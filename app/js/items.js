@@ -72,9 +72,24 @@ export function createItems(sp, opts = {}) {
       }
 
       mesh.userData = Object.assign({}, mesh.userData, {
-        id: p.id, frg: p.frg, w, d, h, rot, z: +p.z || 0
+        id: p.id, frg: p.frg, w, d, h, rot, z: +p.z || 0, auto: !!p.auto
       });
       placeMesh(mesh, +p.x, +p.y);
+
+      /* F2: moyka belgisi — stoleshnitsa yuzasida quyuq quti (ichki kesim vizuali) */
+      if (p.moyka) {
+        const mk = p.moyka;
+        const sink = new THREE.Mesh(
+          new THREE.BoxGeometry(mk.size, mk.size, 26),
+          new THREE.MeshBasicMaterial({ color: 0x1e293b }));
+        const bl = mk.backLocal || 1;   // devor tomoni (lokal +y/-1)
+        sink.position.set(
+          -w / 2 + mk.offset + mk.size / 2,
+          bl * (d / 2 - mk.fromBack - mk.size / 2),
+          h / 2 - 9);
+        sink.userData = { kind: 'moyka' };
+        mesh.add(sink);
+      }
 
       if (p.id === selectedId) applySel(mesh, true);
       group.add(mesh);
@@ -101,7 +116,9 @@ export function createItems(sp, opts = {}) {
     ptr.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     ptr.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
     ray.setFromCamera(ptr, sp.camera);
-    const hits = ray.intersectObjects(meshes, true);
+    /* F2: synthetic (auto) meshlar tanlanmaydi/sudralmaydi — pastki mebel
+       stoleshnitsa ostida ham bosib tanlansa bo'ladi */
+    const hits = ray.intersectObjects(meshes.filter(m => !(m.userData && m.userData.auto)), true);
     if (!hits.length) return null;
     let obj = hits[0].object;
     while (obj && obj.parent && obj.parent !== group && !meshes.includes(obj)) {

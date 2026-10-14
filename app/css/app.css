@@ -209,6 +209,7 @@ body.panel-open.panel-tall #stage { bottom: calc(var(--sheet-tall-h) + var(--saf
 .form-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
 .form-row.opening { grid-template-columns: 1.2fr 1fr 1fr; }
 .form-row.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.form-row.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .field input, .field select {
   width: 100%; padding: 9px 10px; border: 1px solid var(--line);
@@ -389,6 +390,7 @@ table.smeta tfoot td { font-weight: 800; border-top: 2px solid var(--ink); }
   .form-row.opening { grid-template-columns: 1fr 1fr; }
   .form-row.opening .field:first-child { grid-column: 1 / -1; }
   .form-row.two { grid-template-columns: 1fr; }
+  .form-row.four { grid-template-columns: 1fr 1fr; }
 }
 
 /* telefon: render tugmalari faqat ikonka bilan */
@@ -475,3 +477,27 @@ table.smeta tfoot td { font-weight: 800; border-top: 2px solid var(--ink); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* ── F1: poligon xona — burchaklar jadvali ───────────────────────────── */
+#zPtsWrap { margin: 6px 0; font-size: 12.5px; }
+#zPtsWrap summary { cursor: pointer; color: var(--muted); }
+#zPts { margin: 6px 0 4px; }
+#zPts [data-row] { display: flex; gap: 4px; align-items: center; margin: 3px 0; }
+#zPts [data-row] b { width: 18px; text-align: center; opacity: .55; }
+#zPts [data-row] input {
+  flex: 1; min-width: 0; padding: 5px 6px;
+  border: 1px solid var(--line); border-radius: 6px;
+  background: var(--surface); font-size: 12.5px;
+}
+#zPts [data-row] button { padding: 3px 8px; font-size: 12px; }
+
+/* F2: oshxona elementlari — checkbox to'ri */
+.k-checks {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px;
+  margin: 6px 0 8px;
+}
+.k-checks label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--fg, #334155); cursor: pointer;
+}
+.k-checks input[type="checkbox"] { accent-color: #0d9488; }

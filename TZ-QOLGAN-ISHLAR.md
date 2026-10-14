@@ -24,6 +24,56 @@
 
 ---
 
+### 0.1 Bajarilgan (2026-10-14)
+
+§4 1-band "Darhol" barcha 12 ta band bajarildi va tekshirildi (`node /tmp/opencode/verify.mjs` [1]–[6], `node /tmp/opencode/verify_ai.mjs` 34/34, `bash tests/ui/run.sh` 5/5, brauzer QA `/tmp/opencode/qa_ai.mjs` — F6 leak 0, U/L overlap 0, ⚠️ rejimi, A3 W_OVERLAP 0):
+
+- **C1, C6, C7** — `cnc.js` (Y-mirrored teshiklar, DXF sheet offsets, Altendorf plan hisob);
+- **K1, K2, K3, K4** — lenta/GibLab/BPJ (`bpj.js` qayta yozildi: pozitsiyalar noyob, holes 80/80, 3 material) va finish/kesim o'lchamlari; `materials.json` ga `[2800,2070]` qo'shildi;
+- **A1** — parser: "yarim", kirill, U/L tartibi, birlikli o'lchamlar, balandlik → `unknown`, "✅" soxta emas (`assumed` → ⚠️ 3600×2800);
+- **A2** — `footprint()` anchor semantikasi + Z-interval ustma-ustlik; U/L AI placement ankorlari tuzatildi;
+- **A3** — validator Z-interval bilan balandlikni hisoblaydi (soxta W_OVERLAP yo'q);
+- **F5** — barcha `innerHTML` joylari esc/Number qilindi (sweep + catFilter/material/cutlist/smeta);
+- **F6** — `scene.js` shared materiallar + `clearGroup()` (geometry doim dispose; 8× xona o'zgarishida geometriya o'sishi 0).
+
+### 0.2 F1 yadro + qoldiq qismi bajarildi (2026-10-14/15) — poligon xona
+
+§4 4-banddan "F1" ning yadrosi (qolganlari §3.6 F1 qatorida):
+
+- **Model**: `room.outline` n-punktli poligon — hamma yozuvchidan (applyRoom) endi jadvaldan o'qiydi; `roomBBox()` yordamchi (`rules.js`);
+- **Validatsiya**: `pointInPoly` + `fpInRoom` (4 burchak + 4 chek + markaz) — L qirqim (notch) hududagi mebel to'g'ri ushlanadi (A3/W_OUT);
+- **UI**: "To'rtburchak / L shakl" shakl tugmalari + nuqtalar jadvali (qo'shish/o'chirish); W/D = rect generator (programmatik kiritilsa ham ishlaydi);
+- **Teshiklar**: devor select dinamik (edge soni), haqiqiy edge uzunligi bilan; AI teshiklariga `wall/offset/sill/height` avto-to'ldirish (eski E_OPENING_OUT_OF_WALL xatosi yo'q qildi);
+- **Sahna**: pol = `ShapeGeometry(outline)` (L qirqim bo'sh); devorlar per-edge (oldin ham);
+- **OBJ export**: pol ear-clipping bilan triangulyatsiya (`engine/geom.js`);
+- **GLB export**: pol `computePolygonFloor` bilan (ikki qatlam z=0/-40, non-indexed, bin offsetlar kumulyativ) — bbox quti emas; mebelli koddan keyin ham accessors to'g'ri (`verify_glb.mjs`);
+- **Quvur / rozetka**: `room.utilities[]` ({type, wall, offset, z}) — sahnada 3D silindr/plastina + 2D belgi (`scene.js`), UI blok + chiplar (`app.js`), validatsiya `E_UTIL_OUT_OF_WALL` (`rules.js`); yangi loyiha endi DEFAULT_ROOM massivlarini nusxalaydi (`freshRoom()` — eski payvast bug);
+- **AI**: matndan o'lchamsiz qurilganda ⚠️ rejimi (A1) — AI hozircha baribir to'rtburchak kontur beradi;
+- **Tekshiruv**: `verify_f1.mjs` 37/37, `verify_glb.mjs` 24/24, `verify.mjs` [1]–[6] ✓, `verify_ai.mjs` 34/34 ✓, `tests/ui/run.sh` 5/5 ✓, brauzer `qa_f1.mjs` + `qa_f1_shot.mjs` (2D/3D L) + `qa_util.mjs` (quvur/rozetka) + `qa_ai.mjs` ✓;
+
+**F1 qoldiq (keyingi qadam):** AI `suggestLayout` edge'lar bo'yicha joylashtirish (hozir W/D); 90° dan boshqa burchakli xonada devor edge lokal o'qi bo'yicha qo'lda joylashtirish yordami; quvur/rozetka GLB/OBJ exportda ko'rinmaydi (oxirgi qoldiq).
+
+### 0.3 F2 bajarildi (2026-10-15) — oshxona elementlari
+
+§4 4-banddan "F2" ning katta qismi (qolganlari §3.6 F2 qatorida):
+
+- **Model**: `doc.kitchen` = {stoleshnitsa, sokol, dobor(+h), karniz(+h), moyka{on,offset,fromBack,size}} — zamer panelidagi "Oshxona elementlari (F2)" bloki (`index.html`), `syncKitchen/kitchenApply` (`app.js`);
+- **Yaxlit stoleshnitsa**: `engine/kitchen.js` — `detectRuns` (kuxnya-pastki/ustki modullarini devor bo'ylab run'larga birlashtiradi; gap ≤30mm, klaster 20mm), `splitSegments` (varaq 2800 dan uzun run → 2+ segment), `deriveKitchen` → **synthetic placements** (`auto:true`, persist EMAS): SP-ST-001 stoleshnitsa (z=max h), SP-ST-002 sokol (no3d — 3D kickplate assembler'da), SP-ST-003 dobor (devor tomoni = xona markazidan uroq), SP-ST-004 karniz (ustki tepasida);
+- **Bir joyda**: `viewPlacements()` (app.js) — user placements + derived; 3D (`items.setPlacements`), cutlist/raskroy/tannarxi/kotirovka (`doRecalc`), export (OBJ/GLB/BPJ/holes) — hammasi shu ro'yxatdan; raycast auto meshlarni chetlab o'tadi (pastki mebel stoleshnitsa ostida ham bosiladi);
+- **Sokol smetada**: synthetic SP-ST-002 cutlist satr + tannarx (audit topilmasi: "sokol faqat 3D'da, smetada yo'q" — endi smetada);
+- **Moyka kesimi**: `kind:'cutout'` hole (x/y/w/d, dia=0) stoleshnitsa detaliga; `materials.json` hole_kinds `cutout` 25 000 so'm (tannarxda `holeCost`); CNC/BPJ circle (dia=0) chiqarildi — ichki kontur hali kesilmaydi (qoldiq);
+- **Fragmentlar**: SP-ST-001..004 (`fragments.json`, slot `stoleshnitsa/dobor/karniz` → LDSP18 `slots.js`); Katalogdan qo'lda ham qo'ysa bo'ladi;
+- **AI**: `aiBuild` dan keyin `room.utilities` + `doc.kitchen` saqlanadi (AI xonani qayta qursa ham);
+- **Tekshiruv**: `verify_f2.mjs` 33/33, `verify.mjs` ✓, `verify_ai.mjs` 34/34, `verify_f1.mjs` 37/37, `verify_glb.mjs` 24/24, `tests/ui/run.sh` 5/5, brauzer `qa_f2.mjs` (toggle→cutlist/smeta/moyka) + `qa_f1/qa_ai/qa_util` ✓;
+
+- **O'rnatma texnika (F2c)**: `data/appliances.json` (pech/posudomoyka/mikroto'lqin/muzlatgich/plita/chimenee — standart nishon o'lchamlari) → katalogda "O'rnatma texnika" kategoriyasi (SP-T-001..006, bo'sh korpus — cutlist 0 detal, 3D placeholder quti, `default_z` bilan: plita z=720, chimenee z=1500);
+- **Moyka 3D belgisi**: derived stoleshnitsa placementida `p.moyka` → items.js quyuq quti (lokal koordinata, devor tomoni `backLocal`);
+- **CNC ichki kontur**: `collectSheetCutouts` → DXF `CUTOUT` qatlami + G-code **2a-bosqich** (ichki kontur tashqi konturdan OLDIN — holding tab bilan); moyka konvensiyasi tuzatildi (x=EN/F dan, y=UZUNLIK/L dan); vertikal run'lar uchun synthetic placementlar **rot=90** (detal uzunligi W bo'lib, 2800 varaqqa sig'adi);
+- **AI**: `aiBuild` dan keyin `room.utilities` + `doc.kitchen` saqlanadi (AI xonani qayta qursa ham);
+- **Tekshiruv**: `verify_f2.mjs` 42/42, `verify.mjs` ✓, `verify_ai.mjs` 34/34, `verify_f1.mjs` 37/37, `verify_glb.mjs` 24/24, `tests/ui/run.sh` 5/5, brauzer `qa_f2.mjs` (cutlist/smeta/moyka/appliances/sink-mesh) + `qa_f1/qa_ai/qa_util` ✓;
+
+**F2 qoldiq (keyingi qadam):** ERP stoleshnitsa materiali (hozir LDSP18 — Sobir javobi); L-burchakda stoleshnitsa birlashtirish (hozir 2 alohida qism); texnika uchun AI avtomatik joylashtirish.
+
 ## 1. Egasining qarori kerak (ishni to'xtatib turibdi)
 
 | # | Savol | Hozirgi holat |
@@ -87,13 +137,13 @@ Ustuvorlik: **P0** — sexda ishlatishdan oldin shart · **P1** — keyingi · *
 
 | # | Ish | Joy | Ma'lumot |
 |---|---|---|---|
-| C1 | Teshiklar Y bo'yicha ko'zgu aksida tushadi (56 tadan 0 tasi o'z detalida) | `cnc.js:57, 266` | — |
+| C1 | Teshiklar Y bo'yicha ko'zgu aksida tushadi (56 tadan 0 tasi o'z detalida) | `cnc.js:57, 266` | ✅ 2026-10-14 |
 | C2 | Kesish chuqurligi doim 16 mm, detal esa 18 mm — oxirigacha kesilmaydi | `cnc.js:210` | D7 |
 | C3 | Detallar orasida arra kerfi (4 mm) qoladi, freza esa Ø6 — qo'shni detalga kirib ketadi | nesting + cnc | D7 |
 | C4 | Biesse `.cix` va Homag `.mpr` — loyiha emas, doim "Sample_Panel" chiqadi | `cnc.js:566` | D7 |
 | C5 | Hamma teshik bitta Ø6 freza bilan; burg'ulash sikli yo'q; yon teshiklar yuza teshigi deb beriladi | `cnc.js` | D7 |
-| C6 | DXF'da hamma varaq bitta nuqtada ustma-ust | `cnc.js:93` | — |
-| C7 | Altendorf rejasi: 84 kesimdan 34 tasi detallarni kesib o'tadi | `cnc.js:432` | — |
+| C6 | DXF'da hamma varaq bitta nuqtada ustma-ust | `cnc.js:93` | ✅ 2026-10-14 |
+| C7 | Altendorf rejasi: 84 kesimdan 34 tasi detallarni kesib o'tadi | `cnc.js:432` | ✅ 2026-10-14 |
 | C8 | G-code: G54/G43 yo'q, bir o'tishda to'liq chuqurlik, kirish rampasi yo'q | `cnc.js` | D7 |
 | C9 | Post-prosessor plugin arxitekturasi: yangi stanok = yangi fayl | — | D7 |
 | C10 | Birinchi ishga tushirish: 1 ta arzon detalda sinov va texnolog tasdig'i (TZ §10.3) | — | D7 |
@@ -102,10 +152,10 @@ Ustuvorlik: **P0** — sexda ishlatishdan oldin shart · **P1** — keyingi · *
 
 | # | Ish | Ustuvorlik |
 |---|---|---|
-| K1 | Lenta (strip) rejimi buzuq: koordinatalar almashgan, tekstura 90° buriladi | P0 |
-| K2 | GibLab eksportining o'z joylashtirgichi bor va detallarni tashlab ketadi (95 tadan 89 tasi chiqadi); shkafda xato bilan to'xtaydi → asosiy kroy natijasidan foydalansin | P0 |
-| K3 | BPJ: hamma panel MDF 16 mm; bitta moduldagi panellar bir nuqtada; teshiklar yo'q | P0 |
-| K4 | Eksportlar endi detal `length`/`width` = kesim o'lchami ekanini hisobga olsin (tayyor o'lcham — `finish_length/width`). GibLab'da `l` (tayyor) va `cl` (kesim) maydonlari to'g'ri to'ldirilsin | P0 |
+| K1 | Lenta (strip) rejimi buzuq: koordinatalar almashgan, tekstura 90° buriladi | P0 ✅ 2026-10-14 |
+| K2 | GibLab eksportining o'z joylashtirgichi bor va detallarni tashlab ketadi (95 tadan 89 tasi chiqadi); shkafda xato bilan to'xtaydi → asosiy kroy natijasidan foydalansin | P0 ✅ 2026-10-14 |
+| K3 | BPJ: hamma panel MDF 16 mm; bitta moduldagi panellar bir nuqtada; teshiklar yo'q | P0 ✅ 2026-10-14 |
+| K4 | Eksportlar endi detal `length`/`width` = kesim o'lchami ekanini hisobga olsin (tayyor o'lcham — `finish_length/width`). GibLab'da `l` (tayyor) va `cl` (kesim) maydonlari to'g'ri to'ldirilsin | P0 ✅ 2026-10-14 |
 | K5 | `nestBatch` buyurtma ID'sini yo'qotadi | P1 |
 | K6 | **GibLab bilan solishtirish (benchmark):** 200 ta faylda list soni ≥ 90% holatda ko'p bo'lmasligi, chiqindi ≤ +2 foiz punkt (D11) | P0 |
 | K7 | Qoldiqlar ombori — UI (API bor) | P1 |
@@ -128,9 +178,9 @@ Ustuvorlik: **P0** — sexda ishlatishdan oldin shart · **P1** — keyingi · *
 
 | # | Ish |
 |---|---|
-| A1 | Parser 27 iboradan 7 tasini tushunadi. Tuzatiladiganlar: "3.5 ga 2.8", kirill "3х4", "3 yarim", "угловая", miqdorlar ("4 ta"), U shakl (doim L chiqadi), "eshik 90 sm" → 90 000 mm, "shkaf h 2400" → shift balandligi. Tushunmasa ham "✅" ko'rsatmasin |
-| A2 | L shaklda modullar ustma-ust tushadi (burilgan devor) |
-| A3 | Validator balandlikni hisobga olmaydi — ustki va pastki shkaflar uchun soxta "W_OVERLAP" ogohlantirishi |
+| A1 | Parser 27 iboradan 7 tasini tushunadi. Tuzatiladiganlar: "3.5 ga 2.8", kirill "3х4", "3 yarim", "угловая", miqdorlar ("4 ta"), U shakl (doim L chiqadi), "eshik 90 sm" → 90 000 mm, "shkaf h 2400" → shift balandligi. Tushunmasa ham "✅" ko'rsatmasin | ✅ 2026-10-14 |
+| A2 | L shaklda modullar ustma-ust tushadi (burilgan devor) | ✅ 2026-10-14 |
+| A3 | Validator balandlikni hisobga olmaydi — ustki va pastki shkaflar uchun soxta "W_OVERLAP" ogohlantirishi | ✅ 2026-10-14 |
 | A4 | **LLM ulash** — server proxy, kalit faqat serverda, provayder sozlanadi. Hozirgi `gemini-pro` modeli eskirgan (D13) |
 | A5 | Yandex SpeechKit (STT/TTS) server proxy; Gemini Live (D13) |
 | A6 | AI jurnali: usta nima dedi → AI nima tushundi → tasdiqlandimi (lug'at o'sishi uchun) |
@@ -139,12 +189,12 @@ Ustuvorlik: **P0** — sexda ishlatishdan oldin shart · **P1** — keyingi · *
 
 | # | Ish |
 |---|---|
-| F1 | Xona faqat to'rtburchak → poligon, 90° bo'lmagan burchaklar, L shaklli xona; deraza, eshik, quvur, rozetka |
-| F2 | Oshxona elementlari: yaxlit stoleshnitsa, sokol (smetaga ham), dobor, karniz, o'rnatma texnika o'lchamlari, moyka kesimi |
+| F1 | Xona faqat to'rtburchak → poligon, 90° bo'lmagan burchaklar, L shaklli xona; deraza, eshik, quvur, rozetka | ✅ yadro + GLB pol + quvur/rozetka 2026-10-15 (§0.2); qoldiq: AI edge-placement, 90°+ yordam, utility export |
+| F2 | Oshxona elementlari: yaxlit stoleshnitsa, sokol (smetaga ham), dobor, karniz, o'rnatma texnika o'lchamlari, moyka kesimi  ✅ 2026-10-15 (§0.3, texnika+moyka 3D+CNC kontur ham); qoldiq: ERP material, L-burchak birlashtirish |
 | F3 | Undo/redo; bir nechta loyiha (IndexedDB); `loyiha.json` ni import qilish |
 | F4 | Material qidiruvi: 2 harfli so'zlar noto'g'ri moslashadi; "oq", "kromka" kabi o'zbekcha so'zlar topilmaydi; sinonim lug'ati (TZ §4.2) |
-| F5 | Xavfsizlik: 5 ta `innerHTML` joyda ma'lumot ekranlanmagan (`app.js:297, 424, 447, 486, 522`) |
-| F6 | Three.js xotirasi: devor va to'r tozalanganda `dispose` qilinmaydi |
+| F5 | Xavfsizlik: 5 ta `innerHTML` joyda ma'lumot ekranlanmagan (`app.js:297, 424, 447, 486, 522`) | ✅ 2026-10-14 |
+| F6 | Three.js xotirasi: devor va to'r tozalanganda `dispose` qilinmaydi | ✅ 2026-10-14 |
 | F7 | `app.js` (1 300 qator) modullarga bo'linsin; og'ir hisob (kroy) Web Worker'da |
 | F8 | Rus tilidagi interfeys |
 | F9 | BLE lazer o'lchagich (TZ §2) |
@@ -175,7 +225,7 @@ Ustuvorlik: **P0** — sexda ishlatishdan oldin shart · **P1** — keyingi · *
 
 ## 4. Bajarish tartibi (tavsiya)
 
-1. **Darhol (ma'lumot kutmasdan):** C1, C6, C7, K1, K2, K3, K4, A1–A3, F5, F6.
+1. ~~**Darhol (ma'lumot kutmasdan):** C1, C6, C7, K1, K2, K3, K4, A1–A3, F5, F6.~~ ✅ 2026-10-14 bajarildi (§0.1).
 2. **Ma'lumot kelganda:**
    - D6 + D7 → M1–M4, C2–C10;
    - D1–D5 → S1–S3;

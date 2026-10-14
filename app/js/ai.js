@@ -11,6 +11,8 @@
  *      chiqib ketishni oldini olish.
  */
 
+import { footprint } from './engine/rules.js';
+
 /* ── 1. Sonlar va O'zbek tili lug'ati ── */
 
 const NUM_MAP = {
@@ -33,7 +35,7 @@ function parseNum(s) {
  * Masalan: "3x4 metr oshxona, L shakl, burchakka tumba, gaz plita, tepasiga osma shkaf, xolodilnik"
  */
 export function parseZamer(text) {
-  const t = String(text || '').toLowerCase();
+  let t = String(text || '').toLowerCase();
   const unknown = [];
   const room = {
     w: 0, d: 0, h: 2700,
@@ -43,46 +45,79 @@ export function parseZamer(text) {
   };
   const orders = [];
 
-  /* ── 1. Layout turi (L-shakl, U-shakl, to'g'ri, orol) ── */
-  if (/l[\s-]*shakl|burchakli|burchak|г[\s-]*образн/i.test(t)) {
-    room.layoutType = 'L';
-  } else if (/u[\s-]*shakl|p[\s-]*shakl|п[\s-]*образн|uch\s*tomon/i.test(t)) {
+  /* "3 yarim" → "3.5" (A1) */
+  t = t.replace(/(\d+(?:[.,]\d+)?)\s*yarim/g,
+    (_, a) => String(parseFloat(String(a).replace(',', '.')) + 0.5));
+
+  /* ── 1. Layout turi (U birinchi tekshiriladi — "U shakl, burchakka" matnida
+          "burchak" so'zi L ga tegmasligi uchun; "угловая" = L (A1)) ── */
+  if (/u[\s-]*shakl|p[\s-]*shakl|п[\s-]*образн|uch\s*tomon/i.test(t)) {
     room.layoutType = 'U';
+  } else if (/l[\s-]*shakl|burchakli|burchak|углов|г[\s-]*образн/i.test(t)) {
+    room.layoutType = 'L';
   } else if (/orol|orolli|ostrov/i.test(t)) {
     room.layoutType = 'island';
   }
 
   /* ── 2. Xona o'lchamlari ── */
-  // "3x4", "3*4", "3 x 4", "3000x4000", "3000 x 4000"
-  let m = t.match(/(\d+(?:[.,]\d+)?)\s*[x×*]\s*(\d+(?:[.,]\d+)?)/);
+  // "3x4", "3*4", "3000x4000", kirill "3х4" (A1)
+  let m = t.match(/(\d+(?:[.,]\d+)?)\s*[x×*xXхХ]\s*(\d+(?:[.,]\d+)?)/);
   if (m) {
     let w = parseNum(m[1]), d = parseNum(m[2]);
     if (w < 100 && d < 100) { w *= 1000; d *= 1000; }
     room.w = Math.round(w); room.d = Math.round(d);
   } else {
-    // "3 metr 4 metr", "3m 4m", "3 ga 4"
-    m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:м|metr|m|ga)?\s*(?:на|ga)?\s*(\d+(?:[.,]\d+)?)\s*(?:м|metr|m)/);
+    // "3.5 ga 2.8", "3 ga 4 metr" — separator so'z bilan (A1)
+    m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:га|ga|на)\s*(?:метр(?:ов)?\s*)?(\d+(?:[.,]\d+)?)/);
     if (m) {
       let w = parseNum(m[1]), d = parseNum(m[2]);
       if (w < 100 && d < 100) { w *= 1000; d *= 1000; }
       room.w = Math.round(w); room.d = Math.round(d);
+    } else {
+      // "3 metr 4 metr", "3m 4m" — ikkala tomonda ham birlik majburiy
+      m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:м|metr|метр)\s*(?:га|на)?\s*(\d+(?:[.,]\d+)?)\s*(?:м|metr|метр)/);
+      if (m) {
+        let w = parseNum(m[1]), d = parseNum(m[2]);
+        if (w < 100 && d < 100) { w *= 1000; d *= 1000; }
+        room.w = Math.round(w); room.d = Math.round(d);
+      }
     }
   }
 
-  /* ── 3. Balandlik ── */
-  m = t.match(/(?:balandlik|высота|height|shift|h)\s*[=:]?\s*(\d+(?:[.,]\d+)?)/);
+  /* ── 3. Balandlik ──
+     Faqat xona kalit so'zlari (balandlik/высота/height/shift) yoki mustaqil "h".
+     "shkaf h 2400" — mebel balandligi, xona emas (A1): unknown ga tushadi. */
+  m = t.match(/(?:balandli[kg]\w*|высота|height|shift|h)\s*[=:]?\s*(\d+(?:[.,]\d+)?)/);
   if (m) {
+    const before = t.slice(Math.max(0, m.index - 14), m.index);
+    const isFurniture = /(shkaf|modul|penal|tumba|osma|garderob|eshik|stol|divan|karavot|mebel|korpus|шкаф|шкаф|тумба|стол|мебель|шкафа)\s*$/.test(before);
     let h = parseNum(m[1]);
     if (h < 100) h *= 1000;
-    if (h >= 1000 && h <= 6000) room.h = Math.round(h);
+    if (isFurniture) {
+      unknown.push(m[0].trim());
+    } else if (h >= 1000 && h <= 6000) {
+      room.h = Math.round(h);
+    }
   }
 
-  /* ── 4. Teshiklar: Deraza va Eshiklar ── */
-  const reO = /(deraza|oyna|okno|eshik|dver)\s*[=:]?\s*(\d+(?:[.,]\d+)?)\s*(?:m|metr|м)?/g;
+  /* ── 4. Teshiklar: Deraza va Eshiklar — birlikga e'tibor (A1):
+        "eshik 90 sm" → 900 mm (eski kod 90 000 mm qilardi) ── */
+  const reO = /(deraza|oyna|okno|eshik|dver)\s*[=:]?\s*(\d+(?:[.,]\d+)?)\s*(sm|см|cm|mm|мм|m|metr|метр|м)?/g;
   let mm;
   while ((mm = reO.exec(t))) {
+    const unit = (mm[3] || '').toLowerCase();
     let wid = parseNum(mm[2]);
-    if (wid < 100) wid *= 1000;
+    if (/^(sm|см|cm)$/.test(unit)) {
+      wid *= 10;                                   // sm/cm → mm
+    } else if (/^(mm|мм)$/.test(unit)) {
+      // mm — o'zgarmaydi
+    } else if (/^(m|metr|метр|м)$/.test(unit)) {
+      wid *= 1000;                                 // m → mm
+    } else if (wid > 0 && wid < 10) {
+      wid *= 1000;                                 // "1.5" → 1.5 m
+    } else if (wid > 0 && wid < 100) {
+      wid *= 10;                                   // "90" → 90 sm
+    }
     room.openings.push({
       type: /deraza|oyna|okno/.test(mm[1]) ? 'window' : 'door',
       width: Math.round(wid || 900)
@@ -94,7 +129,7 @@ export function parseZamer(text) {
     sink: /moyka|rakovina|chanoq|yuvg'ich|мойка/i.test(t),
     stove: /gaz|plita|pechka|duxovka|варочн|плита/i.test(t),
     fridge: /xolodilnik|muzlatgich|холодильник/i.test(t),
-    corner: /burchak|угол/i.test(t) || room.layoutType === 'L' || room.layoutType === 'U',
+    corner: /burchak|угол/i.test(t),
     upper: /ustki|tepa|osma|navesnoy|навесн/i.test(t),
     tall: /penal|kolonna|baland shkaf|пенал/i.test(t),
     wardrobe: /garderob|kupe|shkaf-kupe/i.test(t),
@@ -102,16 +137,17 @@ export function parseZamer(text) {
   };
   room.features = features;
 
-  /* ── 6. Miqdorli buyurtmalar ("3 ta pastki", "2 ta osma") ── */
-  const reQ = /(\d+|bir|bitta|ikki|ikkita|uch|uchta|to'rt|besh|olti)\s*(?:ta)?\s+([a-z'`-]+)/g;
+  /* ── 6. Miqdorli buyurtmalar ("3 ta pastki", "4 tadan osma", "4ta") (A1) ── */
+  const reQ = /(\d+|bir|bitta|ikki|ikkita|uch|uchta|to'rt|to`rt|besh|olti|yetti|sakkiz|to'qqiz|o'n|o`n)\s*(?:tadan|tali|ta|donalik|dona|шт|штука)?\s*([a-zа-я'`-]+)/gi;
   const KIND_MAP = [
-    [/ustki|osma|tepa/, 'ustki'],
-    [/pastki|tumba/, 'pastki'],
-    [/burchak/, 'burchak'],
-    [/garderob|shkaf/, 'shkaf'],
-    [/stol/, 'stol'],
-    [/divan/, 'divan'],
-    [/orol/, 'orol']
+    [/ustki|osma|tepa|navesnoy|навесн|верхн/, 'ustki'],
+    [/pastki|tumba|нижн/, 'pastki'],
+    [/burchak|углов/, 'burchak'],
+    [/garderob|shkaf|шкаф|купе/, 'shkaf'],
+    [/penal|пенал/, 'shkaf'],
+    [/stol|стол/, 'stol'],
+    [/divan|диван/, 'divan'],
+    [/orol|остров/, 'orol']
   ];
 
   while ((mm = reQ.exec(t))) {
@@ -124,6 +160,16 @@ export function parseZamer(text) {
     if (kind) orders.push({ kind, qty });
   }
 
+  /* Teshiklarga devor (edge) va geometriya berish — F1: aks holda
+     validateDoc E_OPENING_OUT_OF_WALL beradi va sahna uni chizmaydi. */
+  room.openings.forEach(op => {
+    if (op.wall == null) op.wall = 0;
+    const seg = (room.w || op.width || 900) + 0;
+    if (op.offset == null) op.offset = Math.max(100, Math.round((seg - (op.width || 900)) / 2));
+    if (op.sill == null) op.sill = op.type === 'window' ? 900 : 0;
+    if (op.height == null) op.height = op.type === 'window' ? 1400 : 2100;
+  });
+
   // Standart to'rtburchak xona konturi
   if (room.w && room.d) {
     room.outline = [[0, 0], [room.w, 0], [room.w, room.d], [0, room.d]];
@@ -135,24 +181,21 @@ export function parseZamer(text) {
 /* ── 2. To'qnashuv va Joylashtirish Matematikasi ── */
 
 /**
- * 2D to'rtburchaklar to'qnashuvini tekshirish (AABB Collision Test).
+ * 2D + Z (balandlik) to'qnashuv tekshiruvi.
+ * (x,y) — burchak ANCHOR (items.js placeMesh): rot 270 da haqiqiy
+ * footprint [x, x+d]×[y-w, y] bo'ladi. Eski kod rot'ni e'tiborsiz
+ * qoldirgani uchun L/U shaklda modullar ustma-ust tushgan (A2).
  */
 function isColliding(a, b) {
-  // Vertikal zonalarga bo'lish: pastki (z < 1000) va ustki (z >= 1000)
-  const aUpper = (a.z || 0) >= 1000;
-  const bUpper = (b.z || 0) >= 1000;
-  // Agar biri pastda, biri tepada bo'lsa (kolonna bundan mustasno) — to'qnashmaydi
-  if (aUpper !== bUpper && (a.h || 0) < 1800 && (b.h || 0) < 1800) {
-    return false;
-  }
+  /* Balandlik oralig'i: [z, z+h] — ustki (1450) va pastki (0) shkaflar
+     bir xayoliy proyeksiyada ustma-ust, lekin 3D da to'qnashmaydi. */
+  const az0 = a.z || 0, az1 = az0 + (a.h || 0);
+  const bz0 = b.z || 0, bz1 = bz0 + (b.h || 0);
+  if (a.h > 0 && b.h > 0 && (az1 <= bz0 || bz1 <= az0)) return false;
 
-  // 2D proyeksiyada AABB
-  const aX2 = a.x + a.w;
-  const aY2 = a.y + a.d;
-  const bX2 = b.x + b.w;
-  const bY2 = b.y + b.d;
-
-  return !(aX2 <= b.x + 2 || a.x >= bX2 - 2 || aY2 <= b.y + 2 || a.y >= bY2 - 2);
+  const fa = footprint(a), fb = footprint(b);
+  return !(fa.x1 <= fb.x0 + 2 || fa.x0 >= fb.x1 - 2 ||
+           fa.y1 <= fb.y0 + 2 || fa.y0 >= fb.y1 - 2);
 }
 
 /**
@@ -212,8 +255,11 @@ export function suggestLayout(room, catalog = {}, orders = []) {
     return item;
   }
 
-  /* ═══════════════ A. L-SHAKLLI OSHXONA (CORNER SNAPPING) ═══════════════ */
-  if (layout === 'L' || feat.corner) {
+  /* ═══════════════ A. L-SHAKLLI OSHXONA (CORNER SNAPPING) ═══════════════
+     layout === 'U' bo'lsa bu blok o'tkazib yuboriladi — "U shakl, burchakka"
+     matnida feat.corner true bo'lib, L birinchi kirib, U hech qachon qurilmay
+     qolgan edi (A1). */
+  if (layout !== 'U' && (layout === 'L' || feat.corner)) {
     const cW = cornerFrag ? cornerFrag.w : 900;
     const cD = cornerFrag ? cornerFrag.d : 550;
 
@@ -243,13 +289,14 @@ export function suggestLayout(room, catalog = {}, orders = []) {
     const maxWallY = D - margin;
 
     // Agar xolodilnik yoki kolonna bo'lsa, eng chetiga qo'yish
+    // rot 270 → footprint y∈[y-w, y]: anchor = maxWallY (A2)
     if ((feat.fridge || feat.tall) && maxWallY - 600 >= curY + 600) {
-      place(fridgeFrag, margin, maxWallY - 600, 0, 270, 600);
+      place(fridgeFrag, margin, maxWallY, 0, 270, 600);
     }
 
     // Chap devor bo'ylab pastki shkaflar (rot = 270°, fasad o'ngga)
     while (curY + 600 <= (feat.fridge ? maxWallY - 600 : maxWallY)) {
-      place(baseStandard, margin, curY, 0, 270, 600);
+      place(baseStandard, margin, curY + 600, 0, 270, 600);
       curY += 600;
     }
 
@@ -263,10 +310,10 @@ export function suggestLayout(room, catalog = {}, orders = []) {
       uX += uW;
     }
 
-    // Chap devor ustki qatori
+    // Chap devor ustki qatori (rot 270: anchor = uY + 600, footprint [uY, uY+600])
     let uY = margin + 600;
     while (uY + 600 <= (feat.fridge ? maxWallY - 600 : maxWallY)) {
-      place(upperStandard, margin, uY, 1450, 270, 600);
+      place(upperStandard, margin, uY + 600, 1450, 270, 600);
       uY += 600;
     }
 
@@ -280,8 +327,10 @@ export function suggestLayout(room, catalog = {}, orders = []) {
 
     // Chap burchak
     place(cornerFrag, margin, margin, 0, 0);
-    // O'ng burchak
-    place(cornerFrag, W - margin - cW, margin, 0, 90);
+    // O'ng burchak — rot 0: footprint [W-margin-cW, W-margin]×[margin, margin+cD]
+    // (eski rot 90 burchakni devordan uzoqlashtirib, o'ng qanot bilan ustma-ust
+    //  tushishiga sabak bo'lardi — A2)
+    place(cornerFrag, W - margin - cW, margin, 0, 0);
 
     // O'rta qism (pastki devor, cW dan W-cW gacha)
     let midX = margin + cW;
@@ -290,17 +339,18 @@ export function suggestLayout(room, catalog = {}, orders = []) {
       midX += 600;
     }
 
-    // Chap qanot (Y o'qi bo'ylab, rot 270°)
+    // Chap qanot (Y o'qi bo'ylab, rot 270: anchor = leftY+600)
     let leftY = margin + cD;
     while (leftY + 600 <= D - margin) {
-      place(baseStandard, margin, leftY, 0, 270, 600);
+      place(baseStandard, margin, leftY + 600, 0, 270, 600);
       leftY += 600;
     }
 
-    // O'ng qanot (Y o'qi bo'ylab, rot 90°, fasad chapga qarab)
+    // O'ng qanot (Y o'qi bo'ylab, rot 90 → footprint [x-d, x]×[y, y+w];
+    // anchor x = W-margin, ya'ni devorga yopishqoq)
     let rightY = margin + cD;
     while (rightY + 600 <= D - margin) {
-      place(baseStandard, W - margin - 550, rightY, 0, 90, 600);
+      place(baseStandard, W - margin, rightY, 0, 90, 600);
       rightY += 600;
     }
 
@@ -379,7 +429,11 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
   }
 
   const room = parsed.room;
+  let assumed = false;
   if (!room.outline) {
+    /* O'lcham topilmadi — default bilan davom etamiz, lekin "✅ 3600×2800"
+       deb da'vo qilmaymiz (A1: "Tushunmasa ham ✅ ko'rsatmasin") */
+    assumed = true;
     room.w = room.w || 3600;
     room.d = room.d || 2800;
     room.outline = [[0, 0], [room.w, 0], [room.w, room.d], [0, room.d]];
@@ -399,7 +453,7 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
     placements
   };
 
-  return { doc, orders: parsed.orders, unknown: parsed.unknown, source };
+  return { doc, orders: parsed.orders, unknown: parsed.unknown, source, assumed };
 }
 
 /* ── 4. Ovoz Tizimi (Web Speech API) ── */

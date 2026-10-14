@@ -21,13 +21,15 @@ export const CATEGORY_COLOR = {
   shelf:    0xdcd2be,   // toko — kulrang
   door:     0xc9b79a,   // eshik — to'qroq
   window:   0xbcd0dc,   // oyna — moviy
+  appliance:0x64748b,   // o'rnatma texnika — slateg kulrang
+  countertop:0xd8d2c4,  // oshxona qo'shimcha
   other:    0xd8d2c4
 };
 
 export const CATEGORY_LABEL = {
   cabinet: 'Shkaf', wardrobe: 'Garderob', kitchen: 'Oshxona', bathroom: 'Hammom',
   sofa: 'Divan', table: 'Stol', chair: 'Stol-stul', bed: 'Karyera',
-  shelf: 'Javon', door: 'Eshik', window: 'Oyna', other: 'Boshqa'
+  shelf: 'Javon', door: 'Eshik', window: 'Oyna', appliance: "O'rnatma texnika", other: 'Boshqa'
 };
 
 const SEL_COLOR = 0xd97706; // tanlanganlik sarg'ish-oltin

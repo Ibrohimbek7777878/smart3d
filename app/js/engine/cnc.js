@@ -16,17 +16,24 @@
  * Hole coords: part-local (x,y) → sheet coords (+ aylantirish) → DXF/NC Y-up.
  */
 
-/* ── Yordamchi: hole'ni varaq koordinatasiga o'tkazish ───────────────────── */
+/* ── Yordamchi: hole'ni varaq koordinatasiga o'tkazish ─────────────────────
+ * Teshik lokal o'qlari (cutlist.js konvensiyasi):
+ *   h.x — EN bo'ylab F chetdan,  h.y — UZUNLIK bo'ylab L chetdan.
+ * Varaq ustida detal qanday yotgani (nesting.js):
+ *   rotated=false → detal uzunligi varaq X bo'ylab, eni Y bo'ylab:
+ *       sheet x = part.x + h.y (uzunlik),  sheet y = part.y + h.x (en)
+ *   rotated=true  → detal eni varaq X bo'ylab, uzunligi Y bo'ylab:
+ *       sheet x = part.x + h.x (en),       sheet y = part.y + h.y (uzunlik)
+ * (Eski kodda bu ikki filial ALMASGAN edi — natijada 56 teshikdan 0 tasi
+ *  o'z detaliga tushmagan, xato 1926 mm gacha.) */
 function holeToSheet(h, part, sheetW, flipY) {
-  let x, y, fw, fh;   // fw/fh — joylashgan o'lcham (footprint)
+  let x, y;
   if (part.rotated) {
-    x = part.x + (h.y || 0);
-    y = part.y + (h.x || 0);
-    fw = part.width; fh = part.length;
-  } else {
     x = part.x + (h.x || 0);
     y = part.y + (h.y || 0);
-    fw = part.length; fh = part.width;
+  } else {
+    x = part.x + (h.y || 0);
+    y = part.y + (h.x || 0);
   }
   if (flipY) y = sheetW - y;   // y pastdan yuqoriga (DXF/Excellon konvensiyasi)
   return { x: Math.round(x * 100) / 100, y: Math.round(y * 100) / 100 };
@@ -48,6 +55,8 @@ function collectSheetHoles(nest, cutlists) {
         const pid = ref.includes(':') ? ref.slice(0, ref.indexOf(':')) : null;
         const fragHoles = holesByPlacement[pid] || [];
         for (const h of fragHoles) {
+          /* F2: moyka kesimi (kind=cutout) — CNC drill uchun emas (ichki kontur hali yo'q) */
+          if (h.kind === 'cutout' || !(h.dia > 0)) continue;
           const refPart = ref.includes(':') ? ref.slice(ref.indexOf(':') + 1) : ref;
           const refBase = refPart.split('#')[0];
           if (h.part !== refBase) continue;
@@ -68,6 +77,53 @@ function collectSheetHoles(nest, cutlists) {
 }
 function sheetWOf(sheet) { return sheet.width; }
 
+/** F2: moyka/kontur kesimlari (kind=cutout) — DETAL/nest fazosida (G-code p.y bilan bir xil).
+ *  Markaz: x=EN (F chetdan), y=UZUNLIK (L chetdan); len = varaq X (detal uzunlik), wid = varaq Y. */
+function collectSheetCutouts(nest, cutlists) {
+  const byPlacement = {};
+  for (const cl of cutlists || []) {
+    if (cl.placementId != null) {
+      byPlacement[cl.placementId] = (cl.holes || []).filter(h => h.kind === 'cutout');
+    }
+  }
+  const out = [];
+  for (const mat in (nest.by_material || {})) {
+    const nm = nest.by_material[mat];
+    for (const sheet of nm.sheets || []) {
+      const cutouts = [];
+      for (const part of sheet.parts || []) {
+        const ref = String(part.ref || '');
+        const pid = ref.includes(':') ? ref.slice(0, ref.indexOf(':')) : null;
+        const list = byPlacement[pid] || [];
+        if (!list.length) continue;
+        const refPart = ref.includes(':') ? ref.slice(ref.indexOf(':') + 1) : ref;
+        const refBase = refPart.split('#')[0];
+        for (const h of list) {
+          if (h.part !== refBase) continue;
+          const sizeW = +h.d || +h.w || 0;   // en bo'ylab (x)
+          const sizeL = +h.w || sizeW;       // uzunlik bo'ylab (y)
+          let cx, cy, lenS, widS;
+          if (part.rotated) {
+            cx = part.x + (+h.x || 0) + sizeW / 2;
+            cy = part.y + (+h.y || 0) + sizeL / 2;
+            lenS = sizeW; widS = sizeL;
+          } else {
+            cx = part.x + (+h.y || 0) + sizeL / 2;
+            cy = part.y + (+h.x || 0) + sizeW / 2;
+            lenS = sizeL; widS = sizeW;
+          }
+          cutouts.push({
+            x: Math.round(cx * 100) / 100, y: Math.round(cy * 100) / 100,
+            len: lenS, wid: widS, ref
+          });
+        }
+      }
+      out.push({ sheet, material: mat, cutouts });
+    }
+  }
+  return out;
+}
+
 /* ── 1) DXF ──────────────────────────────────────────────────────────────── */
 export function nestDXF(nest) {
   const L = [];
@@ -86,42 +142,65 @@ export function nestDXF(nest) {
   pair(0, 'SECTION'); pair(2, 'ENTITIES');
 
   const sheetsData = collectSheetHoles(nest, nest._cutlists || []);
+  /* F2: ichki konturlar (moyka) — CUTOUT qatlami */
+  const cutBySheet = {};
+  for (const sd of collectSheetCutouts(nest, nest._cutlists || [])) {
+    cutBySheet[sd.sheet.no + '_' + sd.material] = sd.cutouts || [];
+  }
   const sheetList = sheetsData.length ? sheetsData
     : Object.keys(nest.by_material || {}).flatMap(mat =>
         (nest.by_material[mat].sheets || []).map(sheet => ({ sheet, material: mat, holes: [] })));
 
-  for (const { sheet, holes } of sheetList) {
+  /* Har bir varaq o'z nixosida (0,0) boshlansa — ular ustma-ust tushadi va
+   * bitta CAD/CNC dasturida kesish mumkin emas. Varaqlarni Y bo'ylab ajratamiz. */
+  const SHEET_GAP = 50;   // mm oraliq
+  let sheetOy = 0;
+
+  for (const { sheet, material, holes } of sheetList) {
     const SW = sheet.width;
     const SL = sheet.length;
     const trimL = sheet.trimL || 0;
     const trimW = sheet.trimW || 0;
+    const oy = sheetOy;          // shu varaqning Y-offseti
+    sheetOy += SW + SHEET_GAP;
 
     /* varaq chegarasi (SHEET) */
-    line('SHEET', 0, 0, SL, 0);
-    line('SHEET', SL, 0, SL, SW);
-    line('SHEET', SL, SW, 0, SW);
-    line('SHEET', 0, SW, 0, 0);
+    line('SHEET', 0, oy, SL, oy);
+    line('SHEET', SL, oy, SL, oy + SW);
+    line('SHEET', SL, oy + SW, 0, oy + SW);
+    line('SHEET', 0, oy + SW, 0, oy);
 
     /* tozalangan ishchi maydon chegarasi (TRIM) */
     if (trimL > 0 || trimW > 0) {
-      line('TRIM', trimL, trimW, SL - trimL, trimW);
-      line('TRIM', SL - trimL, trimW, SL - trimL, SW - trimW);
-      line('TRIM', SL - trimL, SW - trimW, trimL, SW - trimW);
-      line('TRIM', trimL, SW - trimW, trimL, trimW);
+      line('TRIM', trimL, oy + trimW, SL - trimL, oy + trimW);
+      line('TRIM', SL - trimL, oy + trimW, SL - trimL, oy + SW - trimW);
+      line('TRIM', SL - trimL, oy + SW - trimW, trimL, oy + SW - trimW);
+      line('TRIM', trimL, oy + SW - trimW, trimL, oy + trimW);
     }
 
     /* detallar (PART — Y-up flip) */
     for (const p of sheet.parts || []) {
       const fw = p.rotated ? p.width : p.length;
       const fh = p.rotated ? p.length : p.width;
-      const x = p.x, yb = SW - (p.y + fh);
+      const x = p.x, yb = oy + SW - (p.y + fh);
       line('PART', x, yb, x + fw, yb);
       line('PART', x + fw, yb, x + fw, yb + fh);
       line('PART', x + fw, yb + fh, x, yb + fh);
       line('PART', x, yb + fh, x, yb);
     }
     /* teshiklar (HOLES) */
-    for (const h of holes) circle('HOLES', h.x, h.y, h.dia / 2);
+    for (const h of holes) circle('HOLES', h.x, oy + h.y, h.dia / 2);
+
+    /* F2: ichki konturlar (moyka kesimi) — DETAL fazosida, Y-up flip */
+    for (const co of cutBySheet[sheet.no + '_' + material] || []) {
+      const x0 = co.x - co.len / 2, x1 = co.x + co.len / 2;
+      const yb = oy + SW - (co.y + co.wid / 2);
+      const yt = oy + SW - (co.y - co.wid / 2);
+      line('CUTOUT', x0, yb, x1, yb);
+      line('CUTOUT', x1, yb, x1, yt);
+      line('CUTOUT', x1, yt, x0, yt);
+      line('CUTOUT', x0, yt, x0, yb);
+    }
   }
 
   pair(0, 'ENDSEC');
@@ -234,6 +313,11 @@ export function cutGCode(nest, cutlists, opts) {
   for (const sd of sheetsData) {
     sheetMapHoles[sd.sheet.no + '_' + sd.material] = sd.holes || [];
   }
+  /* F2: ichki konturlar (moyka) */
+  const cutoutMap = {};
+  for (const sd of collectSheetCutouts(nest, cutlists)) {
+    cutoutMap[sd.sheet.no + '_' + sd.material] = sd.cutouts || [];
+  }
 
   const sheets = Object.keys(nest.by_material || {});
   for (const mat of sheets) {
@@ -256,6 +340,32 @@ export function cutGCode(nest, cutlists, opts) {
           L.push('G0 Z' + safeZ + ';');
           L.push('G0 X' + h.x.toFixed(2) + ' Y' + h.y.toFixed(2) + ';');
           L.push('G1 Z-' + hDepth.toFixed(2) + ' F' + plunge + ';');
+          L.push('G0 Z' + safeZ + ';');
+        }
+      }
+
+      /* 2a-BOSQICH: ICHKI KONTUR (moyka kesimi) — detaldan chiqmasdan OLDIN kesiladi,
+         shunda detal holding tab bilan mahkam turadi va ichki qism tushib ketmaydi */
+      const sheetCutouts = cutoutMap[sKey] || [];
+      if (sheetCutouts.length) {
+        L.push(';--- BOSQICH 2a: Ichki konturlar (moyka kesimi) Jami: ' + sheetCutouts.length + ' ---');
+        for (const co of sheetCutouts) {
+          const x0 = co.x - co.len / 2 + r;
+          const y0 = co.y - co.wid / 2 + r;
+          const x1 = co.x + co.len / 2 - r;
+          const y1 = co.y + co.wid / 2 - r;
+          if (x1 <= x0 || y1 <= y0) {
+            L.push("; Cutout " + (co.ref || '') + " — asbob diametridan kichik, o'tkazib yuborildi");
+            continue;
+          }
+          L.push(';--- Cutout: ' + (co.ref || '') + ' ---');
+          L.push('G0 Z' + safeZ + ';');
+          L.push('G0 X' + x0.toFixed(2) + ' Y' + y0.toFixed(2) + ';');
+          L.push('G1 Z-' + depth.toFixed(2) + ' F' + plunge + ';');
+          L.push('G1 X' + x1.toFixed(2) + ' Y' + y0.toFixed(2) + ' F' + feed + ';');
+          L.push('G1 X' + x1.toFixed(2) + ' Y' + y1.toFixed(2) + ';');
+          L.push('G1 X' + x0.toFixed(2) + ' Y' + y1.toFixed(2) + ';');
+          L.push('G1 X' + x0.toFixed(2) + ' Y' + y0.toFixed(2) + ';');
           L.push('G0 Z' + safeZ + ';');
         }
       }
@@ -425,82 +535,168 @@ export function woodwopMPR(panel, holes = [], opts = {}) {
   return L.join('\r\n');
 }
 
+/* ── Fazali kesim rejasi: guillotine ───────────────────────────────────────
+ * Har bir kesim DETAL ICHIDAN o'tmaydi (Kamchilik C7): kesim faqat detallar
+ * orasidagi BO'SHLIK markazidan o'tkaziladi. Diagonal proeksiya bo'shliqlari
+ * orasidan kesim topilib, varaq guillotine uslubida bo'laklarga ajratiladi.
+ * Natija: 1-FAZA = bo'ylama (Y), 2-FAZA = ko'ndalang (X) kesimlar. */
+const CUT_TOL = 0.5;   // mm — kesim chizig'i detaldan kamida shu masofada
+
+/** axis bo'yicha proeksiya bo'shliqlarining o'rtalari (kesim nomzodlari). */
+function cutCandidates(parts, axis) {
+  const iv = parts.map(p => (axis === 'y' ? [p.y0, p.y1] : [p.x0, p.x1]))
+    .sort((a, b) => a[0] - b[0]);
+  const merged = [];
+  for (const [s, e] of iv) {
+    const last = merged[merged.length - 1];
+    /* faqat haqiqiy UTBUSH (overlap) birlashtiriladi — yonma-yon (touch)
+     * detallar alohida qoladi, ular orasidagi chegarada kesim mumkin */
+    if (last && s < last[1] - 1e-9) last[1] = Math.max(last[1], e);
+    else merged.push([s, e]);
+  }
+  const cands = [];
+  for (let i = 0; i + 1 < merged.length; i++) cands.push((merged[i][1] + merged[i + 1][0]) / 2);
+  return cands;
+}
+
+/** Guillotine: avval bo'ylama (Y), bo'lmasa ko'ndalang (X) kesim topadi. */
+function planCuts(parts, rx0, ry0, rx1, ry1, depth, out) {
+  if (parts.length <= 1) return;
+  if (depth > 60) { out.blocked += parts.length; return; }
+  for (const axis of ['y', 'x']) {
+    const cands = cutCandidates(parts, axis);
+    if (!cands.length) continue;
+    /* eng muvozanatli bo'linishni tanlaymiz (detallarning yarmi har tomonda) */
+    let best = cands[0], bestDiff = Infinity;
+    for (const c of cands) {
+      const lo = parts.filter(p => (axis === 'y' ? p.y1 : p.x1) <= c + CUT_TOL).length;
+      const hi = parts.length - lo;
+      const d = Math.abs(lo - hi);
+      if (d < bestDiff) { bestDiff = d; best = c; }
+    }
+    const c = best;
+    /* bo'shliq chegarasi bo'lgani uchun hech bir detal kesimni kesib o'tmaydi —
+     * shu tariqa har bir detal aynan bitta tomonga tushadi (yo'qotilmaydi) */
+    const lo = [], hi = [];
+    if (axis === 'y') {
+      out.rip.push({ y: c, x0: rx0, x1: rx1 });
+      for (const p of parts) (p.y1 <= c + CUT_TOL ? lo : hi).push(p);
+      planCuts(lo, rx0, ry0, rx1, c, depth + 1, out);
+      planCuts(hi, rx0, c, rx1, ry1, depth + 1, out);
+    } else {
+      out.cross.push({ x: c, y0: ry0, y1: ry1 });
+      for (const p of parts) (p.x1 <= c + CUT_TOL ? lo : hi).push(p);
+      planCuts(lo, rx0, ry0, c, ry1, depth + 1, out);
+      planCuts(hi, c, ry0, rx1, ry1, depth + 1, out);
+    }
+    return;
+  }
+  out.blocked += parts.length;   // proeksiya bo'shligi topilmadi
+}
+
+/** Kesim detaldan o'tmaydimi? (ha = buzilmagan) */
+function cutViolations(rip, cross, parts) {
+  let v = 0;
+  for (const c of rip) for (const p of parts) {
+    if (p.y0 + CUT_TOL < c.y && p.y1 - CUT_TOL > c.y &&
+        p.x0 < c.x1 - CUT_TOL && p.x1 > c.x0 + CUT_TOL) v++;
+  }
+  for (const c of cross) for (const p of parts) {
+    if (p.x0 + CUT_TOL < c.x && p.x1 - CUT_TOL > c.x &&
+        p.y0 < c.y1 - CUT_TOL && p.y1 > c.y0 + CUT_TOL) v++;
+  }
+  return v;
+}
+
 /**
- * 7) Altendorf va formatli arralash stanoklari uchun Fazali Kesim (Phased Cuts Guide - Kamchilik 10).
+ * 7) Altendorf fazali kesim rejasi — STRUKTURALI natija (test va boshqa
+ * eksportlar uchun). Har bir varaq uchun {sheet, material, rip, cross,
+ * parts, violations, blocked}. `violations` — detaldan o'tgan kesimlar
+ * soni (0 bo'lishi shart).
+ */
+export function altendorfPlan(nest) {
+  const out = [];
+  const byMat = nest.by_material || {};
+  for (const mat in byMat) {
+    for (const sheet of byMat[mat].sheets || []) {
+      const parts = (sheet.parts || []).map(p => {
+        const pw = p.rotated ? p.width : p.length;
+        const ph = p.rotated ? p.length : p.width;
+        return { p, pw, ph, x0: p.x, y0: p.y, x1: p.x + pw, y1: p.y + ph };
+      });
+      const plan = { rip: [], cross: [], blocked: 0 };
+      planCuts(parts, 0, 0, sheet.length, sheet.width, 0, plan);
+      out.push({
+        material: mat, sheet, parts,
+        rip: plan.rip, cross: plan.cross,
+        blocked: plan.blocked,
+        violations: cutViolations(plan.rip, plan.cross, parts)
+      });
+    }
+  }
+  return out;
+}
+
+/**
+ * 7) Altendorf va formatli arralash stanoklari uchun Fazali Kesim (Kamchilik 10).
  * Arralovchi usta uchun 1-Faza (Bo'ylama polosa), 2-Faza (Ko'ndalang detal) va 3-Faza (Formatlash) xaritasi.
  */
 export function altendorfPhasedCuts(nest) {
+  const plan = altendorfPlan(nest);
   const L = [];
   L.push('================================================================================');
-  L.push('       ALTENDORF FORMATLI ARRALASH STANOGI UCHUN FAZALI KESIM QO\'LLANMASI       ');
+  L.push("       ALTENDORF FORMATLI ARRALASH STANOGI UCHUN FAZALI KESIM QO'LLANMASI       ");
   L.push('================================================================================');
   L.push(`Sana: ${new Date().toLocaleDateString('uz-UZ')} · Arra kerf: 4 mm`);
-  L.push('');
 
-  const byMat = nest.by_material || {};
-  let sheetTotal = 0;
+  let totalRip = 0, totalCross = 0, totalViol = 0, totalBlocked = 0;
 
-  for (const mat in byMat) {
-    const nm = byMat[mat];
-    for (const sheet of nm.sheets || []) {
-      sheetTotal++;
-      L.push('--------------------------------------------------------------------------------');
-      L.push(`VARAQ №${sheet.no} · Material: ${mat} · O'lchami: ${sheet.length}×${sheet.width} mm`);
-      L.push(`Detallar soni: ${(sheet.parts || []).length} ta · Chiqindi: ${sheet.stats?.waste_pct || 0}%`);
-      L.push('--------------------------------------------------------------------------------');
+  for (const s of plan) {
+    const sheet = s.sheet;
+    totalRip += s.rip.length; totalCross += s.cross.length;
+    totalViol += s.violations; totalBlocked += s.blocked;
 
-      // Detallarni Y koordinatasi bo'yicha polosalarga ajratish
-      const parts = [...(sheet.parts || [])].sort((a, b) => a.y - b.y || a.x - b.x);
-      const strips = [];
-      let currentStrip = null;
+    L.push('--------------------------------------------------------------------------------');
+    L.push(`VARAQ №${sheet.no} · Material: ${s.material} · O'lchami: ${sheet.length}×${sheet.width} mm`);
+    L.push(`Detallar soni: ${(sheet.parts || []).length} ta · Chiqindi: ${sheet.stats?.waste_pct || 0}%`);
+    L.push('--------------------------------------------------------------------------------');
 
-      for (const p of parts) {
-        const ph = p.rotated ? p.length : p.width;
-        const pw = p.rotated ? p.width : p.length;
-        const topY = p.y + ph;
-
-        if (!currentStrip || Math.abs(currentStrip.y - p.y) > 5) {
-          currentStrip = { y: p.y, height: ph, topY, parts: [] };
-          strips.push(currentStrip);
-        } else {
-          currentStrip.height = Math.max(currentStrip.height, ph);
-          currentStrip.topY = Math.max(currentStrip.topY, topY);
-        }
-        currentStrip.parts.push({ ...p, pw, ph });
-      }
-
-      L.push(`1-FAZA: BO'YLAMA ASOSIY POLOSA KESIMLARI (Rip Cuts - Varaq bo'ylab ${strips.length} ta polosa):`);
-      for (let sIdx = 0; sIdx < strips.length; sIdx++) {
-        const s = strips[sIdx];
-        L.push(`  [1.${sIdx + 1}] Polosa ${sIdx + 1}: Arra o'lchami Y = ${Math.round(s.y)} mm dan Y = ${Math.round(s.topY)} mm gacha (Kengligi: ${Math.round(s.height)} mm)`);
-      }
-      L.push('');
-
-      L.push(`2-FAZA: POLOSALARNI KO'NDALANG BO'LAKLASH (Cross Cuts - Detallarni ajratish):`);
-      for (let sIdx = 0; sIdx < strips.length; sIdx++) {
-        const s = strips[sIdx];
-        L.push(`  Polosa ${sIdx + 1} (${Math.round(s.height)} mm):`);
-        const sParts = s.parts.sort((a, b) => a.x - b.x);
-        for (let pIdx = 0; pIdx < sParts.length; pIdx++) {
-          const p = sParts[pIdx];
-          L.push(`    → Kesim ${pIdx + 1} (X=${Math.round(p.x + p.pw)} mm): Detal "${p.code || 'Panel'}" [${Math.round(p.pw)}×${Math.round(p.ph)} mm] · Ref: ${p.ref}`);
-        }
-      }
-      L.push('');
-
-      L.push(`3-FAZA: QOLDIQ VA CHEGARANI TOZALASH (Recut & Trim):`);
-      const rem = (sheet.remnants || [])[0];
-      if (rem) {
-        L.push(`  Foydali qoldiq panel: ${Math.round(rem.length)}×${Math.round(rem.width)} mm (${(rem.area / 1e6).toFixed(2)} m²) omborga qaytarilsin.`);
-      } else {
-        L.push(`  Qoldiq yo'q — varaq to'liq ishlatildi.`);
-      }
-      L.push('');
+    L.push(`1-FAZA: BO'YLAMA KESIMLAR (Rip Cuts — varaq bo'ylab, Y qiymatida): ${s.rip.length} ta`);
+    if (s.rip.length) {
+      s.rip.forEach((c, i) => {
+        L.push(`  [1.${i + 1}] Y = ${Math.round(c.y)} mm · X: ${Math.round(c.x0)} → ${Math.round(c.x1)} mm (polosa chegarasi)`);
+      });
+    } else {
+      L.push("  Yo'q — varaq bo'ylab ajratish shart emas.");
     }
+    L.push('');
+
+    L.push(`2-FAZA: KO'NDALANG KESIMLAR (Cross Cuts — polosa ichida, X qiymatida): ${s.cross.length} ta`);
+    if (s.cross.length) {
+      s.cross.forEach((c, i) => {
+        L.push(`  [2.${i + 1}] X = ${Math.round(c.x)} mm · Y: ${Math.round(c.y0)} → ${Math.round(c.y1)} mm (detal ajratish)`);
+      });
+    } else {
+      L.push("  Yo'q — barcha detallar bo'ylama kesimlar bilan ajratildi.");
+    }
+    L.push('');
+
+    L.push('3-FAZA: QOLDIQ VA CHEGARANI TOZALASH (Recut & Trim):');
+    const rem = (sheet.remnants || [])[0];
+    if (rem) {
+      L.push(`  Foydali qoldiq panel: ${Math.round(rem.length)}×${Math.round(rem.width)} mm (${(rem.area / 1e6).toFixed(2)} m²) omborga qaytarilsin.`);
+    } else {
+      L.push(`  Qoldiq yo'q — varaq to'liq ishlatildi.`);
+    }
+    L.push(`  NAZORAT: kesimlardan ${s.violations} tasi detaldan o'tadi (0 bo'lishi shart)` +
+      (s.blocked ? ` · ajratib bo'lmagan detal: ${s.blocked}` : ''));
+    L.push('');
   }
 
   L.push('================================================================================');
-  L.push(`XULOSA: Jami ${sheetTotal} ta varaq arralandi. Barcha kesimlar tekshirildi.`);
+  L.push(`XULOSA: Jami ${plan.length} ta varaq · ${totalRip} bo'ylama + ${totalCross} ko'ndalang kesim.`);
+  L.push(`NAZORAT: detaldan o'tgan kesimlar — ${totalViol} (0 bo'lishi shart).` +
+    (totalBlocked ? ` Ajratib bo'lmagan: ${totalBlocked} detal.` : ''));
   return L.join('\r\n') + '\r\n';
 }
 

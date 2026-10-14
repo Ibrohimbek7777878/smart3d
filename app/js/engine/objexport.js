@@ -13,6 +13,7 @@
  * Chiqish: obj (geometriya) + mtl + holes.json + placement.csv + cutlist.csv
  */
 import { getModulePanels } from './assembler.js';
+import { triangulate } from './geom.js';
 
 const fmt = (n) => (Math.round(n * 10000) / 10000).toFixed(4);
 
@@ -36,12 +37,14 @@ const MTL_COLOR = {
   window: [0.74, 0.82, 0.86],
   other: [0.85, 0.82, 0.77],
   wall: [0.91, 0.89, 0.83],
-  floor: [0.95, 0.93, 0.89]
+  floor: [0.95, 0.93, 0.89],
+  pipe: [0.55, 0.60, 0.66],    // quvur — kulrang metall
+  outlet: [0.20, 0.24, 0.30]   // rozetka — quyuq plastik
 };
 
 /** smart3d.mtl — material kutubxonasi. */
 function buildMTL(catalog) {
-  const cats = new Set(['wall', 'floor', 'korpus', 'fasad', 'orqa', 'polka', 'handle']);
+  const cats = new Set(['wall', 'floor', 'korpus', 'fasad', 'orqa', 'polka', 'handle', 'pipe', 'outlet']);
   for (const f of Object.values(catalog || {})) {
     if (f.category) cats.add(f.category);
   }
@@ -95,9 +98,10 @@ export function buildOBJ(doc, catalog) {
       out.v.push(`v ${fmt(+p[0])} ${fmt(+p[1])} 0`);
       base++;
     }
-    // pol
-    const idx = outline.map((_, i) => start + i + 1);
-    out.f.push(`f ${idx.join(' ')}`);
+    // pol — F1: konkav (L shakl) kontur uchun triangulyatsiya (n-urchak emas)
+    for (const t of triangulate(outline.map(p => [+p[0], +p[1]]))) {
+      out.f.push(`f ${t.map(i => start + i + 1).join(' ')}`);
+    }
 
     // devorlar
     for (let i = 0; i < outline.length; i++) {
@@ -125,6 +129,48 @@ export function buildOBJ(doc, catalog) {
         [1, 2, 3, 4], [5, 8, 7, 6], [1, 5, 6, 2], [2, 6, 7, 3], [3, 7, 8, 4], [4, 8, 5, 1]
       ];
       for (const f4 of fc) out.f.push(`f ${f4.map(n => n + b0).join(' ')}`);
+    }
+
+    /* ── 1b) F1: quvur/rozetka (room.utilities) — devor yuzasida ── */
+    const utils = room.utilities || [];
+    if (utils.length) {
+      const th = +room.wall_thickness || 100;
+      const emitBox = (cx, cy, cz, ex, ey, ez, ang, name) => {
+        out.v.push(`o ${name}`);
+        const c = Math.cos(ang), s = Math.sin(ang);
+        const corners = [];
+        for (const sx of [-ex, ex]) for (const sy of [-ey, ey]) for (const sz of [-ez, ez]) {
+          const lx = sx * c - sy * s, ly = sx * s + sy * c;
+          corners.push([cx + lx, cy + ly, cz + sz]);
+        }
+        const b = base;
+        for (const pt of corners) { out.v.push(`v ${fmt(pt[0])} ${fmt(pt[1])} ${fmt(pt[2])}`); base++; }
+        // 6 ta yuz (corner indeksi: [−x−y−z, +x−y−z, +x+y−z, −x+y−z, −x−y+z, +x−y+z, +x+y+z, −x+y+z])
+        const f6 = [
+          [1, 2, 3, 4], [5, 8, 7, 6], [1, 5, 6, 2], [2, 6, 7, 3], [3, 7, 8, 4], [4, 8, 5, 1]
+        ];
+        for (const f4 of f6) out.f.push(`f ${f4.map(n => n + b).join(' ')}`);
+      };
+      for (let ui = 0; ui < utils.length; ui++) {
+        const u = utils[ui];
+        const wi = Number(u.wall);
+        if (!(wi >= 0) || wi >= outline.length) continue;
+        const a = outline[wi], b2 = outline[(wi + 1) % outline.length];
+        const ex = +b2[0] - +a[0], ey = +b2[1] - +a[1];
+        const len = Math.hypot(ex, ey);
+        if (len < 1) continue;
+        const t = Math.max(0, Math.min(1, (Number(u.offset) || 0) / len));
+        const px = +a[0] + ex * t, py = +a[1] + ey * t;
+        const z = Math.max(50, Math.min(wh - 50, Number(u.z) || 1000));
+        const ang = Math.atan2(ey, ex);
+        if (u.type === 'outlet') {
+          out.v.push('usemtl cat_outlet');
+          emitBox(px, py, z, 35, th / 2 + 11, 35, ang, `rozetka_${ui + 1}`);
+        } else {
+          out.v.push('usemtl cat_pipe');
+          emitBox(px, py, z, 25, th / 2 + 40, 25, ang, `quvur_${ui + 1}`);
+        }
+      }
     }
   }
 

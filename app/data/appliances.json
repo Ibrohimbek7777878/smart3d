@@ -1,0 +1,63 @@
+{
+ "_meta": {
+  "desc": "O'rnatma texnika o'lchamlari (F2) — nishon/placeholder o'lchamlari. ERPdan aniq model kelguncha bozordagi standart o'lchamlar.",
+  "unit": "mm",
+  "updated": "2026-10-15"
+ },
+ "appliances": [
+  {
+   "code": "SP-T-001",
+   "name": "O'rnatma pech (duxovka) 600",
+   "w": 600,
+   "d": 600,
+   "h": 600,
+   "z": 0,
+   "note": "Nishon 600×600×600, pastki modul ichida"
+  },
+  {
+   "code": "SP-T-002",
+   "name": "O'rnatma posudomoyka 600",
+   "w": 600,
+   "d": 600,
+   "h": 820,
+   "z": 0,
+   "note": "Standart peshtaxta balandligi ostida"
+  },
+  {
+   "code": "SP-T-003",
+   "name": "Mikroto'lqin (o'rnatma) 600",
+   "w": 595,
+   "d": 380,
+   "h": 350,
+   "z": 1100,
+   "note": "Ustki modul ichida"
+  },
+  {
+   "code": "SP-T-004",
+   "name": "O'rnatma muzlatgich 600",
+   "w": 600,
+   "d": 600,
+   "h": 1970,
+   "z": 0,
+   "note": "Ustun (kolonna) ko'rinishi"
+  },
+  {
+   "code": "SP-T-005",
+   "name": "Plita (ish stoli) 600",
+   "w": 600,
+   "d": 520,
+   "h": 120,
+   "z": 720,
+   "note": "Stoleshnitsa ustida"
+  },
+  {
+   "code": "SP-T-006",
+   "name": "Chimenee (havalandirish) 600",
+   "w": 600,
+   "d": 500,
+   "h": 400,
+   "z": 1500,
+   "note": "Plita ustida, devorga osiladi"
+  }
+ ]
+}

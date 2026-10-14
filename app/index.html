@@ -90,6 +90,15 @@
         <button class="chip" data-w="5000" data-d="4000">5×4 m</button>
         <button class="chip" data-w="6000" data-d="4000">6×4 m</button>
       </div>
+      <div class="chips" id="zShapes">
+        <button class="chip" data-shape="rect">▣ To'rtburchak</button>
+        <button class="chip" data-shape="l">◩ L shakl</button>
+      </div>
+      <details id="zPtsWrap">
+        <summary>Xona burchaklari (poligon nuqtalari, mm)</summary>
+        <div id="zPts"></div>
+        <div class="ai-row"><button class="btn" id="zPtAdd" style="flex:1">+ nuqta</button></div>
+      </details>
       <button class="btn primary block" id="zApply">Xonani qo'llash</button>
 
       <h3>Teshiklar (deraza / eshik)</h3>
@@ -105,6 +114,38 @@
         <button class="btn" id="oClear">Tozalash</button>
       </div>
       <div id="oList" class="chips"></div>
+
+      <h3>Quvur / Rozetka</h3>
+      <div class="form-row four">
+        <div class="field"><label>Turi</label>
+          <select id="uType"><option value="pipe">Quvur</option><option value="outlet">Rozetka</option></select>
+        </div>
+        <div class="field"><label>Devor</label><select id="uWall"></select></div>
+        <div class="field"><label>Boshlanish, mm</label><input id="uOffset" type="number" value="500" step="50"></div>
+        <div class="field"><label>Balandlik z, mm</label><input id="uZ" type="number" value="1000" step="50"></div>
+      </div>
+      <div class="ai-row">
+        <button class="btn teal" id="uAdd" style="flex:1">+ Quvur/rozetka qo'shish</button>
+      </div>
+      <div id="uList" class="chips"></div>
+
+      <h3>Oshxona elementlari (F2)</h3>
+      <div class="k-checks">
+        <label><input type="checkbox" id="kStol"> Yaxlit stoleshnitsa</label>
+        <label><input type="checkbox" id="kSokol"> Sokol (smetada)</label>
+        <label><input type="checkbox" id="kDobor"> Dobor (backsplash)</label>
+        <label><input type="checkbox" id="kKarniz"> Karniz</label>
+      </div>
+      <div class="form-row four">
+        <div class="field"><label>Dobor bal., mm</label><input id="kDoborH" type="number" value="60" step="10" min="30" max="200"></div>
+        <div class="field"><label>Karniz bal., mm</label><input id="kKarnizH" type="number" value="60" step="10" min="30" max="200"></div>
+        <div class="field"><label>Moyka</label><select id="kMoyka"><option value="off">Yo'q</option><option value="on">Kesim (moyka)</option></select></div>
+        <div class="field"><label>Moyka o'lchami, mm</label><input id="kMoykaSize" type="number" value="500" step="10" min="300" max="900"></div>
+      </div>
+      <div class="form-row four">
+        <div class="field"><label>Moyka boshl., mm</label><input id="kMoykaOff" type="number" value="600" step="50" min="0"></div>
+        <div class="field"><label>Devordan, mm</label><input id="kMoykaBack" type="number" value="100" step="10" min="0"></div>
+      </div>
 
       <h3>Loyiha</h3>
       <div class="ai-row">

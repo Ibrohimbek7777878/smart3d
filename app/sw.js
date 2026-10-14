@@ -8,7 +8,7 @@
  * SHELL ro'yxati js/app.js importlari va fetch() lari bilan bir xil bo'lishi SHART —
  * yangi modul qo'shilsa shu yerga ham yoziladi va CACHE versiyasi oshiriladi.
  */
-const CACHE = 'smart3d-v9';
+const CACHE = 'smart3d-v14';
 const SHELL = [
   './',
   'index.html',
@@ -32,6 +32,7 @@ const SHELL = [
   'js/engine/giblab.js',
   'js/engine/glbexport.js',
   'js/engine/nesting.js',
+  'js/engine/kitchen.js',
   'js/engine/objexport.js',
   'js/engine/photo-render.js',
   'js/engine/price.js',
@@ -40,6 +41,7 @@ const SHELL = [
   'js/engine/slots.js',
   'js/engine/xlsxexport.js',
   /* ma'lumotlar (app.js boot() da yuklanadi) */
+  'data/appliances.json',
   'data/fragments.json',
   'data/materials.json',
   'data/materials-index.json',

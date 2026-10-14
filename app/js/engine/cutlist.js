@@ -12,6 +12,7 @@
 
 import { evalFormula, roundMm } from './expr.js';
 import { resolveSlots } from './slots.js';
+import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
 
 /** Orqaga moslik uchun evalExpr (ichkarida xavfsiz evalFormula ishlaydi). */
 export function evalExpr(expr, vars) {
@@ -123,6 +124,24 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
     }
   }
 
+  /* ── 1b) O'lcham validatsiyasi ─────────────────────────────────
+   * Formula manfiy/0 natija bera olishi mumkin (mas. SP-BD-002 karkas:
+   * "d-200", d=150 → −50). Bunday o'lcham raskroy/DXF/G-code'ni buzadi —
+   * xato qaytaramiz va o'lchamni minimal qiymatga clamp qilamiz, shu tariqa
+   * nomanfiy o'lcham hech qachon nesting va stanok fayllariga tushmaydi. */
+  const MIN_PART_MM = 10;
+  for (const p of parts) {
+    if (p.finish_length > 0 && p.finish_width > 0) continue;
+    errors.push({
+      code: 'E_BAD_SIZE',
+      message: `${frag.code}.${p.code}: tayyor o'lcham noto'g'ri (${p.finish_length}×${p.finish_width} mm) — formula ko'rsatmalarini tekshiring`
+    });
+    p.finish_length = Math.max(MIN_PART_MM, rInt(p.finish_length));
+    p.finish_width = Math.max(MIN_PART_MM, rInt(p.finish_width));
+    p.length = Math.max(MIN_PART_MM, rInt(p.length));
+    p.width = Math.max(MIN_PART_MM, rInt(p.width));
+  }
+
   /* ── 2) Kromka ──────────────────────────────────────────────────
    * Ikki format qo'llab-quvvatlanadi:
    *  a) fragment darajasida: edge: [{code, sides:["F","B"], material?, thickness?, slot?}]
@@ -194,19 +213,35 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   };
   for (const p of parts) {
     if (!sideThk[p.code]) continue;
-    p.length = rInt(p.finish_length - dedOf(p.code, 'L') - dedOf(p.code, 'R'));
-    p.width = rInt(p.finish_width - dedOf(p.code, 'F') - dedOf(p.code, 'B'));
+    const rawL = p.finish_length - dedOf(p.code, 'L') - dedOf(p.code, 'R');
+    const rawW = p.finish_width - dedOf(p.code, 'F') - dedOf(p.code, 'B');
+    if (rawL > 0 && rawW > 0) {
+      p.length = rInt(rawL);
+      p.width = rInt(rawW);
+    } else {
+      /* kromka qalinligi tayyor o'lchamdan katta — kesim o'lchami manfiy
+       * bo'lmasin (aks holda raskroy va G-code buziladi) */
+      errors.push({
+        code: 'E_BAD_SIZE',
+        message: `${frag.code}.${p.code}: kromkadan keyin kesim o'lchami manfiy (${rawL}×${rawW} mm)`
+      });
+      p.length = Math.max(MIN_PART_MM, rInt(rawL));
+      p.width = Math.max(MIN_PART_MM, rInt(rawW));
+    }
   }
 
   /* ── 3) Teshiklar (burg'ilash) ──────────────────────────────────
-   * Formula koordinatasi TAYYOR detalning L/F burchagidan (x — uzunlik bo'ylab L chetdan,
-   * y — en bo'ylab F chetdan). Stanok kesilgan (kromkasiz) panelni teshadi, shuning uchun
-   * L va F tomondagi ayirilgan kromka qalinligiga suramiz — kromka yopishgach teshik joyida. */
+   * Formula koordinatasi TAYYOR detalning burchagidan, lekin O'QLAR fragment
+   * ma'lumotidagi konvensiya bo'yicha: x — EN bo'ylab F chetdan (system-32 chizig'i:
+   * 32/37/64/98 mm), y — UZUNLIK bo'ylab L chetdan (detal balandligi/uzunligi bo'ylab
+   * joylashuv). 1281 fragmentning 99.1% (882/890) shu konvensiyaga mos chiqdi.
+   * Stanok kesilgan (kromkasiz) panelni teshadi, shuning uchun F va L tomondagi
+   * ayirilgan kromka qalinligiga suramiz — kromka yopishgach teshik joyida. */
   const holes = [];
   for (const hl of frag.holes || []) {
     try {
-      const x = evalFormula(hl.x, baseVars) - dedOf(hl.part, 'L');
-      const y = evalFormula(hl.y, baseVars) - dedOf(hl.part, 'F');
+      const x = evalFormula(hl.x, baseVars) - dedOf(hl.part, 'F');
+      const y = evalFormula(hl.y, baseVars) - dedOf(hl.part, 'L');
       const qty = Math.max(1, Math.round(+hl.qty || 1));
       holes.push({
         fragment: frag.code,
@@ -324,8 +359,14 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     noteMissing('Xizmatlar', 'hole:' + kind, "Teshik burg'ilash (" + kind + ')');
     return 0;
   };
-  const sheetArea = (meta) => {
-    const s = meta && meta.sheets && meta.sheets[0];
+  /* Varap maydoni — KROY bilan bir xil format tanlovi (kichik format katta
+   * panellarga sig'masa katta format tanlanadi, aks holda narx buziladi). */
+  const kerf = +(materials.kerf != null ? materials.kerf : KERF_DEFAULT);
+  const trimL = +(materials.trimL != null ? materials.trimL : (materials.trim != null ? materials.trim : TRIM_DEFAULT));
+  const trimW = +(materials.trimW != null ? materials.trimW : (materials.trim != null ? materials.trim : TRIM_DEFAULT));
+  const sheetArea = (meta, ps) => {
+    const s = pickSheetSize(meta && meta.sheets, (L, W) =>
+      (ps || []).every(p => panelFitsSheet(p, L, W, kerf, trimL, trimW)));
     return s ? s[0] * s[1] : 2800 * 2070;
   };
 
@@ -379,7 +420,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       group = 'Plita (Kroy)';
     } else {
       const area = (areaByMat[mat] || 0);
-      const sheetsExact = area / (sheetArea(meta) * 0.85);   // 85% — taxminiy kroy unumdorligi
+      const sheetsExact = area / (sheetArea(meta, groups[mat]) * 0.85);   // 85% — taxminiy kroy unumdorligi
       qty = Math.round(sheetsExact * 100) / 100;
       amount = Math.round(sheetsExact * unitPrice);
       totalPanelArea += area / 1e6;

@@ -94,6 +94,15 @@ python3 -m http.server 8811 --directory "Smart3D/app"
 | 23| Sex texnologik xaritasi — formatka, kromka, prisadka, montaj uchastkalari uchun | ✅ `workshopTechCard()` |
 | 24| Hisobot A4 chop/PDF + PWA offline + WebXR VR | ✅ |
 | 25| Backend API + SQLite — 1281 material, 63 fragment, WebSocket real-time narx | ✅ `server/index.js` |
+| 25b| **F2 oshxona** — `doc.kitchen` toggles, yaxlit stoleshnitsa/sokol/dobor/karniz (synthetic, rot=90 vertikal uchun), moyka kesimi (cutout hole + hole_kinds + 3D belgi + CNC DXF CUTOUT/G-code 2a), SP-ST-001..004, o'rnatma texnika SP-T-001..006 (`data/appliances.json`) | ✅ 2026-10-15 (TZ §0.3) |
+| 26| **Poligon xona (F1)** — L shakl, nuqtalar jadvali, point-in-polygon validatsiya, dinamik devor-teshik, ShapeGeometry pol, OBJ/GLB triangulyatsiyalangan pol, quvur/rozetka (`room.utilities` + `E_UTIL_OUT_OF_WALL`) | ✅ 2026-10-14/15 (TZ §0.2) |
+
+**2026-10-14 — TZ §4 "darhol" 12 tasi bajarildi (§0.1 TZ-QOLGAN-ISHLAR.md):**
+- C1/C6/C7 — `cnc.js` (Y-ko'zgu teshiklar, DXF varaq ofseti, Altendorf plan);
+- K1–K4 — lenta/GibLab/BPJ export; **BPJ `bpj.js` qayta yozildi** (pozitsiyalar noyob, holes 80/80, 3 material, finish/kesim o'lchamlari); `materials.json` ga `[2800,2070]`;
+- A1–A3 — `parseZamer` (yarim/kirill/U-L/birlikli balandlik), `footprint()` anchor semantikasi + Z-interval, validator balandlik nazorati;
+- F5 — barcha `innerHTML` ekranlarida esc/Number; F6 — `scene.js` shared materiallar + `clearGroup()` (8× xona o'zgarishida geometriya o'sishi 0).
+- Tekshiruv: `verify.mjs` [1]–[6] ✓, `verify_ai.mjs` 34/34 ✓, `tests/ui/run.sh` 5/5 ✓, brauzer QA `qa_ai.mjs` (F6 leak 0, U/L overlap 0, ⚠️, A3 W_OVERLAP 0) ✓.
 
 **Raskroy solishtirish (namuna oshxona):** Lenta 87.4% vs Guillotine 78.3% — **Lenta yaxshi**.
 
@@ -141,10 +150,12 @@ Bitta `state.doc` → narx, cutlist, raskroy, export — hammasi shundan.
 | 2 | **Price baza** — kromka/furnitura/ish haqi narxlari | Fayl kutilmoqda |
 | 3 | **Deploy** `smart3d.bittada.uz` | Tunnel agent qanday ishga tushiriladi — **Sobir javobi** |
 | 4 | **CNC WoodWOP/Biesse** post | Sexdan 1–2 ta **namuna NC fayl** (`.cpu`,`.cix`,`.nc`,`.tap`) |
-| 5 | BPJ teshik (holes) sxemasi | Namunada `holes:[]` edi |
+| 5 | BPJ teshik (holes) sxemasi | ✅ sxema `bpj.js` ichida qurildi (80/80 tekshirildi); real Bazis `.bpj` namunasi hali keladi |
 | 6 | **AI (LLM)** | Endpoint + API kalit (hozir lokal qoidalar ishlaydi) |
 | 7 | **Backend** — scaffold tayyor (auth/materials/orders/WS), production'ga chiqarish kerak | Serverni ishga tushirish + domain ulash |
 | 8 | i18n (rus/ingiz) | Keyin |
+| 9 | **F1 qoldiq** — AI edge-placement (hozir W/D), 90°+ burchak yordami, utility export (GLB/OBJ) | Kod ishi (ma'lumot kerak emas); GLB poli va quvur/rozetka ✅ 2026-10-15 |
+| 10| **F2 qoldiq** — ERP stoleshnitsa materiali (hozir LDSP18), L-burchak stoleshnitsa birlashtirish, texnika AI joylashtirish | ERP material = Sobir javobi; qolganlari kod ishi |
 
 ---
 

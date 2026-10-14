@@ -17,6 +17,9 @@
  * Test: Smart3D namunasi → python giblab_raskroy.py → 0 xato, round-trip.
  */
 
+/* varaq formatini asosiy kroy bilan BIR XIL qoidada tanlash uchun */
+import { pickSheetSize } from './nesting.js';
+
 const HEADER = [0, 0, 0, 0, 0, 0, 0, 1];
 const VERSION = 3;
 const T_TRIM = 1, T_CUT = 2, T_PART = 3, T_WASTE = 4;
@@ -92,12 +95,68 @@ function buildRaskroyData(patterns) {
   return w.toB64();
 }
 
+/* ── Yo'nalish: detning L (X) va W (Y) o'lchamlari ───────────────
+ * GibLab daraxti: level1 yozuvlar L (bizning X) bo'ylab, level2 — W (Y) bo'ylab
+ * (`pattern_rects` → `_render_nodes`, axis 0 → 1). Demak polosaning kengligi =
+ * detning X o'lchami, polosa ichida detlar Y bo'ylab teriladi.
+ *
+ * Yo'nalish manbai (ustuvorlik):
+ *   1) asosiy kroy natijasi — uning `rotated` bayrog'i (X o'lchami detning ENI
+ *      bo'lsa rotated=true) — raskroyda qanday qo'yilgan bo'lsa shunday;
+ *   2) kroy yo'q bo'lsa — tekstura qoidasi (nesting.js bilan bir xil).
+ * `length`/`width` — KESIM o'lchami (arralanadigan).
+ */
+function partExtents(p, nestHit, fmts, kerf, trimL, trimW) {
+  const L = +p.length || 0, W = +p.width || 0;
+  let xl = L, yw = W;                       // xl — L/X bo'ylab, yw — W/Y bo'ylab
+  const tex = String(p.texture || '').toLowerCase();
+  const lockedUz = tex === 'uzunlik' || tex === 'length' || tex === 'y';
+  const lockedEn = tex === 'en' || tex === 'width' || tex === 'x';
+  if (nestHit) {
+    /* asosiy kroy qanday joylashtirgan bo'lsa — shunday (X o'lchami detning
+     * ENI bo'lsa rotated=true) */
+    if (nestHit.rotated) { xl = W; yw = L; }
+  } else if (lockedEn) {
+    xl = W; yw = L;
+  } else if (!lockedUz) {
+    /* erkin tekstura — kroydek: formatga sig'adigan yo'nalishni tanla */
+    const any = (a, b) => (fmts || []).some(([fL, fW]) =>
+      a + trimL + kerf <= +fL && b + trimW + kerf <= +fW);
+    if (!any(L, W) && any(W, L)) { xl = W; yw = L; }
+  }
+  return { xl, yw };
+}
+
+/* Asosiy kroy natijasidan: detal anahtari → {rotated, material} */
+function buildNestMap(nest) {
+  const map = new Map();
+  if (!nest || !nest.by_material) return map;
+  for (const mat in nest.by_material) {
+    const n = nest.by_material[mat];
+    for (const sh of (n.sheets || [])) {
+      for (const pt of (sh.parts || [])) {
+        if (pt && pt.ref != null) {
+          map.set(String(pt.ref), { rotated: !!pt.rotated, material: pt.material || mat, sheet: sh.no });
+        }
+      }
+    }
+  }
+  return map;
+}
+
 /* ── LSTR joylashtirish → patterns (kesim daraxti bilan) ────────
- * parts: [{pid, l, w, stackLen}] — stackLen = W o'qi bo'ylab egallaydi.
- * Chiziq kengligi = det kengligi (L bo'ylab), detallar W bo'ylab teriladi.
+ * parts: [{pid, l, w, xl, yw}] — xl: L (X) bo'ylab, yw: W (Y) bo'ylab egallaydi.
+ * Har polosada barcha detallar teng `xl` li (level2 yozuv polosa kengligini
+ * o'ziga xos olmaydi — polosa kengligi BUTUN polosaga qo'llanadi), shuning uchun
+ * tenglik ANIQ bo'lishi shart.
+ *
+ * HECH BIR DETAL TASHLANMAYDI (K2): sig'magan polosa boshqasiga, varaq sig'masa
+ * yangi varaqqa qo'yiladi; hattoki varaqdan ham katta detal o'z varaqiga yoziladi
+ * va ogohlantirish qaytariladi.
  */
 function packStrips(parts, L, W, kerf, trimL, trimW) {
   const patterns = [];
+  const warnings = [];
   let cur = null, cardId = 1;
   let posL = 0;
   let strips = [];
@@ -118,23 +177,23 @@ function packStrips(parts, L, W, kerf, trimL, trimW) {
     if (trimL > 0) cur.records.push({ level: 1, type: T_TRIM, size: trimL, count: 0, part_id: -1 });
     let pos = trimL > 0 ? trimL + kerf : 0;    // _render_nodes modeli: har yozuv size+kerf
     for (const st of strips) {
-      const rec = { level: 1, type: T_CUT, size: st.width, count: 1, part_id: -1, children: [] };
+      const rec = { level: 1, type: T_CUT, size: st.xl, count: 1, part_id: -1, children: [] };
       if (trimW > 0) rec.children.push({ level: 2, type: T_TRIM, size: trimW, count: 0, part_id: -1 });
-      let posW = trimW > 0 ? trimW + kerf : 0;
+      let posW = st.posW0;
       for (const p of st.parts) {
-        rec.children.push({ level: 2, type: T_PART, size: p.stackLen, count: 1, part_id: p.pid });
+        rec.children.push({ level: 2, type: T_PART, size: p.yw, count: 1, part_id: p.pid });
         cur.n_parts++; cur.n_parts2++;
         cur.parts_area += (p.l * p.w) / 1e6;
-        posW += p.stackLen + kerf;
+        posW += p.yw + kerf;
       }
       const remW = W - posW;                   // namuna: waste = cap - pos(kerf bilan)
       if (remW >= MIN_WASTE) {
         rec.children.push({ level: 2, type: T_WASTE, size: remW, count: 0, part_id: null });
-        cur.n_waste++; cur.waste_area += (st.width * remW) / 1e6;
-        cur._wasteParts.push({ wExt: st.width, hExt: remW });
+        cur.n_waste++; cur.waste_area += (st.xl * remW) / 1e6;
+        cur._wasteParts.push({ wExt: st.xl, hExt: remW });
       }
       cur.records.push(rec);
-      pos += st.width + kerf;
+      pos += st.xl + kerf;
     }
     strips = [];
     const remL = L - pos;                      // posL kerf bilan — waste = L - pos
@@ -145,21 +204,27 @@ function packStrips(parts, L, W, kerf, trimL, trimW) {
     }
   };
 
-  const sorted = parts.slice().sort((a, b) => (b.w - a.w) || (b.l - a.l));
+  /* eng teng polosani emas, eng ko'p joy qolgan teng polosani top */
+  const baseW = trimW > 0 ? trimW + kerf : 0;
+  const sorted = parts.slice().sort((a, b) => (b.xl - a.xl) || (b.yw - a.yw));
   for (const p of sorted) {
-    if (p.w + trimL + kerf > L || p.l + trimW + kerf > W) continue;   // sig'maydi
-    const st = strips[strips.length - 1];
-    if (st && Math.abs(st.width - p.w) <= 1) {
-      const posW = (trimW > 0 ? trimW + kerf : 0)
-        + st.parts.reduce((s, x) => s + x.stackLen + kerf, 0);
-      if (posW + p.stackLen <= W) { st.parts.push(p); continue; }
+    let best = null;
+    for (const st of strips) {
+      if (Math.abs(st.xl - p.xl) > 0.01) continue;      // polosa kengligi ANIQ teng
+      if (st.posW + p.yw > W) continue;
+      if (!best || st.posW > best.posW) best = st;
     }
-    if (!cur || posL + p.w > L) { closeStrips(); newPattern(); }
-    strips.push({ width: p.w, parts: [p] });
-    posL += p.w + kerf;
+    if (best) { best.parts.push(p); best.posW += p.yw + kerf; continue; }
+
+    if (!cur || posL + p.xl > L) { closeStrips(); newPattern(); }
+    strips.push({ xl: p.xl, parts: [p], posW0: baseW, posW: baseW + p.yw + kerf });
+    posL += p.xl + kerf;
+    if (posL - kerf > L + 0.6) {
+      warnings.push(`part#${p.pid}: polosa varaqdan oshdi (${p.xl} > ${L - trimL} mm)`);
+    }
   }
   closeStrips();
-  return patterns;
+  return { patterns, warnings };
 }
 
 /* ── cut_len / cut_count / filling (daraxt hisobi) ─────────────── */
@@ -176,15 +241,22 @@ function finalizePattern(p) {
   p.filling = sheetArea ? p.parts_area / sheetArea : 0;
 }
 
-/* ── Asosiy: nest + cutlists + materials → .project XML ────────── */
+/* ── Asosiy: nest + cutlists + materials → .project XML ──────────
+ * K2: joylashtirish asosiy kroy natijasidan (yo'nalish/`rotated`) olinadi —
+ *     GibLab'ning o'z pakeri detallarni tashlamaydi, "joylashmadi" xatosi yo'q.
+ * K4: <part l/w> = TAYYOR o'lcham (finish_*), <part cl/cw> = KESIM o'lcham.
+ * @returns {{xml: string, warnings: string[], stats: Object}}
+ */
 export function buildProject(opts) {
-  const { cutlists, materials, modelName = 'Smart3D', materialCode } = opts;
+  const { cutlists, materials, modelName = 'Smart3D', materialCode, nest } = opts;
   const settings = Object.assign({
     kerf: 4, trimL: 8, trimW: 8, maxTurns: 4,
     currency: 'UZS', version: '23051701'
   }, opts.settings || {});
 
   const kerf = +(settings.kerf != null ? settings.kerf : (materials && materials.kerf) || 4);
+  const warnings = [];
+  const nestMap = buildNestMap(nest);
 
   const matMeta = {};
   for (const m of ((materials && materials.panel_materials) || [])) matMeta[m.code] = m;
@@ -196,14 +268,29 @@ export function buildProject(opts) {
   for (const cl of (cutlists || [])) {
     for (const pt of (cl.parts || [])) {
       const mat = pt.material || materialCode || 'MDF16';
+      const cutL = +pt.length || 0, cutW = +pt.width || 0;
+      const finL = +pt.finish_length || cutL, finW = +pt.finish_width || cutW;
+      const nestKey = cl.placementId != null && pt.ref != null
+        ? cl.placementId + ':' + pt.ref : null;
+      const nestHit = nestKey ? nestMap.get(nestKey) : null;
+      const mm = matMeta[mat];
+      const fmts = (mm && mm.sheets && mm.sheets.length) ? mm.sheets : [[2800, 2070]];
+      const ex = partExtents(pt, nestHit, fmts, kerf, settings.trimL, settings.trimW);
       (byMat[mat] = byMat[mat] || []).push({
-        l: +pt.length, w: +pt.width, pid: 0,
-        fragment: pt.fragment || '', code: pt.code || '',
-        placementId: cl.placementId, ref: pt.ref
+        l: cutL, w: cutW, fl: finL, fw: finW, xl: ex.xl, yw: ex.yw, pid: 0,
+        fragment: pt.fragment || '', code: pt.code || '', texture: pt.texture || '',
+        placementId: cl.placementId, ref: pt.ref, inNest: !!nestHit
       });
     }
   }
   if (!Object.keys(byMat).length) throw new Error('bo\'sh loyiha — detallar yo\'q');
+  if (!nestMap.size) {
+    warnings.push('asosiy kroy natijasi topilmadi — yo\'nalish tekstura qoidasidan olindi');
+  } else {
+    const total = Object.values(byMat).reduce((s, a) => s + a.length, 0);
+    const inNest = Object.values(byMat).reduce((s, a) => s + a.filter(p => p.inNest).length, 0);
+    if (inNest < total) warnings.push(`kroyda topilmagan detal: ${total - inNest} / ${total}`);
+  }
 
   let nextId = 1;
   const takeId = () => nextId++;
@@ -211,19 +298,50 @@ export function buildProject(opts) {
   const productId = takeId();
   const partEntries = [];
   const matBlocks = [];
+  let placedCount = 0, inputCount = 0, tooBigCount = 0;
 
   for (const mat in byMat) {
     const mlist = byMat[mat];
     const meta = matMeta[mat] || { name: mat, thickness: 16, sheets: [[2800, 2070]], sheet_price: 0 };
-    const sz = (meta.sheets && meta.sheets[0]) || [2800, 2070];
+    /* format — kroy bilan BIR XIL qoida: shu loyihadagi detallar sig'adigan
+     * birinchi format (kichik format katta panellarni tashlamaydi). */
+    const allFmts = (meta.sheets && meta.sheets.length) ? meta.sheets : [[2800, 2070]];
+    const fits = (p, L2, W2) =>
+      p.xl + settings.trimL + kerf <= L2 && p.yw + settings.trimW + kerf <= W2;
+    const okSet = new Set();
+    for (const p of mlist) if (allFmts.some(s => fits(p, +s[0], +s[1]))) okSet.add(p);
+    const placeable = mlist.filter(p => okSet.has(p));
+    const tooBig = mlist.filter(p => !okSet.has(p));
+
+    const sz = pickSheetSize(meta.sheets, (L2, W2) => placeable.every(p => fits(p, L2, W2)));
     const L = +sz[0], W = +sz[1];
 
-    for (const p of mlist) { p.pid = takeId(); partEntries.push({ id: p.pid, l: p.l, w: p.w }); }
+    if (tooBig.length) {
+      const biggest = allFmts.slice().sort((a, b) => (b[0] * b[1]) - (a[0] * a[1]))[0];
+      warnings.push(
+        `${mat}: ${tooBig.length} ta detal hech bir varaq formatiga sig'madi `
+        + `(eng katta ${biggest[0]}×${biggest[1]} da ham) — raskroydan chetlashtirildi: `
+        + tooBig.slice(0, 3).map(p => `${p.code} ${p.xl}×${p.yw}`).join(', ')
+        + (tooBig.length > 3 ? '…' : ''));
+    }
 
-    const packParts = mlist.map(p => ({ pid: p.pid, l: p.l, w: p.w, stackLen: p.l }));
-    const patterns = packStrips(packParts, L, W, kerf, settings.trimL, settings.trimW);
-    if (!patterns.length) throw new Error(mat + ': joylashmadi');
-    for (const pat of patterns) finalizePattern(pat);
+    for (const p of mlist) {
+      p.pid = takeId();
+      /* K4: l/w = tayyor, cl/cw = kesim */
+      partEntries.push({ id: p.pid, l: p.fl, w: p.fw, cl: p.l, cw: p.w });
+    }
+
+    inputCount += mlist.length;
+    const packParts = placeable.map(p => ({ pid: p.pid, l: p.l, w: p.w, xl: p.xl, yw: p.yw }));
+    const packed = packStrips(packParts, L, W, kerf, settings.trimL, settings.trimW);
+    const patterns = packed.patterns;
+    warnings.push(...packed.warnings);
+    if (!patterns.length && placeable.length) warnings.push(mat + ': joylashmadi (varaq o\'lchamini tekshiring)');
+    for (const pat of patterns) {
+      finalizePattern(pat);
+      placedCount += pat.n_parts;
+    }
+    tooBigCount += tooBig.length;
 
     // waste ID larni recordsga tayinlash
     for (const pat of patterns) {
@@ -243,6 +361,12 @@ export function buildProject(opts) {
     const stockId = takeId();
     const toolCutId = takeId();
     matBlocks.push({ mat, meta, L, W, patterns, stockId, toolCutId, mlist, sheetPrice: +meta.sheet_price || 0 });
+  }
+
+  /* K2 nazorati: formatga sig'maganlardan boshqasi tashlanmasligi shart */
+  const expected = inputCount - tooBigCount;
+  if (placedCount !== expected) {
+    warnings.push(`raskroyga kirmagan detal: ${expected - placedCount} / ${inputCount}`);
   }
 
   /* kromka (EL) guruhlari */
@@ -284,8 +408,9 @@ export function buildProject(opts) {
   x += `<good typeId="product" id="${productId}" count="1" name="${escXml(modelName)}" `
      + `costMaterial="${r2(costMaterial)}" costOperation="${r2(costOperation)}" cost="${r2(costTotal)}">\n`;
   for (const pe of partEntries) {
+    /* K4: l/w (va dl/jl nusxalari) = TAYYOR o'lcham, cl/cw = KESIM o'lcham */
     x += `<part l="${r2(pe.l)}" w="${r2(pe.w)}" dl="${r2(pe.l)}" dw="${r2(pe.w)}" `
-       + `jl="${r2(pe.l)}" jw="${r2(pe.w)}" cl="${r2(pe.l)}" cw="${r2(pe.w)}" `
+       + `jl="${r2(pe.l)}" jw="${r2(pe.w)}" cl="${r2(pe.cl)}" cw="${r2(pe.cw)}" `
        + `minusCount="0" count="1" usedCount="1" txt="false" id="${pe.id}"/>\n`;
   }
   x += `</good>\n`;
@@ -370,7 +495,15 @@ export function buildProject(opts) {
   }
 
   x += `</project>`;
-  return x;
+  const stats = {
+    parts: inputCount,
+    placed: placedCount,
+    excluded: tooBigCount,
+    sheets: matBlocks.reduce((s, mb) => s + mb.patterns.length, 0),
+    materials: matBlocks.length,
+    warnings: warnings.length
+  };
+  return { xml: x, warnings, stats };
 }
 
 /* ── QA: XML stringini tekshirish (minimal) ────────────────────── */

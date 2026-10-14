@@ -22,23 +22,35 @@ export const KERF_DEFAULT = 4;
 export const TRIM_DEFAULT = 10;
 
 /* ── LSTR: lenta rejimi — teng kenglikdagi detallar lentalari ─────
- * GibLab/.project daraxtiga mos: chiziq kengligi = det kengligi (L bo'ylab),
- * detallar W bo'ylab teriladi. items l/w — KERF QO'SHILGAN (nestPanels).
+ * GibLab/.project daraxtiga mos: polosa varaq L (X) bo'ylab cho'ziladi,
+ * polosaning balandligi (Y) = det ENI (W), ichidagi detallar L (X) bo'ylab
+ * teriladi. Konvensiya packSheet bilan BIR XIL: placement X o'lchami = o.l,
+ * Y o'lchami = o.w — shunda DXF/CNC konsumentlari (fw = rotated ? w : l)
+ * va textura yo'nalishi to'g'ri chiqadi.
+ * (Eski kodda X/Y ALMASGAN edi → DXF'da detallar ustma-ust tushar,
+ *  tekstura 90° burilar edi.) items l/w — KERF QO'SHILGAN (nestPanels).
  * Aylanish: it.canRotate && maxRot >= 2 bo'lsa 90° mumkin.
  * Qaytaradi: {placed, unplaced, remnants:[{x,y,w,h,area}]}
  */
 function packStrip(items, L0, W0, kerf, maxRot) {
   const sorted = items.slice().sort((a, b) => (b.w - a.w) || (b.l - a.l));
   const placed = [], unplaced = [], remnants = [];
-  let posL = 0, cur = null;
+  let posW = 0, cur = null;   // keyingi polosaning Y boshi
 
   const closeStrip = () => {
     if (!cur) return;
-    let posW = 0;
-    for (const p of cur.parts) posW += p.l;
-    const remW = W0 - posW;
-    if (remW >= 30) remnants.push({ x: cur.x, y: posW, w: cur.width, h: remW, area: cur.width * remW });
+    const remL = L0 - cur.posL;
+    if (remL >= 30) remnants.push({ x: cur.posL, y: cur.y, w: remL, h: cur.height, area: remL * cur.height });
     cur = null;
+  };
+
+  /* placement: X = o.l, Y = o.w; xIsLength — X o'lchami detning uzunligimi */
+  const place = (it, o, x, y) => {
+    placed.push({
+      id: it.id + '#' + placed.length, src: it.src || it,
+      x, y, w: o.l, h: o.w, rotated: o.rot,
+      xIsLength: o.rot ? !it.lIsLength : it.lIsLength
+    });
   };
 
   for (const it of sorted) {
@@ -47,14 +59,10 @@ function packStrip(items, L0, W0, kerf, maxRot) {
     if (allowRot) opts.push({ l: it.w, w: it.l, rot: true });
     let done = false;
     if (cur) {
-      const posW = cur.parts.reduce((s, x) => s + x.l, 0);
       for (const o of opts) {
-        if (Math.abs(cur.width - o.w) <= 1 && posW + o.l <= W0 + 0.01) {
-          cur.parts.push({ l: o.l });
-          placed.push({
-            id: it.id + '#' + placed.length, src: it.src || it,
-            x: cur.x, y: posW, w: o.w, h: o.l, rotated: o.rot
-          });
+        if (Math.abs(cur.height - o.w) <= 1 && cur.posL + o.l <= L0 + 0.01) {
+          place(it, o, cur.posL, cur.y);
+          cur.posL += o.l;
           done = true; break;
         }
       }
@@ -63,22 +71,19 @@ function packStrip(items, L0, W0, kerf, maxRot) {
     closeStrip();
     let ok = false;
     for (const o of opts) {
-      if (posL + o.w <= L0) {
-        cur = { width: o.w, x: posL, parts: [{ l: o.l }] };
-        placed.push({
-          id: it.id + '#' + placed.length, src: it.src || it,
-          x: posL, y: 0, w: o.w, h: o.l, rotated: o.rot
-        });
-        posL += o.w;
+      if (posW + o.w <= W0) {
+        cur = { height: o.w, y: posW, posL: o.l };
+        place(it, o, 0, posW);
+        posW += o.w;
         ok = true; break;
       }
     }
     if (!ok) unplaced.push(it);
   }
   closeStrip();
-  if (posL > 0) {
-    const remL = L0 - posL;
-    if (remL >= 30) remnants.push({ x: posL, y: 0, w: remL, h: W0, area: remL * W0 });
+  if (posW > 0) {
+    const remW = W0 - posW;
+    if (remW >= 30) remnants.push({ x: 0, y: posW, w: L0, h: remW, area: L0 * remW });
   }
   return { placed, unplaced, remnants };
 }
@@ -109,7 +114,11 @@ function packSheet(items, L0, W0, opt = {}) {
     if (!best) { unplaced.push(it); continue; }
 
     const f = free[best.f];
-    placed.push({ id: it.id, x: best.x, y: best.y, w: best.w, h: best.h, rotated: rot, src: it.src || it });
+    placed.push({
+      id: it.id, x: best.x, y: best.y, w: best.w, h: best.h, rotated: rot,
+      xIsLength: rot ? !it.lIsLength : it.lIsLength,   // X o'lchami detning uzunligimi
+      src: it.src || it
+    });
     free.splice(best.f, 1);
     
     // Guillotine bo'linishi
@@ -155,12 +164,17 @@ export function nestPanels(panels, opt = {}) {
     let canRotate = maxRot >= 2;
     let initialL = pLen + kerf;
     let initialW = pWid + kerf;
+    /* lIsLength — item.l detning UZUNLIGIMI (varaq L/X bo'ylab).
+     * 'uzunlik' texturada uzunlikka aylanish taqiqlanadi; 'en' texturada
+     * l/w almashgani uchun placementning X o'lchami det ENI bo'ladi. */
+    let lIsLength = true;
     if (tex === 'uzunlik' || tex === 'length' || tex === 'y') {
       canRotate = false;
     } else if (tex === 'en' || tex === 'width' || tex === 'x') {
       initialL = pWid + kerf;
       initialW = pLen + kerf;
       canRotate = false;
+      lIsLength = false;
     }
 
     for (let i = 0; i < n; i++) {
@@ -170,6 +184,7 @@ export function nestPanels(panels, opt = {}) {
         l: initialL,
         w: initialW,
         canRotate,
+        lIsLength,
         texture: tex
       });
     }
@@ -195,7 +210,9 @@ export function nestPanels(panels, opt = {}) {
         ref: x.src.id, code: x.src.code || '', fragment: x.src.fragment || '',
         length: x.src.length, width: x.src.width,
         x: Math.round(actualX * 10) / 10, y: Math.round(actualY * 10) / 10,
-        rotated: x.rotated, material: x.src.material,
+        /* rotated = X o'lchami detning ENI (konsumentlar fw = rotated ? w : l) */
+        rotated: x.xIsLength != null ? !x.xIsLength : x.rotated,
+        material: x.src.material,
         texture: x.src.texture || 'ixtiyoriy'
       };
     });
@@ -263,23 +280,64 @@ export function nestPanels(panels, opt = {}) {
 }
 
 /**
+ * Bitta panel berilgan varaqda TEXTURE qoidalari bilan sig'adimi?
+ * (qolgan detallar bilan emas — faqat o'zi; tanlangan formatda har bir detal
+ * o'z varaqiga yoki lentalar orasidagi bo'shliqqa sig'ishi shart.)
+ */
+export function panelFitsSheet(p, L, W, kerf = KERF_DEFAULT, trimL = TRIM_DEFAULT, trimW = TRIM_DEFAULT) {
+  const tex = String(p.texture || p.grain || '').toLowerCase();
+  const len = +p.length || 0, wid = +p.width || 0;
+  const fits = (l, w) => l + trimL + kerf <= L && w + trimW + kerf <= W;
+  if (tex === 'uzunlik' || tex === 'length' || tex === 'y') return fits(len, wid);
+  if (tex === 'en' || tex === 'width' || tex === 'x') return fits(wid, len);
+  return fits(len, wid) || fits(wid, len);
+}
+
+/**
+ * Material varaq formatini tanlaydi.
+ * `sheets` — materiaaldagi formatlar RO'YXATI (ustuvorlik saqlanadi):
+ * birinchi (berilgan tartibda) format — `fits(L,W)` uchun true qaytaradi.
+ * Hammasi sig'masa — eng katta format (qolgan detallar ogohlantiriladi).
+ * @param {Array} sheets — [[L,W], ...]
+ * @param {function} fits — (L, W) => boolean
+ * @returns {[number, number]}
+ */
+export function pickSheetSize(sheets, fits) {
+  const list = (sheets && sheets.length) ? sheets.filter(s => s && +s[0] > 0 && +s[1] > 0) : [];
+  if (!list.length) return [2800, 2070];
+  for (const s of list) if (fits(+s[0], +s[1])) return [+s[0], +s[1]];
+  return list.slice().sort((a, b) => (+b[0] * +b[1]) - (+a[0] * +a[1]))[0].map(Number);
+}
+
+/**
  * Butun loyiha: materiallar bo'yicha guruhlab joylashtiradi.
  * @param {Array} parts — cutlist chiqishi (material maydoni bilan)
  * @param {Object} materials — materials.json
  */
 export function nestProject(parts, materials, cfg = {}) {
-  const sheetPrice = {}, sizes = {};
+  const sheetPrice = {};
   (materials.panel_materials || []).forEach(m => {
     sheetPrice[m.code] = m.sheet_price || 0;
-    sizes[m.code] = (m.sheets && m.sheets[0]) || materials.sheet_sizes_default || [2800, 2070];
   });
   const groups = {};
   for (const p of parts) (groups[p.material || 'DEFAULT'] = groups[p.material || 'DEFAULT'] || []).push(p);
 
+  const kerf = cfg.kerf != null ? +cfg.kerf : (materials.kerf || 4);
+  const trimL = cfg.trimL != null ? +cfg.trimL : (materials.trimL != null ? +materials.trimL : (materials.trim || TRIM_DEFAULT));
+  const trimW = cfg.trimW != null ? +cfg.trimW : (materials.trimW != null ? +materials.trimW : (materials.trim || TRIM_DEFAULT));
+
+  /* Format shu loyihadagi detallarga sig'adigan bo'lishi shart —
+   * aks holda kichik format (2440×1220) katta orqa panellarni tashlab ketadi. */
+  const sizes = {};
+  for (const m of (materials.panel_materials || [])) {
+    sizes[m.code] = pickSheetSize(m.sheets, (L, W) =>
+      (groups[m.code] || []).every(p => panelFitsSheet(p, L, W, kerf, trimL, trimW)));
+  }
+
   const nestOpt = {
-    kerf: cfg.kerf != null ? +cfg.kerf : (materials.kerf || 4),
-    trimL: cfg.trimL != null ? +cfg.trimL : (materials.trimL != null ? +materials.trimL : (materials.trim || TRIM_DEFAULT)),
-    trimW: cfg.trimW != null ? +cfg.trimW : (materials.trimW != null ? +materials.trimW : (materials.trim || TRIM_DEFAULT)),
+    kerf,
+    trimL,
+    trimW,
     mode: cfg.mode || 'bssf',
     maxRot: cfg.maxRot != null ? +cfg.maxRot : 2,
     remMinA: cfg.remMinA, remMinB: cfg.remMinB, remUsableMin: cfg.remUsableMin

@@ -135,3 +135,21 @@ bu biz korgan sayt sunpina ularda huddi shunday tizm bor va ular bazisiz ishlayd
 38. yaxsh unda boshla tz yozb ol oldin toliq va shu tz asosida ishla hamda barcha skillaring toliq olib kerelilarini ishlat
 
 39. hozir qolgan ishlar nimalar va ularni hammasin bita tz ga yozganmisan
+
+40. qara hozir menda opencode va antigravity proo bor end nima qilsak shu ishlarn kdo yoziladigan ishlarn ularga topshira olamiz va hammasin men sen orqali boshqarib turishim kere bolad hamda real timeda natijan korib turishm ham kere
+
+40. https://github.com/khondamirai-spec/mini-agents shuni o'rnat
+
+41. davom et
+
+42. Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
+
+43. davom et
+
+44. davom et
+
+45. Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
+
+46. Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
+
+47. davom et

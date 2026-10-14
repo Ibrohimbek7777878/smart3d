@@ -12,6 +12,7 @@
  */
 
 import { getModulePanels } from './assembler.js';
+import { triangulate } from './geom.js';
 
 /** glTF PBR material konfiguratsiyalari. */
 const MATERIAL_DEFS = {
@@ -55,6 +56,18 @@ const MATERIAL_DEFS = {
     name: 'cat_floor',
     baseColorFactor: [0.92, 0.85, 0.75, 1.0],
     roughnessFactor: 0.55,
+    metallicFactor: 0.05
+  },
+  pipe: {
+    name: 'cat_pipe',
+    baseColorFactor: [0.55, 0.60, 0.66, 1.0],
+    roughnessFactor: 0.40,
+    metallicFactor: 0.70
+  },
+  outlet: {
+    name: 'cat_outlet',
+    baseColorFactor: [0.20, 0.24, 0.30, 1.0],
+    roughnessFactor: 0.60,
     metallicFactor: 0.05
   },
   other: {
@@ -185,6 +198,41 @@ function computeBoxVerticesAndNormals(cx, cy, cz, cs, sn, px, py, pz, pw, pd, ph
     positions,
     normals,
     bounds: { min: [minX, minY, minZ], max: [maxX, maxY, maxZ] }
+  };
+}
+
+/* F1: poligon pol — bbox quti EMAS, haqiqiy kontur (L qirqim bo'sh qoladi).
+   Ikki qatlam: yuqori z=0, pastki z=-40; ear-clipping triangulyatsiya.
+   Non-indexed → primitive.indices'siz (index buffer faqat boxlar uchun). */
+function computePolygonFloor(outline) {
+  const pts = outline.map(p => [+p[0], +p[1]]);
+  const tris = triangulate(pts);
+  const per = tris.length * 3;
+  const positions = new Float32Array(per * 2 * 3);
+  const normals = new Float32Array(per * 2 * 3);
+  let v = 0;
+  const put = (i, z, nx, ny, nz) => {
+    const p = pts[i];
+    positions[v * 3] = p[0] / 1000;          // mm → m
+    positions[v * 3 + 1] = z / 1000;         // Smart3D Z → glTF Y
+    positions[v * 3 + 2] = -p[1] / 1000;     // Smart3D Y → glTF -Z
+    normals[v * 3] = nx; normals[v * 3 + 1] = ny; normals[v * 3 + 2] = nz;
+    v++;
+  };
+  for (const [a, b, c] of tris) { put(a, 0, 0, 1, 0); put(b, 0, 0, 1, 0); put(c, 0, 0, 1, 0); }
+  for (const [a, b, c] of tris) { put(c, -40, 0, -1, 0); put(b, -40, 0, -1, 0); put(a, -40, 0, -1, 0); }
+  let minX = Infinity, minY = Infinity, minZ = Infinity;
+  let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+  for (let i = 0; i < positions.length; i += 3) {
+    const x = positions[i], y = positions[i + 1], z = positions[i + 2];
+    if (x < minX) minX = x; if (x > maxX) maxX = x;
+    if (y < minY) minY = y; if (y > maxY) maxY = y;
+    if (z < minZ) minZ = z; if (z > maxZ) maxZ = z;
+  }
+  return {
+    positions, normals,
+    bounds: { min: [minX, minY, minZ], max: [maxX, maxY, maxZ] },
+    indexed: false
   };
 }
 
@@ -328,13 +376,8 @@ export function buildGLB(doc, catalog = {}, opts = {}) {
       if (+pt[1] < minY) minY = +pt[1]; if (+pt[1] > maxY) maxY = +pt[1];
     }
     const rw = maxX - minX, rd = maxY - minY;
-    const rcx = minX + rw / 2, rcy = minY + rd / 2;
 
-    const floorGeom = computeBoxVerticesAndNormals(
-      rcx, rcy, -20, 1, 0,
-      0, 0, 0,
-      rw + 100, rd + 100, 40
-    );
+    const floorGeom = computePolygonFloor(outline);   // F1: poligon, bbox quti emas
     const floorGeomIdx = panelGeometries.length;
     panelGeometries.push(floorGeom);
 
@@ -394,6 +437,44 @@ export function buildGLB(doc, catalog = {}, opts = {}) {
       roomChildNodes.push(wallNodeIdx);
     }
 
+    /* ── 1b) F1: quvur/rozetka (room.utilities) — devor yuzasida ── */
+    const utils = room.utilities || [];
+    if (utils.length) {
+      const wallThickU = +room.wall_thickness || 100;
+      for (let ui = 0; ui < utils.length; ui++) {
+        const u = utils[ui];
+        const wi = Number(u.wall);
+        if (!(wi >= 0) || wi >= outline.length) continue;
+        const a = outline[wi], b2 = outline[(wi + 1) % outline.length];
+        const ex = +b2[0] - +a[0], ey = +b2[1] - +a[1];
+        const len = Math.hypot(ex, ey);
+        if (len < 1) continue;
+        const t = Math.max(0, Math.min(1, (Number(u.offset) || 0) / len));
+        const px = +a[0] + ex * t, py = +a[1] + ey * t;
+        const z = Math.max(50, Math.min(wh - 50, Number(u.z) || 1000));
+        const ang = Math.atan2(ey, ex);
+        const ucs = Math.cos(ang), usn = Math.sin(ang);
+        // devor normali (xonaga qaragan tomonga yarim qalinlikka suriladi)
+        const nx = -usn * (wallThickU / 2), ny = ucs * (wallThickU / 2);
+        let pw, pd, ph, matKey, nm;
+        if (u.type === 'outlet') {
+          pw = 70; pd = 22; ph = 70; matKey = 'outlet'; nm = `Rozetka ${ui + 1}`;
+        } else {
+          pw = 50; pd = wallThickU + 80; ph = 50; matKey = 'pipe'; nm = `Quvur ${ui + 1}`;
+        }
+        const uGeom = computeBoxVerticesAndNormals(
+          px + nx, py + ny, z, ucs, usn, 0, 0, 0, pw, pd, ph
+        );
+        const uGeomIdx = panelGeometries.length;
+        panelGeometries.push(uGeom);
+        const uMeshIdx = meshes.length;
+        meshes.push({ name: `Mesh_${nm}`, geomIndex: uGeomIdx, materialIndex: getMaterialIndex(matKey) });
+        const uNodeIdx = nodes.length;
+        nodes.push({ name: nm, mesh: uMeshIdx });
+        roomChildNodes.push(uNodeIdx);
+      }
+    }
+
     const roomNodeIdx = nodes.length;
     nodes.push({
       name: `Xona (${Math.round(rw)}×${Math.round(rd)}×${wh} mm)`,
@@ -404,11 +485,19 @@ export function buildGLB(doc, catalog = {}, opts = {}) {
 
   /* ── 3. Binar buferni (BIN chunk) yig'ish ── */
   const totalBoxes = panelGeometries.length;
-  const totalVerts = totalBoxes * 24;
+  /* F1 dan keyin geometriyalar turli uzunlikda (poligon pol = 2×tris×3 verts).
+     Har bir geometriya uchun pozitsiya/normallar starti (float indeks). */
+  const geomPosOffsets = [];
+  let totalPosFloats = 0;
+  for (const g of panelGeometries) {
+    geomPosOffsets.push(totalPosFloats);
+    totalPosFloats += g.positions.length;
+    if (g.normals.length !== g.positions.length) throw new Error('GLB: normals uzunligi mos emas');
+  }
 
-  const posByteLength = totalVerts * 3 * 4;  // float32
-  const normByteLength = totalVerts * 3 * 4; // float32
-  const idxByteLength = 36 * 2;              // 36 ta uint16 = 72 bayt
+  const posByteLength = totalPosFloats * 4;  // float32
+  const normByteLength = totalPosFloats * 4; // float32
+  const idxByteLength = 36 * 2;              // box indices (shared; pol non-indexed)
 
   // Har bir bo'lim 4 baytga karrali (aligned)
   const posOffset = 0;
@@ -421,18 +510,18 @@ export function buildGLB(doc, catalog = {}, opts = {}) {
   const totalBinLength = rawBinLength + binPadding;
 
   const binBuffer = new Uint8Array(totalBinLength);
-  const posView = new Float32Array(binBuffer.buffer, binBuffer.byteOffset + posOffset, totalVerts * 3);
-  const normView = new Float32Array(binBuffer.buffer, binBuffer.byteOffset + normOffset, totalVerts * 3);
+  const posView = new Float32Array(binBuffer.buffer, binBuffer.byteOffset + posOffset, totalPosFloats);
+  const normView = new Float32Array(binBuffer.buffer, binBuffer.byteOffset + normOffset, totalPosFloats);
   const idxView = new Uint16Array(binBuffer.buffer, binBuffer.byteOffset + idxOffset, 36);
 
-  // 1) Standart 36 ta indeksni yozish
+  // 1) Standart 36 ta indeksni yozish (faqat box panellar ishlatadi)
   idxView.set(boxIndices);
 
-  // 2) Cho'qqi va normallarni yozish
+  // 2) Cho'qqi va normallarni yozish (o'zgaruvchan uzunlik)
   for (let b = 0; b < totalBoxes; b++) {
     const geom = panelGeometries[b];
-    posView.set(geom.positions, b * 24 * 3);
-    normView.set(geom.normals, b * 24 * 3);
+    posView.set(geom.positions, geomPosOffsets[b]);
+    normView.set(geom.normals, geomPosOffsets[b]);
   }
 
   /* ── 4. glTF JSON obyektini yaratish ── */
@@ -455,12 +544,15 @@ export function buildGLB(doc, catalog = {}, opts = {}) {
     const meshInfo = meshes[m];
     const geom = panelGeometries[meshInfo.geomIndex];
 
+    const vCount = geom.positions.length / 3;
+    const vByte = geomPosOffsets[meshInfo.geomIndex] * 4;
+
     const posAccessorIdx = accessors.length;
     accessors.push({
       bufferView: 0,
-      byteOffset: meshInfo.geomIndex * 24 * 3 * 4,
+      byteOffset: vByte,
       componentType: 5126, // FLOAT
-      count: 24,
+      count: vCount,
       type: 'VEC3',
       min: geom.bounds.min,
       max: geom.bounds.max
@@ -469,25 +561,24 @@ export function buildGLB(doc, catalog = {}, opts = {}) {
     const normAccessorIdx = accessors.length;
     accessors.push({
       bufferView: 1,
-      byteOffset: meshInfo.geomIndex * 24 * 3 * 4,
+      byteOffset: vByte,
       componentType: 5126, // FLOAT
-      count: 24,
+      count: vCount,
       type: 'VEC3'
     });
 
+    const primitive = {
+      attributes: {
+        POSITION: posAccessorIdx,
+        NORMAL: normAccessorIdx
+      },
+      material: meshInfo.materialIndex,
+      mode: 4 // TRIANGLES
+    };
+    if (geom.indexed !== false) primitive.indices = 0;   // boxlar: umumiy 36 indeks
     gltfMeshes.push({
       name: meshInfo.name,
-      primitives: [
-        {
-          attributes: {
-            POSITION: posAccessorIdx,
-            NORMAL: normAccessorIdx
-          },
-          indices: 0, // Umumiy 36 indeks accesssori
-          material: meshInfo.materialIndex,
-          mode: 4 // TRIANGLES
-        }
-      ]
+      primitives: [primitive]
     });
   }
 
@@ -575,12 +666,13 @@ export function buildGLB(doc, catalog = {}, opts = {}) {
   glb.set(binBuffer, offset);
   offset += totalBinLength;
 
+  const indexedBoxes = panelGeometries.filter(g => g.indexed !== false).length;
   return {
     glb,
     stats: {
       totalBoxes,
-      totalVerts,
-      totalIndices: totalBoxes * 36,
+      totalVerts: totalPosFloats / 3,
+      totalIndices: indexedBoxes * 36,
       meshesCount: gltfMeshes.length,
       nodesCount: nodes.length,
       byteLength: totalGlbLength

@@ -40,7 +40,8 @@ export const DEFAULT_ROOM = {
   outline: [[0, 0], [4200, 0], [4200, 3100], [0, 3100]],
   wall_height: 2700,
   wall_thickness: 100,
-  openings: []
+  openings: [],
+  utilities: []
 };
 
 export function createScene(container, opts = {}) {
@@ -110,6 +111,31 @@ export function createScene(container, opts = {}) {
   const matLine = (color, opacity = 1) =>
     new THREE.LineBasicMaterial({ color: color, transparent: opacity < 1, opacity: opacity });
 
+  /* ── F6: qayta qurishda yangi material yaratilmaydi — ular SHARED va
+     clearGroup ularni dispose QILMAYDI (faqat guruh ichidagi geometry va
+     SHARED bo'lmagan materiallar tozalanadi). ── */
+  const matEdge = matLine(CLR.edge);
+  const matGridMinor = matLine(CLR.gridMinor, 0.5);
+  const matGridMajor = matLine(CLR.gridMajor, 0.85);
+  const matFloor = new THREE.MeshBasicMaterial({ color: CLR.floor });
+  /* F1: quvur/rozetka belgisi (Line emas — Mesh uchun BasicMaterial) */
+  const matUtil = new THREE.MeshBasicMaterial({ color: CLR.edge });
+  const SHARED_MATS = new Set([matWall3D, matWall2D, matEdge, matGridMinor, matGridMajor, matFloor, matUtil]);
+
+  /* Guruhni bo'shatish + GPU resurslarini tozalash.
+     Eski kod `.clear()` ishlatgan edi — devor/to'r har qayta qurilganda
+     (xona o'lchami o'zgarganda) geometriyalar GPU xotirasida qolib ketgan. */
+  function clearGroup(g) {
+    for (const child of g.children.slice()) {
+      g.remove(child);
+      child.traverse(o => {
+        if (o.geometry) o.geometry.dispose();
+        const mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+        for (const m of mats) if (m && !SHARED_MATS.has(m)) m.dispose();
+      });
+    }
+  }
+
   /* ── Devor: Shape + holes → ExtrudeGeometry (B8) ────────────────────── */
   function wallShape(len, height, openings) {
     const shape = new THREE.Shape();
@@ -152,9 +178,9 @@ export function createScene(container, opts = {}) {
   }
 
   function buildWalls(room) {
-    gWalls3D.clear();
-    gWalls2D.clear();
-    gFloor.clear();
+    clearGroup(gWalls3D);
+    clearGroup(gWalls2D);
+    clearGroup(gFloor);
 
     const outline = Array.isArray(room && room.outline) && room.outline.length >= 3
       ? room.outline : DEFAULT_ROOM.outline;
@@ -187,26 +213,59 @@ export function createScene(container, opts = {}) {
       // va devor reja ko'rinishida ko'rinmaydi.
       const geo2 = new THREE.BoxGeometry(len, height, thick);
       const m2 = new THREE.Mesh(geo2, matWall2D);
-      m2.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo2, 1), matLine(CLR.edge)));
+      m2.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo2, 1), matEdge));
       placeWall(m2, p0, p1, height);
       m2.userData = m3.userData;
       gWalls2D.add(m2);
       count++;
     }
 
-    const b = bboxFrom(pts);
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(b.w, b.h),
-      new THREE.MeshBasicMaterial({ color: CLR.floor })
-    );
-    floor.position.set(b.cx, b.cy, -2);            // devor ostida, z=0 dan pastda
+    /* F1: pol — haqiqiy kontur (L shaklda qirqim bo'sh qoladi);
+       ShapeGeometry konkav poligonni to'g'ri triangulyatsiya qiladi. */
+    /* F1: quvur/rozetka belgilari — devor edge bo'ylab offset, balandlik z */
+    for (const u of (room && room.utilities) || []) {
+      const ui = Number(u && u.wall);
+      if (!(ui >= 0) || ui >= pts.length) continue;
+      const p0 = pts[ui], p1 = pts[(ui + 1) % pts.length];
+      const len = Math.hypot(p1.x - p0.x, p1.y - p0.y);
+      if (len < 1) continue;
+      const t = Math.max(0, Math.min(1, (Number(u.offset) || 0) / len));
+      const px = p0.x + (p1.x - p0.x) * t, py = p0.y + (p1.y - p0.y) * t;
+      const z = Math.max(50, Math.min(height - 50, Number(u.z) || 1000));
+      const dx = (p1.x - p0.x) / len, dy = (p1.y - p0.y) / len;
+      const along = new THREE.Vector3(dx, dy, 0);
+      const up = new THREE.Vector3(0, 0, 1);
+      const normal = new THREE.Vector3(dy, -dx, 0);
+      let m3;
+      if (u.type === 'outlet') {
+        // rozetka: devor yuzasiga qaragan plastina (70×70, qalinlik 22)
+        m3 = new THREE.Mesh(new THREE.BoxGeometry(70, 70, 22), matUtil);
+        m3.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(along, up, normal));
+      } else {
+        // quvur: devor qalinligi bo'ylab silindr (ikki tomondan chiqadi)
+        m3 = new THREE.Mesh(new THREE.CylinderGeometry(25, 25, thick + 80, 16), matUtil);
+        m3.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+      }
+      m3.position.set(px, py, z);
+      m3.userData = { kind: 'util', type: u.type || 'pipe' };
+      gWalls3D.add(m3);
+      // 2D reja belgisi — devor ustida (z = devor balandligidan yuqori)
+      const g2 = new THREE.Mesh(new THREE.CircleGeometry(u.type === 'outlet' ? 55 : 40, 20), matUtil);
+      g2.position.set(px, py, height + 60);
+      g2.userData = m3.userData;
+      gWalls2D.add(g2);
+    }
+
+    const shape = new THREE.Shape(pts.map(p => new THREE.Vector2(p.x, p.y)));
+    const floor = new THREE.Mesh(new THREE.ShapeGeometry(shape), matFloor);
+    floor.position.set(0, 0, -2);                  // devor ostida, z=0 dan pastda
     gFloor.add(floor);
     return count;
   }
 
   /* ── To'r: 100 mm (nozik) / 500 mm (qalin) ─────────────────────────── */
   function buildGrid(b) {
-    gGrid.clear();
+    clearGroup(gGrid);
     const pad = 1000;
     const x0 = Math.floor((b.minX - pad) / 500) * 500, x1 = Math.ceil((b.maxX + pad) / 500) * 500;
     const y0 = Math.floor((b.minY - pad) / 500) * 500, y1 = Math.ceil((b.maxY + pad) / 500) * 500;
@@ -215,10 +274,10 @@ export function createScene(container, opts = {}) {
     for (let y = y0; y <= y1; y += 100) (y % 500 === 0 ? major : minor).push(b.minX - pad, y, 0, b.maxX + pad, y, 0);
     gGrid.add(new THREE.LineSegments(
       new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(minor, 3)),
-      matLine(CLR.gridMinor, 0.5)));
+      matGridMinor));
     gGrid.add(new THREE.LineSegments(
       new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(major, 3)),
-      matLine(CLR.gridMajor, 0.85)));
+      matGridMajor));
   }
 
   function bboxFrom(pts) {
@@ -396,6 +455,12 @@ export function createScene(container, opts = {}) {
     _startLoop() { if (!rafId) { rafId = 1; renderer.setAnimationLoop(loop); } },
     _stopLoop() { if (rafId) { renderer.setAnimationLoop(null); rafId = 0; } },
     _resize: resize,
+
+    /* QA (F6): GPU'dagi geometry/textures soni — qayta qurishda o'smasligi kerak */
+    _info: () => ({
+      geometries: renderer.info.memory.geometries,
+      textures: renderer.info.memory.textures
+    }),
 
     dispose() {
       api._stopLoop();

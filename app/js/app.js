@@ -11,7 +11,8 @@
 import { createScene, DEFAULT_ROOM } from './scene.js';
 import { attachControls } from './controls.js';
 import { createItems } from './items.js';
-import { validateDoc } from './engine/rules.js';
+import { validateDoc, footprint, roomBBox } from './engine/rules.js';
+import { deriveKitchen, moykaHole } from './engine/kitchen.js';
 import { cutlist, productionCost } from './engine/cutlist.js';
 import { nestProject } from './engine/nesting.js';
 import { buildOBJ, cutlistCSV, smetaCSV, xncCSV, download } from './engine/objexport.js';
@@ -154,11 +155,16 @@ function doRecalc() {
   const cutlists = [];
   const allParts = [];
   const slots = projectSlots();
-  for (const p of doc.placements) {
+  const mkHole = moykaHole(doc);             // F2: moyka kesimi — birinchi stoleshnitsaga
+  for (const p of viewPlacements()) {
     const fr = state.catalog[p.frg];
     if (!fr) continue;
     const cl = cutlist(fr, p.w, p.d, p.h, mats, { projectSlots: slots, placementSlots: p.slots });
     cl.placementId = p.id;                   // CNC join uchun
+    /* F2: moyka kesimi — stoleshnitsa run'ining birinchi segmentiga */
+    if (mkHole && p.frg === 'SP-ST-001' && p.runIdx === 0 && p.segIdx === 0) {
+      cl.holes.push(Object.assign({}, mkHole));
+    }
     cutlists.push(cl);
     /* id — noyob (placement + ref) — nesting ref/CNC join uchun */
     for (const x of cl.parts) allParts.push(Object.assign({}, x, { id: p.id + ':' + x.ref }));
@@ -185,7 +191,8 @@ function doRecalc() {
  *  (UI, Excel, hisobot va smeta.csv — hammasi shu bitta obyektdan o'qiydi; TZ §5 3.6). */
 function buildQuote(doc, cutlists, prod, sizeWarnings) {
   const byId = {};
-  for (const p of doc.placements) byId[p.id] = p;
+  for (const p of viewPlacements()) byId[p.id] = p;   /* F2: synthetic oshxona qatorlari ham */
+
   const lines = cutlists.map((cl, i) => {
     const p = byId[cl.placementId] || {};
     const frag = state.catalog[cl.fragment] || {};
@@ -239,8 +246,8 @@ function renderSmeta(priceRes, prod) {
   const tf = $('#smTable').querySelector('tfoot');
   tb.innerHTML = priceRes.lines.map(l => `
     <tr>
-      <td>${esc(l.name)}<br><small style="color:var(--muted)">${esc(l.code)} · ${l.w}×${l.d}${l.extra && l.extra.stretch_k ? ' · k=' + l.extra.stretch_k : ''}</small></td>
-      <td class="num">${l.qty}</td>
+      <td>${esc(l.name)}<br><small style="color:var(--muted)">${esc(l.code)} · ${Number(l.w) || 0}×${Number(l.d) || 0}${l.extra && l.extra.stretch_k ? ' · k=' + (Number(l.extra.stretch_k) || 0) : ''}</small></td>
+      <td class="num">${Number(l.qty) || 0}</td>
       <td class="num">${fmtSum(l.unit_price)}</td>
       <td class="num">${fmtSum(l.amount)}</td>
     </tr>`).join('') ||
@@ -302,8 +309,10 @@ function renderNest(nest) {
   let html = `<div class="nest-cap"><span>${esc(mat)} — 1-varaq (${sheet.parts.length} detal)</span><span>${r.sheet_length}×${r.sheet_width}</span></div>`;
   html += `<div class="nest-sheet" style="--ar:${ar}">`;
   for (const p of sheet.parts) {
-    const l = (p.length / sheet.length * 100).toFixed(2);
-    const w = (p.width / sheet.width * 100).toFixed(2);
+    const fw = p.rotated ? p.width : p.length;   // X o'lchami (varaq bo'ylab)
+    const fh = p.rotated ? p.length : p.width;   // Y o'lchami (varaq eni bo'ylab)
+    const l = (fw / sheet.length * 100).toFixed(2);
+    const w = (fh / sheet.width * 100).toFixed(2);
     const x = (p.x / sheet.length * 100).toFixed(2);
     const y = (p.y / sheet.width * 100).toFixed(2);
     html += `<div class="nest-part" style="left:${x}%;top:${y}%;width:${l}%;height:${w}%;${p.rotated ? 'background:#c8b8e8;' : ''}">${esc(p.code)}</div>`;
@@ -335,7 +344,7 @@ function renderCutlist(cutlists) {
       ${cl.parts.map(p => `<tr><td>${esc(p.code)}</td><td class="num">${p.length}×${p.width}</td></tr>`).join('')}
       </tbody></table>
       <div style="font-size:11.5px;color:var(--muted);margin-top:6px">Furnitura: ${esc(hw || '—')}<br>
-      Teshiklar: ${cl.holes.map(h => `${h.kind} Ø${h.dia}×${h.depth} (${h.qty})`).join(', ') || '—'}</div>
+      Teshiklar: ${cl.holes.map(h => `${esc(h.kind)} Ø${Number(h.dia) || 0}×${Number(h.depth) || 0} (${Number(h.qty) || 0})`).join(', ') || '—'}</div>
     </details>`;
   }).join('') || '<div class="msg warn">Mebel yo\'q</div>';
 }
@@ -376,35 +385,69 @@ function renderExCheck(val, doc, cutlists, nest) {
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
 /* ═══════════════════ DOC YANGILASH ═══════════════════ */
+/* DEFAULT_ROOM dan YANGI xona (massivlar nusxa — Object.assign payvast
+   massivlarni umumiy qoldiradi: yangi loyiha eski openings/utilities ni
+   meros qilib olardi). */
+function freshRoom() {
+  return {
+    ...DEFAULT_ROOM,
+    outline: DEFAULT_ROOM.outline.map(p => p.slice()),
+    openings: DEFAULT_ROOM.openings.map(o => ({ ...o })),
+    utilities: []
+  };
+}
+
+/* F2: oshxona sozlamalari (persist) — yangi loyiha: stoleshnitsa/sokol o'chirilgan */
+function freshKitchen() {
+  return {
+    stoleshnitsa: false, sokol: false,
+    dobor: false, doborH: 60,
+    karniz: false, karnizH: 60,
+    moyka: { on: false, offset: 600, fromBack: 100, size: 500 }
+  };
+}
+
+/* F2: foydalanuvchi placements + synthetic oshxona elementlari (auto, persist emas).
+   3D/smeta/raskroy/export — hammasi shu ro'yxatdan o'qiydi. */
+function viewPlacements() {
+  const user = (state.doc && state.doc.placements) || [];
+  if (!state.catalog || !state.doc || !state.doc.kitchen) return user;
+  try { return user.concat(deriveKitchen(state.doc, state.catalog)); }
+  catch (e) { console.warn('deriveKitchen:', e); return user; }
+}
+
 function setDoc(doc, opts = {}) {
   state.doc = doc;
+  if (!doc.kitchen) doc.kitchen = freshKitchen();   /* F2 */
   state.idSeq = Math.max(state.idSeq,
     1 + doc.placements.reduce((m, p) => Math.max(m, parseInt(String(p.id).replace(/\D/g, ''), 10) || 0), 0));
   sp.setDoc(doc);
-  items.setPlacements(doc.placements, state.catalog);
+  items.setPlacements(viewPlacements(), state.catalog);
   syncZamerInputs();
   if (!opts.skipRecalc) scheduleRecalc(opts.immediate);
 }
 
 function addPlacement(frag) {
-  const W = state.doc.room.outline[1][0], D = state.doc.room.outline[2][1];
+  const bb = roomBBox(state.doc.room.outline);
   const id = 'p' + (state.idSeq++);
-  // devor bo'ylab eng chap bo'sh joy
-  const row = state.doc.placements.filter(p => p.y < 300).sort((a, b) => a.x - b.x);
-  let x = 0;
+  // devor bo'ylab eng chap bo'sh joy — rot'li modullar uchun ham (footprint, A2)
+  const row = state.doc.placements.filter(p => footprint(p).y0 < 300 + bb.minY)
+    .sort((a, b) => footprint(a).x0 - footprint(b).x0);
+  let x = bb.minX;
   for (const p of row) {
-    if (p.x - x >= frag.w) break;
-    x = p.x + p.w;
+    const f = footprint(p);
+    if (f.x0 - x >= frag.w) break;
+    x = f.x1;
   }
-  if (x + frag.w > W) x = Math.max(0, W - frag.w);
+  if (x + frag.w > bb.maxX) x = Math.max(bb.minX, bb.maxX - frag.w);
   // qarama-qarshi devor band bo'lsa — markazga
   const p = {
     id, frg: frag.code, name: frag.name,
-    x: Math.round(x / 50) * 50, y: 50, z: 0,
+    x: Math.round(x / 50) * 50, y: 50, z: frag.default_z || 0,
     w: frag.w, d: frag.d, h: frag.h, rot: 0, qty: 1
   };
   state.doc.placements.push(p);
-  items.setPlacements(state.doc.placements, state.catalog);
+  items.setPlacements(viewPlacements(), state.catalog);
   items.select(id);
   scheduleRecalc();
   toast(frag.name + ' qo\'yildi', 'good');
@@ -416,7 +459,7 @@ function removePlacement(id) {
   state.doc.placements.splice(i, 1);
   items.select(null);
   hideItemCard();
-  items.setPlacements(state.doc.placements, state.catalog);
+  items.setPlacements(viewPlacements(), state.catalog);
   scheduleRecalc(true);
 }
 
@@ -459,17 +502,17 @@ function renderCatalog() {
   for (const f of Object.values(state.catalog)) cats[f.category] = (cats[f.category] || 0) + 1;
   const filters = [['all', 'Barchasi']].concat(Object.entries(cats));
   $('#catFilter').innerHTML = filters.map(([c]) =>
-    `<button class="chip ${state.filter === c ? 'is-active' : ''}" data-f="${c}">${c === 'all' ? 'Barchasi' : catName(c)}</button>`
+    `<button class="chip ${state.filter === c ? 'is-active' : ''}" data-f="${esc(c)}">${c === 'all' ? 'Barchasi' : esc(catName(c))}</button>`
   ).join('');
 
   const list = Object.values(state.catalog)
     .filter(f => state.filter === 'all' || f.category === state.filter);
   $('#catGrid').innerHTML = list.map(f => `
-    <button class="cat-card" data-code="${f.code}">
+    <button class="cat-card" data-code="${esc(f.code)}">
       <div class="cc-name">${esc(f.name)}</div>
-      <div class="cc-dim">${f.w}×${f.d}×${f.h} mm</div>
-      <div class="cc-range">min ${f.min_w || '—'} · max ${f.max_w || '—'}</div>
-      <div class="cc-price" title="Taxminiy: standart o'lchamda, kroysiz">~${fmtSum(estimateFragment(f))}</div>
+      <div class="cc-dim">${Number(f.w) || 0}×${Number(f.d) || 0}×${Number(f.h) || 0} mm</div>
+      <div class="cc-range">min ${f.min_w ? Number(f.min_w) : '—'} · max ${f.max_w ? Number(f.max_w) : '—'}</div>
+      <div class="cc-price" title="${f.category === 'appliance' ? "O'rnatma texnika — nishon o'lchami" : 'Taxminiy: standart o\'lchamda, kroysiz'}">${f.category === 'appliance' ? "o'rnatma texnika" : '~' + fmtSum(estimateFragment(f))}</div>
     </button>`).join('');
 }
 
@@ -494,8 +537,8 @@ const CAT_NAMES = {
   shelf: 'Javon', door: 'Eshik', window: 'Deraza',
   tall_cabinet: 'Penal', drawer_base: 'Tortmali tumba', wall_cabinet: 'Osma shkaf',
   cargo_base: 'Kargo tumba', wall_corner: 'Burchak osma', desk: 'Yozuv stoli',
-  mobile_pedestal: "G'ildirakli tumba", coat_hanger: 'Kiyim ilgich',
-  vanity: 'Rakovina tumbasi', mirror_cabinet: "Ko'zguli shkaf", other: 'Boshqa'
+  mobile_pedestal: "G'ildirakli tumba", coat_hanger: 'Kiyim ilgich', appliance: "O'rnatma texnika",
+  vanity: 'Rakovina tumbasi', mirror_cabinet: "Ko'zguli shkaf", countertop: 'Oshxona qo\'shimcha', other: 'Boshqa'
 };
 function catName(c) { return CAT_NAMES[c] || c; }
 
@@ -542,7 +585,7 @@ function renderSheetSel() {
   });
   const opts = ['<option value="-1">— ERP katalogi (demo narxlar) —</option>'];
   for (const t of Object.keys(groups).sort()) {
-    opts.push(`<optgroup label="${t} (${groups[t].length})">`);
+    opts.push(`<optgroup label="${esc(t)} (${groups[t].length})">`);
     for (const s of groups[t]) {
       /* ID orqali index topish */
       const idx = all.findIndex(x => (x.sku && x.sku === s.sku && x.name === s.name) || (x.name === s.name && x.type === s.type));
@@ -559,26 +602,132 @@ function renderSheetSel() {
 }
 
 /* ═══════════════════ ZAMER ═══════════════════ */
+/* F2: oshxona elementlari — UI ↔ doc.kitchen (top-level: setDoc chaqiradi) */
+function syncKitchen() {
+  const k = state.doc.kitchen;
+  if (!k) return;
+  $('#kStol').checked = !!k.stoleshnitsa;
+  $('#kSokol').checked = !!k.sokol;
+  $('#kDobor').checked = !!k.dobor;
+  $('#kKarniz').checked = !!k.karniz;
+  $('#kDoborH').value = k.doborH || 60;
+  $('#kKarnizH').value = k.karnizH || 60;
+  const m = k.moyka || {};
+  $('#kMoyka').value = m.on ? 'on' : 'off';
+  $('#kMoykaSize').value = m.size || 500;
+  $('#kMoykaOff').value = m.offset != null ? m.offset : 600;
+  $('#kMoykaBack').value = m.fromBack != null ? m.fromBack : 100;
+}
+
+function kitchenApply() {
+  const k = state.doc.kitchen || (state.doc.kitchen = freshKitchen());
+  k.stoleshnitsa = $('#kStol').checked;
+  k.sokol = $('#kSokol').checked;
+  k.dobor = $('#kDobor').checked;
+  k.doborH = Math.max(30, +$('#kDoborH').value || 60);
+  k.karniz = $('#kKarniz').checked;
+  k.karnizH = Math.max(30, +$('#kKarnizH').value || 60);
+  const m = k.moyka || (k.moyka = { on: false, offset: 600, fromBack: 100, size: 500 });
+  m.on = $('#kMoyka').value === 'on';
+  m.size = Math.max(300, Math.min(900, +$('#kMoykaSize').value || 0) || 500);
+  m.offset = Math.max(0, +$('#kMoykaOff').value || 0);
+  m.fromBack = Math.max(0, +$('#kMoykaBack').value || 0);
+  setDoc(state.doc, { immediate: true });
+}
+
 function syncZamerInputs() {
   const r = state.doc.room;
-  const o = r.outline;
-  const w = o[1][0] - o[0][0], d = o[2][1] - o[0][1];
-  $('#zW').value = w; $('#zD').value = d; $('#zH').value = r.wall_height;
+  const bb = roomBBox(r.outline);
+  $('#zW').value = Math.round(bb.w); $('#zD').value = Math.round(bb.h); $('#zH').value = r.wall_height;
+  renderPts(r.outline);
+  renderWallSelect();
   renderOpenings();
+  renderUtilities();
+  syncKitchen();
+}
+
+/* F1: poligon nuqtalar jadvali — applyRoom uchun yagona manba (truth).
+   W/D inputlari "rect generator": kiritilsa jadval to'rtburchakka qaytadi. */
+function renderPts(pts) {
+  $('#zPts').innerHTML = (pts || []).map((p, i) => `
+    <div data-row="${i}">
+      <b>${i + 1}</b>
+      <input class="px" type="number" step="50" value="${Number(p[0]) || 0}" aria-label="X nuqta ${i + 1}">
+      <input class="py" type="number" step="50" value="${Number(p[1]) || 0}" aria-label="Y nuqta ${i + 1}">
+      <button class="btn" data-delpt="${i}" title="Nuqtani o'chirish"${(pts || []).length <= 3 ? ' disabled' : ''}>✕</button>
+    </div>`).join('');
+}
+
+function rectifyPts() {
+  const w = +$('#zW').value || 4000, d = +$('#zD').value || 3000;
+  renderPts([[0, 0], [w, 0], [w, d], [0, d]]);
+}
+
+function ptsFromTable() {
+  const rows = [...document.querySelectorAll('#zPts [data-row]')];
+  if (rows.length < 3) return null;
+  const pts = rows.map(r => [+r.querySelector('.px').value, +r.querySelector('.py').value]);
+  if (pts.some(p => !isFinite(p[0]) || !isFinite(p[1]))) return null;
+  // yopiq halqa (oxirgi = birinchi) bo'lsa — takroriy nuqtani tashlaymiz
+  if (pts.length > 3 && pts[0][0] === pts[pts.length - 1][0] && pts[0][1] === pts[pts.length - 1][1]) pts.pop();
+  return pts.length >= 3 ? pts : null;
+}
+
+function wallOptionsHtml() {
+  const pts = state.doc.room.outline || [];
+  return pts.map((p, i) => {
+    const q = pts[(i + 1) % pts.length];
+    const len = Math.round(Math.hypot(q[0] - p[0], q[1] - p[1]));
+    return `<option value="${i}">${i} (${len} mm)</option>`;
+  }).join('');
+}
+
+function renderWallSelect() {
+  const pts = state.doc.room.outline || [];
+  const curO = $('#oWall').value, curU = $('#uWall').value;
+  const html = wallOptionsHtml();
+  $('#oWall').innerHTML = html;
+  $('#uWall').innerHTML = html;
+  if (Number(curO) < pts.length) $('#oWall').value = curO;
+  if (Number(curU) < pts.length) $('#uWall').value = curU;
+}
+
+function renderUtilities() {
+  const utils = state.doc.room.utilities || [];
+  $('#uList').innerHTML = utils.map((u, i) =>
+    `<span class="chip is-active">${u.type === 'outlet' ? '🔌' : '🚿'} devor ${Number(u.wall) || 0} · ${Number(u.offset) || 0}mm · z${Number(u.z) || 0} <b data-delu="${i}" style="margin-left:6px;cursor:pointer">✕</b></span>`
+  ).join('');
+}
+
+function ptsEq(a, b) {
+  return a.length === b.length &&
+    a.every((p, i) => Number(p[0]) === Number(b[i][0]) && Number(p[1]) === Number(b[i][1]));
 }
 
 function applyRoom() {
-  const w = +$('#zW').value || 4000, d = +$('#zD').value || 3000, h = +$('#zH').value || 2700;
-  state.doc.room.outline = [[0, 0], [w, 0], [w, d], [0, d]];
+  const h = +$('#zH').value || 2700;
+  const cur = state.doc.room.outline || [];
+  const w = +$('#zW').value || 4000, d = +$('#zD').value || 3000;
+  let pts = ptsFromTable();
+  if (!pts || ptsEq(pts, cur)) {
+    /* Jadval o'zgartirilmagan (yoki yaroqsiz) → W/D "rect generator" ustuvor:
+       qiymatlar programmatik kiritilsa ham (input event chiqmasa) ishlaydi. */
+    const bb = roomBBox(cur);
+    pts = (Math.round(bb.w) !== w || Math.round(bb.h) !== d)
+      ? [[0, 0], [w, 0], [w, d], [0, d]]
+      : (pts || cur);
+  }
+  state.doc.room.outline = pts;
   state.doc.room.wall_height = h;
   setDoc(state.doc, { immediate: true });
-  toast('Xona: ' + w + '×' + d + '×' + h + ' mm', 'good');
+  const bb = roomBBox(pts);
+  toast('Xona: ' + pts.length + ' nuqta · ' + bb.w + '×' + bb.h + '×' + h + ' mm', 'good');
 }
 
 function renderOpenings() {
   const ops = state.doc.room.openings || [];
   $('#oList').innerHTML = ops.map((o, i) =>
-    `<span class="chip is-active">${o.type === 'window' ? '🪟' : '🚪'} devor ${o.wall} · ${o.width}mm <b data-del="${i}" style="margin-left:6px;cursor:pointer">✕</b></span>`
+    `<span class="chip is-active">${o.type === 'window' ? '🪟' : '🚪'} devor ${Number(o.wall) || 0} · ${Number(o.width) || 0}mm <b data-del="${i}" style="margin-left:6px;cursor:pointer">✕</b></span>`
   ).join('');
 }
 
@@ -593,12 +742,18 @@ async function runAI() {
   try {
     const res = await aiBuild(text, state.catalog);
     res.doc.placements = res.doc.placements.filter(p => state.catalog[p.frg]);
+    /* F1/F2: AI yangi xona quradi — lekin quvur/rozetka va oshxona sozlamalari saqlanadi */
+    res.doc.room.utilities = (state.doc.room && state.doc.room.utilities) || [];
+    res.doc.kitchen = state.doc.kitchen || freshKitchen();
     setDoc(res.doc, { immediate: true });
     sp.setMode('2d');
     ctl.updateButtons();
     $('#aiOut').innerHTML =
-      `<div class="msg ok">✅ ${res.doc.room.outline[1][0]}×${res.doc.room.outline[2][1]}×${res.doc.room.wall_height} mm —
-       ${res.doc.placements.length} mebel qo'yildi (manba: ${res.source === 'llm' ? 'LLM' : 'qoida engine'})</div>` +
+      (res.assumed
+        ? `<div class="msg warn">⚠️ Xona o'lchami tushunilmadi — 3600×2800 mm taxmin qilindi.
+           Matnda "3x4 metr", "3.5 ga 2.8" kabi yozing.</div>`
+        : `<div class="msg ok">✅ ${(() => { const b = roomBBox(res.doc.room.outline); return Math.round(b.w) + '×' + Math.round(b.h); })()}×${res.doc.room.wall_height} mm —
+       ${res.doc.placements.length} mebel qo'yildi (manba: ${res.source === 'llm' ? 'LLM' : 'qoida engine'})</div>`) +
       (res.unknown.length ? `<div class="msg warn">Tushunilmadi: ${esc(res.unknown.join(', '))}</div>` : '');
     toast('Konstruksiya tayyor!', 'good');
     openTab('smeta');
@@ -668,7 +823,7 @@ function integrityCheck(needCutlist) {
 
 function exportOBJ() {
   if (!integrityCheck(false)) return;
-  const r = buildOBJ(state.doc, state.catalog);
+  const r = buildOBJ(Object.assign({}, state.doc, { placements: viewPlacements() }), state.catalog);
   download('smart3d-model.obj', r.obj, 'text/plain');
   setTimeout(() => download('smart3d-model.mtl', r.mtl, 'text/plain'), 350);
   toast('OBJ + MTL yuklanmoqda — ' + r.placements.length + ' guruh', 'good');
@@ -676,7 +831,7 @@ function exportOBJ() {
 function exportGlb() {
   if (!integrityCheck(false)) return;
   try {
-    const res = buildGLB(state.doc, state.catalog);
+    const res = buildGLB(Object.assign({}, state.doc, { placements: viewPlacements() }), state.catalog);
     const name = ($('#projName').textContent.trim() || 'smart3d').replace(/\s+/g, '_');
     download(name + '-model.glb', res.glb, 'model/gltf-binary');
     toast(`GLB tayyor — ${res.stats.totalBoxes} panel (${Math.round(res.stats.byteLength / 1024)} KB)`, 'good');
@@ -830,7 +985,7 @@ function initPano360Viewer(container, panoCanvas) {
 }
 function exportHoles() {
   if (!integrityCheck(false)) return;
-  const r = buildOBJ(state.doc, state.catalog);
+  const r = buildOBJ(Object.assign({}, state.doc, { placements: viewPlacements() }), state.catalog);
   download('smart3d-holes.json', JSON.stringify({ version: 1, unit: 'mm', holes: r.holes, placements: r.placements }, null, 1), 'application/json');
 }
 function exportCut() {
@@ -856,7 +1011,7 @@ function printReport() {
   const s = (nest && nest.summary) || {};
   const fmt = (x) => fmtSum(x == null ? 0 : x);
   const rows = pr.lines.map(l =>
-    `<tr><td>${esc(l.name)}<br><small>${esc(l.code)} · ${l.w}×${l.d} mm</small></td><td class=n>${l.qty}</td><td class=n>${fmt(l.unit_price)}</td><td class=n>${fmt(l.amount)}</td></tr>`
+    `<tr><td>${esc(l.name)}<br><small>${esc(l.code)} · ${Number(l.w) || 0}×${Number(l.d) || 0} mm</small></td><td class=n>${Number(l.qty) || 0}</td><td class=n>${fmt(l.unit_price)}</td><td class=n>${fmt(l.amount)}</td></tr>`
   ).join('') || '<tr><td colspan=4>Mebel qo\'yilmagan</td></tr>';
   const prodRows = ((prod && prod.lines) || []).map(l =>
     `<tr><td>${esc(l.name || l.material || '')}</td><td class=n>${esc(l.unit || '')}</td><td class=n>${fmt(l.amount != null ? l.amount : l.cost)}</td></tr>`
@@ -944,7 +1099,7 @@ function exportBpj() {
      JSON (UTF-8) — BazisViewer/Bazis import qiladi. */
   try {
     const name = $('#projName').textContent.trim() || 'Smart3D';
-    const bpj = buildBPJ(state.doc, state.catalog, state.materials, {
+    const bpj = buildBPJ(Object.assign({}, state.doc, { placements: viewPlacements() }), state.catalog, state.materials, {
       modelName: name, materialCode: state.materialCode, cutlists: state._res?.cutlists
     });
     download(name.replace(/\s+/g, '_') + '.bpj',
@@ -963,18 +1118,24 @@ function exportGl() {
   try {
     const res = state._res;
     const name = $('#projName').textContent.trim() || 'Smart3D';
-    const xml = buildGlProject({
+    const gl = buildGlProject({
       cutlists: res.cutlists, materials: state.materials,
       modelName: name, materialCode: state.materialCode,
+      nest: res.nest,
       settings: {
         kerf: state.nestCfg && state.nestCfg.kerf,
         trimL: state.nestCfg && state.nestCfg.trimL,
         trimW: state.nestCfg && state.nestCfg.trimW
       }
     });
-    download(name.replace(/\s+/g, '_') + '.project', xml, 'application/xml');
-    const ops = (xml.match(/<operation /g) || []).length;
-    toast('GibLab .project tayyor — ' + ops + ' operatsiya', 'good');
+    download(name.replace(/\s+/g, '_') + '.project', gl.xml, 'application/xml');
+    const ops = (gl.xml.match(/<operation /g) || []).length;
+    const st = gl.stats || {};
+    toast(`GibLab .project tayyor — ${ops} operatsiya, ${st.placed}/${st.parts} detal, ${st.sheets} varaq`, 'good');
+    if (gl.warnings && gl.warnings.length) {
+      console.warn('GibLab ogohlantirish:', gl.warnings);
+      toast('GibLab: ' + gl.warnings[0] + (gl.warnings.length > 1 ? ` (+${gl.warnings.length - 1})` : ''), 'warn');
+    }
   } catch (e) {
     console.error('GibLab export xato:', e);
     toast('GibLab xato: ' + e.message, 'bad');
@@ -1094,11 +1255,7 @@ function loadProject() {
 function newProject() {
   if (state.doc.placements.length &&
       !confirm('Joriy loyiha (' + state.doc.placements.length + ' mebel) o\'chiriladi. Davom etasizmi?')) return;
-  state.doc = {
-    v: 1, kind: 'smart3d',
-    room: Object.assign({}, DEFAULT_ROOM),
-    placements: []
-  };
+  state.doc = { v: 1, kind: 'smart3d', room: freshRoom(), placements: [] };
   $('#projName').textContent = 'Yangi loyiha';
   items.select(null); hideItemCard();
   setDoc(state.doc, { immediate: true });
@@ -1106,16 +1263,27 @@ function newProject() {
 
 /* ═══════════════════ INIT ═══════════════════ */
 async function boot() {
-  const [frags, mats, nestDef, sheetCat, matIdx, services] = await Promise.all([
+  const [frags, mats, nestDef, sheetCat, matIdx, services, appliances] = await Promise.all([
     fetch('data/fragments.json').then(r => r.json()),
     fetch('data/materials.json').then(r => r.json()),
     fetch('data/nesting-defaults.json').then(r => r.json()).catch(() => ({})),
     fetch('data/sheet-catalog.json').then(r => r.json()).catch(() => null),
     fetch('data/materials-index.json').then(r => r.json()).catch(() => null),
-    fetch('data/services.json').then(r => r.json()).catch(() => null)
+    fetch('data/services.json').then(r => r.json()).catch(() => null),
+    fetch('data/appliances.json').then(r => r.json()).catch(() => null)
   ]);
   state.catalog = {};
   for (const f of frags) state.catalog[f.code] = f;
+  /* F2: o'rnatma texnika — nishon (bo'sh korpusli) katalog yozuvlari */
+  for (const a of (appliances && appliances.appliances) || []) {
+    state.catalog[a.code] = {
+      code: a.code, name: a.name, category: 'appliance', group: 'texnika',
+      w: a.w, d: a.d, h: a.h, min_w: 200, max_w: 1200,
+      price_mode: 'unit', price: 0, production: 'none',
+      parts: [], holes: [], hardware: [], edge: [],
+      default_z: a.z || 0, note: a.note
+    };
+  }
   state.materials = mats;
   state.sheetCatalog = sheetCat;
   state.services = services;
@@ -1144,7 +1312,7 @@ async function boot() {
     hitTest: (e) => !!(items && items.hitTest(e))      // mebel ustida — sudrash items.js ga
   });
   items = createItems(sp, {
-    getPlacements: () => state.doc.placements,
+    getPlacements: () => viewPlacements(),
     onSelect: (id, mesh, source) => {
       state.selectedId = id;
       if (id) {
@@ -1166,7 +1334,7 @@ async function boot() {
   });
 
   /* boshlang'ich namuna: oshxona */
-  state.doc = { v: 1, kind: 'smart3d', room: Object.assign({}, DEFAULT_ROOM), placements: [] };
+  state.doc = { v: 1, kind: 'smart3d', room: freshRoom(), placements: [] };
   const sample = suggestLayout(state.doc.room, state.catalog, [{ kind: 'pastki', qty: 3 }, { kind: 'ustki', qty: 2 }]);
   state.doc.placements = sample;
 
@@ -1201,12 +1369,41 @@ async function boot() {
   // zamer
   $('#zApply').addEventListener('click', applyRoom);
   $$('#zPresets .chip').forEach(c => c.addEventListener('click', () => {
-    $('#zW').value = c.dataset.w; $('#zD').value = c.dataset.d; applyRoom();
+    $('#zW').value = c.dataset.w; $('#zD').value = c.dataset.d;
+    rectifyPts(); applyRoom();                       // preset = doim to'rtburchak
   }));
+  // F1: shakl tugmalari — to'rtburchak (W/D) yoki L shakl poligoni
+  $$('#zShapes .chip').forEach(c => c.addEventListener('click', () => {
+    if (c.dataset.shape === 'rect') { rectifyPts(); applyRoom(); }
+    else {
+      renderPts([[0, 0], [3600, 0], [3600, 2000], [2200, 2000], [2200, 3000], [0, 3000]]);
+      $('#zPtsWrap').open = true;                    // nuqtalar ko'rinib tursin
+      applyRoom();
+    }
+  }));
+  // F1: nuqtalar jadvali — qo'shish / o'chirish; W/D kiritilsa → rect
+  $('#zPtAdd').addEventListener('click', () => {
+    const rows = [...document.querySelectorAll('#zPts [data-row]')];
+    const last = rows.length ? [+rows[rows.length - 1].querySelector('.px').value,
+                                +rows[rows.length - 1].querySelector('.py').value] : [0, 0];
+    const pts = rows.map(r => [+r.querySelector('.px').value, +r.querySelector('.py').value]);
+    pts.push([isFinite(last[0]) ? last[0] + 500 : 0, isFinite(last[1]) ? last[1] : 0]);
+    renderPts(pts);
+  });
+  $('#zPts').addEventListener('click', (e) => {
+    const i = e.target.dataset && e.target.dataset.delpt;
+    if (i == null) return;
+    const pts = [...document.querySelectorAll('#zPts [data-row]')]
+      .filter(r => r.dataset.row !== i)
+      .map(r => [+r.querySelector('.px').value, +r.querySelector('.py').value]);
+    if (pts.length >= 3) renderPts(pts);
+  });
+  ['#zW', '#zD'].forEach(sel => $(sel).addEventListener('input', rectifyPts));
   $('#oAdd').addEventListener('click', () => {
     const wall = +$('#oWall').value;
     const w = state.doc.room.outline;
-    const seg = wall % 2 === 0 ? (wall === 0 ? w[1][0] : w[1][0]) : w[2][1];
+    const a = w[wall], b = w[(wall + 1) % w.length];
+    const seg = Math.hypot(b[0] - a[0], b[1] - a[1]);   // F1: haqiqiy edge uzunligi
     const wid = Math.min(+$('#oW').value || 1000, seg - 800);
     state.doc.room.openings.push({
       wall, type: $('#oType').value, offset: Math.max(100, Math.round((seg - wid) / 2)),
@@ -1216,6 +1413,32 @@ async function boot() {
     setDoc(state.doc, { immediate: true });
   });
   $('#oClear').addEventListener('click', () => { state.doc.room.openings = []; setDoc(state.doc, { immediate: true }); });
+  // F1: quvur / rozetka
+  $('#uAdd').addEventListener('click', () => {
+    const pts = state.doc.room.outline || [];
+    const wall = +$('#uWall').value;
+    const a = pts[wall], b = pts[(wall + 1) % pts.length];
+    if (!a || !b) { toast("Avval xonani qo'llang", 'err'); return; }
+    const seg = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    const off = Math.max(0, Math.min(seg, +$('#uOffset').value || 0));
+    (state.doc.room.utilities = state.doc.room.utilities || []).push({
+      type: $('#uType').value, wall, offset: Math.round(off),
+      z: Math.max(50, +$('#uZ').value || 1000)
+    });
+    setDoc(state.doc, { immediate: true });
+    toast("Quvur/rozetka qo'yildi", 'good');
+  });
+  $('#uList').addEventListener('click', (e) => {
+    const i = e.target.dataset && e.target.dataset.delu;
+    if (i != null) {
+      (state.doc.room.utilities || []).splice(+i, 1);
+      setDoc(state.doc, { immediate: true });
+    }
+  });
+  // F2: oshxona elementlari — toggle → synthetic stoleshnitsa/sokol/dobor/karniz/moyka
+  const K_IDS = ['#kStol', '#kSokol', '#kDobor', '#kKarniz', '#kDoborH', '#kKarnizH',
+                 '#kMoyka', '#kMoykaSize', '#kMoykaOff', '#kMoykaBack'];
+  K_IDS.forEach(sel => $(sel).addEventListener('change', () => kitchenApply()));
   $('#oList').addEventListener('click', (e) => {
     const i = e.target.dataset && e.target.dataset.del;
     if (i != null) { state.doc.room.openings.splice(+i, 1); setDoc(state.doc, { immediate: true }); }
@@ -1283,7 +1506,7 @@ async function boot() {
     Object.assign(p, patch);
     const cl = clampSize(p, frag);
     if (Object.keys(cl).length) { Object.assign(p, cl); showItemCard(p.id); }
-    items.setPlacements(state.doc.placements, state.catalog);
+    items.setPlacements(viewPlacements(), state.catalog);
     checkClamp(p, frag);
     scheduleRecalc();
   };
@@ -1296,15 +1519,16 @@ async function boot() {
     if (!state.selectedId) return;
     const p = state.doc.placements.find(x => x.id === state.selectedId);
     p.rot = ((p.rot || 0) + 90) % 360;
-    items.setPlacements(state.doc.placements, state.catalog);
+    items.setPlacements(viewPlacements(), state.catalog);
     scheduleRecalc();
   });
   $('#icDup').addEventListener('click', () => {
     if (!state.selectedId) return;
     const p = state.doc.placements.find(x => x.id === state.selectedId);
-    const np = Object.assign({}, p, { id: 'p' + (state.idSeq++), x: p.x + p.w + 50 });
+    const f = footprint(p);
+    const np = Object.assign({}, p, { id: 'p' + (state.idSeq++), x: p.x + f.ex + 50 });
     state.doc.placements.push(np);
-    items.setPlacements(state.doc.placements, state.catalog);
+    items.setPlacements(viewPlacements(), state.catalog);
     items.select(np.id);
     scheduleRecalc();
   });
@@ -1312,7 +1536,7 @@ async function boot() {
     if (!state.selectedId) return;
     const p = state.doc.placements.find(x => x.id === state.selectedId);
     p.x += dx; p.y += dy;
-    items.setPlacements(state.doc.placements, state.catalog);
+    items.setPlacements(viewPlacements(), state.catalog);
     showItemCard(p.id);
     scheduleRecalc();
   }

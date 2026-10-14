@@ -3240,7 +3240,7 @@
     "code": "karkas",
     "qty": 1,
     "len": "w-200",
-    "width": "d-200",
+    "width": "h-200",
     "material": "LDSP18"
    }
   ],
@@ -10499,5 +10499,164 @@
     "qty": 2
    }
   ]
+ },
+ {
+  "code": "SP-ST-001",
+  "name": "Yaxlit stoleshnitsa (oshxona)",
+  "category": "countertop",
+  "group": "kuxnya-stol",
+  "w": 1000,
+  "d": 600,
+  "h": 18,
+  "min_w": 300,
+  "max_w": 2700,
+  "min_d": 300,
+  "max_d": 900,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 0,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "stoleshnitsa",
+    "qty": 1,
+    "len": "w",
+    "width": "d",
+    "slot": "stoleshnitsa",
+    "tekstura": "uzunlik"
+   }
+  ],
+  "edge": [
+   {
+    "code": "stoleshnitsa",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": []
+ },
+ {
+  "code": "SP-ST-002",
+  "name": "Sokol planka (oshxona)",
+  "category": "countertop",
+  "group": "kuxnya-stol",
+  "w": 1000,
+  "d": 100,
+  "h": 18,
+  "min_w": 300,
+  "max_w": 2700,
+  "min_d": 50,
+  "max_d": 150,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 0,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "sokol",
+    "qty": 1,
+    "len": "w",
+    "width": "d",
+    "slot": "korpus",
+    "tekstura": "uzunlik"
+   }
+  ],
+  "edge": [
+   {
+    "code": "sokol",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": []
+ },
+ {
+  "code": "SP-ST-003",
+  "name": "Dobor (backsplash)",
+  "category": "countertop",
+  "group": "kuxnya-stol",
+  "w": 1000,
+  "d": 18,
+  "h": 60,
+  "min_w": 300,
+  "max_w": 2700,
+  "min_d": 10,
+  "max_d": 30,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 0,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "dobor",
+    "qty": 1,
+    "len": "w",
+    "width": "d",
+    "slot": "dobor",
+    "tekstura": "uzunlik"
+   }
+  ],
+  "edge": [
+   {
+    "code": "dobor",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": []
+ },
+ {
+  "code": "SP-ST-004",
+  "name": "Karniz (oshxona)",
+  "category": "countertop",
+  "group": "kuxnya-stol",
+  "w": 1000,
+  "d": 30,
+  "h": 60,
+  "min_w": 300,
+  "max_w": 2700,
+  "min_d": 15,
+  "max_d": 50,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 0,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "karniz",
+    "qty": 1,
+    "len": "w",
+    "width": "d",
+    "slot": "karniz",
+    "tekstura": "uzunlik"
+   }
+  ],
+  "edge": [
+   {
+    "code": "karniz",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": []
  }
 ]

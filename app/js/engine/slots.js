@@ -19,7 +19,11 @@ export const DEFAULT_SLOTS = {
   orqa: 'HDF3',
   polka: 'LDSP18',
   kromka_korpus: 'PVC04',
-  kromka_fasad: 'PVC2'
+  kromka_fasad: 'PVC2',
+  /* F2: oshxona qo'shimchalari (ERP stoleshnitsa materiali kelguncha) */
+  stoleshnitsa: 'LDSP18',
+  dobor: 'LDSP18',
+  karniz: 'LDSP18'
 };
 
 /**
