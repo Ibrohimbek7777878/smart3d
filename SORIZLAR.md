@@ -133,3 +133,5 @@ bu biz korgan sayt sunpina ularda huddi shunday tizm bor va ular bazisiz ishlayd
 37. end qisqa londa qilb shuntirb ber qaytadan va hozir nimalar bolgan nimas yoq hozircha faqt sayt qilamiz keyicnhalik ilova qilina dlekin sayt ham har qanday qurilmadan kirlganda moslashuvchan bolish repsonsivlign ham kuchaytirish kere bolad
 
 38. yaxsh unda boshla tz yozb ol oldin toliq va shu tz asosida ishla hamda barcha skillaring toliq olib kerelilarini ishlat
+
+39. hozir qolgan ishlar nimalar va ularni hammasin bita tz ga yozganmisan
