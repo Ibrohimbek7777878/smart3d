@@ -296,7 +296,9 @@
   {
    "code": "cutout",
    "name": "Moyka kesimi (ichki kontur)",
-   "price": 25000
+   "price": 0,
+   "price_src": "yoq",
+   "note": "Narx manbasiz edi (25000) — ERP xizmat narxi (widget_service) kelguncha 'narx yo'q'"
   }
  ],
  "labor": {

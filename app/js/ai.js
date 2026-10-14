@@ -61,25 +61,27 @@ export function parseZamer(text) {
 
   /* ── 2. Xona o'lchamlari ── */
   // "3x4", "3*4", "3000x4000", kirill "3х4" (A1)
+  let dimSpan = null;                               // xona o'lchami matndagi o'rni — miqdor emas
   let m = t.match(/(\d+(?:[.,]\d+)?)\s*[x×*xXхХ]\s*(\d+(?:[.,]\d+)?)/);
   if (m) {
     let w = parseNum(m[1]), d = parseNum(m[2]);
     if (w < 100 && d < 100) { w *= 1000; d *= 1000; }
-    room.w = Math.round(w); room.d = Math.round(d);
+    room.w = Math.round(w); room.d = Math.round(d); dimSpan = [m.index, m.index + m[0].length];
   } else {
-    // "3.5 ga 2.8", "3 ga 4 metr" — separator so'z bilan (A1)
-    m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:га|ga|на)\s*(?:метр(?:ов)?\s*)?(\d+(?:[.,]\d+)?)/);
+    // "3.5 ga 2.8", "3 ga 4 metr", "3.5 metrga 3 metr", "3 yarim metr ga 3" — separator so'z
+    // bilan; birinchi sondan keyin birlik ham kelishi mumkin (A1)
+    m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:metr|метр|м|m)?\s*(?:га|ga|на)\s*(?:метр(?:ов)?\s*|metr\s*)?(\d+(?:[.,]\d+)?)/);
     if (m) {
       let w = parseNum(m[1]), d = parseNum(m[2]);
       if (w < 100 && d < 100) { w *= 1000; d *= 1000; }
-      room.w = Math.round(w); room.d = Math.round(d);
+      room.w = Math.round(w); room.d = Math.round(d); dimSpan = [m.index, m.index + m[0].length];
     } else {
       // "3 metr 4 metr", "3m 4m" — ikkala tomonda ham birlik majburiy
       m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:м|metr|метр)\s*(?:га|на)?\s*(\d+(?:[.,]\d+)?)\s*(?:м|metr|метр)/);
       if (m) {
         let w = parseNum(m[1]), d = parseNum(m[2]);
         if (w < 100 && d < 100) { w *= 1000; d *= 1000; }
-        room.w = Math.round(w); room.d = Math.round(d);
+        room.w = Math.round(w); room.d = Math.round(d); dimSpan = [m.index, m.index + m[0].length];
       }
     }
   }
@@ -150,15 +152,37 @@ export function parseZamer(text) {
     [/orol|остров/, 'orol']
   ];
 
-  while ((mm = reQ.exec(t))) {
-    const qty = Math.max(1, parseNum(mm[1]) || 1);
-    const word = mm[2];
-    let kind = null;
-    for (const [re, k] of KIND_MAP) {
-      if (re.test(word)) { kind = k; break; }
+  const kindOf = (word) => {
+    for (const [re, k] of KIND_MAP) if (word && re.test(word)) return k;
+    return null;
+  };
+  /* Ikki uslub: "4 ta pastki" (son → so'z) va "pastki 4 ta" (so'z → son) (A1).
+     Vergulsiz matnda (ovoz) "pastki 4 ta ustki 3 ta" ikki xil o'qilishi mumkin —
+     gap "… N ta" bilan tugasa, so'z → son uslubi ishlatilgan: u birinchi o'qiladi.
+     Bir son faqat bir marta sanaladi (o'rni bo'yicha). */
+  const NUMW = "\\d+|bir|bitta|ikki|ikkita|uch|uchta|to'rt|to'rtta|to`rt|besh|beshta|olti|oltita|yetti|sakkiz|to'qqiz|o'n|o`n";
+  const reQR = new RegExp(`([a-zа-я'\`-]+)(?:\\s+([a-zа-я'\`-]+))?\\s*[:=-]?\\s*(${NUMW})\\s*(?:tadan|ta|dona|шт)(?![a-zа-я])`, 'gi');
+  const usedNums = new Set();
+  const inDim = (pos) => dimSpan && pos >= dimSpan[0] && pos < dimSpan[1];   // "4x3 pastki" — 3 miqdor emas
+  const readNumFirst = () => {
+    reQ.lastIndex = 0;
+    while ((mm = reQ.exec(t))) {
+      if (usedNums.has(mm.index) || inDim(mm.index)) continue;
+      const kind = kindOf(mm[2]);
+      if (kind) { orders.push({ kind, qty: Math.max(1, parseNum(mm[1]) || 1) }); usedNums.add(mm.index); }
     }
-    if (kind) orders.push({ kind, qty });
-  }
+  };
+  const readWordFirst = () => {
+    reQR.lastIndex = 0;
+    while ((mm = reQR.exec(t))) {
+      const numPos = mm.index + mm[0].lastIndexOf(mm[3]);
+      if (usedNums.has(numPos) || inDim(numPos)) continue;
+      const kind = kindOf(mm[1]) || kindOf(mm[2]);
+      if (kind) { orders.push({ kind, qty: Math.max(1, parseNum(mm[3]) || 1) }); usedNums.add(numPos); }
+    }
+  };
+  if (new RegExp(`(?:${NUMW})\\s*(?:tadan|ta|dona|шт)\\s*[.!?]*\\s*$`, 'i').test(t)) { readWordFirst(); readNumFirst(); }
+  else { readNumFirst(); readWordFirst(); }
 
   /* Teshiklarga devor (edge) va geometriya berish — F1: aks holda
      validateDoc E_OPENING_OUT_OF_WALL beradi va sahna uni chizmaydi. */
@@ -226,8 +250,20 @@ export function suggestLayout(room, catalog = {}, orders = []) {
   let idSeq = 1;
   const margin = 50; // devor chetidan bo'sh joy
 
+  /* Buyurtmadagi miqdor ("pastki 4 ta, ustki 3 ta") — yuqori chegara (A1). Buyurtmada
+     son bo'lmasa — avvalgidek devor to'ldiriladi. Burchak va plita tumbasi ham "pastki". */
+  const capOf = (k) => {
+    const q = (orders || []).filter(o => o.kind === k).reduce((s, o) => s + o.qty, 0);
+    return q > 0 ? q : Infinity;
+  };
+  const cap = { pastki: capOf('pastki'), ustki: capOf('ustki') };
+  const count = { pastki: 0, ustki: 0 };
+  const roleOf = (frag, z) => (z > 0 ? 'ustki' : ((frag.h || 0) >= 1800 ? 'baland' : 'pastki'));
+
   function place(frag, x, y, z, rot = 0, customW = null) {
     if (!frag) return null;
+    const role = roleOf(frag, z);
+    if (count[role] != null && count[role] >= cap[role]) return null;   // so'ralgan son to'ldi
     const w = customW || frag.w;
     const d = frag.d;
     const h = frag.h;
@@ -252,6 +288,7 @@ export function suggestLayout(room, catalog = {}, orders = []) {
     }
 
     placements.push(item);
+    if (count[role] != null) count[role]++;
     return item;
   }
 
@@ -441,6 +478,15 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
 
   const placements = suggestLayout(room, catalog, parsed.orders);
 
+  /* So'ralgan son sig'madi — jim o'tib ketmaydi (A1) */
+  const notes = [];
+  for (const k of ['pastki', 'ustki']) {
+    const req = (parsed.orders || []).filter(o => o.kind === k).reduce((s, o) => s + o.qty, 0);
+    if (!req) continue;
+    const got = placements.filter(p => (k === 'ustki' ? (p.z || 0) > 0 : !((p.z || 0) > 0) && (p.h || 0) < 1800)).length;
+    if (got < req) notes.push(`${k}: ${req} ta so'raldi, ${got} tasi sig'di`);
+  }
+
   const doc = {
     v: 1,
     kind: 'smart3d',
@@ -453,7 +499,7 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
     placements
   };
 
-  return { doc, orders: parsed.orders, unknown: parsed.unknown, source, assumed };
+  return { doc, orders: parsed.orders, unknown: parsed.unknown, notes, source, assumed };
 }
 
 /* ── 4. Ovoz Tizimi (Web Speech API) ── */

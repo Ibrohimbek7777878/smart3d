@@ -172,5 +172,30 @@ const upper = { id: 'p2', frg: 'SP-K-002', x: 500, y: 500, z: 1450, w: 600, d: 3
   eq('footprint rot180 → x[400,1000] y[450,1000]', [h.x0, h.y0, h.x1, h.y1], [400, 450, 1000, 1000]);
 }
 
+/* ══════════════ A1 (2-qism): "metrga", miqdorlar va sig'mas buyurtma ══════════════ */
+{
+  let r = parseZamer('3.5 metrga 3 metr oshxona');
+  eq('A1 "3.5 metrga 3 metr" → 3500×3000', [r.room.w, r.room.d], [3500, 3000]);
+  r = parseZamer('3 yarim metr ga 3 metr oshxona');
+  eq('A1 "3 yarim metr ga 3 metr" → 3500×3000', [r.room.w, r.room.d], [3500, 3000]);
+  const sum = (o, k) => o.filter(x => x.kind === k).reduce((s, x) => s + x.qty, 0);
+  r = parseZamer('oshxona 4x3, pastki 4 ta, ustki 3 ta');
+  eq('A1 "pastki 4 ta, ustki 3 ta" (so\'z → son)', [sum(r.orders, 'pastki'), sum(r.orders, 'ustki')], [4, 3]);
+  r = parseZamer('oshxona 4x3 pastki 4 ta ustki 3 ta');
+  eq('A1 vergulsiz (ovoz) "pastki 4 ta ustki 3 ta"', [sum(r.orders, 'pastki'), sum(r.orders, 'ustki')], [4, 3]);
+  r = parseZamer('oshxona 4x3, 3 ta pastki 2 ta ustki');
+  eq('A1 "3 ta pastki 2 ta ustki" (son → so\'z, ikki marta sanalmaydi)', [sum(r.orders, 'pastki'), sum(r.orders, 'ustki')], [3, 2]);
+
+  const b = await aiBuild('oshxona 4x3, pastki 4 ta, ustki 3 ta', catalog);
+  const low = b.doc.placements.filter(p => !(p.z > 0) && p.h < 1800).length;
+  const up = b.doc.placements.filter(p => p.z > 0).length;
+  eq('A1 aiBuild so\'ralgan son: 4 pastki + 3 ustki', [low, up], [4, 3]);
+  ok('A1 aiBuild: sig\'gan buyurtmada ogohlantirish yo\'q', (b.notes || []).length === 0, JSON.stringify(b.notes));
+  const v = validateDoc(b.doc, { catalog });
+  ok('A1 aiBuild 4+3: ustma-ust yo\'q', !v.warnings.concat(v.errors).some(w => /OVERLAP/.test(w.code)), JSON.stringify(v.warnings));
+  const s = await aiBuild('oshxona 2x3, pastki 9 ta', catalog);
+  ok('A1 sig\'magan buyurtma → "so\'raldi … sig\'di" ogohlantirishi', (s.notes || []).some(x => /pastki: 9 ta so'raldi/.test(x)), JSON.stringify(s.notes));
+}
+
 console.log('\n' + (fails === 0 ? `=== HAMMASI OK (${n} ta tekshiruv) ===` : `=== ${fails}/${n} XATO ===`));
 process.exit(fails ? 1 : 0);

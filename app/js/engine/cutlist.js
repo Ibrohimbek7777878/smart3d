@@ -356,7 +356,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   const holePrice = (kind) => {
     const m = holeByKind[kind] || holeByKind.drill;
     if (m && m.price > 0) return m.price;
-    noteMissing('Xizmatlar', 'hole:' + kind, "Teshik burg'ilash (" + kind + ')');
+    noteMissing('Xizmatlar', 'hole:' + kind, (holeByKind[kind] && holeByKind[kind].name) || ("Teshik burg'ilash (" + kind + ')'));
     return 0;
   };
   /* Varap maydoni — KROY bilan bir xil format tanlovi (kichik format katta

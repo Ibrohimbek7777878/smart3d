@@ -36,6 +36,8 @@ export default async function run(page) {
       const tabs = [...document.querySelectorAll('.tab')].map(t => t.getBoundingClientRect());
       const tabsOk = tabs.every(r => r.left >= 0 && r.right <= vw + 1 && r.bottom <= vh + 1 && r.top >= 0 && r.width > 0);
       const small = [...document.querySelectorAll('button, select, input, [contenteditable]')]
+        /* katakcha/radio <label> ichida bo'lsa — bosish maydoni yozuvning o'zi */
+        .map(el => (el.matches('input[type=checkbox], input[type=radio]') && el.closest('label')) || el)
         .filter(el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && (r.height < 36 || r.width < 36); })
         .map(el => (el.id || el.className || el.tagName) + ':' + Math.round(el.getBoundingClientRect().width) + 'x' + Math.round(el.getBoundingClientRect().height));
       const price = document.getElementById('totalPrice').getBoundingClientRect();

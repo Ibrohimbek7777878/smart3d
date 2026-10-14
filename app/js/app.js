@@ -754,7 +754,8 @@ async function runAI() {
            Matnda "3x4 metr", "3.5 ga 2.8" kabi yozing.</div>`
         : `<div class="msg ok">✅ ${(() => { const b = roomBBox(res.doc.room.outline); return Math.round(b.w) + '×' + Math.round(b.h); })()}×${res.doc.room.wall_height} mm —
        ${res.doc.placements.length} mebel qo'yildi (manba: ${res.source === 'llm' ? 'LLM' : 'qoida engine'})</div>`) +
-      (res.unknown.length ? `<div class="msg warn">Tushunilmadi: ${esc(res.unknown.join(', '))}</div>` : '');
+      (res.unknown.length ? `<div class="msg warn">Tushunilmadi: ${esc(res.unknown.join(', '))}</div>` : '') +
+      ((res.notes || []).length ? `<div class="msg warn">⚠️ ${esc(res.notes.join(' · '))}</div>` : '');
     toast('Konstruksiya tayyor!', 'good');
     openTab('smeta');
   } catch (e) {

@@ -81,7 +81,8 @@ ok(cl.parts[0].finish_length === 1200 && cl.parts[0].finish_width === 550, 'deta
 ok(cl.edges.length === 1 && cl.edges[0].meters > 0, '4 tomon kromka (yig\'ilgan)');
 cl.holes.push(Object.assign({}, hole));
 ok(cl.holes.some(h => h.kind === 'cutout'), 'moyka cutout cl.holes ichida');
-ok(mats.hole_kinds.some(h => h.code === 'cutout' && h.price > 0), 'materials hole_kinds: cutout narxi');
+/* qoida 4.3: narx o'ylab topilmaydi — ERP xizmat narxi kelguncha cutout 'narx yo'q' */
+ok(mats.hole_kinds.some(h => h.code === 'cutout' && !(h.price > 0)), 'materials hole_kinds: cutout bor, manbasiz narx yo\'q');
 
 /* ── 6) nesting + productionCost ── */
 const cls = [];
@@ -100,7 +101,7 @@ ok((nest.summary?.placed_count || 0) === allParts.length, 'raskroy: hammasi sig\
 ok((nest.summary?.unplaced_count || 0) === 0 || !nest.by_material || Object.values(nest.by_material).every(r => !(r.unplaced || []).length), 'sig\'magan yo\'q');
 const prod = productionCost(cls, mats, { nestResult: nest });
 ok(prod.clientTotal > 0, 'tannarx > 0: ' + prod.clientTotal);
-ok(prod.breakdown && prod.breakdown.holeCost >= 25000, 'holeCost moyka kesimi (25000) ni o\'z ichiga oladi: ' + (prod.breakdown && prod.breakdown.holeCost));
+ok((prod.missing || []).some(m => m.code === 'hole:cutout'), 'moyka kesimi smetada "narx yo\'q" ro\'yxatida (to\'liq emas belgisi)');
 ok(prod.perModule && prod.perModule.length === cls.length, 'perModule = cutlist soni (buildQuote uchun)');
 
 /* ── 7) Uzun run: 2 segment stoleshnitsa ── */
