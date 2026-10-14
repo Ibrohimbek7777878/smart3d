@@ -24,11 +24,12 @@ bittada sunpin/
 ├── Smart3D/
 │   ├── app/                          ← ISHLAYDI (http.server bilan ochiladi)
 │   │   ├── index.html                ← yagona sahifa (zamer/katalog/AI/raskroy/export)
-│   │   ├── sw.js                     ← PWA service worker (smart3d-v7)
+│   │   ├── sw.js                     ← PWA service worker (smart3d-v14)
 │   │   ├── css/app.css
 │   │   ├── data/
-│   │   │   ├── fragments.json        ← 30 ta mebel moduli (formula bilan)
-│   │   │   ├── materials.json        ← narx/kafitsient/varaq (ERP bilan yangilangan)
+│   │   │   ├── fragments.json        ← 83 ta mebel moduli (SP-K/W/U + SP-ST oshxona)
+│   │   │   ├── appliances.json       ← o'rnatma texnika o'lchamlari (SP-T-001..006)
+│   │   │   ├── materials.json        ← narx/kafitsient/varaq + hole_kinds (ERP bilan yangilangan)
 │   │   │   ├── sheet-catalog.json    ← 1281 ERP panel (SKU+narx+olcham)
 │   │   │   ├── furnitura-catalog.json← 1978 furnitura (price bazaga ulanmagan)
 │   │   │   └── nesting-defaults.json ← raskroy sozlamalari
@@ -38,14 +39,17 @@ bittada sunpin/
 │   │   │   ├── scene.js/controls.js/items.js/materials3d.js ← three.js 2D/3D/VR
 │   │   │   └── engine/
 │   │   │       ├── cutlist.js        ← modul→detal (formula eval) + productionCost
-│   │   │       ├── rules.js          ← joylashtirish + validatsiya
+│   │   │       ├── rules.js          ← joylashtirish + validatsiya (+ poligon xona)
+│   │   │       ├── geom.js           ← poligon pol triangulyatsiyasi (F1)
+│   │   │       ├── kitchen.js        ← oshxona synthetic placements (F2)
 │   │   │       ├── price.js          ← qatlamli narx
 │   │   │       ├── nesting.js        ← BSSF + lenta(LSTR), kerf, qoldiq
 │   │   │       ├── giblab.js         ← .project (XML + binar data blob) ★
 │   │   │       ├── bpj.js            ← Bazis Progect XML
-│   │   │       ├── cnc.js            ← DXF/NC/PTP
-│   │   │       └── objexport.js      ← OBJ/MTL, CSV (cutlist/smeta/XNC)
+│   │   │       ├── cnc.js            ← DXF/NC/PTP + CUTOUT (F2 moyka)
+│   │   │       └── objexport.js      ← OBJ/MTL + quvur/rozetka, CSV
 │   │   └── vendor/three/             ← three.js + XR
+│   ├── tests/                        ← regressiya (bash tests/run-all.sh)
 │   ├── data/                         ← bo'sh (keyingi fayllar uchun)
 │   ├── Mahsulotlar-Narx-Katalogi-2026-10-13.xlsx  ← ERP bugungi narxlar
 │   ├── Mahsulotlar_Katalog_Narxlari.xlsx          ← eski katalog
@@ -93,7 +97,7 @@ python3 -m http.server 8811 --directory "Smart3D/app"
 | 22| CNC: Altendorf formatka — 1/2/3-faza bo'ylama va ko'ndalang kesim ko'rsatmasi | ✅ `altendorfPhasedCuts()` |
 | 23| Sex texnologik xaritasi — formatka, kromka, prisadka, montaj uchastkalari uchun | ✅ `workshopTechCard()` |
 | 24| Hisobot A4 chop/PDF + PWA offline + WebXR VR | ✅ |
-| 25| Backend API + SQLite — 1281 material, 63 fragment, WebSocket real-time narx | ✅ `server/index.js` |
+| 25| Backend API + SQLite — 1281 material, 83 fragment, WebSocket real-time narx | ✅ `server/index.js` |
 | 25b| **F2 oshxona** — `doc.kitchen` toggles, yaxlit stoleshnitsa/sokol/dobor/karniz (synthetic, rot=90 vertikal uchun), moyka kesimi (cutout hole + hole_kinds + 3D belgi + CNC DXF CUTOUT/G-code 2a), SP-ST-001..004, o'rnatma texnika SP-T-001..006 (`data/appliances.json`) | ✅ 2026-10-15 (TZ §0.3) |
 | 26| **Poligon xona (F1)** — L shakl, nuqtalar jadvali, point-in-polygon validatsiya, dinamik devor-teshik, ShapeGeometry pol, OBJ/GLB triangulyatsiyalangan pol, quvur/rozetka (`room.utilities` + `E_UTIL_OUT_OF_WALL`) | ✅ 2026-10-14/15 (TZ §0.2) |
 
@@ -140,6 +144,18 @@ python3 -m http.server 8811 --directory "Smart3D/app"
 ### Yagona state
 Bitta `state.doc` → narx, cutlist, raskroy, export — hammasi shundan.
 
+### viewPlacements() arxitekturasi (F2)
+- `state.doc.placements` — **foydalanuvchining** placementlari (persist qilinadi).
+- `viewPlacements()` — user + **synthetic** oshxona placementlari (`stoleshnitsa/sokol/dobor/karniz`, `engine/kitchen.js` `deriveKitchen`). Syntheticlar `auto:true` bilan keladi va **hech qachon persist qilinmaydi** (faqat 3D/cutlist/raskroy/smeta/export uchun).
+- 3D raycast `userData.auto` mesh'larni **cheklaydi** — stoleshnitsa ostidagi mebel tanlana oladi.
+- Moyka cutout konvensiyasi: `x` = EN (F chetdan), `y` = UZUNLIK (L chetdan); `holeToSheet()` aynan shu tartibda varaqka o'tkazadi.
+
+### Texnik tuzoqlar (xatoni qayta topmaslik uchun)
+- **Python heredoc `\'` bug**: python `"""...\'..."""` ichidagi `\'` Python'da `'` ga aylanadi → JS'da `qo'llang` kabi apostrofli satr butunlay buzadi (`SyntaxError: missing ) after argument list`) va **dastur umuman ishlamay qoladi**, konsolda esa faqat 404 ko'rinadi. **Retsept:** har bir o'zgartirilgan JS'dan keyin `cp X.js /tmp/chk.mjs && node --check /tmp/chk.mjs`. Apostrofli matnni JS'da **ikki qo'shtirnoq** bilan yozing.
+- **Patchright world quirk**: `page.evaluate(fn, arg, false)` (3-arg) **MAIN world**da ishlaydi (`window.__s3d` ko'rinadi); oddiy 2-arg `page.evaluate(fn, arg)` **ISOLATED world**da ishlaydi. QA skriptlarida: `const M = (fn, arg) => page.evaluate(fn, arg, false);`
+- **Brauzer QA**: `node "$HOME/.claude/skills/browser-automation/browser.mjs" "http://127.0.0.1:8811/" --script <script.mjs> --timeout N`; skript `export default async function run(page)` eksport qiladi; `page.on('dialog', d => d.accept())` qo'yiladi.
+- **Server**: `setsid python3 -m http.server 8811 --bind 127.0.0.1 --directory ".../Smart3D/app"`.
+
 ---
 
 ## 6. Qolgan ishlar (blokerlar bilan)
@@ -154,8 +170,15 @@ Bitta `state.doc` → narx, cutlist, raskroy, export — hammasi shundan.
 | 6 | **AI (LLM)** | Endpoint + API kalit (hozir lokal qoidalar ishlaydi) |
 | 7 | **Backend** — scaffold tayyor (auth/materials/orders/WS), production'ga chiqarish kerak | Serverni ishga tushirish + domain ulash |
 | 8 | i18n (rus/ingiz) | Keyin |
-| 9 | **F1 qoldiq** — AI edge-placement (hozir W/D), 90°+ burchak yordami, utility export (GLB/OBJ) | Kod ishi (ma'lumot kerak emas); GLB poli va quvur/rozetka ✅ 2026-10-15 |
+| 9 | **F1 qoldiq** — AI edge-placement (hozir W/D), 90°+ burchak yordami | Kod ishi; utility export (GLB/OBJ quvur/rozetka) ✅ 2026-10-15 |
 | 10| **F2 qoldiq** — ERP stoleshnitsa materiali (hozir LDSP18), L-burchak stoleshnitsa birlashtirish, texnika AI joylashtirish | ERP material = Sobir javobi; qolganlari kod ishi |
+| 11| **F3** — Undo/redo; bir nechta loyiha (IndexedDB); `loyiha.json` import | Kod ishi (katta, ~2–3 sessiya) |
+| 12| **F4** — Material qidiruvi sinonim lug'ati ("oq", "kromka" kabi o'zbekcha so'zlar topilmaydi; 2 harfli noto'g'ri moslash) | Kod ishi (kichik, ~1 sessiya; lug'at `search.js`) |
+| 13| **F7** — `app.js` (~1300 qator) modullarga bo'lish; og'ir hisob (kroy) Web Worker'da | Kod ishi (juda katta, ~3–4 sessiya; refaktor — ehtiyot bo'ling) |
+| 14| **F8** — Rus tilidagi interfeys | Kod ishi (~2–3 sessiya) |
+| 15| **F9** — BLE lazer o'lchagich (TZ §2) | Kod ishi + apparat (Web Bluetooth); ~2–3 sessiya |
+
+**Kod ishlarining aniq manbasi:** `TZ-QOLGAN-ISHLAR.md §4` — F1–F9 to'liq tavsif + §0.1/§0.2/§0.3 bajarilgan qismlar. **Har bir prompt SORIZLAR.md ga yoziladi** (hozir #47 gacha).
 
 ---
 
@@ -198,11 +221,25 @@ npm start         # http://localhost:3000
 
 ## 8. Keyingi qadam (tartib bo'yicha)
 
-1. 600 fragment faylini tashlash → `fragments.json` ga aylantirish
-2. Price faylini tashlash → `furnitura-catalog.json` / `materials.json` ga ulash
-3. Sobirdan tunnel agent usulini olish → `smart3d.bittada.uz` ga deploy
-4. Sexdan CNC namuna fayl olish → `cnc.js` post-prosessorini to'g'rilash
-5. LLM API kalit olish → `ai.js` ni ulash
+**Kod ishlar (men bajara olaman) — manba: `TZ-QOLGAN-ISHLAR.md §4` (F1–F9), §6 jadvalidagi 9–15-qatorlar:**
+1. **F1 qoldiq** — AI edge-placement (hozir W/D), 90°+ burchak yordami
+2. **F2 qoldiq** — L-burchak stoleshnitsa birlashtirish, texnika AI joylashtirish
+3. **F3** — Undo/redo + IndexedDB (bir nechta loyiha) + `loyiha.json` import
+4. **F4** — Material qidiruvi sinonim lug'ati
+5. **F7/F8/F9** — app.js bo'lish / rus tili / BLE (katta yoki bloklangan)
+
+**Data/ta'sir kerak (men bajara olmayman) — §6 1–8-qatorlar:**
+6. 600 fragment faylini tashlash → `fragments.json` ga aylantirish
+7. Price faylini tashlash → `furnitura-catalog.json` / `materials.json` ga ulash
+8. Sobirdan tunnel agent usulini olish → `smart3d.bittada.uz` ga deploy
+9. Sexdan CNC namuna fayl olish → `cnc.js` post-prosessorini to'g'rilash
+10. LLM API kalit olish → `ai.js` ni ulash
+
+**Regressiya (o'zgartirishdan keyin HAR DOIM ishga tushiring):**
+```bash
+bash Smart3D/tests/run-all.sh        # 6 ta node test — hammasi yashil bo'lishi shart
+bash Smart3D/tests/ui/run.sh         # 5 ta brauzer UI test (port 8899)
+```
 
 ---
 

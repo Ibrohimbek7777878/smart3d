@@ -1,5 +1,5 @@
-import { buildGLB } from '/home/ibrohim/Desktop/bittada sunpin/Smart3D/app/js/engine/glbexport.js';
-import { buildOBJ } from '/home/ibrohim/Desktop/bittada sunpin/Smart3D/app/js/engine/objexport.js';
+import { buildGLB } from '../app/js/engine/glbexport.js';
+import { buildOBJ } from '../app/js/engine/objexport.js';
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('ok   ' + m); } else { fail++; console.log('FAIL ' + m); } };
 

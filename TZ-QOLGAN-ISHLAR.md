@@ -189,7 +189,7 @@ Ustuvorlik: **P0** — sexda ishlatishdan oldin shart · **P1** — keyingi · *
 
 | # | Ish |
 |---|---|
-| F1 | Xona faqat to'rtburchak → poligon, 90° bo'lmagan burchaklar, L shaklli xona; deraza, eshik, quvur, rozetka | ✅ yadro + GLB pol + quvur/rozetka 2026-10-15 (§0.2); qoldiq: AI edge-placement, 90°+ yordam, utility export |
+| F1 | Xona faqat to'rtburchak → poligon, 90° bo'lmagan burchaklar, L shaklli xona; deraza, eshik, quvur, rozetka | ✅ yadro + GLB/OBJ pol + quvur/rozetka **export ham** 2026-10-15 (§0.2); qoldiq: AI edge-placement, 90°+ yordam |
 | F2 | Oshxona elementlari: yaxlit stoleshnitsa, sokol (smetaga ham), dobor, karniz, o'rnatma texnika o'lchamlari, moyka kesimi  ✅ 2026-10-15 (§0.3, texnika+moyka 3D+CNC kontur ham); qoldiq: ERP material, L-burchak birlashtirish |
 | F3 | Undo/redo; bir nechta loyiha (IndexedDB); `loyiha.json` ni import qilish |
 | F4 | Material qidiruvi: 2 harfli so'zlar noto'g'ri moslashadi; "oq", "kromka" kabi o'zbekcha so'zlar topilmaydi; sinonim lug'ati (TZ §4.2) |
