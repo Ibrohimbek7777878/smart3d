@@ -1,0 +1,281 @@
+{
+ "_meta": {
+  "version": 1,
+  "currency": "UZS",
+  "note": "Smart3D narx bazasi. Manba: SUNPIN-DATALAR (Chorsu/Sergeli narx oraliklari) + sunpin_nesting.py SHEET_PRICE. O'zgartirish real-time ko'rinadi.",
+  "updated": "2026-10-12"
+ },
+ "panel_materials": [
+  {
+   "code": "LDSP18",
+   "name": "LDSP 18mm",
+   "thickness": 18,
+   "factor": 0.86,
+   "sheet_price": 580650,
+   "sheets": [
+    [
+     2800,
+     2070
+    ],
+    [
+     2440,
+     1220
+    ]
+   ],
+   "src": "narx-2026-10-13"
+  },
+  {
+   "code": "LDSP16",
+   "name": "LDSP 16mm",
+   "thickness": 16,
+   "factor": 0.8,
+   "sheet_price": 499600,
+   "sheets": [
+    [
+     2800,
+     2070
+    ],
+    [
+     2440,
+     1220
+    ]
+   ],
+   "src": "narx-2026-10-13"
+  },
+  {
+   "code": "LMDF16",
+   "name": "ЛМДФ 16mm",
+   "thickness": 16,
+   "factor": 0.88,
+   "sheet_price": 614238,
+   "src": "narx-2026-10-13",
+   "sheets": [
+    [
+     2800,
+     2070
+    ],
+    [
+     2440,
+     1220
+    ]
+   ]
+  },
+  {
+   "code": "MDF16",
+   "name": "MDF 16mm",
+   "thickness": 16,
+   "factor": 1.0,
+   "sheet_price": 484895,
+   "sheets": [
+    [
+     2440,
+     1220
+    ],
+    [
+     2800,
+     2070
+    ]
+   ],
+   "src": "narx-2026-10-13"
+  },
+  {
+   "code": "MDF18",
+   "name": "MDF 18mm",
+   "thickness": 18,
+   "factor": 1.12,
+   "sheet_price": 521400,
+   "sheets": [
+    [
+     2440,
+     1220
+    ]
+   ],
+   "src": "narx-2026-10-13"
+  },
+  {
+   "code": "HDF3",
+   "name": "HDF 3mm (orqa devor)",
+   "thickness": 3,
+   "factor": 0.55,
+   "sheet_price": 100725,
+   "sheets": [
+    [
+     2440,
+     1220
+    ]
+   ],
+   "src": "narx-2026-10-13"
+  },
+  {
+   "code": "MDF8",
+   "name": "MDF 8mm",
+   "thickness": 8,
+   "factor": 0.7,
+   "sheet_price": 298868,
+   "sheets": [
+    [
+     2440,
+     1220
+    ]
+   ],
+   "src": "narx-2026-10-13"
+  },
+  {
+   "code": "OYNA",
+   "name": "Oyna 4mm",
+   "thickness": 4,
+   "factor": 1.05,
+   "sheet_price": 200000,
+   "sheets": [
+    [
+     2440,
+     1220
+    ]
+   ]
+  },
+  {
+   "code": "UPHOLSTERY",
+   "name": "Mato / dermalin",
+   "thickness": 0,
+   "factor": 1.0,
+   "sheet_price": 0,
+   "sheets": []
+  },
+  {
+   "code": "OSB12",
+   "name": "OSB 12mm",
+   "thickness": 12,
+   "factor": 0.75,
+   "sheet_price": 175000,
+   "sheets": [
+    [
+     2440,
+     1220
+    ]
+   ]
+  }
+ ],
+ "edge_materials": [
+  {
+   "code": "PVC2",
+   "name": "PVC kromka 2mm",
+   "price_m": 1500
+  },
+  {
+   "code": "PVC04",
+   "name": "PVC kromka 0.4mm",
+   "price_m": 800
+  },
+  {
+   "code": "REHAU2",
+   "name": "Rehau kromka 2mm",
+   "price_m": 2000
+  }
+ ],
+ "hardware": [
+  {
+   "code": "TS-1730",
+   "name": "Styajka TS-1730",
+   "unit": "dona",
+   "price": 6000
+  },
+  {
+   "code": "GD-04",
+   "name": "Vint GD-04 (4×40)",
+   "unit": "dona",
+   "price": 500
+  },
+  {
+   "code": "NOG-90",
+   "name": "Nojka 90mm",
+   "unit": "dona",
+   "price": 15000
+  },
+  {
+   "code": "Ush-90",
+   "name": "Ushko 90mm",
+   "unit": "dona",
+   "price": 2500
+  },
+  {
+   "code": "SH-01",
+   "name": "Shkant 8×30",
+   "unit": "dona",
+   "price": 500
+  },
+  {
+   "code": "SR-450",
+   "name": "Profil SR-450",
+   "unit": "dona",
+   "price": 35000
+  },
+  {
+   "code": "GAS-UP",
+   "name": "Gaz lift UP",
+   "unit": "juft",
+   "price": 95000
+  },
+  {
+   "code": "M8-60",
+   "name": "Vint M8×60",
+   "unit": "dona",
+   "price": 1000
+  },
+  {
+   "code": "PET-4",
+   "name": "Petlya (dona)",
+   "unit": "dona",
+   "price": 4500
+  },
+  {
+   "code": "PROF-AL",
+   "name": "Alyuminiy profil",
+   "unit": "m",
+   "price": 45000
+  },
+  {
+   "code": "MAT-UPH",
+   "name": "Matras tasmasi",
+   "unit": "dona",
+   "price": 8000
+  },
+  {
+   "code": "RU-128",
+   "name": "Ruchka RU-128 (metall)",
+   "unit": "dona",
+   "price": 18000
+  }
+ ],
+ "hole_kinds": [
+  {
+   "code": "drill",
+   "name": "Burg'ilash",
+   "price": 300
+  },
+  {
+   "code": "dowel",
+   "name": "Shkant teshigi",
+   "price": 500
+  },
+  {
+   "code": "hinge",
+   "name": "Petlya teshigi (35mm)",
+   "price": 1500
+  },
+  {
+   "code": "cam",
+   "name": "Kam teshigi",
+   "price": 800
+  }
+ ],
+ "labor": {
+  "panel_per_piece": 12000,
+  "per_fragment_min": 40000,
+  "note": "Kesim + yig'ish ish haqi (taxminiy)"
+ },
+ "sheet_sizes_default": [
+  2800,
+  2070
+ ],
+ "kerf": 4
+}

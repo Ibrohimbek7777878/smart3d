@@ -1,0 +1,11 @@
+{
+  "_meta": "Smart3D nesting 2.0 — GibLab Раскрой parametrlari asosida (TZ-GibLab-adaptatsiya §3)",
+  "mode": "bssf",
+  "kerf": 4,
+  "maxRot": 2,
+  "trimL": 8,
+  "trimW": 8,
+  "remMinA": 300,
+  "remMinB": 300,
+  "remUsableMin": 0.5
+}

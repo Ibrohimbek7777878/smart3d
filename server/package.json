@@ -1,0 +1,34 @@
+{
+  "name": "smart3d-server",
+  "version": "2.0.0",
+  "description": "Smart 3D backend — production (PostgreSQL + Redis + WebSocket + Multi-tenant)",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node index.js",
+    "start:sqlite": "node index.js",
+    "start:prod": "node src/server.js",
+    "dev": "node --watch index.js",
+    "migrate": "psql $DATABASE_URL -f schema.sql",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^8.0.0",
+    "ioredis": "^5.4.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.0",
+    "prom-client": "^15.1.0",
+    "rate-limit-redis": "^4.2.0",
+    "uuid": "^11.0.0",
+    "ws": "^8.18.0",
+    "winston": "^3.14.0",
+    "zod": "^3.23.0"
+  }
+}

@@ -1,0 +1,10 @@
+# Smart3D — gitga kirmaydigan fayllar
+node_modules/
+*.db
+*.db-wal
+*.db-shm
+.env
+.env.*
+.DS_Store
+Thumbs.db
+*.log

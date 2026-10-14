@@ -1,0 +1,127 @@
+{
+  "_meta": "Mebel ishlab chiqarish xizmatlari va tariflari (Smart3D Services Catalog 2026)",
+  "updated_at": "2026-10-14",
+  "currency": "UZS",
+  "services": [
+    {
+      "code": "SRV_CUT_SHEET",
+      "name": "Formatli kesish (kroy)",
+      "category": "cutting",
+      "unit": "varaq",
+      "price": 35000,
+      "desc": "Formatli arralash stanogida 1 ta varaq (2800x2070)ni kesish"
+    },
+    {
+      "code": "SRV_CUT_METER",
+      "name": "To'g'ri chiziqli kesim",
+      "category": "cutting",
+      "unit": "m",
+      "price": 4500,
+      "desc": "Arralash chizig'i bo'yicha 1 metr kesish"
+    },
+    {
+      "code": "SRV_EDGE_04",
+      "name": "Kromka yopishtirish (0.4 mm PVX)",
+      "category": "edging",
+      "unit": "m",
+      "price": 2500,
+      "desc": "Avtomatik kromka stanogida 0.4mm PVX yopishtirish va frezerlash"
+    },
+    {
+      "code": "SRV_EDGE_20",
+      "name": "Kromka yopishtirish (2.0 mm PVX)",
+      "category": "edging",
+      "unit": "m",
+      "price": 4000,
+      "desc": "Avtomatik stanogida qalin 2.0mm PVX qirra urish, round va siklyovka"
+    },
+    {
+      "code": "SRV_EDGE_CURVE",
+      "name": "Egri chiziqli kromka urish",
+      "category": "edging",
+      "unit": "m",
+      "price": 8000,
+      "desc": "Radiusli va shaklli detallarga qo'lda kromka yopishtirish"
+    },
+    {
+      "code": "SRV_HOLE_CONFIRMAT",
+      "name": "Konfirmat / Shkant teshigi (burilish)",
+      "category": "drilling",
+      "unit": "dona",
+      "price": 1200,
+      "desc": "Prisadka stanogida d=5/7/8mm o'tuvchi va oxirgi teshiklar ochish"
+    },
+    {
+      "code": "SRV_HOLE_MINIFIX",
+      "name": "Minifiks (eksentrik) teshigi",
+      "category": "drilling",
+      "unit": "dona",
+      "price": 2500,
+      "desc": "Eksentrik qulfi (d=15mm) va shtok teshigi komplekti"
+    },
+    {
+      "code": "SRV_HOLE_HINGE",
+      "name": "Petlya kosasi ochish (d=35 mm)",
+      "category": "drilling",
+      "unit": "dona",
+      "price": 3000,
+      "desc": "Fasad eshiklariga 35mm petlya kosasi va 2 ta samorez teshigi"
+    },
+    {
+      "code": "SRV_GROOVE_HDF",
+      "name": "Paz ochish (HDF orqa devor uchun)",
+      "category": "milling",
+      "unit": "m",
+      "price": 3000,
+      "desc": "Detallarda 4x8mm yoki 4x10mm o'yiq ochish"
+    },
+    {
+      "code": "SRV_CNC_MILLING",
+      "name": "CNC frezerovka (shaklli kesish)",
+      "category": "milling",
+      "unit": "m",
+      "price": 15000,
+      "desc": "CNC stanogida egri chiziq, arkalar va figura frezerlash"
+    },
+    {
+      "code": "SRV_PAINT_MATTE",
+      "name": "MDF fasad bo'yash (mat / emal)",
+      "category": "finishing",
+      "unit": "m²",
+      "price": 280000,
+      "desc": "Gruntovka + 2 qavat italyan poliuretan emal (mat)"
+    },
+    {
+      "code": "SRV_PAINT_GLOSS",
+      "name": "MDF fasad bo'yash (glyanec / polirovka)",
+      "category": "finishing",
+      "unit": "m²",
+      "price": 380000,
+      "desc": "Gruntovka + emal + shaffof lak + oyna darajasida polirovka"
+    },
+    {
+      "code": "SRV_PACKING",
+      "name": "Qadoqlash (streych + burchak himoyasi)",
+      "category": "logistics",
+      "unit": "modul",
+      "price": 25000,
+      "desc": "Transport uchun ko'pik va 5 qatlamli streych plyonka bilan o'rash"
+    },
+    {
+      "code": "SRV_DELIVERY",
+      "name": "Yetkazib berish (shahar bo'ylab)",
+      "category": "logistics",
+      "unit": "reys",
+      "price": 200000,
+      "desc": "Toshkent shahri va shahar atrofiga yuk mashinasida tashish"
+    },
+    {
+      "code": "SRV_INSTALLATION",
+      "name": "O'rnatish va montaj xizmati",
+      "category": "assembly",
+      "unit": "modul",
+      "price": 80000,
+      "desc": "Mijoz xonadonida mebelni daraja (nivelir) bo'yicha yig'ish va osish"
+    }
+  ]
+}

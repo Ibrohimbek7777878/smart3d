@@ -1,0 +1,10503 @@
+[
+ {
+  "code": "SP-K-001",
+  "name": "Kichik oshxona shkafi (pastki)",
+  "category": "cabinet",
+  "group": "kuxnya-pastki",
+  "w": 600,
+  "d": 550,
+  "h": 720,
+  "min_w": 300,
+  "max_w": 1000,
+  "min_d": 450,
+  "max_d": 650,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 420000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   },
+   {
+    "code": "eshik",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "B",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-002",
+  "name": "Kichik oshxona shkafi (ustki)",
+  "category": "cabinet",
+  "group": "kuxnya-ustki",
+  "w": 600,
+  "d": 350,
+  "h": 700,
+  "min_w": 300,
+  "max_w": 1000,
+  "min_d": 300,
+  "max_d": 400,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 340000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "eshik",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "B",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-003",
+  "name": "Oshxona pufog'i (2 tovadan)",
+  "category": "cabinet",
+  "group": "kuxnya-ustki",
+  "w": 600,
+  "d": 350,
+  "h": 450,
+  "min_w": 400,
+  "max_w": 1200,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 380000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-004",
+  "name": "Oshxona pastki shkaf (3 eshik)",
+  "category": "cabinet",
+  "group": "kuxnya-pastki",
+  "w": 900,
+  "d": 550,
+  "h": 720,
+  "min_w": 600,
+  "max_w": 1800,
+  "min_d": 500,
+  "max_d": 650,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 1250000,
+  "material_code": "MDF16",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift",
+    "qty": 2,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 8
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 656,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 8
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   }
+  ],
+  "production": "panel",
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-005",
+  "name": "Oshxona ustki shkaf (3 eshik)",
+  "category": "cabinet",
+  "group": "kuxnya-ustki",
+  "w": 900,
+  "d": 350,
+  "h": 700,
+  "min_w": 600,
+  "max_w": 1800,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 980000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "eshik",
+    "qty": 3,
+    "len": "h-8",
+    "width": "(w-12)/3"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 6
+   },
+   {
+    "part": "eshik",
+    "side": "B",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 6
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 6
+   },
+   {
+    "code": "GD-04",
+    "qty": 12
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-006",
+  "name": "Tall shkaf (yuqori)",
+  "category": "cabinet",
+  "group": "kuxnya-ustki",
+  "w": 600,
+  "d": 350,
+  "h": 2200,
+  "min_w": 400,
+  "max_w": 1200,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 1650000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift",
+    "qty": 6,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   },
+   {
+    "code": "eshik",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "B",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-007",
+  "name": "Burchak oshxona moduli (90°)",
+  "category": "cabinet",
+  "group": "kuxnya-burchak",
+  "w": 900,
+  "d": 550,
+  "h": 720,
+  "stretch_axis": "",
+  "price_mode": "unit",
+  "price": 720000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-008",
+  "name": "Oshxona ostki shkaf (tandir tori)",
+  "category": "cabinet",
+  "group": "kuxnya-pastki",
+  "w": 600,
+  "d": 550,
+  "h": 720,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 520000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-009",
+  "name": "Oshxona orol moduli (pufoqli)",
+  "category": "kitchen",
+  "group": "kuxnya-orol",
+  "w": 1600,
+  "d": 900,
+  "h": 900,
+  "min_w": 1000,
+  "max_w": 2400,
+  "min_d": 700,
+  "max_d": 1100,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 2950000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift",
+    "qty": 2,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik",
+    "qty": 3,
+    "len": "h-8",
+    "width": "(w-12)/3"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   },
+   {
+    "code": "eshik",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 6
+   },
+   {
+    "part": "eshik",
+    "side": "B",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 6
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 6
+   },
+   {
+    "code": "GD-04",
+    "qty": 12
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-W-001",
+  "name": "Klassik garderob (2 eshik)",
+  "category": "wardrobe",
+  "group": "garderob",
+  "w": 1200,
+  "d": 600,
+  "h": 2400,
+  "min_w": 800,
+  "max_w": 2400,
+  "min_d": 550,
+  "max_d": 700,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 2400000,
+  "material_code": "MDF16",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift",
+    "qty": 5,
+    "len": "w-36",
+    "width": "d/2"
+   },
+   {
+    "code": "eshik",
+    "qty": 2,
+    "len": "h-40",
+    "width": "w/2-4"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 32,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 16
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 32,
+    "y": 2368,
+    "dia": 8,
+    "depth": 30,
+    "kind": "cam",
+    "qty": 8
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 8
+   },
+   {
+    "code": "SH-01",
+    "qty": 2
+   },
+   {
+    "code": "NOG-90",
+    "qty": 8
+   }
+  ],
+  "production": "panel",
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-W-002",
+  "name": "Sliding garderob (2 eshik)",
+  "category": "wardrobe",
+  "group": "garderob",
+  "w": 1800,
+  "d": 620,
+  "h": 2400,
+  "min_w": 1200,
+  "max_w": 3000,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 3100000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift",
+    "qty": 5,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik",
+    "qty": 2,
+    "len": "h-8",
+    "width": "(w-8)/2"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   },
+   {
+    "code": "eshik",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 4
+   },
+   {
+    "part": "eshik",
+    "side": "B",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 4
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 8
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-W-003",
+  "name": "Kichik garderob (1 eshik)",
+  "category": "wardrobe",
+  "group": "garderob",
+  "w": 600,
+  "d": 600,
+  "h": 2200,
+  "min_w": 400,
+  "max_w": 1200,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 1350000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift",
+    "qty": 6,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   },
+   {
+    "code": "eshik",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "B",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-W-004",
+  "name": "Kiyim garmonlari (4 tokа)",
+  "category": "wardrobe",
+  "group": "garderob-ichki",
+  "w": 1200,
+  "d": 550,
+  "h": 2200,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 620000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "toka",
+    "qty": 4,
+    "len": "(w-50)/2-8",
+    "width": "d-80",
+    "material": "MDF16"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "SR-450",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-B-001",
+  "name": "Hammom shkafi (yuqori)",
+  "category": "bathroom",
+  "group": "hammom",
+  "w": 800,
+  "d": 350,
+  "h": 800,
+  "min_w": 400,
+  "max_w": 1200,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 780000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik",
+    "qty": 2,
+    "len": "h-8",
+    "width": "(w-8)/2"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   },
+   {
+    "code": "eshik",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 4
+   },
+   {
+    "part": "eshik",
+    "side": "B",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 4
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 8
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-B-002",
+  "name": "Hammom shkafi + lavabo (pastki)",
+  "category": "bathroom",
+  "group": "hammom",
+  "w": 900,
+  "d": 500,
+  "h": 850,
+  "min_w": 600,
+  "max_w": 1500,
+  "min_d": 450,
+  "max_d": 600,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 1450000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "eshik",
+    "qty": 2,
+    "len": "h-8",
+    "width": "(w-8)/2"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 4
+   },
+   {
+    "part": "eshik",
+    "side": "B",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 4
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 8
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-B-003",
+  "name": "Ko'zgu shkafi",
+  "category": "bathroom",
+  "group": "hammom",
+  "w": 600,
+  "d": 150,
+  "h": 800,
+  "min_w": 400,
+  "max_w": 1000,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 450000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   },
+   {
+    "code": "eshik",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik",
+    "side": "B",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-S-001",
+  "name": "Karnay divan (3 kishilik)",
+  "category": "sofa",
+  "group": "mebel",
+  "w": 2100,
+  "d": 900,
+  "h": 850,
+  "min_w": 1600,
+  "max_w": 2800,
+  "min_d": 800,
+  "max_d": 1000,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 3400000,
+  "material_code": "UPHOLSTERY",
+  "production": "upholstery",
+  "parts": [
+   {
+    "code": "karkas",
+    "qty": 1,
+    "len": "w-200",
+    "width": "d-200",
+    "material": "LDSP18"
+   }
+  ],
+  "edge": [],
+  "holes": [],
+  "hardware": [
+   {
+    "code": "MAT-UPH",
+    "qty": 1
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-S-002",
+  "name": "Karnay burchak divani",
+  "category": "sofa",
+  "group": "mebel",
+  "w": 2200,
+  "d": 1600,
+  "h": 850,
+  "stretch_axis": "",
+  "price_mode": "unit",
+  "price": 4600000,
+  "material_code": "UPHOLSTERY",
+  "production": "upholstery",
+  "parts": [
+   {
+    "code": "karkas",
+    "qty": 1,
+    "len": "w-200",
+    "width": "d-200",
+    "material": "LDSP18"
+   }
+  ],
+  "edge": [],
+  "holes": [],
+  "hardware": [
+   {
+    "code": "MAT-UPH",
+    "qty": 1
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-S-003",
+  "name": "Kreslo",
+  "category": "sofa",
+  "group": "mebel",
+  "w": 800,
+  "d": 800,
+  "h": 900,
+  "stretch_axis": "",
+  "price_mode": "unit",
+  "price": 1250000,
+  "material_code": "UPHOLSTERY",
+  "production": "upholstery",
+  "parts": [],
+  "edge": [],
+  "holes": [],
+  "hardware": [
+   {
+    "code": "MAT-UPH",
+    "qty": 1
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-S-004",
+  "name": "Jurnal stoli",
+  "category": "table",
+  "group": "mebel",
+  "w": 1200,
+  "d": 600,
+  "h": 750,
+  "min_w": 800,
+  "max_w": 1800,
+  "min_d": 450,
+  "max_d": 900,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 890000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "gorma",
+    "qty": 1,
+    "len": "w",
+    "width": "d",
+    "material": "MDF16"
+   },
+   {
+    "code": "oyoq",
+    "qty": 4,
+    "len": "h-40",
+    "width": 60,
+    "material": "LDSP18"
+   },
+   {
+    "code": "qator",
+    "qty": 2,
+    "len": "w-160",
+    "width": 100,
+    "material": "LDSP18"
+   }
+  ],
+  "edge": [
+   {
+    "code": "gorma",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "gorma",
+    "side": "B",
+    "x": 100,
+    "y": 100,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 8
+   },
+   {
+    "part": "gorma",
+    "side": "B",
+    "x": 100,
+    "y": 132,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 8
+   },
+   {
+    "part": "gorma",
+    "side": "F",
+    "x": 60,
+    "y": "d/2-40",
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "NOG-90",
+    "qty": 8
+   },
+   {
+    "code": "M8-60",
+    "qty": 8
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-T-001",
+  "name": "Ofis stoli",
+  "category": "table",
+  "group": "ofis",
+  "w": 1400,
+  "d": 700,
+  "h": 750,
+  "min_w": 1000,
+  "max_w": 2000,
+  "min_d": 600,
+  "max_d": 900,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 1350000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "gorma",
+    "qty": 1,
+    "len": "w",
+    "width": "d",
+    "material": "MDF16"
+   },
+   {
+    "code": "oyoq",
+    "qty": 4,
+    "len": "h-40",
+    "width": 60,
+    "material": "LDSP18"
+   },
+   {
+    "code": "qator",
+    "qty": 2,
+    "len": "w-160",
+    "width": 100,
+    "material": "LDSP18"
+   }
+  ],
+  "edge": [
+   {
+    "code": "gorma",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "gorma",
+    "side": "B",
+    "x": 100,
+    "y": 100,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 8
+   },
+   {
+    "part": "gorma",
+    "side": "B",
+    "x": 100,
+    "y": 132,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 8
+   },
+   {
+    "part": "gorma",
+    "side": "F",
+    "x": 60,
+    "y": "d/2-40",
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "NOG-90",
+    "qty": 8
+   },
+   {
+    "code": "M8-60",
+    "qty": 8
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-T-002",
+  "name": "Klassik ovqat stoli (6 kishi)",
+  "category": "table",
+  "group": "mebel",
+  "w": 1800,
+  "d": 900,
+  "h": 750,
+  "min_w": 1200,
+  "max_w": 2600,
+  "min_d": 700,
+  "max_d": 1100,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 2100000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "gorma",
+    "qty": 1,
+    "len": "w",
+    "width": "d",
+    "material": "MDF16"
+   },
+   {
+    "code": "oyoq",
+    "qty": 4,
+    "len": "h-40",
+    "width": 60,
+    "material": "LDSP18"
+   },
+   {
+    "code": "qator",
+    "qty": 2,
+    "len": "w-160",
+    "width": 100,
+    "material": "LDSP18"
+   }
+  ],
+  "edge": [
+   {
+    "code": "gorma",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "gorma",
+    "side": "B",
+    "x": 100,
+    "y": 100,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 8
+   },
+   {
+    "part": "gorma",
+    "side": "B",
+    "x": 100,
+    "y": 132,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 8
+   },
+   {
+    "part": "gorma",
+    "side": "F",
+    "x": 60,
+    "y": "d/2-40",
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "NOG-90",
+    "qty": 8
+   },
+   {
+    "code": "M8-60",
+    "qty": 8
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-T-003",
+  "name": "Kofegini (maketi beriladi)",
+  "category": "table",
+  "group": "mebel",
+  "w": 1100,
+  "d": 1100,
+  "h": 750,
+  "stretch_axis": "",
+  "price_mode": "unit",
+  "price": 1850000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "gorma",
+    "qty": 1,
+    "len": "w",
+    "width": "d",
+    "material": "MDF16"
+   },
+   {
+    "code": "oyoq",
+    "qty": 4,
+    "len": "h-40",
+    "width": 60,
+    "material": "LDSP18"
+   },
+   {
+    "code": "qator",
+    "qty": 2,
+    "len": "w-160",
+    "width": 100,
+    "material": "LDSP18"
+   }
+  ],
+  "edge": [
+   {
+    "code": "gorma",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "gorma",
+    "side": "B",
+    "x": 100,
+    "y": 100,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 8
+   },
+   {
+    "part": "gorma",
+    "side": "B",
+    "x": 100,
+    "y": 132,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 8
+   },
+   {
+    "part": "gorma",
+    "side": "F",
+    "x": 60,
+    "y": "d/2-40",
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "NOG-90",
+    "qty": 8
+   },
+   {
+    "code": "M8-60",
+    "qty": 8
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-C-001",
+  "name": "Ofis kreslasi",
+  "category": "chair",
+  "group": "ofis",
+  "w": 650,
+  "d": 650,
+  "h": 1100,
+  "stretch_axis": "",
+  "price_mode": "unit",
+  "price": 780000,
+  "material_code": "UPHOLSTERY",
+  "production": "upholstery",
+  "parts": [
+   {
+    "code": "karkas",
+    "qty": 1,
+    "len": "w-200",
+    "width": "d-200",
+    "material": "LDSP18"
+   }
+  ],
+  "edge": [],
+  "holes": [],
+  "hardware": [
+   {
+    "code": "MAT-UPH",
+    "qty": 1
+   },
+   {
+    "code": "GAS-UP",
+    "qty": 1
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-C-002",
+  "name": "Yemek stoli stuli",
+  "category": "chair",
+  "group": "mebel",
+  "w": 450,
+  "d": 500,
+  "h": 900,
+  "stretch_axis": "",
+  "price_mode": "unit",
+  "price": 390000,
+  "material_code": "UPHOLSTERY",
+  "production": "upholstery",
+  "parts": [
+   {
+    "code": "karkas",
+    "qty": 1,
+    "len": "w-200",
+    "width": "d-200",
+    "material": "LDSP18"
+   }
+  ],
+  "edge": [],
+  "holes": [],
+  "hardware": [
+   {
+    "code": "MAT-UPH",
+    "qty": 1
+   },
+   {
+    "code": "GAS-UP",
+    "qty": 1
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-BD-001",
+  "name": "Karyera (1.5 m)",
+  "category": "bed",
+  "group": "yotoq",
+  "w": 1500,
+  "d": 2000,
+  "h": 1000,
+  "min_w": 900,
+  "max_w": 1800,
+  "min_d": 1900,
+  "max_d": 2200,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 2300000,
+  "material_code": "UPHOLSTERY",
+  "production": "upholstery",
+  "parts": [
+   {
+    "code": "karkas",
+    "qty": 1,
+    "len": "w-200",
+    "width": "d-200",
+    "material": "LDSP18"
+   }
+  ],
+  "edge": [],
+  "holes": [],
+  "hardware": [
+   {
+    "code": "MAT-UPH",
+    "qty": 1
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-BD-002",
+  "name": "Karyera boshkasi",
+  "category": "bed",
+  "group": "yotoq",
+  "w": 1500,
+  "d": 150,
+  "h": 700,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 480000,
+  "material_code": "UPHOLSTERY",
+  "production": "upholstery",
+  "parts": [
+   {
+    "code": "karkas",
+    "qty": 1,
+    "len": "w-200",
+    "width": "d-200",
+    "material": "LDSP18"
+   }
+  ],
+  "edge": [],
+  "holes": [],
+  "hardware": [
+   {
+    "code": "MAT-UPH",
+    "qty": 1
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-SH-001",
+  "name": "Toka (3 polka)",
+  "category": "shelf",
+  "group": "maket",
+  "w": 900,
+  "d": 300,
+  "h": 1800,
+  "min_w": 600,
+  "max_w": 1800,
+  "min_d": 250,
+  "max_d": 400,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 690000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "polka",
+    "qty": 4,
+    "len": "w-36",
+    "width": "d-10",
+    "material": "LDSP18"
+   }
+  ],
+  "edge": [
+   {
+    "code": "polka",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   }
+  ],
+  "hardware": [
+   {
+    "code": "SH-01",
+    "qty": 8
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-D-001",
+  "name": "Ichki eshik (rangli)",
+  "category": "door",
+  "group": "eshik",
+  "w": 900,
+  "d": 40,
+  "h": 2100,
+  "min_w": 700,
+  "max_w": 1000,
+  "min_h": 1900,
+  "max_h": 2400,
+  "stretch_axis": "",
+  "price_mode": "m2",
+  "price": 320000,
+  "material_code": "MDF8",
+  "parts": [
+   {
+    "code": "eshik",
+    "qty": 1,
+    "len": "h",
+    "width": "w"
+   }
+  ],
+  "edge": [
+   {
+    "code": "eshik",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC0.4",
+    "thickness": 0.4
+   }
+  ],
+  "holes": [
+   {
+    "part": "eshik",
+    "side": "F",
+    "x": 450,
+    "y": 210,
+    "dia": 5,
+    "depth": 10,
+    "kind": "drill",
+    "qty": 6
+   }
+  ],
+  "hardware": [
+   {
+    "code": "Ush-90",
+    "qty": 4
+   }
+  ],
+  "production": "panel",
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-WI-001",
+  "name": "Oyna (deraza)",
+  "category": "window",
+  "group": "deraza",
+  "w": 1400,
+  "h": 1500,
+  "d": 60,
+  "min_w": 600,
+  "max_w": 2400,
+  "min_h": 800,
+  "max_h": 2200,
+  "stretch_axis": "xy",
+  "price_mode": "m2",
+  "price": 290000,
+  "material_code": "OYNA",
+  "production": "glass",
+  "parts": [
+   {
+    "code": "ramka",
+    "qty": 4,
+    "len": "h",
+    "width": 58,
+    "material": "LDSP18"
+   },
+   {
+    "code": "tokcha",
+    "qty": 1,
+    "len": "w-116",
+    "width": 58,
+    "material": "LDSP18"
+   }
+  ],
+  "edge": [
+   {
+    "code": "ramka",
+    "sides": [
+     "F"
+    ],
+    "material": "PROF-AL",
+    "thickness": 1
+   }
+  ],
+  "holes": [
+   {
+    "part": "ramka",
+    "side": "F",
+    "x": 100,
+    "y": 100,
+    "dia": 4,
+    "depth": 10,
+    "kind": "drill",
+    "qty": 8
+   }
+  ],
+  "hardware": [
+   {
+    "code": "PROF-AL",
+    "qty": 6
+   },
+   {
+    "code": "PET-4",
+    "qty": 1
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-010",
+  "name": "Oshxona ustki shkafi",
+  "category": "cabinet",
+  "group": "kuxnya-ustki",
+  "w": 800,
+  "d": 350,
+  "h": 720,
+  "min_w": 400,
+  "max_w": 1200,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 380000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-011",
+  "name": "Oshxona ustki shkaf (2 eshikli)",
+  "category": "cabinet",
+  "group": "kuxnya-ustki",
+  "w": 1000,
+  "d": 350,
+  "h": 720,
+  "min_w": 600,
+  "max_w": 1600,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 520000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   },
+   {
+    "code": "eshik2",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik2",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik2",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-012",
+  "name": "Deraza osti moduli",
+  "category": "cabinet",
+  "group": "kuxnya-deraza",
+  "w": 1200,
+  "d": 350,
+  "h": 720,
+  "min_w": 800,
+  "max_w": 2000,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 450000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   },
+   {
+    "code": "eshik2",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik2",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik2",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-013",
+  "name": "Baland shkaf (kolonna)",
+  "category": "cabinet",
+  "group": "kuxnya-kolonna",
+  "w": 600,
+  "d": 600,
+  "h": 2200,
+  "min_w": 500,
+  "max_w": 800,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 780000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift3",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift4",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   },
+   {
+    "code": "eshik2",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik2",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik2",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-014",
+  "name": "Pishirish paneli osti",
+  "category": "cabinet",
+  "group": "kuxnya-pec",
+  "w": 600,
+  "d": 550,
+  "h": 600,
+  "min_w": 550,
+  "max_w": 700,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 350000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-K-015",
+  "name": "Muzlatgich yon modul",
+  "category": "cabinet",
+  "group": "kuxnya-muz",
+  "w": 600,
+  "d": 600,
+  "h": 2200,
+  "min_w": 500,
+  "max_w": 700,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 650000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-W-005",
+  "name": "Garderob (2 qanotli)",
+  "category": "wardrobe",
+  "group": "garderob",
+  "w": 1200,
+  "d": 600,
+  "h": 2200,
+  "min_w": 800,
+  "max_w": 2400,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 1250000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift3",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   },
+   {
+    "code": "eshik2",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik2",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik2",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-W-006",
+  "name": "Garderob (3 qanotli)",
+  "category": "wardrobe",
+  "group": "garderob",
+  "w": 1800,
+  "d": 600,
+  "h": 2200,
+  "min_w": 1200,
+  "max_w": 3000,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 1750000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift3",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift4",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/3"
+   },
+   {
+    "code": "eshik2",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/3"
+   },
+   {
+    "code": "eshik3",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/3"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik2",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik3",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik2",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik3",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 6
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-W-007",
+  "name": "Garderob (4 qanotli)",
+  "category": "wardrobe",
+  "group": "garderob",
+  "w": 2400,
+  "d": 600,
+  "h": 2200,
+  "min_w": 1800,
+  "max_w": 3600,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 2250000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift3",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift4",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift5",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/4"
+   },
+   {
+    "code": "eshik2",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/4"
+   },
+   {
+    "code": "eshik3",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/4"
+   },
+   {
+    "code": "eshik4",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/4"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik2",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik3",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik4",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik2",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik3",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik4",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 8
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-W-008",
+  "name": "Poyabzal shkafi",
+  "category": "wardrobe",
+  "group": "garderob",
+  "w": 800,
+  "d": 350,
+  "h": 1000,
+  "min_w": 600,
+  "max_w": 1200,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 420000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   },
+   {
+    "code": "eshik2",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik2",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik2",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-W-009",
+  "name": "Garderob burchak",
+  "category": "wardrobe",
+  "group": "garderob",
+  "w": 900,
+  "d": 900,
+  "h": 2200,
+  "min_w": 800,
+  "max_w": 1100,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 1450000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift3",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-T-004",
+  "name": "Ish stoli",
+  "category": "table",
+  "group": "ofis",
+  "w": 1400,
+  "d": 700,
+  "h": 750,
+  "min_w": 1000,
+  "max_w": 2000,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 550000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-T-005",
+  "name": "Kompyuter stoli",
+  "category": "table",
+  "group": "ofis",
+  "w": 1200,
+  "d": 600,
+  "h": 750,
+  "min_w": 800,
+  "max_w": 1600,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 480000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-T-006",
+  "name": "Karolina (yordamchi stol)",
+  "category": "table",
+  "group": "ofis",
+  "w": 600,
+  "d": 400,
+  "h": 750,
+  "min_w": 400,
+  "max_w": 800,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 280000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-T-007",
+  "name": "Uy ish stoli",
+  "category": "table",
+  "group": "ofis",
+  "w": 1000,
+  "d": 600,
+  "h": 750,
+  "min_w": 800,
+  "max_w": 1400,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 380000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-SH-002",
+  "name": "TV taxta",
+  "category": "shelf",
+  "group": "tv",
+  "w": 1600,
+  "d": 400,
+  "h": 500,
+  "min_w": 1000,
+  "max_w": 2400,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 650000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   },
+   {
+    "code": "eshik2",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik2",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik2",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-SH-003",
+  "name": "Kitob javoni",
+  "category": "shelf",
+  "group": "kitob",
+  "w": 800,
+  "d": 300,
+  "h": 2000,
+  "min_w": 600,
+  "max_w": 1200,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 580000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift3",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift4",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-SH-004",
+  "name": "Vitrina (eshikli javon)",
+  "category": "shelf",
+  "group": "vitirina",
+  "w": 800,
+  "d": 400,
+  "h": 2000,
+  "min_w": 600,
+  "max_w": 1200,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 850000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift3",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift4",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   },
+   {
+    "code": "eshik2",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik2",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik2",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-SH-005",
+  "name": "Ochiq javon",
+  "category": "shelf",
+  "group": "javon",
+  "w": 800,
+  "d": 300,
+  "h": 1800,
+  "min_w": 600,
+  "max_w": 1200,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 320000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift3",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift4",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-BD-003",
+  "name": "Kir yotoq (160)",
+  "category": "bed",
+  "group": "kir-yotoq",
+  "w": 1600,
+  "d": 2000,
+  "h": 400,
+  "min_w": 1400,
+  "max_w": 1800,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 1200000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-BD-004",
+  "name": "Kir yotoq (180)",
+  "category": "bed",
+  "group": "kir-yotoq",
+  "w": 1800,
+  "d": 2000,
+  "h": 400,
+  "min_w": 1600,
+  "max_w": 2000,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 1350000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-BD-005",
+  "name": "Komod (4 chexolli)",
+  "category": "bed",
+  "group": "komod",
+  "w": 800,
+  "d": 450,
+  "h": 1000,
+  "min_w": 600,
+  "max_w": 1200,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 680000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-BD-006",
+  "name": "Toshqin",
+  "category": "bed",
+  "group": "toshqin",
+  "w": 1400,
+  "d": 400,
+  "h": 500,
+  "min_w": 1000,
+  "max_w": 1800,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 420000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-B-004",
+  "name": "Yuvish stoli (dastlabka)",
+  "category": "bathroom",
+  "group": "hammom",
+  "w": 600,
+  "d": 450,
+  "h": 850,
+  "min_w": 500,
+  "max_w": 900,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 380000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-B-005",
+  "name": "Gyalka shkafi",
+  "category": "bathroom",
+  "group": "hammom",
+  "w": 700,
+  "d": 250,
+  "h": 1400,
+  "min_w": 500,
+  "max_w": 900,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 320000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   },
+   {
+    "code": "eshik2",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik2",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik2",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-B-006",
+  "name": "Hammom garderobi",
+  "category": "bathroom",
+  "group": "hammom",
+  "w": 600,
+  "d": 250,
+  "h": 1800,
+  "min_w": 500,
+  "max_w": 800,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 420000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift3",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   },
+   {
+    "code": "eshik2",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/2"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik2",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   },
+   {
+    "part": "eshik2",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 4
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-S-005",
+  "name": "Divan qutisi (o'tirgan)",
+  "category": "sofa",
+  "group": "mehmon",
+  "w": 1800,
+  "d": 850,
+  "h": 450,
+  "min_w": 1500,
+  "max_w": 2400,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 950000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-S-006",
+  "name": "Mehmonxona divani",
+  "category": "sofa",
+  "group": "mehmon",
+  "w": 2200,
+  "d": 900,
+  "h": 800,
+  "min_w": 1800,
+  "max_w": 2800,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 1650000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-C-003",
+  "name": "Ofis stuli (o'tirgan)",
+  "category": "chair",
+  "group": "stul",
+  "w": 450,
+  "d": 450,
+  "h": 450,
+  "min_w": 400,
+  "max_w": 550,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 180000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-C-004",
+  "name": "Oshxona stuli",
+  "category": "chair",
+  "group": "stul",
+  "w": 400,
+  "d": 400,
+  "h": 900,
+  "min_w": 350,
+  "max_w": 500,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 150000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-M-001",
+  "name": "Peshxona (zashibka)",
+  "category": "cabinet",
+  "group": "peshxona",
+  "w": 1000,
+  "d": 400,
+  "h": 900,
+  "min_w": 800,
+  "max_w": 1400,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 480000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-M-002",
+  "name": "Entresol",
+  "category": "cabinet",
+  "group": "entresol",
+  "w": 900,
+  "d": 400,
+  "h": 400,
+  "min_w": 600,
+  "max_w": 1500,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 220000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "eshik1",
+    "qty": 1,
+    "len": "h-8",
+    "width": "(w-4)/1"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "eshik1",
+    "sides": [
+     "F",
+     "B",
+     "L",
+     "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "eshik1",
+    "side": "F",
+    "x": 100,
+    "y": "h/2-64",
+    "dia": 35,
+    "depth": 12,
+    "kind": "hinge",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 2
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-M-003",
+  "name": "Shkaf ichki javon",
+  "category": "shelf",
+  "group": "ichki",
+  "w": 800,
+  "d": 350,
+  "h": 2000,
+  "min_w": 600,
+  "max_w": 1200,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 350000,
+  "material_code": "LDSP16",
+  "production": "panel",
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w",
+    "width": "d"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "w",
+    "width": "h"
+   },
+   {
+    "code": "shift1",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift2",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift3",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift4",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   },
+   {
+    "code": "shift5",
+    "qty": 1,
+    "len": "w-36",
+    "width": "d"
+   }
+  ],
+  "edge": [
+   {
+    "code": "yon",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F",
+     "B"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   }
+  ],
+  "holes": [
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 4
+   },
+   {
+    "part": "yon",
+    "side": "F",
+    "x": 64,
+    "y": 96,
+    "dia": 8,
+    "depth": 30,
+    "kind": "dowel",
+    "qty": 4
+   },
+   {
+    "part": "ust",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   },
+   {
+    "part": "past",
+    "side": "F",
+    "x": 64,
+    "y": 64,
+    "dia": 5,
+    "depth": 13,
+    "kind": "drill",
+    "qty": 2
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TS-1730",
+    "qty": 0
+   },
+   {
+    "code": "GD-04",
+    "qty": 4
+   },
+   {
+    "code": "NOG-90",
+    "qty": 4
+   }
+  ],
+  "station_source": "shablon"
+ },
+ {
+  "code": "SP-G-010",
+  "name": "Shkaf-kupe 2 eshikli (1600x600x2200)",
+  "category": "wardrobe",
+  "group": "garderob",
+  "w": 1600,
+  "d": 600,
+  "h": 2200,
+  "min_w": 1200,
+  "max_w": 2000,
+  "min_d": 550,
+  "max_d": 700,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 2850000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "peregorodka",
+    "qty": 1,
+    "len": "h - 2 * t - 100",
+    "width": "d - 100",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "polka",
+    "qty": 4,
+    "len": "(w - 3 * t) / 2",
+    "width": "d - 110",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "kupe_eshik",
+    "qty": 2,
+    "len": "h - 80",
+    "width": "(w / 2) + 20",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "h - 10",
+    "width": "w - 10",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "KUPE-SYS-02",
+    "qty": 1
+   },
+   {
+    "code": "TRUBA-OVAL",
+    "qty": 1
+   },
+   {
+    "code": "FLANETS-OVAL",
+    "qty": 2
+   },
+   {
+    "code": "CONFIRMAT",
+    "qty": 24
+   }
+  ]
+ },
+ {
+  "code": "SP-G-011",
+  "name": "Shkaf-kupe 3 eshikli (2400x600x2400)",
+  "category": "wardrobe",
+  "group": "garderob",
+  "w": 2400,
+  "d": 600,
+  "h": 2400,
+  "min_w": 2100,
+  "max_w": 3000,
+  "min_d": 550,
+  "max_d": 700,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 4200000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "peregorodka",
+    "qty": 2,
+    "len": "h - 2 * t - 100",
+    "width": "d - 100",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "polka",
+    "qty": 6,
+    "len": "(w - 4 * t) / 3",
+    "width": "d - 110",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "kupe_eshik",
+    "qty": 3,
+    "len": "h - 80",
+    "width": "(w / 3) + 20",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "h - 10",
+    "width": "w - 10",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "KUPE-SYS-03",
+    "qty": 1
+   },
+   {
+    "code": "TRUBA-OVAL",
+    "qty": 2
+   },
+   {
+    "code": "FLANETS-OVAL",
+    "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "qty": 36
+   }
+  ]
+ },
+ {
+  "code": "SP-G-012",
+  "name": "Garderob 2 eshik + 2 tortmali (900x550x2100)",
+  "category": "wardrobe",
+  "group": "garderob",
+  "w": 900,
+  "d": 550,
+  "h": 2100,
+  "min_w": 800,
+  "max_w": 1100,
+  "min_d": 500,
+  "max_d": 650,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 1950000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "eshik",
+    "qty": 2,
+    "len": "h - 400",
+    "width": "(w - 6) / 2",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_fasad",
+    "qty": 2,
+    "len": "190",
+    "width": "w - 4",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_yon",
+    "qty": 4,
+    "len": "450",
+    "width": "140",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_tub",
+    "qty": 2,
+    "len": "w - 2 * t - 26",
+    "width": "450",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "h - 10",
+    "width": "w - 10",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "NAPRAV-450",
+    "qty": 2
+   },
+   {
+    "code": "PETLYA-NAK",
+    "qty": 6
+   },
+   {
+    "code": "RUCHKA-128",
+    "qty": 4
+   },
+   {
+    "code": "TRUBA-OVAL",
+    "qty": 1
+   }
+  ]
+ },
+ {
+  "code": "SP-K-020",
+  "name": "Penal Duxovka va Mikroto'lqinli pech uchun (600x600x2100)",
+  "category": "tall_cabinet",
+  "group": "kuxnya-kolonna",
+  "w": 600,
+  "d": 600,
+  "h": 2100,
+  "min_w": 600,
+  "max_w": 600,
+  "min_d": 550,
+  "max_d": 650,
+  "stretch_axis": "y",
+  "price_mode": "unit",
+  "price": 1650000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "texnika_polka",
+    "qty": 2,
+    "len": "w - 2 * t",
+    "width": "d - 20",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tepa_eshik",
+    "qty": 1,
+    "len": "450",
+    "width": "w - 4",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "past_eshik",
+    "qty": 1,
+    "len": "710",
+    "width": "w - 4",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "h - 10",
+    "width": "w - 10",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "PETLYA-NAK",
+    "qty": 4
+   },
+   {
+    "code": "RUCHKA-128",
+    "qty": 2
+   },
+   {
+    "code": "NOG-100",
+    "qty": 4
+   }
+  ]
+ },
+ {
+  "code": "SP-K-021",
+  "name": "Penal O'rnatma Muzlatgich uchun (600x600x2100)",
+  "category": "tall_cabinet",
+  "group": "kuxnya-muz",
+  "w": 600,
+  "d": 600,
+  "h": 2100,
+  "min_w": 600,
+  "max_w": 600,
+  "min_d": 550,
+  "max_d": 650,
+  "stretch_axis": "y",
+  "price_mode": "unit",
+  "price": 1750000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "ust",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "past",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tepa_muz_fasad",
+    "qty": 1,
+    "len": "1150",
+    "width": "w - 4",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "past_muz_fasad",
+    "qty": 1,
+    "len": "710",
+    "width": "w - 4",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "h - 10",
+    "width": "w - 10",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "PETLYA-MUZ",
+    "qty": 6
+   },
+   {
+    "code": "SLIDER-MUZ",
+    "qty": 4
+   },
+   {
+    "code": "NOG-100",
+    "qty": 4
+   }
+  ]
+ },
+ {
+  "code": "SP-K-022",
+  "name": "Pastki modul 3 tortmali (600x550x720)",
+  "category": "drawer_base",
+  "group": "kuxnya-pastki",
+  "w": 600,
+  "d": 550,
+  "h": 720,
+  "min_w": 400,
+  "max_w": 900,
+  "min_d": 500,
+  "max_d": 650,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 820000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tub",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tsarga",
+    "qty": 2,
+    "len": "w - 2 * t",
+    "width": "100",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "fasad_kichik",
+    "qty": 1,
+    "len": "140",
+    "width": "w - 4",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "fasad_katta",
+    "qty": 2,
+    "len": "284",
+    "width": "w - 4",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_yon",
+    "qty": 6,
+    "len": "500",
+    "width": "140",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_orqa",
+    "qty": 3,
+    "len": "w - 2 * t - 76",
+    "width": "140",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_tub",
+    "qty": 3,
+    "len": "w - 2 * t - 56",
+    "width": "496",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "h - 4",
+    "width": "w - 4",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TANDEM-500",
+    "qty": 3
+   },
+   {
+    "code": "RUCHKA-128",
+    "qty": 3
+   },
+   {
+    "code": "NOG-100",
+    "qty": 4
+   }
+  ]
+ },
+ {
+  "code": "SP-K-023",
+  "name": "Pastki modul 2 katta tortmali (800x550x720)",
+  "category": "drawer_base",
+  "group": "kuxnya-pastki",
+  "w": 800,
+  "d": 550,
+  "h": 720,
+  "min_w": 600,
+  "max_w": 1200,
+  "min_d": 500,
+  "max_d": 650,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 980000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tub",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tsarga",
+    "qty": 2,
+    "len": "w - 2 * t",
+    "width": "100",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "fasad_katta",
+    "qty": 2,
+    "len": "354",
+    "width": "w - 4",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_yon",
+    "qty": 4,
+    "len": "500",
+    "width": "180",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_orqa",
+    "qty": 2,
+    "len": "w - 2 * t - 76",
+    "width": "180",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_tub",
+    "qty": 2,
+    "len": "w - 2 * t - 56",
+    "width": "496",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "h - 4",
+    "width": "w - 4",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TANDEM-500",
+    "qty": 2
+   },
+   {
+    "code": "RUCHKA-128",
+    "qty": 2
+   },
+   {
+    "code": "NOG-100",
+    "qty": 4
+   }
+  ]
+ },
+ {
+  "code": "SP-K-024",
+  "name": "Kargo butilka saqlagich (200x550x720)",
+  "category": "cargo_base",
+  "group": "kuxnya-pastki",
+  "w": 200,
+  "d": 550,
+  "h": 720,
+  "min_w": 150,
+  "max_w": 300,
+  "min_d": 500,
+  "max_d": 650,
+  "stretch_axis": "y",
+  "price_mode": "unit",
+  "price": 460000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tub",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tsarga",
+    "qty": 2,
+    "len": "w - 2 * t",
+    "width": "80",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "fasad",
+    "qty": 1,
+    "len": "h - 8",
+    "width": "w - 4",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "h - 4",
+    "width": "w - 4",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "KARGO-200",
+    "qty": 1
+   },
+   {
+    "code": "RUCHKA-128",
+    "qty": 1
+   },
+   {
+    "code": "NOG-100",
+    "qty": 4
+   }
+  ]
+ },
+ {
+  "code": "SP-K-025",
+  "name": "Tepasi idish quritgichli (Sushilka) osma shkaf (800x320x720)",
+  "category": "wall_cabinet",
+  "group": "kuxnya-ustki",
+  "w": 800,
+  "d": 320,
+  "h": 720,
+  "min_w": 600,
+  "max_w": 900,
+  "min_d": 300,
+  "max_d": 400,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 590000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "qopqoq",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tub",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "eshik",
+    "qty": 2,
+    "len": "h - 8",
+    "width": "(w - 6) / 2",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "h - 4",
+    "width": "w - 4",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "SUSHILKA-800",
+    "qty": 1
+   },
+   {
+    "code": "PETLYA-DOV",
+    "qty": 4
+   },
+   {
+    "code": "NAVES-REG",
+    "qty": 2
+   },
+   {
+    "code": "RUCHKA-128",
+    "qty": 2
+   }
+  ]
+ },
+ {
+  "code": "SP-K-026",
+  "name": "Gorizontal ko'tarilma osma shkaf (Aventos) (800x320x720)",
+  "category": "wall_cabinet",
+  "group": "kuxnya-ustki",
+  "w": 800,
+  "d": 320,
+  "h": 720,
+  "min_w": 600,
+  "max_w": 1200,
+  "min_d": 300,
+  "max_d": 400,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 780000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "qopqoq",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tub",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "polka",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d - 20",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "gorizontal_fasad",
+    "qty": 2,
+    "len": "(h - 6) / 2",
+    "width": "w - 4",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "h - 4",
+    "width": "w - 4",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "LIFT-HF",
+    "qty": 1
+   },
+   {
+    "code": "NAVES-REG",
+    "qty": 2
+   },
+   {
+    "code": "RUCHKA-128",
+    "qty": 2
+   }
+  ]
+ },
+ {
+  "code": "SP-K-027",
+  "name": "Tepadagi burchak shkafi 90° (600x600x720)",
+  "category": "wall_corner",
+  "group": "kuxnya-burchak",
+  "w": 600,
+  "d": 600,
+  "h": 720,
+  "min_w": 550,
+  "max_w": 650,
+  "min_d": 550,
+  "max_d": 650,
+  "stretch_axis": "y",
+  "price_mode": "unit",
+  "price": 680000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon_chap",
+    "qty": 1,
+    "len": "h",
+    "width": "320",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "yon_ong",
+    "qty": 1,
+    "len": "h",
+    "width": "320",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "orqa_yon_1",
+    "qty": 1,
+    "len": "h",
+    "width": "600",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "orqa_yon_2",
+    "qty": 1,
+    "len": "h",
+    "width": "600 - t",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tub_l",
+    "qty": 1,
+    "len": "600 - 2 * t",
+    "width": "600 - 2 * t",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "qopqoq_l",
+    "qty": 1,
+    "len": "600 - 2 * t",
+    "width": "600 - 2 * t",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "eshik",
+    "qty": 1,
+    "len": "h - 8",
+    "width": "390",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "PETLYA-BURCHAK-135",
+    "qty": 2
+   },
+   {
+    "code": "NAVES-REG",
+    "qty": 2
+   },
+   {
+    "code": "RUCHKA-128",
+    "qty": 1
+   }
+  ]
+ },
+ {
+  "code": "SP-O-010",
+  "name": "Yozuv stoli + 3 tortmali tumba (1400x700x750)",
+  "category": "desk",
+  "group": "ofis",
+  "w": 1400,
+  "d": 700,
+  "h": 750,
+  "min_w": 1200,
+  "max_w": 1800,
+  "min_d": 600,
+  "max_d": 800,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 1350000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "stoleshnitsa",
+    "qty": 1,
+    "len": "w",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "oyoq_chap",
+    "qty": 1,
+    "len": "h - t",
+    "width": "d - 50",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tsarga_orqa",
+    "qty": 1,
+    "len": "w - 400 - 3 * t",
+    "width": "350",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tumba_yon",
+    "qty": 2,
+    "len": "h - t",
+    "width": "500",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tumba_tub",
+    "qty": 1,
+    "len": "400 - 2 * t",
+    "width": "500",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_fasad",
+    "qty": 3,
+    "len": "(h - t - 40) / 3",
+    "width": "396",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_yon",
+    "qty": 6,
+    "len": "450",
+    "width": "120",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_orqa",
+    "qty": 3,
+    "len": "400 - 2 * t - 76",
+    "width": "120",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_tub",
+    "qty": 3,
+    "len": "400 - 2 * t - 56",
+    "width": "446",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "NAPRAV-450",
+    "qty": 3
+   },
+   {
+    "code": "RUCHKA-128",
+    "qty": 3
+   },
+   {
+    "code": "UGOLOK-MEBEL",
+    "qty": 8
+   }
+  ]
+ },
+ {
+  "code": "SP-O-011",
+  "name": "G'ildirakli ofis tumbasi (400x450x550)",
+  "category": "mobile_pedestal",
+  "group": "ofis",
+  "w": 400,
+  "d": 450,
+  "h": 550,
+  "min_w": 400,
+  "max_w": 500,
+  "min_d": 400,
+  "max_d": 550,
+  "stretch_axis": "y",
+  "price_mode": "unit",
+  "price": 540000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h - 60",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "qopqoq",
+    "qty": 1,
+    "len": "w",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus",
+     "B": "kromka_korpus",
+     "L": "kromka_korpus",
+     "R": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tub",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_fasad",
+    "qty": 3,
+    "len": "(h - 60 - 2 * t) / 3",
+    "width": "w - 4",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_yon",
+    "qty": 6,
+    "len": "400",
+    "width": "100",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_tub",
+    "qty": 3,
+    "len": "w - 2 * t - 56",
+    "width": "396",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "h - 70",
+    "width": "w - 4",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "NAPRAV-400",
+    "qty": 3
+   },
+   {
+    "code": "GILDIRAK-ROLIK",
+    "qty": 4
+   },
+   {
+    "code": "ZAMOK-MARKAZIY",
+    "qty": 1
+   },
+   {
+    "code": "RUCHKA-128",
+    "qty": 3
+   }
+  ]
+ },
+ {
+  "code": "SP-D-002",
+  "name": "Dahliz kiyim ilgich paneli tokcha bilan (800x250x1400)",
+  "category": "coat_hanger",
+  "group": "peshxona",
+  "w": 800,
+  "d": 250,
+  "h": 1400,
+  "min_w": 600,
+  "max_w": 1200,
+  "min_d": 200,
+  "max_d": 300,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 420000,
+  "material_code": "LDSP18",
+  "production": "panel",
+  "slots": {
+   "korpus": "LDSP18",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "asosiy_panel",
+    "qty": 1,
+    "len": "h",
+    "width": "w",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus",
+     "B": "kromka_korpus",
+     "L": "kromka_korpus",
+     "R": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "shapka_polka",
+    "qty": 1,
+    "len": "w",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus",
+     "B": "kromka_korpus",
+     "L": "kromka_korpus",
+     "R": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "kroneyshteyn",
+    "qty": 2,
+    "len": "200",
+    "width": "200",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "KRYUCHOK-3TALIK",
+    "qty": 5
+   },
+   {
+    "code": "NAVES-OGIR",
+    "qty": 2
+   }
+  ]
+ },
+ {
+  "code": "SP-H-010",
+  "name": "Hammom osma tumbasi rakovina uchun (800x480x500)",
+  "category": "vanity",
+  "group": "hammom",
+  "w": 800,
+  "d": 480,
+  "h": 500,
+  "min_w": 600,
+  "max_w": 1200,
+  "min_d": 400,
+  "max_d": 550,
+  "stretch_axis": "x",
+  "price_mode": "unit",
+  "price": 920000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "slots": {
+   "korpus": "MDF16",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC2",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tub",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tsarga_tepa",
+    "qty": 2,
+    "len": "w - 2 * t",
+    "width": "80",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_fasad",
+    "qty": 2,
+    "len": "(h - 6) / 2",
+    "width": "w - 4",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_yon",
+    "qty": 4,
+    "len": "400",
+    "width": "120",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tortma_tub",
+    "qty": 2,
+    "len": "w - 2 * t - 56",
+    "width": "396",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "TANDEM-400-NAM",
+    "qty": 2
+   },
+   {
+    "code": "NAVES-CAMAR",
+    "qty": 2
+   }
+  ]
+ },
+ {
+  "code": "SP-H-011",
+  "name": "Hammom ko'zguli osma dori shkafi (800x150x700)",
+  "category": "mirror_cabinet",
+  "group": "hammom",
+  "w": 800,
+  "d": 150,
+  "h": 700,
+  "min_w": 600,
+  "max_w": 1000,
+  "min_d": 140,
+  "max_d": 200,
+  "stretch_axis": "xy",
+  "price_mode": "unit",
+  "price": 620000,
+  "material_code": "MDF16",
+  "production": "panel",
+  "slots": {
+   "korpus": "MDF16",
+   "fasad": "MDF16",
+   "orqa": "HDF3",
+   "kromka_korpus": "PVC04",
+   "kromka_fasad": "PVC2"
+  },
+  "parts": [
+   {
+    "code": "yon",
+    "qty": 2,
+    "len": "h",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "qopqoq",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "tub",
+    "qty": 1,
+    "len": "w - 2 * t",
+    "width": "d",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "polka",
+    "qty": 2,
+    "len": "w - 2 * t",
+    "width": "d - 20",
+    "slot": "korpus",
+    "edge": {
+     "F": "kromka_korpus"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "ko'zgu_eshik",
+    "qty": 2,
+    "len": "h - 4",
+    "width": "(w - 6) / 2",
+    "slot": "fasad",
+    "edge": {
+     "F": "kromka_fasad",
+     "B": "kromka_fasad",
+     "L": "kromka_fasad",
+     "R": "kromka_fasad"
+    },
+    "tekstura": "uzunlik"
+   },
+   {
+    "code": "orqa",
+    "qty": 1,
+    "len": "h - 4",
+    "width": "w - 4",
+    "slot": "orqa",
+    "tekstura": "erkin"
+   }
+  ],
+  "hardware": [
+   {
+    "code": "PETLYA-NAM",
+    "qty": 4
+   },
+   {
+    "code": "TIP-ON",
+    "qty": 2
+   },
+   {
+    "code": "NAVES-REG",
+    "qty": 2
+   }
+  ]
+ }
+]

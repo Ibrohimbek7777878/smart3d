@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#211d18">
+<title>Smart3D — mebel konstruksiya, narx va export</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="css/app.css">
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/three.module.js" } }
+</script>
+</head>
+<body>
+
+<!-- Boot -->
+<div id="boot">
+  <div class="logo">Smart<span>3D</span></div>
+  <div class="bar"><i></i></div>
+  <small>katalog va sahna yuklanmoqda…</small>
+</div>
+
+<!-- Header -->
+<header id="topbar">
+  <div class="logo">Smart<span>3D</span></div>
+  <div id="projName" contenteditable="true" spellcheck="false">Namuna: oshxona</div>
+  <div id="totalPrice">0 so'm<small>jami narx</small></div>
+</header>
+
+<!-- Sahna -->
+<main id="stage">
+  <div id="scene"></div>
+
+  <div id="viewCtl">
+    <button id="btn2d" class="pill is-active">2D</button>
+    <button id="btn3d" class="pill">3D</button>
+    <button id="btnFit" class="pill" title="Sig'dirish">⌖</button>
+    <button id="btnSnap1080" class="pill" title="1080p Foto-render">📸 1080p</button>
+    <button id="btnSnap360" class="pill" title="360° Panorama">🔄 360°</button>
+  </div>
+
+  <!-- Tanlangan mebel kartasi -->
+  <div id="itemCard" class="hidden">
+    <div class="ic-head">
+      <span class="ic-name" id="icName">—</span>
+      <span class="ic-code" id="icCode">—</span>
+      <button class="btn sm ghost" id="icClose" title="Yopish">✕</button>
+    </div>
+    <div class="ic-grid">
+      <div><label>Eni w, mm</label><input id="icW" type="number" step="10"></div>
+      <div><label>Chuqur. d, mm</label><input id="icD" type="number" step="10"></div>
+      <div><label>Baland. h, mm</label><input id="icH" type="number" step="10"></div>
+      <div><label>X</label><input id="icX" type="number" step="50"></div>
+    </div>
+    <div class="ic-warn hidden" id="icWarn"></div>
+    <div class="ic-btns">
+      <button class="btn sm" id="icLeft">◀</button>
+      <button class="btn sm" id="icRight">▶</button>
+      <button class="btn sm" id="icRot">⟳ 90°</button>
+      <button class="btn sm" id="icDup">⧉ Nusxa</button>
+      <button class="btn sm danger" id="icDel">🗑 O'chirish</button>
+    </div>
+  </div>
+</main>
+
+<!-- Panel -->
+<section id="panel">
+  <nav id="tabs">
+    <button class="tab is-active" data-tab="zamer"><span class="ti">📐</span>Zamer</button>
+    <button class="tab" data-tab="catalog"><span class="ti">🧩</span>Katalog</button>
+    <button class="tab" data-tab="ai"><span class="ti">🤖</span>AI</button>
+    <button class="tab" data-tab="smeta"><span class="ti">🧾</span>Smeta</button>
+    <button class="tab" data-tab="export"><span class="ti">⬇️</span>Export</button>
+  </nav>
+
+  <div id="panes">
+
+    <!-- ZAMER -->
+    <div class="pane is-active" data-pane="zamer">
+      <h3>Xona o'lchamlari (zamer)</h3>
+      <div class="form-row">
+        <div class="field"><label>Eni W, mm</label><input id="zW" type="number" value="4200" step="100"></div>
+        <div class="field"><label>Chuqur. D, mm</label><input id="zD" type="number" value="3100" step="100"></div>
+        <div class="field"><label>Baland. H, mm</label><input id="zH" type="number" value="2700" step="50"></div>
+      </div>
+      <div class="chips" id="zPresets">
+        <button class="chip" data-w="3600" data-d="3000">3.6×3 m</button>
+        <button class="chip" data-w="4200" data-d="3100">4.2×3.1 m</button>
+        <button class="chip" data-w="5000" data-d="4000">5×4 m</button>
+        <button class="chip" data-w="6000" data-d="4000">6×4 m</button>
+      </div>
+      <button class="btn primary block" id="zApply">Xonani qo'llash</button>
+
+      <h3>Teshiklar (deraza / eshik)</h3>
+      <div class="form-row" style="grid-template-columns: 1.2fr 1fr 1fr;">
+        <div class="field"><label>Turi</label>
+          <select id="oType"><option value="window">Deraza</option><option value="door">Eshik</option></select>
+        </div>
+        <div class="field"><label>Kengligi, mm</label><input id="oW" type="number" value="1200" step="50"></div>
+        <div class="field"><label>Devor</label><select id="oWall"><option value="0">0 (old)</option><option value="1">1 (o'ng)</option><option value="2">2 (orqa)</option><option value="3">3 (chap)</option></select></div>
+      </div>
+      <div class="ai-row">
+        <button class="btn teal" id="oAdd" style="flex:1">+ Teshik qo'shish</button>
+        <button class="btn" id="oClear">Tozalash</button>
+      </div>
+      <div id="oList" class="chips"></div>
+
+      <h3>Loyiha</h3>
+      <div class="ai-row">
+        <button class="btn" id="pSave" style="flex:1">💾 Saqlash</button>
+        <button class="btn" id="pLoad" style="flex:1">📂 Yuklash</button>
+        <button class="btn" id="pNew" style="flex:1">✨ Yangi</button>
+      </div>
+    </div>
+
+    <!-- KATALOG -->
+    <div class="pane" data-pane="catalog">
+      <h3>Panel materiali — narx shu zahoti o'zgaradi</h3>
+      <div class="field">
+        <select id="matSel"></select>
+      </div>
+      <h3>ERP katalogi — real mahsulot (SKU + narx)</h3>
+      <div class="field">
+        <input id="sheetQ" type="text" placeholder="Qidiruv: nom yoki SKU (masalan Egger, WQ 3957)">
+      </div>
+      <div class="field">
+        <select id="sheetSel"></select>
+      </div>
+      <div class="chips" id="catFilter"></div>
+      <div class="cat-grid" id="catGrid"></div>
+    </div>
+
+    <!-- AI -->
+    <div class="pane" data-pane="ai">
+      <h3>AI: matn yoki ovoz bilan zamer + konstruksiya</h3>
+      <textarea id="aiText" placeholder="Misol: oshxona 3.6x3 metr, balandlik 2.7, deraza 1.4, 4 ta pastki shkaf, 1 garderob"></textarea>
+      <div class="ai-row">
+        <button class="btn" id="btnVoice">🎤 Ovoz</button>
+        <button class="btn primary" id="btnBuild" style="flex:1">🪄 Konstruksiyani qurish</button>
+      </div>
+      <div class="chips" id="aiSamples">
+        <button class="chip">oshxona 3.6x3 m, balandlik 2.7, 4 ta pastki shkaf</button>
+        <button class="chip">4.2x3.1 xona, 1 garderob, 1 stol</button>
+        <button class="chip">5x4 mehmonxona, divan, 2 ta toko</button>
+      </div>
+      <div id="aiOut"></div>
+
+      <h3>Qanday ishlaydi</h3>
+      <div class="msg ok">AI matnni o'lcham va buyurtmaga ajratadi → qoida engine modullarni
+        max/min chegarada joylashtiradi → narx real-time hisoblanadi. Ovoz — Web Speech API
+        (Chrome/Edge). LLM ulash — server tayyor bo'lganda avtomatik.</div>
+    </div>
+
+    <!-- SMETA -->
+    <div class="pane" data-pane="smeta">
+      <div class="total-block">
+        <div>
+          <div class="tb-label">Jami narx</div>
+          <div class="tb-sum" id="smTotal">0</div>
+        </div>
+        <div class="tb-sub" id="smSub"></div>
+      </div>
+      <div id="smMsgs"></div>
+
+      <h3>Kotirovka (mijozga)</h3>
+      <table class="smeta" id="smTable">
+        <thead><tr><th>Mebel</th><th style="text-align:right">Miq.</th><th style="text-align:right">Narx</th><th style="text-align:right">Summa</th></tr></thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+      </table>
+
+      <h3>Sex tannarxi (Haqiqiy ishlab chiqarish xarajatlari)</h3>
+      <table class="smeta" id="smWorkshopTable">
+        <thead><tr><th>Xarajat moddasi</th><th style="text-align:right">Miqdor</th><th style="text-align:right">Birlik</th><th style="text-align:right">Summa</th></tr></thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+      </table>
+
+      <h3>Ishlab chiqarish — raskroy
+        <button class="btn sm ghost" id="nestCfgBtn" style="float:right;margin-top:-4px">⚙️ Parametrlar</button>
+      </h3>
+      <div class="stats" id="nestStats"></div>
+      <div id="nestPreview"></div>
+
+      <h3>Detallar / teshiklar / furnitura</h3>
+      <div id="cutList"></div>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="pane" data-pane="export">
+      <h3>Fayllarni yuklab olish</h3>
+      <div class="exp-grid">
+        <button class="exp-btn primary" id="exRender1080"><b>📸 1080p Foto-render</b><span>Ultra-HD (1920x1080 PNG) · mijozga taqdimot</span></button>
+        <button class="exp-btn primary" id="exRender360"><b>🔄 360° Panorama</b><span>Ekvirektangulyar VR panorama (2048x1024)</span></button>
+        <button class="exp-btn primary" id="exObj"><b>⬇️ OBJ model</b><span>SketchUp / Bazis uchun · mm · guruhlar bilan</span></button>
+        <button class="exp-btn primary" id="exGlb"><b>⬇️ GLB model (3D/AR)</b><span>Mobil AR, Telegram 3D, Blender · panellar bilan</span></button>
+        <button class="exp-btn" id="exHoles"><b>⬇️ holes.json</b><span>Teshiklar: №, diameter, chuqurlik, koordinata</span></button>
+        <button class="exp-btn" id="exCut"><b>⬇️ cutlist.csv</b><span>Detallar: o'lcham, material, soni</span></button>
+        <button class="exp-btn primary" id="exXlsx"><b>📊 Excel Smeta (.xlsx)</b><span>Professional 5-bo'limli to'liq hisob-kitob</span></button>
+        <button class="exp-btn" id="exSmeta"><b>⬇️ smeta.csv</b><span>Narx jadvali (CSV)</span></button>
+        <button class="exp-btn" id="exProject"><b>⬇️ loyiha.json</b><span>To'liq hujjat (qayta ochish uchun)</span></button>
+        <button class="exp-btn" id="exBpj"><b>⬇️ BPJ (Bazis)</b><span>Haqiqiy .bpj — BazisUniversalExport 4.2</span></button>
+        <button class="exp-btn" id="exGl"><b>⬇️ GibLab (.project)</b><span>Raskroy kartasi bilan — GibLab import</span></button>
+        <button class="exp-btn" id="exXnc"><b>⬇️ XNC (detallar)</b><span>Kod 1_1 — GibLab import Excel uchun</span></button>
+        <button class="exp-btn" id="exReport"><b>🖨 Hisobot (chop etish)</b><span>Kotirovka + raskroy — A4, PDF saqlash mumkin</span></button>
+        <button class="exp-btn" id="exDxf"><b>⬇️ DXF (raskroy)</b><span>Varaq + detallar + teshiklar — CNC/lazer</span></button>
+        <button class="exp-btn" id="exNc"><b>⬇️ NC (teshik)</b><span>Excellon — Biesse/Homag drayllar</span></button>
+        <button class="exp-btn" id="exGcode"><b>⬇️ G-code (kesim)</b><span>ISO/Fanuc — kontur kesish</span></button>
+        <button class="exp-btn" id="exPtp"><b>⬇️ PTP (pozitsiya)</b><span>Panel joylashuvi — drill line uchun</span></button>
+        <button class="exp-btn" id="exCix"><b>⬇️ Biesse (.cix)</b><span>BiesseWorks / bSolid CNC drayl</span></button>
+        <button class="exp-btn" id="exMpr"><b>⬇️ Homag (.mpr)</b><span>WoodWOP 4.0-8.0 CNC drayl</span></button>
+        <button class="exp-btn" id="exAltendorf"><b>📋 Formatka (Altendorf)</b><span>1/2/3-faza kesim xaritasi (arralovchi uchun)</span></button>
+      </div>
+
+      <h3>Export tekshiruvi</h3>
+      <div id="exCheck"></div>
+
+      <h3>Bazis Mebelshikda ochish</h3>
+      <div class="msg ok">1) <b>.bpj</b> faylini BazisViewer/Bazis'ga import qiling —
+        to'liq BOM, qirralar (butts), materiallar va transform'lar bilan.
+        2) OBJ — 3D ko'rinish uchun (SketchUp/Bazis).
+        3) Teshiklar <b>holes.json</b>, narx <b>smeta.csv</b> da.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- NESTING PARAMETRLARI MODAL -->
+<div id="nestCfgModal" class="modal-back" hidden>
+  <div class="modal-card">
+    <h3 style="margin-top:0">⚙️ Raskroy parametrlari</h3>
+    <div class="nc-grid">
+      <label>Joylashtirish rejimi
+        <select id="ncMode">
+          <option value="bssf">Guillotine (BSSF) — zichroq</option>
+          <option value="strip">Lenta (LSTR) — GibLab kabi</option>
+        </select>
+      </label>
+      <label>Aylantirish
+        <select id="ncMaxRot">
+          <option value="1">Yo'q — texture xavfsiz</option>
+          <option value="2">90° — zichroq</option>
+        </select>
+      </label>
+      <label>Arra qalinligi, mm
+        <input id="ncKerf" type="number" min="1" max="12" step="0.1">
+      </label>
+      <label>Trim (old), mm
+        <input id="ncTrimL" type="number" min="0" max="50" step="1">
+      </label>
+      <label>Trim (yon), mm
+        <input id="ncTrimW" type="number" min="0" max="50" step="1">
+      </label>
+      <label>Qoldiq min A, mm
+        <input id="ncRemA" type="number" min="50" max="2000" step="10">
+      </label>
+      <label>Qoldiq min B, mm
+        <input id="ncRemB" type="number" min="50" max="2000" step="10">
+      </label>
+      <label>Delovoy qoldiq min, m²
+        <input id="ncRemU" type="number" min="0.05" max="10" step="0.05">
+      </label>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn primary" id="ncApply" style="flex:1">Qo'llash</button>
+      <button class="btn" id="ncReset">Standart</button>
+      <button class="btn ghost" id="ncClose">Yopish</button>
+    </div>
+  </div>
+</div>
+
+<!-- 360 Panorama Modal -->
+<dialog id="panoModal" class="dlg" style="max-width:860px;width:95vw;padding:16px;border-radius:12px;background:#18181b;color:#f4f4f5;border:1px solid #27272a;">
+  <div class="dlg-head" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <h3 style="margin:0;font-size:1.1rem">🔄 360° Virtual Tur va Panorama</h3>
+    <button class="btn sm ghost" id="panoClose" style="color:#a1a1aa">✕</button>
+  </div>
+  <div class="dlg-body" style="text-align:center">
+    <div id="panoCanvasContainer" style="width:100%;height:400px;background:#09090b;border-radius:8px;overflow:hidden;position:relative;"></div>
+    <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+      <small style="color:#a1a1aa">Sichqoncha yoki barmoq bilan xonani 360° erkin aylantiring</small>
+      <button class="btn primary" id="panoDownload">⬇️ Panoramani yuklab olish (.jpg)</button>
+    </div>
+  </div>
+</dialog>
+
+<div id="toast"></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

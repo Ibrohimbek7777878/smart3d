@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart3D — Ishlar hisoboti (2026-10-13)</title>
+<style>
+  :root { --bg:#0f1419; --card:#1a2332; --line:#2d3a4d; --text:#e7ecf3; --muted:#8b9bb4; --ok:#2ecc71; --warn:#f39c12; --accent:#3b82f6; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+  .wrap { max-width:980px; margin:0 auto; padding:28px 18px 80px; }
+  h1 { font-size:26px; margin:0 0 4px; }
+  h2 { font-size:19px; margin:34px 0 12px; border-bottom:2px solid var(--line); padding-bottom:6px; }
+  h3 { font-size:15px; margin:18px 0 8px; color:var(--accent); }
+  .sub { color:var(--muted); font-size:13px; }
+  table { width:100%; border-collapse:collapse; margin:10px 0; font-size:13px; }
+  th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
+  th { background:#16202e; color:var(--muted); font-weight:600; }
+  .ok { color:var(--ok); font-weight:700; }
+  .warn { color:var(--warn); font-weight:700; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:12px 0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; margin:12px 0; }
+  .stat { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; text-align:center; }
+  .stat b { display:block; font-size:22px; color:var(--accent); }
+  .stat span { font-size:12px; color:var(--muted); }
+  code { background:#101820; padding:1px 6px; border-radius:4px; font-size:12px; color:#7ec8ff; }
+  pre { background:#101820; border:1px solid var(--line); border-radius:8px; padding:12px; overflow-x:auto; font-size:12px; }
+  ul { margin:6px 0; padding-left:22px; }
+  li { margin:4px 0; }
+  .arch { font-family:monospace; font-size:12px; white-space:pre; background:#101820; border:1px solid var(--line); border-radius:8px; padding:14px; overflow-x:auto; color:#9fd49f; }
+  .badge { display:inline-block; background:#16202e; border:1px solid var(--line); border-radius:20px; padding:2px 10px; font-size:11px; color:var(--muted); margin:2px; }
+  footer { margin-top:40px; color:var(--muted); font-size:12px; border-top:1px solid var(--line); padding-top:10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Smart3D — yakuniy hisobot</h1>
+<p class="sub">Mebel SaaS: zamer → AI konstruksiya → smeta → raskroy → 2D/3D/VR → CNC/GibLab · Demo holat 2026-10-13 · Muddat: 20.10.2026</p>
+
+<div class="grid">
+  <div class="stat"><b>30</b><span>fragment modul</span></div>
+  <div class="stat"><b>1 281</b><span>ERP material (SKU+narx)</span></div>
+  <div class="stat"><b>1 978</b><span>furnitura katalogi</span></div>
+  <div class="stat"><b>12</b><span>export format</span></div>
+</div>
+
+<h2>1. Tizim arxitekturasi</h2>
+<div class="arch">BAZALAR (data/*.json)
+  fragments.json (30 modul) · sheet-catalog.json (1281 ERP)
+  materials.json (narx/kafitsient) · nesting-defaults.json
+        │
+        ▼
+UI (app.js) — state + 3D (three.js)
+  Zamer / Katalog / AI / Raskroy / Export
+        │
+        ▼
+ENGINE (js/engine/)
+  ai.js      matn → o'lcham + buyurtma
+  rules.js   joylashtirish + validatsiya
+  cutlist.js modul → detal (formula bilan)
+  price.js   narx
+  nesting.js raskroy (BSSF / lenta LSTR)
+  giblab.js  .project · cnc.js NC/DXF · bpj.js</div>
+
+<h2>2. Tayyor funksiyalar (tekshirilgan)</h2>
+<table>
+<tr><th>Modul</th><th>Nima</th><th>Holat</th></tr>
+<tr><td>Zamer</td><td>Xona o'lchami, deraza/eshik, 2D/3D sahna, sudrab-joylash</td><td class="ok">✅</td></tr>
+<tr><td>AI konstruksiya</td><td>Matn/ovoz → tahlil → modul tanlash → o'lchamga moslash → joylashtirish</td><td class="ok">✅</td></tr>
+<tr><td>Fragment engine</td><td>Formula bilan detal (<code>"len":"h-8"</code>) — 30 modul</td><td class="ok">✅</td></tr>
+<tr><td>Smeta</td><td>Mijoz kotirovkasi (qatlamli narx) + ishlab chiqarish xarajati</td><td class="ok">✅</td></tr>
+<tr><td>Kesim listi</td><td>Detal, kromka (m), teshik, furnitura — har bir moduldan</td><td class="ok">✅</td></tr>
+<tr><td>Raskroy 2.0</td><td>Guillotine (BSSF) + <b>Lenta (GibLab)</b> rejimi, kerf, aylantirish, delovoy qoldiq</td><td class="ok">✅</td></tr>
+<tr><td>Raskroy sozlamalari</td><td>⚙️ modal — localStorage'da saqlanadi</td><td class="ok">✅</td></tr>
+<tr><td>ERP material bazasi</td><td>1281 panel: qidiruv (kirill/lotin), real narx + varaq o'lchami smeta/raskroyga ta'sir qiladi</td><td class="ok">✅</td></tr>
+<tr><td>Export: OBJ + MTL</td><td>3D model (Blender/o'yinlar uchun)</td><td class="ok">✅</td></tr>
+<tr><td>Export: DXF raskroy</td><td>CAD'da ochiladigan varaq chizmasi</td><td class="ok">✅</td></tr>
+<tr><td>Export: NC / PTP</td><td>CNC uchun G-kod / point-to-point</td><td class="ok">✅</td></tr>
+<tr><td>Export: BPJ</td><td>Bazis Progect XML (namuna bilan moslashgan)</td><td class="ok">✅</td></tr>
+<tr><td>Export: GibLab .project</td><td>XML + binar raskroy kartasi (data attr, LSTR) — <code>giblab_raskroy.py</code> parseri bilan bayt-ma-bayt round-trip, 55 detal/11 karta 0 xato</td><td class="ok">✅</td></tr>
+<tr><td>Export: XNC CSV</td><td>Kod <code>1_1</code> — GibLab "Импорт из Excel" uchun</td><td class="ok">✅</td></tr>
+<tr><td>Export: Hisobot</td><td>A4 chop etish / PDF (kotirovka + xarajat + raskroy)</td><td class="ok">✅</td></tr>
+<tr><td>PWA offline</td><td>Service worker — internetsiz ishlaydi</td><td class="ok">✅</td></tr>
+<tr><td>VR</td><td>WebXR — quloqchin bilan xonada yurish</td><td class="ok">✅</td></tr>
+</table>
+
+<h2>3. ERP material bazasi (XLSX → Smart3D)</h2>
+<div class="card">
+<p><b>Manba:</b> <code>Mahsulotlar-Narx-Katalogi-2026-10-13.xlsx</code> (bugungi narxlar) + <code>Mahsulotlar_Katalog_Narxlari.xlsx</code></p>
+<table>
+<tr><th>Material</th><th>Demo narx</th><th>ERP haqiqiy narx</th></tr>
+<tr><td>LDSP 16mm</td><td>165 000</td><td class="ok">499 600 so'm/varaq</td></tr>
+<tr><td>LDSP 18mm</td><td>185 000</td><td class="ok">580 650 so'm/varaq</td></tr>
+<tr><td>ЛМДФ 16mm</td><td>—</td><td class="ok">614 238 (yangi tip)</td></tr>
+<tr><td>MDF 16mm</td><td>290 000</td><td class="ok">484 895 so'm/varaq</td></tr>
+<tr><td>MDF 8mm</td><td>165 000</td><td class="ok">298 868 so'm/varaq</td></tr>
+<tr><td>HDF 3mm (orqa)</td><td>75 000</td><td class="ok">100 725 so'm/varaq</td></tr>
+</table>
+<p><b>Katalog tarkibi:</b> LDSP 480 · AKRIL 430 · LMDF 193 · MDF 159 · HDF 16 · OYNA 3. Qidiruv lotin/kirill ("Egger"="Эггер" topadi). Tanlangan real mahsulot → varaq narxi va o'lchami raskroy hisobiga tushadi.</p>
+<p><b>Furnitura:</b> 1978 ta ruchka/petli/slayder saqlandi — price bazaga keyin ulanadi.</p>
+</div>
+
+<h2>4. GibLab .project — texnik tafsilot</h2>
+<ul>
+<li>Format: XML root <code>&lt;project&gt;</code> + goods + sheet + operations CS/EL</li>
+<li>Binar <code>data</code> blob: 15 bayt/record (opcode, size, count, part_id); LSTR packing, waste = cap − pos</li>
+<li>Tekshiruv: Python parseri <code>giblab_raskroy.py</code> bilan round-trip bayt-ma-bayt teng; real faylda 55 detal / 11 karta / 0 xato</li>
+<li>Yo'l: kroy.bittada.uz (o'qildi, buzilmadi) → Smart3D'ga moslashtirildi</li>
+</ul>
+
+<h2>5. Raskroy — Lenta vs Guillotine (namuna oshxona)</h2>
+<table>
+<tr><th>Rejim</th><th>Foydalanish</th><th>Ochiq maydon</th></tr>
+<tr><td>Guillotine (BSSF)</td><td>78,3%</td><td>10,3 m²</td></tr>
+<tr><td><b>Lenta (GibLab)</b></td><td class="ok">87,4%</td><td class="ok">6,0 m²</td></tr>
+</table>
+
+<h2>6. Keyingi qadamlar</h2>
+<table>
+<tr><th>Ish</th><th>Bloker</th></tr>
+<tr><td>600 ta fragment bazasini kiritish</td><td class="warn">Fayl formati kutilmoqda (Excel/JSON/rasm)</td></tr>
+<tr><td>Price baza (kromka/furnitura/ish haqi narxlari)</td><td class="warn">Fayl kutilmoqda</td></tr>
+<tr><td>smart3d.bittada.uz'ga deploy (tunel agent)</td><td class="warn">Agent ishga tushirish usuli — Sobir javobi kutilmoqda</td></tr>
+<tr><td>CNC WoodWOP/Biesse post</td><td class="warn">Sexdan 1–2 ta namuna fayl kerak</td></tr>
+<tr><td>BPJ teshik (holes) sxemasi</td><td class="warn">Namunada holes bo'sh edi</td></tr>
+<tr><td>LLM (AI) API kaliti</td><td class="warn">Endpoint + kalit kerak (demo — lokal qoidalar)</td></tr>
+</table>
+
+<h2>7. Muhim hujjatlar</h2>
+<ul>
+<li><code>Smart3D/app/README.md</code> — texnik README (qurilish, ishga tushirish)</li>
+<li><code>Smart3D/TADQIQOT-kroy-giblab-tunel.md</code> — kroy/tunel/GibLab tadqiqoti</li>
+<li><code>Smart3D/app/data/sheet-catalog.json</code> — ERP material bazasi</li>
+<li>Ishga tushirish: <code>bash Smart3D/ishga-tushirish.sh</code> yoki <code>python3 -m http.server 8811 --directory Smart3D/app</code></li>
+</ul>
+
+<footer>Smart3D · hisobot 2026-10-13 · eski TZ fayllari o'chirildi (mazmuni shu hujjatda)</footer>
+</div>
+</body>
+</html>
