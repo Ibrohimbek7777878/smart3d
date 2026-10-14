@@ -408,7 +408,13 @@ export function voiceSupported() {
   return typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
 }
 
-export function startVoice(onText, onEnd, lang = 'uz-UZ') {
+/**
+ * Ovozni matnga aylantirishni boshlaydi.
+ * @param {object} o — { lang='uz-UZ', onText(text), onError(code), onEnd(lastErrorCode|null) }
+ *   onError har xatoda chaqiriladi; onEnd sessiya tugaganda BIR MARTA (xato bo'lsa ham).
+ * @returns SpeechRecognition (stop() bilan to'xtatiladi) yoki null.
+ */
+export function startVoice({ lang = 'uz-UZ', onText, onError, onEnd } = {}) {
   if (!voiceSupported()) return null;
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   const rec = new SpeechRec();
@@ -416,12 +422,16 @@ export function startVoice(onText, onEnd, lang = 'uz-UZ') {
   rec.continuous = false;
   rec.interimResults = false;
 
+  let lastError = null;
   rec.onresult = (e) => {
     const text = e.results[0] && e.results[0][0] && e.results[0][0].transcript;
-    if (text) onText(text);
+    if (text && onText) onText(text);
   };
-  rec.onerror = () => { if (onEnd) onEnd(); };
-  rec.onend = () => { if (onEnd) onEnd(); };
+  rec.onerror = (e) => {
+    lastError = (e && e.error) || 'unknown';
+    if (onError) onError(lastError);
+  };
+  rec.onend = () => { if (onEnd) onEnd(lastError); };
   rec.start();
   return rec;
 }

@@ -30,11 +30,9 @@ export async function render1080p(sp, opts = {}) {
     sp.setMode('3d');
   }
 
-  // 2. Asl holatni saqlab olish
-  const origWidth = renderer.domElement.width;
-  const origHeight = renderer.domElement.height;
+  // 2. Asl holatni saqlab olish (o'lcham keyin sp._resize() bilan konteynerdan tiklanadi —
+  //    domElement.width × DPR qayta qo'llansa, har renderda canvas 2× kattalashib ketadi)
   const origDpr = renderer.getPixelRatio();
-  const origAspect = cam3d.aspect;
   const origGridVis = sp.groups.grid ? sp.groups.grid.visible : true;
 
   // Gridni vaqtincha yashirish
@@ -95,9 +93,7 @@ export async function render1080p(sp, opts = {}) {
   // 5. Asl renderer holatini tiklash
   if (sp.groups.grid) sp.groups.grid.visible = origGridVis;
   renderer.setPixelRatio(origDpr);
-  renderer.setSize(origWidth, origHeight, false);
-  cam3d.aspect = origAspect;
-  cam3d.updateProjectionMatrix();
+  sp._resize();                      // o'lcham + kamera nisbati konteynerdan
   if (prevMode !== '3d') sp.setMode(prevMode);
   sp._invalidate();
 
@@ -127,10 +123,10 @@ export async function render360Panorama(sp, opts = {}) {
   const renderer = sp.renderer;
   const scene = sp.scene;
 
-  // 1. Markaz koordinatalarini aniqlash
-  const bbox = sp.bbox || { min: { x: 1500, y: 1500 }, max: { x: 3000, y: 3000 } };
-  const eyeX = (bbox.min.x + bbox.max.x) / 2;
-  const eyeY = (bbox.min.y + bbox.max.y) / 2;
+  // 1. Markaz koordinatalarini aniqlash (sp.bbox = {minX, minY, maxX, maxY, cx, cy})
+  const bbox = sp.bbox || { cx: 2100, cy: 1550 };
+  const eyeX = bbox.cx;
+  const eyeY = bbox.cy;
   const eyeZ = opts.eyeHeight || 1500; // Standart ko'z balandligi: 1.5 metr
 
   const prevMode = sp.getMode();

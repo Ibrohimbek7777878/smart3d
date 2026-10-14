@@ -302,28 +302,33 @@ function renderCutlist(cutlists) {
 function renderExCheck(val, doc, cutlists, nest) {
   const n = (doc.placements || []).length;
   const totalCutlistParts = (cutlists || []).reduce((s, c) => s + (c.parts || []).reduce((sp, p) => sp + (p.qty || 1), 0), 0);
-  const totalCutlistArea = Math.round((cutlists || []).reduce((s, c) => s + (c.totalArea || 0), 0) * 1000) / 1000;
+  const totalCutlistArea = Math.round((cutlists || []).reduce((s, c) => s + ((c.stats && c.stats.area_m2) || 0), 0) * 1000) / 1000;
   const placedCount = nest?.summary?.placed_count || 0;
   const placedArea = nest?.summary?.used_area_m2 || 0;
-  const unplacedCount = (nest?.unplaced || []).length;
+  const unplacedCount = Object.values(nest?.by_material || {}).reduce((s, r) => s + ((r && r.unplaced) || []).length, 0);
   const holes = (cutlists || []).reduce((s, c) => s + (c.holes || []).reduce((sh, h) => sh + (h.qty || 1), 0), 0);
-  const isMatched = (totalCutlistParts === placedCount) && (unplacedCount === 0);
+  /* maydon: yaxlitlash farqi 0.01 m² gacha ruxsat */
+  const isMatched = (totalCutlistParts === placedCount) && (unplacedCount === 0) &&
+    Math.abs(totalCutlistArea - placedArea) <= 0.01;
 
   let html = '';
   if (!val.ok) {
     html = `<div class="msg err">⚠️ Exportdan oldin xatolarni tuzating (${val.errors.length} ta xato mavjud)</div>`;
   } else if (!isMatched) {
-    html = `<div class="msg warn">⚠️ Raskroyda ${unplacedCount} ta detal sig'madi! Jami detal: ${totalCutlistParts}, joylashgani: ${placedCount}. Varaq o'lchamini tekshiring!</div>`;
+    html = `<div class="msg warn">⚠️ Detallar mos emas: kesim listida ${totalCutlistParts} ta (${totalCutlistArea} m²),
+      raskroyda ${placedCount} ta (${placedArea} m²), sig'magani ${unplacedCount} ta. Varaq o'lchamini tekshiring!</div>`;
   } else {
     html = `
       <div class="msg ok">
-        <b>✅ Checksum to'liq mos keldi (100% Validatsiya):</b><br>
+        <b>✅ Kesim listi va raskroy mos:</b><br>
         • Modullar: ${n} ta | Detallar: ${totalCutlistParts} ta (hammasi varaqqa tushdi)<br>
-        • Panel maydoni: ${totalCutlistArea} m² (cutlist) = ${placedArea} m² (nesting)<br>
-        • Prisadka teshiklari: ${holes} ta | Varaqlar: ${nest?.summary?.total_sheets || 0} dona<br>
-        • Formatlar: OBJ, BPJ 4.2, GibLab .project, CNC G-code (Ø6mm kompensatsiya), DXF
+        • Panel maydoni: ${totalCutlistArea} m² (kesim listi) = ${placedArea} m² (raskroy)<br>
+        • Teshiklar: ${holes} ta | Varaqlar: ${nest?.summary?.total_sheets || 0} dona
       </div>`;
   }
+  /* AUDIT-2026-10-14 §3: stanok fayllari haqiqiy stanokda sinalmagan */
+  html += `<div class="msg warn">⚠️ <b>SINOV:</b> stanok fayllari (DXF, NC, G-code, PTP, Biesse, Homag, Altendorf)
+    hali sexda sinalmagan — ishlab chiqarishda ishlatmang.</div>`;
   $('#exCheck').innerHTML = html;
 }
 
@@ -437,8 +442,12 @@ function renderCatalog() {
 
 const CAT_NAMES = {
   cabinet: 'Shkaf', wardrobe: 'Garderob', kitchen: 'Oshxona', bathroom: 'Hammom',
-  sofa: 'Divan', table: 'Stol', chair: 'Stol-chai', bed: 'Karyera',
-  shelf: 'Toka', door: 'Eshik', window: 'Deraza', other: 'Boshqa'
+  sofa: 'Divan', table: 'Stol', chair: 'Stul', bed: 'Karavot',
+  shelf: 'Javon', door: 'Eshik', window: 'Deraza',
+  tall_cabinet: 'Penal', drawer_base: 'Tortmali tumba', wall_cabinet: 'Osma shkaf',
+  cargo_base: 'Kargo tumba', wall_corner: 'Burchak osma', desk: 'Yozuv stoli',
+  mobile_pedestal: "G'ildirakli tumba", coat_hanger: 'Kiyim ilgich',
+  vanity: 'Rakovina tumbasi', mirror_cabinet: "Ko'zguli shkaf", other: 'Boshqa'
 };
 function catName(c) { return CAT_NAMES[c] || c; }
 
@@ -527,6 +536,8 @@ function renderOpenings() {
 async function runAI() {
   const text = $('#aiText').value.trim();
   if (!text) { toast('Avval matn yozing yoki ovozni bosing', 'err'); return; }
+  if (state.doc.placements.length &&
+      !confirm('AI yangi konstruksiya quradi — joriy ' + state.doc.placements.length + ' ta mebel almashtiriladi. Davom etasizmi?')) return;
   const btn = $('#btnBuild');
   btn.disabled = true; btn.textContent = '⏳ Qurilmoqda…';
   try {
@@ -557,22 +568,31 @@ function toggleVoice() {
   }
   if (!voiceSupported()) { toast('Bu brauzer ovozni qo\'llab-quvvatlamaydi (Chrome/Edge kiriting)', 'err'); return; }
   btn.classList.add('rec'); btn.textContent = '● Yozilyapti…';
-  let triedLang = false;
+  const reset = () => { state.voice = null; btn.classList.remove('rec'); btn.textContent = '🎤 Ovoz'; };
+  const VOICE_ERR = {
+    'not-allowed': 'Mikrofonga ruxsat bering (brauzer sozlamalari)',
+    'service-not-allowed': 'Mikrofonga ruxsat bering (brauzer sozlamalari)',
+    'audio-capture': 'Mikrofon topilmadi',
+    'network': 'Ovoz xizmati uchun internet kerak'
+  };
+  let triedRu = false;
   const start = (lang) => {
-    state.voice = startVoice({
+    const rec = startVoice({
       lang,
       onText: (t) => { $('#aiText').value = t; },
-      onEnd: () => { state.voice = null; btn.classList.remove('rec'); btn.textContent = '🎤 Ovoz'; },
-      onError: (err) => {
-        if (!triedLang && (err === 'language-not-supported' || err === 'language')) {
-          triedLang = true; start('ru-RU'); return;   // zaxira
+      onEnd: (err) => {
+        if (state.voice !== rec) return;            // to'xtatilgan yoki almashtirilgan sessiya
+        if (err === 'language-not-supported' && !triedRu) {
+          triedRu = true; state.voice = start('ru-RU'); return;   // zaxira: rus tili
         }
-        state.voice = null; btn.classList.remove('rec'); btn.textContent = '🎤 Ovoz';
-        toast('Ovoz xatosi: ' + err, 'err');
+        reset();
+        if (err && err !== 'no-speech' && err !== 'aborted') toast(VOICE_ERR[err] || ('Ovoz xatosi: ' + err), 'bad');
       }
     });
+    return rec;
   };
-  start('uz-UZ');
+  state.voice = start('uz-UZ');
+  if (!state.voice) reset();
 }
 
 /* ═══════════════════ EXPORT ═══════════════════ */
@@ -637,7 +657,9 @@ async function take360Panorama() {
     const r = await render360Panorama(sp, { download: false });
     const dlg = $('#panoModal');
     const container = $('#panoCanvasContainer');
+    if (panoViewer) { panoViewer.dispose(); panoViewer = null; }
     container.innerHTML = '';
+    dlg.showModal();                     // avval ochamiz — konteyner o'lchami ma'lum bo'lsin
     initPano360Viewer(container, r.canvas);
 
     $('#panoDownload').onclick = () => {
@@ -649,14 +671,14 @@ async function take360Panorama() {
       document.body.removeChild(a);
       toast('360° Panorama yuklab olindi!', 'good');
     };
-    $('#panoClose').onclick = () => {
-      dlg.close();
+    $('#panoClose').onclick = () => dlg.close();
+    /* ✕ ham, Esc ham shu yerga keladi — WebGL renderer va sikl doim bo'shatiladi */
+    dlg.onclose = () => {
       if (panoViewer) {
         panoViewer.dispose();
         panoViewer = null;
       }
     };
-    dlg.showModal();
     toast('360° Virtual Tur ochildi!', 'good');
   } catch (e) {
     console.error('360 panorama xatosi:', e);
@@ -668,12 +690,23 @@ function initPano360Viewer(container, panoCanvas) {
   const w = container.clientWidth || 800;
   const h = container.clientHeight || 400;
   const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(w, h);
+  renderer.domElement.style.touchAction = 'none';
   container.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, w / h, 1, 1100);
   camera.target = new THREE.Vector3(0, 0, 0);
+
+  /* oyna o'lchami o'zgarsa (telefon burildi) — ko'rgich ham moslashadi */
+  const ro = new ResizeObserver(() => {
+    const cw = container.clientWidth || w, ch = container.clientHeight || h;
+    renderer.setSize(cw, ch);
+    camera.aspect = cw / ch;
+    camera.updateProjectionMatrix();
+  });
+  ro.observe(container);
 
   const geometry = new THREE.SphereGeometry(500, 60, 40);
   geometry.scale(-1, 1, 1);
@@ -732,6 +765,7 @@ function initPano360Viewer(container, panoCanvas) {
   panoViewer = {
     dispose() {
       cancelAnimationFrame(reqId);
+      ro.disconnect();
       el.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
@@ -918,6 +952,7 @@ function exportNc() {
 }
 function exportPtp() {
   cncSafe((nest, cls) => cncBundle(nest, cls).ptp, '-ptp.csv', 'text/csv', 'PTP pozitsiya tayyor');
+}
 function exportGcode() {
   cncSafe((nest, cls) => cutGCode(nest, cls, { toolDia: 6.0, addTabs: true }), '-kesim.nc', 'text/plain', 'G-code (ISO) tayyor — kontur kesim');
 }
@@ -990,6 +1025,8 @@ function loadProject() {
   }
 }
 function newProject() {
+  if (state.doc.placements.length &&
+      !confirm('Joriy loyiha (' + state.doc.placements.length + ' mebel) o\'chiriladi. Davom etasizmi?')) return;
   state.doc = {
     v: 1, kind: 'smart3d',
     room: Object.assign({}, DEFAULT_ROOM),
@@ -1253,12 +1290,25 @@ async function boot() {
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     navigator.serviceWorker.register('sw.js').catch(() => { /* offline emas — jim */ });
   }
-  /* ═══ WebSocket — real-time narx yangilanishi ═══ */
+  connectPriceSocket();
+  $('#boot').style.transition = 'opacity .35s';
+  $('#boot').style.opacity = '0';
+  setTimeout(() => $('#boot').remove(), 400);
+  toast('Smart3D tayyor — 2D/3D ni ko\'ring', 'good');
+}
+
+/* ═══ WebSocket — real-time narx yangilanishi ═══
+ * Faqat sayt Smart3D serveri orqali ochilganda ulanadi (bir xil origin'da /api/health
+ * javob bersa). Statik hostingda (python http.server, CDN) WebSocket umuman ochilmaydi. */
+async function connectPriceSocket() {
+  if (!location.protocol.startsWith('http')) return;
+  try {
+    const r = await fetch('/api/health', { cache: 'no-store' });
+    if (!r.ok || !(r.headers.get('content-type') || '').includes('json')) return;
+  } catch (e) { return; }                    // server yo'q — jim
   try {
     const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsHost = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-      ? 'localhost:3000' : location.host;
-    const ws = new WebSocket(`${wsProto}//${wsHost}/ws`);
+    const ws = new WebSocket(`${wsProto}//${location.host}/ws`);
     ws.onmessage = (e) => {
       try {
         const msg = JSON.parse(e.data);
@@ -1275,12 +1325,8 @@ async function boot() {
         }
       } catch (err) { /* ignore */ }
     };
-    ws.onclose = () => { /* server yo'q — jim */ };
+    ws.onclose = () => { /* server to'xtadi — jim */ };
   } catch (err) { /* WebSocket yo'q — jim */ }
-  $('#boot').style.transition = 'opacity .35s';
-  $('#boot').style.opacity = '0';
-  setTimeout(() => $('#boot').remove(), 400);
-  toast('Smart3D tayyor — 2D/3D ni ko\'ring', 'good');
 }
 
 boot().catch(e => {
