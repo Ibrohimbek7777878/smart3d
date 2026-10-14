@@ -22,7 +22,7 @@ if (!fs.existsSync(dbPath)) { console.error(`XATO: baza topilmadi (${dbPath}) â€
 
 const db = new Database(dbPath);
 const hash = bcrypt.hashSync(password, 10);
-const r = db.prepare("UPDATE users SET password_hash = ?, role = 'admin' WHERE email = ?").run(hash, email);
+const r = db.prepare("UPDATE users SET password_hash = ?, role = 'admin' WHERE lower(email) = ?").run(hash, email);
 if (r.changes === 0) {
   db.prepare('INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)').run('Admin', email, hash, 'admin');
   console.log(`Admin yaratildi: ${email}`);

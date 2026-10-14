@@ -188,20 +188,25 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   const edges = Object.values(edgeAgg);
 
   /* ── 2b) Kesim o'lchami = tayyor o'lcham − kromka (≥ EDGE_DEDUCT_MIN_MM) ── */
+  const dedOf = (code, side) => {
+    const t = (sideThk[code] || {})[side] || 0;
+    return t >= EDGE_DEDUCT_MIN_MM ? t : 0;
+  };
   for (const p of parts) {
-    const st = sideThk[p.code];
-    if (!st) continue;
-    const ded = (side) => (st[side] >= EDGE_DEDUCT_MIN_MM ? st[side] : 0);
-    p.length = rInt(p.finish_length - ded('L') - ded('R'));
-    p.width = rInt(p.finish_width - ded('F') - ded('B'));
+    if (!sideThk[p.code]) continue;
+    p.length = rInt(p.finish_length - dedOf(p.code, 'L') - dedOf(p.code, 'R'));
+    p.width = rInt(p.finish_width - dedOf(p.code, 'F') - dedOf(p.code, 'B'));
   }
 
-  /* ── 3) Teshiklar (burg'ilash) ──────────────────────────────── */
+  /* ── 3) Teshiklar (burg'ilash) ──────────────────────────────────
+   * Formula koordinatasi TAYYOR detalning L/F burchagidan (x — uzunlik bo'ylab L chetdan,
+   * y — en bo'ylab F chetdan). Stanok kesilgan (kromkasiz) panelni teshadi, shuning uchun
+   * L va F tomondagi ayirilgan kromka qalinligiga suramiz — kromka yopishgach teshik joyida. */
   const holes = [];
   for (const hl of frag.holes || []) {
     try {
-      const x = evalFormula(hl.x, baseVars);
-      const y = evalFormula(hl.y, baseVars);
+      const x = evalFormula(hl.x, baseVars) - dedOf(hl.part, 'L');
+      const y = evalFormula(hl.y, baseVars) - dedOf(hl.part, 'F');
       const qty = Math.max(1, Math.round(+hl.qty || 1));
       holes.push({
         fragment: frag.code,
@@ -236,7 +241,9 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   const isDrawer = (p) => /tortma|drawer|yashik|yashchik/i.test(p.code);
   const sliding = hardware.some(hw => /KUPE|SLID|RAIL|ROLIK/i.test(hw.code));
   const doors = sliding ? [] : fronts.filter(p => !isDrawer(p));
-  if (doors.length && !hardware.some(hw => /PET|petl|hinge/i.test(hw.code))) {
+  /* TS-… — eski fragmentlarda petlya shu kod bilan yozilgan (materials.json da nomi
+     "Styajka TS-1730" — ziddiyat egasi bilan aniqlanadi); bor bo'lsa ikkinchi marta qo'shilmaydi */
+  if (doors.length && !hardware.some(hw => /TS-|PET|petl|hinge/i.test(hw.code))) {
     const hingeQty = doors.reduce((s, p) => s + hingesForDoor(Math.max(p.finish_length, p.finish_width)), 0);
     hardware.push({ fragment: frag.code, code: 'PET-4', qty: hingeQty, _auto: true });
   }

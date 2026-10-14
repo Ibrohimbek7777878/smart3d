@@ -112,26 +112,36 @@ function num(v, field, { min = 0, max = 1e12, required = false } = {}) {
 /** Async route'dagi xato Express 4 da ushlanmaydi — next(err) ga o'tkazamiz (aks holda server o'chadi). */
 const ah = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
-/* ═══════════════════ RATE LIMIT (kutubxonasiz, xotirada) ═══════════════════ */
+/* ═══════════════════ RATE LIMIT (kutubxonasiz, xotirada) ═══════════════════
+ * login — faqat MUVAFFAQIYATSIZ urinishlar sanaladi (bitta NAT ortidagi sex o'zini
+ * bloklamaydi); register — alohida hisob. Nginx ortida TRUST_PROXY=1 shart. */
 function rateLimit({ windowMs, max }) {
   const hits = new Map();                  // ip → {n, reset}
   setInterval(() => {
     const now = Date.now();
     for (const [k, v] of hits) if (v.reset <= now) hits.delete(k);
   }, windowMs).unref();
-  return (req, res, next) => {
-    const now = Date.now(), key = req.ip;
+  const entry = (key) => {
+    const now = Date.now();
     let h = hits.get(key);
     if (!h || h.reset <= now) { h = { n: 0, reset: now + windowMs }; hits.set(key, h); }
-    h.n++;
-    if (h.n > max) {
-      res.set('Retry-After', String(Math.ceil((h.reset - now) / 1000)));
-      return res.status(429).json({ error: 'Urinishlar juda ko\'p — keyinroq qayta urinib ko\'ring' });
-    }
-    next();
+    return h;
+  };
+  return {
+    /** chegaradan oshgan bo'lsa 429 qaytaradi */
+    check: (req, res, next) => {
+      const h = entry(req.ip);
+      if (h.n >= max) {
+        res.set('Retry-After', String(Math.ceil((h.reset - Date.now()) / 1000)));
+        return res.status(429).json({ error: 'Urinishlar juda ko\'p — keyinroq qayta urinib ko\'ring' });
+      }
+      next();
+    },
+    hit: (req) => { entry(req.ip).n++; }
   };
 }
-const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10 });
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10 });   // 10 xato / 15 daq
+const registerLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10 }); // 10 ro'yxat / soat
 
 /* ── Express ── */
 const app = express();
@@ -171,7 +181,8 @@ const signToken = (u) => jwt.sign({ id: u.id, email: u.email, role: u.role }, JW
   { expiresIn: JWT_EXPIRES, algorithm: 'HS256' });
 
 /* ═══════════════════ AUTH API ═══════════════════ */
-app.post('/api/register', authLimiter, ah(async (req, res) => {
+app.post('/api/register', registerLimiter.check, ah(async (req, res) => {
+  registerLimiter.hit(req);
   const b = req.body || {};
   const em = email(b.email);
   const password = str(b.password, 'parol', { max: 128, required: true });
@@ -179,7 +190,7 @@ app.post('/api/register', authLimiter, ah(async (req, res) => {
   const name = plainText(b.name, 'ism', { max: 100 });
   const phone = str(b.phone, 'telefon', { max: 32 });
   if (phone && !/^[0-9+()\-\s]+$/.test(phone)) bad('telefon formati noto\'g\'ri');
-  const exists = db.prepare('SELECT id FROM users WHERE email = ?').get(em);
+  const exists = db.prepare('SELECT id FROM users WHERE lower(email) = ?').get(em);
   if (exists) return res.status(409).json({ error: 'Email allaqachon bor' });
   const hash = await bcrypt.hash(password, 10);
   const r = db.prepare('INSERT INTO users (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, ?)')
@@ -188,12 +199,14 @@ app.post('/api/register', authLimiter, ah(async (req, res) => {
   res.json({ token: signToken(user), user });
 }));
 
-app.post('/api/login', authLimiter, ah(async (req, res) => {
+app.post('/api/login', loginLimiter.check, ah(async (req, res) => {
   const b = req.body || {};
   const em = email(b.email);
   const password = str(b.password, 'parol', { max: 128, required: true });
-  const u = db.prepare('SELECT * FROM users WHERE email = ?').get(em);
+  /* lower(email) — eski kod emailni o'zgartirmasdan saqlagan (katta harflar bilan) */
+  const u = db.prepare('SELECT * FROM users WHERE lower(email) = ?').get(em);
   if (!u || !(await bcrypt.compare(password, u.password_hash))) {
+    loginLimiter.hit(req);
     return res.status(401).json({ error: 'Email yoki parol noto\'g\'ri' });
   }
   res.json({ token: signToken(u), user: { id: u.id, name: u.name, email: u.email, role: u.role } });
@@ -210,7 +223,7 @@ app.get('/api/materials', (req, res) => {
   const q = str(req.query.q, 'q', { max: 100 });
   const catCode = str(req.query.cat_code, 'cat_code', { max: 20 });
   const type = str(req.query.type, 'type', { max: 20 });
-  const limit = num(req.query.limit, 'limit', { min: 1, max: 500 }) || 100;
+  const limit = Math.min(num(req.query.limit, 'limit', { min: 1, max: 1e6 }) || 100, 500);
   let sql = 'SELECT * FROM materials WHERE 1=1';
   const params = [];
   if (catCode) { sql += ' AND cat_code = ?'; params.push(catCode); }
@@ -266,7 +279,7 @@ app.post('/api/orders', auth, (req, res) => {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
     .run(req.user.id, plainText(b.client_name, 'client_name', { max: 200 }), str(b.client_phone, 'client_phone', { max: 32 }),
       clientEmail, JSON.stringify(room), JSON.stringify(placements),
-      Math.round(num(b.total_price, 'total_price', { min: 0, max: 1e13 }) || 0), plainText(b.notes, 'notes', { max: 4000 }));
+      Math.round(num(b.total_price, 'total_price', { min: 0, max: 1e13 }) || 0), str(b.notes, 'notes', { max: 4000 }));
   res.json({ id: Number(r.lastInsertRowid), ok: true });
 });
 
@@ -306,7 +319,9 @@ app.get('/api/furnitura', (req, res) => {
   res.json({ _meta: data._meta, total: items.length, items: items.slice(0, 100) });
 });
 
-/* ═══════════════════ REMNANTS API (Kamchilik 9) — faqat login bilan ═══════════════════ */
+/* ═══════════════════ REMNANTS API (Kamchilik 9) ═══════════════════
+ * Sex ombori: o'qish — login bilan, yozish — faqat admin (ro'yxatdan o'tish ochiq,
+ * oddiy foydalanuvchi omborni o'zgartira olmasligi kerak). */
 app.get('/api/remnants', auth, (req, res) => {
   const status = str(req.query.status, 'status', { max: 20 }) || 'available';
   const materialCode = str(req.query.material_code, 'material_code', { max: 40 });
@@ -317,7 +332,7 @@ app.get('/api/remnants', auth, (req, res) => {
   res.json(db.prepare(sql).all(...params));
 });
 
-app.post('/api/remnants', auth, (req, res) => {
+app.post('/api/remnants', auth, adminOnly, (req, res) => {
   const b = req.body || {};
   if (!Array.isArray(b.remnants) || b.remnants.length === 0) bad('Remnants ro\'yxati kerak');
   if (b.remnants.length > 1000) bad('Remnants juda ko\'p (max 1000)');
@@ -346,7 +361,7 @@ app.post('/api/remnants', auth, (req, res) => {
   res.json({ ok: true, count: list.length });
 });
 
-app.put('/api/remnants/:id/use', auth, (req, res) => {
+app.put('/api/remnants/:id/use', auth, adminOnly, (req, res) => {
   const orderId = num((req.body || {}).order_id, 'order_id', { min: 1, max: 1e12 });
   const r = db.prepare('UPDATE remnants SET status = ?, used_order_id = ? WHERE remnant_id = ? OR id = ?')
     .run('used', orderId, req.params.id, req.params.id);

@@ -8,12 +8,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import jwt from 'jsonwebtoken';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_DIR = path.join(__dirname, '..');
-const SRC_DB = path.join(SERVER_DIR, 'smart3d.db');
 const SECRET = 'test-secret-' + 'x'.repeat(40);
+const ADMIN_PW = 'test-admin-parol-1';
 
 let tmp, proc, base;
 
@@ -37,9 +38,10 @@ const api = (p, opts = {}) => fetch(base + p, {
 before(async () => {
   tmp = fs.mkdtempSync(path.join(os.tmpdir(), 's3d-test-'));
   const db = path.join(tmp, 'test.db');
-  const src = new (await import('better-sqlite3')).default(SRC_DB, { readonly: true });
-  await src.backup(db);                     // WAL bilan to'g'ri nusxa
-  src.close();
+  /* toza baza (smart3d.db gitga kirmaydi) — init-db orqali, admin paroli test uchun */
+  execFileSync(process.execPath, ['init-db.js'], {
+    cwd: SERVER_DIR, env: { ...process.env, DB_PATH: db, ADMIN_PASSWORD: ADMIN_PW, ADMIN_EMAIL: 'Admin@Smart3D.uz' }, stdio: 'pipe'
+  });
   const port = freePort();
   base = `http://127.0.0.1:${port}`;
   const r = await startServer({ PORT: String(port), DB_PATH: db, JWT_SECRET: SECRET, NODE_ENV: 'test' });
@@ -97,10 +99,31 @@ test('ro\'yxatdan o\'tish: kuchsiz parol va HTML ism rad etiladi; to\'g\'risi is
   assert.ok(p.exp - p.iat <= 12 * 3600, 'token muddati ≤ 12 soat');
   const me = await api('/api/me', { headers: { authorization: 'Bearer ' + token } });
   assert.equal(me.status, 200);
-  /* login qilgan foydalanuvchi qoldiq yoza oladi, noto'g'ri raqamlar — 400 */
+  /* oddiy foydalanuvchi sex omborini (qoldiqlar) o'zgartira olmaydi */
+  const auth = { authorization: 'Bearer ' + token };
+  assert.equal((await api('/api/remnants', { method: 'POST', headers: auth, body: JSON.stringify({ remnants: [{ len: 500, width: 300 }] }) })).status, 403);
+  assert.equal((await api('/api/remnants/1/use', { method: 'PUT', headers: auth, body: '{}' })).status, 403);
+  assert.equal((await api('/api/remnants', { headers: auth })).status, 200, 'o\'qish — mumkin');
+  /* buyurtma izohida < > belgilari — oddiy matn, rad etilmaydi */
+  const o = await api('/api/orders', { method: 'POST', headers: auth, body: JSON.stringify({ client_name: 'Ali', notes: "eni > 600 bo'lsa 2 eshik" }) });
+  assert.equal(o.status, 200);
+});
+
+test('admin: aralash harfli email bilan kirish; qoldiqni faqat admin yozadi', async () => {
+  for (const em of ['admin@smart3d.uz', 'ADMIN@Smart3D.uz']) {
+    const r = await api('/api/login', { method: 'POST', body: JSON.stringify({ email: em, password: ADMIN_PW }) });
+    assert.equal(r.status, 200, em);
+  }
+  const { token } = await (await api('/api/login', { method: 'POST', body: JSON.stringify({ email: 'admin@smart3d.uz', password: ADMIN_PW }) })).json();
   const auth = { authorization: 'Bearer ' + token };
   assert.equal((await api('/api/remnants', { method: 'POST', headers: auth, body: JSON.stringify({ remnants: [{ len: 'abc', width: 300 }] }) })).status, 400);
   assert.equal((await api('/api/remnants', { method: 'POST', headers: auth, body: JSON.stringify({ remnants: [{ len: 500, width: 300 }] }) })).status, 200);
+});
+
+test('materials: limit katta bo\'lsa 500 ga cheklanadi (400 emas)', async () => {
+  const r = await api('/api/materials?limit=1000');
+  assert.equal(r.status, 200);
+  assert.ok((await r.json()).length <= 500);
 });
 
 test('ovoz: audio uchun soxta matn qaytarilmaydi (501)', async () => {
@@ -122,7 +145,7 @@ test('noma\'lum API — 404 JSON', async () => {
   assert.ok((await r.json()).error);
 });
 
-test('login brute-force: 15 daqiqada 10 urinishdan keyin 429', async () => {
+test('login brute-force: 15 daqiqada 10 ta xato urinishdan keyin 429', async () => {
   let got429 = false;
   for (let i = 0; i < 12; i++) {
     const r = await api('/api/login', { method: 'POST', body: JSON.stringify({ email: 'admin@smart3d.uz', password: 'notogri-' + i }) });

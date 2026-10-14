@@ -71,11 +71,13 @@ function projectSlots() {
   return { korpus: state.materialCode, polka: state.materialCode, fasad: state.fasadCode };
 }
 
-/** ERP varag'i qaysi slotga tegishli: LDSP/LMDF/OSB → korpus, HDF → orqa, qolgani (MDF, akril) → fasad. */
+/** ERP varag'i qaysi slotga tegishli: LDSP/LMDF/OSB → korpus, HDF → orqa, MDF (va akril) → fasad.
+ *  Oyna va boshqalar slot emas (null) — korpus/fasad tanloviga tegmaydi. */
 function slotForBase(base) {
   if (/^HDF/.test(base)) return 'orqa';
   if (/^(LDSP|LMDF|OSB)/.test(base)) return 'korpus';
-  return 'fasad';
+  if (/^MDF/.test(base)) return 'fasad';
+  return null;
 }
 
 /* ERP katalogidagi real mahsulot → hisoblash bazasi (kod) */
@@ -475,10 +477,11 @@ function renderCatalog() {
  *  o'lchamda va kroysiz (maydon ÷ 85%) taxmin. Material/varaq o'zgarmaguncha keshlanadi. */
 const estCache = { key: '', map: {} };
 function estimateFragment(f) {
-  const mats = effectiveMaterials();
-  const key = state.materialCode + '|' + state.fasadCode + '|' + (state.sheet ? state.sheet.sku + state.sheet.name : '');
-  if (estCache.key !== key) { estCache.key = key; estCache.map = {}; }
+  const sh = state.sheet;
+  const key = state.materialCode + '|' + state.fasadCode + '|' + (sh ? sh.sku + sh.name + '@' + sh.uzs : '');
+  if (estCache.key !== key) { estCache.key = key; estCache.map = {}; estCache.mats = null; }
   if (estCache.map[f.code] == null) {
+    const mats = estCache.mats || (estCache.mats = effectiveMaterials());   // nusxa — faqat kesh bo'sh bo'lsa
     const cl = cutlist(f, f.w, f.d, f.h, mats, { projectSlots: projectSlots() });
     estCache.map[f.code] = productionCost([cl], mats, { areaEstimate: true }).clientTotal;
   }
@@ -1255,7 +1258,8 @@ async function boot() {
       if (slot === 'korpus') { state.materialCode = base; $('#matSel').value = base; }
       else if (slot === 'fasad') { state.fasadCode = base; $('#fasadSel').value = base; }
       renderCatalog();
-      toast('Real material (' + slot + '): ' + state.sheet.name, 'good');
+      toast(slot ? 'Real material (' + slot + '): ' + state.sheet.name
+                 : state.sheet.name + ' — korpus/fasad uchun emas, faqat narx bazasi yangilandi', slot ? 'good' : 'warn');
     } else {
       toast('Demo narxlar (materials.json)', 'ok');
     }
@@ -1413,6 +1417,7 @@ async function connectPriceSocket() {
             sh.uzs = msg.uzs;
             sh.usd = msg.usd;
             renderSheetSel();
+            if (sh === state.sheet) { renderCatalog(); scheduleRecalc(true); }   // tanlangan varaq — narx qayta
             toast(`Narx yangilandi: ${sh.name.slice(0, 40)} — ${fmtSum(old)} → ${fmtSum(msg.uzs)}`, 'good');
           }
         }

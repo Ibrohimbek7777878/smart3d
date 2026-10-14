@@ -162,7 +162,7 @@ console.log('Settings: default qo\'yildi');
 
 /* ═══════════════════ ADMIN USER ═══════════════════ */
 /* Parol faqat ADMIN_PASSWORD dan — kodda ham, konsolda ham turmaydi */
-const adminEmail = process.env.ADMIN_EMAIL || 'admin@smart3d.uz';
+const adminEmail = (process.env.ADMIN_EMAIL || 'admin@smart3d.uz').trim().toLowerCase();
 const adminPassword = process.env.ADMIN_PASSWORD || '';
 if (adminPassword.length >= 8) {
   const hash = await bcrypt.hash(adminPassword, 10);
