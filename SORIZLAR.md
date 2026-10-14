@@ -153,3 +153,41 @@ bu biz korgan sayt sunpina ularda huddi shunday tizm bor va ular bazisiz ishlayd
 46. Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
 
 47. davom et
+
+48. tohta men shunchak nima va qanday qilsam bolad dedim tohta kod yozmay tur
+
+49. QOIDALAR-Bittada-2026-10-14.txt  bu fayln oqib chiq ehtiyot bol opencode ham ishlayabd kod yozma taqiqlayman toliq oldin shu qoidalrin oqib chiq
+
+50. ulrni qoyib tur sen hozir ozing neshta sikl bolsang hammasin qoshib ishlatsihing shart bu ha qoida va skillarn tartib boyicha berilgan taskka qarb ishlatishing kere shuni qila olasanmi qoida opencode ishlayabd teginma va kod ham boshqa narsa ham yozma
+
+51. end toliq qosh va hozir oqib chiqan qoidlaring ichidan bizn loyhaga tushadigan qoidalrn qoldir va bu qoidalrin ichida men ozimn boshqa loyhamga yozilgan qooidalr ham bor oshlarin ochir 
+
+[joylangan matn: "AI YORDAMCHI … UMUMIY ISH QOIDALARI" — to'liq matni qoidalar_qatiy_amalqilinsin.md, 1-qism]
+
+bular barcha ai suniy intleket uchun qoidalar va bularga amal qilishing shart
+
+52. yoq  fayl nomin ozinga xoitranga ham yozb qoy va qoida asosida ishlaysan savol bolsa berasan  fayln nomin qoidalar_qatiy_amalqilinsin.md ga ozagrtiasan
+
+## 2026-10-15
+
+53. /home/ibrohim/Desktop/bittada sunpin/Smart3D/data1  bu yerga 2ta fayl qoshdim modulniy va narxlar degan shularni ham korib chiq lekin ehtiyot bol opencode hali ham ishlayabdi
+
+54. end bularni ham loyhaga qoshish va realni ishlatish kere ozi loyhan shunib oldingmi va bularni qoshgach bita kuxniya chizb natijan chiqarishimiz kere hammasin tatbilab  va narxlar zpachatstlar materila bazadagi mahsulotlarnga id qoyish orqali muomon hal qilish kere
+
+55. hozircha tz yozma va kod ham yozma yechim topish kere va ishlyadim loyhamiz shuni bilish kere konstrsukyiya qilamiz yangi kuxniy mebelni va fragment ishlatamiz fragmnetlar maxmimal minimal degan narsa bor yoq bolsa ozimiz qoshamiz osha maxmimal va minimalka asosida oshalardan chiqmagan holda ishlayd va chizilad va narx chiqarilad materila soni zapchast hamma hammasi chiqarilish kere va kroyin ham qilinish kere senga namuna giblab fayllar va namuna b3d ob,bpj,fayllar kere bolsa ayt menda bor va senga code serverni parolin linkn bersam  kirb ozinga kereli narsalarn qismlarn olib chiqa olasanm lekin loyhaga teginmaslign va ishlab trugan serverda turgan loyha u buzib qoymasliging kere bolad ozi loyha tz da yozilgan boyicha ketilayabdimi yoqmi shuni ham ayt
+
+56. [joylangan matn: server agentining Smart3D uchun fayllar ro'yxati]
+
+Qaysi bri kere hoz
+
+57. hozir buni pauzaga qoy va eslatb tur end loyhan korib chiq opencde berilgan tasklarn qyasilarn qilgan va kamchiliklar bolsa togirlab ket hamda toliq tugatib qoy
+
+58. ish nechi fozi boldi umumiy
+
+59. hozir opencode qolgan ishlarn tugat toliq ishlaydigan bolsin hammasi  opencode hozir tohtadi ishn boshla
+
+60. /home/ibrohim/Desktop/bittada sunpin/Smart3D/Smart3D_malumot   shu fayln kor
+
+61. olchamlarni tasdiqlayman lekin ozgarishtirsh ham bolsin olchamlarni keyinchalik va 2chi savoling dark yokida light uni korib chiqamz tz yoz va ishn boshla
+
+62. ha chiqman kamchiliklarin togirla qoidalr faylin ozgartirb qoy  boshla

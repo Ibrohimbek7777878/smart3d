@@ -3,8 +3,8 @@
   "nima": "Bazis material/zapchast nomi → ERP mahsuloti (8 xonali ID). Narxga faqat 'aniq' va 'tasdiqlangan' kiradi.",
   "tasdiqlash": "Taklifni tasdiqlash: shu yozuvda 'holat' ni 'tasdiqlangan' qiling — qayta import uni saqlaydi.",
   "holat": {
-   "yoq": 69,
-   "taklif": 3,
+   "yoq": 70,
+   "taklif": 2,
    "aniq": 1
   }
  },
@@ -60,12 +60,8 @@
   {
    "nom": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
    "tur": "plita",
-   "holat": "taklif",
-   "id": "50000013",
-   "erp_nom": "ЛХДФ 3мм 2800*2070 Кашемир 5,796кв",
-   "sku": "5981 PE",
-   "oxshashlik": 0.62,
-   "sabab": "narxga kirmaydi — egasi tasdiqlashi kerak ('holat': 'tasdiqlangan')"
+   "holat": "yoq",
+   "sabab": "ERP katalogida mos mahsulot topilmadi"
   },
   {
    "nom": "Кромка 19/1 ПВХ Белый гладкий",

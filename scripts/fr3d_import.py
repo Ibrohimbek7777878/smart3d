@@ -193,16 +193,22 @@ def tokens(s):
     return out
 
 
-def best_candidate(name, pool):
-    """O'xshash mahsulot (taklif): token o'xshashligi; raqamli tokenlar mos bo'lishi shart."""
+PLITA_IGNORE = {"stand"}   # "Standart" — seriya so'zi, rang/dekor emas
+
+
+def best_candidate(name, pool, strict=False):
+    """O'xshash mahsulot (taklif): token o'xshashligi; raqamli tokenlar mos bo'lishi shart.
+    strict (plita) — Bazis nomidagi barcha so'zlar (rang, dekor) ERP nomida bo'lishi shart:
+    "ЛХДФ … Белый" ga "ЛХДФ … Кашемир" taklif qilinmaydi."""
     tn = tokens(name)
     if not tn:
         return None, 0.0
     nums = {t for t in tn if re.search(r"\d", t)}
+    need = (tn - PLITA_IGNORE) if strict else nums
     best, score = None, 0.0
     for it in pool:
         ti = tokens(it["name"])
-        if nums and not nums <= ti:
+        if need and not need <= ti:
             continue
         inter = len(tn & ti)
         if not inter:
@@ -226,7 +232,7 @@ def link(name, kind, furn, f_by_norm, mats, m_by_norm, old):
     if exact:
         rec.update(holat="aniq", id=exact["id"], erp_nom=exact["name"], sku=exact.get("sku"))
         return rec
-    cand, score = best_candidate(name, furn if kind == "furnitura" else mats)
+    cand, score = best_candidate(name, furn if kind == "furnitura" else mats, strict=(kind == "plita"))
     if cand and score >= 0.5:
         rec.update(holat="taklif", id=cand["id"], erp_nom=cand["name"], sku=cand.get("sku"), oxshashlik=score,
                    sabab="narxga kirmaydi — egasi tasdiqlashi kerak ('holat': 'tasdiqlangan')")

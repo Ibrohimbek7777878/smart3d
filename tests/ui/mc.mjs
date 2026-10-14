@@ -33,7 +33,8 @@ export default async function run(page) {
   const t800 = await total();
   await setW(1500);
   R.olcham = { tanlangan: await M(() => { const s = window.__s3d.state; return s.doc.placements.find(q => q.id === s.selectedId)?.frg; }),
-    narx600: t600, narx800: t800, ozgardi: t800 > t600, eni1500: await M(() => +document.getElementById('icW').value) };
+    narx600: t600, narx800: t800, ozgardi: t800 > t600, eni1500: await M(() => +document.getElementById('icW').value),
+    ogohlantirish: await M(() => { const el = document.getElementById('icWarn'); return el.classList.contains('hidden') ? '(ko\'rinmaydi)' : el.textContent; }) };
   R.cheklov = await M(() => {
     const s = window.__s3d.state, p = s.doc.placements.find(q => q.frg === 'MC-KP-02');
     const f = s.catalog['MC-KP-02'];

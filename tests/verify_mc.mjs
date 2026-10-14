@@ -39,6 +39,12 @@ ok('kodlar noyob (MC-…)', new Set(mc.map(f => f.code)).size === mc.length && m
 ok('stoleshnitsa bo\'lagi modulda yo\'q (F2 yaxlit quradi)', mc.every(f => !f.parts.some(p => /stol|столешн/i.test(p.nom + p.code))));
 ok('avtomatik furnitura o\'chiq (Bazis BOM to\'liq)', mc.every(f => f.auto_hardware === false));
 ok('o\'ylab topilgan narx yo\'q: furnitura ID faqat ERP katalogidan', mc.every(f => f.hardware.every(h => !h.id || furnById[h.id])));
+{ /* plita taklifida rang/dekor mos (B2): Bazis nomidagi har so'z (5 harf o'zagi) ERP nomida bor */
+  const stems = (t) => String(t).toLowerCase().split(/[^a-zа-яё]+/i).filter(x => x.length >= 4 && !/^standart/.test(x)).map(x => x.slice(0, 5));
+  const plita = J('id-links.json').links.filter(l => l.tur === 'plita' && (l.holat === 'taklif' || l.holat === 'aniq'));
+  const bad = plita.filter(l => { const e = stems(l.erp_nom); return stems(l.nom).some(x => !e.includes(x)); });
+  ok('plita taklifi: rangi boshqa mahsulot taklif qilinmaydi (ЛХДФ Белый ≠ Кашемир)', bad.length === 0, bad.map(l => l.nom + ' → ' + l.erp_nom).join(' | '));
+}
 
 /* ══ [2] Bazis bilan solishtirish (Bazis o'lchamida) ══ */
 console.log('\n[2] Bazis bilan solishtirish');

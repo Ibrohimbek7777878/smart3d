@@ -82,6 +82,17 @@ Usta MebelCity'ning haqiqiy modullaridan oshxona chizadi. Modul o'lchami sex sta
 - **A5:** `tests/verify_mc.mjs` 34/34 (`run-all.sh` ga qo'shildi), brauzer `tests/ui/mc.mjs` (`run.sh` ga qo'shildi). Barcha regressiya yashil.
 - **Ma'lum cheklovlar:** Bazis BOM maydoni (parser kontur bo'yicha) 4 modulda farq qiladi — egri panellar va 2 ta o'qilmagan kontur; kroy to'g'ri to'rtburchak bo'yicha (to'g'ri). Kromka qoida bo'yicha Bazis'dan ±20% farq qiladi (D3 kerak). Krovat gabariti taxminiy (ichma-ich bloklar).
 
+## 1b. B — Kamchiliklarni tuzatish (2026-10-15, egasi: "kamchiliklarni to'g'irla … boshla") — BAJARILDI
+- **B1. O'lcham chegarasi ogohlantirishi.** Inspektorda (eni/chuqurligi/bo'yi) chegaradan tashqari qiymat kiritilsa, dastur uni jim siqib qo'yardi — ogohlantirish siqilgandan keyingi qiymat bilan tekshirilgani uchun hech qachon chiqmasdi.
+  - Tuzatish: ogohlantirish usta kiritgan qiymat bo'yicha chiqadi va nimaga siqilgani yoziladi ("eni 1500 mm > max 1070 → 1070 ga siqildi").
+  - Fayllar: `app/js/app.js` (`numPatch`, `checkClamp`). Boshqa joyda o'lcham siqilmaydi (tekshirildi). **Xavf: PAST** — faqat ekrandagi matn; hisob o'zgarmaydi.
+- **B2. Noto'g'ri taklif (plita).** "ЛХДФ 3мм 2800*2070 Белый … Standart" → "ЛХДФ … Кашемир" deb taklif qilingan — rangi boshqa.
+  - Tuzatish: plita uchun Bazis nomidagi barcha so'zlar (rang, dekor) ERP nomida bo'lishi shart; bo'lmasa — "yo'q". Furnitura qoidasi o'zgarmaydi.
+  - Fayllar: `scripts/fr3d_import.py`, qayta import → `app/data/id-links.json`. `fragments-mc.json` o'zgarmasligi tekshiriladi. **Xavf: PAST** — taklif baribir narxga kirmaydi.
+- **Sinov:** `tests/ui/mc.mjs` ga ogohlantirish tekshiruvi; `verify_mc` ga "plita taklifida rang mos"; to'liq regressiya.
+- **Moliya:** narx hisobi o'zgarmaydi, ERP'ga hech narsa yozilmaydi.
+- **Egasidan kerak bo'lib qoladi:** 69 ta zapchast moslashtirish, kromka narxlari (D3), krovat/parta min/max.
+
 ## 2. Moliya, xavf, orqaga qaytarish
 - **Moliya:** ERP va moliyaga hech narsa yozilmaydi, faqat lokal JSON fayllar o'qiladi. Pul harakati yo'q.
 - **Umumiy xavf: O'RTA.** Faqat yangi modullar va yangi fayllar; eski 83 fragment, kroy dvigateli va eksportlar o'zgarmaydi.

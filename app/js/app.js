@@ -477,14 +477,14 @@ function showItemCard(id) {
 }
 function hideItemCard() { $('#itemCard').classList.add('hidden'); $('#icWarn').classList.add('hidden'); }
 
-function checkClamp(p, frag) {
+/** Chegaradan tashqari o'lcham uchun ogohlantirish. siqildi=true — p usta kiritgan qiymat, u siqib qo'yilgan */
+function checkClamp(p, frag, siqildi = false) {
   const w = [];
-  if (frag.min_w && p.w < frag.min_w) w.push(`eni min ${frag.min_w} mm dan kich → ${frag.min_w} ga siqiladi`);
-  if (frag.max_w && p.w > frag.max_w) w.push(`eni max ${frag.max_w} mm dan katta`);
-  if (frag.min_d && p.d < frag.min_d) w.push(`chuqurlik min ${frag.min_d} mm dan kich`);
-  if (frag.max_d && p.d > frag.max_d) w.push(`chuqurlik max ${frag.max_d} mm dan katta`);
-  if (frag.min_h && p.h < frag.min_h) w.push(`bo'yi min ${frag.min_h} mm dan kich`);
-  if (frag.max_h && p.h > frag.max_h) w.push(`bo'yi max ${frag.max_h} mm dan katta`);
+  for (const [k, nom] of [['w', 'eni'], ['d', 'chuqurligi'], ['h', "bo'yi"]]) {
+    const lo = frag['min_' + k], hi = frag['max_' + k];
+    if (lo && p[k] < lo) w.push(`${nom} ${p[k]} mm < min ${lo}` + (siqildi ? ` → ${lo} ga siqildi` : ''));
+    if (hi && p[k] > hi) w.push(`${nom} ${p[k]} mm > max ${hi}` + (siqildi ? ` → ${hi} ga siqildi` : ''));
+  }
   const el = $('#icWarn');
   if (w.length) { el.textContent = '⚠️ ' + w.join(' · '); el.classList.remove('hidden'); }
   else el.classList.add('hidden');
@@ -1519,10 +1519,11 @@ async function boot() {
     const frag = state.catalog[p.frg] || {};
     const patch = { [key]: Math.round(+e.target.value || 0) };
     Object.assign(p, patch);
+    const want = { w: p.w, d: p.d, h: p.h };        // usta kiritgan — ogohlantirish shu bo'yicha
     const cl = clampSize(p, frag);
     if (Object.keys(cl).length) { Object.assign(p, cl); showItemCard(p.id); }
     items.setPlacements(viewPlacements(), state.catalog);
-    checkClamp(p, frag);
+    checkClamp(want, frag, true);
     scheduleRecalc();
   };
   ['icW', 'icD', 'icH', 'icX'].forEach((id, i) => {
