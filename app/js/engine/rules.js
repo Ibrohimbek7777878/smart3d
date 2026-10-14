@@ -267,6 +267,8 @@ export function validateDoc(doc, opts = {}) {
       if (frag.max_w && w > frag.max_w) warnings.push({ code: 'W_SIZE_CLAMP', id: p.frg, message: p.frg + ': eni chegaradan katta' });
       if (frag.min_d && d < frag.min_d) warnings.push({ code: 'W_SIZE_CLAMP', id: p.id, message: p.frg + ': chuqurligi chegaradan kich' });
       if (frag.max_d && d > frag.max_d) warnings.push({ code: 'W_SIZE_CLAMP', id: p.frg, message: p.frg + ': chuqurligi chegaradan katta' });
+      if (frag.min_h && h < frag.min_h) warnings.push({ code: 'W_SIZE_CLAMP', id: p.id, message: p.frg + ': bo\'yi chegaradan kich' });
+      if (frag.max_h && h > frag.max_h) warnings.push({ code: 'W_SIZE_CLAMP', id: p.id, message: p.frg + ': bo\'yi chegaradan katta' });
     }
     // xona chegarasi — aylanish hisobga olingan (footprint)
     const ext = rotatedExtent(w, d, p.rot);

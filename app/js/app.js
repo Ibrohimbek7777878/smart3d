@@ -22,6 +22,7 @@ import { buildBPJ } from './engine/bpj.js';
 import { buildProject as buildGlProject } from './engine/giblab.js';
 import { cncBundle, cutGCode } from './engine/cnc.js';
 import { buildSearchIndex, searchMaterial } from './engine/search.js';
+import { applySexStandart } from './engine/standart.js';
 import { aiBuild, startVoice, voiceSupported, parseZamer, suggestLayout } from './ai.js';
 import { VRButton } from '../vendor/three/addons/webxr/VRButton.js';
 import * as THREE from 'three';
@@ -173,7 +174,7 @@ function doRecalc() {
   const nest = nestProject(allParts, mats, state.nestCfg || {});
 
   /* 5) ishlab chiqarish tannarxi (haqiqiy varaqlar soni bilan) */
-  const prod = productionCost(cutlists, mats, { nestResult: nest });
+  const prod = productionCost(cutlists, mats, { nestResult: nest, furnituraById: state.furnById });
 
   /* 6) mijoz kotirovkasi — tannarx × (1 + ustama), modullarga taqsimlangan */
   const priceRes = buildQuote(doc, cutlists, prod, sizeCheck.warnings);
@@ -482,6 +483,8 @@ function checkClamp(p, frag) {
   if (frag.max_w && p.w > frag.max_w) w.push(`eni max ${frag.max_w} mm dan katta`);
   if (frag.min_d && p.d < frag.min_d) w.push(`chuqurlik min ${frag.min_d} mm dan kich`);
   if (frag.max_d && p.d > frag.max_d) w.push(`chuqurlik max ${frag.max_d} mm dan katta`);
+  if (frag.min_h && p.h < frag.min_h) w.push(`bo'yi min ${frag.min_h} mm dan kich`);
+  if (frag.max_h && p.h > frag.max_h) w.push(`bo'yi max ${frag.max_h} mm dan katta`);
   const el = $('#icWarn');
   if (w.length) { el.textContent = '⚠️ ' + w.join(' · '); el.classList.remove('hidden'); }
   else el.classList.add('hidden');
@@ -493,6 +496,8 @@ function clampSize(p, frag) {
   if (frag.max_w) out.w = Math.min(out.w || p.w, frag.max_w);
   if (frag.min_d) out.d = Math.max(p.d, frag.min_d);
   if (frag.max_d) out.d = Math.min(out.d || p.d, frag.max_d);
+  if (frag.min_h) out.h = Math.max(p.h, frag.min_h);
+  if (frag.max_h) out.h = Math.min(out.h || p.h, frag.max_h);
   return out;
 }
 
@@ -526,7 +531,7 @@ function estimateFragment(f) {
   if (estCache.map[f.code] == null) {
     const mats = estCache.mats || (estCache.mats = effectiveMaterials());   // nusxa — faqat kesh bo'sh bo'lsa
     const cl = cutlist(f, f.w, f.d, f.h, mats, { projectSlots: projectSlots() });
-    estCache.map[f.code] = productionCost([cl], mats, { areaEstimate: true }).clientTotal;
+    estCache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: state.furnById }).clientTotal;
   }
   return estCache.map[f.code];
 }
@@ -1264,17 +1269,26 @@ function newProject() {
 
 /* ═══════════════════ INIT ═══════════════════ */
 async function boot() {
-  const [frags, mats, nestDef, sheetCat, matIdx, services, appliances] = await Promise.all([
+  const [frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat] = await Promise.all([
     fetch('data/fragments.json').then(r => r.json()),
     fetch('data/materials.json').then(r => r.json()),
     fetch('data/nesting-defaults.json').then(r => r.json()).catch(() => ({})),
     fetch('data/sheet-catalog.json').then(r => r.json()).catch(() => null),
     fetch('data/materials-index.json').then(r => r.json()).catch(() => null),
     fetch('data/services.json').then(r => r.json()).catch(() => null),
-    fetch('data/appliances.json').then(r => r.json()).catch(() => null)
+    fetch('data/appliances.json').then(r => r.json()).catch(() => null),
+    fetch('data/fragments-mc.json').then(r => r.json()).catch(() => null),        // MebelCity haqiqiy modullari (TZ-HAQIQIY-MODULLAR A2)
+    fetch('data/sex-standartlari.json').then(r => r.json()).catch(() => null),    // sex min/max (A1)
+    fetch('data/furnitura-catalog.json').then(r => r.json()).catch(() => null)    // ERP furnitura, ID → narx (A4)
   ]);
+  /* ERP furnitura ID → {name, uzs, no_price}: tannarx zapchast narxini ID bo'yicha oladi */
+  state.furnById = {};
+  for (const it of (furnCat && furnCat.items) || []) if (it.id) state.furnById[it.id] = it;
   state.catalog = {};
   for (const f of frags) state.catalog[f.code] = f;
+  for (const f of (mcFrags && mcFrags.fragments) || []) state.catalog[f.code] = f;
+  state.sexStd = sexStd;
+  for (const f of Object.values(state.catalog)) applySexStandart(f, sexStd);
   /* F2: o'rnatma texnika — nishon (bo'sh korpusli) katalog yozuvlari */
   for (const a of (appliances && appliances.appliances) || []) {
     state.catalog[a.code] = {

@@ -1,0 +1,55 @@
+{
+ "_meta": {
+  "nima": "MebelCity sexining modul o'lcham chegaralari (min/max) — Smart3D modulni shu oraliqdan chiqarmaydi",
+  "manba": "Smart3D_malumot/Sex_olchamlari_taklif.xlsx, 'Taklif chegaralar' varag'i — 804 ta haqiqiy buyurtmaning 40 604 ta detali (GibLab .project). MIN/MAX = haqiqiy o'lchamlarning 5–95% oralig'i, 10 mm ga yaxlitlangan; std = eng ko'p uchragan",
+  "tasdiq": "Loyiha egasi tasdiqladi — 2026-10-15",
+  "ozgartirish": "Chegarani o'zgartirish uchun SHU FAYLNI tahrirlang (kodga tegish shart emas). Fragment 'standart' maydoni orqali shu yerdagi turga ulanadi; ilova yuklanganda min/max shu yerdan olinadi.",
+  "birlik": "mm",
+  "eslatma": "h — korpus (yon devor) bo'yi, sokol va stoleshnitsasiz. w — modul eni (eshik enidan hisoblangan). Detal turlari (eshik, tortma, polka, sokol) — tekshiruv uchun ma'lumot."
+ },
+ "modullar": {
+  "oshxona_pastki_1e": {
+   "nom": "Oshxona pastki modul — bir eshikli",
+   "w": { "min": 300, "max": 540 },
+   "h": { "min": 600, "max": 880, "std": [708, 758, 746] },
+   "d": { "min": 450, "max": 580, "std": [450, 470, 500] }
+  },
+  "oshxona_pastki_2e": {
+   "nom": "Oshxona pastki modul — ikki eshikli",
+   "w": { "min": 600, "max": 1070 },
+   "h": { "min": 600, "max": 880, "std": [708, 758, 746] },
+   "d": { "min": 450, "max": 580, "std": [450, 470, 500] }
+  },
+  "oshxona_ustki_1e": {
+   "nom": "Oshxona ustki modul — bir eshikli",
+   "w": { "min": 300, "max": 540 },
+   "h": { "min": 460, "max": 1140, "std": [668, 768, 868] },
+   "d": { "min": 290, "max": 400, "std": [300, 350, 330] }
+  },
+  "oshxona_ustki_2e": {
+   "nom": "Oshxona ustki modul — ikki eshikli",
+   "w": { "min": 600, "max": 1070 },
+   "h": { "min": 460, "max": 1140, "std": [668, 768, 868] },
+   "d": { "min": 290, "max": 400, "std": [300, 350, 330] }
+  },
+  "oshxona_penal": {
+   "nom": "Oshxona penal (baland)",
+   "h": { "min": 2030, "max": 2660, "std": [2284, 2484, 2084] },
+   "d": { "min": 290, "max": 660, "std": [600, 580, 500] }
+  },
+  "shkaf": {
+   "nom": "Shkaf / kupe — korpus",
+   "h": { "min": 1780, "max": 2590, "std": [2084, 1984, 1784] },
+   "d": { "min": 350, "max": 600, "std": [600, 500, 400] }
+  }
+ },
+ "detallar": {
+  "oshxona_eshik": { "w": { "min": 290, "max": 540, "std": [348, 398, 298] }, "h": { "min": 530, "max": 1150, "std": [698, 720, 798] } },
+  "oshxona_tortma_fasad": { "w": { "min": 370, "max": 760, "std": [598, 498, 398] }, "h": { "min": 140, "max": 330, "std": [238, 255, 197] } },
+  "oshxona_polka": { "d": { "min": 190, "max": 570, "std": [280, 330, 430] } },
+  "oshxona_sokol": { "h": { "min": 80, "max": 100, "std": [90, 100, 95] } },
+  "shkaf_eshik": { "w": { "min": 310, "max": 600, "std": [398, 423, 448] } },
+  "shkaf_polka": { "d": { "min": 270, "max": 580, "std": [400, 480, 376] } },
+  "shkaf_sokol": { "h": { "min": 80, "max": 100, "std": [100, 84, 90] } }
+ }
+}

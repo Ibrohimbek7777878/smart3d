@@ -131,7 +131,7 @@ Ustuvorlik: **P0** — sexda ishlatishdan oldin shart · **P1** — keyingi · *
 | M4 | 31 ta teshik detal chegarasidan tashqarida; eski teshiklar shablon (hammasi 64,64) | D6 |
 | M5 | Nomlar 4 yozuvda (ru / uz / uz-kir / en) — TZ talabi; hozir faqat o'zbekcha lotin | — |
 | M6 | Shisha, mato kabi yog'och bo'lmagan materiallar (divan, deraza) LDSP deb hisoblanmasligi | — |
-| M7 | **Fragment muharriri:** Excel shablondan import + ko'rinish + formula tekshiruvi → 600 ta modul | D8 |
+| M7 | **Fragment muharriri:** Excel shablondan import + ko'rinish + formula tekshiruvi → 600 ta modul | D8 — **→ `TZ-HAQIQIY-MODULLAR.md` (2026-10-15, MebelCity modullari uchun)** |
 
 ### 3.2 Stanok fayllari — P0 (hozir hammasi "SINOV" belgisi bilan)
 
@@ -166,7 +166,7 @@ Ustuvorlik: **P0** — sexda ishlatishdan oldin shart · **P1** — keyingi · *
 
 | # | Ish | Ustuvorlik | Ma'lumot |
 |---|---|---|---|
-| S1 | Fragmentlardagi furnitura kodlarini ERP katalogidagi haqiqiy mahsulotga bog'lash (28/40 bazada yo'q) | P0 | D5 |
+| S1 | Fragmentlardagi furnitura kodlarini ERP katalogidagi haqiqiy mahsulotga bog'lash (28/40 bazada yo'q) | P0 | D5 — **→ `TZ-HAQIQIY-MODULLAR.md` (2026-10-15, MebelCity modullari uchun)** |
 | S2 | `services.json` (15 ta manbasiz tarif) → ERP'dagi 211 ta xizmat | P0 | D2 |
 | S3 | `sheet-catalog.json` ma'lumot xatolari: 184 ta narxsiz, 9 ta imkonsiz valyuta kursi, 30 ta noto'g'ri qalinlik, 3 ta noto'g'ri o'lcham | P0 | D1 |
 | S4 | Valyuta kursi kunlik (CBU) — hozir qattiq 12 800 | P1 | — |

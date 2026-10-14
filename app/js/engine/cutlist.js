@@ -266,7 +266,10 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   const hardware = (frag.hardware || []).map(hw => ({
     fragment: frag.code,
     code: hw.code,
-    qty: Math.max(1, Math.round(+hw.qty || 1))
+    qty: Math.max(1, Math.round(+hw.qty || 1)),
+    id: hw.id,              // ERP furnitura ID (8 xona) — narx shu bo'yicha (TZ-HAQIQIY-MODULLAR A4)
+    name: hw.name,
+    unit: hw.unit
   }));
 
   /* ── 4b) Avtomatik furnitura — fragmentda ko'rsatilmagan bo'lsa ──
@@ -275,14 +278,17 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   const fronts = parts.filter(p => p.slot === 'fasad' || /eshik|door|fasad|front/i.test(p.code));
   const isDrawer = (p) => /tortma|drawer|yashik|yashchik/i.test(p.code);
   const sliding = hardware.some(hw => /KUPE|SLID|RAIL|ROLIK/i.test(hw.code));
-  const doors = sliding ? [] : fronts.filter(p => !isDrawer(p));
+  /* Bazis'dan import qilingan modul (auto_hardware:false) — furnitura ro'yxati Bazis BOM'idan
+     to'liq keladi; avtomatik petlya/ruchka qo'shilsa ikki marta sanaladi */
+  const autoHw = frag.auto_hardware !== false;
+  const doors = sliding || !autoHw ? [] : fronts.filter(p => !isDrawer(p));
   /* TS-… — eski fragmentlarda petlya shu kod bilan yozilgan (materials.json da nomi
      "Styajka TS-1730" — ziddiyat egasi bilan aniqlanadi); bor bo'lsa ikkinchi marta qo'shilmaydi */
   if (doors.length && !hardware.some(hw => /TS-|PET|petl|hinge/i.test(hw.code))) {
     const hingeQty = doors.reduce((s, p) => s + hingesForDoor(Math.max(p.finish_length, p.finish_width)), 0);
     hardware.push({ fragment: frag.code, code: 'PET-4', qty: hingeQty, _auto: true });
   }
-  if (fronts.length && !sliding && !hardware.some(hw => /RU-|ruchka|handle/i.test(hw.code))) {
+  if (autoHw && fronts.length && !sliding && !hardware.some(hw => /RU-|ruchka|handle/i.test(hw.code))) {
     hardware.push({ fragment: frag.code, code: 'RU-128', qty: fronts.length, _auto: true });
   }
 
@@ -317,7 +323,8 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
  *
  * @param {Array} cutlists — barcha modullar cutlist natijalari (doc.placements tartibida)
  * @param {Object} materials — materials.json (effektiv: tanlangan ERP varag'i bilan)
- * @param {Object} [opt] — { nestResult, markupPct, areaEstimate }
+ * @param {Object} [opt] — { nestResult, markupPct, areaEstimate, furnituraById }
+ *   furnituraById: ERP furnitura ID → {name, uzs, no_price} (hw.id bor bo'lsa narx shu yerdan)
  *   areaEstimate: kroysiz taxmin (katalog kartasi uchun) — varaq maydoni ÷ 0.85, butun varaqqa yaxlitlanmaydi
  * @returns {{lines, totalCost, clientTotal, perModule:[{cost, client}], missing:[], breakdown}}
  */
@@ -347,11 +354,18 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     noteMissing('Kromka', code, m && m.name);
     return 0;
   };
-  const hwPrice = (code) => {
-    const m = hwByCode[code];
-    if (m && m.price > 0) return m.price;
-    noteMissing('Furnitura', code, m && m.name);
-    return 0;
+  /* ERP furnitura (8 xonali ID) — app.js yuklaydi; ID bor bo'lsa narx FAQAT shu yerdan */
+  const furnById = opt.furnituraById || {};
+  const hwUnitPrice = (hw) => {
+    if (hw.id) { const f = furnById[hw.id]; return f && f.uzs > 0 && !f.no_price ? f.uzs : 0; }
+    const m = hwByCode[hw.code];
+    return m && m.price > 0 ? m.price : 0;
+  };
+  const hwName = (hw) => (hw.id && furnById[hw.id] && furnById[hw.id].name) || (hwByCode[hw.code] || {}).name || hw.name || hw.code;
+  const hwPrice = (hw) => {
+    const price = hwUnitPrice(hw);
+    if (!(price > 0)) noteMissing('Furnitura', hw.code, hwName(hw));
+    return price;
   };
   const holePrice = (kind) => {
     const m = holeByKind[kind] || holeByKind.drill;
@@ -389,7 +403,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       edgeAgg[key].meters += e.meters;
     }
     for (const hw of cl.hardware || []) {
-      hwAgg[hw.code] = hwAgg[hw.code] || { code: hw.code, qty: 0 };
+      hwAgg[hw.code] = hwAgg[hw.code] || { code: hw.code, qty: 0, id: hw.id, name: hw.name, unit: hw.unit };
       hwAgg[hw.code].qty += hw.qty;
     }
     for (const hl of cl.holes || []) {
@@ -452,12 +466,12 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   for (const k in hwAgg) {
     const a = hwAgg[k];
     const meta = hwByCode[a.code] || {};
-    const price = hwPrice(a.code);
+    const price = hwPrice(a);
     const amount = price * a.qty;
     hwCost += amount;
     lines.push({
-      group: 'Furnitura', code: a.code, name: meta.name || a.code,
-      qty: a.qty, unit: meta.unit || 'dona', unit_price: price, amount, no_price: !(price > 0)
+      group: 'Furnitura', code: a.code, id: a.id, name: hwName(a),
+      qty: a.qty, unit: meta.unit || a.unit || 'dona', unit_price: price, amount, no_price: !(price > 0)
     });
   }
 
@@ -502,7 +516,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       if (areaByMat[mat] > 0) cost += (p.length * p.width) / areaByMat[mat] * (sheetCostByMat[mat] || 0);
     }
     for (const e of cl.edges || []) cost += e.meters * (edgeByCode[e.material] || edgeByCode[String(e.material).replace(/\./g, '')] || {}).price_m || 0;
-    for (const hw of cl.hardware || []) cost += hw.qty * (((hwByCode[hw.code] || {}).price) || 0);
+    for (const hw of cl.hardware || []) cost += hw.qty * hwUnitPrice(hw);
     for (const hl of cl.holes || []) cost += (hl.qty || 1) * (((holeByKind[hl.kind] || holeByKind.drill || {}).price) || 0);
     if (totalParts) cost += laborCost * (cl.parts || []).length / totalParts;
     return { cost: Math.round(cost), client: Math.round(cost * (1 + markup)) };

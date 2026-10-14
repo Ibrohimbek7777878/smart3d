@@ -1,0 +1,94 @@
+# TZ — Haqiqiy MebelCity modullari, sex standartlari va ID orqali narx
+
+**Sana:** 2026-10-15 · **Holat:** egasi "tz yoz va ishni boshla" dedi (2026-10-15) — bajarilmoqda
+**Asos:** `TZ-QOLGAN-ISHLAR.md` M7 (haqiqiy modullar importi) va S1 (zapchastni ERP ga bog'lash — yangi modullar uchun) bandlarining batafsil rejasi. Eski 83 fragmentni tuzatish (M1–M4) u yerda qoladi.
+**Ma'lumot:**
+- `data1/modulniy/` — 38 ta Bazis `.fr3d` moduli;
+- `Smart3D_malumot/Sex_olchamlari_taklif.xlsx` — min/max, **egasi tasdiqladi 2026-10-15, keyin o'zgartirish mumkin bo'lishi shart**;
+- ERP katalog JSON'lari.
+
+## 0. Maqsad
+
+Usta MebelCity'ning haqiqiy modullaridan oshxona chizadi. Modul o'lchami sex standarti (min/max) ichida o'zgaradi va undan chiqib ketmaydi. Natijada:
+- detallar va kroy;
+- material va zapchast ro'yxati;
+- narx — ERP mahsulotidan ID orqali olinadi; narx bo'lmasa "narx yo'q";
+- eksportlar.
+
+**Bu TZ ga kirmaydi:** dizayn (dark/light) — egasi keyin ko'radi; stanok namunalari va serverdan fayllar — pauzada; Bazis teshiklari (parserda hali ochilmagan); LLM.
+
+## 1. Bosqichlar
+
+### A1 — Sex standartlari (o'zgartiriladigan ma'lumot fayli)
+- **Yangi `app/data/sex-standartlari.json`:** Excel'ning "Taklif chegaralar" varag'idan olinadi. Har bir modul turi uchun eni, bo'yi va chuqurligi bo'yicha min/max va standart o'lcham.
+  - Manba va tasdiq sanasi faylning o'zida yoziladi.
+  - Shaxsiy ma'lumot ("Xom detallar" varag'i) olinmaydi.
+- **O'zgartirish:** faqat shu faylni tahrirlash kifoya, kodga tegilmaydi. Interfeysdan o'zgartirish server ulanganda (keyingi TZ).
+- **Bog'lanish:** fragmentda `standart: "<tur>"` maydoni bo'lsa, min/max shu fayldan olinadi. Eski 83 ta fragmentga tegilmaydi (qoida 2.1).
+- **Bo'yi ham cheklanadi:** mebel kartasida bo'yi ham min/max bilan cheklanadi (hozir faqat eni va chuqurligi). Yangi `min_h/max_h` ishlatiladi.
+- **Fayllar:** yangi JSON, `app.js` (yuklash va cheklash), `sw.js` (kesh). **Xavf: PAST** — faqat `standart` maydoni bor modullarga ta'sir qiladi.
+
+### A2 — 38 ta Bazis modulini import qilish
+- **Yangi `scripts/fr3d_import.py`** (faqat standart Python): Bittada parseridan (`mebelcity-platform/.../b3d_full_parser.py`) **faqat o'qish** uchun foydalanadi.
+  - Natija: yangi `app/data/fragments-mc.json`. Qayta ishga tushirilsa, xuddi shu natija chiqadi.
+- **Har bir modul uchun:**
+  - **Gabarit (W×D×H):** panellarning global koordinatalaridan.
+  - **Detal roli** — panel tekisligidan aniqlanadi: yon / tub va qopqoq / polka / orqa / eshik va tortma / planka.
+  - **Formula** — detal butun modul bo'ylab cho'zilsa: `o'q − k·t − c` (masalan, `w - 2*t`). Kichik qismlar (planka eni, tortma yoni) o'zgarmas o'lchamda qoladi. Standart o'lchamda formula natijasi Bazis'dagi bilan aynan teng bo'lishi shart.
+  - **Slot:** korpus / fasad / orqa (material nomi va detal roli bo'yicha).
+  - **Kromka** — qoida bo'yicha: korpus detalida old cheti, fasadda 4 tomoni, orqa devorda yo'q. Jami uzunlik Bazis BOM bilan solishtiriladi va farq hisobotda chiqadi.
+  - **Furnitura va mahkamlagich** — Bazis BOM'idan (nom, soni) va A3 dagi ID bilan.
+  - **Stoleshnitsa bo'lagi chiqarib tashlanadi** — F2 butun qator uchun yaxlit stoleshnitsa quradi, aks holda u ikki marta hisoblanadi.
+  - **Teshiklar:** `[]` — parser cheklovi, hisobotda belgilanadi.
+  - **Guruh** `kuxnya-pastki` / `kuxnya-ustki` / `kuxnya-kolonna` va hokazo — `kitchen.js` stoleshnitsa va sokolni shu guruh bo'yicha quradi.
+  - **Kod va nom:** kod `MC-<bo'lim>-NN`, nom — fayl nomidan.
+  - **Standart:** eshik soni nomdan aniqlanadi ("1 fasad" / "2 fasad"). Krovat va parta uchun standart yo'q — ular o'zgarmas o'lchamda qoladi va bu belgilanadi.
+- **Ilova** `fragments-mc.json` ni katalogga qo'shib yuklaydi (`app.js`, `sw.js`).
+- **Xavf: O'RTA** — katalog kengayadi; eski fragmentlar va oqimlar o'zgarmaydi.
+
+### A3 — ID va bog'lash
+- **Furnitura ID'si:** `furnitura-catalog.json` dagi har bir mahsulotga 8 xonali ID beriladi. Prefiks `90` (FUR) + 6 xonali tartib raqam; mavjud format `{prefiks}{6 xona}` saqlanadi.
+  - ID barqaror: bir marta berilgan ID o'zgarmaydi, yangilariga keyingi raqam beriladi. Skript: `scripts/id_berish.py`.
+- **Kromka:** ERP katalogida kromka **yo'q**, shuning uchun ID bo'lmaydi. Narx `materials.json` dagi kromka narxidan qalinlik mos kelganda olinadi, aks holda "narx yo'q" (ma'lumot D3 kerak).
+- **Yangi `app/data/id-links.json`:** Bazis'dagi har bir material va zapchast nomi → ERP mahsuloti.
+  - Holat `aniq` — nom yoki artikul aynan mos.
+  - Holat `taklif` — o'xshash; **narxga kirmaydi**, egasi tasdiqlaydi.
+  - Holat `yoq` — mos mahsulot topilmadi.
+- **Xavf: O'RTA.** Qoida 4.3: noaniq moslik narxga kirmaydi.
+
+### A4 — Narx ID orqali
+- **Tannarx:** `productionCost` furnitura narxini ID bo'yicha ERP katalogidan oladi. Narx 0 yoki yo'q bo'lsa → "narx yo'q" va smeta "to'liq emas" deb belgilanadi.
+- **Ilova** `furnitura-catalog.json` ni yuklaydi.
+- **Fayllar:** `cutlist.js`, `app.js`, `sw.js`. **Xavf: O'RTA** — faqat yangi modullar smetasi o'zgaradi; eski modullar avvalgidek.
+
+### A5 — Sinov va tekshiruv
+- **Yangi `tests/verify_mc.mjs`** — har modul standart o'lchamda:
+  - detallar soni va har bir material bo'yicha maydon Bazis BOM bilan solishtiriladi;
+  - furnitura soni Bazis bilan bir xil;
+  - min/max cheklovi ishlaydi (eni, bo'yi, chuqurligi).
+- **Sinov oshxonasi** (3 m, haqiqiy modullardan): detallar → kroy → tannarx → mijoz narxi → material va zapchast → eksportlar xatosiz; stoleshnitsa bir marta hisoblanadi.
+- **Brauzer:** katalogdan modul qo'shish, o'lchamini o'zgartirish, narxning o'zgarishi.
+- **Regressiya:** `bash tests/run-all.sh`, `bash tests/ui/run.sh`, `cd server && npm test`.
+
+## 1a. Bajarilish holati (2026-10-15) — A1–A5 BAJARILDI
+- **A1:** `sex-standartlari.json` + `engine/standart.js`; bo'yi (h) cheklovi qo'shildi (`app.js`, `rules.js`).
+- **A2:** 38 modul (KP 11 · KU 10 · KA 3 · KK 1 · SH 6 · KR 5 · PA 2). Sinov paytida topilib, importerda tuzatildi:
+  - detallar material bo'yicha ham guruhlanadi (ikki rangli krovatda hammasi "oq" bo'lib qolardi);
+  - shisha → alohida `oyna` sloti (OYNA 4 mm), LDSP kroyiga tushmaydi; 10 mm dan yupqa plita (ЛМДФ 5,5) → `orqa` sloti, izoh bilan;
+  - korpusdan boshqa slotdagi formulada `t` → `t_korpus` (cutlist `t` ni detal sloti qalinligi qiladi; polka "w − 2·t" korpus yon devoriga bog'liq);
+  - `manba.zagotovka_m2` (to'g'ri to'rtburchak) va `manba.kontur_farq` — shaklli/parser konturini o'qiy olmagan panellar soni.
+- **A3:** 1978 ta furnituraga ID (90000001–90001978). Bog'lanish: aniq 1 · taklif 3 · yo'q 69.
+- **A4:** `productionCost` furnitura narxini ID bo'yicha oladi; narxsizi 0 va "narx yo'q".
+- **A5:** `tests/verify_mc.mjs` 34/34 (`run-all.sh` ga qo'shildi), brauzer `tests/ui/mc.mjs` (`run.sh` ga qo'shildi). Barcha regressiya yashil.
+- **Ma'lum cheklovlar:** Bazis BOM maydoni (parser kontur bo'yicha) 4 modulda farq qiladi — egri panellar va 2 ta o'qilmagan kontur; kroy to'g'ri to'rtburchak bo'yicha (to'g'ri). Kromka qoida bo'yicha Bazis'dan ±20% farq qiladi (D3 kerak). Krovat gabariti taxminiy (ichma-ich bloklar).
+
+## 2. Moliya, xavf, orqaga qaytarish
+- **Moliya:** ERP va moliyaga hech narsa yozilmaydi, faqat lokal JSON fayllar o'qiladi. Pul harakati yo'q.
+- **Umumiy xavf: O'RTA.** Faqat yangi modullar va yangi fayllar; eski 83 fragment, kroy dvigateli va eksportlar o'zgarmaydi.
+- **Orqaga qaytarish:** har bosqich alohida git commit, `git revert` bilan qaytariladi.
+- **Git'ga kirmaydi:** `data1/` va `Smart3D_malumot/` — egasi qaror qilmagan, ichida mijoz ismlari bor.
+
+## 3. Egasidan kerak (ishni to'xtatmaydi)
+- `id-links.json` dagi `taklif` holatidagi mosliklarni tasdiqlash.
+- Kromka narxlari (D3).
+- Krovat va parta uchun min/max — kerak bo'lsa, `sex-standartlari.json` ga qo'shiladi.
