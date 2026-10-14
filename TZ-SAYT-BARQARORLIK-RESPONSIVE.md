@@ -106,7 +106,7 @@ telefon, planshet va kompyuterning qaysi biridan ochilmasin, to'liq va qulay ish
 | 2.9 | Telefonda input shrifti ≥ 16 px (iOS bosilganda zoom qilmasligi uchun) |
 | 2.10 | Yuqori panel (header): kichik ekranda loyiha nomi qisqaradi, narx doim ko'rinadi |
 | 2.11 | Sahna tugmalari (2D/3D/⌖/render) kichik ekranda bir qatorga sig'adi: render tugmalari ixcham bo'ladi (faqat ikonka) |
-| 2.12 | Mebel kartasi (itemCard) telefonda pastki panelni yopib qo'ymaydi, panel ustida turadi; inputlar 2×2 to'rda joylashadi |
+| 2.12 | Mebel kartasi (itemCard) telefonda pastki panelni yopib qo'ymaydi, panel ustida turadi. Sahnada mebelga tegilsa panel yig'iladi; panel ochilsa karta yashirinadi. Inputlar 4 ustunda, ≤ 359 px ekranda 2×2 |
 | 2.13 | Smeta jadvallari tor ekranda sahifani buzmaydi: jadval o'z ichida gorizontal suriladi |
 | 2.14 | Modal oynalar (raskroy parametrlari, 360°) telefonda to'liq ekranga yaqin ochiladi, ichidagisi suriladi |
 | 2.15 | Sahifa hech qanday ekranda gorizontal surilmaydi (`scrollWidth ≤ clientWidth`) |

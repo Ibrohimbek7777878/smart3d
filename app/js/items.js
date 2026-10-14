@@ -22,6 +22,19 @@ function applySel(mesh, on) {
   });
 }
 
+/** Mesh'ni (x, y) burchak nuqtasiga qo'yadi — userData: w, d, h, rot, z. */
+function placeMesh(mesh, x, y) {
+  const u = mesh.userData;
+  const rad = u.rot * Math.PI / 180;
+  mesh.position.set(
+    x + (u.w / 2) * Math.cos(rad) - (u.d / 2) * Math.sin(rad),
+    y + (u.w / 2) * Math.sin(rad) + (u.d / 2) * Math.cos(rad),
+    u.z + u.h / 2
+  );
+  mesh.rotation.z = rad;
+  u.x = x; u.y = y;
+}
+
 export function createItems(sp, opts = {}) {
   const group = sp.groups.items;
   let catalog = {};
@@ -58,14 +71,10 @@ export function createItems(sp, opts = {}) {
         }
       }
 
-      const rad = rot * Math.PI / 180;
-      const cx = (+p.x) + (w / 2) * Math.cos(rad) - (d / 2) * Math.sin(rad);
-      const cy = (+p.y) + (w / 2) * Math.sin(rad) + (d / 2) * Math.cos(rad);
-      mesh.position.set(cx, cy, (+p.z || 0) + h / 2);
-      mesh.rotation.z = rad;
       mesh.userData = Object.assign({}, mesh.userData, {
-        id: p.id, frg: p.frg, w, d, h, rot, x: +p.x, y: +p.y, z: +p.z || 0
+        id: p.id, frg: p.frg, w, d, h, rot, z: +p.z || 0
       });
+      placeMesh(mesh, +p.x, +p.y);
 
       if (p.id === selectedId) applySel(mesh, true);
       group.add(mesh);
@@ -74,11 +83,12 @@ export function createItems(sp, opts = {}) {
     sp._invalidate();
   }
 
-  function select(id) {
+  /** source: 'scene' — foydalanuvchi sahnada bosdi; aks holda dasturdan (katalog, nusxa…) */
+  function select(id, source) {
     selectedId = id;
     for (const m of meshes) applySel(m, m.userData.id === id);
     sp._invalidate();
-    opts.onSelect && opts.onSelect(id, meshes.find(m => m.userData.id === id) || null);
+    opts.onSelect && opts.onSelect(id, meshes.find(m => m.userData.id === id) || null, source);
   }
   function getSelected() { return selectedId; }
 
@@ -100,9 +110,13 @@ export function createItems(sp, opts = {}) {
     return obj;
   }
 
-  /* ── 2D: sudrab ko'chirish (snap 50 mm) ─────────────────────────── */
-  let drag = null;
-  const SNAP = 50;
+  /* ── Tanlash va 2D sudrash (snap 50 mm) ──────────────────────────
+   * · 2D: mebelni bosish — darhol tanlanadi va sudraladi;
+   * · 3D: tegish (siljimasdan qo'yib yuborish) bilan tanlanadi — aylantirish tanlamaydi;
+   * · bo'sh joyga TEGISH tanlovni bekor qiladi (pan/pinch bekor qilmaydi — controls.js);
+   * · ikkinchi barmoq tushsa sudrash to'xtaydi (pinch-zoom controls.js da). */
+  let drag = null, tap = null;
+  const SNAP = 50, TAP_PX = 6;
   const snap = (v) => Math.round(v / SNAP) * SNAP;
 
   function worldPerPx() {
@@ -111,28 +125,35 @@ export function createItems(sp, opts = {}) {
   }
 
   function onDown(e) {
+    if (!e.isPrimary) { drag = null; tap = null; return; }
     if (e.button !== 0) return;
     const m = pick(e);
-    if (!m) { if (selectedId !== null) select(null); return; }
-    select(m.userData.id);
-    if (sp.mode === '2d') {
-      drag = { id: m.userData.id, sx: e.clientX, sy: e.clientY, ox: m.userData.x, oy: m.userData.y, moved: false };
-      sp.renderer.domElement.setPointerCapture && sp.renderer.domElement.setPointerCapture(e.pointerId);
-    }
+    tap = { x: e.clientX, y: e.clientY, id: m ? m.userData.id : null };
+    if (!m || sp.mode !== '2d') return;
+    select(m.userData.id, 'scene');
+    drag = { id: m.userData.id, pointerId: e.pointerId, sx: e.clientX, sy: e.clientY,
+             ox: m.userData.x, oy: m.userData.y, lx: m.userData.x, ly: m.userData.y };
+    sp.renderer.domElement.setPointerCapture && sp.renderer.domElement.setPointerCapture(e.pointerId);
   }
   function onMove(e) {
-    if (!drag) return;
+    if (!drag || e.pointerId !== drag.pointerId) return;
     const k = worldPerPx();
-    const dx = (e.clientX - drag.sx) * k;
-    const dy = -(e.clientY - drag.sy) * k;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) drag.moved = true;
+    const nx = snap(drag.ox + (e.clientX - drag.sx) * k);
+    const ny = snap(drag.oy - (e.clientY - drag.sy) * k);
+    if (nx === drag.lx && ny === drag.ly) return;
     const m = meshes.find(x => x.userData.id === drag.id);
     if (!m) return;
-    const nx = snap(drag.ox + dx), ny = snap(drag.oy + dy);
+    drag.lx = nx; drag.ly = ny;
+    placeMesh(m, nx, ny);              // faqat shu mesh — butun sahna qayta qurilmaydi
+    sp._invalidate();
     opts.onDrag && opts.onDrag(drag.id, nx, ny);
   }
   function onUp(e) {
-    drag = null;
+    if (tap && e.isPrimary && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) < TAP_PX) {
+      if (tap.id === null) { if (selectedId !== null) select(null, 'scene'); }
+      else if (sp.mode !== '2d') select(tap.id, 'scene');
+    }
+    tap = null; drag = null;
     try { sp.renderer.domElement.releasePointerCapture && sp.renderer.domElement.releasePointerCapture(e.pointerId); } catch (_) {}
   }
 
@@ -144,6 +165,8 @@ export function createItems(sp, opts = {}) {
 
   return {
     setPlacements, select, getSelected, meshes,
+    /** Ekran nuqtasida mebel bormi (controls.js: bo'sh joy = pan) */
+    hitTest: (e) => !!pick(e),
     refresh: () => setPlacements(opts.getPlacements(), catalog),
     dispose() {
       el.removeEventListener('pointerdown', onDown);

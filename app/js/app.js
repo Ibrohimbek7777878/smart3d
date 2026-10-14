@@ -52,6 +52,7 @@ const state = {
 let sp = null, ctl = null, items = null;
 
 const WOOD = /^(LDSP|MDF|HDF|OSB)/;
+const PHONE_MQ = window.matchMedia('(max-width: 599px)');   // app.css telefon chegarasi bilan bir xil
 const fmtSum = (n) => SpPrice.fmtSoom(n);
 
 function toast(msg, kind) {
@@ -343,14 +344,6 @@ function setDoc(doc, opts = {}) {
   items.setPlacements(doc.placements, state.catalog);
   syncZamerInputs();
   if (!opts.skipRecalc) scheduleRecalc(opts.immediate);
-}
-
-function updatePlacement(id, patch, opts = {}) {
-  const p = state.doc.placements.find(x => x.id === id);
-  if (!p) return;
-  Object.assign(p, patch);
-  items.setPlacements(state.doc.placements, state.catalog);
-  scheduleRecalc(opts.immediate);
 }
 
 function addPlacement(frag) {
@@ -978,7 +971,21 @@ function openTab(name) {
     panel.classList.add('open');
     panel.classList.toggle('tall', name === 'smeta' || name === 'export' || name === 'ai');
   }
-  setTimeout(() => sp._resize(), 250);
+  syncPanelState();
+}
+
+/* Pastki sheet rejimida (telefon/planshet) sahna panel ustida qisqaradi — CSS body
+   klasslari orqali; #scene ResizeObserver o'lchamni o'zi yangilaydi va 2D ni sig'diradi. */
+function syncPanelState() {
+  const panel = $('#panel');
+  document.body.classList.toggle('panel-open', panel.classList.contains('open'));
+  document.body.classList.toggle('panel-tall', panel.classList.contains('tall'));
+  setTimeout(() => sp._resize(), 250);       // panel balandligi animatsiyasidan keyin
+}
+function togglePanel() {
+  const panel = $('#panel');
+  if (panel.classList.contains('open')) { panel.classList.remove('open', 'tall'); syncPanelState(); }
+  else openTab(($('.tab.is-active') || $('.tab')).dataset.tab);
 }
 
 function hideItemCardOnSmall() {}
@@ -1071,12 +1078,31 @@ async function boot() {
   // sp-scene inline `position:relative` qo'yadi — stylesheetdagi absolute
   // ustun bo'lishi uchun avval inline qiymatni belgilaymiz.
   $('#scene').style.position = 'absolute';
-  sp = createScene($('#scene'), { mode: '2d' });
-  ctl = attachControls(sp, { onToggle: () => { $('#btn2d').classList.toggle('is-active', sp.mode === '2d'); $('#btn3d').classList.toggle('is-active', sp.mode === '3d'); } });
+  sp = createScene($('#scene'), { mode: '2d', insetTop: 56 });   // 56px — #viewCtl tugmalari
+  ctl = attachControls(sp, {
+    onToggle: () => { $('#btn2d').classList.toggle('is-active', sp.mode === '2d'); $('#btn3d').classList.toggle('is-active', sp.mode === '3d'); },
+    hitTest: (e) => !!(items && items.hitTest(e))      // mebel ustida — sudrash items.js ga
+  });
   items = createItems(sp, {
     getPlacements: () => state.doc.placements,
-    onSelect: (id) => { state.selectedId = id; id ? showItemCard(id) : hideItemCard(); },
-    onDrag: (id, x, y) => updatePlacement(id, { x, y })
+    onSelect: (id, mesh, source) => {
+      state.selectedId = id;
+      if (id) {
+        /* telefonda sahnadagi mebelga tegilsa panel yig'iladi — mebel kartasiga joy kerak
+           (app.css ≤599px). Katalogdan qo'shishda panel ochiq qoladi. */
+        if (source === 'scene' && PHONE_MQ.matches && $('#panel').classList.contains('open')) togglePanel();
+        showItemCard(id);
+      } else hideItemCard();
+    },
+    /* sudrash paytida mesh'ni items.js o'zi siljitadi — bu yerda faqat ma'lumot,
+       qayta qurish yo'q; narx to'xtagandan keyin (debounce) hisoblanadi */
+    onDrag: (id, x, y) => {
+      const p = state.doc.placements.find(q => q.id === id);
+      if (!p) return;
+      p.x = x; p.y = y;
+      if (state.selectedId === id) $('#icX').value = x;
+      scheduleRecalc();
+    }
   });
 
   /* boshlang'ich namuna: oshxona */
@@ -1092,6 +1118,7 @@ async function boot() {
   /* ── Hodisalar ── */
   // tabs
   $$('.tab').forEach(t => t.addEventListener('click', () => openTab(t.dataset.tab)));
+  $('#panelGrab').addEventListener('click', togglePanel);
   // view
   /* VR tugmasi — faqat 3D rejimda + WebXR qo'llab-quvvatlansa ko'rinadi */
   let vrBtn = null;
@@ -1285,7 +1312,7 @@ async function boot() {
   });
 
   // boot yopish
-  window.__s3d = { state, exportBpj, exportGl, openTab };   // QA uchun
+  window.__s3d = { state, exportBpj, exportGl, openTab, get sp() { return sp; } };   // QA uchun
   /* PWA offline — birinchi tashrifdan keyin internetsiz ishlaydi */
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     navigator.serviceWorker.register('sw.js').catch(() => { /* offline emas — jim */ });

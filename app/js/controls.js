@@ -26,8 +26,7 @@ function isTypingTarget(el) {
 
 export function attachControls(sp, opts = {}) {
   if (!sp) throw new Error('sp-controls: sp-scene kerak');
-  const el = sp.renderer.domElement;
-  const MIN_SCALE = 0.05, MAX_SCALE = 40;      // 2D zoom chegarasi
+  const el = sp.renderer.domElement;           // 2D zoom chegarasi — scene.zoomAt() da
 
   /* ── 3D: OrbitControls (faqat 3D rejimda ishlaydi) ─────────────────── */
   const orbit = new OrbitControls(sp.cam3d, el);
@@ -39,9 +38,14 @@ export function attachControls(sp, opts = {}) {
   orbit.enabled = false;                       // 2Dda o'chiq
   sp._controls = orbit;
 
-  /* ── 2D: g'ildirak = zoom, chapdrag = pan ─────────────────────────── */
-  let dragging = false, lastX = 0, lastY = 0, pointerId = null;
-  let scale2d = 1;                              // hozirgi zoom (cheklash uchun)
+  /* ── 2D: sichqoncha va barmoq (TZ-SAYT-BARQARORLIK-RESPONSIVE §4.2) ──
+   *  · bo'sh joyni sudrash (1 barmoq / chap tugma) — pan; o'rta tugma yoki Shift — har doim pan;
+   *  · 2 barmoq — pinch-zoom + pan; g'ildirak — zoom;
+   *  · ikki marta tegish / dblclick bo'sh joyda — sig'dirish.
+   *  Mebel ustidagi bosish items.js ga qoldiriladi (opts.hitTest). */
+  const pts = new Map();                        // faol pointerlar: id → {x, y}
+  let panning = false, pinch = null;
+  let lastTap = { t: 0, x: 0, y: 0 };
 
   function onWheel(e) {
     if (sp.mode !== '2d') return;               // 3Dda OrbitControls ishlaydi
@@ -50,39 +54,59 @@ export function attachControls(sp, opts = {}) {
     sp.zoomAt(factor, e.clientX, e.clientY);
   }
 
+  function pinchState() {
+    const [a, b] = Array.from(pts.values());
+    return { dist: Math.hypot(a.x - b.x, a.y - b.y) || 1, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
+  }
+
   function onPointerDown(e) {
     if (sp.mode !== '2d') return;               // 3D — OrbitControls'ning ishi
-    // O'ng tugma yoki o'rta tugma = ko'chirish; chap tugma = tanlash (S-D4)
-    if (e.button !== 0 && e.button !== 1) return;
-    dragging = true; pointerId = e.pointerId;
-    lastX = e.clientX; lastY = e.clientY;
-    el.setPointerCapture && el.setPointerCapture(pointerId);
+    if (e.pointerType === 'mouse' && e.button !== 0 && e.button !== 1) return;
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    el.setPointerCapture && el.setPointerCapture(e.pointerId);
+    if (pts.size === 2) { panning = false; pinch = pinchState(); return; }   // ikkinchi barmoq
+    if (pts.size > 2) return;
+    const forcePan = e.button === 1 || e.shiftKey;
+    if (!forcePan && opts.hitTest && opts.hitTest(e)) return;              // mebel — items.js
+    panning = true;
+    if (e.pointerType !== 'mouse') {            // ikki marta tegish — sig'dirish
+      const now = performance.now();
+      if (now - lastTap.t < 320 && Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < 30) {
+        sp.fit(); lastTap.t = 0;
+      } else lastTap = { t: now, x: e.clientX, y: e.clientY };
+    }
   }
   function onPointerMove(e) {
-    if (!dragging || sp.mode !== '2d') return;
-    const dx = e.clientX - lastX, dy = e.clientY - lastY;
-    lastX = e.clientX; lastY = e.clientY;
-    if (e.shiftKey || e.buttons & 4) {         // o'rta tugma
-      sp.panBy(dx, dy);
+    const prev = pts.get(e.pointerId);
+    if (!prev || sp.mode !== '2d') return;
+    const cur = { x: e.clientX, y: e.clientY };
+    pts.set(e.pointerId, cur);
+    if (pinch && pts.size >= 2) {
+      const now = pinchState();
+      sp.panBy(now.mx - pinch.mx, now.my - pinch.my);
+      sp.zoomAt(now.dist / pinch.dist, now.mx, now.my);
+      pinch = now;
+    } else if (panning) {
+      sp.panBy(cur.x - prev.x, cur.y - prev.y);
     }
   }
   function onPointerUp(e) {
-    if (pointerId !== null && el.releasePointerCapture) {
-      try { el.releasePointerCapture(pointerId); } catch (err) { /* jim */ }
-    }
-    dragging = false; pointerId = null;
+    if (!pts.has(e.pointerId)) return;
+    pts.delete(e.pointerId);
+    try { el.releasePointerCapture && el.releasePointerCapture(e.pointerId); } catch (err) { /* jim */ }
+    if (pts.size < 2) pinch = null;
+    if (pts.size === 0) panning = false;        // pinch'dan keyin qolgan barmoq pan qilmaydi (sakrash yo'q)
   }
-
-  // ← chapdrag bilan pan (chizma joyini ko'chirish)
-  function onAltDragStart(e) {
-    if (sp.mode !== '2d') return;
-    if (!(e.altKey || e.button === 1)) return;
+  function onDblClick(e) {
+    if (sp.mode === '2d' && !(opts.hitTest && opts.hitTest(e))) sp.fit();
   }
 
   el.addEventListener('wheel', onWheel, { passive: false });
   el.addEventListener('pointerdown', onPointerDown);
+  el.addEventListener('dblclick', onDblClick);
   window.addEventListener('pointermove', onPointerMove);
   window.addEventListener('pointerup', onPointerUp);
+  window.addEventListener('pointercancel', onPointerUp);
 
   /* ── Klaviatura: N (rejim), F (sig'dirish), Esc (bekor) ───────────── */
   function onKeyDown(e) {
@@ -137,7 +161,6 @@ export function attachControls(sp, opts = {}) {
   return {
     orbit,
     get mode() { return sp.mode; },
-    get scale2d() { return scale2d; },
     setModeButtons,
     updateButtons,
     /** Sahna tashqarisidan (masalan undo) kamera tiklash */
@@ -145,8 +168,10 @@ export function attachControls(sp, opts = {}) {
     dispose() {
       el.removeEventListener('wheel', onWheel);
       el.removeEventListener('pointerdown', onPointerDown);
+      el.removeEventListener('dblclick', onDblClick);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
       window.removeEventListener('keydown', onKeyDown);
       orbit.dispose();
     }

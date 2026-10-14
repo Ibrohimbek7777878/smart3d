@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#211d18">
 <title>Smart3D — mebel konstruksiya, narx va export</title>
 <link rel="manifest" href="manifest.json">
@@ -34,9 +34,9 @@
   <div id="viewCtl">
     <button id="btn2d" class="pill is-active">2D</button>
     <button id="btn3d" class="pill">3D</button>
-    <button id="btnFit" class="pill" title="Sig'dirish">⌖</button>
-    <button id="btnSnap1080" class="pill" title="1080p Foto-render">📸 1080p</button>
-    <button id="btnSnap360" class="pill" title="360° Panorama">🔄 360°</button>
+    <button id="btnFit" class="pill icon" title="Sig'dirish (F, ikki marta tegish)" aria-label="Sahnani ekranga sig'dirish">⌖</button>
+    <button id="btnSnap1080" class="pill" title="1080p Foto-render" aria-label="1080p foto-render">📸<span class="lbl"> 1080p</span></button>
+    <button id="btnSnap360" class="pill" title="360° Panorama" aria-label="360° panorama">🔄<span class="lbl"> 360°</span></button>
   </div>
 
   <!-- Tanlangan mebel kartasi -->
@@ -44,7 +44,7 @@
     <div class="ic-head">
       <span class="ic-name" id="icName">—</span>
       <span class="ic-code" id="icCode">—</span>
-      <button class="btn sm ghost" id="icClose" title="Yopish">✕</button>
+      <button class="btn sm ghost" id="icClose" title="Yopish" aria-label="Yopish">✕</button>
     </div>
     <div class="ic-grid">
       <div><label>Eni w, mm</label><input id="icW" type="number" step="10"></div>
@@ -65,6 +65,7 @@
 
 <!-- Panel -->
 <section id="panel">
+  <button id="panelGrab" class="grab" aria-label="Panelni ochish yoki yopish"></button>
   <nav id="tabs">
     <button class="tab is-active" data-tab="zamer"><span class="ti">📐</span>Zamer</button>
     <button class="tab" data-tab="catalog"><span class="ti">🧩</span>Katalog</button>
@@ -92,7 +93,7 @@
       <button class="btn primary block" id="zApply">Xonani qo'llash</button>
 
       <h3>Teshiklar (deraza / eshik)</h3>
-      <div class="form-row" style="grid-template-columns: 1.2fr 1fr 1fr;">
+      <div class="form-row opening">
         <div class="field"><label>Turi</label>
           <select id="oType"><option value="window">Deraza</option><option value="door">Eshik</option></select>
         </div>
@@ -163,18 +164,22 @@
       <div id="smMsgs"></div>
 
       <h3>Kotirovka (mijozga)</h3>
+      <div class="tbl-wrap">
       <table class="smeta" id="smTable">
         <thead><tr><th>Mebel</th><th style="text-align:right">Miq.</th><th style="text-align:right">Narx</th><th style="text-align:right">Summa</th></tr></thead>
         <tbody></tbody>
         <tfoot></tfoot>
       </table>
+      </div>
 
       <h3>Sex tannarxi (Haqiqiy ishlab chiqarish xarajatlari)</h3>
+      <div class="tbl-wrap">
       <table class="smeta" id="smWorkshopTable">
         <thead><tr><th>Xarajat moddasi</th><th style="text-align:right">Miqdor</th><th style="text-align:right">Birlik</th><th style="text-align:right">Summa</th></tr></thead>
         <tbody></tbody>
         <tfoot></tfoot>
       </table>
+      </div>
 
       <h3>Ishlab chiqarish — raskroy
         <button class="btn sm ghost" id="nestCfgBtn" style="float:right;margin-top:-4px">⚙️ Parametrlar</button>
@@ -261,8 +266,8 @@
         <input id="ncRemU" type="number" min="0.05" max="10" step="0.05">
       </label>
     </div>
-    <div style="display:flex;gap:8px;margin-top:14px">
-      <button class="btn primary" id="ncApply" style="flex:1">Qo'llash</button>
+    <div class="modal-btns">
+      <button class="btn primary" id="ncApply">Qo'llash</button>
       <button class="btn" id="ncReset">Standart</button>
       <button class="btn ghost" id="ncClose">Yopish</button>
     </div>
@@ -270,15 +275,15 @@
 </div>
 
 <!-- 360 Panorama Modal -->
-<dialog id="panoModal" class="dlg" style="max-width:860px;width:95vw;padding:16px;border-radius:12px;background:#18181b;color:#f4f4f5;border:1px solid #27272a;">
-  <div class="dlg-head" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-    <h3 style="margin:0;font-size:1.1rem">🔄 360° Virtual Tur va Panorama</h3>
-    <button class="btn sm ghost" id="panoClose" style="color:#a1a1aa">✕</button>
+<dialog id="panoModal" class="dlg pano-dlg">
+  <div class="pano-head">
+    <h3>🔄 360° Virtual Tur va Panorama</h3>
+    <button class="btn sm ghost" id="panoClose" aria-label="Yopish">✕</button>
   </div>
-  <div class="dlg-body" style="text-align:center">
-    <div id="panoCanvasContainer" style="width:100%;height:400px;background:#09090b;border-radius:8px;overflow:hidden;position:relative;"></div>
-    <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
-      <small style="color:#a1a1aa">Sichqoncha yoki barmoq bilan xonani 360° erkin aylantiring</small>
+  <div class="dlg-body">
+    <div id="panoCanvasContainer" class="pano-box"></div>
+    <div class="pano-foot">
+      <small>Sichqoncha yoki barmoq bilan xonani 360° erkin aylantiring</small>
       <button class="btn primary" id="panoDownload">⬇️ Panoramani yuklab olish (.jpg)</button>
     </div>
   </div>

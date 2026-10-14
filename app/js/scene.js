@@ -234,16 +234,21 @@ export function createScene(container, opts = {}) {
   let bbox = bboxFrom([{ x: 0, y: 0 }, { x: 4200, y: 0 }, { x: 4200, y: 3100 }, { x: 0, y: 3100 }]);
 
   /* ── Kamerani sig'dirish (B4: 2D frustum = bbox + 20%) ─────────────── */
+  /* Ekranning tepasidagi `insetTop` px sahna tugmalari (#viewCtl) bilan band —
+     xona shu tasmadan pastdagi qismga sig'diriladi (past ekranli telefonda tugmalar
+     devorni yopmasin). Ekran balandligining 30% idan ko'p olinmaydi. */
+  const insetTop = Math.max(0, Number(opts.insetTop) || 0);
   function fit2D() {
-    const w = Math.max(bbox.w * 1.2, 1000);
-    const h = Math.max(bbox.h * 1.2, 1000);
-    const aspect = (container.clientWidth || 1) / (container.clientHeight || 1);
-    let vw = w, vh = h;
-    if (aspect > vw / vh) vw = vh * aspect; else vh = vw / aspect;
+    const W = container.clientWidth || 1, H = container.clientHeight || 1;
+    const top = Math.min(insetTop, H * 0.3);
+    const needW = Math.max(bbox.w * 1.2, 1000);
+    const needH = Math.max(bbox.h * 1.2, 1000);
+    const mmPerPx = Math.max(needW / W, needH / (H - top));
+    const vw = W * mmPerPx, vh = H * mmPerPx;
     cam2d.left = bbox.cx - vw / 2;
     cam2d.right = bbox.cx + vw / 2;
-    cam2d.top = bbox.cy + vh / 2;
-    cam2d.bottom = bbox.cy - vh / 2;
+    cam2d.top = bbox.cy + (top + (H - top) / 2) * mmPerPx;   // bbox markazi — bo'sh qism markazida
+    cam2d.bottom = cam2d.top - vh;
     /* MUHIM: orto kameraning ko'rish oynasi (left/right/top/bottom) KAMERA
        POSITSIYASIGA NISBATAN o'lchanadi. Agar frustum already chizma
        markaziga (cx,cy) qarab markazlangan bo'lsa, kamera ham (cx,cy) da
@@ -344,6 +349,11 @@ export function createScene(container, opts = {}) {
     /** 2D: sxma atrofidagi nuqtaga zoom (B4 — frustum mm'da). */
     zoomAt(factor, px, py) {
       if (mode === '2d') {
+        /* chegara: ko'rinish eni 400 mm (yaqin) … xonaning 8 baravari (uzoq) */
+        const curW = cam2d.right - cam2d.left;
+        const maxW = Math.max(bbox.w, bbox.h) * 8 + 4000;
+        factor = Math.max(curW / maxW, Math.min(factor, curW / 400));
+        if (!isFinite(factor) || factor <= 0) return false;
         const rect = renderer.domElement.getBoundingClientRect();
         const fx = rect.width ? (px - rect.left) / rect.width : 0.5;
         const fy = rect.height ? (py - rect.top) / rect.height : 0.5;
