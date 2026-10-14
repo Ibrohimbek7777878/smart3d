@@ -83,13 +83,18 @@ console.log('✅ 23-26. AI O\'zbek tili zamer & L-shape oshxona arxitekturasi: 1
 // 8. Furnitura & Services (Kamchilik 17, 18)
 const furn = JSON.parse(fs.readFileSync('app/data/furnitura-catalog.json', 'utf8'));
 const srv = JSON.parse(fs.readFileSync('app/data/services.json', 'utf8'));
-const zeroPriced = furn.items.filter(x => (x.uzs || 0) === 0);
-if (zeroPriced.length > 0 || !srv.services.length) throw new Error('Furnitura yoki xizmat narxlari to\'liq emas');
-console.log('✅ 17-18. Furnitura katalogi (0 ta narxsiz) & Xizmatlar tarifi (15 ta tarif): 100% OK');
+/* TZ qoidasi: narx o'ylab topilmaydi. Har bir narxning manbasi bor (scripts/furnitura_narx_tiklash.py);
+   manbada narxi yo'q element 0 so'm va no_price=true bo'lib qoladi. */
+const noSrc = furn.items.filter(x => !x.price_src);
+const fake = furn.items.filter(x => x.no_price ? (x.uzs || 0) !== 0 : !((x.uzs || 0) > 0));
+if (noSrc.length || fake.length || !srv.services.length) throw new Error(`Furnitura narxi manbasiz: ${noSrc.length}, nomuvofiq: ${fake.length}`);
+const noPrice = furn.items.filter(x => x.no_price).length;
+console.log(`✅ 17-18. Furnitura: har narxning manbasi bor (${noPrice} ta ERP'da narxsiz — "narx yo'q") & Xizmatlar: OK`);
 
 // 9. Fragments library (Kamchilik 28)
 const allFrags = JSON.parse(fs.readFileSync('app/data/fragments.json', 'utf8'));
 if (allFrags.length < 75) throw new Error('Fragmentlar soni yetarli emas');
 console.log(`✅ 28. Modullar kutubxonasi kengaytirildi (Jami: ${allFrags.length} ta): 100% OK`);
 
-console.log('\n🎉 BARCHA 30 TA KAMCHILIK VA ARXITEKTURA BO\'LIMLARI 100% TAYYOR VA TESTLARDAN O\'TDI!');
+/* Bu test natijalar MAVJUDLIGINI tekshiradi, to'g'riligini emas — AUDIT-2026-10-14.md ga qarang. */
+console.log('\n✅ Integratsiya testi o\'tdi (natijalar mavjud). To\'g\'rilik va qolgan ishlar: AUDIT-2026-10-14.md');

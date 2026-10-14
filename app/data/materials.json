@@ -159,17 +159,23 @@
   {
    "code": "PVC2",
    "name": "PVC kromka 2mm",
-   "price_m": 1500
+   "price_m": 1500,
+   "thickness": 2.0,
+   "thickness_src": "nomdan"
   },
   {
    "code": "PVC04",
    "name": "PVC kromka 0.4mm",
-   "price_m": 800
+   "price_m": 800,
+   "thickness": 0.4,
+   "thickness_src": "nomdan"
   },
   {
    "code": "REHAU2",
    "name": "Rehau kromka 2mm",
-   "price_m": 2000
+   "price_m": 2000,
+   "thickness": 2.0,
+   "thickness_src": "nomdan"
   }
  ],
  "hardware": [
@@ -277,5 +283,9 @@
   2800,
   2070
  ],
- "kerf": 4
+ "kerf": 4,
+ "pricing": {
+  "markup_pct": 0.35,
+  "note": "Mijoz narxi = tannarx × (1 + markup_pct). 0.35 — kodda turgan standart qiymat; egasi tasdiqlashi kerak (TZ-SAYT-BARQARORLIK-RESPONSIVE §8)."
+ }
 }

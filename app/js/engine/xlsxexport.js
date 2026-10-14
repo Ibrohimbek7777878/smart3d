@@ -237,17 +237,13 @@ const STYLES_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
 /**
  * 5-bo'limli to'liq Excel smetasini yaratish.
- * @param {Object} opts — {doc, catalog, materials, priceRes, prod, nest, projectName, services}
+ * @param {Object} opts — {materials, priceRes, prod, projectName}  (2–5-bo'limlar — prod.lines dan)
  * @returns {Uint8Array} — .xlsx binar fayli
  */
 export function buildXLSX(opts = {}) {
-  const doc = opts.doc || {};
-  const catalog = opts.catalog || {};
   const priceRes = opts.priceRes || { lines: [], total: 0 };
   const prod = opts.prod || { lines: [], total: 0 };
-  const nest = opts.nest || { summary: {} };
   const projectName = opts.projectName || 'Smart3D Mebel Loyihasi';
-  const servicesList = (opts.services && opts.services.services) || [];
 
   const rowsXml = [];
   let rowIdx = 1;
@@ -311,155 +307,58 @@ export function buildXLSX(opts = {}) {
   ], 20);
   addRow([]);
 
-  /* ════════ 2-BO'LIM: PLITA MATERIALLARI (VARAMLAR) ════════ */
-  addRow([{ v: "2. PLITA VA VARAQ MATERIALLARI (LDS, MDF, HDF)", s: 2 }], 22);
-  addRow([
-    { v: "№", s: 3 },
-    { v: "Material nomi", s: 3 },
-    { v: "Formati (mm)", s: 3 },
-    { v: "Qalinlik", s: 3 },
-    { v: "Ketgan varaq", s: 3 },
-    { v: "Foydalanish %", s: 3 },
-    { v: "Summa", s: 3 }
-  ], 20);
+  /* ════════ 2–4-BO'LIMLAR: TANNARX SATRLARI ════════
+   * Hammasi productionCost() natijasidan (prod.lines) — UI dagi "Sex tannarxi" bilan
+   * aynan bir xil raqamlar. Narxi bazada yo'q satr 0 so'm va "narx yo'q" belgisi bilan. */
+  const prodLines = prod.lines || [];
+  const panelMeta = {};
+  for (const m of (opts.materials && opts.materials.panel_materials) || []) panelMeta[m.code] = m;
 
-  const nestSumm = nest.summary || {};
-  const totalSheets = nestSumm.total_sheets || 0;
-  const sheetCost = nestSumm.material_cost || (prod.lines && prod.lines.find(x => x.unit === 'varaq')?.amount) || 0;
-
-  addRow([
-    { v: 1, s: 4 },
-    { v: (opts.sheet && opts.sheet.name) || opts.materialCode || 'LDS/MDF asosiy plita', s: 4 },
-    { v: `${opts.sheet?.l || 2800} × ${opts.sheet?.w || 2070}`, s: 4 },
-    { v: `${opts.sheet?.th || 16} mm`, s: 4 },
-    { v: totalSheets, s: 6 },
-    { v: `${nestSumm.utilization_pct || 0}%`, s: 4 },
-    { v: sheetCost, s: 5 }
-  ]);
-  addRow([
-    { v: "", s: 7 },
-    { v: "", s: 7 },
-    { v: "2-BO'LIM JAMI (Varaqlar):", s: 7 },
-    { v: "", s: 7 },
-    { v: totalSheets, s: 6 },
-    { v: "", s: 7 },
-    { v: sheetCost, s: 7 }
-  ], 20);
-  addRow([]);
-
-  /* ════════ 3-BO'LIM: FURNITURA VA AKSESSUARLAR ════════ */
-  addRow([{ v: "3. FURNITURA VA MEXANIZMLAR", s: 2 }], 22);
-  addRow([
-    { v: "№", s: 3 },
-    { v: "Artikul / Kod", s: 3 },
-    { v: "Furnitura nomi", s: 3 },
-    { v: "Birlik", s: 3 },
-    { v: "Miqdori", s: 3 },
-    { v: "Birlik narxi", s: 3 },
-    { v: "Summa", s: 3 }
-  ], 20);
-
-  const hwLine = (prod.lines || []).find(l => /furnitura/i.test(l.name || ''));
-  const hwTotal = (hwLine && hwLine.amount) || 0;
-
-  // Standart komplektatsiya misollari
-  const hwItems = [
-    { code: "S8109.71", name: "Citterio Vreznaya mebel tutqichi (oq mat)", unit: "dona", qty: 4, price: 76800 },
-    { code: "HETT-SENSYS", name: "Hettich Sensys integratsiyalashgan petlya (dovodnik bilan)", unit: "komplekt", qty: 8, price: 35000 },
-    { code: "QUADRO-25", name: "Quadro 25 qisman ochiluvchi slayder (Silent System)", unit: "komplekt", qty: 2, price: 160000 },
-    { code: "CONF-7X50", name: "Mebel konfirmati 7x50mm + zaglushka", unit: "dona", qty: 48, price: 600 }
-  ];
-
-  let p3Sum = 0;
-  let hwIdx = 1;
-  for (const h of hwItems) {
-    const rowAmt = h.qty * h.price;
-    p3Sum += rowAmt;
+  function costSection(title, header, lines, totalLabel, cellsOf) {
+    addRow([{ v: title, s: 2 }], 22);
+    addRow(header.map(h => ({ v: h, s: 3 })), 20);
+    let sum = 0, i = 1;
+    for (const l of lines) {
+      sum += +l.amount || 0;
+      addRow([{ v: i++, s: 4 }].concat(cellsOf(l)));
+    }
+    if (!lines.length) addRow([{ v: '', s: 4 }, { v: "— yo'q —", s: 4 }]);
     addRow([
-      { v: hwIdx++, s: 4 },
-      { v: h.code, s: 4 },
-      { v: h.name, s: 4 },
-      { v: h.unit, s: 4 },
-      { v: h.qty, s: 6 },
-      { v: h.price, s: 5 },
-      { v: rowAmt, s: 5 }
-    ]);
+      { v: "", s: 7 }, { v: "", s: 7 }, { v: totalLabel, s: 7 },
+      { v: "", s: 7 }, { v: "", s: 7 }, { v: "", s: 7 }, { v: sum, s: 7 }
+    ], 20);
+    addRow([]);
+    return sum;
   }
-  // Agar prod hisob-kitobida boshqa furnitura summasi bo'lsa, moslashtirish
-  if (hwTotal > 0 && Math.abs(hwTotal - p3Sum) > 5000) {
-    const diff = hwTotal - p3Sum;
-    p3Sum += diff;
-    addRow([
-      { v: hwIdx++, s: 4 },
-      { v: "HW-OTHER", s: 4 },
-      { v: "Boshqa mahkamlovchi furnituralar (shkant, polkoderjatel, samorez)", s: 4 },
-      { v: "to'plam", s: 4 },
-      { v: 1, s: 6 },
-      { v: Math.max(0, diff), s: 5 },
-      { v: Math.max(0, diff), s: 5 }
-    ]);
-  }
+  const priceCell = (l) => (l.no_price ? { v: "narx yo'q", s: 4 } : { v: +l.unit_price || 0, s: 5 });
 
-  addRow([
-    { v: "", s: 7 },
-    { v: "", s: 7 },
-    { v: "3-BO'LIM JAMI (Furnitura):", s: 7 },
-    { v: "", s: 7 },
-    { v: "", s: 7 },
-    { v: "", s: 7 },
-    { v: p3Sum, s: 7 }
-  ], 20);
-  addRow([]);
+  const p2Sum = costSection(
+    "2. PLITA VA KROMKA MATERIALLARI",
+    ["№", "Material", "Format / qalinlik", "Birlik", "Miqdori", "Birlik narxi", "Summa"],
+    prodLines.filter(l => /^Plita|^Kromka/.test(l.group)),
+    "2-BO'LIM JAMI (Materiallar):",
+    (l) => {
+      const m = panelMeta[l.code];
+      const fmt = m && m.sheets && m.sheets[0] ? `${m.sheets[0][0]} × ${m.sheets[0][1]} · ${m.thickness} mm` : '';
+      return [{ v: l.name || l.code, s: 4 }, { v: fmt, s: 4 }, { v: l.unit || '', s: 4 },
+              { v: +l.qty || 0, s: 6 }, priceCell(l), { v: +l.amount || 0, s: 5 }];
+    });
 
-  /* ════════ 4-BO'LIM: ISHLAB CHIQARISH VA USLUGA XIZMATLARI ════════ */
-  addRow([{ v: "4. ISHLAB CHIQARISH VA USLUGA XIZMATLARI", s: 2 }], 22);
-  addRow([
-    { v: "№", s: 3 },
-    { v: "Xizmat kodi", s: 3 },
-    { v: "Xizmat nomi", s: 3 },
-    { v: "O'lchov birligi", s: 3 },
-    { v: "Hajmi", s: 3 },
-    { v: "Tarif", s: 3 },
-    { v: "Summa", s: 3 }
-  ], 20);
+  const p3Sum = costSection(
+    "3. FURNITURA VA MEXANIZMLAR",
+    ["№", "Artikul / Kod", "Furnitura nomi", "Birlik", "Miqdori", "Birlik narxi", "Summa"],
+    prodLines.filter(l => l.group === 'Furnitura'),
+    "3-BO'LIM JAMI (Furnitura):",
+    (l) => [{ v: l.code || '', s: 4 }, { v: l.name || '', s: 4 }, { v: l.unit || 'dona', s: 4 },
+            { v: +l.qty || 0, s: 6 }, priceCell(l), { v: +l.amount || 0, s: 5 }]);
 
-  const edgeLine = (prod.lines || []).find(l => /kromka/i.test(l.name || ''));
-  const holeLine = (prod.lines || []).find(l => /teshik/i.test(l.name || ''));
-  const laborLine = (prod.lines || []).find(l => /mehnat|ish haqi/i.test(l.name || ''));
-
-  const srvItems = [
-    { code: "SRV_CUT_SHEET", name: "Formatli arralash (kroy xizmati)", unit: "varaq", qty: totalSheets || 1, price: 35000 },
-    { code: "SRV_EDGE_04", name: "PVX kromka yopishtirish va qayta ishlash", unit: "p.m", qty: 28, price: 2500, overrideAmt: edgeLine?.amount },
-    { code: "SRV_HOLE_CONFIRMAT", name: "Prisadka va montaj teshiklari ochish", unit: "teshik", qty: 54, price: 1200, overrideAmt: holeLine?.amount },
-    { code: "SRV_PACKING", name: "Sexda yig'ish va qadoqlash mehnati", unit: "modul", qty: (doc.placements || []).length || 1, price: 50000, overrideAmt: laborLine?.amount }
-  ];
-
-  let p4Sum = 0;
-  let srvIdx = 1;
-  for (const sv of srvItems) {
-    const amt = sv.overrideAmt != null ? sv.overrideAmt : (sv.qty * sv.price);
-    p4Sum += amt;
-    addRow([
-      { v: srvIdx++, s: 4 },
-      { v: sv.code, s: 4 },
-      { v: sv.name, s: 4 },
-      { v: sv.unit, s: 4 },
-      { v: sv.qty, s: 6 },
-      { v: sv.price, s: 5 },
-      { v: amt, s: 5 }
-    ]);
-  }
-
-  addRow([
-    { v: "", s: 7 },
-    { v: "", s: 7 },
-    { v: "4-BO'LIM JAMI (Xizmatlar):", s: 7 },
-    { v: "", s: 7 },
-    { v: "", s: 7 },
-    { v: "", s: 7 },
-    { v: p4Sum, s: 7 }
-  ], 20);
-  addRow([]);
+  const p4Sum = costSection(
+    "4. ISHLAB CHIQARISH XIZMATLARI VA ISH HAQI",
+    ["№", "Kod", "Nomi", "O'lchov birligi", "Hajmi", "Tarif", "Summa"],
+    prodLines.filter(l => l.group === 'Xizmatlar' || l.group === 'Ish haqi'),
+    "4-BO'LIM JAMI (Xizmatlar):",
+    (l) => [{ v: l.code || '', s: 4 }, { v: l.name || '', s: 4 }, { v: l.unit || '', s: 4 },
+            { v: +l.qty || 0, s: 6 }, priceCell(l), { v: +l.amount || 0, s: 5 }]);
 
   /* ════════ 5-BO'LIM: YAKUNIY FOYDA VA TANNARX XULOSASI ════════ */
   addRow([{ v: "5. TANNARX, FOYDA VA YAKUNIY XULOSA", s: 2 }], 22);
@@ -473,27 +372,29 @@ export function buildXLSX(opts = {}) {
     { v: "Summa", s: 3 }
   ], 20);
 
-  const directCost = sheetCost + p3Sum + p4Sum;
-  const marginPct = 25; // 25% rentabellik
-  const marginAmt = Math.round(directCost * (marginPct / 100));
-  const finalTotal = directCost + marginAmt;
+  /* UI va 1-bo'lim bilan bir xil: tannarx = 2+3+4, mijoz narxi = tannarx × (1 + ustama) */
+  const directCost = p2Sum + p3Sum + p4Sum;
+  const markupPct = Math.round((prod.markupPct != null ? prod.markupPct : (prod.margin || 1) - 1) * 100);
+  const finalTotal = prod.clientTotal != null ? prod.clientTotal : Math.round(directCost * (1 + markupPct / 100));
+  const marginAmt = finalTotal - directCost;
+  const pct = (x) => (finalTotal ? `${Math.round(x / finalTotal * 100)}%` : '0%');
 
   addRow([
     { v: 1, s: 4 },
-    { v: "To'g'ridan-to'g'ri tannarx", s: 4 },
-    { v: "Varaqlar + Furnitura + Sex xizmatlari", s: 4 },
+    { v: "Tannarx", s: 4 },
+    { v: "Materiallar + Furnitura + Xizmatlar va ish haqi", s: 4 },
     { v: "2 + 3 + 4 bo'limlar", s: 4 },
     { v: "", s: 4 },
-    { v: `${Math.round((directCost / finalTotal) * 100)}%`, s: 4 },
+    { v: pct(directCost), s: 4 },
     { v: directCost, s: 5 }
   ]);
   addRow([
     { v: 2, s: 4 },
-    { v: "Ustaxona marjasi (Foyda)", s: 4 },
-    { v: "Kompaniya operatsion foydasi va kafolat fondi", s: 4 },
-    { v: `${marginPct}% marja`, s: 4 },
+    { v: "Ustama (foyda)", s: 4 },
+    { v: "Tannarxga nisbatan", s: 4 },
+    { v: `${markupPct}% ustama`, s: 4 },
     { v: "", s: 4 },
-    { v: `${marginPct}%`, s: 4 },
+    { v: pct(marginAmt), s: 4 },
     { v: marginAmt, s: 5 }
   ]);
 
@@ -506,6 +407,11 @@ export function buildXLSX(opts = {}) {
     { v: "100%", s: 8 },
     { v: finalTotal, s: 8 }
   ], 26);
+  if ((prod.missing || []).length) {
+    addRow([]);
+    addRow([{ v: `* Smeta to'liq emas: ${prod.missing.length} ta narx bazada yo'q (0 so'm deb olingan) — `
+      + prod.missing.map(m => m.name || m.code).join(', '), s: 0 }]);
+  }
 
   // Ustun kengliklari
   const colsXml = `

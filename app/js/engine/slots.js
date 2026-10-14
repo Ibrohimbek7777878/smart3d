@@ -25,13 +25,16 @@ export const DEFAULT_SLOTS = {
 /**
  * Slotlar bo'yicha material va qalinliklarni aniqlaydi.
  *
- * @param {Object} projectSlots — loyiha darajasidagi slotlar (DEFAULT_SLOTS ustiga)
+ * Ustuvorlik (pastdan yuqoriga): DEFAULT_SLOTS → fragment slotlari → loyiha → alohida mebel.
+ *
+ * @param {Object} projectSlots — loyiha darajasidagi slotlar (usta tanlagan korpus/fasad)
  * @param {Object} placementOverride — alohida mebel uchun maxsus slotlar
  * @param {Object} materials — materials.json ma'lumotlar bazasi
- * @returns {Object} { getMaterial(slotName), getThickness(slotName), getEdge(slotName), resolved }
+ * @param {Object} [fragSlots] — fragmentning o'z standart slotlari (fragments.json → slots)
+ * @returns {Object} { getMaterial(slotName), getThickness(slotName), getEdge(slotName), getEdgeByCode(code), slots }
  */
-export function resolveSlots(projectSlots = {}, placementOverride = {}, materials = {}) {
-  const merged = Object.assign({}, DEFAULT_SLOTS, projectSlots, placementOverride);
+export function resolveSlots(projectSlots = {}, placementOverride = {}, materials = {}, fragSlots = {}) {
+  const merged = Object.assign({}, DEFAULT_SLOTS, fragSlots, projectSlots, placementOverride);
   const panelList = materials.panel_materials || [];
   const edgeList = materials.edge_materials || [];
 
@@ -64,10 +67,15 @@ export function resolveSlots(projectSlots = {}, placementOverride = {}, material
       return mat.thickness != null ? mat.thickness : 18;
     },
 
-    /** Slot bo'yicha kromka materiali va narxi */
+    /** Slot bo'yicha kromka materiali (narx — productionCost'da, bazadan) */
     getEdge(slotName) {
       const code = merged[slotName] || (slotName.includes('fasad') ? 'PVC2' : 'PVC04');
-      return edgeMap[code] || { code, name: code, price_m: 1200, thickness: 2 };
+      return this.getEdgeByCode(code);
+    },
+
+    /** Kod bo'yicha kromka ("PVC0.4" = "PVC04"). Bazada yo'q bo'lsa — narxsiz yozuv. */
+    getEdgeByCode(code) {
+      return edgeMap[code] || edgeMap[String(code).replace(/\./g, '')] || { code, name: code, missing: true };
     }
   };
 }

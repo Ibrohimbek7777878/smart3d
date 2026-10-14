@@ -7,6 +7,7 @@
  *   - Ko'p slotlilik (slots.js): korpus, fasad, orqa, polka alohida materiallarda
  *   - Yog'och teksturasi yo'nalishi (texture: uzunlik / en / erkin)
  *   - To'liq tannarx: Varaqlar (kroy) + Kromka + Furnitura + Teshiklar + Ish haqi
+ *   - Kesim o'lchami: tayyor o'lcham − kromka (≥1 mm); narxsiz narsa o'ylab topilmaydi
  */
 
 import { evalFormula, roundMm } from './expr.js';
@@ -22,8 +23,23 @@ export function rInt(x) {
   return roundMm(x);
 }
 
+/** Kesim o'lchamidan shu qalinlikdan boshlab kromka ayiriladi (0.4 mm kabi yupqa kromka — yo'q). */
+export const EDGE_DEDUCT_MIN_MM = 1;
+
+/* Petlya soni eshik balandligiga qarab (petlya ishlab chiqaruvchilarining umumiy qoidasi) */
+function hingesForDoor(heightMm) {
+  if (heightMm <= 900) return 2;
+  if (heightMm <= 1600) return 3;
+  if (heightMm <= 2000) return 4;
+  return 5;
+}
+
 /**
  * Fragment detallarini hisoblaydi.
+ *
+ * Detal `length`/`width` — KESIM o'lchami (arralanadigan): tayyor o'lchamdan
+ * ≥ EDGE_DEDUCT_MIN_MM qalinlikdagi kromka tomonlari ayirilgan. Tayyor o'lcham —
+ * `finish_length`/`finish_width`. Kromka metri tayyor o'lchamdan hisoblanadi.
  *
  * @param {Object} frag — fragments.json elementi
  * @param {number} w, d, h — joylashuv o'lchamlari (mm)
@@ -33,7 +49,7 @@ export function rInt(x) {
  */
 export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   const errors = [];
-  const slotResolver = resolveSlots(opt.projectSlots, opt.placementSlots, materials);
+  const slotResolver = resolveSlots(opt.projectSlots, opt.placementSlots, materials, frag.slots);
 
   // Korpus materialining haqiqiy qalinligi t (mm)
   const tKorpus = slotResolver.getThickness('korpus');
@@ -49,8 +65,9 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   };
 
   const parts = [];
+  const partDefs = {};                      // detal kodi → fragments.json dagi ta'rif
 
-  /* ── 1) Detallar ─────────────────────────────────────────────── */
+  /* ── 1) Detallar (tayyor o'lcham) ───────────────────────────── */
   for (const p of frag.parts || []) {
     try {
       // Detal qaysi slotga tegishli? (korpus / fasad / orqa / polka)
@@ -81,6 +98,7 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
       // Tekstura yo'nalishi (uzunlik / en / erkin)
       const texture = p.tekstura || p.texture || (slotName === 'orqa' ? 'erkin' : 'uzunlik');
 
+      partDefs[p.code] = p;
       for (let i = 0; i < qty; i++) {
         parts.push({
           fragment: frag.code,
@@ -88,6 +106,8 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
           ref: p.code + '#' + (i + 1),
           length: rInt(len),
           width: rInt(wid),
+          finish_length: rInt(len),
+          finish_width: rInt(wid),
           qty: 1,
           slot: slotName,
           material: matCode,
@@ -103,47 +123,77 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
     }
   }
 
-  /* ── 2) Kromka: qirra uzunliklari (mm → m) ──────────────────── */
-  const edges = [];
+  /* ── 2) Kromka ──────────────────────────────────────────────────
+   * Ikki format qo'llab-quvvatlanadi:
+   *  a) fragment darajasida: edge: [{code, sides:["F","B"], material?, thickness?, slot?}]
+   *     — aniq `material` berilgan bo'lsa shu ishlatiladi, aks holda slot;
+   *  b) detal darajasida: parts[].edge = {F:"kromka_korpus", L:"kromka_fasad", ...}
+   *     yoki "hammasi:kromka_fasad".
+   * Tomonlar: F=old, B=orqa (uzunlik bo'ylab), L=chap, R=o'ng (en bo'ylab). */
   const partMap = {};
   for (const p of parts) (partMap[p.code] = partMap[p.code] || []).push(p);
+  const sideThk = {};                       // detal kodi → {F,B,L,R: qalinlik mm}
+  const edgeAgg = {};                       // detal kodi + material → yozuv
+
+  function addEdge(code, sides, meta, qtyOverride) {
+    const ps = partMap[code] || [];
+    if (!ps.length || !sides.length) return;
+    let mPerPiece = 0;
+    for (const side of sides) {
+      mPerPiece += (side === 'F' || side === 'B') ? ps[0].finish_length : ps[0].finish_width;
+      const st = (sideThk[code] = sideThk[code] || {});
+      st[side] = Math.max(st[side] || 0, +meta.thickness || 0);
+    }
+    const qty = Math.max(1, Math.round(+qtyOverride || ps.length));
+    const key = code + '|' + meta.code;
+    if (!edgeAgg[key]) {
+      edgeAgg[key] = {
+        fragment: frag.code, code, material: meta.code, name: meta.name || meta.code,
+        thickness: +meta.thickness || 0, sides: [], qty, meters: 0
+      };
+    }
+    const rec = edgeAgg[key];
+    rec.sides = rec.sides.concat(sides);
+    rec.meters = Math.round((rec.meters + (mPerPiece / 1000) * qty) * 1000) / 1000;
+  }
 
   for (const e of frag.edge || []) {
     try {
-      const ps = partMap[e.code] || [];
-      if (!ps.length) continue;
-
-      // Qaysi kromka materiali?
-      const isFasad = /eshik|fasad|front/i.test(e.code);
-      const defaultEdgeSlot = isFasad ? 'kromka_fasad' : 'kromka_korpus';
-      const edgeMeta = slotResolver.getEdge(e.slot || defaultEdgeSlot);
-
-      // Qirra tomonlari: F=old (len), B=orqa (len), L=chap (width), R=o'ng (width)
-      let mPerPiece = 0;
-      for (const side of e.sides || []) {
-        if (side === 'F' || side === 'B') mPerPiece += ps[0].length;
-        else mPerPiece += ps[0].width;
+      let meta;
+      if (e.material && !e.slot) {
+        const m = slotResolver.getEdgeByCode(e.material);
+        meta = Object.assign({}, m, { thickness: e.thickness != null ? +e.thickness : m.thickness });
+      } else {
+        const isFasad = /eshik|fasad|front/i.test(e.code);
+        meta = slotResolver.getEdge(e.slot || (isFasad ? 'kromka_fasad' : 'kromka_korpus'));
       }
-
-      const qty = Math.max(1, Math.round(+e.qty || ps.length));
-      const totalM = (mPerPiece / 1000) * qty;
-
-      edges.push({
-        fragment: frag.code,
-        code: e.code,
-        material: edgeMeta.code || e.material || 'PVC04',
-        name: edgeMeta.name,
-        thickness: edgeMeta.thickness || e.thickness || 2,
-        sides: e.sides || [],
-        qty,
-        meters: Math.round(totalM * 1000) / 1000
-      });
+      addEdge(e.code, e.sides || [], meta, e.qty);
     } catch (err) {
-      errors.push({
-        code: 'E_BAD_EXPR',
-        message: `${frag.code} edge.${e.code}: ${err.message}`
-      });
+      errors.push({ code: 'E_BAD_EXPR', message: `${frag.code} edge.${e.code}: ${err.message}` });
     }
+  }
+  for (const code in partDefs) {
+    const pe = partDefs[code].edge;
+    if (!pe) continue;
+    if (typeof pe === 'string') {
+      const m = /^hammasi:(.+)$/.exec(pe.trim());
+      if (m) addEdge(code, ['F', 'B', 'L', 'R'], slotResolver.getEdge(m[1]));
+      else errors.push({ code: 'E_EDGE_FORMAT', message: `${frag.code} parts.${code}: kromka formati noma'lum "${pe}"` });
+    } else if (typeof pe === 'object') {
+      const bySlot = {};
+      for (const side of ['F', 'B', 'L', 'R']) if (pe[side]) (bySlot[pe[side]] = bySlot[pe[side]] || []).push(side);
+      for (const slot in bySlot) addEdge(code, bySlot[slot], slotResolver.getEdge(slot));
+    }
+  }
+  const edges = Object.values(edgeAgg);
+
+  /* ── 2b) Kesim o'lchami = tayyor o'lcham − kromka (≥ EDGE_DEDUCT_MIN_MM) ── */
+  for (const p of parts) {
+    const st = sideThk[p.code];
+    if (!st) continue;
+    const ded = (side) => (st[side] >= EDGE_DEDUCT_MIN_MM ? st[side] : 0);
+    p.length = rInt(p.finish_length - ded('L') - ded('R'));
+    p.width = rInt(p.finish_width - ded('F') - ded('B'));
   }
 
   /* ── 3) Teshiklar (burg'ilash) ──────────────────────────────── */
@@ -179,15 +229,19 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
     qty: Math.max(1, Math.round(+hw.qty || 1))
   }));
 
-  /* ── 4b) Avtomatik furnitura — agar eshiklar bo'lsa ──────────── */
-  const doorParts = parts.filter(p => /eshik|door|fasad/i.test(p.code));
-  if (doorParts.length) {
-    const hingeQty = doorParts.length * 2; // har eshikka kamida 2 ta petlya
-    const handleQty = doorParts.length;    // har eshikka 1 ta ruchka
-    const hasHinge = hardware.some(hw => /TS-|petli|hinge/i.test(hw.code));
-    const hasHandle = hardware.some(hw => /RU-|ruchka|handle/i.test(hw.code));
-    if (!hasHinge) hardware.push({ fragment: frag.code, code: 'TS-1730', qty: hingeQty, _auto: true });
-    if (!hasHandle) hardware.push({ fragment: frag.code, code: 'RU-128', qty: handleQty, _auto: true });
+  /* ── 4b) Avtomatik furnitura — fragmentda ko'rsatilmagan bo'lsa ──
+   * Petlya faqat ochiladigan ESHIKKA (tortma fasadiga emas, kupe eshigiga emas),
+   * soni eshik balandligiga qarab; tutqich — har bir fasadga (eshik va tortma). */
+  const fronts = parts.filter(p => p.slot === 'fasad' || /eshik|door|fasad|front/i.test(p.code));
+  const isDrawer = (p) => /tortma|drawer|yashik|yashchik/i.test(p.code);
+  const sliding = hardware.some(hw => /KUPE|SLID|RAIL|ROLIK/i.test(hw.code));
+  const doors = sliding ? [] : fronts.filter(p => !isDrawer(p));
+  if (doors.length && !hardware.some(hw => /PET|petl|hinge/i.test(hw.code))) {
+    const hingeQty = doors.reduce((s, p) => s + hingesForDoor(Math.max(p.finish_length, p.finish_width)), 0);
+    hardware.push({ fragment: frag.code, code: 'PET-4', qty: hingeQty, _auto: true });
+  }
+  if (fronts.length && !sliding && !hardware.some(hw => /RU-|ruchka|handle/i.test(hw.code))) {
+    hardware.push({ fragment: frag.code, code: 'RU-128', qty: fronts.length, _auto: true });
   }
 
   /* ── 5) Statistika ───────────────────────────────────────────── */
@@ -211,39 +265,79 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
 }
 
 /**
- * Butun loyihaning haqiqiy ishlab chiqarish tannarxi va xarajatini hisoblaydi:
- * Plita (kroy natijasidagi haqiqiy varaqlar) + Kromka + Furnitura + Teshiklar + Ish haqi.
+ * Butun loyihaning ishlab chiqarish tannarxi va mijoz narxi.
  *
- * @param {Array} cutlists — barcha modullar cutlist natijalari
- * @param {Object} materials — materials.json
- * @param {Object} [opt] — { nestResult, markupPct }
- * @returns {{lines:[], totalCost:number, clientTotal:number, breakdown:{}}}
+ *   Tannarx = plita (kroydagi HAQIQIY varaqlar) + kromka + furnitura + teshiklar + ish haqi
+ *   Mijoz narxi = tannarx × (1 + ustama)            — materials.pricing.markup_pct
+ *
+ * QOIDA: narxi bazada yo'q narsa 0 so'm bilan hisoblanadi va `missing` ro'yxatiga
+ * tushadi — narx HECH QACHON o'ylab topilmaydi (smeta "to'liq emas" deb belgilanadi).
+ *
+ * @param {Array} cutlists — barcha modullar cutlist natijalari (doc.placements tartibida)
+ * @param {Object} materials — materials.json (effektiv: tanlangan ERP varag'i bilan)
+ * @param {Object} [opt] — { nestResult, markupPct, areaEstimate }
+ *   areaEstimate: kroysiz taxmin (katalog kartasi uchun) — varaq maydoni ÷ 0.85, butun varaqqa yaxlitlanmaydi
+ * @returns {{lines, totalCost, clientTotal, perModule:[{cost, client}], missing:[], breakdown}}
  */
 export function productionCost(cutlists, materials = {}, opt = {}) {
   const matByCode = {};
   (materials.panel_materials || []).forEach(m => { matByCode[m.code] = m; });
   const edgeByCode = {};
-  (materials.edge_materials || []).forEach(m => { edgeByCode[m.code] = m; });
+  (materials.edge_materials || []).forEach(m => {
+    edgeByCode[m.code] = m;
+    edgeByCode[String(m.code).replace(/\./g, '')] = m;
+  });
   const hwByCode = {};
   (materials.hardware || []).forEach(m => { hwByCode[m.code] = m; });
   const holeByKind = {};
   (materials.hole_kinds || []).forEach(m => { holeByKind[m.code] = m; });
-  const labor = materials.labor || { panel_per_piece: 12000, per_fragment_min: 40000 };
+  const labor = materials.labor || {};
+  const markup = opt.markupPct != null ? opt.markupPct
+    : (materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0.35);
 
-  const groups = {}; // material → panel[]
-  const edgeAgg = {}, hwAgg = {};
-  let totalHoles = 0;
+  const missing = [];
+  const noteMissing = (group, code, name) => {
+    if (!missing.some(m => m.group === group && m.code === code)) missing.push({ group, code, name: name || code });
+  };
+  const edgePrice = (code) => {
+    const m = edgeByCode[code] || edgeByCode[String(code).replace(/\./g, '')];
+    if (m && m.price_m > 0) return m.price_m;
+    noteMissing('Kromka', code, m && m.name);
+    return 0;
+  };
+  const hwPrice = (code) => {
+    const m = hwByCode[code];
+    if (m && m.price > 0) return m.price;
+    noteMissing('Furnitura', code, m && m.name);
+    return 0;
+  };
+  const holePrice = (kind) => {
+    const m = holeByKind[kind] || holeByKind.drill;
+    if (m && m.price > 0) return m.price;
+    noteMissing('Xizmatlar', 'hole:' + kind, "Teshik burg'ilash (" + kind + ')');
+    return 0;
+  };
+  const sheetArea = (meta) => {
+    const s = meta && meta.sheets && meta.sheets[0];
+    return s ? s[0] * s[1] : 2800 * 2070;
+  };
+
+  /* ── yig'ish ── */
+  const groups = {};                        // material → detallar
+  const areaByMat = {};                     // material → mm²
+  const edgeAgg = {}, hwAgg = {}, holeAgg = {};
   let totalParts = 0;
-
   for (const cl of cutlists || []) {
     totalParts += (cl.parts || []).length;
     for (const p of cl.parts || []) {
       const mat = p.material || 'LDSP18';
       (groups[mat] = groups[mat] || []).push(p);
+      areaByMat[mat] = (areaByMat[mat] || 0) + p.length * p.width;
     }
     for (const e of cl.edges || []) {
-      const key = e.material + '@' + e.thickness;
-      if (!edgeAgg[key]) edgeAgg[key] = { material: e.material, thickness: e.thickness, meters: 0 };
+      /* narx material kodi bo'yicha — eski fragmentlarda bir kodga turli qalinlik yozilgan */
+      const key = String(e.material).replace(/\./g, '');
+      if (!edgeAgg[key]) edgeAgg[key] = { material: e.material, thickness: e.thickness, meters: 0, name: e.name };
       edgeAgg[key].meters += e.meters;
     }
     for (const hw of cl.hardware || []) {
@@ -251,128 +345,125 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       hwAgg[hw.code].qty += hw.qty;
     }
     for (const hl of cl.holes || []) {
-      totalHoles += (hl.qty || 1);
+      holeAgg[hl.kind] = (holeAgg[hl.kind] || 0) + (hl.qty || 1);
     }
   }
 
   const lines = [];
-  let sheetCost = 0;
-  let totalSheetsCount = 0;
-  let totalPanelArea = 0;
 
-  // 1) Plita materiallari: agar kroy (nestResult) berilgan bo'lsa — haqiqiy varaqlar soni!
-  if (opt.nestResult && opt.nestResult.by_material) {
-    for (const mat in opt.nestResult.by_material) {
-      const nm = opt.nestResult.by_material[mat];
-      const meta = matByCode[mat] || { name: mat, sheet_price: nm.sheet_price || 500000 };
-      const sheetsCount = nm.sheet_count || 0;
-      const unitPrice = nm.sheet_price || meta.sheet_price || 500000;
-      const amount = sheetsCount * unitPrice;
-      sheetCost += amount;
-      totalSheetsCount += sheetsCount;
-      totalPanelArea += (nm.stats ? nm.stats.used_area_m2 : 0);
-      lines.push({
-        group: 'Plita (Kroy)',
-        name: `${meta.name || mat} (${sheetsCount} varaq, ${nm.stats ? nm.stats.utilization_pct : 0}% unumdorlik)`,
-        qty: sheetsCount,
-        unit: 'varaq',
-        unit_price: unitPrice,
-        amount
-      });
+  /* 1) Plita — kroy natijasidagi haqiqiy varaqlar (yoki taxmin) */
+  let sheetCost = 0, totalSheetsCount = 0, totalPanelArea = 0;
+  const sheetCostByMat = {};
+  const mats = opt.nestResult && opt.nestResult.by_material && !opt.areaEstimate
+    ? Object.keys(opt.nestResult.by_material) : Object.keys(groups);
+  for (const mat of mats) {
+    const meta = matByCode[mat] || { name: mat };
+    const nm = opt.nestResult && opt.nestResult.by_material && opt.nestResult.by_material[mat];
+    const unitPrice = (nm && nm.sheet_price) || meta.sheet_price || 0;
+    if (!(unitPrice > 0)) noteMissing('Plita', mat, meta.name);
+    let qty, amount, name, group;
+    if (nm && !opt.areaEstimate) {
+      qty = nm.sheet_count || 0;
+      amount = qty * unitPrice;
+      totalPanelArea += nm.stats ? nm.stats.used_area_m2 : 0;
+      const lost = (nm.unplaced || []).length;
+      if (lost) noteMissing('Kroy', mat, `${meta.name || mat}: ${lost} ta detal varaqqa sig'madi — tannarxga kirmagan`);
+      name = `${meta.name || mat} (${qty} varaq, ${nm.stats ? nm.stats.utilization_pct : 0}% unumdorlik)`;
+      group = 'Plita (Kroy)';
+    } else {
+      const area = (areaByMat[mat] || 0);
+      const sheetsExact = area / (sheetArea(meta) * 0.85);   // 85% — taxminiy kroy unumdorligi
+      qty = Math.round(sheetsExact * 100) / 100;
+      amount = Math.round(sheetsExact * unitPrice);
+      totalPanelArea += area / 1e6;
+      name = `${meta.name || mat} (~${qty} varaq, taxminiy)`;
+      group = 'Plita (Taxminiy)';
     }
-  } else {
-    // Kroy hali o'tkazilmagan bo'lsa — sof kvadrat metri bo'yicha hisob
-    for (const mat in groups) {
-      const ps = groups[mat];
-      const area = ps.reduce((s, x) => s + x.length * x.width, 0) / 1e6;
-      const meta = matByCode[mat] || { name: mat, sheet_price: 500000, sheets: [[2800, 2070]] };
-      const sheetArea = ((meta.sheets && meta.sheets[0] && meta.sheets[0][0] * meta.sheets[0][1]) || (2800 * 2070)) / 1e6;
-      const estSheets = Math.ceil(area / (sheetArea * 0.85)); // 85% taxminiy kroy
-      const amount = estSheets * (meta.sheet_price || 500000);
-      sheetCost += amount;
-      totalSheetsCount += estSheets;
-      totalPanelArea += area;
-      lines.push({
-        group: 'Plita (Taxminiy)',
-        name: `${meta.name || mat} (~${estSheets} varaq)`,
-        qty: estSheets,
-        unit: 'varaq',
-        unit_price: meta.sheet_price || 500000,
-        amount
-      });
-    }
+    sheetCost += amount;
+    totalSheetsCount += qty;
+    sheetCostByMat[mat] = amount;
+    lines.push({ group, code: mat, name, qty, unit: 'varaq', unit_price: unitPrice, amount, no_price: !(unitPrice > 0) });
   }
 
-  // 2) Kromka
+  /* 2) Kromka */
   let edgeCost = 0;
   for (const k in edgeAgg) {
     const a = edgeAgg[k];
-    const price = (edgeByCode[a.material] || { price_m: 1500 }).price_m;
+    const price = edgePrice(a.material);
     const amount = Math.round(a.meters * price);
     edgeCost += amount;
     lines.push({
-      group: 'Kromka',
-      name: (edgeByCode[a.material] || {}).name || a.material,
-      qty: Math.round(a.meters * 100) / 100,
-      unit: 'm',
-      unit_price: price,
-      amount
+      group: 'Kromka', code: a.material,
+      name: (edgeByCode[a.material] || {}).name || a.name || a.material,
+      qty: Math.round(a.meters * 100) / 100, unit: 'm', unit_price: price, amount, no_price: !(price > 0)
     });
   }
 
-  // 3) Furnitura
+  /* 3) Furnitura */
   let hwCost = 0;
   for (const k in hwAgg) {
     const a = hwAgg[k];
-    const meta = hwByCode[a.code] || { name: a.code, price: 5000 };
-    const price = meta.price > 0 ? meta.price : 5000;
+    const meta = hwByCode[a.code] || {};
+    const price = hwPrice(a.code);
     const amount = price * a.qty;
     hwCost += amount;
     lines.push({
-      group: 'Furnitura',
-      name: meta.name || a.code,
-      qty: a.qty,
-      unit: meta.unit || 'dona',
-      unit_price: price,
-      amount
+      group: 'Furnitura', code: a.code, name: meta.name || a.code,
+      qty: a.qty, unit: meta.unit || 'dona', unit_price: price, amount, no_price: !(price > 0)
     });
   }
 
-  // 4) Teshik burg'ilash xizmati
-  const holeUnitPrice = (holeByKind['drill'] || { price: 300 }).price;
-  const holeCost = totalHoles * holeUnitPrice;
-  if (totalHoles > 0) {
+  /* 4) Teshik burg'ilash — turi bo'yicha (petlya, shkant, kam, oddiy) */
+  let holeCost = 0, totalHoles = 0;
+  for (const kind in holeAgg) {
+    const qty = holeAgg[kind];
+    const price = holePrice(kind);
+    const amount = qty * price;
+    holeCost += amount;
+    totalHoles += qty;
     lines.push({
-      group: 'Xizmatlar',
-      name: `Teshik burg'ilash (${totalHoles} dona)`,
-      qty: totalHoles,
-      unit: 'dona',
-      unit_price: holeUnitPrice,
-      amount: holeCost
+      group: 'Xizmatlar', code: 'hole:' + kind,
+      name: `${((holeByKind[kind] || holeByKind.drill || {}).name) || "Teshik burg'ilash"} (${qty} dona)`,
+      qty, unit: 'dona', unit_price: price, amount, no_price: !(price > 0)
     });
   }
 
-  // 5) Sex ish haqi (arralash + yig'ish)
-  const pieceLabor = totalParts * (labor.panel_per_piece || 12000);
-  const fragLabor = (cutlists || []).length * (labor.per_fragment_min || 40000);
+  /* 5) Sex ish haqi (arralash + yig'ish) — materials.labor (taxminiy stavka) */
+  const pieceLabor = totalParts * (labor.panel_per_piece || 0);
+  const fragLabor = (cutlists || []).length * (labor.per_fragment_min || 0);
   const laborCost = Math.max(pieceLabor, fragLabor);
+  if (!(labor.panel_per_piece > 0 || labor.per_fragment_min > 0) && totalParts) noteMissing('Ish haqi', 'labor', 'Ish haqi stavkasi');
   if (laborCost > 0) {
     lines.push({
-      group: 'Ish haqi',
+      group: 'Ish haqi', code: 'labor',
       name: `Arralash, kromka urish va sex yig'ish (${totalParts} detal)`,
-      qty: totalParts,
-      unit: 'detal',
-      unit_price: Math.round(laborCost / (totalParts || 1)),
-      amount: laborCost
+      qty: totalParts, unit: 'detal', unit_price: Math.round(laborCost / (totalParts || 1)), amount: laborCost
     });
   }
 
-  // Jami Tannarx (Cost Price)
+  /* Jami */
   const totalCost = sheetCost + edgeCost + hwCost + holeCost + laborCost;
-
-  // Mijoz narxi (Client Price) — standart 35% ustama marja
-  const markup = opt.markupPct != null ? opt.markupPct : 0.35;
   const clientTotal = Math.round(totalCost * (1 + markup));
+
+  /* Modullar bo'yicha taqsimot (kotirovka satrlari): plita — modul detallari maydoni
+     ulushi bo'yicha, ish haqi — detal soni ulushi bo'yicha; qolgani — modulning o'zidan. */
+  const perModule = (cutlists || []).map(cl => {
+    let cost = 0;
+    for (const p of cl.parts || []) {
+      const mat = p.material || 'LDSP18';
+      if (areaByMat[mat] > 0) cost += (p.length * p.width) / areaByMat[mat] * (sheetCostByMat[mat] || 0);
+    }
+    for (const e of cl.edges || []) cost += e.meters * (edgeByCode[e.material] || edgeByCode[String(e.material).replace(/\./g, '')] || {}).price_m || 0;
+    for (const hw of cl.hardware || []) cost += hw.qty * (((hwByCode[hw.code] || {}).price) || 0);
+    for (const hl of cl.holes || []) cost += (hl.qty || 1) * (((holeByKind[hl.kind] || holeByKind.drill || {}).price) || 0);
+    if (totalParts) cost += laborCost * (cl.parts || []).length / totalParts;
+    return { cost: Math.round(cost), client: Math.round(cost * (1 + markup)) };
+  });
+  /* yaxlitlash qoldig'i oxirgi modulga — satrlar yig'indisi jami bilan aynan teng */
+  if (perModule.length) {
+    const diff = clientTotal - perModule.reduce((s, m) => s + m.client, 0);
+    perModule[perModule.length - 1].client += diff;
+  }
 
   const totalEdgeMeters = Math.round(Object.values(edgeAgg).reduce((s, x) => s + x.meters, 0) * 100) / 100;
   const totalHwCount = Object.values(hwAgg).reduce((s, x) => s + x.qty, 0);
@@ -382,6 +473,8 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     lines,
     totalCost,
     clientTotal,
+    perModule,
+    missing,
     sheetCost,
     edgeCost,
     hwCost,
@@ -390,6 +483,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     totalWorkshopCost: totalCost,
     suggestedClientPrice: clientTotal,
     margin: 1 + markup,
+    markupPct: markup,
     breakdown: {
       sheetCost,
       edgeCost,

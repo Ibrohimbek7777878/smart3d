@@ -36,7 +36,8 @@ const state = {
   doc: null,
   catalog: {},          // {code: frag}
   materials: null,      // materials.json
-  materialCode: 'MDF16',
+  materialCode: 'LDSP18',   // korpus (va polka) materiali — slots.korpus
+  fasadCode: 'MDF16',       // fasad (eshik, tortma) materiali — slots.fasad
   sheetCatalog: null,   // ERP katalogi (sheet-catalog.json)
   searchIndex: null,    // material ID + fuzzy qidiruv indeksi
   sheet: null,          // tanlangan real mahsulot {sku,name,type,th,l,w,uzs}
@@ -51,7 +52,6 @@ const state = {
 
 let sp = null, ctl = null, items = null;
 
-const WOOD = /^(LDSP|MDF|HDF|OSB)/;
 const PHONE_MQ = window.matchMedia('(max-width: 599px)');   // app.css telefon chegarasi bilan bir xil
 const fmtSum = (n) => SpPrice.fmtSoom(n);
 
@@ -65,9 +65,17 @@ function toast(msg, kind) {
 }
 
 /* ═══════════════════ NARX QURILISHI ═══════════════════ */
-function matFactor() {
-  const m = (state.materials.panel_materials || []).find(x => x.code === state.materialCode);
-  return m ? m.factor : 1;
+
+/** Loyiha slotlari (TZ §5 3.1): usta tanlagan korpus va fasad hamma modulga qo'llanadi. */
+function projectSlots() {
+  return { korpus: state.materialCode, polka: state.materialCode, fasad: state.fasadCode };
+}
+
+/** ERP varag'i qaysi slotga tegishli: LDSP/LMDF/OSB → korpus, HDF → orqa, qolgani (MDF, akril) → fasad. */
+function slotForBase(base) {
+  if (/^HDF/.test(base)) return 'orqa';
+  if (/^(LDSP|LMDF|OSB)/.test(base)) return 'korpus';
+  return 'fasad';
 }
 
 /* ERP katalogidagi real mahsulot → hisoblash bazasi (kod) */
@@ -103,16 +111,15 @@ function effectiveMaterials() {
   return mats;
 }
 
-/** Katalog narxlari × joriy material koeffitsienti (material → narx demo). */
+/** price.js uchun katalog jadvali — endi faqat o'lcham ogohlantirishlari (W_SIZE_CLAMP) uchun;
+ *  mijoz narxi tannarxdan hisoblanadi (productionCost → buildQuote). */
 function buildPrices() {
-  const f = matFactor();
   const prices = {};
   for (const code in state.catalog) {
     const fr = state.catalog[code];
-    const isWood = WOOD.test(fr.material_code || '');
     prices[code] = {
       mode: fr.price_mode || 'unit',
-      price: Math.round((fr.price || 0) * (isWood ? f : 1)),
+      price: fr.price || 0,
       name: fr.name, base_w: fr.w,
       min_w: fr.min_w, max_w: fr.max_w, min_d: fr.min_d, max_d: fr.max_d,
       stretch_axis: fr.stretch_axis
@@ -135,8 +142,8 @@ function doRecalc() {
   state.prices = buildPrices();
   const mats = effectiveMaterials();   // real ERP mahsuloti tanlangan bo'lsa — haqiqiy narx/olcham
 
-  /* 1) narx */
-  const priceRes = SpPrice.calc(doc, state.prices, {});
+  /* 1) o'lcham ogohlantirishlari (katalog min/max) */
+  const sizeCheck = SpPrice.calc(doc, state.prices, {});
 
   /* 2) validatsiya */
   const val = validateDoc(doc, { catalog: state.catalog });
@@ -144,13 +151,11 @@ function doRecalc() {
   /* 3) cutlist + ishlab chiqarish xarajati */
   const cutlists = [];
   const allParts = [];
+  const slots = projectSlots();
   for (const p of doc.placements) {
     const fr = state.catalog[p.frg];
     if (!fr) continue;
-    const fr2 = WOOD.test(fr.material_code || '')
-      ? Object.assign({}, fr, { material_code: state.materialCode })
-      : fr;
-    const cl = cutlist(fr2, p.w, p.d, p.h, mats);
+    const cl = cutlist(fr, p.w, p.d, p.h, mats, { projectSlots: slots, placementSlots: p.slots });
     cl.placementId = p.id;                   // CNC join uchun
     cutlists.push(cl);
     /* id — noyob (placement + ref) — nesting ref/CNC join uchun */
@@ -162,6 +167,9 @@ function doRecalc() {
   /* 5) ishlab chiqarish tannarxi (haqiqiy varaqlar soni bilan) */
   const prod = productionCost(cutlists, mats, { nestResult: nest });
 
+  /* 6) mijoz kotirovkasi — tannarx × (1 + ustama), modullarga taqsimlangan */
+  const priceRes = buildQuote(doc, cutlists, prod, sizeCheck.warnings);
+
   state._res = { priceRes, val, cutlists, prod, nest };
   renderTotal(priceRes);
   renderMsgs(val, priceRes);
@@ -171,12 +179,39 @@ function doRecalc() {
   renderExCheck(val, doc, cutlists, nest);
 }
 
+/** Kotirovka: har modul = uning tannarx ulushi × (1 + ustama). Satrlar yig'indisi = jami
+ *  (UI, Excel, hisobot va smeta.csv — hammasi shu bitta obyektdan o'qiydi; TZ §5 3.6). */
+function buildQuote(doc, cutlists, prod, sizeWarnings) {
+  const byId = {};
+  for (const p of doc.placements) byId[p.id] = p;
+  const lines = cutlists.map((cl, i) => {
+    const p = byId[cl.placementId] || {};
+    const frag = state.catalog[cl.fragment] || {};
+    const amount = (prod.perModule[i] || {}).client || 0;
+    return { code: cl.fragment, name: p.name || frag.name || cl.fragment, w: p.w, d: p.d, h: p.h,
+             qty: 1, unit_price: amount, amount };
+  });
+  return {
+    lines,
+    subtotal: prod.clientTotal,
+    discount: 0,
+    total: prod.clientTotal,
+    markupPct: prod.markupPct,
+    missing: prod.missing,
+    incomplete: prod.missing.length > 0,
+    /* W_NO_PRICE — eski katalog narxi haqida, endi ishlatilmaydi */
+    warnings: (sizeWarnings || []).filter(w => w.code !== 'W_NO_PRICE')
+  };
+}
+
 /* ═══════════════════ RENDER ═══════════════════ */
 function renderTotal(priceRes) {
-  $('#totalPrice').innerHTML = fmtSum(priceRes.total) + "<small>jami narx</small>";
-  $('#smTotal').textContent = fmtSum(priceRes.total);
+  const star = priceRes.incomplete ? '*' : '';
+  $('#totalPrice').innerHTML = fmtSum(priceRes.total) + star +
+    '<small>' + (priceRes.incomplete ? "jami (to'liq emas)" : 'jami narx') + '</small>';
+  $('#smTotal').textContent = fmtSum(priceRes.total) + star;
   const n = (state.doc.placements || []).length;
-  $('#smSub').innerHTML = n + ' dona mebel<br>material: ' + state.materialCode;
+  $('#smSub').innerHTML = n + ' dona mebel<br>korpus: ' + esc(state.materialCode) + ' · fasad: ' + esc(state.fasadCode);
 }
 
 function renderMsgs(val, priceRes) {
@@ -188,6 +223,10 @@ function renderMsgs(val, priceRes) {
     const k = w.code + w.message;
     if (seen.has(k)) continue; seen.add(k);
     items.push(`<div class="msg warn">⚠️ ${esc(w.code)} — ${esc(w.message)}</div>`);
+  }
+  if (priceRes.missing && priceRes.missing.length) {
+    items.push(`<div class="msg warn">⚠️ <b>Smeta to'liq emas</b> — ${priceRes.missing.length} ta narx bazada yo'q
+      (0 so'm deb olindi, o'ylab topilmaydi): ${priceRes.missing.map(m => esc(m.name)).join(', ')}</div>`);
   }
   if (!items.length) items.push('<div class="msg ok">✅ Chizma to\'g\'ri — xato yo\'q</div>');
   box.innerHTML = items.join('');
@@ -204,10 +243,8 @@ function renderSmeta(priceRes, prod) {
       <td class="num">${fmtSum(l.amount)}</td>
     </tr>`).join('') ||
     '<tr><td colspan="4" style="color:var(--muted)">Mebel qo\'yilmagan</td></tr>';
-  let foot = `<tr><td colspan="3">Subtotal</td><td class="num">${fmtSum(priceRes.subtotal)}</td></tr>`;
-  if (priceRes.discount) foot += `<tr><td colspan="3">Chegirma</td><td class="num">−${fmtSum(priceRes.discount)}</td></tr>`;
-  foot += `<tr><td colspan="3">JAMI</td><td class="num">${fmtSum(priceRes.total)}</td></tr>`;
-  tf.innerHTML = foot;
+  tf.innerHTML = `<tr><td colspan="3">JAMI (tannarx + ${Math.round((priceRes.markupPct || 0) * 100)}% ustama)${priceRes.incomplete ? ' *' : ''}</td>
+    <td class="num">${fmtSum(priceRes.total)}</td></tr>`;
 
   /* Sex tannarxi (Haqiqiy ishlab chiqarish xarajatlari) */
   const wTb = $('#smWorkshopTable')?.querySelector('tbody');
@@ -219,8 +256,9 @@ function renderSmeta(priceRes, prod) {
       { name: 'Kromka (qirra lenta)', qty: `${b.edgeMeters || 0} metr`, unit: '-', amount: prod.edgeCost },
       { name: 'Furnitura / apparatura', qty: `${b.hwCount || 0} dona`, unit: '-', amount: prod.hwCost },
       { name: 'Prisadka (burg\'ulash)', qty: `${b.holeCount || 0} ta teshik`, unit: '-', amount: prod.holeCost },
-      { name: 'Ish haqi / Usta mehnati', qty: 'Loyiha', unit: '-', amount: prod.laborCost }
+      { name: 'Ish haqi / Usta mehnati (taxminiy stavka)', qty: 'Loyiha', unit: '-', amount: prod.laborCost }
     ];
+    if (prod.missing.length) rows.push({ name: '⚠️ Narxi bazada yo\'q (0 deb olindi)', qty: prod.missing.length + ' ta', unit: '-', amount: 0 });
     wTb.innerHTML = rows.map(r => `
       <tr>
         <td>${esc(r.name)}</td>
@@ -429,8 +467,22 @@ function renderCatalog() {
       <div class="cc-name">${esc(f.name)}</div>
       <div class="cc-dim">${f.w}×${f.d}×${f.h} mm</div>
       <div class="cc-range">min ${f.min_w || '—'} · max ${f.max_w || '—'}</div>
-      <div class="cc-price">${fmtSum(Math.round((f.price || 0) * (WOOD.test(f.material_code || '') ? matFactor() : 1)))}</div>
+      <div class="cc-price" title="Taxminiy: standart o'lchamda, kroysiz">~${fmtSum(estimateFragment(f))}</div>
     </button>`).join('');
+}
+
+/** Katalog kartasi narxi — kotirovka bilan bir xil model (tannarx × ustama), standart
+ *  o'lchamda va kroysiz (maydon ÷ 85%) taxmin. Material/varaq o'zgarmaguncha keshlanadi. */
+const estCache = { key: '', map: {} };
+function estimateFragment(f) {
+  const mats = effectiveMaterials();
+  const key = state.materialCode + '|' + state.fasadCode + '|' + (state.sheet ? state.sheet.sku + state.sheet.name : '');
+  if (estCache.key !== key) { estCache.key = key; estCache.map = {}; }
+  if (estCache.map[f.code] == null) {
+    const cl = cutlist(f, f.w, f.d, f.h, mats, { projectSlots: projectSlots() });
+    estCache.map[f.code] = productionCost([cl], mats, { areaEstimate: true }).clientTotal;
+  }
+  return estCache.map[f.code];
 }
 
 const CAT_NAMES = {
@@ -445,9 +497,11 @@ const CAT_NAMES = {
 function catName(c) { return CAT_NAMES[c] || c; }
 
 function renderMaterials() {
-  $('#matSel').innerHTML = (state.materials.panel_materials || [])
-    .map(m => `<option value="${m.code}" ${m.code === state.materialCode ? 'selected' : ''}>${m.name} — kaf. ×${m.factor} (varaq ${fmtSum(m.sheet_price)})</option>`)
-    .join('');
+  const panels = (state.materials.panel_materials || []).filter(m => /^(LDSP|LMDF|MDF|OSB)/.test(m.code));
+  const opts = (cur) => panels.map(m =>
+    `<option value="${esc(m.code)}" ${m.code === cur ? 'selected' : ''}>${esc(m.name)} — varaq ${m.sheet_price > 0 ? fmtSum(m.sheet_price) : "narx yo'q"}</option>`).join('');
+  $('#matSel').innerHTML = opts(state.materialCode);
+  $('#fasadSel').innerHTML = opts(state.fasadCode);
 }
 
 /* ERP katalogi tanlash — qidiruv yoki joriy tip bo'yicha */
@@ -849,7 +903,7 @@ function exportXlsx() {
     const xlsx = buildXLSX({
       doc: state.doc,
       catalog: state.catalog,
-      materials: state.materials,
+      materials: effectiveMaterials(),
       priceRes: res.priceRes,
       prod: res.prod,
       nest: res.nest,
@@ -875,6 +929,7 @@ function exportProject() {
   download('smart3d-project.json', JSON.stringify({
     app: 'smart3d', v: 2, ts: Date.now(),
     material: state.materialCode,
+    fasad: state.fasadCode,
     sheet: state.sheet || null,
     name: $('#projName').textContent.trim(),
     doc: state.doc
@@ -998,6 +1053,7 @@ function saveProject() {
     app: 'smart3d', v: 2, ts: Date.now(),
     name: $('#projName').textContent.trim(),
     material: state.materialCode,
+    fasad: state.fasadCode,
     sheet: state.sheet ? { sku: state.sheet.sku, name: state.sheet.name, type: state.sheet.type, th: state.sheet.th, l: state.sheet.l, w: state.sheet.w, uzs: state.sheet.uzs } : null,
     doc: state.doc
   };
@@ -1022,7 +1078,8 @@ function loadProject() {
       toast('Loyiha yangi versiyada — ba\'zi funksiyalar ishlamasligi mumkin', 'warn');
     }
     $('#projName').textContent = p.name || 'Loyiha';
-    state.materialCode = p.material || 'MDF16';
+    state.materialCode = p.material || 'LDSP18';
+    state.fasadCode = p.fasad || 'MDF16';
     state.sheet = p.sheet || null;
     renderMaterials(); renderSheetSel(); renderCatalog();
     setDoc(p.doc, { immediate: true });
@@ -1070,9 +1127,9 @@ async function boot() {
     if (saved && typeof saved === 'object') Object.assign(state.nestCfg, saved);
   } catch (e) { /* buzilgan kesh — defaults bilan davom */ }
   delete state.nestCfg._meta;
-  if (!state.materialCode || !(mats.panel_materials || []).find(m => m.code === state.materialCode)) {
-    state.materialCode = 'MDF16';
-  }
+  const known = (c) => (mats.panel_materials || []).some(m => m.code === c);
+  if (!known(state.materialCode)) state.materialCode = 'LDSP18';
+  if (!known(state.fasadCode)) state.fasadCode = 'MDF16';
 
   /* sahna */
   // sp-scene inline `position:relative` qo'yadi — stylesheetdagi absolute
@@ -1179,17 +1236,26 @@ async function boot() {
     renderSheetSel();
     renderCatalog();
     scheduleRecalc(true);
-    toast('Material: ' + state.materialCode + ' — narx yangilandi', 'good');
+    toast('Korpus: ' + state.materialCode + ' — narx yangilandi', 'good');
+  });
+  $('#fasadSel').addEventListener('change', (e) => {
+    state.fasadCode = e.target.value;
+    state.sheet = null;
+    renderSheetSel();
+    renderCatalog();
+    scheduleRecalc(true);
+    toast('Fasad: ' + state.fasadCode + ' — narx yangilandi', 'good');
   });
   $('#sheetSel').addEventListener('change', (e) => {
     const idx = +e.target.value;
     const all = (state.sheetCatalog && state.sheetCatalog.sheets) || [];
     state.sheet = idx >= 0 ? all[idx] : null;
     if (state.sheet) {
-      state.materialCode = baseForSheet(state.sheet);
-      $('#matSel').value = state.materialCode;
+      const base = baseForSheet(state.sheet), slot = slotForBase(base);
+      if (slot === 'korpus') { state.materialCode = base; $('#matSel').value = base; }
+      else if (slot === 'fasad') { state.fasadCode = base; $('#fasadSel').value = base; }
       renderCatalog();
-      toast('Real material: ' + state.sheet.name, 'good');
+      toast('Real material (' + slot + '): ' + state.sheet.name, 'good');
     } else {
       toast('Demo narxlar (materials.json)', 'ok');
     }
