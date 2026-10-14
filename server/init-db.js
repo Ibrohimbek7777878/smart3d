@@ -1,20 +1,24 @@
 /* Smart3D DB init — jadvallar + data import
- * Ishga tushirish: npm run init-db
+ * Ishga tushirish:  ADMIN_PASSWORD='kamida-8-belgi' npm run init-db
+ * Mavjud bazani qayta yaratish (foydalanuvchi va buyurtmalar O'CHADI):  npm run init-db -- --force
  */
 import Database from 'better-sqlite3';
+import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = path.join(__dirname, 'smart3d.db');
+const dbPath = process.env.DB_PATH || path.join(__dirname, 'smart3d.db');
 const dataDir = path.join(__dirname, '../app/data');
 
-/* Eski DB bo'lsa o'chirish */
+/* Mavjud bazani faqat --force bilan o'chiramiz — unda foydalanuvchilar va buyurtmalar bor */
 if (fs.existsSync(dbPath)) {
-  fs.unlinkSync(dbPath);
-  fs.unlinkSync(dbPath + '-wal');
-  fs.unlinkSync(dbPath + '-shm');
+  if (!process.argv.includes('--force')) {
+    console.error(`Baza allaqachon bor: ${dbPath}\nQayta yaratish (barcha foydalanuvchi va buyurtmalar o'chadi): npm run init-db -- --force`);
+    process.exit(1);
+  }
+  for (const f of [dbPath, dbPath + '-wal', dbPath + '-shm']) fs.rmSync(f, { force: true });
   console.log('Eski DB o\'chirildi');
 }
 
@@ -157,11 +161,17 @@ insertSetting.run('version', '1.0.0');
 console.log('Settings: default qo\'yildi');
 
 /* ═══════════════════ ADMIN USER ═══════════════════ */
-import bcrypt from 'bcryptjs';
-const hash = await bcrypt.hash('admin123', 10);
-db.prepare('INSERT OR IGNORE INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)')
-  .run('Admin', 'admin@smart3d.uz', hash, 'admin');
-console.log('Admin user: admin@smart3d.uz / admin123');
+/* Parol faqat ADMIN_PASSWORD dan — kodda ham, konsolda ham turmaydi */
+const adminEmail = process.env.ADMIN_EMAIL || 'admin@smart3d.uz';
+const adminPassword = process.env.ADMIN_PASSWORD || '';
+if (adminPassword.length >= 8) {
+  const hash = await bcrypt.hash(adminPassword, 10);
+  db.prepare('INSERT OR IGNORE INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)')
+    .run('Admin', adminEmail, hash, 'admin');
+  console.log(`Admin user: ${adminEmail} (parol — ADMIN_PASSWORD dan)`);
+} else {
+  console.warn('DIQQAT: ADMIN_PASSWORD (kamida 8 belgi) berilmadi — admin yaratilmadi. Keyin: ADMIN_PASSWORD=\'…\' npm run admin-password');
+}
 
 console.log('\n✅ DB tayyor:', dbPath);
 db.close();
