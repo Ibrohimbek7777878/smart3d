@@ -193,3 +193,28 @@ Har bir o'lchamda quyidagilar tekshiriladi:
 
 1. **Ustama foizi** (mijoz narxi = tannarx + ustama). Hozirgi kodda turgan qiymat vaqtincha qo'llanadi.
 2. **Server joylashuvi** (deploy uchun keyingi TZ'da kerak): `smart3d.bittada.uz` qayerda turadi.
+
+---
+
+## 9. Bajarilish holati (2026-10-14)
+
+| Bosqich | Holat | Commit | Tekshiruv |
+|---|---|---|---|
+| 0 — Git | ✅ | `208ba4d` | — |
+| 1 — Bloklovchi xatolar | ✅ | `62a10c6` | `tests/ui` phase1: JS xatosi 0, render o'lchami barqaror, 360° ochiladi/yopiladi |
+| 2 — Responsive | ✅ | `2eebd48` | `tests/ui` matrix (7 qurilma) + touch + modals |
+| 3 — Smeta | ✅ | `d1ee824` | `tests/ui` phase3: UI = jadval = Excel jami; material → narx |
+| 4 — Server xavfsizligi | ✅ | `885cbdc` | `cd server && npm test` — 13 test |
+| Code review (10 topilma) | ✅ | `8356e65` | yuqoridagilarning hammasi qayta o'tdi |
+
+**Egasining qarori kerak:**
+1. **Ustama** — hozir 35% (`app/data/materials.json` → `pricing.markup_pct`).
+2. **Plita narxi mijozga qanday hisoblanadi.** Hozir TZ bo'yicha kroydagi butun varaqlar asosida: modul kattalashsa, yangi varaq kerak bo'lmaguncha narx deyarli o'zgarmaydi. Muqobil variant — ishlatilgan maydon + chiqindi foizi.
+3. **`TS-1730` nima?** Fragmentlarda u petlya sifatida ishlatilgan, `materials.json` da esa "Styajka TS-1730" deb yozilgan.
+
+**Bu TZ dan tashqarida qolganlar (keyingi TZ):**
+- Stanok fayllari. DXF, NC, G-code, CIX, MPR, Altendorf hozircha "SINOV" belgisi bilan chiqadi.
+- GibLab va BPJ eksportlari asosiy kroydan foydalanmaydi. Endi detal `length`/`width` = kesim o'lchami, tayyor o'lcham — `finish_length`/`finish_width`; eksportlar shunga moslanishi kerak.
+- Fragmentlardagi 31 ta teshik detal chegarasidan tashqarida (eski ma'lumot).
+- AI va LLM, 600 ta modul, multi-tenant.
+- Server deploy: `NODE_ENV=production` da `JWT_SECRET` va `ADMIN_PASSWORD` shart.
