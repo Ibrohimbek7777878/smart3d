@@ -33,6 +33,7 @@
 | 16 | [Telegram bot uchun Mini App](16-telegram-mini-app.md) | TASDIQ KUTILMOQDA (TZ-09 dan keyin) | egasi: bot kaliti serverga, bot linki |
 | 17 | [Bazis BPJ faylini to'liq qilish](17-bpj-toliq.md) | TASDIQ KUTILMOQDA (TZ-09 bilan parallel mumkin) | egasi: Bazis'li kompyuterda real sinov |
 | 18 | [Uch til: o'zbek, rus, ingliz](18-uch-til.md) | TASDIQ KUTILMOQDA (TZ-09 dan keyin) | egasi: atamalar jadvali tasdig'i |
+| 19 | [Production darajasi: modullar, xavfsizlik, xato kodlari, ikonlar](19-senior-production.md) | BAJARILMOQDA (tasdiq 2026-10-15) | — |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.

@@ -270,3 +270,27 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 90. kirishda email orqali bolsin boldi ha bpj ni davom etir tilni ham qosh rus ingliz uzbek  bolsin va har bir harf har bir text ozgarish kere
 
 91. boshla
+
+92. hoz nimalar bold va loyhan nech fozi bold
+
+93. frontendi toliq tugat
+
+94. qara hozir dizayn toliq loyhaga joriy qildingmi
+
+95. hozir github repo yoq hali qoymadi repon privet qilb qoysam sen commit va push qila olasnami
+
+96. davom etaver github repon tawayman keyinroq senga shudna hammasin push qivoraman
+
+97. https://github.com/Ibrohimbek7777878/smart3d  mana reo push qvior
+
+98. davom etishdan oldin  nimalarin qilind va nimalar bold hozir konstruksiya qila oladimi bizni tizim
+
+99. yangi dizayn qachon toliq loyhaga mos tushiriliadi
+
+100. senga github repon berdim commit qildingmi hozir hammasi togir ketayabdim ozi yo biron joyda xaotlik notogr yol bormi ozi syatn html va react+vite three.js qilb olganmiz togir va shunga qarab sen 0dan ozing frontend yozishing chi
+
+101. unda qara har bir sahifa har bir bolimn modul qil olaylik va bu ishni end senior dasturchi kabi qilamiz va faylar joylashuv arxitektura ham shunday bolsin ve nega buncha kop vaqt ketayabd frontend yozib backend moslab chiqish shunchalik qyinmi  opencode qilsach bu ishni
+
+102. yaxsh unda bundan buyogiga senior ,sifwater enginer dasturchi sifatda qilasan va loyhan toliq kiber xujumlardan ximoyalanish byoicha ham korib chiqishimiz kere har bir qismga error log kodlarin ham yozb ket istalgan errorlarn ushlash uchun  ikonlardna foydlan stikerlardan emas hamma modul realni ishlaydigan bolsin va productionga tayyor bolsin
+
+103. boshla
