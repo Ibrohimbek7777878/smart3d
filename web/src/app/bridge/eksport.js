@@ -48,6 +48,7 @@ export const eksport = {
   .logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
   .logo i{width:38px;height:38px;border-radius:12px;background:#FF7A45;color:#2A1206;display:grid;place-items:center;font-weight:800;font-style:normal;font-size:16px}
   .logo b{font-size:18px;display:block;line-height:1.1} .logo small{font-size:11px;color:#555}
+  .logo .usta{height:28px;max-width:120px;object-fit:contain;margin-left:auto}   /* usta logosi — Bittada belgisidan kichik (S4) */
   h1{font-size:20px;margin:0 0 2px} h2{font-size:15px;margin:18px 0 8px;border-bottom:2px solid #333;padding-bottom:3px}
   .meta{color:#555;font-size:12px;margin-bottom:14px}
   table{width:100%;border-collapse:collapse;margin:6px 0}
@@ -58,7 +59,7 @@ export const eksport = {
   footer{margin-top:24px;color:#777;font-size:11px;border-top:1px solid #ccc;padding-top:6px}
   @media print{body{margin:12mm}}
 </style></head><body>
-<div class="logo"><i>3D</i><span><b>Smart3D</b><small>by Bittada</small></span></div>
+<div class="logo"><i>3D</i><span><b>Smart3D</b><small>by Bittada</small></span>${/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(c.logo || '') ? `<img class="usta" src="${c.logo}" alt="Sex logosi">` : ''}</div>
 <h1>${esc(name)}</h1>
 <div class="meta">Smart3D hisobot · ${new Date().toLocaleDateString('uz-UZ')} · material: ${esc(c.matCode)}</div>
 <h2>1. Kotirovka (mijozga)</h2>

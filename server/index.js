@@ -116,6 +116,7 @@ function addColumn(table, col, def) {
 }
 addColumn('users', 'shop', "TEXT DEFAULT ''");   // ro'yxatdagi "Sex nomi" (ixtiyoriy)
 addColumn('projects', 'client', "TEXT DEFAULT ''");   // loyiha kartasidagi mijoz ismi (dizayn: "Loyihalarim")
+addColumn('users', 'settings_json', "TEXT DEFAULT ''");   // dizayndagi "Sozlamalar": ustama, stanok profili, sex logosi
 /* S1: bitta raqam — bitta akkaunt (oxirgi 9 raqam bo'yicha). Eski bazada takror bo'lsa — kodda ham tekshiriladi */
 try { db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_phone9 ON users(substr(phone, -9)) WHERE phone <> ''"); }
 catch (e) { console.warn('DIQQAT: telefon noyob indeksi yaratilmadi (bazada takror raqam bor):', e.message); }
@@ -503,6 +504,35 @@ function sexStdCurrent() {
   const row = db.prepare("SELECT value FROM settings WHERE key = 'sex_standartlari'").get();
   return row ? JSON.parse(row.value) : readJsonData('sex-standartlari.json');
 }
+/* ═══════════════════ FOYDALANUVCHI SOZLAMALARI (TZ-09: dizayndagi "Sozlamalar") ═══════════════════
+ * markup_pct — usta ustamasi (0…3, ya'ni 0–300%; bo'sh bo'lsa materials.json standarti);
+ * stanoklar — "Stanokka" bo'limida ko'rsatiladigan fayllar; logo — sex logosi (PNG/JPEG/WEBP data URL, ≤ ~300 KB),
+ * hisobotda Bittada belgisidan kichikroq (qoida S4). Har usta faqat o'zinikini ko'radi va o'zgartiradi. */
+const STANOKLAR = ['dxf', 'gcode', 'ptp', 'nc', 'xnc', 'altendorf'];
+function settingsPayload(b) {
+  const out = { markup_pct: num(b.markup_pct, 'ustama', { min: 0, max: 3 }), stanoklar: null, logo: null };
+  if (b.stanoklar != null) {
+    if (!Array.isArray(b.stanoklar) || b.stanoklar.some(x => !STANOKLAR.includes(x))) bad('stanok profili noto\'g\'ri');
+    out.stanoklar = [...new Set(b.stanoklar)];
+  }
+  if (b.logo) {
+    if (typeof b.logo !== 'string' || b.logo.length > 400000 || !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(b.logo)) bad('logo: PNG, JPEG yoki WEBP, 300 KB gacha');
+    out.logo = b.logo;
+  }
+  return out;
+}
+app.get('/api/settings', auth, (req, res) => {
+  const u = db.prepare('SELECT settings_json FROM users WHERE id = ?').get(req.user.id);
+  let v = {};
+  try { v = JSON.parse((u && u.settings_json) || '{}') || {}; } catch (e) { v = {}; }
+  res.json({ markup_pct: v.markup_pct ?? null, stanoklar: v.stanoklar ?? null, logo: v.logo ?? null });
+});
+app.put('/api/settings', auth, (req, res) => {
+  const v = settingsPayload(req.body || {});
+  db.prepare('UPDATE users SET settings_json = ? WHERE id = ?').run(JSON.stringify(v), req.user.id);
+  res.json({ ok: true, ...v });
+});
+
 app.get('/api/sex-standartlari', (req, res) => {
   const cur = sexStdCurrent();
   if (!cur) return res.status(404).json({ error: 'Standartlar topilmadi' });

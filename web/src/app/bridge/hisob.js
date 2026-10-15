@@ -64,6 +64,14 @@ export function createHisob(data) {
   const H = {
     catalog, materials: mats, sheetCatalog: sheetCat, services, sexStd, furnById, searchIndex, nestDefaults,
 
+    /** Serverdagi sex standartlari (admin o'zgartiradi, TZ-14) — eski applyStandards bilan bir xil */
+    applyStandards(std) {
+      if (!std || !std.modullar) return false;
+      for (const f of Object.values(catalog)) applySexStandart(f, std);
+      H.sexStd = std;
+      return true;
+    },
+
     /** Korpus/fasad kodi materials.json da bormi (eski boot: noma'lum bo'lsa LDSP18 / MDF16). */
     knownMaterial(code) { return (mats.panel_materials || []).some(m => m.code === code); },
 
@@ -89,7 +97,7 @@ export function createHisob(data) {
     },
 
     /** Butun hisob — eski doRecalc() bilan bir xil tartib.
-     *  opt: { materialCode, fasadCode, sheet, nestCfg } → { priceRes, val, cutlists, prod, nest, placements } */
+     *  opt: { materialCode, fasadCode, sheet, nestCfg, markupPct } → { priceRes, val, cutlists, prod, nest, placements } */
     recalc(doc, opt = {}) {
       const prices = buildPrices(catalog);
       const m = H.effectiveMaterials(opt.sheet || null);
@@ -117,7 +125,9 @@ export function createHisob(data) {
       /* 4) raskroy */
       const nest = nestProject(allParts, m, opt.nestCfg || nestDefaults);
       /* 5) ishlab chiqarish tannarxi (haqiqiy varaqlar soni bilan) */
-      const prod = productionCost(cutlists, m, { nestResult: nest, furnituraById: furnById, xizmatlar: doc.xizmatlar || {} });
+      /* TZ-09: usta ustamasi (Sozlamalar) — berilmasa materials.json standarti (eski sayt bilan bir xil) */
+      const prod = productionCost(cutlists, m, Object.assign({ nestResult: nest, furnituraById: furnById, xizmatlar: doc.xizmatlar || {} },
+        opt.markupPct != null ? { markupPct: opt.markupPct } : {}));
       /* 6) mijoz kotirovkasi — tannarx × (1 + ustama), modullarga taqsimlangan */
       const priceRes = buildQuote(placements, catalog, cutlists, prod, sizeCheck.warnings);
       return { priceRes, val, cutlists, prod, nest, placements, materials: m };

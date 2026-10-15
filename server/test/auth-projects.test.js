@@ -149,6 +149,25 @@ test('TZ-09: loyiha kartasi — mijoz ismi saqlanadi, ro\'yxatda modul soni', as
   assert.equal(bad.status, 400, 'mijoz nomida HTML rad etiladi');
 });
 
+test('TZ-09: sozlamalar — ustama, stanok profili, logo; har usta o\'zinikini; noto\'g\'ri qiymat 400', async () => {
+  /* email bilan (SMS cheklovi — soatiga 10 ta — boshqa testlar uchun qolsin) */
+  const reg = async (e) => (await api('/api/register', { method: 'POST', body: { email: e, password: 'parol12345' } })).json();
+  const a = await reg('sozlama.a@test.uz'), b = await reg('sozlama.b@test.uz');
+  assert.equal((await api('/api/settings')).status, 401);
+  let g = await (await api('/api/settings', { token: a.token })).json();
+  assert.deepEqual(g, { markup_pct: null, stanoklar: null, logo: null });
+  const LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+  const p = await api('/api/settings', { method: 'PUT', token: a.token, body: { markup_pct: 0.4, stanoklar: ['dxf', 'altendorf'], logo: LOGO } });
+  assert.equal(p.status, 200);
+  g = await (await api('/api/settings', { token: a.token })).json();
+  assert.deepEqual([g.markup_pct, g.stanoklar, g.logo], [0.4, ['dxf', 'altendorf'], LOGO]);
+  const gb = await (await api('/api/settings', { token: b.token })).json();
+  assert.equal(gb.markup_pct, null, 'boshqa usta sozlamasi ko\'rinmaydi');
+  for (const bad of [{ markup_pct: 5 }, { stanoklar: ['biesse'] }, { logo: 'data:image/svg+xml;base64,PHN2Zz4=' }, { logo: 'javascript:alert(1)' }]) {
+    assert.equal((await api('/api/settings', { method: 'PUT', token: a.token, body: bad })).status, 400, JSON.stringify(bad));
+  }
+});
+
 test('loyiha: tokensiz 401, buzilgan doc 400', async () => {
   assert.equal((await api('/api/projects')).status, 401);
   const A = await login('998991110003');

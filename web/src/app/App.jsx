@@ -20,6 +20,7 @@ import QadamMebel from './editor/QadamMebel.jsx';
 import QadamNarx from './editor/QadamNarx.jsx';
 import QadamXona from './editor/QadamXona.jsx';
 import Sahna from './editor/Sahna.jsx';
+import Sozlamalar from './screens/Sozlamalar.jsx';
 import Tasdiq from './modals/Tasdiq.jsx';
 import Toast from './modals/Toast.jsx';
 
@@ -31,6 +32,11 @@ const PRESETS = [[3600, 3000, '3.6×3 m'], [4200, 3100, '4.2×3.1 m'], [5000, 40
 const AI_EX = ['oshxona 3.6x3 m, balandlik 2.7, 4 ta pastki shkaf', '4.2x3.1 xona, 1 garderob, 1 stol', '5x4 mehmonxona, divan, 2 ta toko'];
 const RANGLAR = ['#FF7A45', '#5FE1C4', '#B9A6FF', '#FFB59A', '#F3F0E9'];    // dizayndagi raskroy ranglari
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+/* Sozlamalar → stanok profili (server: STANOKLAR bilan bir xil) */
+const STANOK = [['dxf', 'DXF', 'raskroy — CNC/lazer'], ['gcode', 'G-code', 'ISO/Fanuc kontur kesish'], ['ptp', 'PTP', 'panel joylashuvi'],
+  ['nc', 'NC', 'teshiklar (Excellon)'], ['xnc', 'XNC', 'GibLab Excel importi'], ['altendorf', 'Altendorf', 'formatli arra — fazali kesim']];
+const NEST_F = [['kerf', 'Arra qalinligi, mm'], ['trimL', 'Trim (old), mm'], ['trimW', 'Trim (yon), mm'], ['remMinA', 'Qoldiq min A, mm'], ['remMinB', 'Qoldiq min B, mm'], ['remUsableMin', 'Delovoy qoldiq min, m²']];
+const STD_LABEL = { w: 'Eni (w)', d: 'Chuqurligi (d)', h: "Bo'yi (h)", uzunlik: 'Asos uzunligi', eni: 'Asos eni' };
 const sana = (t) => { const d = new Date(String(t || '').replace(' ', 'T') + (String(t || '').includes('Z') ? '' : 'Z')); return isNaN(d) ? '' : d.toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.'); };
 
 export default class App extends React.Component {
@@ -40,7 +46,8 @@ export default class App extends React.Component {
     dv: 0, dataReady: false, dataErr: '', sel: null, part: null, raw: {}, warn: {}, view: '3d', spin: false, tip: 3,
     ai: false, aiText: '', mic: false, cf: null, toast: '', ins: null, insA: { ex: 0, color: 1 },
     cat: 'all', q: '', rk: 0, miss: false, projName: 'Yangi loyiha', pq: '', loaded: false, projects: null,
-    matCode: 'LDSP18', fasadCode: 'MDF16', sheet: null
+    matCode: 'LDSP18', fasadCode: 'MDF16', sheet: null,
+    sets: { markup_pct: null, stanoklar: null, logo: null }, markupIn: null, nestIn: null, stdIn: null, from: 'projects'
   };
   doc = L.newDoc();
   res = null;
@@ -71,6 +78,7 @@ export default class App extends React.Component {
   afterAuthState() { return { screen: 'projects' }; }
   async afterLogin() {
     await this.dataP;
+    this.loadSettings();
     await this.S.afterLogin(false).catch(() => {});        // internetsiz qolgan o'zgarish — avval yuboriladi
     if (this.state.pending) { this.openPending(); return; }
     this.goProjects();
@@ -84,6 +92,7 @@ export default class App extends React.Component {
       const r = await S.api('/api/me');
       if (r.status === 401 || r.status === 404) { S.logout(true); return; }
       if (r.ok) this.setState({ user: { ...S.user, ...(await r.json()) } });
+      this.loadSettings();
     } catch (_) { /* internet yo'q — kirgan holat saqlanadi */ }
     if (this.state.screen === 'reg' || this.state.screen === 'login') this.afterLogin();
   }
@@ -91,7 +100,7 @@ export default class App extends React.Component {
   componentDidMount() {
     this.dead = false; document.body.style.background = '#0F2229';
     window.__app = this;                                // QA uchun (eski saytdagi __s3d kabi)
-    this.dataP = loadData().then(d => { this.H = createHisob(d); this.est = L.createEstimator(this.H); this.setState({ dataReady: true }); })
+    this.dataP = loadData().then(d => { this.H = createHisob(d); this.est = L.createEstimator(this.H); this.setState({ dataReady: true }); this.loadServerStd(); })
       .catch(e => { console.warn('data', e); this.setState({ dataErr: 'Ma\'lumot yuklanmadi — internetni tekshiring' }); });
     this.readHandoff(); this.initSession();
     this.onHash = () => this.readHandoff(); window.addEventListener('hashchange', this.onHash);
@@ -197,7 +206,7 @@ export default class App extends React.Component {
   recalc() {
     if (!this.H) return;
     const s = this.state;
-    try { this.res = this.H.recalc(this.doc, { materialCode: s.matCode, fasadCode: s.fasadCode, sheet: s.sheet, nestCfg: this.nestCfg() }); }
+    try { this.res = this.H.recalc(this.doc, { materialCode: s.matCode, fasadCode: s.fasadCode, sheet: s.sheet, nestCfg: this.nestCfg(), markupPct: s.sets.markup_pct }); }
     catch (e) { console.warn('hisob', e); }
     this.setState({ dv: s.dv + 1 });
     this.S.changed();                                   // kirgan bo'lsa — 2 soniyadan keyin serverga saqlanadi
@@ -349,11 +358,44 @@ export default class App extends React.Component {
     else this.afterLogin();
   }
 
+  /* ── Sozlamalar (TZ-09 4.1): server — kirgan bo'lsa, aks holda qurilmada ── */
+  async loadSettings() {
+    let v = null;
+    if (this.S.loggedIn) { try { const r = await this.S.api('/api/settings'); if (r.ok) v = await r.json(); } catch (_) {} }
+    if (!v) { try { v = JSON.parse(localStorage.getItem('s3d-settings') || 'null'); } catch (_) {} }
+    if (v) this.setState({ sets: { markup_pct: v.markup_pct ?? null, stanoklar: v.stanoklar ?? null, logo: v.logo ?? null } }, () => this.scheduleRecalc(true));
+  }
+  async saveSettings(patch) {
+    const next = { ...this.state.sets, ...patch };
+    if (this.S.loggedIn) {
+      try {
+        const r = await this.S.api('/api/settings', { method: 'PUT', body: next });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) { this.toastMsg('⚠️ ' + (j.error || ('Xato ' + r.status))); return false; }
+      } catch (_) { this.toastMsg('Server bilan aloqa yo\'q — sozlama saqlanmadi'); return false; }
+    } else { try { localStorage.setItem('s3d-settings', JSON.stringify(next)); } catch (_) {} }
+    this.setState({ sets: next }, () => this.scheduleRecalc(true));
+    return true;
+  }
+  /** admin o'zgartirgan sex standartlari (TZ-14) — server bo'lsa undan, aks holda fayldagi */
+  async loadServerStd() {
+    try {
+      const r = await fetch('/api/sex-standartlari', { cache: 'no-store' });
+      if (r.ok && this.H.applyStandards(await r.json())) { this.est = L.createEstimator(this.H); this.scheduleRecalc(true); }
+    } catch (_) { /* server yo'q — fayldagi standartlar */ }
+  }
+  openSettings(section) {
+    const s = this.state;
+    this.setState({ screen: 'settings', from: s.screen === 'settings' ? s.from : s.screen, sel: null, part: null, markupIn: null, nestIn: null, stdIn: null }, () => {
+      if (section) setTimeout(() => { const el = document.querySelector('[data-set="' + section + '"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+    });
+  }
+
   /** eksport konteksti (bridge/eksport.js) */
   ctx() {
     const s = this.state;
     return { doc: this.doc, H: this.H, res: this.res, name: s.projName, matCode: s.matCode, fasadCode: s.fasadCode, sheet: s.sheet,
-      nestCfg: this.H ? this.nestCfg() : {}, sp: this.sahna && this.sahna.sp, toast: t => this.toastMsg(t) };
+      nestCfg: this.H ? this.nestCfg() : {}, sp: this.sahna && this.sahna.sp, toast: t => this.toastMsg(t), logo: s.sets.logo };
   }
   fayl(k) { if (this.H) eksport[k](this.ctx()); }
 
@@ -363,6 +405,73 @@ export default class App extends React.Component {
     const warn = L.setSize(p, frag, key, val);
     this.setState(st => ({ warn: { ...st.warn, [p.id]: warn }, raw: { ...st.raw, [key]: undefined } }));
     this.docChanged('items');
+  }
+
+  /** Sozlamalar sahifasi qiymatlari */
+  setVals() {
+    const s = this.state, H = this.H, u = s.user || {}, admin = u.role === 'admin';
+    if (s.screen !== 'settings') return {};
+    const std = (H && H.sexStd && H.sexStd.modullar) || {};
+    const stdIn = s.stdIn || Object.fromEntries(Object.entries(std).map(([t, m]) => [t, Object.fromEntries(Object.keys(STD_LABEL).filter(k => m[k]).map(k => [k, { min: m[k].min ?? '', max: m[k].max ?? '' }]))]));
+    const nc = s.nestIn || (H ? this.nestCfg() : {});
+    const std0 = H ? Math.round(((H.materials.pricing && H.materials.pricing.markup_pct) ?? 0.35) * 100) : 35;
+    const tel = String(u.phone || '').replace(/^998/, '');
+    return {
+      back: () => (s.from === 'app' ? this.setState({ screen: 'app' }, () => this.docChanged('room', true)) : this.goProjects()),
+      backLabel: s.from === 'app' ? '← Muharrirga' : '← Loyihalarim',
+      akkaunt: [['Ism', u.name || '—'], ['Email', u.email || '—'], ['Telefon', tel ? '+998 ' + [tel.slice(0, 2), tel.slice(2, 5), tel.slice(5, 7), tel.slice(7, 9)].join(' ') : '—'], ['Sex nomi', u.shop || '—']].concat(admin ? [['Rol', 'admin']] : []),
+      logout: () => this.confirm({ title: 'Akkauntdan chiqasizmi?', text: 'Loyihalaringiz serverda saqlangan — qayta kirganda ochiladi.', ok: 'Chiqish', danger: true,
+        yes: () => { this.S.logout(false); this.setState({ screen: 'login', projects: null, sets: { markup_pct: null, stanoklar: null, logo: null } }); } }),
+      markup: s.markupIn ?? (s.sets.markup_pct != null ? Math.round(s.sets.markup_pct * 1000) / 10 : ''), markupPh: std0 + ' (standart)', markupStd: std0,
+      onMarkup: ev => this.setState({ markupIn: ev.target.value }),
+      saveMarkup: async () => {
+        if (s.markupIn == null) return;
+        const t = String(s.markupIn).trim(), n = Number(t.replace(',', '.'));
+        if (t !== '' && !(n >= 0 && n <= 300)) { this.toastMsg('Ustama 0–300% oralig\'ida bo\'lsin'); return; }
+        if (await this.saveSettings({ markup_pct: t === '' ? null : Math.round(n * 10) / 1000 })) { this.setState({ markupIn: null }); this.toastMsg('Ustama saqlandi — narx yangilandi'); }
+      },
+      enter: ev => { if (ev.key === 'Enter') ev.target.blur(); },
+      logo: s.sets.logo,
+      onLogo: ev => {
+        const f = ev.target.files && ev.target.files[0]; ev.target.value = '';
+        if (!f) return;
+        if (!/^image\/(png|jpeg|webp)$/.test(f.type)) { this.toastMsg('Faqat PNG, JPEG yoki WEBP'); return; }
+        if (f.size > 300 * 1024) { this.toastMsg('Logo 300 KB dan kichik bo\'lsin'); return; }
+        const rd = new FileReader();
+        rd.onload = async () => { if (await this.saveSettings({ logo: String(rd.result) })) this.toastMsg('Sex logosi saqlandi'); };
+        rd.readAsDataURL(f);
+      },
+      removeLogo: async () => { if (await this.saveSettings({ logo: null })) this.toastMsg('Sex logosi olib tashlandi'); },
+      stanoklar: STANOK.map(([k, l, sub]) => { const on = !s.sets.stanoklar || s.sets.stanoklar.includes(k);
+        return { label: l, sub, on, flip: () => { const cur = s.sets.stanoklar || STANOK.map(x => x[0]); this.saveSettings({ stanoklar: on ? cur.filter(x => x !== k) : cur.concat(k) }); } }; }),
+      modes: [['bssf', 'Guillotine (BSSF)'], ['strip', 'Lenta (LSTR)']].map(([k, l]) => ({ label: l, on: nc.mode === k, pick: () => this.setState({ nestIn: { ...nc, mode: k } }) })),
+      rots: [[1, 'Yo\'q — tekstura'], [2, '90° — zichroq']].map(([k, l]) => ({ label: l, on: +nc.maxRot === k, pick: () => this.setState({ nestIn: { ...nc, maxRot: k } }) })),
+      nest: NEST_F.map(([k, l]) => ({ label: l, val: nc[k] ?? '', on: ev => this.setState({ nestIn: { ...nc, [k]: ev.target.value } }) })),
+      saveNest: () => {
+        const out = {};
+        for (const [k] of NEST_F) { const n = Number(String(nc[k]).replace(',', '.')); if (!(n >= 0)) { this.toastMsg('Raskroy: son kiriting'); return; } out[k] = n; }
+        out.mode = nc.mode; out.maxRot = +nc.maxRot || 2;
+        try { localStorage.setItem('s3d-nest-cfg', JSON.stringify(out)); } catch (_) {}   // eski sayt bilan bir xil kalit
+        this.setState({ nestIn: null }); this.scheduleRecalc(true); this.toastMsg('Raskroy parametrlari saqlandi');
+      },
+      resetNest: () => { try { localStorage.removeItem('s3d-nest-cfg'); } catch (_) {} this.setState({ nestIn: null }); this.scheduleRecalc(true); this.toastMsg('Raskroy — standart parametrlar'); },
+      admin, stdNote: admin ? 'Admin: chegarani o\'zgartirsangiz — katalog va ogohlantirishlar darhol yangilanadi.' : 'Modul o\'lcham chegaralari (mm). O\'zgartirish — faqat admin.',
+      std: Object.entries(std).map(([t, m]) => ({ nom: m.nom || t, rows: Object.keys(STD_LABEL).filter(k => m[k]).map(k => ({ label: STD_LABEL[k],
+        min: stdIn[t][k].min, max: stdIn[t][k].max,
+        onMin: ev => this.setState({ stdIn: { ...stdIn, [t]: { ...stdIn[t], [k]: { ...stdIn[t][k], min: ev.target.value } } } }),
+        onMax: ev => this.setState({ stdIn: { ...stdIn, [t]: { ...stdIn[t], [k]: { ...stdIn[t][k], max: ev.target.value } } } }) })) })),
+      saveStd: async () => {
+        const mod = {};
+        for (const [t, ks] of Object.entries(stdIn)) for (const [k, v] of Object.entries(ks)) {
+          (mod[t] = mod[t] || {})[k] = { min: v.min === '' ? null : Number(v.min), max: v.max === '' ? null : Number(v.max), std: (std[t][k] && std[t][k].std) || [] };
+        }
+        const r = await this.S.api('/api/sex-standartlari', { method: 'PUT', body: { modullar: mod } });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) { this.toastMsg('⚠️ ' + (j.error || ('Xato ' + r.status))); return; }
+        this.H.applyStandards(j.standartlar); this.est = L.createEstimator(this.H);
+        this.setState({ stdIn: null }); this.scheduleRecalc(true); this.toastMsg('Sex standartlari saqlandi — katalog chegaralari yangilandi');
+      }
+    };
   }
 
   renderVals() {
@@ -444,7 +553,8 @@ export default class App extends React.Component {
         more: [['Detallar (CSV)', 'cutlist'], ['Loyiha fayli', 'loyiha'], ['Smeta (CSV)', 'smetaCsv'], ['OBJ', 'obj'], ['Teshiklar (JSON)', 'teshiklar']] },
       { title: 'Stanokka', col: 'var(--acct)', sub: 'alohida dastursiz', mainLabel: 'GibLab', main: 'giblab',
         more: [['DXF', 'dxf'], ['G-code', 'gcode'], ['Biesse · tez orada', null], ['Homag · tez orada', null], ['PTP', 'ptp'], ['NC', 'nc'], ['XNC', 'xnc'], ['Altendorf', 'altendorf'],
-          admin ? ['Bazis (BPJ) · SINOV', 'bpj'] : ['Bazis (BPJ) · tez orada', null]] }];
+          admin ? ['Bazis (BPJ) · SINOV', 'bpj'] : ['Bazis (BPJ) · tez orada', null]]
+          .filter(([, k]) => !k || !s.sets.stanoklar || !STANOK.some(x => x[0] === k) || s.sets.stanoklar.includes(k)) }];   // stanok profili (Sozlamalar)
     return {
       hasPending: !!s.pending, pendingText: s.pending ? (s.pending.mod + (s.pending.w ? ' · ' + s.pending.w + ' mm' : '') + ' — ro\'yxatdan keyin loyihangizda turadi') : '',
       isAuth: reg || s.screen === 'login', isReg: reg, regHost: this.regHost, regOv: this.regOv,
@@ -465,12 +575,13 @@ export default class App extends React.Component {
       onbBack: () => this.setState({ screen: 'onb1' }), openEditor: () => this.openEditor(),
       aiEx: AI_EX.map(t => ({ t, pick: () => this.setState({ aiText: t }) })), aiText: s.aiText, onAiText: ev => this.setState({ aiText: ev.target.value }),
       toggleMic: () => this.toggleMic(), micLabel: s.mic ? 'Tinglanmoqda…' : 'Ovoz', micBg: s.mic ? 'var(--danger)' : 'var(--sfc2)', micT: s.mic ? '#2A0A0A' : 'var(--txt)',
-      inShell: s.screen === 'app' || s.screen === 'projects', isEditor: s.screen === 'app', isProjects: s.screen === 'projects',
+      inShell: s.screen === 'app' || s.screen === 'projects' || s.screen === 'settings', isEditor: s.screen === 'app', isProjects: s.screen === 'projects', isSettings: s.screen === 'settings',
+      openSettings: () => this.openSettings(), set: this.setVals(),
       projName: s.projName, onProjName: ev => { this.setState({ projName: ev.target.value }); this.S.changed(); },
       initials: (() => { const u = s.user || {}, nm = String(u.name || f.name || '').trim(); return (nm ? nm.split(/\s+/).map(w => w[0]).join('').slice(0, 2) : String(u.email || '').slice(0, 2) || '•').toUpperCase(); })(),
       price: { total: R ? s3n(total) : '…', cost: R ? s3n(cost) : '…', profit: R ? s3n(total - cost) : '…', star: inc ? '*' : '', note: inc ? '* to\'liq emas' : '', som: inc ? 'so\'m *' : 'so\'m' },
       goStep3: () => this.goStep(3), goStep2: () => this.goStep(2), goStep4: () => this.goStep(4),
-      langToast: () => this.toastMsg('O\'zbekcha · Русский — tez orada'), settingsToast: () => this.toastMsg('Sozlamalar: sex logosi, narx ustamasi, stanok profili'),
+      langToast: () => this.toastMsg('O\'zbekcha · Русский — tez orada'), settingsToast: () => this.openSettings(),
       goProjects: () => this.goProjects(), newProject: () => this.newProject(),
       pq: s.pq, onPq: ev => this.setState({ pq: ev.target.value }), projEmpty: !pList.length,
       projects: pList.map(p => ({ name: p.name || 'Loyiha', client: p.client || '—', date: sana(p.updated_at), price: s3n(p.total_price || 0) + ' so\'m', mods: (p.modules || 0) + ' modul',
@@ -525,7 +636,7 @@ export default class App extends React.Component {
       rk: { n: rk + 1, rects, ar: cur ? cur.L + '/' + cur.W : '2800/2070', summary: (NS.total_sheets || 0) + ' varaq · ' + (NS.panel_count || 0) + ' detal · isrof ' + Math.max(0, Math.round(100 - (NS.utilization_pct || 0))) + '%',
         dots: sheets.map((_, i) => ({ w: i === rk ? '22px' : '6px', c: i === rk ? 'var(--acc)' : 'var(--sfc3)' })) },
       rkPrev: () => this.setState({ rk: (rk + sheets.length - 1) % Math.max(1, sheets.length) }), rkNext: () => this.setState({ rk: (rk + 1) % Math.max(1, sheets.length) }),
-      openParams: () => { const c = H ? this.nestCfg() : {}; this.toastMsg('⚙️ Arra ' + (c.kerf ?? '—') + ' mm · trim ' + (c.trimL ?? '—') + ' mm'); },
+      openParams: () => this.openSettings('raskroy'),
       detGroups: Object.entries(det).map(([mc, n]) => ({ n: (H ? this.matName(mc) : mc), c: n + ' detal' })),
       checks: [
         ...(R ? [{ ok: !NS.placed_count || NS.placed_count === NS.panel_count, text: NS.placed_count === NS.panel_count ? detTotal + ' detal ' + (NS.total_sheets || 0) + ' varaqqa sig\'di' : (NS.panel_count - NS.placed_count) + ' ta detal varaqqa sig\'madi' }] : []),
@@ -554,6 +665,7 @@ export default class App extends React.Component {
           <div style={{"minHeight":"100vh","display":"flex","flexDirection":"column"}}>
             <Header v={v} />
             <Loyihalar v={v} />
+            <Sozlamalar v={v} />
             {v.isEditor ? (<>
               <div data-ed="" style={{"flex":"1 1 auto","height":"calc(100vh - 64px)","display":"grid","gridTemplateColumns":"200px minmax(0,1fr) 400px"}}>
                 <EditorNav v={v} />
