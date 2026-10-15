@@ -120,6 +120,8 @@
 - **Testlar:** `tests/verify_teshik.mjs` (17), `tests/verify_mc.mjs`.
 
 ## Ochiq qolgan (egasidan D6)
+- **To'ldirish uchun jadval:** `Smart3D_malumot/D6-teshiklar-va-zapchast-2026-10-15.xlsx` — quyidagi teshik o'lchamlari va zapchast to'plamlari savoli.
+- **Zapchast to'plamlari (topildi 2026-10-15, tuzatilmagan — qaror kerak):** tortma yo'naltirgichi va kiyim ilgichida to'plam ham, ichidagi qismlar ham zapchast bo'lib sanalgan ("Направляющие Салазка" ichida salazka; salazka ichida samorez; "GTV Штанга … с креплениями" ichida штанга va крепление). Hozir narxsiz — summaga ta'sir yo'q; ERP narxi ulanganda ikki marta hisoblanadi.
 - **Petlya:** kosa diametri, chuqurligi, eshik chetidan masofa; yon devordagi planka teshiklari.
 - **Polka ushlagich:** teshik diametri va chuqurligi, polka ostidan markazgacha masofa. Bazis kutubxona obyekti (BZ85) shifrlangan — ochilmaydi.
 - **Ruchka:** teshik diametri (teshiklar orasi nomida bor: 160 mm).
