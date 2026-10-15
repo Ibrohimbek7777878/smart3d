@@ -51,7 +51,7 @@ function smart3dPrice() {
   };
 }
 
-// 2 sahifa: / (sayt) va /app.html (ilova)
+// sahifalar: / (sayt), /app.html (ilova), /404.html (topilmadi)
 export default defineConfig({
   plugins: [
     react(),
@@ -89,7 +89,7 @@ export default defineConfig({
   preview: { proxy: { '/api': API }, headers: { 'Content-Security-Policy': csp({ scriptHashes: inlineScriptHashes(r('../app/index.html')) }) } },
   build: {
     rollupOptions: {
-      input: { main: r('./index.html'), app: r('./app.html') },
+      input: { main: r('./index.html'), app: r('./app.html'), notfound: r('./404.html') },   // 404 — TZ-19
     },
   },
 });

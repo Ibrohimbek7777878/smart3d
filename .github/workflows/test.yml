@@ -1,0 +1,38 @@
+# TZ-19 §5: doimiy tekshiruv — har push va PR da: hisob dvigateli (node), server (xavfsizlik va hujum testlari),
+# sayt build'i va bog'liqliklar zaifligi. Brauzer testlari (tests/ui/*) — lokal (patchright), bu yerda emas.
+name: test
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: server — bog'liqliklar
+        working-directory: server
+        run: npm ci --include=dev
+      - name: sayt — bog'liqliklar
+        working-directory: web
+        run: npm ci --include=dev
+      - name: hisob dvigateli (node testlar)
+        run: bash tests/run-all.sh
+      - name: server testlari (xato kodlari, himoya, loyihalar)
+        working-directory: server
+        run: npm test
+      - name: sayt build
+        working-directory: web
+        run: npx vite build
+      - name: zaifliklar (npm audit)
+        run: |
+          (cd server && npm audit --omit=dev --audit-level=high)
+          (cd web && npm audit --omit=dev --audit-level=high)

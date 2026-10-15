@@ -6,7 +6,7 @@ import { project } from '../../../store/project.js';
 import { useViewer } from '../../../shared/design3d/useViewer.js';
 import { s3Viewer, s3Mats, s3Box, s3Label, S3_TIPS } from '../../../shared/design3d/engine.js';
 import { ichiniKorsaBoladi } from '../../../services/ichki.js';
-import { faylYukla } from '../files/actions.js';
+import { faylYukla, preloadEksport } from '../files/actions.js';
 import { openAi } from '../ai/actions.js';
 import { select } from '../actions.js';
 import { scene, mountSahna, unmountSahna } from './sahna.js';
@@ -18,8 +18,11 @@ export function useSahnaView() {
   const host = useRef(null), ov = useRef(null);
   useEffect(() => {
     if (!data.ready || !host.current) return undefined;
-    try { mountSahna(host.current, A.roomTap); } catch (e) { report('S3D-SCENE-101', { modul: 'editor/scene', err: e }); set('editor', { sceneErr: true }); }
-    return unmountSahna;
+    let alive = true;
+    mountSahna(host.current, A.roomTap, () => alive)
+      .then(() => preloadEksport())                          // fayllar moduli — sahnadan keyin, fonda
+      .catch(e => { report('S3D-SCENE-101', { modul: 'editor/scene', err: e }); set('editor', { sceneErr: true }); });
+    return () => { alive = false; unmountSahna(); };
   }, [data.ready]);
   useEffect(() => { if (scene.sahna) scene.sahna.setMode(ed.view); }, [ed.view]);
   useEffect(() => { if (scene.sahna) scene.sahna.spin(ed.spin); }, [ed.spin]);

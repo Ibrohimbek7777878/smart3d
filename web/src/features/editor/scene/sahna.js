@@ -1,19 +1,20 @@
-import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 import { get, set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
-import { createSahna } from '../../../services/sahna.js';
 
 /* TZ-19: muharrir 3D sahnasi — bizning zamer tizimi (services/sahna.js, qoida S6) dizayn ko'rinishida.
  * Bitta nusxa: muharrir ochilganda yaratiladi (mount), yopilganda tozalanadi (unmount). 3D da o'zgargan holat
- * (eshik ochildi va h.k.) — editor.sceneV hisoblagichi orqali ekranga yetadi. */
+ * (eshik ochildi va h.k.) — editor.sceneV hisoblagichi orqali ekranga yetadi.
+ * TZ-19 §5: three.js (667 KB) va sahna kodi — alohida bo'lak, muharrir ochilganda yuklanadi (birinchi ekran tezroq). */
 export const scene = { sahna: null, vrBtn: null, vrBox: null };
 let offDoc = null;
 
 /** 3D holati o'zgardi — unga bog'liq yozuvlar (masalan "Eshiklarni ochish") yangilanadi */
 export const bumpScene = () => set('editor', s => ({ sceneV: s.sceneV + 1 }));
 
-/** host — dizayndagi roomHost div; onTap — sahnada tegish (actions.roomTap) */
-export function mountSahna(host, onTap) {
+/** host — dizayndagi roomHost div; onTap — sahnada tegish (actions.roomTap). alive() — hali kerakmi (yuklash paytida yopilgan bo'lsa — yo'q) */
+export async function mountSahna(host, onTap, alive = () => true) {
+  const [{ createSahna }, { VRButton }] = await Promise.all([import('../../../services/sahna.js'), import('three/examples/jsm/webxr/VRButton.js')]);
+  if (!alive()) return;
   const H = project.H, ed = get().editor;
   const sahna = createSahna(host, {
     getPlacements: () => H.viewPlacements(project.doc),
