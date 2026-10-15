@@ -23,7 +23,7 @@
 | 06 | [Modullarga teshiklar](06-teshiklar.md) | **EVROVINT BAJARILDI** 2026-10-15 (724 vint, 1077 teshik, Bazis bilan aynan) | D6 — petlya, polka ushlagich, ruchka, eksantrik; evrovint 7/4.5 yoki 8/5 |
 | 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | **BAJARILDI** 2026-10-15 | haqiqiy SMS uchun Eskiz akkaunti serverga |
 | 08 | [Ekrandagi qoida buzilishlari: logo, oyna, burish](08-ui-qoida-tuzatishlari.md) | QISMAN: oyna ✅, burish ✅, logo — kutilmoqda | egasi: Bittada logo fayli |
-| 09 | [Yangi frontend: React versiyani loyihaga ulash (dizayn buzilmaydi)](09-dizayn.md) | TASDIQ KUTILMOQDA | egasi: Q1–Q7 qarorlari va "boshla" |
+| 09 | [Yangi frontend: React versiyani loyihaga ulash (dizayn buzilmaydi)](09-dizayn.md) | **BAJARILDI** 2026-10-15 (`dizayn` tarmog'i) | egasi: yangi UI qismlari skrinshoti (3.3), main'ga qo'shish va deploy ruxsati |
 | 10 | [Deploy va zaxira nusxa](10-deploy-va-zaxira.md) | **REPO QISMI BAJARILDI** 2026-10-15 | admin: `server/DEPLOY.md` bo'yicha o'rnatadi; L1 (yurist) |
 | 11 | [Stanok fayllarini haqiqiy stanokka moslash](11-stanok-postprotsessorlar.md) | MA'LUMOT KUTILMOQDA | stanoklar ✅ (4 tur); D7 namuna fayllar |
 | 12 | [AI: til modeli va ovoz](12-ai-llm.md) | **BAJARILDI** 2026-10-15 (ovozdan tashqari) | real ishlatish uchun API kalit serverga |
@@ -33,7 +33,7 @@
 | 16 | [Telegram bot uchun Mini App](16-telegram-mini-app.md) | TASDIQ KUTILMOQDA (TZ-09 dan keyin) | egasi: bot kaliti serverga, bot linki |
 | 17 | [Bazis BPJ faylini to'liq qilish](17-bpj-toliq.md) | TASDIQ KUTILMOQDA (TZ-09 bilan parallel mumkin) | egasi: Bazis'li kompyuterda real sinov |
 | 18 | [Uch til: o'zbek, rus, ingliz](18-uch-til.md) | TASDIQ KUTILMOQDA (TZ-09 dan keyin) | egasi: atamalar jadvali tasdig'i |
-| 19 | [Production darajasi: modullar, xavfsizlik, xato kodlari, ikonlar](19-senior-production.md) | BAJARILMOQDA (tasdiq 2026-10-15) | — |
+| 19 | [Production darajasi: modullar, xavfsizlik, xato kodlari, ikonlar](19-senior-production.md) | **BAJARILDI** 2026-10-15 (`dizayn` tarmog'i) | egasi: skrinshotlar (ikonlar, "Xatolar jurnali", 404), main'ga qo'shish ruxsati |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.

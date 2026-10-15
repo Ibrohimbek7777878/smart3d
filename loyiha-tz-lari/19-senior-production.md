@@ -1,6 +1,6 @@
 # TZ-19 — Production darajasi: modullar, xavfsizlik, xato kodlari, ikonlar
 
-**Sana:** 2026-10-15 · **Navbat:** 19 · **Holat:** TASDIQLANDI 2026-10-15 ("boshla") — BAJARILMOQDA
+**Sana:** 2026-10-15 · **Navbat:** 19 · **Holat:** BAJARILDI 2026-10-15 — `dizayn` tarmog'ida (main'ga qo'shish — egasi ruxsati bilan)
 **Asos (egasi, 2026-10-15):** "har bir sahifa, har bir bo'limni modul qil; senior software engineer kabi; fayllar arxitekturasi ham shunday; loyihani kiber hujumlardan to'liq himoyalash; har bir qismga error log kodlari; ikonlardan foydalan, stikerlardan emas; hamma modul real ishlaydigan va productionga tayyor bo'lsin".
 **Bog'liq:** TZ-09 (yangi frontend — `dizayn` tarmog'i), TZ-07 (kirish), TZ-10 (deploy), TZ-14 (standartlar), TZ-16 (Telegram).
 
@@ -262,3 +262,31 @@ To'liq ro'yxat — `shared/lib/xatolar.js` va `server/xatolar.js` (bitta manba, 
   - 5 — 0.5;
   - 6 — 0.5–1.
 - Bu taxmin, aniq hisob emas.
+
+## 12. Natija (2026-10-15, `dizayn` tarmog'i, 6 commit: `3f07601` … `987d31b`)
+
+| Bosqich | Natija |
+|---|---|
+| 1. Modullar | `App.jsx` 818 → 47 qator. Ilova `store/`, `services/`, `shared/`, `features/*` ga bo'lindi. Sayt 963 → 136 qator + 9 bo'lim. Dvigatelning takror nusxasi va dizayndagi soxta ma'lumot olib tashlandi |
+| 2. Xato kodlari | `app/js/xatolar.js` — bitta ro'yxat. Server javobi `{ error, code, rid }`. JSON jurnal va `error_log` jadvali. Brauzer xatolari `/api/log` ga boradi. Har bo'lim o'z xato chegarasida. Admin — "Xatolar jurnali" |
+| 3. Xavfsizlik | X1–X11 bajarildi. 9 ta hujum testi yashil. CSP ostida butun sayt va eski sayt ishlaydi (0 bloklash). `npm audit` — 0 zaiflik |
+| 4. Ikonlar | lucide-react 1.49.0. Emoji qolmadi (ilova, sayt, xabarlar). Joylashuv o'zgarmagan |
+| 5. Production | Ilova birinchi ochilishda 388 KB JS yuklaydi (avval 1158 KB). Sekin 4G'da birinchi ekran: sayt 1.12 s, ilova 1.21 s. Esc, SEO, 404, CI |
+| 6. TZ-09 qolgani | Tortmalar (Q5) — faqat 3D, eksport bit darajasida o'zgarmagan. Manzillar (Q7): `/`, `/app.html`, `/eski/`. WebGL'siz va internetsiz holatlar tekshirildi |
+
+**Testlar:**
+- web.sh — 11/11;
+- server — 55/55;
+- run-all, shu jumladan `verify_tortma` — 153/153;
+- `hisob_teng`;
+- eski sayt — 12/12;
+- internetsiz;
+- dizayn.
+
+**Topilgan va tuzatilgan xatolar:**
+- onboarding'da yozilgan o'lcham hisobga olinmasdi;
+- muharrirda xona o'lchamini yozib bo'lmasdi;
+- tortmali modul 3D'da yaxlit quti edi.
+
+**Topilgan va tuzatilgan xavf:** nginx namunasidagi `/ws` blokida X-Forwarded-For yo'q edi.
+

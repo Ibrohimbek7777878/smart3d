@@ -1,6 +1,6 @@
 # TZ-09 — Yangi frontend: React versiyani loyihaga ulash (dizayn buzilmaydi)
 
-**Sana:** 2026-10-15 · **Navbat:** 9 · **Holat:** TASDIQ KUTILMOQDA
+**Sana:** 2026-10-15 · **Navbat:** 9 · **Holat:** BAJARILDI 2026-10-15 — `dizayn` tarmog'ida (main'ga qo'shish va serverga o'rnatish — egasi ruxsati bilan)
 **Almashtiradi:** shu TZ'ning oldingi ikki varianti ("eski sayt ustiga dizayn kiyintirish" va "Bittada laym rangi"). Ular bekor.
 **Egasi qarori (2026-10-15):** Claude Design'ga qayta berilmaydi. Asos — Claude Design yozgan React versiya, uni men loyihaga ulayman.
 **Bog'liq:** TZ-07 (SMS kirish), TZ-12 (AI), TZ-14 (sex standartlari), TZ-01 (stanok fayllari), TZ-05 (modul geometriyasi, pauza), TZ-10 (deploy).
