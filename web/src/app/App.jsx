@@ -3,7 +3,7 @@ import { s3Load, s3Box, s3Mats, s3Label, s3Viewer, s3Build, s3Apply, s3Spec, s3n
 import { createSession } from '../../../app/js/auth-core.js';
 import { aiBuild, suggestLayout, startVoice, voiceSupported } from '../../../app/js/ai.js';
 import { roomBBox } from '../../../app/js/engine/rules.js';
-import { loadData, createHisob } from './bridge/hisob.js';
+import { loadData, createHisob, baseForSheet, slotForBase } from './bridge/hisob.js';
 import * as L from './bridge/loyiha.js';
 import { createSahna } from './bridge/sahna.js';
 import { ichkiSpec, detalKarta, ichiniKorsaBoladi } from './bridge/ichki.js';
@@ -23,6 +23,7 @@ import Sahna from './editor/Sahna.jsx';
 import Sozlamalar from './screens/Sozlamalar.jsx';
 import Tasdiq from './modals/Tasdiq.jsx';
 import Toast from './modals/Toast.jsx';
+import Varaqlar from './modals/Varaqlar.jsx';
 
 /* TZ-09: ilova holati va mantiqi. Ekranlar (JSX) — tasdiqlangan dizayndan o'zgarishsiz; ular faqat `v` dan o'qiydi.
  * Ma'lumot HAQIQIY: loyiha (doc) — bridge/loyiha.js, hisob — bridge/hisob.js (eski sayt bilan aynan bir xil),
@@ -47,7 +48,8 @@ export default class App extends React.Component {
     ai: false, aiText: '', mic: false, cf: null, toast: '', ins: null, insA: { ex: 0, color: 1 },
     cat: 'all', q: '', rk: 0, miss: false, projName: 'Yangi loyiha', pq: '', loaded: false, projects: null,
     matCode: 'LDSP18', fasadCode: 'MDF16', sheet: null,
-    sets: { markup_pct: null, stanoklar: null, logo: null }, markupIn: null, nestIn: null, stdIn: null, from: 'projects'
+    sets: { markup_pct: null, stanoklar: null, logo: null }, markupIn: null, nestIn: null, stdIn: null, from: 'projects',
+    vq: null   // dizaynda yo'q qismlar: pastdan chiqadigan varaq (teshik, shakl, material, oshxona)
   };
   doc = L.newDoc();
   res = null;
@@ -407,6 +409,89 @@ export default class App extends React.Component {
     this.docChanged('items');
   }
 
+  /* ── 8-bosqich: dizaynda yo'q qismlar — varaqlar (modals/Varaqlar.jsx) ── */
+  openVaraq(kind, extra) {
+    const doc = this.doc, k = doc.kitchen || L.freshKitchen(), m = k.moyka || {};
+    const init = {
+      teshik: { tur: 'window', wall: 0, width: 1200, offset: 500, z: 1000 },
+      shakl: { pts: (doc.room.outline || []).map(p => [String(p[0]), String(p[1])]) },
+      material: { slot: 'matCode', q: '' },
+      oshxona: { doborH: k.doborH || 60, karnizH: k.karnizH || 60, size: m.size || 500, offset: m.offset ?? 600, fromBack: m.fromBack ?? 100 }
+    }[kind];
+    this.setState({ vq: { kind, ...init, ...(extra || {}) } });
+  }
+  sheetVals() {
+    const s = this.state, q = s.vq, doc = this.doc, H = this.H;
+    if (!q || !H) return { on: false };
+    const set = (patch) => this.setState({ vq: { ...q, ...patch } });
+    const num = (v) => Number(String(v).replace(',', '.'));
+    const close = () => this.setState({ vq: null });
+    if (q.kind === 'teshik') {
+      const pts = doc.room.outline || [], util = q.tur === 'pipe' || q.tur === 'outlet';
+      const T = [['window', 'Deraza'], ['door', 'Eshik'], ['pipe', 'Quvur'], ['outlet', 'Rozetka']];
+      return { on: true, kind: 'teshik', title: 'Teshiklar', close,
+        turlar: T.map(([k, l]) => ({ label: l, on: q.tur === k, pick: () => set({ tur: k }) })),
+        devorlar: pts.map((_, i) => ({ label: (i + 1) + '-devor · ' + Math.round(L.wallLen(doc, i)) + ' mm', on: q.wall === i, pick: () => set({ wall: i }) })),
+        maydonlar: util
+          ? [{ label: 'Devor boshidan, mm', val: q.offset, on: ev => set({ offset: ev.target.value }) }, { label: 'Balandlik, mm', val: q.z, on: ev => set({ z: ev.target.value }) }]
+          : [{ label: 'Kenglik, mm', val: q.width, on: ev => set({ width: ev.target.value }) }],
+        qosh: () => {
+          const r = util ? L.addUtility(doc, { wall: q.wall, type: q.tur, offset: num(q.offset), z: num(q.z) }) : L.addOpening(doc, { wall: q.wall, type: q.tur, width: num(q.width) });
+          if (!r) { this.toastMsg('Devor juda qisqa — kenglikni kamaytiring'); return; }
+          this.docChanged('room', true); this.forceUpdate(); this.toastMsg(T.find(t => t[0] === q.tur)[1] + ' qo\'shildi');
+        },
+        royxat: [...(doc.room.openings || []).map((o, i) => ({ t: o.type === 'window' ? 'Deraza' : 'Eshik', d: (o.width || 0) + ' mm · ' + (+o.wall + 1) + '-devor',
+          del: () => { doc.room.openings.splice(i, 1); this.docChanged('room', true); this.forceUpdate(); } })),
+          ...(doc.room.utilities || []).map((u, i) => ({ t: u.type === 'outlet' ? 'Rozetka' : 'Quvur', d: (+u.wall + 1) + '-devor · ' + (u.offset || 0) + ' mm · h ' + (u.z || 0),
+            del: () => { doc.room.utilities.splice(i, 1); this.docChanged('room', true); this.forceUpdate(); } }))] };
+    }
+    if (q.kind === 'shakl') {
+      const pts = q.pts;
+      return { on: true, kind: 'shakl', title: '✎ Erkin shakl', close,
+        nuqtalar: pts.map((p, i) => ({ x: p[0], y: p[1], canDel: pts.length > 3,
+          onX: ev => set({ pts: pts.map((r, j) => j === i ? [ev.target.value, r[1]] : r) }), onY: ev => set({ pts: pts.map((r, j) => j === i ? [r[0], ev.target.value] : r) }),
+          del: () => { if (pts.length > 3) set({ pts: pts.filter((_, j) => j !== i) }); } })),
+        qoshNuqta: () => { const l = pts[pts.length - 1] || ['0', '0']; set({ pts: pts.concat([[String(num(l[0]) + 500), l[1]]]) }); },
+        lShakl: () => set({ pts: L.L_OUTLINE.map(p => [String(p[0]), String(p[1])]) }),
+        qolla: () => {
+          const o = pts.map(p => [Math.round(num(p[0])), Math.round(num(p[1]))]);
+          if (o.length < 3 || o.some(p => !isFinite(p[0]) || !isFinite(p[1]))) { this.toastMsg('Kamida 3 ta to\'g\'ri nuqta kiriting'); return; }
+          L.applyRoom(doc, { outline: o }); this.docChanged('room', true); close();
+          const b = roomBBox(o); this.toastMsg('Xona: ' + o.length + ' nuqta · ' + Math.round(b.w) + '×' + Math.round(b.h) + ' mm');
+        } };
+    }
+    if (q.kind === 'material') {
+      const pm = (H.materials.panel_materials || []).filter(m => /^(LDSP|LMDF|MDF|OSB)/.test(m.code));
+      const all = (H.sheetCatalog && H.sheetCatalog.sheets) || [];
+      const same = (a, b) => a && b && ((a.sku && a.sku === b.sku && a.name === b.name) || (a.name === b.name && a.type === b.type));
+      return { on: true, kind: 'material', title: q.slot === 'matCode' ? 'Korpus materiali' : 'Fasad materiali', close,
+        turlar: pm.map(m => ({ label: m.name, on: s[q.slot] === m.code, pick: () => { this.setState({ [q.slot]: m.code, sheet: null }, () => this.scheduleRecalc(true)); this.toastMsg((q.slot === 'matCode' ? 'Korpus' : 'Fasad') + ': ' + m.name + ' — narx yangilandi'); } })),
+        q: q.q, onQ: ev => set({ q: ev.target.value }), demoOn: !s.sheet,
+        demo: () => { this.setState({ sheet: null }, () => this.scheduleRecalc(true)); this.toastMsg('Bazaviy narx (materials.json)'); },
+        plitalar: L.plitaRoyxati(H, q.q, s[q.slot]).slice(0, 80).map(({ s: sh }) => ({
+          name: (sh.id ? '[' + sh.id + '] ' : '') + sh.name, sub: [sh.sku, sh.th ? sh.th + ' mm' : '', sh.l && sh.w ? sh.l + '×' + sh.w : ''].filter(Boolean).join(' · '),
+          price: sh.uzs > 0 ? s3n(sh.uzs) + ' so\'m' : 'narx yo\'q', on: same(s.sheet, sh),
+          pick: () => {
+            const base = baseForSheet(sh), slot = slotForBase(base), st = { sheet: sh };
+            if (slot === 'korpus') st.matCode = base; else if (slot === 'fasad') st.fasadCode = base;
+            this.setState(st, () => this.scheduleRecalc(true));
+            this.toastMsg(slot ? 'Real material (' + slot + '): ' + sh.name : sh.name + ' — korpus/fasad uchun emas, faqat narx bazasi');
+          } })) };
+    }
+    if (q.kind === 'oshxona') {
+      const F = [['doborH', 'Dobor balandligi, mm'], ['karnizH', 'Karniz balandligi, mm'], ['size', 'Moyka kesimi, mm'], ['offset', 'Moyka — chapdan, mm'], ['fromBack', 'Moyka — devordan, mm']];
+      return { on: true, kind: 'oshxona', title: 'Oshxona elementlari', close,
+        maydonlar: F.map(([k, l]) => ({ label: l, val: q[k], on: ev => set({ [k]: ev.target.value }) })),
+        saqla: () => {   /* eski kitchenApply chegaralari bilan bir xil */
+          const kk = doc.kitchen || (doc.kitchen = L.freshKitchen()), m = kk.moyka || (kk.moyka = { on: false, offset: 600, fromBack: 100, size: 500 });
+          kk.doborH = Math.max(30, num(q.doborH) || 60); kk.karnizH = Math.max(30, num(q.karnizH) || 60);
+          m.size = Math.max(300, Math.min(900, num(q.size) || 0) || 500); m.offset = Math.max(0, num(q.offset) || 0); m.fromBack = Math.max(0, num(q.fromBack) || 0);
+          this.docChanged('room', true); close(); this.toastMsg('Oshxona elementlari saqlandi');
+        } };
+    }
+    return { on: false };
+  }
+
   /** Sozlamalar sahifasi qiymatlari */
   setVals() {
     const s = this.state, H = this.H, u = s.user || {}, admin = u.role === 'admin';
@@ -612,20 +697,20 @@ export default class App extends React.Component {
       isS1: s.step === 1, isS2: s.step === 2, isS3: s.step === 3, isS4: s.step === 4,
       shapes: [['rect', '▣ To\'rtburchak'], ['L', '◩ L-shakl'], ['free', '✎ Erkin']].map(x => { const on = x[0] === 'rect' ? isRect : x[0] === 'L' ? !isRect : false;
         return { label: x[1], bg: on ? 'var(--acc)' : 'transparent', c: on ? 'var(--ink)' : 'var(--txt)',
-          pick: () => { if (x[0] === 'free') { this.toastMsg('✎ Erkin shakl: sahnada nuqtalarni bosing'); return; }
+          pick: () => { if (x[0] === 'free') { this.openVaraq('shakl'); return; }
             L.applyRoom(doc, { outline: x[0] === 'L' ? L.L_OUTLINE.map(p => p.slice()) : L.rectOutline(room.w, room.d) }); this.docChanged('room', true); } }; }),
       room, onRoomW: ev => { L.applyRoom(doc, { w: clamp(+ev.target.value || 0, 1500, 9000), d: room.d }); this.docChanged('room'); this.forceUpdate(); },
       onRoomD: ev => { L.applyRoom(doc, { w: room.w, d: clamp(+ev.target.value || 0, 1500, 9000) }); this.docChanged('room'); this.forceUpdate(); },
       onRoomH: ev => { L.applyRoom(doc, { h: clamp(+ev.target.value || 0, 2200, 4000) }); this.docChanged('room'); this.forceUpdate(); },
       roomPresets: PRESETS.map(p => { const on = room.w === p[0] && room.d === p[1]; return { label: p[2], bg: on ? 'var(--acc)' : 'var(--sfc)', c: on ? 'var(--ink)' : 'var(--txt)', pick: () => { L.applyRoom(doc, { outline: L.rectOutline(p[0], p[1]) }); this.docChanged('room', true); } }; }),
-      holes, addHole: () => this.toastMsg('Teshik qo\'shish: turi, kengligi, devori'),
+      holes, addHole: () => this.openVaraq('teshik'), openKitchen: () => this.openVaraq('oshxona'), sheet: this.sheetVals(),
       toggles: kt.map(t => { const on = t[0] === 'moyka' ? !!(K.moyka && K.moyka.on) : !!K[t[0]];
         return { label: t[1], sub: t[2], bg: on ? 'var(--acc)' : 'var(--sfc3)', kx: on ? 'translateX(20px)' : 'none',
           flip: () => { const k = doc.kitchen || (doc.kitchen = L.freshKitchen()); if (t[0] === 'moyka') { k.moyka = k.moyka || { on: false, offset: 600, fromBack: 100, size: 500 }; k.moyka.on = !k.moyka.on; } else k[t[0]] = !k[t[0]]; this.docChanged('room', true); } }; }),
       q: s.q, onQ: ev => this.setState({ q: ev.target.value }),
       catCount: allFr.length + ' ta modul',
       cats: cats.map(c => ({ label: c[1], bg: s.cat === c[0] ? 'var(--acc)' : 'var(--sfc)', c: s.cat === c[0] ? 'var(--ink)' : 'var(--txt)', pick: () => this.setState({ cat: c[0] }) })),
-      mats: [['Korpus', 'matCode'], ['Fasad', 'fasadCode']].map(([k, key]) => ({ k, v: H ? this.matName(s[key]) : '…', cycle: () => cycleMat(key, k) })),
+      mats: [['Korpus', 'matCode'], ['Fasad', 'fasadCode']].map(([k, key]) => ({ k, v: H ? (s.sheet && slotForBase(baseForSheet(s.sheet)) === (key === 'matCode' ? 'korpus' : 'fasad') ? s.sheet.name : this.matName(s[key])) : '…', cycle: () => this.openVaraq('material', { slot: key }) })),
       catalog, catEmpty: !catalog.length,
       toggleMissing: () => this.setState({ miss: !s.miss }), missOpen: s.miss, missArrow: s.miss ? '▴' : '▾',
       markupLabel: 'Foyda (+' + pctMarkup + '%)', hasMissing: missN > 0, missText: '⚠️ ' + missN + ' ta zapchastning narxi bazada yo\'q — 0 deb olindi',
@@ -683,6 +768,7 @@ export default class App extends React.Component {
         <AiOyna v={v} />
         <IchiniKorish v={v} />
         <Tasdiq v={v} />
+        <Varaqlar v={v} />
         <Toast v={v} />
       </div>
       </>

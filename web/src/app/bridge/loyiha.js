@@ -8,6 +8,7 @@ import { footprint, roomBBox } from '../../../../app/js/engine/rules.js';
 import { cutlist, productionCost } from '../../../../app/js/engine/cutlist.js';
 import { USTKI_Z } from '../../../../app/js/ai.js';
 import { projectSlots } from './hisob.js';
+import { searchMaterial } from '../../../../app/js/engine/search.js';
 
 /* scene.js DEFAULT_ROOM bilan bir xil (scene.js three.js'ni yuklaydi — bu modul esa Node'da ham ishlaydi) */
 export const DEFAULT_ROOM = {
@@ -226,4 +227,26 @@ export function addUtility(doc, { wall, type, offset, z }) {
   const u = { type, wall, offset: Math.round(Math.max(0, Math.min(seg, +offset || 0))), z: Math.max(50, +z || 1000) };
   (doc.room.utilities = doc.room.utilities || []).push(u);
   return u;
+}
+
+/* ── ERP plita tanlash (eski renderSheetSel, so'zma-so'z — DOM o'rniga ro'yxat qaytaradi) ── */
+const TRANSLIT = { а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'sch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya' };
+const normQ = (s) => String(s || '').toLowerCase().replace(/[а-яё]/g, c => TRANSLIT[c] || c);
+/** → [{ s (plita), idx }] — qidiruv: ID + fuzzy + ko'p til; bo'sh qidiruvda — tanlangan material turi va qalinligi */
+export function plitaRoyxati(H, q, materialCode) {
+  const all = (H.sheetCatalog && H.sheetCatalog.sheets) || [];
+  q = String(q || '').trim();
+  let items;
+  if (q && H.searchIndex) items = searchMaterial(q, H.searchIndex, { limit: 150 }).map(h => h.item);
+  else if (q) { const nq = normQ(q); items = all.filter(s => normQ(s.name + ' ' + s.sku + ' ' + s.cat).includes(nq)).slice(0, 200); }
+  else {
+    const base = (H.materials.panel_materials || []).find(m => m.code === materialCode);
+    const typeOf = { LDSP18: 'LDSP', LDSP16: 'LDSP', LMDF16: 'LMDF', MDF18: 'MDF', MDF16: 'MDF', MDF8: 'MDF', HDF3: 'HDF', OYNA: 'OYNA' }[materialCode];
+    const th = base ? base.thickness : 16;
+    items = all.filter(s => s.uzs > 0 && s.type === typeOf && Math.abs((s.th || 0) - th) < 0.6).slice(0, 120);
+    if (!items.length) items = all.filter(s => s.uzs > 0 && s.type === typeOf).slice(0, 120);
+    if (!items.length) items = all.filter(s => s.uzs > 0).slice(0, 60);
+  }
+  return items.map(s => ({ s, idx: all.findIndex(x => (x.sku && x.sku === s.sku && x.name === s.name) || (x.name === s.name && x.type === s.type)) }))
+    .filter(x => x.idx >= 0);
 }

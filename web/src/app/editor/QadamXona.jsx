@@ -68,9 +68,15 @@ export default function QadamXona({ v }) {
                       </React.Fragment>))}
                     </div>
                     <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexDirection":"column","gap":"2px"}}>
-                      <span style={{"fontWeight":"800","paddingBottom":"6px"}}>
-                        {"Oshxona elementlari"}
-                      </span>
+                      {/* TZ-09 8-bosqich (dizaynda yo'q): ⚙ — dobor/karniz balandligi, moyka o'lchami; "+ Qo'shish" tugmasi uslubida */}
+                      <div style={{"display":"flex","justifyContent":"space-between","alignItems":"center","paddingBottom":"6px"}}>
+                        <span style={{"fontWeight":"800"}}>
+                          {"Oshxona elementlari"}
+                        </span>
+                        <button onClick={v.openKitchen} aria-label="Oshxona elementlarini sozlash" style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)"}}>
+                          {"⚙ Sozlash"}
+                        </button>
+                      </div>
                       {(v.toggles || []).map((t, $index) => (<React.Fragment key={$index}>
                         <button onClick={t?.flip} style={{"minHeight":"48px","display":"flex","alignItems":"center","justifyContent":"space-between","gap":"12px","background":"none","border":"0","borderTop":"1px solid var(--line)","color":"var(--txt)","fontSize":"15px","fontWeight":"700","cursor":"pointer","padding":"0","textAlign":"left"}}>
                           <span style={{"display":"flex","flexDirection":"column"}}>
