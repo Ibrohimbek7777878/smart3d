@@ -21,13 +21,14 @@
 | 04 | [Narx ma'lumotlari: egasi uchun jadval + import](04-narx-malumotlari.md) | **BAJARILDI** 2026-10-15 (vosita) | egasi: `Smart3D_malumot/narx-toldirish-2026-10-15.xlsx` ni to'ldiradi |
 | 05 | [83 ta umumiy modul geometriyasi](05-modul-geometriyasi.md) | PAUZA (egasi: "hozircha tegmang") | — |
 | 06 | [Modullarga teshiklar](06-teshiklar.md) | A varianti — tadqiqot boshlandi | egasi A ni tanladi |
-| 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | TASDIQ KUTILMOQDA | egasi tanladi: telefon + SMS kod; SMS provayderi kerak |
+| 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | TASDIQ KUTILMOQDA | telefon + SMS (Eskiz.uz); Eskiz akkaunti serverga |
 | 08 | [Ekrandagi qoida buzilishlari: logo, oyna, burish](08-ui-qoida-tuzatishlari.md) | QISMAN: oyna ✅, burish ✅, logo — kutilmoqda | egasi: Bittada logo fayli |
 | 09 | [Yangi dizayn](09-dizayn.md) | MA'LUMOT KUTILMOQDA | Claude Design natijasi; tarif, aloqa |
 | 10 | [Deploy va zaxira nusxa](10-deploy-va-zaxira.md) | MA'LUMOT KUTILMOQDA | server: Bittada (smart3d.bittada.uz) ✅; L1 (yurist) |
 | 11 | [Stanok fayllarini haqiqiy stanokka moslash](11-stanok-postprotsessorlar.md) | MA'LUMOT KUTILMOQDA | stanoklar ✅ (4 tur); D7 namuna fayllar |
-| 12 | [AI: til modeli va ovoz](12-ai-llm.md) | MA'LUMOT KUTILMOQDA | D13 (API kalit), D10 (usta iboralari) |
+| 12 | [AI: til modeli va ovoz](12-ai-llm.md) | TASDIQ KUTILMOQDA | istalgan AI'ga ulanadigan; real sinov uchun API kalit |
 | 13 | [Modullar kutubxonasi — 600 ta](13-modullar-kutubxonasi.md) | MA'LUMOT KUTILMOQDA | D8 (Bazis fayllari) |
+| 14 | [Sex standartlari sahifasi (admin)](14-sex-standartlari-sahifasi.md) | TASDIQ KUTILMOQDA (TZ-07 dan keyin) | — |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.
@@ -35,6 +36,20 @@
 - **03–06** — narx va detallar to'g'riligi.
 - **07–09** — foydalanuvchi uchun.
 - **10–13** — tashqi ma'lumot kelgach.
+
+## Egasi qarorlari (2026-10-15)
+| Savol | Qaror |
+|---|---|
+| Xizmatlar (S3) | prisadka — usta tanlaydi; ish haqi — avtomatik |
+| Modul geometriyasi (TZ-05) | hozircha tegilmaydi |
+| Teshiklar (TZ-06) | A — Bazis faylidan o'qish |
+| BPJ (S5) | SINOV belgisi bilan qoladi; dizayndan keyin Bazis'da real sinov |
+| Kirish | telefon + SMS kod, Eskiz.uz |
+| Server | Bittada serveri, smart3d.bittada.uz |
+| Stanoklar | Altendorf, Homag/Holzma, Biesse Rover, kromka va prisadka |
+| AI | istalgan sun'iy intellektga ulanadigan (provayderga bog'liq emas) |
+| Chegaralar | ekrandan, faqat admin (TZ-14) |
+| Bittada Usta (Q5, S6) | hozircha bog'lanmaydi, keyinchalik ulanadi |
 
 ## Avvalgi TZ'lar (loyiha ildizida, tarix uchun)
 

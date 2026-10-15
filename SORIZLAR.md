@@ -219,3 +219,5 @@ Qaysi bri kere hoz
 75. qaysilarga meni javobim kere va shularn bitama bita shuanrli qibl sora va savol ber
 
 76. (savollarga javob) BPJ: bu hozir tliq tugaganmi va hozir men senga dizyan bersma va sen dizayn loyhaga moslahstirb keyin menu va sahifalrin qoshib  menga shu tugman chiqabr bera olsanmi va oshanda real ishlatb koramiz hozir sen testlaringda muvafaqiayatli otdimi · Kirish: Telefon + SMS kod · Server: Bittada serveri, smart3d.bittada.uz (Tavsiya) · Stanoklar: Altendorf (formatli arra), Homag / Holzma (arra markazi), Biesse Rover (CNC), Kromka va prisadka stanoklari
+
+77. (savollarga javob) SMS: Eskiz.uz (Tavsiya) · AI: hammasin tayor qilb qoy istalgan suniy intelektga ulanadigan qil · Chegaralar: Ha, ekrandan (faqat admin) (Tavsiya) · Bittada Usta: hozircha boglanmayd lekin keyinchalik ulanad

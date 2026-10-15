@@ -52,12 +52,14 @@
 ## Egasining qarori (2026-10-15)
 - **Kirish: telefon + SMS kod** (parolsiz). Shuning uchun 2-bandda parol o'rniga bir martalik SMS kod bo'ladi:
   - 6 xonali kod, 5 daqiqa amal qiladi, urinishlar soni cheklanadi;
-  - SMS provayderi kerak — qaysi biri, egasi aytadi;
+  - **SMS provayderi: Eskiz.uz** (egasi tanladi). Server Eskiz API orqali kod yuboradi. Akkaunt ma'lumotlari faqat server muhitida (`ESKIZ_*`), commit qilinmaydi;
+  - sinov rejimi: test bazasida (S8) SMS yuborilmaydi — kod test natijasida tekshiriladi;
   - provayder kaliti faqat server muhitida saqlanadi.
 
 ## Egasidan kerak
-1. **Telefon + parol bilan kirish** — tasdiqlash. SMS kodi yo'q; kerak bo'lsa — alohida TZ, provayder kerak.
-2. **Q4 — server qayerda turadi?** Deploy uchun, TZ-10.
+1. ~~Kirish usuli~~ — telefon + SMS kod (Eskiz.uz).
+2. **Eskiz.uz akkaunti:** login va kalit. Serverga o'zingiz yoki admin qo'yadi, menga yozma ko'rinishda bermang.
+3. ~~Q4~~ — Bittada serveri.
 
 ## Qabul
 - Bir qurilmada saqlangan loyiha ikkinchisida ochiladi.
