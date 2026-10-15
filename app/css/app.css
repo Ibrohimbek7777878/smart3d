@@ -383,6 +383,16 @@ table.smeta tfoot td { font-weight: 800; border-top: 2px solid var(--ink); }
   padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
 .acct-item.is-current { border-color: var(--accent); }
 .acct-item small { color: var(--muted); }
+.link-btn { background: none; border: 0; padding: 8px 0 0; color: var(--muted); font-size: 12px; cursor: pointer; text-decoration: underline; }
+/* TZ-14: sex standartlari */
+.std-card { width: min(720px, 100%); }
+.std-body { display: flex; flex-direction: column; gap: 10px; max-height: 60vh; overflow-y: auto; }
+.std-tur { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: var(--surface-2); }
+.std-tur small { display: block; color: var(--muted); font-size: 11px; margin: 2px 0 4px; }
+.std-row { display: grid; grid-template-columns: 110px 72px 72px minmax(0, 1fr); gap: 6px; align-items: center; margin-top: 4px; font-size: 12px; }
+.std-row input { padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; background: var(--surface); color: inherit; min-width: 0; }
+.std-row input:disabled { opacity: .7; }
+@media (max-width: 480px) { .std-row { grid-template-columns: 1fr 1fr; } .std-row > span { grid-column: 1 / -1; } .std-row input[data-f="std"] { grid-column: 1 / -1; } }
 /* TZ-08: burish dastagi (2D, tanlangan mebel yonida) — barmoq uchun 44 px */
 .rot-handle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
   background: var(--surface); border: 2px solid var(--accent); color: var(--accent); font-size: 22px; line-height: 1;

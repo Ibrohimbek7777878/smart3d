@@ -131,3 +131,28 @@ test('MebelCity modullari bazada (38 ta)', async () => {
   const f = await (await api('/api/fragments')).json();
   assert.ok(f.filter(x => /^MC-/.test(x.code)).length >= 38);
 });
+
+test('sex standartlari (TZ-14): hamma o\'qiydi; tokensiz 401, usta 403, noto\'g\'ri 400, admin o\'zgartiradi', async () => {
+  const g = await (await api('/api/sex-standartlari')).json();
+  assert.equal(g.modullar.oshxona_pastki_2e.w.max, 1070);
+  const body = { modullar: { oshxona_pastki_2e: { w: { min: 600, max: 1100 } } } };
+  assert.equal((await api('/api/sex-standartlari', { method: 'PUT', body })).status, 401);
+  const U = await login('998991110010');
+  assert.equal((await api('/api/sex-standartlari', { method: 'PUT', token: U.token, body })).status, 403);
+  const adm = await (await api('/api/login', { method: 'POST', body: { email: 'admin@smart3d.uz', password: 'test-admin-parol-2' } })).json();
+  assert.ok(adm.token, 'admin kira olmadi');
+  for (const bodyBad of [
+    { modullar: { oshxona_pastki_2e: { w: { min: 900, max: 800 } } } },
+    { modullar: { yoq_tur: { w: { min: 1, max: 2 } } } },
+    { modullar: { oshxona_pastki_2e: { uzunlik: { min: 1, max: 2 } } } },
+    { modullar: { oshxona_pastki_2e: { h: { min: 600, max: 880, std: [5000] } } } }
+  ]) assert.equal((await api('/api/sex-standartlari', { method: 'PUT', token: adm.token, body: bodyBad })).status, 400, JSON.stringify(bodyBad));
+  const ok = await api('/api/sex-standartlari', { method: 'PUT', token: adm.token, body });
+  assert.equal(ok.status, 200);
+  const g2 = await (await api('/api/sex-standartlari')).json();
+  assert.equal(g2.modullar.oshxona_pastki_2e.w.max, 1100);
+  assert.equal(g2.modullar.oshxona_pastki_2e.h.max, 880);                       // boshqa o'lchamlar saqlandi
+  assert.equal(g2.modullar.oshxona_pastki_2e.nom, g.modullar.oshxona_pastki_2e.nom);
+  assert.ok(g2._meta.ozgartirildi);
+});
+

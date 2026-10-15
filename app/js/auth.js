@@ -133,13 +133,32 @@ export function createAuth(o) {
     $('#acctTitle').textContent = inn ? 'Akkaunt' : 'Kirish';
     $('#acctErr').classList.add('hidden');
     if (inn) {
-      $('#acctUser').textContent = `${(user && user.name) || 'Usta'} · ${formatPhone(user && user.phone)}`;
+      $('#acctUser').textContent = `${(user && user.name) || 'Usta'} · ${user && user.phone ? formatPhone(user.phone) : (user && user.email) || ''}${user && user.role === 'admin' ? ' · admin' : ''}`;
       renderList();
     } else {
+      /* har ochilganda — oddiy (SMS) rejim; admin rejimi faqat havola bosilganda */
+      $('#acctAdminBox').classList.add('hidden');
+      $('#acctAdminLogin').classList.add('hidden');
+      $('#acctSend').classList.remove('hidden');
       $('#acctPhone').focus();
     }
   }
   function hide() { $('#acctModal').hidden = true; }
+  /* TZ-14: admin — email + parol */
+  async function adminLogin() {
+    try {
+      const r = await api('/api/login', { method: 'POST', body: { email: $('#acctEmail').value, password: $('#acctPass').value } });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { showErr(j.error || ('Xato ' + r.status)); return; }
+      token = j.token; user = j.user;
+      ls.set(K.token, token); ls.set(K.user, user);
+      $('#acctPass').value = '';
+      updateBtn();
+      o.toast('Admin sifatida kirdingiz', 'good');
+      await afterLogin(false);
+      show();
+    } catch (e) { showErr("Server bilan aloqa yo'q"); }
+  }
   const showErr = (t) => { const e = $('#acctErr'); e.textContent = '⚠️ ' + t; e.classList.remove('hidden'); };
 
   async function sendCode() {
@@ -241,6 +260,16 @@ export function createAuth(o) {
     $('#acctCode').addEventListener('keydown', (e) => { if (e.key === 'Enter') verify(); });
     $('#acctLogout').addEventListener('click', async () => { if (await o.askConfirm('Akkauntdan chiqasizmi?', 'Chiqish')) { logout(false); hide(); } });
     $('#acctNew').addEventListener('click', async () => { hide(); await o.newProject(); });
+    $('#acctStd').addEventListener('click', () => { hide(); o.openStandards && o.openStandards(); });
+    $('#acctAdminToggle').addEventListener('click', () => {
+      const on = $('#acctAdminBox').classList.toggle('hidden') === false;
+      $('#acctAdminLogin').classList.toggle('hidden', !on);
+      $('#acctSend').classList.toggle('hidden', on);
+      $('#acctVerify').classList.add('hidden');
+      $('#acctCodeRow').classList.add('hidden');
+      (on ? $('#acctEmail') : $('#acctPhone')).focus();
+    });
+    $('#acctAdminLogin').addEventListener('click', adminLogin);
     if (!token) return;
     const me = await api('/api/me');
     if (me.status === 401 || me.status === 404) { logout(true); return; }
@@ -264,6 +293,10 @@ export function createAuth(o) {
     init, changed, flush, aiParse,
     get aiEngine() { return aiEngine; },
     get aiReady() { return !!(token && ai.enabled); },
+    get serverOk() { return serverOk; },
+    get isAdmin() { return !!(user && user.role === 'admin'); },
+    /** token bilan server so'rovi (TZ-14) */
+    apiFetch: (path, opts) => api(path, opts),
     /** "Yangi" yoki kompyuterdan yuklash — keyingi saqlash serverda yangi loyiha ochadi */
     resetCurrent() { if (token) setCurrent(null); },
     get loggedIn() { return !!token; }

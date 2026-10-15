@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Smart3D — brauzer regressiya testlari (TZ-SAYT-BARQARORLIK-RESPONSIVE §7).
 #   bash tests/ui/run.sh            # hammasi
-#   bash tests/ui/run.sh matrix     # bittasi: phase1 | matrix | touch | modals | phase3 | mc | eksport | burish | xizmat | ustki | kirish
+#   bash tests/ui/run.sh matrix     # bittasi: phase1 | matrix | touch | modals | phase3 | mc | eksport | burish | xizmat | ustki | kirish | standart
 # Kerak: Node + browser-automation skill (patchright). Natija va skrinshotlar: tests/ui/out/
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -30,13 +30,14 @@ start_node() {
 }
 stop_node() { [ -n "$NSRV" ] && kill "$NSRV" 2>/dev/null; NSRV=""; rm -rf "$TMPD"; }
 
-SUITES="${*:-phase1 matrix touch modals phase3 mc eksport burish xizmat ustki kirish}"
+SUITES="${*:-phase1 matrix touch modals phase3 mc eksport burish xizmat ustki kirish standart}"
 for s in $SUITES; do
   echo "=== $s"
   URL="http://127.0.0.1:$PORT/"
-  if [ "$s" = kirish ]; then start_node || continue; URL="http://127.0.0.1:$NPORT/"; fi
+  NODE_SUITE=0; case "$s" in kirish|standart) NODE_SUITE=1;; esac   # Node server kerak bo'lgan to'plamlar
+  if [ "$NODE_SUITE" = 1 ]; then start_node || continue; URL="http://127.0.0.1:$NPORT/"; fi
   node "$BROWSER_MJS" "$URL" --script "tests/ui/$s.mjs" --timeout 90000 2>&1 \
     | sed -n '/^script/,/^console/p' | sed '$d' | tee "$QA_OUT/$s.out" \
     | if [ "$s" = matrix ]; then python3 -I tests/ui/fmt_matrix.py; else cat; fi
-  if [ "$s" = kirish ]; then stop_node; fi
+  if [ "$NODE_SUITE" = 1 ]; then stop_node; fi
 done

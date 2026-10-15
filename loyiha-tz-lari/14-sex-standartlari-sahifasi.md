@@ -1,6 +1,6 @@
 # TZ-14 — Sex standartlari sahifasi (min/max — ekrandan, faqat admin)
 
-**Sana:** 2026-10-15 · **Navbat:** 14 (TZ-07 dan keyin) · **Holat:** TASDIQ KUTILMOQDA · **Asos:** egasi: "Ha, ekrandan (faqat admin)".
+**Sana:** 2026-10-15 · **Navbat:** 14 (TZ-07 dan keyin) · **Holat:** BAJARILDI 2026-10-15 (egasi: "hammasini qilib tugatib ber") · **Asos:** egasi: "Ha, ekrandan (faqat admin)".
 
 ## Muammo
 - Modullarning o'lcham chegaralari (oshxona, shkaf, krovat, parta) hozir faqat faylda o'zgartiriladi: `app/data/sex-standartlari.json`.
@@ -39,3 +39,22 @@
 - Admin chegarani ekrandan o'zgartiradi, katalogda darhol ko'rinadi.
 - Usta o'zgartira olmaydi.
 - Tarixda yozuv bor.
+
+## Natija (2026-10-15)
+- **Server:**
+  - `GET /api/sex-standartlari` (hamma) va `PUT` (faqat admin);
+  - tekshiruv: min < max, son 1–20000, standart qiymatlar chegara ichida, faqat mavjud tur va o'lcham;
+  - nom, manba va boshqa maydonlar saqlanadi;
+  - qiymat `settings` jadvalida, har o'zgarish `sex_std_history` da (eski → yangi).
+- **Sayt:**
+  - "📏 Sex standartlari" — akkaunt oynasidan; har tur bo'yicha min / max / standart qiymatlar va manba;
+  - admin o'zgartiradi, usta faqat ko'radi;
+  - saqlangach katalog chegaralari va narx taxminlari darhol yangilanadi;
+  - server orqali ochilganda standartlar serverdan olinadi.
+- **Admin kirishi:** kirish oynasida "Admin (email bilan)" havolasi; har ochilganda oyna SMS rejimiga qaytadi.
+- **`applySexStandart`:** bo'sh qiymat endi chegarani olib tashlaydi (eski qiymat qolib ketmaydi).
+- **Testlar:**
+  - server 30/30 (yangi: 401 / 403 / 400×4 / 200, boshqa maydonlar saqlanishi);
+  - brauzer `tests/ui/standart.mjs` — admin o'zgartirdi → katalog "max 1100"; noto'g'ri qiymat — xato; usta faqat ko'radi; qayta ochilganda 1100;
+  - to'liq regressiya yashil.
+

@@ -345,21 +345,43 @@
         </label>
         <small id="acctDev" class="acct-hint"></small>
       </div>
+      <!-- TZ-14: admin — email + parol (sex standartlarini o'zgartirish uchun) -->
+      <div id="acctAdminBox" class="hidden">
+        <label class="acct-lbl">Admin email<input id="acctEmail" type="email" autocomplete="username"></label>
+        <label class="acct-lbl">Parol<input id="acctPass" type="password" autocomplete="current-password"></label>
+      </div>
       <div id="acctErr" class="msg err hidden"></div>
       <div class="modal-btns">
+        <button class="btn primary hidden" id="acctAdminLogin">Admin sifatida kirish</button>
         <button class="btn primary" id="acctSend">Kod yuborish</button>
         <button class="btn primary hidden" id="acctVerify">Kirish</button>
         <button class="btn ghost" id="acctClose1">Yopish</button>
       </div>
+      <button class="link-btn" id="acctAdminToggle" type="button">Admin (email bilan) →</button>
     </div>
     <div id="acctIn" class="hidden">
       <div class="acct-user"><b id="acctUser"></b><button class="btn ghost" id="acctLogout">Chiqish</button></div>
       <h4 class="acct-h">Loyihalarim</h4>
       <div id="acctList" class="acct-list"></div>
       <div class="modal-btns">
+        <button class="btn" id="acctStd">📏 Sex standartlari</button>
         <button class="btn primary" id="acctNew">+ Yangi loyiha</button>
         <button class="btn ghost" id="acctClose2">Yopish</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- TZ-14: sex standartlari (min/max) — admin o'zgartiradi, usta ko'radi -->
+<div id="stdModal" class="modal-back" hidden role="dialog" aria-modal="true" aria-labelledby="stdTitle">
+  <div class="modal-card std-card">
+    <h3 id="stdTitle" style="margin-top:0">📏 Sex standartlari (mm)</h3>
+    <div id="stdNote" class="msg warn hidden">Faqat admin o'zgartiradi — siz ko'rib turibsiz</div>
+    <div id="stdBody" class="std-body"></div>
+    <div id="stdErr" class="msg err hidden"></div>
+    <div class="modal-btns">
+      <button class="btn primary hidden" id="stdSave">Saqlash</button>
+      <button class="btn ghost" id="stdClose">Yopish</button>
     </div>
   </div>
 </div>

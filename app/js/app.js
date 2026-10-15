@@ -1260,6 +1260,61 @@ function hideItemCardOnSmall() {}
 
 /* ═══════════════════ SAVE / LOAD ═══════════════════ */
 const LS_KEY = 'smart3d.project.v2';
+/* ═══════════════════ SEX STANDARTLARI (TZ-14) ═══════════════════
+ * Server orqali ochilganda standartlar serverdan olinadi (admin o'zgartirgan bo'lishi mumkin). */
+function applyStandards(std) {
+  if (!std || !std.modullar) return;
+  state.sexStd = std;
+  for (const f of Object.values(state.catalog)) applySexStandart(f, std);
+  estCache.key = '';                       // katalog narx taxminlari qayta
+  renderCatalog();
+  scheduleRecalc(true);
+}
+async function loadServerStandards() {
+  if (!auth || !auth.serverOk) return;
+  try {
+    const r = await fetch('/api/sex-standartlari', { cache: 'no-store' });
+    if (r.ok) applyStandards(await r.json());
+  } catch (e) { /* server yo'q — fayldagi standartlar qoladi */ }
+}
+const STD_LABEL = { w: 'Eni (w)', d: 'Chuqurligi (d)', h: "Bo'yi (h)", uzunlik: 'Asos uzunligi', eni: 'Asos eni' };
+function openStandards() {
+  const std = state.sexStd;
+  if (!std || !std.modullar) { toast('Standartlar yuklanmagan', 'bad'); return; }
+  const admin = !!(auth && auth.isAdmin);
+  $('#stdNote').classList.toggle('hidden', admin);
+  $('#stdSave').classList.toggle('hidden', !admin);
+  $('#stdErr').classList.add('hidden');
+  const dis = admin ? '' : ' disabled';
+  $('#stdBody').innerHTML = Object.entries(std.modullar).map(([tur, t]) => {
+    const rows = Object.keys(STD_LABEL).filter(k => t[k]).map(k => {
+      const v = t[k];
+      return `<div class="std-row"><span>${STD_LABEL[k]}</span>
+        <input type="number" inputmode="numeric" data-tur="${esc(tur)}" data-k="${k}" data-f="min" value="${v.min != null ? Number(v.min) : ''}" placeholder="min" aria-label="${esc(tur)} ${k} min"${dis}>
+        <input type="number" inputmode="numeric" data-tur="${esc(tur)}" data-k="${k}" data-f="max" value="${v.max != null ? Number(v.max) : ''}" placeholder="max" aria-label="${esc(tur)} ${k} max"${dis}>
+        <input type="text" data-tur="${esc(tur)}" data-k="${k}" data-f="std" value="${esc((v.std || []).join(', '))}" placeholder="standart: 708, 758" aria-label="${esc(tur)} ${k} standart"${dis}>
+      </div>`;
+    }).join('');
+    return `<div class="std-tur"><b>${esc(t.nom || tur)}</b>${t.manba ? `<small>${esc(String(t.manba).slice(0, 160))}</small>` : ''}${rows}</div>`;
+  }).join('');
+  $('#stdModal').hidden = false;
+}
+async function saveStandards() {
+  const mod = {};
+  for (const el of document.querySelectorAll('#stdBody input')) {
+    const { tur, k, f } = el.dataset;
+    const o = ((mod[tur] = mod[tur] || {})[k] = mod[tur][k] || {});
+    if (f === 'std') o.std = el.value.split(/[,\s]+/).filter(Boolean).map(Number);
+    else o[f] = el.value === '' ? null : Number(el.value);
+  }
+  const r = await auth.apiFetch('/api/sex-standartlari', { method: 'PUT', body: { modullar: mod } });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = $('#stdErr'); e.textContent = '⚠️ ' + (j.error || ('Xato ' + r.status)); e.classList.remove('hidden'); return; }
+  applyStandards(j.standartlar);
+  $('#stdModal').hidden = true;
+  toast('Sex standartlari saqlandi — katalog chegaralari yangilandi', 'good');
+}
+
 /** Loyiha fayli shakli — qurilmaga (localStorage) va serverga (TZ-07) bir xil */
 function buildProjectPayload() {
   return {
@@ -1602,6 +1657,9 @@ async function boot() {
     renderCatalog();
     toast(e.target.checked ? "Prisadka smetaga qo'shildi" : "Prisadka smetadan olindi", 'good');
   });
+  $('#stdSave').addEventListener('click', saveStandards);
+  $('#stdClose').addEventListener('click', () => { $('#stdModal').hidden = true; });
+  $('#stdModal').addEventListener('click', (e) => { if (e.target.id === 'stdModal') $('#stdModal').hidden = true; });
   $('#icLeft').addEventListener('click', () => nudge(-50, 0));
   $('#icRight').addEventListener('click', () => nudge(50, 0));
   $('#icRot').addEventListener('click', () => {
@@ -1710,9 +1768,9 @@ async function boot() {
     },
     getTotal: () => (state._res && state._res.priceRes ? state._res.priceRes.total : 0),
     hasWork: () => !!(state.doc && state.doc.placements && state.doc.placements.length),
-    newProject, askConfirm, toast, fmtSum
+    newProject, askConfirm, toast, fmtSum, openStandards
   });
-  auth.init();
+  auth.init().then(loadServerStandards);
   $('#projName').addEventListener('blur', () => auth && auth.changed());
   $('#boot').style.transition = 'opacity .35s';
   $('#boot').style.opacity = '0';

@@ -15,8 +15,9 @@ export function applySexStandart(frag, std) {
   for (const k of dims) {
     if (!t[k]) continue;
     const m = map[k] || { o: k, ofset: 0 };
-    if (t[k].min != null) frag['min_' + m.o] = t[k].min + m.ofset;
-    if (t[k].max != null) frag['max_' + m.o] = t[k].max + m.ofset;
+    /* bo'sh qiymat — chegara yo'q (TZ-14: admin olib tashlasa eski qiymat qolib ketmasin) */
+    if (t[k].min != null) frag['min_' + m.o] = t[k].min + m.ofset; else delete frag['min_' + m.o];
+    if (t[k].max != null) frag['max_' + m.o] = t[k].max + m.ofset; else delete frag['max_' + m.o];
   }
   return frag;
 }

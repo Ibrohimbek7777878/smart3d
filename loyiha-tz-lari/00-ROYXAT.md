@@ -28,7 +28,7 @@
 | 11 | [Stanok fayllarini haqiqiy stanokka moslash](11-stanok-postprotsessorlar.md) | MA'LUMOT KUTILMOQDA | stanoklar ✅ (4 tur); D7 namuna fayllar |
 | 12 | [AI: til modeli va ovoz](12-ai-llm.md) | **BAJARILDI** 2026-10-15 (ovozdan tashqari) | real ishlatish uchun API kalit serverga |
 | 13 | [Modullar kutubxonasi — 600 ta](13-modullar-kutubxonasi.md) | MA'LUMOT KUTILMOQDA | D8 (Bazis fayllari) |
-| 14 | [Sex standartlari sahifasi (admin)](14-sex-standartlari-sahifasi.md) | TASDIQ KUTILMOQDA (TZ-07 dan keyin) | — |
+| 14 | [Sex standartlari sahifasi (admin)](14-sex-standartlari-sahifasi.md) | **BAJARILDI** 2026-10-15 | — |
 | 15 | [Katalogdan ustki shkaf balandligi](15-ustki-shkaf-balandligi.md) | **BAJARILDI** 2026-10-15 | — |
 
 **Navbat sababi:**
