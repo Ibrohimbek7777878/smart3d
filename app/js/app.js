@@ -1373,6 +1373,19 @@ async function boot() {
       p.x = x; p.y = y;
       if (state.selectedId === id) $('#icX').value = x;
       scheduleRecalc();
+    },
+    /* TZ-08: burish dastagi — markaz atrofida; qo'yib yuborilganda sahna qayta quriladi
+       (stoleshnitsa/sokol kabi hosila elementlar yangi burchakka moslashadi) */
+    onRotate: (id, rot, x, y) => {
+      const p = state.doc.placements.find(q => q.id === id);
+      if (!p) return;
+      p.rot = rot; p.x = x; p.y = y;
+      if (state.selectedId === id) $('#icX').value = x;
+      scheduleRecalc();
+    },
+    onRotateEnd: (id) => {
+      items.setPlacements(viewPlacements(), state.catalog);
+      if (state.selectedId === id) showItemCard(id);
     }
   });
 

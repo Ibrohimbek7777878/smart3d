@@ -1,6 +1,6 @@
 # TZ-08 — Ekrandagi qoida buzilishlarini tuzatish (logo, oyna, burish)
 
-**Sana:** 2026-10-15 · **Navbat:** 8 · **Holat:** QISMAN — 2-qism (tasdiq oynasi) BAJARILDI 2026-10-15; 3-qism (burish) jarayonda; 1-qism (logo) — fayl kutilmoqda · **Bog'liq:** logo fayli egasidan.
+**Sana:** 2026-10-15 · **Navbat:** 8 · **Holat:** QISMAN — 2-qism (tasdiq oynasi) va 3-qism (burish) BAJARILDI 2026-10-15; 1-qism (logo) — fayl kutilmoqda · **Bog'liq:** logo fayli egasidan.
 
 ## Muammo (tekshirilgan)
 1. **Bittada logosi chiqadigan hujjatlarda yo'q** (qoida 6.3, S4):
@@ -50,6 +50,22 @@
     - brauzerning oddiy oynasi 0 marta.
   - `tests/qa_ai.mjs` yangi oynani bosadigan qilindi — 3 ta AI qurilishi o'tdi.
   - Regressiya yashil.
+
+- **3-qism (2026-10-15):** burish dastagi (`items.js`, CSS2D).
+  - Tanlangan mebelning old tomonida (xona ichida) ⟳ dastak: 44 px, ekranda doim bir xil o'lcham.
+  - Sudralganda mebel **markazi atrofida** buriladi: 15° qadam, Shift bosilsa — erkin.
+  - Qo'yib yuborilganda sahna qayta quriladi (stoleshnitsa va boshqa hosila elementlar moslashadi).
+  - Faqat 2D'da; 3D'da yashirin. "⟳ 90°" tugmasi zaxira bo'lib qoldi.
+  - **TZ'dan farq:** ikki barmoqli burish qilinmadi — u xaritani kattalashtirish (pinch-zoom) bilan to'qnashadi. O'rniga dastakni bitta barmoq bilan sudrash ishlaydi.
+  - Dastlab dastak orqa (devor) tomonda edi — kompyuterda ekrandan chiqib qolardi. Old tomonga o'tkazildi.
+  - **Tekshiruv** (`tests/ui/burish.mjs`, `run.sh` ga qo'shildi): kompyuterda sichqoncha bilan va telefonda barmoq bilan —
+    - 0° → 90°;
+    - markaz joyida (≤ 2 mm);
+    - kamera surilmadi;
+    - 3D'da dastak yashirin;
+    - JS xatosi 0.
+  - Regressiya: 8 brauzer to'plami va 8 node to'plami yashil.
+  - Ma'lum: matritsa testi birinchi qurilmada (android-360) ba'zan "small=28" beradi — qayta ishga tushirilganda 0 (sovuq start beqarorligi, oldin ham bo'lgan).
 
 ## Egasidan kerak
 - **Bittada logo fayli** — SVG yoki shaffof PNG; qorong'i va yorug' fon uchun variantlari bo'lsa yaxshi.

@@ -22,7 +22,7 @@
 | 05 | [83 ta umumiy modul geometriyasi](05-modul-geometriyasi.md) | TASDIQ KUTILMOQDA | egasi: konstruksiya qoidasi |
 | 06 | [Modullarga teshiklar](06-teshiklar.md) | QAROR KUTILMOQDA | egasi: variant A yoki B; B uchun D6 |
 | 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | TASDIQ KUTILMOQDA | egasi: telefon + parol bilan kirish |
-| 08 | [Ekrandagi qoida buzilishlari: logo, oyna, burish](08-ui-qoida-tuzatishlari.md) | QISMAN: oyna ✅, burish — jarayonda | egasi: Bittada logo fayli |
+| 08 | [Ekrandagi qoida buzilishlari: logo, oyna, burish](08-ui-qoida-tuzatishlari.md) | QISMAN: oyna ✅, burish ✅, logo — kutilmoqda | egasi: Bittada logo fayli |
 | 09 | [Yangi dizayn](09-dizayn.md) | MA'LUMOT KUTILMOQDA | Claude Design natijasi; tarif, aloqa |
 | 10 | [Deploy va zaxira nusxa](10-deploy-va-zaxira.md) | MA'LUMOT KUTILMOQDA | Q4 (server qayerda), L1 (yurist) |
 | 11 | [Stanok fayllarini haqiqiy stanokka moslash](11-stanok-postprotsessorlar.md) | MA'LUMOT KUTILMOQDA | D7 (serverdan namunalar), Q7 (stanok modellari) |

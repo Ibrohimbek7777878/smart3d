@@ -365,6 +365,11 @@ table.smeta tfoot td { font-weight: 800; border-top: 2px solid var(--ink); }
 .modal-btns { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 .modal-btns .btn.primary { flex: 1 1 auto; }
 .ask-card { width: min(420px, 100%); }
+/* TZ-08: burish dastagi (2D, tanlangan mebel yonida) — barmoq uchun 44 px */
+.rot-handle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 2px solid var(--accent); color: var(--accent); font-size: 22px; line-height: 1;
+  box-shadow: 0 2px 8px rgba(0,0,0,.18); pointer-events: auto; touch-action: none; cursor: grab; user-select: none; }
+.rot-handle.is-active { cursor: grabbing; background: var(--accent); color: #fff; }
 .ask-text { margin: 0 0 4px; font-size: 15px; line-height: 1.45; }
 
 /* 360° panorama oynasi */

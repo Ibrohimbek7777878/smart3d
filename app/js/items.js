@@ -5,6 +5,7 @@
  * xotira tozalash (leak-free disposal).
  */
 import * as THREE from 'three';
+import { CSS2DObject } from '../vendor/three/addons/renderers/CSS2DRenderer.js';
 import { makeItemMesh } from './materials3d.js';
 
 const SEL_EDGE = 0xd97706, EDGE = 0x8a8072;
@@ -95,6 +96,7 @@ export function createItems(sp, opts = {}) {
       group.add(mesh);
       meshes.push(mesh);
     }
+    updateHandle();
     sp._invalidate();
   }
 
@@ -102,6 +104,7 @@ export function createItems(sp, opts = {}) {
   function select(id, source) {
     selectedId = id;
     for (const m of meshes) applySel(m, m.userData.id === id);
+    updateHandle();
     sp._invalidate();
     opts.onSelect && opts.onSelect(id, meshes.find(m => m.userData.id === id) || null, source);
   }
@@ -162,6 +165,7 @@ export function createItems(sp, opts = {}) {
     if (!m) return;
     drag.lx = nx; drag.ly = ny;
     placeMesh(m, nx, ny);              // faqat shu mesh — butun sahna qayta qurilmaydi
+    updateHandle();
     sp._invalidate();
     opts.onDrag && opts.onDrag(drag.id, nx, ny);
   }
@@ -173,6 +177,82 @@ export function createItems(sp, opts = {}) {
     tap = null; drag = null;
     try { sp.renderer.domElement.releasePointerCapture && sp.renderer.domElement.releasePointerCapture(e.pointerId); } catch (_) {}
   }
+
+  /* ── TZ-08: burish dastagi (qoida 6.2 — ishora asosiy, "⟳ 90°" tugmasi zaxira) ─────────
+   * Tanlangan mebel yonida (2D) HTML dastak — CSS2D, har chizishda o'zi joylashadi, ekranda
+   * doim 44 px (barmoq uchun). Sudralganda mebel MARKAZI atrofida buriladi: 15° qadam,
+   * Shift bosilsa — erkin. Bosish dastakning o'ziga tushadi — sahna sudrash/kamera bilan
+   * to'qnashmaydi. Ikki barmoqli burish yo'q: u pinch-zoom bilan to'qnashadi. */
+  const HANDLE_GAP = 220;                     // mm — mebel chetidan dastakkacha
+  const hEl = document.createElement('div');
+  hEl.className = 'rot-handle';
+  hEl.title = "Burish — sudrang (Shift: erkin burchak)";
+  hEl.setAttribute('aria-label', 'Mebelni burish');
+  hEl.textContent = '⟳';
+  const handle = new CSS2DObject(hEl);
+  handle.visible = false;
+  sp.scene ? sp.scene.add(handle) : group.add(handle);
+  let rot = null;
+
+  function selMesh() { return meshes.find(m => m.userData.id === selectedId && !m.userData.auto) || null; }
+  function updateHandle() {
+    const m = selMesh();
+    const on = !!m && sp.mode === '2d';
+    handle.visible = on;
+    hEl.style.display = on ? '' : 'none';
+    if (!on) return;
+    const u = m.userData, r = u.rot * Math.PI / 180;
+    const R = Math.max(u.w, u.d) / 2 + HANDLE_GAP;
+    /* old tomonda (lokal +y — xona ichi; orqa tomoni devorga qaragan) */
+    handle.position.set(m.position.x - R * Math.sin(r), m.position.y + R * Math.cos(r), u.z + u.h + 10);
+  }
+  function screenToWorld(cx, cy) {
+    const rect = sp.renderer.domElement.getBoundingClientRect(), c = sp.cam2d;
+    return { x: c.left + (cx - rect.left) / rect.width * (c.right - c.left),
+             y: c.top - (cy - rect.top) / rect.height * (c.top - c.bottom) };
+  }
+  function onRotDown(e) {
+    const m = selMesh();
+    if (!m || sp.mode !== '2d') return;
+    e.preventDefault(); e.stopPropagation();
+    rot = { id: m.userData.id, pointerId: e.pointerId, cx: m.position.x, cy: m.position.y };
+    hEl.setPointerCapture && hEl.setPointerCapture(e.pointerId);
+    hEl.classList.add('is-active');
+  }
+  function onRotMove(e) {
+    if (!rot || e.pointerId !== rot.pointerId) return;
+    e.preventDefault();
+    const m = meshes.find(x => x.userData.id === rot.id);
+    if (!m) return;
+    const w = screenToWorld(e.clientX, e.clientY);
+    let deg = Math.atan2(w.y - rot.cy, w.x - rot.cx) * 180 / Math.PI - 90;   // dastak — mebelning lokal +y (old) tomonida
+    if (!e.shiftKey) deg = Math.round(deg / 15) * 15;
+    deg = Math.round(((deg % 360) + 360) % 360);
+    const u = m.userData;
+    if (deg === u.rot) return;
+    const r = deg * Math.PI / 180;
+    /* markaz joyida qoladi: burchak nuqtasi (x, y) qayta hisoblanadi */
+    const ax = Math.round(rot.cx - ((u.w / 2) * Math.cos(r) - (u.d / 2) * Math.sin(r)));
+    const ay = Math.round(rot.cy - ((u.w / 2) * Math.sin(r) + (u.d / 2) * Math.cos(r)));
+    u.rot = deg;
+    placeMesh(m, ax, ay);
+    updateHandle();
+    sp._invalidate();
+    opts.onRotate && opts.onRotate(rot.id, deg, ax, ay);
+  }
+  function onRotUp(e) {
+    if (!rot || e.pointerId !== rot.pointerId) return;
+    try { hEl.releasePointerCapture && hEl.releasePointerCapture(e.pointerId); } catch (_) {}
+    hEl.classList.remove('is-active');
+    const id = rot.id;
+    rot = null;
+    opts.onRotateEnd && opts.onRotateEnd(id);
+  }
+  hEl.addEventListener('pointerdown', onRotDown);
+  hEl.addEventListener('pointermove', onRotMove);
+  hEl.addEventListener('pointerup', onRotUp);
+  hEl.addEventListener('pointercancel', onRotUp);
+  sp.on && sp.on('toggle', () => { updateHandle(); sp._invalidate(); });
 
   const el = sp.renderer.domElement;
   el.addEventListener('pointerdown', onDown);
@@ -186,6 +266,12 @@ export function createItems(sp, opts = {}) {
     hitTest: (e) => !!pick(e),
     refresh: () => setPlacements(opts.getPlacements(), catalog),
     dispose() {
+      hEl.removeEventListener('pointerdown', onRotDown);
+      hEl.removeEventListener('pointermove', onRotMove);
+      hEl.removeEventListener('pointerup', onRotUp);
+      hEl.removeEventListener('pointercancel', onRotUp);
+      if (handle.parent) handle.parent.remove(handle);
+      hEl.remove();
       el.removeEventListener('pointerdown', onDown);
       el.removeEventListener('pointermove', onMove);
       el.removeEventListener('pointerup', onUp);
