@@ -31,8 +31,14 @@
 - **Moliya:** pul harakati yo'q. To'lov va obuna — keyin, alohida TZ (B9).
 - **Orqaga qaytarish:** git; serverda — oldingi versiyaga qaytish yo'riqnomada.
 
+## Egasining qarori (2026-10-15)
+- **Server: Bittada serveri, `smart3d.bittada.uz`.**
+  - Ishga tushirishni server admini yoki server agenti yo'riqnoma bo'yicha bajaradi.
+  - Umumiy nginx va systemd'ni men tahrirlamayman (5.5).
+  - Boshqa tizimlarga xalaqit bermasligi uchun alohida port va alohida jarayon.
+
 ## Egasidan kerak
-- **Q4** — server qayerda.
+- ~~Q4 — server qayerda~~ — javob berildi: Bittada serveri.
 - **L1** — yurist xulosasi.
 
 ## Qabul

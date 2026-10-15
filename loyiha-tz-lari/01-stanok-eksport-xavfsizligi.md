@@ -44,7 +44,10 @@
   - gorizontal aylantirish yo'q;
   - JS xatosi 0.
   - Brauzer to'plamlari (7 qurilma) va node testlari yashil. Bundan mustasno: `verify.mjs` [5] — TZ-02 dagi eski sabab, bu o'zgarishga bog'liq emas.
-- **BPJ tugmasi o'zgartirilmadi** — egasining javobi kutilmoqda.
+- **BPJ (egasi qarori, 2026-10-15):** tugma qoladi, yoniga `SINOV` belgisi qo'yildi, yuklanganda ogohlantirish chiqadi.
+  - Egasi dizayn ulangandan keyin haqiqiy Bazis'da sinab ko'radi.
+  - Cheklov: 117 panelning 31 tasi (26%) joyini 3D modeldan olmaydi — Bazis'da ular noto'g'ri joyda chiqishi mumkin.
+  - Qoida S5 bilan ziddiyat egasiga aytildi; qoidalar fayliga istisno yozish uchun alohida ruxsat kerak.
 
 ## Egasidan kerak
 - **BPJ (Bazis) tugmasi** yashirilsinmi (S5 — tavsiya), yoki qoidadan istisno qilinsinmi?

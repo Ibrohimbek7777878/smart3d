@@ -15,17 +15,17 @@
 
 | № | TZ | Holat | To'siq — kimdan nima kerak |
 |---|---|---|---|
-| 01 | [Stanok eksportlari: noto'g'ri faylni yashirish](01-stanok-eksport-xavfsizligi.md) | **BAJARILDI** 2026-10-15 (BPJ bandidan tashqari) | egasi: BPJ yashirilsinmi (S5) |
+| 01 | [Stanok eksportlari: noto'g'ri faylni yashirish](01-stanok-eksport-xavfsizligi.md) | **BAJARILDI** 2026-10-15 (BPJ — SINOV belgisi bilan qoldi) | — |
 | 02 | [Testlarni tiklash, `/tmp` ga bog'liqlikni yo'qotish](02-testlarni-tiklash.md) | **BAJARILDI** 2026-10-15 | — |
 | 03 | [Xizmatlar avtomatik qo'shilmasin (S3)](03-xizmatlar-S3.md) | **BAJARILDI** 2026-10-15 | — (prisadka tanlanadi, ish haqi avtomatik) |
 | 04 | [Narx ma'lumotlari: egasi uchun jadval + import](04-narx-malumotlari.md) | **BAJARILDI** 2026-10-15 (vosita) | egasi: `Smart3D_malumot/narx-toldirish-2026-10-15.xlsx` ni to'ldiradi |
 | 05 | [83 ta umumiy modul geometriyasi](05-modul-geometriyasi.md) | PAUZA (egasi: "hozircha tegmang") | — |
 | 06 | [Modullarga teshiklar](06-teshiklar.md) | A varianti — tadqiqot boshlandi | egasi A ni tanladi |
-| 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | TASDIQ KUTILMOQDA | egasi: telefon + parol bilan kirish |
+| 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | TASDIQ KUTILMOQDA | egasi tanladi: telefon + SMS kod; SMS provayderi kerak |
 | 08 | [Ekrandagi qoida buzilishlari: logo, oyna, burish](08-ui-qoida-tuzatishlari.md) | QISMAN: oyna ✅, burish ✅, logo — kutilmoqda | egasi: Bittada logo fayli |
 | 09 | [Yangi dizayn](09-dizayn.md) | MA'LUMOT KUTILMOQDA | Claude Design natijasi; tarif, aloqa |
-| 10 | [Deploy va zaxira nusxa](10-deploy-va-zaxira.md) | MA'LUMOT KUTILMOQDA | Q4 (server qayerda), L1 (yurist) |
-| 11 | [Stanok fayllarini haqiqiy stanokka moslash](11-stanok-postprotsessorlar.md) | MA'LUMOT KUTILMOQDA | D7 (serverdan namunalar), Q7 (stanok modellari) |
+| 10 | [Deploy va zaxira nusxa](10-deploy-va-zaxira.md) | MA'LUMOT KUTILMOQDA | server: Bittada (smart3d.bittada.uz) ✅; L1 (yurist) |
+| 11 | [Stanok fayllarini haqiqiy stanokka moslash](11-stanok-postprotsessorlar.md) | MA'LUMOT KUTILMOQDA | stanoklar ✅ (4 tur); D7 namuna fayllar |
 | 12 | [AI: til modeli va ovoz](12-ai-llm.md) | MA'LUMOT KUTILMOQDA | D13 (API kalit), D10 (usta iboralari) |
 | 13 | [Modullar kutubxonasi — 600 ta](13-modullar-kutubxonasi.md) | MA'LUMOT KUTILMOQDA | D8 (Bazis fayllari) |
 

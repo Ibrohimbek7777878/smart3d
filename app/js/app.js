@@ -1146,7 +1146,7 @@ function exportBpj() {
     });
     download(name.replace(/\s+/g, '_') + '.bpj',
       JSON.stringify(bpj, null, 2), 'application/json');
-    toast('BPJ tayyor — ' + bpj.meta.totalPanels + ' panel', 'good');
+    toast('BPJ tayyor — ' + bpj.meta.totalPanels + ' panel — SINOV: Bazis\'da ochib tekshirilmagan', 'warn');   // TZ-01
   } catch (e) {
     console.error('BPJ export xato:', e);
     toast('BPJ xato: ' + e.message, 'bad');

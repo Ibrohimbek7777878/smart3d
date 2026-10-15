@@ -215,3 +215,7 @@ Qaysi bri kere hoz
 73. davom etaver
 
 74. (savollarga javob) BPJ: nega puazda qolgan qilinaidgna va qolgan ishlarn qyatadna shuntirb ber · Xizmatlar: Prisadka tanlanadi, ish haqi o'zi (Tavsiya) · Konstruksiya: Hozircha tegmang · Teshiklar: A — Bazis faylidan o'qish (Tavsiya)
+
+75. qaysilarga meni javobim kere va shularn bitama bita shuanrli qibl sora va savol ber
+
+76. (savollarga javob) BPJ: bu hozir tliq tugaganmi va hozir men senga dizyan bersma va sen dizayn loyhaga moslahstirb keyin menu va sahifalrin qoshib  menga shu tugman chiqabr bera olsanmi va oshanda real ishlatb koramiz hozir sen testlaringda muvafaqiayatli otdimi · Kirish: Telefon + SMS kod · Server: Bittada serveri, smart3d.bittada.uz (Tavsiya) · Stanoklar: Altendorf (formatli arra), Homag / Holzma (arra markazi), Biesse Rover (CNC), Kromka va prisadka stanoklari

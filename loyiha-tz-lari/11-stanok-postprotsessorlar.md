@@ -41,9 +41,15 @@
 - **Moliya:** noto'g'ri kesim — plita isrofi. Shuning uchun bosqichma-bosqich sinov.
 - **Orqaga qaytarish:** har stanok alohida commit.
 
+## Egasining javobi (2026-10-15)
+- **Sexda:** Altendorf (formatli arra), Homag / Holzma (arra markazi), Biesse Rover (CNC), kromka va prisadka stanoklari.
+- **Namunalar:**
+  - Altendorf `.gibcut`, Homag `.LC4`, Rover `.tap` — serverda;
+  - kromka va prisadka — sexdagi kompyuterlarda.
+
 ## Egasidan kerak
 - **D7** — serverdagi namuna fayllar. Server agenti uchun matn tayyor.
-- **Q7** — sexdagi stanoklarning aniq modellari.
+- **Q7** — stanok turlari aytildi (4 tur). Post-protsessor uchun aniq model nomlari ham kerak bo'ladi — namuna fayllarning sarlavhasidan ham aniqlash mumkin.
 - Texnolog bilan sinov kuni.
 
 ## Qabul

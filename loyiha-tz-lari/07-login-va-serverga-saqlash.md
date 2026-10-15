@@ -49,6 +49,12 @@
 - **Moliya:** pul harakati yo'q.
 - **Orqaga qaytarish:** server va sayt alohida commit'larda, `git revert`. localStorage'dagi loyiha ko'chirilgandan keyin ham o'chirilmaydi.
 
+## Egasining qarori (2026-10-15)
+- **Kirish: telefon + SMS kod** (parolsiz). Shuning uchun 2-bandda parol o'rniga bir martalik SMS kod bo'ladi:
+  - 6 xonali kod, 5 daqiqa amal qiladi, urinishlar soni cheklanadi;
+  - SMS provayderi kerak — qaysi biri, egasi aytadi;
+  - provayder kaliti faqat server muhitida saqlanadi.
+
 ## Egasidan kerak
 1. **Telefon + parol bilan kirish** — tasdiqlash. SMS kodi yo'q; kerak bo'lsa — alohida TZ, provayder kerak.
 2. **Q4 — server qayerda turadi?** Deploy uchun, TZ-10.
