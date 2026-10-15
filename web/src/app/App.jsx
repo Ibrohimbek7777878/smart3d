@@ -7,6 +7,7 @@ import { loadData, createHisob } from './bridge/hisob.js';
 import * as L from './bridge/loyiha.js';
 import { createSahna } from './bridge/sahna.js';
 import { ichkiSpec, detalKarta, ichiniKorsaBoladi } from './bridge/ichki.js';
+import { eksport } from './bridge/eksport.js';
 import AiOyna from './modals/AiOyna.jsx';
 import EditorNav from './editor/EditorNav.jsx';
 import Header from './shell/Header.jsx';
@@ -348,6 +349,14 @@ export default class App extends React.Component {
     else this.afterLogin();
   }
 
+  /** eksport konteksti (bridge/eksport.js) */
+  ctx() {
+    const s = this.state;
+    return { doc: this.doc, H: this.H, res: this.res, name: s.projName, matCode: s.matCode, fasadCode: s.fasadCode, sheet: s.sheet,
+      nestCfg: this.H ? this.nestCfg() : {}, sp: this.sahna && this.sahna.sp, toast: t => this.toastMsg(t) };
+  }
+  fayl(k) { if (this.H) eksport[k](this.ctx()); }
+
   /* ── modul kartasi ── */
   setDimP(key, val) {
     const p = this.pl(this.state.sel), frag = this.fr(p); if (!p || !frag) return;
@@ -426,9 +435,16 @@ export default class App extends React.Component {
       ['dobor', 'Dobor', (K.doborH || 60) + ' mm'], ['karniz', 'Karniz', (K.karnizH || 60) + ' mm'],
       ['moyka', 'Moyka', ((K.moyka || {}).size || 500) + ' mm kesim']];
     const pctMarkup = prod ? Math.round((prod.markupPct || 0) * 100) : 0;
-    const fileG = [{ title: 'Mijozga', col: 'var(--cyan)', sub: 'Bittada logosi bilan', mainLabel: '🖨 Hisobot (PDF)', more: ['📸 Rasm', '🔄 360°', 'GLB (3D/AR)'] },
-      { title: 'Sexga', col: 'var(--lav)', sub: (NS.panel_count || 0) + ' detal · ' + (NS.total_sheets || 0) + ' varaq', mainLabel: '📊 Excel smeta', more: ['Detallar (CSV)', 'Loyiha fayli'] },
-      { title: 'Stanokka', col: 'var(--acct)', sub: 'alohida dastursiz', mainLabel: 'GibLab', more: ['DXF', 'G-code', 'Biesse · tez orada', 'Homag · tez orada', 'PTP', 'NC', 'XNC', 'Altendorf', 'Bazis (BPJ) · tez orada'] }];
+    const admin = !!(s.user && s.user.role === 'admin');
+    /* dizayndagi ro'yxat; har yorliq — haqiqiy fayl. Biesse/Homag — TZ-11 gacha yo'q (doim namuna detal chiqaradi, TZ-01);
+       BPJ — TZ-17 gacha faqat admin, SINOV. "Smeta (CSV)", "OBJ", "Teshiklar (JSON)" — eski saytdagi fayllar yo'qolmasin (5-bo'lim) */
+    const fileG = [
+      { title: 'Mijozga', col: 'var(--cyan)', sub: 'Bittada logosi bilan', mainLabel: '🖨 Hisobot (PDF)', main: 'hisobot', more: [['📸 Rasm', 'rasm'], ['🔄 360°', 'panorama'], ['GLB (3D/AR)', 'glb']] },
+      { title: 'Sexga', col: 'var(--lav)', sub: (NS.panel_count || 0) + ' detal · ' + (NS.total_sheets || 0) + ' varaq', mainLabel: '📊 Excel smeta', main: 'excel',
+        more: [['Detallar (CSV)', 'cutlist'], ['Loyiha fayli', 'loyiha'], ['Smeta (CSV)', 'smetaCsv'], ['OBJ', 'obj'], ['Teshiklar (JSON)', 'teshiklar']] },
+      { title: 'Stanokka', col: 'var(--acct)', sub: 'alohida dastursiz', mainLabel: 'GibLab', main: 'giblab',
+        more: [['DXF', 'dxf'], ['G-code', 'gcode'], ['Biesse · tez orada', null], ['Homag · tez orada', null], ['PTP', 'ptp'], ['NC', 'nc'], ['XNC', 'xnc'], ['Altendorf', 'altendorf'],
+          admin ? ['Bazis (BPJ) · SINOV', 'bpj'] : ['Bazis (BPJ) · tez orada', null]] }];
     return {
       hasPending: !!s.pending, pendingText: s.pending ? (s.pending.mod + (s.pending.w ? ' · ' + s.pending.w + ' mm' : '') + ' — ro\'yxatdan keyin loyihangizda turadi') : '',
       isAuth: reg || s.screen === 'login', isReg: reg, regHost: this.regHost, regOv: this.regOv,
@@ -463,7 +479,7 @@ export default class App extends React.Component {
       roomHost: this.roomHost, roomOv: this.roomOv, notLoaded: !this.sahna,
       vw: { b2: s.view === '2d' ? 'var(--acc)' : 'transparent', t2: s.view === '2d' ? 'var(--ink)' : 'var(--txt)', b3: s.view === '3d' ? 'var(--acc)' : 'transparent', t3: s.view === '3d' ? 'var(--ink)' : 'var(--txt)', sb: s.spin ? 'var(--cyan)' : 'rgba(23,50,57,.9)', st: s.spin ? '#06231E' : 'var(--txt)' },
       set2D: () => this.setState({ view: '2d', spin: false }), set3D: () => this.setState({ view: '3d' }), toggleSpin: () => this.setState({ spin: !s.spin, view: '3d' }), center: () => this.sahna && this.sahna.center(),
-      shot: () => this.toastMsg('📸 1080p rasm — 6-bosqichda'),
+      shot: () => this.fayl('rasm'),
       tip: { on: s.screen === 'app' && s.tip < 3, text: S3_TIPS[Math.min(s.tip, 2)], n: Math.min(s.tip, 2) + 1, btn: s.tip >= 2 ? 'Tushunarli' : 'Keyingi' },
       tipNext: () => this.setState({ tip: s.tip + 1 }), tipSkip: () => this.setState({ tip: 3 }),
       hasSel: !!sm, deselect: () => this.select(null),
@@ -516,7 +532,7 @@ export default class App extends React.Component {
         { ok: !sizeWarn, text: sizeWarn ? sizeWarn + ' ta o\'lcham chegaradan tashqari' : 'Hamma o\'lcham modul chegarasida' },
         ...valErr.map(x => ({ ok: false, text: x.message || x.code })),
         ...(missN ? [{ ok: false, text: missN + ' ta zapchastning narxi yo\'q' }] : [])],
-      fileGroups: fileG.map(g => ({ ...g, main: () => this.toastMsg(g.mainLabel + ' — 6-bosqichda'), more: g.more.map(l => { const dis = l.includes('tez orada'); return { label: l, dis, c: dis ? 'var(--mut)' : 'var(--txt)', cur: dis ? 'not-allowed' : 'pointer', go: () => { if (!dis) this.toastMsg(l + ' — 6-bosqichda'); } }; }) })),
+      fileGroups: fileG.map(g => ({ ...g, main: () => this.fayl(g.main), more: g.more.map(([l, k]) => { const dis = !k; return { label: l, dis, c: dis ? 'var(--mut)' : 'var(--txt)', cur: dis ? 'not-allowed' : 'pointer', go: () => { if (k) this.fayl(k); } }; }) })),
       insOpen: !!s.ins && !!insSpec, insHost: this.insHost, insOv: this.insOv, closeInside: () => this.setState({ ins: null }),
       ins: insSpec && insP ? { name: insP.name || (this.fr(insP) || {}).name, code: insP.frg, size: insP.w + '×' + insP.d + '×' + insP.h + ' mm', hasNote: false, note: '', detal: insSpec.stats.detal, zap: insSpec.stats.zap, list: insSpec.list, hw: insSpec.hwList, ex: s.insA.ex,
         cB: s.insA.color ? 'var(--acc)' : 'transparent', cT: s.insA.color ? 'var(--ink)' : 'var(--mut)', pB: s.insA.color ? 'transparent' : 'var(--sfc)', pT: s.insA.color ? 'var(--mut)' : 'var(--txt)' } : { list: [], hw: [] },
