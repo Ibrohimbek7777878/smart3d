@@ -36,6 +36,7 @@ export function attachControls(sp, opts = {}) {
   orbit.minDistance = 500;
   orbit.maxDistance = 60000;
   orbit.enabled = false;                       // 2Dda o'chiq
+  if (sp.theme && sp.theme.orbit) Object.assign(orbit, sp.theme.orbit);   // TZ-09: mavzu (masofa, burchak chegarasi)
   sp._controls = orbit;
 
   /* ── 2D: sichqoncha va barmoq (TZ-SAYT-BARQARORLIK-RESPONSIVE §4.2) ──
@@ -131,7 +132,8 @@ export function attachControls(sp, opts = {}) {
   sp.on('toggle', () => {
     orbit.enabled = sp.mode === '3d';
     if (sp.mode === '3d') {
-      orbit.target.set(sp.bbox.cx, sp.bbox.cy, 0);
+      const t = sp.camTarget ? sp.camTarget() : [sp.bbox.cx, sp.bbox.cy, 0];   // TZ-09: mavzu o'z markazini beradi
+      orbit.target.set(t[0], t[1], t[2]);
       orbit.update();
       sp._startLoop();                       // damping uchun doimiy sikl
     } else {

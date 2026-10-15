@@ -15,7 +15,7 @@ export default function QadamMebel({ v }) {
                         </h2>
                       </div>
                       <span style={{"fontSize":"13px","color":"var(--mut)","fontWeight":"700"}}>
-                        {"121 ta modul"}
+                        {v.catCount}
                       </span>
                     </div>
                     <input value={v.q} onChange={v.onQ} placeholder="shkaf 2 eshik…" style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","height":"48px","background":"var(--sfc)","flex":"0 0 auto"}} />

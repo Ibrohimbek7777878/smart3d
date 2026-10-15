@@ -45,6 +45,7 @@ const SEL_COLOR = 0xd97706; // tanlanganlik sarg'ish-oltin
 export function makeItemMesh(THREE, frag, w, d, h, opts = {}) {
   const group = new THREE.Group();
   const asm = getModulePanels(frag, w, d, h, opts);
+  if (opts.theme) return themedMesh(THREE, frag, w, d, h, asm, opts.theme, group);
 
   // Ranglar
   const carcassColor = (frag && CATEGORY_COLOR[frag.category]) || 0xd9c9a8;
@@ -141,4 +142,67 @@ export function setSelected(mesh, THREE, isSelected) {
 export function itemMaterial(THREE, category, selected = false) {
   const color = selected ? SEL_COLOR : (CATEGORY_COLOR[category] || CATEGORY_COLOR.other);
   return new THREE.MeshLambertMaterial({ color });
+}
+/* ── TZ-09: dizayn mavzusi (yangi frontend) ─────────────────────────────────────────────────
+ * Materiallar mavzudan keladi (dizayndagi s3Mats: LDSP korpus, yog'och/oq fasad, HDF, tosh, qora, metall).
+ * Qirra chiziqlari yo'q (dizayn). Eshiklar petlya atrofida aylanadigan "pivot" ichida —
+ * group.userData.movers: [{ obj, type:'door', sign }] (items.js ochadi/yopadi).
+ * Har panel mesh'ida userData.part — detal kartasi uchun (nom, o'lcham, slot).
+ * theme: { mat(kind) → Material, ustki(frag) → bool, glass(frag) → bool } */
+function themedMesh(THREE, frag, w, d, h, asm, theme, group) {
+  const ustki = theme.ustki ? theme.ustki(frag) : false;
+  const glass = theme.glass ? theme.glass(frag) : false;
+  const code = frag ? frag.code : '';
+  const kind = frag && frag.category === 'countertop'
+    ? (code === 'SP-ST-002' ? 'dark' : 'stone')                 // sokol — qora, stoleshnitsa/dobor/karniz — tosh
+    : null;
+  const mats = {
+    korpus: theme.mat(kind || (frag && frag.category === 'appliance' ? 'appliance' : 'ldsp')),
+    fasad: theme.mat(kind || (glass ? 'glass' : ustki ? 'white' : 'wood')),
+    orqa: theme.mat('hdf'),
+    handle: theme.mat('handle')
+  };
+  const hitGeo = new THREE.BoxGeometry(w, d, h);
+  const hitMesh = new THREE.Mesh(hitGeo, new THREE.MeshBasicMaterial({ visible: false }));
+  hitMesh.userData = { kind: 'hitBox' };
+  group.add(hitMesh);
+  const movers = [];
+  for (const p of asm.panels) {
+    const mat = p.slot === 'fasad' ? mats.fasad : p.slot === 'orqa' ? mats.orqa : mats.korpus;
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(p.w, p.d, p.h), mat);
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    mesh.userData = { panelId: p.id, name: p.name, slot: p.slot, part: { id: p.id, name: p.name, slot: p.slot, size: [p.w, p.d, p.h] } };
+    let parent = group, ox = 0;
+    if (p.isDoor && p.hingeSide) {
+      /* petlya cheti — eshik shu nuqta atrofida aylanadi (old tomonga ochiladi) */
+      const sign = p.hingeSide === 'right' ? -1 : 1;
+      const pivot = new THREE.Group();
+      ox = p.x - sign * p.w / 2;
+      pivot.position.set(ox, p.y, p.z);
+      group.add(pivot);
+      parent = pivot;
+      movers.push({ obj: pivot, type: 'door', sign, key: p.id });
+      mesh.position.set(p.x - ox, 0, 0);
+      if (p.handle) {
+        const hm = new THREE.Mesh(new THREE.BoxGeometry(p.handle.w, p.handle.d, p.handle.h), mats.handle);
+        hm.position.set(p.handle.x - ox, p.handle.y - p.y, p.handle.z - p.z);
+        hm.userData = { part: mesh.userData.part };
+        pivot.add(hm);
+      }
+      mesh.userData.mover = p.id;
+    } else {
+      mesh.position.set(p.x, p.y, p.z);
+      if (p.handle) {
+        const hm = new THREE.Mesh(new THREE.BoxGeometry(p.handle.w, p.handle.d, p.handle.h), mats.handle);
+        hm.position.set(p.handle.x, p.handle.y, p.handle.z);
+        group.add(hm);
+      }
+    }
+    parent.add(mesh);
+  }
+  group.userData = {
+    kind: 'item', code, name: frag ? frag.name : '', category: frag ? frag.category : 'other',
+    w, d, h, panelsCount: asm.panels.length, doorsCount: asm.doors.length, movers, themed: true
+  };
+  return group;
 }

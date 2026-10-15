@@ -9,6 +9,12 @@ out = sys.argv[1]
 KUTILGAN = {
     '1-royxat': 'Q2: Email maydoni (email + parol bilan kirish)',
     '2-kirish': 'Q2: Telefon o\'rniga Email',
+    # TZ-09 §9: ma'lumotli ekranlar — haqiqiy loyiha, hisob va 3D (bizning sahna); joylashuv/uslub yonma-yon solishtiriladi
+    '5-mebel': 'haqiqiy katalog (121) va 3D sahna',
+    '6-xona': 'haqiqiy xona va oshxona elementlari',
+    '7-narx': 'haqiqiy hisob (kotirovka, tannarx, raskroy)',
+    '8-fayllar': 'haqiqiy tekshiruv natijasi',
+    '9-loyihalar': 'haqiqiy loyihalar ro\'yxati (serverdan)',
 }
 limit = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
 masks = {}

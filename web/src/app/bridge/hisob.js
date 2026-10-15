@@ -6,16 +6,18 @@
  * Ikkalasi bir xil natija berishi brauzer testi bilan tekshiriladi: tests/ui/hisob_teng.mjs.
  *
  * Yo'llar NISBIY (alias emas): modul Vite'da ham, eski sayt sahifasida ham, Node testida ham bir xil yuklanadi.
- * price.js — UMD: brauzerda self.SpPrice ga yoziladi; Node testi globalThis.SpPrice ni o'zi qo'yadi. */
+ * price.js — UMD: quyidagi SpPrice() izohiga qarang. */
 import { validateDoc } from '../../../../app/js/engine/rules.js';
 import { deriveKitchen, moykaHole } from '../../../../app/js/engine/kitchen.js';
 import { cutlist, productionCost } from '../../../../app/js/engine/cutlist.js';
 import { nestProject } from '../../../../app/js/engine/nesting.js';
 import { applySexStandart } from '../../../../app/js/engine/standart.js';
 import { buildSearchIndex } from '../../../../app/js/engine/search.js';
-import '../../../../app/js/engine/price.js';
+import * as PriceMod from '../../../../app/js/engine/price.js';
 
-const SpPrice = () => globalThis.SpPrice;
+/* price.js — UMD. Brauzerda (dev, eski sayt sahifasi) o'zi globalThis.SpPrice ga yoziladi; Vite build'i esa
+   uni CommonJS deb o'qiydi (module.exports shoxobchasi) — u holda modulning default eksporti. Ikkalasi ham bir xil API. */
+const SpPrice = () => globalThis.SpPrice || (PriceMod && (PriceMod.default || PriceMod.SpPrice)) || PriceMod;
 
 /** Ma'lumot fayllari — eski boot() dagi ro'yxat va tartib bilan bir xil. */
 export const DATA_FILES = {

@@ -22,7 +22,7 @@ export default function QadamNarx({ v }) {
                           <span className="sc-interp">{v.price?.total}</span>
                         </span>
                         <span style={{"fontSize":"12px","fontWeight":"700"}}>
-                          {"so'm *"}
+                          {v.price?.som}
                         </span>
                       </div>
                       <div style={{"borderRadius":"18px","padding":"14px","background":"var(--sfc)","border":"1px solid var(--line)","display":"flex","flexDirection":"column","gap":"2px"}}>
@@ -38,7 +38,7 @@ export default function QadamNarx({ v }) {
                       </div>
                       <div style={{"borderRadius":"18px","padding":"14px","background":"var(--sfc)","border":"1px solid var(--line)","display":"flex","flexDirection":"column","gap":"2px"}}>
                         <span style={{"fontSize":"12px","fontWeight":"800","color":"var(--mut)"}}>
-                          {"Foyda (+35%)"}
+                          {v.markupLabel}
                         </span>
                         <span style={{"fontSize":"19px","fontWeight":"800","fontVariantNumeric":"tabular-nums","lineHeight":"1.15","color":"var(--cyan)"}}>
                           <span className="sc-interp">{v.price?.profit}</span>
@@ -48,9 +48,10 @@ export default function QadamNarx({ v }) {
                         </span>
                       </div>
                     </div>
+                    {v.hasMissing ? (<>
                     <div style={{"borderRadius":"16px","background":"rgba(255,123,123,.10)","border":"1px solid rgba(255,123,123,.38)"}}>
                       <button onClick={v.toggleMissing} style={{"width":"100%","minHeight":"48px","display":"flex","justifyContent":"space-between","alignItems":"center","gap":"8px","padding":"10px 14px","background":"none","border":"0","color":"var(--danger)","fontWeight":"800","fontSize":"14px","cursor":"pointer","textAlign":"left"}}>
-                        {"⚠️ 12 ta zapchastning narxi bazada yo'q — 0 deb olindi"}
+                        {v.missText}
                         <span>
                           <span className="sc-interp">{v.missArrow}</span>
                         </span>
@@ -70,6 +71,7 @@ export default function QadamNarx({ v }) {
                         </div>
                       </>) : null}
                     </div>
+                    </>) : null}
                     <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"4px 16px 8px"}}>
                       <div style={{"display":"flex","justifyContent":"space-between","padding":"12px 0 6px"}}>
                         <span style={{"fontWeight":"800"}}>
@@ -129,7 +131,7 @@ export default function QadamNarx({ v }) {
                           </button>
                         </div>
                       </div>
-                      <div style={{"position":"relative","width":"100%","aspectRatio":"2800/2070","borderRadius":"8px","background":"repeating-linear-gradient(135deg,#2A4D57 0 6px,#244550 6px 12px)","border":"1px solid var(--line)","overflow":"hidden"}}>
+                      <div style={{"position":"relative","width":"100%","aspectRatio":v.rk?.ar,"borderRadius":"8px","background":"repeating-linear-gradient(135deg,#2A4D57 0 6px,#244550 6px 12px)","border":"1px solid var(--line)","overflow":"hidden"}}>
                         {(v.rk?.rects || []).map((r, $index) => (<React.Fragment key={$index}>
                           <div style={{"position":"absolute","left":r?.l,"top":r?.t,"width":r?.w,"height":r?.h,"background":r?.c,"borderRadius":"2px","opacity":".92"}}></div>
                         </React.Fragment>))}
@@ -141,7 +143,7 @@ export default function QadamNarx({ v }) {
                       </div>
                       <div style={{"display":"flex","justifyContent":"space-between","alignItems":"center","gap":"8px","flexWrap":"wrap"}}>
                         <span style={{"fontWeight":"800","color":"var(--acct)","fontVariantNumeric":"tabular-nums"}}>
-                          {"6 varaq · 82 detal · isrof 9%"}
+                          {v.rk?.summary}
                         </span>
                         <button onClick={v.openParams} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)"}}>
                           {"⚙️ Parametrlar"}

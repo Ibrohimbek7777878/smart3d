@@ -29,10 +29,32 @@ function smart3dData() {
   };
 }
 
+/* TZ-09: engine/price.js — UMD (brauzerda self.SpPrice, Node'da module.exports). Vite build'i uni CommonJS o'ramiga
+   oladi va API global'ga yetmaydi. Shu sababli build'da u ESM ko'rinishida beriladi: fayl O'ZGARMAYDI, o'qib o'raladi —
+   API default eksport va self.SpPrice (eski kod global'dan o'qiydi). */
+function smart3dPrice() {
+  const PRICE = r('../app/js/engine/price.js');
+  return {
+    name: 'smart3d-price', enforce: 'pre',
+    async resolveId(id, importer) {
+      if (!/engine\/price\.js$/.test(id)) return null;
+      const res = await this.resolve(id, importer, { skipSelf: true });
+      return res && path.resolve(res.id) === PRICE ? '\0smart3d-price' : null;
+    },
+    load(id) {
+      if (id !== '\0smart3d-price') return null;
+      const src = fs.readFileSync(PRICE, 'utf8');
+      return 'const m = { exports: {} };\n(function (module, exports) {\n' + src + '\n}).call({}, m, m.exports);\n' +
+        'const api = m.exports;\nif (typeof self !== "undefined" && !self.SpPrice) self.SpPrice = api;\nexport default api;\n';
+    }
+  };
+}
+
 // 2 sahifa: / (sayt) va /app.html (ilova)
 export default defineConfig({
   plugins: [
     react(),
+    smart3dPrice(),
     smart3dData(),
     /* internetsiz ishlash: sahifa, kod, shrift va ma'lumot oldindan keshlanadi; /api — doim tarmoqdan */
     VitePWA({

@@ -131,6 +131,24 @@ test('loyihalar: yaratish, ro\'yxat, ochish, yangilash; boshqa usta ko\'rmaydi; 
   assert.equal((await api('/api/projects/' + id, { token: A.token })).status, 404);
 });
 
+test('TZ-09: loyiha kartasi — mijoz ismi saqlanadi, ro\'yxatda modul soni', async () => {
+  const { token } = await login('+998 99 777 66 55', 'Karta Usta');
+  const body = { name: 'Oshxona-Aziza', client: 'Aziza Karimova', total_price: 5701103, doc: DOC('K') };
+  const c = await api('/api/projects', { method: 'POST', token, body });
+  assert.equal(c.status, 200);
+  const { id } = await c.json();
+  let list = await (await api('/api/projects', { token })).json();
+  let it = list.find(p => p.id === id);
+  assert.deepEqual([it.name, it.client, it.modules], ['Oshxona-Aziza', 'Aziza Karimova', 1]);
+  const one = await (await api('/api/projects/' + id, { token })).json();
+  assert.equal(one.client, 'Aziza Karimova');
+  await api('/api/projects/' + id, { method: 'PUT', token, body: { ...body, client: 'Boshqa Mijoz' } });
+  list = await (await api('/api/projects', { token })).json();
+  assert.equal(list.find(p => p.id === id).client, 'Boshqa Mijoz');
+  const bad = await api('/api/projects', { method: 'POST', token, body: { ...body, client: '<b>x</b>' } });
+  assert.equal(bad.status, 400, 'mijoz nomida HTML rad etiladi');
+});
+
 test('loyiha: tokensiz 401, buzilgan doc 400', async () => {
   assert.equal((await api('/api/projects')).status, 401);
   const A = await login('998991110003');

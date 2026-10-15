@@ -34,11 +34,11 @@ export default function Header({ v }) {
                   <button onClick={v.goStep3} style={{"height":"44px","padding":"0 14px","borderRadius":"999px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"15px","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","fontVariantNumeric":"tabular-nums","whiteSpace":"nowrap"}}>
                     <span className="sc-interp">{v.price?.total}</span>{" so'm"}
                     <span style={{"fontSize":"13px"}}>
-                      {"*"}
+                      {v.price?.star}
                     </span>
                   </button>
                   <span data-hide-m="" style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"700","whiteSpace":"nowrap"}}>
-                    {"* to'liq emas"}
+                    {v.price?.note}
                   </span>
                 </>) : null}
                 <button onClick={v.langToast} aria-label="Til" data-hide-m="" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto"}}>

@@ -115,6 +115,7 @@ function addColumn(table, col, def) {
   if (!db.prepare(`PRAGMA table_info(${table})`).all().some(c => c.name === col)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`);
 }
 addColumn('users', 'shop', "TEXT DEFAULT ''");   // ro'yxatdagi "Sex nomi" (ixtiyoriy)
+addColumn('projects', 'client', "TEXT DEFAULT ''");   // loyiha kartasidagi mijoz ismi (dizayn: "Loyihalarim")
 /* S1: bitta raqam — bitta akkaunt (oxirgi 9 raqam bo'yicha). Eski bazada takror bo'lsa — kodda ham tekshiriladi */
 try { db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_phone9 ON users(substr(phone, -9)) WHERE phone <> ''"); }
 catch (e) { console.warn('DIQQAT: telefon noyob indeksi yaratilmadi (bazada takror raqam bor):', e.message); }
@@ -368,31 +369,34 @@ function projectPayload(b) {
   if (inner.placements.length > 500) bad('placements juda ko\'p (max 500)');
   return {
     name: plainText(b.name, 'nom', { max: 200 }) || 'Loyiha',
+    client: plainText(b.client, 'mijoz', { max: 200 }),
     doc_json: JSON.stringify(doc),
     total_price: Math.round(num(b.total_price, 'total_price', { min: 0, max: 1e13 }) || 0)
   };
 }
 app.get('/api/projects', auth, (req, res) => {
-  res.json(db.prepare('SELECT id, name, total_price, created_at, updated_at FROM projects WHERE user_id = ? AND archived = 0 ORDER BY updated_at DESC, id DESC')
-    .all(req.user.id));
+  /* TZ-09: kartada mijoz va modul soni (saqlangan loyihadan; eski yozuvlarda mijoz bo'sh) */
+  res.json(db.prepare(`SELECT id, name, client, total_price, created_at, updated_at,
+      COALESCE(json_array_length(doc_json, '$.doc.placements'), json_array_length(doc_json, '$.placements'), 0) AS modules
+    FROM projects WHERE user_id = ? AND archived = 0 ORDER BY updated_at DESC, id DESC`).all(req.user.id));
 });
 app.post('/api/projects', auth, (req, res) => {
   const v = projectPayload(req.body || {});
-  const r = db.prepare('INSERT INTO projects (user_id, name, doc_json, total_price) VALUES (?, ?, ?, ?)')
-    .run(req.user.id, v.name, v.doc_json, v.total_price);
+  const r = db.prepare('INSERT INTO projects (user_id, name, client, doc_json, total_price) VALUES (?, ?, ?, ?, ?)')
+    .run(req.user.id, v.name, v.client, v.doc_json, v.total_price);
   res.json({ id: Number(r.lastInsertRowid), ok: true });
 });
 app.get('/api/projects/:id', auth, (req, res) => {
   const pr = db.prepare('SELECT * FROM projects WHERE id = ? AND user_id = ? AND archived = 0').get(req.params.id, req.user.id);
   if (!pr) return res.status(404).json({ error: 'Topilmadi' });
-  res.json({ id: pr.id, name: pr.name, total_price: pr.total_price, updated_at: pr.updated_at, doc: JSON.parse(pr.doc_json) });
+  res.json({ id: pr.id, name: pr.name, client: pr.client || '', total_price: pr.total_price, updated_at: pr.updated_at, doc: JSON.parse(pr.doc_json) });
 });
 app.put('/api/projects/:id', auth, (req, res) => {
   const pr = db.prepare('SELECT id FROM projects WHERE id = ? AND user_id = ? AND archived = 0').get(req.params.id, req.user.id);
   if (!pr) return res.status(404).json({ error: 'Topilmadi' });
   const v = projectPayload(req.body || {});
-  db.prepare('UPDATE projects SET name = ?, doc_json = ?, total_price = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
-    .run(v.name, v.doc_json, v.total_price, pr.id);
+  db.prepare('UPDATE projects SET name = ?, client = ?, doc_json = ?, total_price = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+    .run(v.name, v.client, v.doc_json, v.total_price, pr.id);
   res.json({ ok: true });
 });
 app.delete('/api/projects/:id', auth, (req, res) => {

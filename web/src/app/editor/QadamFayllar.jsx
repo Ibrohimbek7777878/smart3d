@@ -17,24 +17,23 @@ export default function QadamFayllar({ v }) {
                       <span style={{"fontWeight":"800"}}>
                         {"Tekshiruv"}
                       </span>
-                      <span style={{"display":"flex","gap":"10px","fontSize":"14px"}}>
-                        <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
-                          {"✓"}
-                        </span>
-                        {"82 detal 6 varaqqa sig'di"}
-                      </span>
-                      <span style={{"display":"flex","gap":"10px","fontSize":"14px"}}>
-                        <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
-                          {"✓"}
-                        </span>
-                        {"Hamma o'lcham modul chegarasida"}
-                      </span>
-                      <span style={{"display":"flex","gap":"10px","fontSize":"14px","color":"var(--danger)"}}>
-                        <span style={{"fontWeight":"800"}}>
-                          {"⚠️"}
-                        </span>
-                        {"12 ta zapchastning narxi yo'q"}
-                      </span>
+                      {(v.checks || []).map((k, $index) => (<React.Fragment key={$index}>
+                        {k?.ok ? (<>
+                          <span style={{"display":"flex","gap":"10px","fontSize":"14px"}}>
+                            <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
+                              {"✓"}
+                            </span>
+                            {k?.text}
+                          </span>
+                        </>) : (<>
+                          <span style={{"display":"flex","gap":"10px","fontSize":"14px","color":"var(--danger)"}}>
+                            <span style={{"fontWeight":"800"}}>
+                              {"⚠️"}
+                            </span>
+                            {k?.text}
+                          </span>
+                        </>)}
+                      </React.Fragment>))}
                     </div>
                     {(v.fileGroups || []).map((g, $index) => (<React.Fragment key={$index}>
                       <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexDirection":"column","gap":"12px","padding":"18px"}}>

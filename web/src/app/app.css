@@ -30,3 +30,10 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 .h3:hover{color:var(--txt) !important;background:var(--sfc) !important}
 .h4:hover{color:var(--txt) !important;background:var(--sfc) !important}
 .h5:hover{border-color:var(--acc) !important;transform:translateX(2px) !important}
+
+/* TZ-09: dizaynda yo'q qism — mebelni burish dastagi (2D, TZ-08, items.js). Dizayn tokenlari: 44px tugma, --sfc fon,
+   --acc urg'u (dizayndagi dumaloq tugmalar uslubida). Egasi skrinshot bilan tasdiqlaydi (qoida 3.3). */
+.rot-handle{width:44px;height:44px;border-radius:999px;display:grid;place-items:center;background:var(--sfc,#173239);
+  border:2px solid var(--acc,#FF7A45);color:var(--acc,#FF7A45);font-size:20px;line-height:1;font-weight:800;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:auto;touch-action:none;cursor:grab;user-select:none}
+.rot-handle.is-active{cursor:grabbing;background:var(--acc,#FF7A45);color:var(--ink,#2A1206)}

@@ -38,6 +38,12 @@ function placeMesh(mesh, x, y) {
 
 export function createItems(sp, opts = {}) {
   const group = sp.groups.items;
+  /* TZ-09: dizayn mavzusi (yangi frontend) — opts.theme bo'lsa: mavzu materiallari, to'q sariq tanlov ramkasi,
+     cyan o'lcham yorliqlari, eshik ochilishi, detal tanlash. Berilmasa — hammasi avvalgidek. */
+  const TH = opts.theme || null;
+  const open = {};                    // 'modulId:eshikId' → 1 (ochiq)
+  const openV = {};                   // joriy ochilish 0..1 (silliq)
+  let focus = null;                   // { id, part } — detal kartasi
   let catalog = {};
   let selectedId = null;
   const meshes = [];
@@ -53,6 +59,7 @@ export function createItems(sp, opts = {}) {
           if (Array.isArray(child.material)) child.material.forEach(mat => mat.dispose());
           else child.material.dispose();
         }
+        if (child.element && child.element.remove) child.element.remove();   // TZ-09: CSS2D yorliq (tanlov o'lchami)
       });
     }
     meshes.length = 0;
@@ -62,7 +69,7 @@ export function createItems(sp, opts = {}) {
       if (!frag) continue;
       const w = +p.w || +frag.w, d = +p.d || +frag.d, h = +p.h || +frag.h;
       const rot = ((+p.rot || 0) % 360 + 360) % 360;
-      const mesh = makeItemMesh(THREE, frag, w, d, h);
+      const mesh = makeItemMesh(THREE, frag, w, d, h, TH ? { theme: TH } : {});
 
       // Agar oddiy mesh bo'lsa geometriyani siljitadi (Group allaqachon markazlashgan)
       if (mesh.geometry && mesh.geometry.translate) {
@@ -92,10 +99,11 @@ export function createItems(sp, opts = {}) {
         mesh.add(sink);
       }
 
-      if (p.id === selectedId) applySel(mesh, true);
+      if (p.id === selectedId) (TH ? themeSel(mesh, true) : applySel(mesh, true));
       group.add(mesh);
       meshes.push(mesh);
     }
+    if (TH) { applyMovers(true); applyFocus(); }
     updateHandle();
     sp._invalidate();
   }
@@ -103,7 +111,8 @@ export function createItems(sp, opts = {}) {
   /** source: 'scene' — foydalanuvchi sahnada bosdi; aks holda dasturdan (katalog, nusxa…) */
   function select(id, source) {
     selectedId = id;
-    for (const m of meshes) applySel(m, m.userData.id === id);
+    if (TH && focus && focus.id !== id) { focus = null; applyFocus(); }
+    for (const m of meshes) (TH ? themeSel(m, m.userData.id === id) : applySel(m, m.userData.id === id));
     updateHandle();
     sp._invalidate();
     opts.onSelect && opts.onSelect(id, meshes.find(m => m.userData.id === id) || null, source);
@@ -171,7 +180,8 @@ export function createItems(sp, opts = {}) {
   }
   function onUp(e) {
     if (tap && e.isPrimary && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) < TAP_PX) {
-      if (tap.id === null) { if (selectedId !== null) select(null, 'scene'); }
+      if (TH && opts.onTap && sp.mode !== '2d') { const h = pickPart(e); opts.onTap(h ? h.id : null, h ? h.part : null); }
+      else if (tap.id === null) { if (selectedId !== null) select(null, 'scene'); }
       else if (sp.mode !== '2d') select(tap.id, 'scene');
     }
     tap = null; drag = null;
@@ -260,7 +270,97 @@ export function createItems(sp, opts = {}) {
   el.addEventListener('pointerup', onUp);
   el.addEventListener('pointercancel', onUp);
 
+  /* ── TZ-09 mavzu: tanlov ramkasi va o'lcham yorliqlari (dizayn: Box3Helper 0xFF7A45 + cyan yorliq) ── */
+  function dimLabel(text) {
+    const el = document.createElement('div');
+    el.textContent = text;
+    el.style.cssText = 'pointer-events:none;font-size:13px;font-weight:700;color:#5FE1C4;padding:3px 8px;border-radius:8px;' +
+      'background:rgba(15,34,41,.85);border:1px solid rgba(95,225,196,.35);font-variant-numeric:tabular-nums;white-space:nowrap';
+    return new CSS2DObject(el);
+  }
+  function themeSel(mesh, on) {
+    const u = mesh.userData;
+    if (u.selBox) {
+      mesh.remove(u.selBox);
+      u.selBox.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); if (o.element) o.element.remove(); });
+      u.selBox = null;
+    }
+    if (!on) return;
+    const g = new THREE.Group();
+    const box = new THREE.Box3(new THREE.Vector3(-u.w / 2 - 6, -u.d / 2 - 6, -u.h / 2 - 6), new THREE.Vector3(u.w / 2 + 6, u.d / 2 + 30, u.h / 2 + 6));
+    g.add(new THREE.Box3Helper(box, 0xFF7A45));
+    const W = dimLabel(Math.round(u.w) + ''); W.position.set(0, u.d / 2 + 40, -u.h / 2 - 40); g.add(W);
+    const H = dimLabel(Math.round(u.h) + ''); H.position.set(u.w / 2 + 60, u.d / 2 + 20, 0); g.add(H);
+    const D = dimLabel(Math.round(u.d) + ''); D.position.set(u.w / 2 + 60, 0, -u.h / 2 - 20); g.add(D);
+    mesh.add(g);
+    u.selBox = g;
+  }
+
+  /* ── eshik ochilishi (dizayn: silliq 1-exp(-dt*6), maksimal 1.75 rad) ── */
+  let animating = false, lastT = 0;
+  function applyMovers(instant) {
+    let busy = false;
+    const now = performance.now(), dt = Math.min(0.05, (now - (lastT || now)) / 1000); lastT = now;
+    const k = instant ? 1 : 1 - Math.exp(-dt * 6);
+    for (const m of meshes) {
+      for (const mv of (m.userData.movers || [])) {
+        const key = m.userData.id + ':' + mv.key;
+        const t = open[key] ? 1 : 0, c = openV[key] || 0;
+        const n = Math.abs(t - c) < 0.001 ? t : c + (t - c) * k;
+        openV[key] = n;
+        if (n !== t) busy = true;
+        if (mv.type === 'door') mv.obj.rotation.z = mv.sign * n * 1.75;
+      }
+    }
+    return busy;
+  }
+  if (TH) sp.on('frame', () => { if (animating) { animating = applyMovers(false); sp._invalidate(); } });
+  function kick() { lastT = performance.now(); animating = true; if (sp.mode === '3d') sp._startLoop(); else { applyMovers(true); sp._invalidate(); } }
+  /** modul eshiklari kalitlari (ochish/yopish uchun) */
+  function moverKeys(id) {
+    const out = [];
+    for (const m of meshes) if (id == null || m.userData.id === id) for (const mv of (m.userData.movers || [])) out.push(m.userData.id + ':' + mv.key);
+    return out;
+  }
+  function setOpen(keys, on) { for (const k of keys) { if (on) open[k] = 1; else delete open[k]; } kick(); }
+
+  /* ── detal tanlash: bosilgan panel (ochilgan eshik ham) ── */
+  function pickPart(e) {
+    const rect = sp.renderer.domElement.getBoundingClientRect();
+    ptr.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    ptr.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    ray.setFromCamera(ptr, sp.camera);
+    const hits = ray.intersectObjects(meshes.filter(m => !(m.userData && m.userData.auto)), true)
+      .filter(h => h.object.visible && !(h.object.userData && h.object.userData.kind === 'hitBox'));
+    let hit = hits[0];
+    if (focus) { const vis = hits.find(h => !(h.object.material && h.object.material.transparent && h.object.material.opacity < 0.5)); if (vis) hit = vis; }
+    if (!hit) return null;
+    let obj = hit.object, part = null;
+    while (obj && !meshes.includes(obj)) { if (!part && obj.userData && obj.userData.part) part = obj.userData.part; obj = obj.parent; }
+    if (!obj) return null;
+    const pid = part && part.id;
+    const mv = (obj.userData.movers || []).find(x => x.key === pid);
+    return { id: obj.userData.id, part: part ? Object.assign({}, part, mv ? { key: obj.userData.id + ':' + mv.key } : {}) : null };
+  }
+  /** detal fokus: qolganlari shaffof (0.14), tanlangani yoritiladi (dizayn) */
+  function applyFocus() {
+    for (const m of meshes) m.traverse(o => {
+      if (!o.isMesh || (o.userData && o.userData.kind === 'hitBox') || !o.material || o.material.isMeshBasicMaterial) return;
+      const mat = o.material;
+      if (mat.userData.base === undefined) mat.userData.base = { opacity: mat.opacity, transparent: mat.transparent, depthWrite: mat.depthWrite };
+      const mine = focus && m.userData.id === focus.id && o.userData.part && o.userData.part.id === focus.part;
+      if (focus && !mine) { mat.transparent = true; mat.opacity = 0.14; mat.depthWrite = false; }
+      else { const b = mat.userData.base; mat.transparent = b.transparent; mat.opacity = b.opacity; mat.depthWrite = b.depthWrite; }
+      if (mat.emissive) { mat.emissive.setHex(mine ? 0x8a3000 : 0x000000); mat.emissiveIntensity = mine ? 0.35 : 1; }
+      mat.needsUpdate = true;
+    });
+    sp._invalidate();
+  }
+
   return {
+    /* TZ-09 mavzu API */
+    moverKeys, setOpen, isOpen: (k) => !!open[k],
+    setFocus(id, partId) { focus = id && partId ? { id, part: partId } : null; applyFocus(); },
     setPlacements, select, getSelected, meshes,
     /** Ekran nuqtasida mebel bormi (controls.js: bo'sh joy = pan) */
     hitTest: (e) => !!pick(e),
