@@ -88,6 +88,24 @@ test('email bilan ro\'yxat: telefon S1 formatiga keltiriladi, takror raqam — 4
   assert.equal(ok.status, 200);
 });
 
+test('TZ-09: email + parol bilan ro\'yxat va kirish — ism, telefon (S1), sex nomi saqlanadi; /api/me ham qaytaradi', async () => {
+  const r = await api('/api/register', { method: 'POST', body: { email: 'usta.tz09@test.uz', password: 'parol12345', name: 'Jasur', phone: '+998 97 555 44 33', shop: 'Mebel-Pro' } });
+  assert.equal(r.status, 200);
+  const j = await r.json();
+  assert.equal(j.user.phone, '998975554433');
+  assert.equal(j.user.shop, 'Mebel-Pro');
+  const l = await api('/api/login', { method: 'POST', body: { email: 'USTA.tz09@test.uz', password: 'parol12345' } });
+  assert.equal(l.status, 200);
+  const lj = await l.json();
+  assert.deepEqual([lj.user.name, lj.user.phone, lj.user.shop], ['Jasur', '998975554433', 'Mebel-Pro']);
+  const me = await (await api('/api/me', { token: lj.token })).json();
+  assert.deepEqual([me.email, me.phone, me.shop], ['usta.tz09@test.uz', '998975554433', 'Mebel-Pro']);
+  const bad = await api('/api/login', { method: 'POST', body: { email: 'usta.tz09@test.uz', password: 'notogri-parol' } });
+  assert.equal(bad.status, 401);
+  const html = await api('/api/register', { method: 'POST', body: { email: 'x.tz09@test.uz', password: 'parol12345', shop: '<b>x</b>' } });
+  assert.equal(html.status, 400, 'sex nomida HTML rad etiladi');
+});
+
 test('loyihalar: yaratish, ro\'yxat, ochish, yangilash; boshqa usta ko\'rmaydi; o\'chirish — yashirish', async () => {
   const A = await login('998991110001', 'A');
   const B = await login('998991110002', 'B');

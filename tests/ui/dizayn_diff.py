@@ -5,6 +5,11 @@ import json, os, sys
 from PIL import Image, ImageChops, ImageDraw
 
 out = sys.argv[1]
+# Egasi qarori bilan dizayndan ATAYLAB farq qiladigan ekranlar (TZ-09). Farq ko'rsatiladi, yonma-yon rasm olinadi.
+KUTILGAN = {
+    '1-royxat': 'Q2: Email maydoni (email + parol bilan kirish)',
+    '2-kirish': 'Q2: Telefon o\'rniga Email',
+}
 limit = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
 masks = {}
 for f in os.listdir(out):
@@ -37,12 +42,14 @@ for f in sorted(os.listdir(out)):
     area = sum(m.histogram()[255:]) or 1
     pct = 100 * n / area
     ok = pct <= limit
-    if not ok:
-        bad += 1
+    sabab = KUTILGAN.get(name)
+    if not ok or sabab:
+        if not ok and not sabab:
+            bad += 1
         s = Image.new('RGB', (a.width * 2 + 10, a.height), (255, 0, 0))
         s.paste(a, (0, 0)); s.paste(b, (a.width + 10, 0))
         s.save(os.path.join(out, f'yonma-{w}-{name}.png'))
-    rows.append((w, name, f'{pct:6.2f}%', 'OK' if ok else f'FARQ joyi {diff.getbbox()}'))
+    rows.append((w, name, f'{pct:6.2f}%', 'OK' if ok else (f'KUTILGAN FARQ — {sabab}' if sabab else f'FARQ joyi {diff.getbbox()}')))
 
 for r in rows:
     print(f'{r[0]:>5} {r[1]:<16} {r[2]:>10}  {r[3]}')

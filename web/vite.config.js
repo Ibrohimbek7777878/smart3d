@@ -7,6 +7,7 @@ import path from 'node:path';
 
 const r = (p) => fileURLToPath(new URL(p, import.meta.url));
 const DATA = r('../app/data');   // ma'lumot — bitta manba (eski sayt bilan umumiy)
+const API = process.env.SMART3D_API || 'http://127.0.0.1:3000';   // Smart3D server (dev/preview proksi)
 
 /* TZ-09: app/data/*.json — dev'da /data/ dan beriladi, build'da dist/data/ ga ko'chiriladi (nusxa repoda saqlanmaydi) */
 function smart3dData() {
@@ -59,8 +60,9 @@ export default defineConfig({
   resolve: { dedupe: ['three', 'react', 'react-dom'] },   // dvigatel (app/js) ham shu three nusxasini oladi
   server: {
     fs: { allow: [r('..')] },                              // ../app/js/engine importi uchun
-    proxy: { '/api': 'http://127.0.0.1:3000', '/ws': { target: 'ws://127.0.0.1:3000', ws: true } }
+    proxy: { '/api': API, '/ws': { target: API.replace(/^http/, 'ws'), ws: true } }
   },
+  preview: { proxy: { '/api': API } },                     // testlar: build + server (tests/ui/web_*.sh)
   build: {
     rollupOptions: {
       input: { main: r('./index.html'), app: r('./app.html') },

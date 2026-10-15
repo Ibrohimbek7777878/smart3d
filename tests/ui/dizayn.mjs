@@ -45,8 +45,9 @@ export default async function run(page) {
     await click(/^Ro'yxatdan o'tish$/, true); await page.waitForTimeout(900);
     const fill = async (ph, v) => { const el = page.locator(`input[placeholder*="${ph}"]`).first(); if (await el.count()) await el.fill(v); };
     await fill('Jasur', 'Test Usta');
+    await fill('jasur@', 'dizayn' + Date.now() + '@test.uz');          // TZ-09 Q2: faqat yangi frontendda
     const tel = page.locator('input[type=tel], input[inputmode=numeric], input[inputmode=tel]').first();
-    if (await tel.count()) { await tel.click(); await tel.type('901112233'); }
+    if (await tel.count()) { await tel.click(); await tel.type('9' + String(Date.now()).slice(-8)); }
     await fill('kamida 8', 'parol12345');
     await click(/^Ro'yxatdan o'tish$/, true); await page.waitForTimeout(1200);
     await shot('3-onboarding1');

@@ -1,5 +1,6 @@
 import React from 'react';
 import { s3Load, s3Box, s3Spec, s3Mats, s3Label, s3Viewer, s3Build, s3Apply, s3n, S3_LIM, S3_CAT, S3_INS, s3Cat, s3NewId, s3Mk, s3Default, s3Price, S3_SHEETS, S3_TIPS, S3_PROJ, s3Thumb, s3Room } from './engine.js';
+import { createSession } from '../../../app/js/auth-core.js';
 import AiOyna from './modals/AiOyna.jsx';
 import EditorNav from './editor/EditorNav.jsx';
 import Header from './shell/Header.jsx';
@@ -16,12 +17,31 @@ import Tasdiq from './modals/Tasdiq.jsx';
 import Toast from './modals/Toast.jsx';
 
 export default class App extends React.Component {
-  state={screen:'reg',f:{name:'',phone:'',pass:'',shop:'',show:false,err:{},tried:false},onbKind:'kitchen',preset:0,
+  state={screen:'reg',f:{name:'',email:'',phone:'',pass:'',shop:'',show:false,err:{},tried:false},user:null,save:null,onbKind:'kitchen',preset:0,
     step:2,done:{1:true},room:{w:3600,d:3000,h:2700},shape:'rect',tg:{stol:true,sokol:true,dobor:false,karniz:true,moyka:true},
     mods:s3Default(),sel:null,open:{},part:null,raw:{},view:'3d',spin:false,tip:3,ai:false,aiText:'',mic:false,cf:null,toast:'',ins:null,
     insA:{ex:0,color:1},cat:'all',q:'',rk:0,miss:false,mat:{k:0,f:0},projName:'Oshxona-Aziza',pq:'',loaded:false};
   openV={};miniHost=React.createRef();miniOv=React.createRef();regHost=React.createRef();regOv=React.createRef();roomHost=React.createRef();roomOv=React.createRef();insHost=React.createRef();insOv=React.createRef();
-  componentDidMount(){this.dead=false;document.body.style.background='#0F2229';this.readHandoff();
+  /* TZ-09: server bilan ishlash — app/js/auth-core.js (eski sayt bilan umumiy: kirish, avtomatik saqlash, navbat) */
+  S=createSession({toast:t=>this.toastMsg(t),onState:(kind,title)=>this.setState({save:kind?{kind,title}:null}),
+    onUser:(u,why)=>{this.setState({user:u});if(why==='expired'){this.toastMsg('Kirish muddati tugadi — qayta kiring');this.setState({screen:'login'})}},
+    getPayload:()=>this.projectPayload(),getTotal:()=>this.projectTotal(),applyPayload:(doc,meta)=>this.applyProject(doc,meta),hasWork:()=>this.hasWork()});
+  projectPayload(){return null}   // TZ-09 3–4-bosqich: haqiqiy loyiha
+  projectTotal(){return 0}
+  applyProject(){}
+  hasWork(){return false}
+  /** kirgandan keyin: saytdan modul kelgan bo'lsa — muharrir, aks holda — loyihalar */
+  afterAuthState(){return this.state.pending?{screen:'app',step:2,done:{1:true},tip:3,...this.applyPending(s3Default())}:{screen:'projects'}}
+  /** sahifa ochilganda: saqlangan kirish kaliti hali amal qiladimi */
+  async initSession(){const S=this.S;if(!S.loggedIn)return;
+    this.setState({user:S.user});
+    const go=()=>{if(this.state.screen==='reg'||this.state.screen==='login')this.setState(this.afterAuthState())};
+    try{const r=await S.api('/api/me');
+      if(r.status===401||r.status===404){S.logout(true);return}
+      if(r.ok)this.setState({user:{...S.user,...(await r.json())}});
+      go()}
+    catch(_){go()}}   // internet yo'q — kirgan holat saqlanadi
+  componentDidMount(){this.dead=false;document.body.style.background='#0F2229';this.readHandoff();this.initSession();
     this.onHash=()=>this.readHandoff();window.addEventListener('hashchange',this.onHash);
     s3Load().then(T=>{if(this.dead)return;this.T=T;this.setState({loaded:true},()=>this.sync())}).catch(e=>console.warn('three load failed',e))}
   componentWillUnmount(){this.dead=true;this.vMini&&this.vMini.dispose();window.removeEventListener('hashchange',this.onHash);['vReg','vRoom','vIns'].forEach(k=>this[k]&&this[k].dispose());clearTimeout(this.tT)}
@@ -78,10 +98,11 @@ export default class App extends React.Component {
     const q=new URLSearchParams(h.includes('=')?h:'s='+h),s=q.get('s');const st={};
     if(s==='login'||s==='reg')st.screen=s;
     const mod=q.get('mod');if(mod&&s3Cat(mod)){st.pending={mod,w:+q.get('w')||s3Cat(mod).w}}
-    let user=null;try{user=JSON.parse(localStorage.getItem('s3d-user')||'null')}catch(_){}
-    if(user&&s==='reg'&&!mod){st.screen='login'}
-    if(user)st.f={...this.state.f,phone:user.phone||'',name:user.name||''};
-    this.setState(st)}
+    /* shu qurilmada avval kirilgan bo'lsa — kirish oynasi, email tayyor (dizayndagi xatti-harakat, haqiqiy akkaunt bilan) */
+    let last='';try{last=localStorage.getItem('s3d-last-email')||''}catch(_){}
+    if(last&&s==='reg'&&!mod){st.screen='login'}
+    if(last)st.f={...this.state.f,email:last};
+    this.setState(st,()=>{if(this.S.loggedIn&&(this.state.screen==='reg'||this.state.screen==='login'))this.setState(this.afterAuthState())})}
   applyPending(base){const p=this.state.pending;if(!p)return base;const c=s3Cat(p.mod),lim=S3_LIM[c.type].w,m=s3Mk(p.mod,{w:Math.max(lim[0],Math.min(lim[1],p.w))});
     setTimeout(()=>this.toastMsg('Saytdagi modul loyihaga qo\'shildi: '+p.mod+' · '+m.w+' mm'),400);return {mods:[...base,m],sel:m.id,pending:null}}
   toastMsg(t){clearTimeout(this.tT);this.setState({toast:t});this.tT=setTimeout(()=>this.setState({toast:''}),3000)}
@@ -93,16 +114,29 @@ export default class App extends React.Component {
   addMod(c){const m=s3Mk(c.code);this.setState(s=>({mods:[...s.mods,m],sel:m.id}));this.toastMsg(c.code+' sahnaga qo\'shildi')}
   confirm(o){this.setState({cf:o})}
   goStep(n){this.setState(s=>{const done={...s.done};for(let i=1;i<n;i++)done[i]=true;return {step:n,done}})}
-  submitAuth(){const s=this.state,f=s.f,reg=s.screen==='reg',e={};
+  /* TZ-09 Q2: email + parol (server: /api/register, /api/login). SMS (TZ-07) auth-core.js da tayyor — Eskiz kelgach yoqiladi */
+  async submitAuth(){const s=this.state,f=s.f,reg=s.screen==='reg',e={},em=f.email.trim();
     if(reg&&!f.name.trim())e.name='Ismingizni yozing';
-    let user=null;try{user=JSON.parse(localStorage.getItem('s3d-user')||'null')}catch(_){}
-    if(f.phone.length!==9)e.phone='Telefon 9 raqam bo\'lishi kerak';else if(reg&&(f.phone==='901234567'||(user&&user.phone===f.phone)))e.phone='Bu raqam bilan akkaunt bor — kirish';
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em))e.email='Emailni to\'g\'ri yozing';
+    if(reg&&f.phone.length!==9)e.phone='Telefon 9 raqam bo\'lishi kerak';
     if(f.pass.length<8)e.pass='Parol kamida 8 belgi';
     if(Object.keys(e).length){this.setState({f:{...f,err:e,tried:true}});return}
-    if(reg){try{localStorage.setItem('s3d-user',JSON.stringify({name:f.name.trim(),phone:f.phone,shop:f.shop.trim()}))}catch(_){}}
-    else if(user&&user.name&&!f.name)f.name=user.name;
-    if(!reg&&this.state.pending){this.setState({f:{...f,err:{}},screen:'app',step:2,done:{1:true},tip:3,...this.applyPending(s3Default())});return}
-    this.setState({f:{...f,err:{}},screen:reg?'onb1':'projects'})}
+    if(this.authBusy)return;this.authBusy=true;
+    const j=reg?await this.S.register({email:em,password:f.pass,name:f.name.trim(),phone:'998'+f.phone,shop:f.shop.trim()})
+               :await this.S.login(em,f.pass);
+    this.authBusy=false;
+    if(!j.ok){
+      if(j.status===0){this.toastMsg('Server bilan aloqa yo\'q — internetni tekshiring');return}
+      const t=String(j.error||'');
+      if(j.status===409)(/telefon/i.test(t)?e.phone='Bu raqam bilan akkaunt bor — kirish':e.email='Bu email bilan akkaunt bor — kirish');
+      else if(j.status===401)e.pass='Email yoki parol noto\'g\'ri';
+      else if(/parol/i.test(t))e.pass=t;else if(/telefon/i.test(t))e.phone=t;else if(/ism/i.test(t))e.name=t;else e.email=t;
+      this.setState({f:{...f,err:e,tried:true}});return}
+    try{localStorage.setItem('s3d-last-email',em)}catch(_){}
+    const name=(j.user&&j.user.name)||f.name;
+    this.setState({f:{...f,name,pass:'',err:{}},user:j.user});
+    if(!reg&&this.state.pending){this.setState(this.afterAuthState());return}
+    this.setState({screen:reg?'onb1':'projects'})}
   renderVals(){const s=this.state,f=s.f,reg=s.screen==='reg',e=f.err;
     const sc=f.pass.length?[f.pass.length>=8,/\d/.test(f.pass),/[A-ZА-Я]/.test(f.pass),/[^\w]/.test(f.pass)].filter(Boolean).length:0;
     const scC=['var(--sfc3)','var(--danger)','var(--acc)','var(--cyan)','var(--cyan)'][sc];
@@ -131,12 +165,12 @@ export default class App extends React.Component {
     return {
       hasPending:!!s.pending,pendingText:s.pending?(s.pending.mod+' · '+s.pending.w+' mm — ro\'yxatdan keyin loyihangizda turadi'):'',
       isAuth:reg||s.screen==='login',isReg:reg,regHost:this.regHost,regOv:this.regOv,
-      f:{title:reg?'Ro\'yxatdan o\'tish':'Kirish',sub:reg?'1 daqiqa. Keyin birinchi loyihangizni chizasiz.':'Telefon raqamingiz va parolingiz bilan.',
+      f:{title:reg?'Ro\'yxatdan o\'tish':'Kirish',sub:reg?'1 daqiqa. Keyin birinchi loyihangizni chizasiz.':'Email va parolingiz bilan.',
         cta:reg?'Ro\'yxatdan o\'tish':'Kirish',alt:reg?'Akkauntingiz bormi?':'Akkaunt yo\'qmi?',altCta:reg?'Kirish':'Ro\'yxatdan o\'tish',
-        name:f.name,phone:fmt(f.phone),pass:f.pass,shop:f.shop,passType:f.show?'text':'password',eye:f.show?'🙈':'👁',
+        name:f.name,email:f.email,eEmail:!!e.email,eEmailt:e.email||'',bEmail:bd('email'),passAuto:reg?'new-password':'current-password',phone:fmt(f.phone),pass:f.pass,shop:f.shop,passType:f.show?'text':'password',eye:f.show?'🙈':'👁',
         bars:[1,2,3,4].map(i=>({c:i<=sc?scC:'var(--sfc2)'})),strength:['','Zaif','O\'rtacha','Yaxshi','Kuchli'][sc],
         eName:!!e.name,eNamet:e.name||'',ePhone:!!e.phone,ePhonet:e.phone||'',ePass:!!e.pass,ePasst:e.pass||'',bName:bd('name'),bPhone:bd('phone'),bPass:bd('pass')},
-      onName:ev=>this.setState({f:{...f,name:ev.target.value}}),onShop:ev=>this.setState({f:{...f,shop:ev.target.value}}),
+      onName:ev=>this.setState({f:{...f,name:ev.target.value}}),onEmail:ev=>this.setState({f:{...f,email:ev.target.value}}),onShop:ev=>this.setState({f:{...f,shop:ev.target.value}}),
       onPhone:ev=>{let d=ev.target.value.replace(/\D/g,'');if(d.startsWith('998')&&d.length>9)d=d.slice(3);this.setState({f:{...f,phone:d.slice(0,9)}})},
       onPass:ev=>this.setState({f:{...f,pass:ev.target.value}}),toggleEye:()=>this.setState({f:{...f,show:!f.show}}),
       submitAuth:()=>this.submitAuth(),swapAuth:()=>this.setState({screen:reg?'login':'reg',f:{...f,err:{}}}),
@@ -149,7 +183,7 @@ export default class App extends React.Component {
       aiEx:aiEx.map(t=>({t,pick:()=>this.setState({aiText:t})})),aiText:s.aiText,onAiText:ev=>this.setState({aiText:ev.target.value}),
       toggleMic:()=>this.setState({mic:!s.mic}),micLabel:s.mic?'Tinglanmoqda…':'Ovoz',micBg:s.mic?'var(--danger)':'var(--sfc2)',micT:s.mic?'#2A0A0A':'var(--txt)',
       inShell:s.screen==='app'||s.screen==='projects',isEditor:s.screen==='app',isProjects:s.screen==='projects',
-      projName:s.projName,onProjName:ev=>this.setState({projName:ev.target.value}),initials:(f.name.trim()?f.name.trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2):'JA').toUpperCase(),
+      projName:s.projName,onProjName:ev=>this.setState({projName:ev.target.value}),initials:(()=>{const u=s.user||{},nm=String(u.name||f.name||'').trim();return (nm?nm.split(/\s+/).map(w=>w[0]).join('').slice(0,2):String(u.email||'').slice(0,2)||'•').toUpperCase()})(),
       price:{total:s3n(sub),cost:s3n(cost),profit:s3n(sub-cost)},goStep3:()=>this.goStep(3),goStep2:()=>this.goStep(2),goStep4:()=>this.goStep(4),
       langToast:()=>this.toastMsg('O\'zbekcha · Русский — tez orada'),settingsToast:()=>this.toastMsg('Sozlamalar: sex logosi, narx ustamasi, stanok profili'),
       goProjects:()=>this.setState({screen:'projects',sel:null}),newProject:()=>this.setState({screen:'onb1',mods:s3Default(),projName:'Yangi loyiha'}),

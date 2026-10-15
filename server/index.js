@@ -110,6 +110,11 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 `);
+/* TZ-09: yangi maydonlar — mavjud bazaga ham qo'shiladi (eski ma'lumot o'zgarmaydi) */
+function addColumn(table, col, def) {
+  if (!db.prepare(`PRAGMA table_info(${table})`).all().some(c => c.name === col)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`);
+}
+addColumn('users', 'shop', "TEXT DEFAULT ''");   // ro'yxatdagi "Sex nomi" (ixtiyoriy)
 /* S1: bitta raqam — bitta akkaunt (oxirgi 9 raqam bo'yicha). Eski bazada takror bo'lsa — kodda ham tekshiriladi */
 try { db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_phone9 ON users(substr(phone, -9)) WHERE phone <> ''"); }
 catch (e) { console.warn('DIQQAT: telefon noyob indeksi yaratilmadi (bazada takror raqam bor):', e.message); }
@@ -258,6 +263,7 @@ app.post('/api/register', registerLimiter.check, ah(async (req, res) => {
   const password = str(b.password, 'parol', { max: 128, required: true });
   if (password.length < 8) bad('parol kamida 8 belgi bo\'lishi kerak');
   const name = plainText(b.name, 'ism', { max: 100 });
+  const shop = plainText(b.shop, 'sex nomi', { max: 100 });   // TZ-09: ixtiyoriy
   const tel = b.phone ? phone(b.phone) : '';        // S1: 998XXXXXXXXX
   if (tel && db.prepare("SELECT id FROM users WHERE phone <> '' AND substr(phone, -9) = ?").get(tel.slice(-9))) {
     return res.status(409).json({ error: 'Bu telefon bilan akkaunt bor' });
@@ -265,9 +271,9 @@ app.post('/api/register', registerLimiter.check, ah(async (req, res) => {
   const exists = db.prepare('SELECT id FROM users WHERE lower(email) = ?').get(em);
   if (exists) return res.status(409).json({ error: 'Email allaqachon bor' });
   const hash = await bcrypt.hash(password, 10);
-  const r = db.prepare('INSERT INTO users (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, ?)')
-    .run(name, em, tel, hash, 'user');
-  const user = { id: Number(r.lastInsertRowid), name, email: em, role: 'user' };
+  const r = db.prepare('INSERT INTO users (name, email, phone, shop, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)')
+    .run(name, em, tel, shop, hash, 'user');
+  const user = { id: Number(r.lastInsertRowid), name, email: em, phone: tel, shop, role: 'user' };
   res.json({ token: signToken(user), user });
 }));
 
@@ -281,11 +287,11 @@ app.post('/api/login', loginLimiter.check, ah(async (req, res) => {
     loginLimiter.hit(req);
     return res.status(401).json({ error: 'Email yoki parol noto\'g\'ri' });
   }
-  res.json({ token: signToken(u), user: { id: u.id, name: u.name, email: u.email, role: u.role } });
+  res.json({ token: signToken(u), user: { id: u.id, name: u.name, email: u.email, phone: u.phone || '', shop: u.shop || '', role: u.role } });
 }));
 
 app.get('/api/me', auth, (req, res) => {
-  const u = db.prepare('SELECT id, name, email, phone, role FROM users WHERE id = ?').get(req.user.id);
+  const u = db.prepare('SELECT id, name, email, phone, shop, role FROM users WHERE id = ?').get(req.user.id);
   if (!u) return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
   res.json(u);
 });

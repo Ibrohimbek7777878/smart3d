@@ -11,12 +11,8 @@ DES="$ROOT/frontend/design_handoff_smart3d/designs"
 [ -f "$BROWSER_MJS" ] || { echo "browser.mjs topilmadi: $BROWSER_MJS"; exit 1; }
 rm -rf "$OUT"; mkdir -p "$OUT"
 
-(cd web && NODE_ENV=production npx vite build >/dev/null)
-PORT=$(python3 -I -c 'import socket;s=socket.socket();s.bind(("127.0.0.1",0));print(s.getsockname()[1])')
-python3 -m http.server "$PORT" --bind 127.0.0.1 --directory web/dist >/dev/null 2>&1 &
-SRV=$!
-trap 'kill $SRV 2>/dev/null || true' EXIT          # faqat o'zimiz ochgan server (PID bo'yicha)
-sleep 1
+source tests/ui/web_server.sh          # ro'yxatdan o'tish endi haqiqiy serverga boradi (TZ-09 2-bosqich)
+PORT=$WPORT
 
 enc() { python3 -I -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$1"; }
 for VP in "1440 900" "390 844"; do
