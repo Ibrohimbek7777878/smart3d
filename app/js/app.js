@@ -1034,7 +1034,8 @@ function initPano360Viewer(container, panoCanvas) {
 }
 function exportHoles() {
   if (!integrityCheck(false)) return;
-  const r = buildOBJ(Object.assign({}, state.doc, { placements: viewPlacements() }), state.catalog);
+  const r = buildOBJ(Object.assign({}, state.doc, { placements: viewPlacements() }), state.catalog,
+    { cutlists: (state._res && state._res.cutlists) || [] });
   download('smart3d-holes.json', JSON.stringify({ version: 1, unit: 'mm', holes: r.holes, placements: r.placements }, null, 1), 'application/json');
 }
 function exportCut() {

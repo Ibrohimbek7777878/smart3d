@@ -73,8 +73,11 @@ function buildMTL(catalog) {
  * @param {Object} catalog — {code: frag}
  * @returns {{obj:string, mtl:string, holes:any[], placements:any[]}}
  */
-export function buildOBJ(doc, catalog) {
+export function buildOBJ(doc, catalog, opt = {}) {
   const out = { v: [], f: [] };
+  /* TZ-06: MebelCity teshiklari (Bazis birikmalari) — cutlist'da modul o'lchamida hisoblangan */
+  const clById = {};
+  for (const cl of opt.cutlists || []) if (cl.placementId != null) clById[cl.placementId] = cl;
   let base = 0;
   const holes = [], placementRows = [];
 
@@ -250,12 +253,23 @@ export function buildOBJ(doc, catalog) {
           rotated: rot
         });
       }
+      const bHoles = frag.birikmalar && clById[p.id] ? clById[p.id].holes.filter(hl => /^evrovint/.test(hl.kind)) : [];
+      for (const hl of bHoles) {
+        holes.push({
+          placement: p.id, fragment: p.frg, part: hl.part, side: hl.side, torets: hl.torets,
+          kind: hl.kind, dia: hl.dia, depth: hl.depth,
+          local_x: hl.x, local_y: hl.y,          // kesilgan detal burchagidan: x — F chetdan, y — L chetdan
+          world: { x: Math.round(ox), y: Math.round(oy), z: Math.round(oz) },
+          size: { w, d, h }, qty: 1, nusxa: hl.nusxa,
+          rotated: rot
+        });
+      }
 
       placementRows.push({
         id: p.id, fragment: p.frg, name: frag.name || '',
         x: Math.round(ox), y: Math.round(oy), z: Math.round(oz),
         rot, w, d, h,
-        panels: asm.panels.length, holes: (frag.holes || []).length,
+        panels: asm.panels.length, holes: (frag.holes || []).length + bHoles.length,
         material: frag.material_code || '', qty: 1
       });
     }

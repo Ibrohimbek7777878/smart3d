@@ -8,6 +8,7 @@ import { cutlist, productionCost, birikmaTeshiklari, bazisQoida } from '../app/j
 import { nestProject } from '../app/js/engine/nesting.js';
 import { applySexStandart } from '../app/js/engine/standart.js';
 import { cncBundle } from '../app/js/engine/cnc.js';
+import { buildOBJ } from '../app/js/engine/objexport.js';
 
 const J = (p) => JSON.parse(readFileSync(fileURLToPath(new URL('../app/data/' + p, import.meta.url)), 'utf8'));
 const mc = J('fragments-mc.json').fragments;
@@ -141,6 +142,12 @@ console.log('\n[5] Stanok fayllari va prisadka');
   const on = productionCost(cls, mats, { nestResult: nest, xizmatlar: { teshik: true } });
   const tl = on.lines.filter(l => /teshik|prisadka/i.test(l.group + ' ' + l.name));
   ok('prisadka faqat usta tanlasa (S3): tanlanmasa tannarxda yo\'q', !off.lines.some(l => /teshik|prisadka/i.test(l.group)) || off.totalCost <= on.totalCost);
+  const doc = { room: {}, placements: pick.map((f, i) => ({ id: 'p' + i, frg: f.code, x: i * 1000, y: 0, z: 0, w: f.w, d: f.d, h: f.h })) };
+  const cat = Object.fromEntries(pick.map(f => [f.code, f]));
+  const hj = buildOBJ(doc, cat, { cutlists: cls }).holes;
+  const birT = cls.reduce((s, cl) => s + cl.holes.filter(h => /^evrovint/.test(h.kind)).length, 0);
+  ok(`holes.json (3D eksport): MebelCity teshiklari bor — ${hj.length} = ${birT}, torets cheti bilan`,
+    hj.length === birT && hj.some(h => h.torets) && hj.every(h => typeof h.local_x === 'number'));
   ok(`prisadka soni = barcha nusxalardagi teshiklar (${jamiT})`, cls.every(cl => cl.stats.hole_count === cl.holes.reduce((q, h) => q + h.qty * h.nusxa, 0)) && jamiT > 0, JSON.stringify(tl.map(l => [l.name, l.qty])));
 }
 

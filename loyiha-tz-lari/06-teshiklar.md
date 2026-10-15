@@ -125,5 +125,5 @@
 - **Ruchka:** teshik diametri (teshiklar orasi nomida bor: 160 mm).
 - **Eksantrik + shkant** (1 modul, Shkaf 001): parametrlar faylda bor (D2=15, H2=12.5 …), lekin qaysi teshik qaysi detalga — texnolog tasdiqlashi kerak.
 - **Evrovint diametri:** fayllarda ikki xil — 7 / 4.5 mm va 8 / 5 mm. Har modul o'z faylidagini oladi. Sexda qaysi biri ishlatilishini tasdiqlang.
-- **Mavjud bo'lmagan qism:** `holes.json` eksporti (OBJ to'plami) hali faqat shablon teshiklarni chiqaradi — MC teshiklari cutlist orqali stanok fayllarida bor.
+- ~~`holes.json` eksporti~~ — bajarildi (2026-10-15): 3D eksportdagi `smart3d-holes.json` da MebelCity teshiklari (torets cheti bilan) bor.
 
