@@ -249,6 +249,7 @@ const S3_CAT=[
 const S3_INS=['MC-KP-02','MC-KU-04'];
 const s3Cat=c=>S3_CAT.find(x=>x.code===c);
 let s3Id=1;
+const s3NewId=()=>s3Id++;   // import qilingan o'zgaruvchiga tashqaridan yozib bo'lmaydi (ES modul) — yangi id shu orqali
 const s3Mk=(code,o)=>{const c=s3Cat(code),m={...c,...(o||{}),id:s3Id++,off:0,warn:''};m.p0=o&&o.p?o.p:c.p;m.v0=m.w*m.h*m.d;return m};
 const s3Default=()=>[s3Mk('MC-KP-08'),s3Mk('MC-KP-11'),s3Mk('MC-KP-02'),s3Mk('MC-KP-04'),s3Mk('MC-KU-04',{w:1000,h:700,p:598700}),s3Mk('MC-KU-07'),s3Mk('MC-KU-03')];
 const s3Price=m=>m.p0*(0.4+0.6*(m.w*m.h*m.d)/m.v0);
@@ -326,4 +327,4 @@ function s3Room(T,v,st){const mm=x=>x/1000;
     s3Label(v,''+m.w,'',an((xa+xb)/2,yb-.05),'dim').op=1;s3Label(v,''+m.h,'',an(xb+.12,(bb.min.y+bb.max.y)/2),'dim').op=1}
   return {W,R}}
 
-export { S3_SVG, s3Load, s3Box, s3cl, s3f1, s3P, s3SpecKP, s3SpecKU, s3SpecSH, s3Spec, s3WoodTex, s3Mats, s3HwMesh, s3Label, s3Viewer, s3Kitchen, s3Clear, s3Build, s3Apply, S3_STORY, s3n, S3_LIM, S3_CAT, S3_INS, s3Cat, s3Id, s3Mk, s3Default, s3Price, S3_SHEETS, S3_TIPS, S3_PROJ, s3Thumb, s3Room };
+export { S3_SVG, s3Load, s3Box, s3cl, s3f1, s3P, s3SpecKP, s3SpecKU, s3SpecSH, s3Spec, s3WoodTex, s3Mats, s3HwMesh, s3Label, s3Viewer, s3Kitchen, s3Clear, s3Build, s3Apply, S3_STORY, s3n, S3_LIM, S3_CAT, S3_INS, s3Cat, s3Id, s3NewId, s3Mk, s3Default, s3Price, S3_SHEETS, S3_TIPS, S3_PROJ, s3Thumb, s3Room };

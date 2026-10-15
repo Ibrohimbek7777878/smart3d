@@ -1,5 +1,5 @@
 import React from 'react';
-import { s3Load, s3Box, s3Spec, s3Mats, s3Label, s3Viewer, s3Build, s3Apply, s3n, S3_LIM, S3_CAT, S3_INS, s3Cat, s3Id, s3Mk, s3Default, s3Price, S3_SHEETS, S3_TIPS, S3_PROJ, s3Thumb, s3Room } from './engine.js';
+import { s3Load, s3Box, s3Spec, s3Mats, s3Label, s3Viewer, s3Build, s3Apply, s3n, S3_LIM, S3_CAT, S3_INS, s3Cat, s3NewId, s3Mk, s3Default, s3Price, S3_SHEETS, S3_TIPS, S3_PROJ, s3Thumb, s3Room } from './engine.js';
 
 export default class App extends React.Component {
   state={screen:'reg',f:{name:'',phone:'',pass:'',shop:'',show:false,err:{},tried:false},onbKind:'kitchen',preset:0,
@@ -157,7 +157,7 @@ export default class App extends React.Component {
       sm:sm?{openLabel:(smOpen?'Yopish':'Ochish')+(sm.kind==='tortma'?' · tortmalar':' · eshiklar'),canIns:S3_INS.includes(sm.code),noIns:!S3_INS.includes(sm.code),name:sm.name,code:sm.code,warn:sm.warn,hasWarn:!!sm.warn,rows:[dimRow('w','Eni'),dimRow('d','Chuqurligi'),dimRow('h','Bo\'yi')]}:{rows:[]},
       moveL:()=>this.upd(sm.id,x=>{x.off-=50;return x}),moveR:()=>this.upd(sm.id,x=>{x.off+=50;return x}),
       rotate:()=>this.toastMsg('⟳ 90° — burchak devoriga o\'tkazish keyingi versiyada'),
-      dup:()=>{const c={...sm,id:s3Id++,off:0,warn:''};const i=mods.indexOf(sm);const nm=[...mods];nm.splice(i+1,0,c);this.setState({mods:nm,sel:c.id});this.toastMsg('Nusxa qo\'shildi')},
+      dup:()=>{const c={...sm,id:s3NewId(),off:0,warn:''};const i=mods.indexOf(sm);const nm=[...mods];nm.splice(i+1,0,c);this.setState({mods:nm,sel:c.id});this.toastMsg('Nusxa qo\'shildi')},
       askDel:()=>this.confirm({title:'Modulni o\'chirasizmi?',text:sm.code+' · '+sm.name+' loyihadan olib tashlanadi.',ok:'O\'chirish',danger:true,yes:()=>{this.setState({mods:mods.filter(m=>m.id!==sm.id),sel:null});this.toastMsg('Modul o\'chirildi')}}),
       openInside:()=>{if(!S3_INS.includes(sm.code))return;this.insAuto=true;this.setState({ins:sm.id,insA:{ex:0,color:1}})},
       openAi:()=>this.setState({ai:true}),closeAi:()=>this.setState({ai:false,mic:false}),aiOpen:s.ai,
@@ -246,16 +246,16 @@ export default class App extends React.Component {
                       {"+"}
                     </span>
                     <span style={{"fontSize":"14px","fontWeight":"700"}}>
-                      {v.pendingText}
+                      <span className="sc-interp">{v.pendingText}</span>
                     </span>
                   </div>
                 </>) : null}
                 <div style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
                   <h1 style={{"margin":"0","fontSize":"clamp(30px,3.4vw,40px)","lineHeight":"1.05","letterSpacing":"-.035em","fontWeight":"800"}}>
-                    {v.f?.title}
+                    <span className="sc-interp">{v.f?.title}</span>
                   </h1>
                   <p style={{"margin":"0","color":"var(--mut)"}}>
-                    {v.f?.sub}
+                    <span className="sc-interp">{v.f?.sub}</span>
                   </p>
                 </div>
                 <div style={{"display":"flex","flexDirection":"column","gap":"16px"}}>
@@ -267,7 +267,7 @@ export default class App extends React.Component {
                       <input value={v.f?.name} onChange={v.onName} placeholder="Jasur Aliyev" style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","borderColor":v.f?.bName}} />
                       {v.f?.eName ? (<>
                         <span style={{"fontSize":"13px","color":"var(--danger)","fontWeight":"600"}}>
-                          {v.f?.eNamet}
+                          <span className="sc-interp">{v.f?.eNamet}</span>
                         </span>
                       </>) : null}
                     </label>
@@ -284,7 +284,7 @@ export default class App extends React.Component {
                     </div>
                     {v.f?.ePhone ? (<>
                       <span style={{"fontSize":"13px","color":"var(--danger)","fontWeight":"600"}}>
-                        {v.f?.ePhonet}
+                        <span className="sc-interp">{v.f?.ePhonet}</span>
                       </span>
                     </>) : null}
                   </label>
@@ -295,7 +295,7 @@ export default class App extends React.Component {
                     <div style={{"display":"flex","alignItems":"center","height":"52px","borderRadius":"14px","background":"var(--bg)","border":`1px solid ${v.f?.bPass}`,"overflow":"hidden"}}>
                       <input type={v.f?.passType} value={v.f?.pass} onChange={v.onPass} placeholder="kamida 8 belgi" style={{"flex":"1","minWidth":"0","height":"100%","background":"transparent","border":"0","color":"var(--txt)","fontSize":"16px","outline":"none","padding":"0 16px"}} />
                       <button onClick={v.toggleEye} aria-label="Parolni ko'rsatish" style={{"width":"52px","height":"52px","background":"transparent","border":"0","color":"var(--mut)","fontSize":"18px","cursor":"pointer"}}>
-                        {v.f?.eye}
+                        <span className="sc-interp">{v.f?.eye}</span>
                       </button>
                     </div>
                     {v.isReg ? (<>
@@ -306,13 +306,13 @@ export default class App extends React.Component {
                           </React.Fragment>))}
                         </div>
                         <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"700","minWidth":"64px","textAlign":"right"}}>
-                          {v.f?.strength}
+                          <span className="sc-interp">{v.f?.strength}</span>
                         </span>
                       </div>
                     </>) : null}
                     {v.f?.ePass ? (<>
                       <span style={{"fontSize":"13px","color":"var(--danger)","fontWeight":"600"}}>
-                        {v.f?.ePasst}
+                        <span className="sc-interp">{v.f?.ePasst}</span>
                       </span>
                     </>) : null}
                   </label>
@@ -329,14 +329,14 @@ export default class App extends React.Component {
                   </>) : null}
                 </div>
                 <button onClick={v.submitAuth} style={{"height":"56px","borderRadius":"16px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer","transition":"transform .15s ease-out"}} className="h0">
-                  {v.f?.cta}
+                  <span className="sc-interp">{v.f?.cta}</span>
                 </button>
                 <div style={{"display":"flex","justifyContent":"center","gap":"6px","color":"var(--mut)","fontSize":"15px"}}>
                   <span>
-                    {v.f?.alt}
+                    <span className="sc-interp">{v.f?.alt}</span>
                   </span>
                   <button onClick={v.swapAuth} style={{"background":"none","border":"0","padding":"0","color":"var(--acct)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
-                    {v.f?.altCta}
+                    <span className="sc-interp">{v.f?.altCta}</span>
                   </button>
                 </div>
               </div>
@@ -361,7 +361,7 @@ export default class App extends React.Component {
                   </React.Fragment>))}
                 </div>
                 <span style={{"fontFamily":"'JetBrains Mono',monospace","fontSize":"13px","color":"var(--mut)"}}>
-                  {v.onb?.n}{" / 3"}
+                  <span className="sc-interp">{v.onb?.n}</span>{" / 3"}
                 </span>
               </div>
             </div>
@@ -379,14 +379,14 @@ export default class App extends React.Component {
                   {(v.onb?.kinds || []).map((k, $index) => (<React.Fragment key={$index}>
                     <button onClick={k?.pick} style={{"minHeight":"200px","textAlign":"left","borderRadius":"24px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","padding":"24px","cursor":"pointer","display":"flex","flexDirection":"column","justifyContent":"space-between","gap":"16px","transition":"transform .35s cubic-bezier(.2,.8,.2,1),border-color .2s","transform":"perspective(900px)"}} className="h1">
                       <span style={{"width":"64px","height":"64px","borderRadius":"20px","background":"var(--sfc2)","display":"grid","placeItems":"center","fontSize":"32px"}}>
-                        {k?.icon}
+                        <span className="sc-interp">{k?.icon}</span>
                       </span>
                       <span style={{"display":"flex","flexDirection":"column","gap":"4px"}}>
                         <span style={{"fontSize":"22px","fontWeight":"800","letterSpacing":"-.02em"}}>
-                          {k?.label}
+                          <span className="sc-interp">{k?.label}</span>
                         </span>
                         <span style={{"fontSize":"14px","color":"var(--mut)"}}>
-                          {k?.sub}
+                          <span className="sc-interp">{k?.sub}</span>
                         </span>
                       </span>
                     </button>
@@ -399,10 +399,10 @@ export default class App extends React.Component {
                     {"← Orqaga"}
                   </button>
                   <h1 style={{"margin":"0","fontSize":"clamp(30px,4vw,48px)","letterSpacing":"-.04em","lineHeight":"1.05","fontWeight":"800"}}>
-                    {v.onb?.t2}
+                    <span className="sc-interp">{v.onb?.t2}</span>
                   </h1>
                   <p style={{"margin":"0","color":"var(--mut)","fontSize":"17px"}}>
-                    {v.onb?.s2}
+                    <span className="sc-interp">{v.onb?.s2}</span>
                   </p>
                 </div>
                 {v.onb?.notAi ? (<>
@@ -410,10 +410,10 @@ export default class App extends React.Component {
                     {(v.onb?.presets || []).map((p, $index) => (<React.Fragment key={$index}>
                       <button onClick={p?.pick} style={{"minHeight":"96px","borderRadius":"20px","background":p?.bg,"border":`1px solid ${p?.bd}`,"color":"var(--txt)","cursor":"pointer","display":"flex","flexDirection":"column","alignItems":"flex-start","justifyContent":"center","gap":"2px","padding":"16px 20px","transition":"border-color .2s"}}>
                         <span style={{"fontSize":"26px","fontWeight":"800","fontVariantNumeric":"tabular-nums","letterSpacing":"-.02em"}}>
-                          {p?.label}
+                          <span className="sc-interp">{p?.label}</span>
                         </span>
                         <span style={{"fontSize":"13px","color":"var(--mut)"}}>
-                          {p?.area}
+                          <span className="sc-interp">{p?.area}</span>
                         </span>
                       </button>
                     </React.Fragment>))}
@@ -447,11 +447,11 @@ export default class App extends React.Component {
                     <textarea value={v.aiText} onChange={v.onAiText} rows="4" placeholder="oshxona 3.6x3 m, balandlik 2.7, 4 ta pastki shkaf" style={{"width":"100%","borderRadius":"16px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","padding":"16px","resize":"vertical","outline":"none"}}></textarea>
                     <div style={{"display":"flex","gap":"8px","flexWrap":"wrap","alignItems":"center"}}>
                       <button onClick={v.toggleMic} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","height":"44px","background":v.micBg,"color":v.micT}}>
-                        {"🎤 "}{v.micLabel}
+                        {"🎤 "}<span className="sc-interp">{v.micLabel}</span>
                       </button>
                       {(v.aiEx || []).map((x, $index) => (<React.Fragment key={$index}>
                         <button onClick={x?.pick} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"600"}}>
-                          {x?.t}
+                          <span className="sc-interp">{x?.t}</span>
                         </button>
                       </React.Fragment>))}
                     </div>
@@ -496,7 +496,7 @@ export default class App extends React.Component {
               <div style={{"marginLeft":"auto","display":"flex","alignItems":"center","gap":"8px"}}>
                 {v.isEditor ? (<>
                   <button onClick={v.goStep3} style={{"height":"44px","padding":"0 14px","borderRadius":"999px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"15px","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","fontVariantNumeric":"tabular-nums","whiteSpace":"nowrap"}}>
-                    {v.price?.total}{" so'm"}
+                    <span className="sc-interp">{v.price?.total}</span>{" so'm"}
                     <span style={{"fontSize":"13px"}}>
                       {"*"}
                     </span>
@@ -509,7 +509,7 @@ export default class App extends React.Component {
                   {"🌐"}
                 </button>
                 <div style={{"width":"44px","height":"44px","borderRadius":"999px","background":"var(--sfc2)","border":"1px solid var(--line)","display":"grid","placeItems":"center","fontWeight":"800","fontSize":"14px","color":"var(--cyan)"}}>
-                  {v.initials}
+                  <span className="sc-interp">{v.initials}</span>
                 </div>
               </div>
             </header>
@@ -550,18 +550,18 @@ export default class App extends React.Component {
                       </div>
                       <div style={{"display":"flex","flexDirection":"column","gap":"2px","padding":"0 6px"}}>
                         <span style={{"fontSize":"18px","fontWeight":"800"}}>
-                          {X?.name}
+                          <span className="sc-interp">{X?.name}</span>
                         </span>
                         <span style={{"fontSize":"14px","color":"var(--mut)"}}>
-                          {X?.client}{" · "}{X?.date}
+                          <span className="sc-interp">{X?.client}</span>{" · "}<span className="sc-interp">{X?.date}</span>
                         </span>
                       </div>
                       <div style={{"display":"flex","justifyContent":"space-between","alignItems":"center","padding":"0 6px 6px"}}>
                         <span style={{"padding":"5px 12px","borderRadius":"999px","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"13px","fontVariantNumeric":"tabular-nums"}}>
-                          {X?.price}
+                          <span className="sc-interp">{X?.price}</span>
                         </span>
                         <span style={{"fontSize":"13px","color":"var(--mut)","fontWeight":"700"}}>
-                          {X?.mods}
+                          <span className="sc-interp">{X?.mods}</span>
                         </span>
                       </div>
                     </button>
@@ -575,10 +575,10 @@ export default class App extends React.Component {
                   {(v.nav || []).map((s, $index) => (<React.Fragment key={$index}>
                     <button data-navbtn="" onClick={s?.go} style={{"minHeight":"52px","borderRadius":"14px","border":"0","background":s?.bg,"color":s?.c,"display":"flex","alignItems":"center","gap":"12px","padding":"0 12px","fontWeight":"800","fontSize":"15px","cursor":"pointer","textAlign":"left","transition":"background .2s"}}>
                       <span style={{"width":"30px","height":"30px","flex":"0 0 30px","borderRadius":"999px","display":"grid","placeItems":"center","fontSize":"13px","fontWeight":"800","background":s?.nb,"color":s?.nc}}>
-                        {s?.mark}
+                        <span className="sc-interp">{s?.mark}</span>
                       </span>
                       <span>
-                        {s?.label}
+                        <span className="sc-interp">{s?.label}</span>
                       </span>
                     </button>
                   </React.Fragment>))}
@@ -615,7 +615,7 @@ export default class App extends React.Component {
                       {"🔄 360°"}
                     </button>
                     <button onClick={v.toggleAllOpen} style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","pointerEvents":"auto","whiteSpace":"nowrap"}}>
-                      {"🚪 "}{v.openAllLabel}
+                      {"🚪 "}<span className="sc-interp">{v.openAllLabel}</span>
                     </button>
                     <button onClick={v.center} aria-label="Markazga" style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","pointerEvents":"auto","whiteSpace":"nowrap"}}>
                       {"⌖ Markazga"}
@@ -625,10 +625,10 @@ export default class App extends React.Component {
                     <div style={{"position":"absolute","left":"50%","top":"72px","zIndex":"5","transform":"translateX(-50%)","width":"min(360px,calc(100% - 24px))","background":"var(--cyan)","color":"#06231E","borderRadius":"18px","padding":"14px 16px","display":"flex","flexDirection":"column","gap":"10px","boxShadow":"0 16px 40px rgba(0,0,0,.35)"}}>
                       <div style={{"display":"flex","justifyContent":"space-between","gap":"8px"}}>
                         <span style={{"fontWeight":"800","fontSize":"16px"}}>
-                          {v.tip?.text}
+                          <span className="sc-interp">{v.tip?.text}</span>
                         </span>
                         <span style={{"fontFamily":"'JetBrains Mono',monospace","fontSize":"12px","fontWeight":"700"}}>
-                          {v.tip?.n}{"/3"}
+                          <span className="sc-interp">{v.tip?.n}</span>{"/3"}
                         </span>
                       </div>
                       <div style={{"display":"flex","gap":"8px","justifyContent":"flex-end"}}>
@@ -636,7 +636,7 @@ export default class App extends React.Component {
                           {"O'tkazib yuborish"}
                         </button>
                         <button onClick={v.tipNext} style={{"height":"36px","padding":"0 14px","borderRadius":"10px","border":"0","background":"#06231E","color":"var(--cyan)","fontWeight":"800","cursor":"pointer"}}>
-                          {v.tip?.btn}
+                          <span className="sc-interp">{v.tip?.btn}</span>
                         </button>
                       </div>
                     </div>
@@ -646,10 +646,10 @@ export default class App extends React.Component {
                       <div style={{"display":"flex","justifyContent":"space-between","alignItems":"flex-start","gap":"8px"}}>
                         <div style={{"display":"flex","flexDirection":"column","gap":"4px","minWidth":"0"}}>
                           <span style={{"fontSize":"17px","fontWeight":"800","lineHeight":"1.2"}}>
-                            {v.sm?.name}
+                            <span className="sc-interp">{v.sm?.name}</span>
                           </span>
                           <span style={{"alignSelf":"flex-start","padding":"2px 8px","borderRadius":"999px","background":"var(--sfc2)","fontFamily":"'JetBrains Mono',monospace","fontSize":"12px"}}>
-                            {v.sm?.code}
+                            <span className="sc-interp">{v.sm?.code}</span>
                           </span>
                         </div>
                         <button onClick={v.deselect} aria-label="Yopish" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"36px","height":"36px","background":"var(--sfc2)"}}>
@@ -660,7 +660,7 @@ export default class App extends React.Component {
                         <div style={{"display":"flex","flexDirection":"column","gap":"2px"}}>
                           <div style={{"display":"flex","alignItems":"center","gap":"8px"}}>
                             <span style={{"flex":"1","fontSize":"14px","fontWeight":"700","color":"var(--mut)"}}>
-                              {r?.label}
+                              <span className="sc-interp">{r?.label}</span>
                             </span>
                             <button onClick={r?.dec} aria-label="Kamaytirish" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"40px","height":"40px","background":"var(--sfc2)"}}>
                               {"–"}
@@ -671,13 +671,13 @@ export default class App extends React.Component {
                             </button>
                           </div>
                           <span style={{"fontSize":"12px","color":"var(--mut)","textAlign":"right","fontVariantNumeric":"tabular-nums"}}>
-                            {"min "}{r?.min}{" · max "}{r?.max}
+                            {"min "}<span className="sc-interp">{r?.min}</span>{" · max "}<span className="sc-interp">{r?.max}</span>
                           </span>
                         </div>
                       </React.Fragment>))}
                       {v.sm?.hasWarn ? (<>
                         <div style={{"padding":"10px 12px","borderRadius":"12px","background":"rgba(255,123,123,.12)","border":"1px solid rgba(255,123,123,.4)","color":"var(--danger)","fontSize":"13px","fontWeight":"700"}}>
-                          {"⚠️ "}{v.sm?.warn}
+                          {"⚠️ "}<span className="sc-interp">{v.sm?.warn}</span>
                         </div>
                       </>) : null}
                       <div style={{"display":"flex","gap":"6px","flexWrap":"wrap"}}>
@@ -698,7 +698,7 @@ export default class App extends React.Component {
                         </button>
                       </div>
                       <button onClick={v.toggleModOpen} style={{"height":"48px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
-                        {"🚪 "}{v.sm?.openLabel}
+                        {"🚪 "}<span className="sc-interp">{v.sm?.openLabel}</span>
                       </button>
                       <span style={{"fontSize":"12px","color":"var(--mut)","textWrap":"pretty"}}>
                         {"Eshik yoki tortmani bosing — ochiladi. Ochilgan detalni bosing — ma'lumot chiqadi."}
@@ -720,10 +720,10 @@ export default class App extends React.Component {
                       <div style={{"display":"flex","justifyContent":"space-between","alignItems":"flex-start","gap":"8px"}}>
                         <div style={{"display":"flex","flexDirection":"column","gap":"4px","minWidth":"0"}}>
                           <span style={{"fontSize":"18px","fontWeight":"800","lineHeight":"1.2"}}>
-                            {v.pt?.name}
+                            <span className="sc-interp">{v.pt?.name}</span>
                           </span>
                           <span style={{"alignSelf":"flex-start","padding":"2px 8px","borderRadius":"999px","background":"var(--sfc2)","fontFamily":"'JetBrains Mono',monospace","fontSize":"12px"}}>
-                            {v.pt?.code}
+                            <span className="sc-interp">{v.pt?.code}</span>
                           </span>
                         </div>
                         <button onClick={v.closePart} aria-label="Yopish" style={{"width":"36px","height":"36px","flex":"0 0 auto","borderRadius":"12px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"17px","cursor":"pointer"}}>
@@ -741,24 +741,24 @@ export default class App extends React.Component {
                           {"O'lcham"}
                         </span>
                         <span style={{"fontWeight":"800","fontVariantNumeric":"tabular-nums","color":"var(--cyan)"}}>
-                          {v.pt?.dim}
+                          <span className="sc-interp">{v.pt?.dim}</span>
                         </span>
                         <span style={{"color":"var(--mut)"}}>
                           {"Material"}
                         </span>
                         <span style={{"fontWeight":"700"}}>
-                          {v.pt?.mat}
+                          <span className="sc-interp">{v.pt?.mat}</span>
                         </span>
                         <span style={{"color":"var(--mut)"}}>
                           {"Kromka"}
                         </span>
                         <span style={{"fontWeight":"700"}}>
-                          {v.pt?.edge}
+                          <span className="sc-interp">{v.pt?.edge}</span>
                         </span>
                       </div>
                       {v.pt?.isMov ? (<>
                         <button onClick={v.togglePartOpen} style={{"height":"44px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
-                          {"🚪 "}{v.pt?.movLabel}
+                          {"🚪 "}<span className="sc-interp">{v.pt?.movLabel}</span>
                         </button>
                       </>) : null}
                     </div>
@@ -780,7 +780,7 @@ export default class App extends React.Component {
                     <div style={{"display":"flex","padding":"4px","gap":"4px","borderRadius":"14px","background":"var(--sfc)"}}>
                       {(v.shapes || []).map((x, $index) => (<React.Fragment key={$index}>
                         <button onClick={x?.pick} style={{"flex":"1","height":"40px","borderRadius":"10px","border":"0","background":x?.bg,"color":x?.c,"fontWeight":"800","fontSize":"14px","cursor":"pointer","whiteSpace":"nowrap"}}>
-                          {x?.label}
+                          <span className="sc-interp">{x?.label}</span>
                         </button>
                       </React.Fragment>))}
                     </div>
@@ -807,7 +807,7 @@ export default class App extends React.Component {
                     <div style={{"display":"flex","flexWrap":"wrap","gap":"6px"}}>
                       {(v.roomPresets || []).map((p, $index) => (<React.Fragment key={$index}>
                         <button onClick={p?.pick} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":p?.bg,"color":p?.c,"fontVariantNumeric":"tabular-nums"}}>
-                          {p?.label}
+                          <span className="sc-interp">{p?.label}</span>
                         </button>
                       </React.Fragment>))}
                     </div>
@@ -823,10 +823,10 @@ export default class App extends React.Component {
                       {(v.holes || []).map((h, $index) => (<React.Fragment key={$index}>
                         <div style={{"display":"flex","justifyContent":"space-between","gap":"8px","padding":"8px 0","borderTop":"1px solid var(--line)","fontSize":"14px"}}>
                           <span style={{"fontWeight":"700"}}>
-                            {h?.t}
+                            <span className="sc-interp">{h?.t}</span>
                           </span>
                           <span style={{"color":"var(--mut)","fontVariantNumeric":"tabular-nums"}}>
-                            {h?.d}
+                            <span className="sc-interp">{h?.d}</span>
                           </span>
                         </div>
                       </React.Fragment>))}
@@ -839,10 +839,10 @@ export default class App extends React.Component {
                         <button onClick={t?.flip} style={{"minHeight":"48px","display":"flex","alignItems":"center","justifyContent":"space-between","gap":"12px","background":"none","border":"0","borderTop":"1px solid var(--line)","color":"var(--txt)","fontSize":"15px","fontWeight":"700","cursor":"pointer","padding":"0","textAlign":"left"}}>
                           <span style={{"display":"flex","flexDirection":"column"}}>
                             <span>
-                              {t?.label}
+                              <span className="sc-interp">{t?.label}</span>
                             </span>
                             <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"600"}}>
-                              {t?.sub}
+                              <span className="sc-interp">{t?.sub}</span>
                             </span>
                           </span>
                           <span style={{"width":"48px","height":"28px","flex":"0 0 48px","borderRadius":"999px","background":t?.bg,"position":"relative","transition":"background .2s"}}>
@@ -873,7 +873,7 @@ export default class App extends React.Component {
                     <div style={{"display":"flex","gap":"6px","overflowX":"auto","flex":"0 0 auto","paddingBottom":"2px"}}>
                       {(v.cats || []).map((c, $index) => (<React.Fragment key={$index}>
                         <button onClick={c?.pick} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","flex":"0 0 auto","background":c?.bg,"color":c?.c,"whiteSpace":"nowrap"}}>
-                          {c?.label}
+                          <span className="sc-interp">{c?.label}</span>
                         </button>
                       </React.Fragment>))}
                     </div>
@@ -881,10 +881,10 @@ export default class App extends React.Component {
                       {(v.mats || []).map((m, $index) => (<React.Fragment key={$index}>
                         <button onClick={m?.cycle} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc)","color":"var(--txt)","fontWeight":"600"}}>
                           <span style={{"color":"var(--mut)"}}>
-                            {m?.k}{":"}
+                            <span className="sc-interp">{m?.k}</span>{":"}
                           </span>
                           <span style={{"fontWeight":"800"}}>
-                            {m?.v}
+                            <span className="sc-interp">{m?.v}</span>
                           </span>
                           <span style={{"color":"var(--mut)"}}>
                             {"▾"}
@@ -914,18 +914,18 @@ export default class App extends React.Component {
                           </div>
                           <span style={{"flex":"1","minWidth":"0","display":"flex","flexDirection":"column","gap":"2px"}}>
                             <span style={{"fontWeight":"800","fontSize":"15px","lineHeight":"1.25"}}>
-                              {X?.name}
+                              <span className="sc-interp">{X?.name}</span>
                             </span>
                             <span style={{"fontSize":"13px","color":"var(--cyan)","fontWeight":"700","fontVariantNumeric":"tabular-nums"}}>
-                              {X?.dims}
+                              <span className="sc-interp">{X?.dims}</span>
                             </span>
                             <span style={{"fontSize":"12px","color":"var(--mut)","fontVariantNumeric":"tabular-nums"}}>
-                              {X?.lim}
+                              <span className="sc-interp">{X?.lim}</span>
                             </span>
                           </span>
                           <span style={{"display":"flex","flexDirection":"column","alignItems":"flex-end","gap":"6px"}}>
                             <span style={{"fontSize":"13px","fontWeight":"800","fontVariantNumeric":"tabular-nums","whiteSpace":"nowrap"}}>
-                              {X?.price}
+                              <span className="sc-interp">{X?.price}</span>
                             </span>
                             <span style={{"width":"32px","height":"32px","borderRadius":"10px","background":"var(--acc)","color":"var(--ink)","display":"grid","placeItems":"center","fontWeight":"800"}}>
                               {"+"}
@@ -950,7 +950,7 @@ export default class App extends React.Component {
                           {"Mijozga narx"}
                         </span>
                         <span style={{"fontSize":"19px","fontWeight":"800","fontVariantNumeric":"tabular-nums","lineHeight":"1.15"}}>
-                          {v.price?.total}
+                          <span className="sc-interp">{v.price?.total}</span>
                         </span>
                         <span style={{"fontSize":"12px","fontWeight":"700"}}>
                           {"so'm *"}
@@ -961,7 +961,7 @@ export default class App extends React.Component {
                           {"Sex tannarxi"}
                         </span>
                         <span style={{"fontSize":"19px","fontWeight":"800","fontVariantNumeric":"tabular-nums","lineHeight":"1.15"}}>
-                          {v.price?.cost}
+                          <span className="sc-interp">{v.price?.cost}</span>
                         </span>
                         <span style={{"fontSize":"12px","color":"var(--mut)"}}>
                           {"so'm"}
@@ -972,7 +972,7 @@ export default class App extends React.Component {
                           {"Foyda (+35%)"}
                         </span>
                         <span style={{"fontSize":"19px","fontWeight":"800","fontVariantNumeric":"tabular-nums","lineHeight":"1.15","color":"var(--cyan)"}}>
-                          {v.price?.profit}
+                          <span className="sc-interp">{v.price?.profit}</span>
                         </span>
                         <span style={{"fontSize":"12px","color":"var(--mut)"}}>
                           {"so'm"}
@@ -983,7 +983,7 @@ export default class App extends React.Component {
                       <button onClick={v.toggleMissing} style={{"width":"100%","minHeight":"48px","display":"flex","justifyContent":"space-between","alignItems":"center","gap":"8px","padding":"10px 14px","background":"none","border":"0","color":"var(--danger)","fontWeight":"800","fontSize":"14px","cursor":"pointer","textAlign":"left"}}>
                         {"⚠️ 12 ta zapchastning narxi bazada yo'q — 0 deb olindi"}
                         <span>
-                          {v.missArrow}
+                          <span className="sc-interp">{v.missArrow}</span>
                         </span>
                       </button>
                       {v.missOpen ? (<>
@@ -991,10 +991,10 @@ export default class App extends React.Component {
                           {(v.missing || []).map((m, $index) => (<React.Fragment key={$index}>
                             <span style={{"display":"flex","justifyContent":"space-between","gap":"8px"}}>
                               <span>
-                                {m?.n}
+                                <span className="sc-interp">{m?.n}</span>
                               </span>
                               <span style={{"color":"var(--mut)"}}>
-                                {m?.c}
+                                <span className="sc-interp">{m?.c}</span>
                               </span>
                             </span>
                           </React.Fragment>))}
@@ -1014,14 +1014,14 @@ export default class App extends React.Component {
                         <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"9px 0","borderTop":"1px solid var(--line)","fontSize":"13px"}}>
                           <span style={{"display":"flex","flexDirection":"column","minWidth":"0"}}>
                             <span style={{"fontWeight":"700"}}>
-                              {r?.name}
+                              <span className="sc-interp">{r?.name}</span>
                             </span>
                             <span style={{"color":"var(--mut)","fontVariantNumeric":"tabular-nums"}}>
-                              {r?.dim}{" · "}{r?.n}{" dona"}
+                              <span className="sc-interp">{r?.dim}</span>{" · "}<span className="sc-interp">{r?.n}</span>{" dona"}
                             </span>
                           </span>
                           <span style={{"fontWeight":"800","fontVariantNumeric":"tabular-nums","whiteSpace":"nowrap"}}>
-                            {r?.p}
+                            <span className="sc-interp">{r?.p}</span>
                           </span>
                         </div>
                       </React.Fragment>))}
@@ -1034,14 +1034,14 @@ export default class App extends React.Component {
                         <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"9px 0","borderTop":"1px solid var(--line)","fontSize":"13px"}}>
                           <span style={{"display":"flex","flexDirection":"column"}}>
                             <span style={{"fontWeight":"700"}}>
-                              {r?.name}
+                              <span className="sc-interp">{r?.name}</span>
                             </span>
                             <span style={{"color":"var(--mut)","fontVariantNumeric":"tabular-nums"}}>
-                              {r?.q}
+                              <span className="sc-interp">{r?.q}</span>
                             </span>
                           </span>
                           <span style={{"fontWeight":"800","fontVariantNumeric":"tabular-nums","whiteSpace":"nowrap"}}>
-                            {r?.p}
+                            <span className="sc-interp">{r?.p}</span>
                           </span>
                         </div>
                       </React.Fragment>))}
@@ -1049,7 +1049,7 @@ export default class App extends React.Component {
                     <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexDirection":"column","gap":"10px"}}>
                       <div style={{"display":"flex","justifyContent":"space-between","alignItems":"center","gap":"8px"}}>
                         <span style={{"fontWeight":"800"}}>
-                          {"Raskroy · "}{v.rk?.n}{"-varaq"}
+                          {"Raskroy · "}<span className="sc-interp">{v.rk?.n}</span>{"-varaq"}
                         </span>
                         <div style={{"display":"flex","gap":"6px"}}>
                           <button onClick={v.rkPrev} aria-label="Oldingi varaq" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"36px","height":"36px","background":"var(--sfc2)"}}>
@@ -1086,10 +1086,10 @@ export default class App extends React.Component {
                       {(v.detGroups || []).map((g, $index) => (<React.Fragment key={$index}>
                         <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"9px 0","borderTop":"1px solid var(--line)","fontSize":"13px"}}>
                           <span style={{"fontWeight":"700"}}>
-                            {g?.n}
+                            <span className="sc-interp">{g?.n}</span>
                           </span>
                           <span style={{"color":"var(--mut)","fontVariantNumeric":"tabular-nums"}}>
-                            {g?.c}
+                            <span className="sc-interp">{g?.c}</span>
                           </span>
                         </div>
                       </React.Fragment>))}
@@ -1134,14 +1134,14 @@ export default class App extends React.Component {
                       <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexDirection":"column","gap":"12px","padding":"18px"}}>
                         <div style={{"display":"flex","justifyContent":"space-between","alignItems":"center"}}>
                           <span style={{"fontSize":"13px","fontWeight":"800","letterSpacing":".08em","textTransform":"uppercase","color":g?.col}}>
-                            {g?.title}
+                            <span className="sc-interp">{g?.title}</span>
                           </span>
                           <span style={{"fontSize":"12px","color":"var(--mut)"}}>
-                            {g?.sub}
+                            <span className="sc-interp">{g?.sub}</span>
                           </span>
                         </div>
                         <button onClick={g?.main} style={{"height":"52px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer"}}>
-                          {g?.mainLabel}
+                          <span className="sc-interp">{g?.mainLabel}</span>
                         </button>
                         <div style={{"display":"flex","flexWrap":"wrap","gap":"6px"}}>
                           <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"700","alignSelf":"center"}}>
@@ -1149,7 +1149,7 @@ export default class App extends React.Component {
                           </span>
                           {(g?.more || []).map((m, $index) => (<React.Fragment key={$index}>
                             <button onClick={m?.go} disabled={m?.dis} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","minHeight":"34px","background":"var(--sfc2)","color":m?.c,"fontFamily":"'JetBrains Mono',monospace","fontSize":"12px","cursor":m?.cur}}>
-                              {m?.label}
+                              <span className="sc-interp">{m?.label}</span>
                             </button>
                           </React.Fragment>))}
                         </div>
@@ -1177,13 +1177,13 @@ export default class App extends React.Component {
             <div style={{"display":"flex","gap":"6px","flexWrap":"wrap"}}>
               {(v.aiEx || []).map((x, $index) => (<React.Fragment key={$index}>
                 <button onClick={x?.pick} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"600","fontSize":"13px","textAlign":"left"}}>
-                  {x?.t}
+                  <span className="sc-interp">{x?.t}</span>
                 </button>
               </React.Fragment>))}
             </div>
             <div style={{"display":"flex","gap":"8px"}}>
               <button onClick={v.toggleMic} style={{"height":"52px","padding":"0 18px","borderRadius":"14px","border":"1px solid var(--line)","background":v.micBg,"color":v.micT,"fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
-                {"🎤 "}{v.micLabel}
+                {"🎤 "}<span className="sc-interp">{v.micLabel}</span>
               </button>
               <button onClick={v.aiBuild} style={{"flex":"1","height":"52px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer"}}>
                 {"🪄 Qurish"}
@@ -1203,7 +1203,7 @@ export default class App extends React.Component {
                     {"Ichini ko'rish"}
                   </span>
                   <span style={{"fontSize":"22px","fontWeight":"800"}}>
-                    {v.ins?.name}
+                    <span className="sc-interp">{v.ins?.name}</span>
                   </span>
                 </div>
                 <div style={{"position":"absolute","left":"16px","right":"16px","bottom":"16px","zIndex":"3","display":"flex","flexWrap":"wrap","gap":"12px","alignItems":"center","padding":"10px 16px","borderRadius":"18px","background":"rgba(23,50,57,.92)","border":"1px solid var(--line)"}}>
@@ -1221,7 +1221,7 @@ export default class App extends React.Component {
                         {"Sochish"}
                       </span>
                       <span style={{"color":"var(--txt)"}}>
-                        {v.ins?.ex}{"%"}
+                        <span className="sc-interp">{v.ins?.ex}</span>{"%"}
                       </span>
                     </span>
                     <input type="range" min="0" max="100" value={v.ins?.ex} onChange={v.onInsEx} />
@@ -1232,14 +1232,14 @@ export default class App extends React.Component {
                 <div style={{"display":"flex","justifyContent":"space-between","alignItems":"flex-start","gap":"8px"}}>
                   <div style={{"display":"flex","flexDirection":"column","gap":"4px"}}>
                     <span style={{"padding":"2px 8px","alignSelf":"flex-start","borderRadius":"999px","background":"var(--sfc2)","fontFamily":"'JetBrains Mono',monospace","fontSize":"12px"}}>
-                      {v.ins?.code}
+                      <span className="sc-interp">{v.ins?.code}</span>
                     </span>
                     <span style={{"fontSize":"15px","fontWeight":"800","color":"var(--cyan)","fontVariantNumeric":"tabular-nums"}}>
-                      {v.ins?.size}
+                      <span className="sc-interp">{v.ins?.size}</span>
                     </span>
                     {v.ins?.hasNote ? (<>
                       <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"600","maxWidth":"240px"}}>
-                        {v.ins?.note}
+                        <span className="sc-interp">{v.ins?.note}</span>
                       </span>
                     </>) : null}
                   </div>
@@ -1250,7 +1250,7 @@ export default class App extends React.Component {
                 <div style={{"display":"grid","gridTemplateColumns":"1fr 1fr","gap":"8px"}}>
                   <div style={{"background":"var(--sfc)","borderRadius":"16px","padding":"12px"}}>
                     <div style={{"fontSize":"28px","fontWeight":"800","color":"var(--acct)","lineHeight":"1.1","fontVariantNumeric":"tabular-nums"}}>
-                      {v.ins?.detal}
+                      <span className="sc-interp">{v.ins?.detal}</span>
                     </div>
                     <div style={{"fontSize":"12px","color":"var(--mut)"}}>
                       {"detal"}
@@ -1258,7 +1258,7 @@ export default class App extends React.Component {
                   </div>
                   <div style={{"background":"var(--sfc)","borderRadius":"16px","padding":"12px"}}>
                     <div style={{"fontSize":"28px","fontWeight":"800","color":"var(--acct)","lineHeight":"1.1","fontVariantNumeric":"tabular-nums"}}>
-                      {v.ins?.zap}
+                      <span className="sc-interp">{v.ins?.zap}</span>
                     </div>
                     <div style={{"fontSize":"12px","color":"var(--mut)"}}>
                       {"zapchast"}
@@ -1270,15 +1270,15 @@ export default class App extends React.Component {
                     <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"9px 0","borderTop":"1px solid var(--line)","fontSize":"13px"}}>
                       <span>
                         <span style={{"color":"var(--mut)"}}>
-                          {r?.n}{"×"}
+                          <span className="sc-interp">{r?.n}</span>{"×"}
                         </span>
                         {" "}
                         <span style={{"fontWeight":"700"}}>
-                          {r?.name}
+                          <span className="sc-interp">{r?.name}</span>
                         </span>
                       </span>
                       <span style={{"fontWeight":"700","fontVariantNumeric":"tabular-nums","whiteSpace":"nowrap"}}>
-                        {r?.dim}
+                        <span className="sc-interp">{r?.dim}</span>
                       </span>
                     </div>
                   </React.Fragment>))}
@@ -1286,9 +1286,9 @@ export default class App extends React.Component {
                 <div style={{"display":"flex","flexWrap":"wrap","gap":"6px"}}>
                   {(v.ins?.hw || []).map((h, $index) => (<React.Fragment key={$index}>
                     <span style={{"padding":"5px 10px","borderRadius":"999px","background":"var(--sfc)","fontSize":"12px","fontWeight":"700"}}>
-                      {h?.name}{" "}
+                      <span className="sc-interp">{h?.name}</span>{" "}
                       <span style={{"color":"var(--acct)"}}>
-                        {"×"}{h?.cnt}
+                        {"×"}<span className="sc-interp">{h?.cnt}</span>
                       </span>
                     </span>
                   </React.Fragment>))}
@@ -1301,17 +1301,17 @@ export default class App extends React.Component {
           <div style={{"position":"fixed","inset":"0","zIndex":"80","background":"rgba(4,12,15,.6)","display":"grid","placeItems":"center","padding":"16px"}}>
             <div role="dialog" style={{"width":"min(420px,100%)","background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"24px","padding":"24px","display":"flex","flexDirection":"column","gap":"12px","boxShadow":"0 30px 80px rgba(0,0,0,.5)"}}>
               <span style={{"fontSize":"20px","fontWeight":"800"}}>
-                {v.cf?.title}
+                <span className="sc-interp">{v.cf?.title}</span>
               </span>
               <span style={{"color":"var(--mut)"}}>
-                {v.cf?.text}
+                <span className="sc-interp">{v.cf?.text}</span>
               </span>
               <div style={{"display":"flex","gap":"8px","justifyContent":"flex-end","paddingTop":"8px"}}>
                 <button onClick={v.cfNo} style={{"height":"48px","padding":"0 18px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"800","cursor":"pointer"}}>
                   {"Bekor"}
                 </button>
                 <button onClick={v.cfYes} style={{"height":"48px","padding":"0 18px","borderRadius":"14px","border":"0","background":v.cf?.bg,"color":v.cf?.c,"fontWeight":"800","cursor":"pointer"}}>
-                  {v.cf?.ok}
+                  <span className="sc-interp">{v.cf?.ok}</span>
                 </button>
               </div>
             </div>
@@ -1319,7 +1319,7 @@ export default class App extends React.Component {
         </>) : null}
         {v.hasToast ? (<>
           <div role="status" style={{"position":"fixed","left":"50%","bottom":"92px","zIndex":"90","transform":"translateX(-50%)","maxWidth":"calc(100% - 32px)","padding":"12px 18px","borderRadius":"14px","background":"var(--txt)","color":"var(--bg)","fontWeight":"800","fontSize":"14px","boxShadow":"0 16px 40px rgba(0,0,0,.4)"}}>
-            {v.toast}
+            <span className="sc-interp">{v.toast}</span>
           </div>
         </>) : null}
       </div>

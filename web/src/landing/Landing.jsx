@@ -240,22 +240,22 @@ export default class Landing extends React.Component {
             <div style={{"position":"absolute","left":"clamp(16px,4vw,48px)","bottom":"clamp(16px,5vh,48px)","zIndex":"3","width":"min(430px,calc(100% - 32px))","opacity":v.st?.co,"transform":v.st?.ct,"background":"rgba(23,50,57,.82)","backdropFilter":"blur(14px)","WebkitBackdropFilter":"blur(14px)","border":"1px solid var(--line)","borderRadius":"24px","padding":"clamp(18px,2.2vw,26px)","display":"flex","flexDirection":"column","gap":"12px","boxShadow":"0 24px 60px rgba(0,0,0,.25)"}}>
               <div style={{"display":"flex","justifyContent":"space-between","alignItems":"center"}}>
                 <span style={{"fontFamily":"'JetBrains Mono',monospace","fontSize":"13px","fontWeight":"700","color":"var(--acct)"}}>
-                  {v.st?.n}{" / 06"}
+                  <span className="sc-interp">{v.st?.n}</span>{" / 06"}
                 </span>
                 <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"600"}}>
                   {"Pastki shkaf · MC-KP-02"}
                 </span>
               </div>
               <h3 style={{"margin":"0","fontSize":"clamp(22px,2.3vw,30px)","lineHeight":"1.1","letterSpacing":"-.02em","fontWeight":"800","textWrap":"balance"}}>
-                {v.st?.title}
+                <span className="sc-interp">{v.st?.title}</span>
               </h3>
               <p style={{"margin":"0","color":"var(--mut)","fontSize":"15px","textWrap":"pretty"}}>
-                {v.st?.text}
+                <span className="sc-interp">{v.st?.text}</span>
               </p>
               <div style={{"display":"grid","gridTemplateColumns":"repeat(4,minmax(0,1fr))","gap":"6px"}}>
                 <div style={{"background":"var(--sfc2)","borderRadius":"14px","padding":"10px"}}>
                   <div style={{"fontSize":"22px","fontWeight":"800","color":"var(--acct)","fontVariantNumeric":"tabular-nums"}}>
-                    {v.st?.c?.detal}
+                    <span className="sc-interp">{v.st?.c?.detal}</span>
                   </div>
                   <div style={{"fontSize":"12px","color":"var(--mut)"}}>
                     {"detal"}
@@ -263,7 +263,7 @@ export default class Landing extends React.Component {
                 </div>
                 <div style={{"background":"var(--sfc2)","borderRadius":"14px","padding":"10px"}}>
                   <div style={{"fontSize":"22px","fontWeight":"800","color":"var(--acct)","fontVariantNumeric":"tabular-nums"}}>
-                    {v.st?.c?.zap}
+                    <span className="sc-interp">{v.st?.c?.zap}</span>
                   </div>
                   <div style={{"fontSize":"12px","color":"var(--mut)"}}>
                     {"zapchast"}
@@ -271,7 +271,7 @@ export default class Landing extends React.Component {
                 </div>
                 <div style={{"background":"var(--sfc2)","borderRadius":"14px","padding":"10px"}}>
                   <div style={{"fontSize":"22px","fontWeight":"800","color":"var(--acct)","fontVariantNumeric":"tabular-nums"}}>
-                    {v.st?.c?.krom}
+                    <span className="sc-interp">{v.st?.c?.krom}</span>
                   </div>
                   <div style={{"fontSize":"12px","color":"var(--mut)"}}>
                     {"m kromka"}
@@ -279,7 +279,7 @@ export default class Landing extends React.Component {
                 </div>
                 <div style={{"background":"var(--sfc2)","borderRadius":"14px","padding":"10px"}}>
                   <div style={{"fontSize":"22px","fontWeight":"800","color":"var(--acct)","fontVariantNumeric":"tabular-nums"}}>
-                    {v.st?.c?.area}
+                    <span className="sc-interp">{v.st?.c?.area}</span>
                   </div>
                   <div style={{"fontSize":"12px","color":"var(--mut)"}}>
                     {"m² plita"}
@@ -504,7 +504,7 @@ export default class Landing extends React.Component {
                   <div style={{"position":"absolute","right":"12px","top":"60px","zIndex":"4","width":"min(360px,calc(100% - 24px))","maxHeight":"calc(100% - 72px)","overflow":"auto","background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","boxShadow":"0 16px 40px rgba(0,0,0,.28)","display":"flex","flexDirection":"column","gap":"10px"}}>
                     <div style={{"display":"flex","justifyContent":"space-between","alignItems":"center","gap":"8px"}}>
                       <span style={{"fontSize":"18px","fontWeight":"800"}}>
-                        {v.sel?.name}
+                        <span className="sc-interp">{v.sel?.name}</span>
                       </span>
                       <button onClick={v.closeSel} aria-label="Yopish" style={{"width":"36px","height":"36px","borderRadius":"12px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","cursor":"pointer"}}>
                         {"×"}
@@ -521,25 +521,25 @@ export default class Landing extends React.Component {
                         {"Tayyor o'lcham"}
                       </span>
                       <span style={{"fontWeight":"700","fontVariantNumeric":"tabular-nums"}}>
-                        {v.sel?.dim}
+                        <span className="sc-interp">{v.sel?.dim}</span>
                       </span>
                       <span style={{"color":"var(--mut)"}}>
                         {"Material"}
                       </span>
                       <span style={{"fontWeight":"600"}}>
-                        {v.sel?.mat}
+                        <span className="sc-interp">{v.sel?.mat}</span>
                       </span>
                       <span style={{"color":"var(--mut)"}}>
                         {"Soni"}
                       </span>
                       <span style={{"fontWeight":"600"}}>
-                        {v.sel?.n}
+                        <span className="sc-interp">{v.sel?.n}</span>
                       </span>
                       <span style={{"color":"var(--mut)"}}>
                         {"Kromka"}
                       </span>
                       <span style={{"fontWeight":"600"}}>
-                        {v.sel?.edge}
+                        <span className="sc-interp">{v.sel?.edge}</span>
                       </span>
                     </div>
                   </div>
@@ -560,7 +560,7 @@ export default class Landing extends React.Component {
                       {"Sochish"}
                     </span>
                     <span style={{"color":"var(--txt)","fontVariantNumeric":"tabular-nums"}}>
-                      {v.explode}{"%"}
+                      <span className="sc-interp">{v.explode}</span>{"%"}
                     </span>
                   </span>
                   <input type="range" min="0" max="100" step="1" value={v.explode} onChange={v.onExplode} />
@@ -572,18 +572,18 @@ export default class Landing extends React.Component {
                         {"Eni · min 600 · max 1070"}
                       </span>
                       <span style={{"color":"var(--txt)","fontVariantNumeric":"tabular-nums"}}>
-                        {v.W}{" mm"}
+                        <span className="sc-interp">{v.W}</span>{" mm"}
                       </span>
                     </span>
                     <input type="range" min="600" max="1070" step="10" value={v.W} onChange={v.onW} />
                     <span style={{"fontSize":"13px","color":"var(--cyan)","fontWeight":"600","fontVariantNumeric":"tabular-nums"}}>
-                      {"Eshik 2 × "}{v.doorW}{" mm · Polka "}{v.polkaW}{" mm"}
+                      {"Eshik 2 × "}<span className="sc-interp">{v.doorW}</span>{" mm · Polka "}<span className="sc-interp">{v.polkaW}</span>{" mm"}
                     </span>
                   </label>
                 </>) : null}
                 {v.notKP ? (<>
                   <span style={{"flex":"1 1 240px","fontSize":"14px","color":"var(--mut)"}}>
-                    {"O'lchamni sozlash — ilovada, modul chegarasida: "}{v.spec?.lim}
+                    {"O'lchamni sozlash — ilovada, modul chegarasida: "}<span className="sc-interp">{v.spec?.lim}</span>
                   </span>
                 </>) : null}
               </div>
@@ -593,23 +593,23 @@ export default class Landing extends React.Component {
                 <div style={{"display":"flex","justifyContent":"space-between","gap":"8px","alignItems":"flex-start"}}>
                   <div style={{"display":"flex","flexDirection":"column","gap":"2px"}}>
                     <span style={{"fontSize":"20px","fontWeight":"800","letterSpacing":"-.01em"}}>
-                      {v.spec?.name}
+                      <span className="sc-interp">{v.spec?.name}</span>
                     </span>
                     <span style={{"fontSize":"14px","color":"var(--mut)"}}>
-                      {v.spec?.sub}
+                      <span className="sc-interp">{v.spec?.sub}</span>
                     </span>
                   </div>
                   <span style={{"padding":"4px 10px","borderRadius":"999px","background":"var(--sfc2)","fontFamily":"'JetBrains Mono',monospace","fontSize":"12px","whiteSpace":"nowrap"}}>
-                    {v.spec?.code}
+                    <span className="sc-interp">{v.spec?.code}</span>
                   </span>
                 </div>
                 <span style={{"fontSize":"15px","fontWeight":"700","color":"var(--cyan)","fontVariantNumeric":"tabular-nums"}}>
-                  {v.size}
+                  <span className="sc-interp">{v.size}</span>
                 </span>
                 <div style={{"display":"grid","gridTemplateColumns":"1fr 1fr","gap":"8px"}}>
                   <div style={{"background":"var(--sfc2)","borderRadius":"18px","padding":"14px"}}>
                     <div style={{"fontSize":"32px","fontWeight":"800","color":"var(--acct)","fontVariantNumeric":"tabular-nums","lineHeight":"1.1"}}>
-                      {v.cnt?.detal}
+                      <span className="sc-interp">{v.cnt?.detal}</span>
                     </div>
                     <div style={{"fontSize":"13px","color":"var(--mut)"}}>
                       {"detal"}
@@ -617,7 +617,7 @@ export default class Landing extends React.Component {
                   </div>
                   <div style={{"background":"var(--sfc2)","borderRadius":"18px","padding":"14px"}}>
                     <div style={{"fontSize":"32px","fontWeight":"800","color":"var(--acct)","fontVariantNumeric":"tabular-nums","lineHeight":"1.1"}}>
-                      {v.cnt?.zap}
+                      <span className="sc-interp">{v.cnt?.zap}</span>
                     </div>
                     <div style={{"fontSize":"13px","color":"var(--mut)"}}>
                       {"zapchast"}
@@ -625,7 +625,7 @@ export default class Landing extends React.Component {
                   </div>
                   <div style={{"background":"var(--sfc2)","borderRadius":"18px","padding":"14px"}}>
                     <div style={{"fontSize":"32px","fontWeight":"800","color":"var(--acct)","fontVariantNumeric":"tabular-nums","lineHeight":"1.1"}}>
-                      {v.cnt?.krom}
+                      <span className="sc-interp">{v.cnt?.krom}</span>
                     </div>
                     <div style={{"fontSize":"13px","color":"var(--mut)"}}>
                       {"m kromka"}
@@ -633,7 +633,7 @@ export default class Landing extends React.Component {
                   </div>
                   <div style={{"background":"var(--sfc2)","borderRadius":"18px","padding":"14px"}}>
                     <div style={{"fontSize":"32px","fontWeight":"800","color":"var(--acct)","fontVariantNumeric":"tabular-nums","lineHeight":"1.1"}}>
-                      {v.cnt?.area}
+                      <span className="sc-interp">{v.cnt?.area}</span>
                     </div>
                     <div style={{"fontSize":"13px","color":"var(--mut)"}}>
                       {"m² plita"}
@@ -654,23 +654,23 @@ export default class Landing extends React.Component {
                   <div style={{"display":"flex","justifyContent":"space-between","gap":"12px","padding":"9px 0","borderTop":"1px solid var(--line)","fontSize":"14px"}}>
                     <span style={{"display":"flex","gap":"8px","minWidth":"0"}}>
                       <span style={{"color":"var(--mut)","fontVariantNumeric":"tabular-nums","width":"22px"}}>
-                        {r?.n}{"×"}
+                        <span className="sc-interp">{r?.n}</span>{"×"}
                       </span>
                       <span style={{"fontWeight":"600"}}>
-                        {r?.name}
+                        <span className="sc-interp">{r?.name}</span>
                       </span>
                     </span>
                     <span style={{"fontVariantNumeric":"tabular-nums","fontWeight":"600","whiteSpace":"nowrap"}}>
-                      {r?.dim}
+                      <span className="sc-interp">{r?.dim}</span>
                     </span>
                   </div>
                 </React.Fragment>))}
                 <div style={{"display":"flex","flexWrap":"wrap","gap":"6px","paddingTop":"12px","borderTop":"1px solid var(--line)"}}>
                   {(v.spec?.hwList || []).map((h, $index) => (<React.Fragment key={$index}>
                     <span style={{"padding":"5px 10px","borderRadius":"999px","background":"var(--sfc2)","fontSize":"12px","fontWeight":"600"}}>
-                      {h?.name}{" "}
+                      <span className="sc-interp">{h?.name}</span>{" "}
                       <span style={{"color":"var(--acct)","fontWeight":"800"}}>
-                        {"×"}{h?.cnt}
+                        {"×"}<span className="sc-interp">{h?.cnt}</span>
                       </span>
                     </span>
                   </React.Fragment>))}
