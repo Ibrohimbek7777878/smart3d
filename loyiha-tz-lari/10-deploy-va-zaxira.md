@@ -1,6 +1,6 @@
 # TZ-10 — Saytni ishga chiqarish (deploy) va zaxira nusxa
 
-**Sana:** 2026-10-15 · **Navbat:** 10 · **Holat:** MA'LUMOT KUTILMOQDA — Q4 va L1. **Bog'liq:** TZ-07.
+**Sana:** 2026-10-15 · **Navbat:** 10 · **Holat:** REPO QISMI BAJARILDI 2026-10-15 — serverga o'rnatishni admin `server/DEPLOY.md` bo'yicha qiladi; L1 (yurist) kutilmoqda. **Bog'liq:** TZ-07.
 
 ## Muammo
 - **Sayt hech qayerda ishlamayapti** (B4).
@@ -44,3 +44,21 @@
 ## Qabul
 - Test serverda yo'riqnoma bo'yicha noldan ishga tushdi.
 - Zaxira nusxadan tiklandi.
+
+## Natija (2026-10-15)
+- **`server/DEPLOY.md`** — Bittada serveri (`smart3d.bittada.uz`) uchun tartib:
+  - talablar, kodni ko'chirish (`git archive`), muhit fayli (gitga kirmaydi);
+  - baza, PM2 yoki systemd, nginx (namuna), HTTPS;
+  - tekshiruv, zaxira (cron), tiklash, yangilash va orqaga qaytish.
+  - Hammasi "avval test" tartibida. Server sozlamalarini admin qo'yadi (5.5).
+- **`server/backup.js`:**
+  - server ishlab turganda ham xavfsiz nusxa (better-sqlite3 backup API);
+  - nusxa butunligi tekshiriladi, bitta fayl (WAL'siz);
+  - oxirgi `KEEP` (14) tasi saqlanadi.
+- **PM2:** `ecosystem.config.js` → `.cjs` (`package.json` ESM bo'lgani uchun PM2 eskisini yuklay olmasdi). `ARCHITECTURE.md` dagi ishoralar ham yangilandi.
+- **Testlar:**
+  - `server/test/backup.test.js` — nusxa, butunlik, rotatsiya, baza yo'q bo'lsa xato;
+  - `server/test/prod.test.js` — production'da `JWT_SECRET` yo'q yoki qisqa bo'lsa ishga tushmaydi; to'g'ri sozlamada `/api/health` ok, Eskiz'siz SMS 503 va `dev_code` yo'q.
+  - Server 34/34.
+- **Sinalmadi:** Docker image qurilishi (internetdan `node:20` image tortadi). Haqiqiy serverga o'rnatish — admin ishi.
+

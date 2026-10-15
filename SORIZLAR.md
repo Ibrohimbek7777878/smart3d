@@ -231,3 +231,6 @@ bularn keyinroq qilamzi hozir bita konstruksiya qila olamzmi ozi
 79. loyhan bilasan toliq nimalar qila olishn ham bilasan shundaymi toliq tnaishb chiqdingmi oyha bilan
 
 80. qara /home/ibrohim/Desktop/bittada sunpin/Smart3D/frontend  bu yerda loyhan frontend qism uchun claude designda qilingan dizyan bor va yana bir nechata fayllar ham bor korib toliq tanishb chiq hozir boshqa chatda ham claude ishlayabd unga tegib ketma  knstruksiyan qila olamizmi hozir va loyhan realn prodcutionga 2kunda chiqara olamzmi
+
+81. end dizaynga teginmaymiz yani dizyan buzmagan holda loyhamizga moslahstriamiz logo ga ham teginma  kirsh paroln olib tashlaymiz va orngia sms qoyamiz yokida emal bilan krish qilamiz va bir nechta dizaynda yoq sahifalarin qoshib ketamiz shunday qilska yaxshimi yokida
+sen hozir menga yana bir md fayl berasan va osha fyan claude desiganga beraman va ozi togirlab berad  qay bir yaxsh va sifatli tez bolad

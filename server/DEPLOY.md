@@ -1,0 +1,134 @@
+# Smart3D — serverga o'rnatish va zaxira (TZ-10)
+
+**Kim uchun:** Bittada server admini yoki server agenti. Manzil: `smart3d.bittada.uz`, Bittada serveri (egasi qarori, 2026-10-15).
+
+**Tartib:** avval **test** (alohida port + alohida baza), tekshirilgach — jonli.
+
+**Qoida:** server sozlamalarini (nginx, systemd, PM2) admin qo'yadi. Bu hujjat faqat namuna beradi. Boshqa xizmatlarga tegilmaydi — Smart3D o'z porti, o'z jarayoni va o'z bazasida ishlaydi.
+
+## 1. Talablar
+- Node.js 20+.
+- `better-sqlite3` qurish uchun: `python3`, `make`, `g++`.
+- Bo'sh port, masalan `3070` — admin tanlaydi.
+
+## 2. Kod
+Repoda `git remote` yo'q — kod serverga arxiv yoki `rsync` bilan ko'chiriladi:
+```bash
+# ishlab chiquvchi kompyuterida (repo ildizi):
+git archive --format=tar.gz -o smart3d.tar.gz HEAD
+# serverda:
+mkdir -p /srv/smart3d && tar -xzf smart3d.tar.gz -C /srv/smart3d
+cd /srv/smart3d/server && npm ci --omit=dev
+```
+Kerakli papkalar faqat `server/` va `app/` (frontend). `data1/` va `Smart3D_malumot/` serverga **kerak emas**.
+
+## 3. Muhit fayli (gitga KIRMAYDI)
+`/etc/smart3d.env` — egasi `root`, guruhi `smart3d`, ruxsat `640`:
+```bash
+NODE_ENV=production
+PORT=3070
+TRUST_PROXY=1
+DB_PATH=/var/lib/smart3d/smart3d.db
+JWT_SECRET=<openssl rand -hex 48 natijasi>
+JWT_EXPIRES=30d
+# SMS (Eskiz.uz) — bo'lmasa kirish ishlamaydi (production'da 503)
+ESKIZ_EMAIL=<eskiz akkaunti>
+ESKIZ_PASSWORD=<eskiz kaliti>
+ESKIZ_FROM=4546
+# AI — ixtiyoriy (bo'lmasa qoidali tahlilchi ishlaydi)
+# AI_PROVIDER=anthropic   # yoki gemini | openai
+# AI_MODEL=claude-opus-5-5
+# AI_API_KEY=<kalit>
+```
+- `JWT_SECRET` 32 belgidan qisqa bo'lsa, production server ishga tushmaydi.
+- Standart `admin123` paroli bilan ham ishga tushmaydi.
+- **Eskiz:** SMS matni ("Smart3D kirish kodi: XXXXXX. Kodni hech kimga bermang.") shablon sifatida moderatsiyadan o'tishi talab qilinishi mumkin — akkauntda tekshiring.
+
+## 4. Baza (faqat birinchi marta)
+```bash
+mkdir -p /var/lib/smart3d
+cd /srv/smart3d/server
+DB_PATH=/var/lib/smart3d/smart3d.db ADMIN_EMAIL=<admin email> ADMIN_PASSWORD='<kuchli parol>' node init-db.js
+```
+Keyingi ishga tushishlarda yangi jadvallar o'zi qo'shiladi (`CREATE TABLE IF NOT EXISTS`) — `init-db` qayta ishlatilmaydi. Uni `--force` bilan ishlatsangiz, foydalanuvchilar o'chadi.
+
+## 5. Ishga tushirish (bittasini tanlang)
+**PM2:**
+```bash
+cd /srv/smart3d/server
+set -a; . /etc/smart3d.env; set +a
+pm2 start ecosystem.config.cjs --env production && pm2 save
+```
+
+**systemd** (namuna, admin qo'yadi):
+```ini
+[Unit]
+Description=Smart3D
+After=network.target
+[Service]
+User=smart3d
+WorkingDirectory=/srv/smart3d/server
+EnvironmentFile=/etc/smart3d.env
+ExecStart=/usr/bin/node index.js
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target
+```
+- **Bitta jarayon.** SQLite, so'rov cheklovlari va SMS hisoblagichlari xotirada — klaster rejimi ishlatilmaydi.
+- **Docker** (muqobil): repo ildizidan `docker build -f server/Dockerfile -t smart3d .`.
+
+## 6. nginx (namuna, admin qo'yadi)
+```nginx
+server {
+  server_name smart3d.bittada.uz;
+  client_max_body_size 3m;
+  location /ws { proxy_pass http://127.0.0.1:3070; proxy_http_version 1.1;
+                 proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade"; }
+  location / { proxy_pass http://127.0.0.1:3070;
+               proxy_set_header Host $host; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+               proxy_set_header X-Forwarded-Proto $scheme; }
+}
+```
+HTTPS — `certbot --nginx -d smart3d.bittada.uz`. Sayt PWA va telefon kamerasi/mikrofoni uchun HTTPS shart.
+
+## 7. Tekshiruv
+```bash
+curl -s https://smart3d.bittada.uz/api/health        # {"ok":true,...}
+curl -s https://smart3d.bittada.uz/api/ai/status     # {"enabled":…}
+```
+Brauzerda:
+- sayt ochiladi;
+- 👤 tugmasi ko'rinadi;
+- telefon raqamiga SMS kod keladi;
+- loyiha saqlanadi va boshqa qurilmada ochiladi.
+
+## 8. Zaxira nusxa
+Har kuni 03:00 (cron, namuna):
+```cron
+0 3 * * * cd /srv/smart3d/server && DB_PATH=/var/lib/smart3d/smart3d.db BACKUP_DIR=/var/backups/smart3d KEEP=14 /usr/bin/node backup.js >> /var/log/smart3d-backup.log 2>&1
+```
+- `backup.js` server ishlab turganda ham xavfsiz.
+- Nusxaning butunligini tekshiradi, oxirgi 14 tasini saqlaydi.
+- Natija JSON ko'rinishida logga yoziladi.
+
+**Zaxiradan tiklash:**
+1. Servisni to'xtating.
+2. `cp /var/backups/smart3d/smart3d-<sana>.db /var/lib/smart3d/smart3d.db`
+3. `-wal` va `-shm` fayllarini o'chiring.
+4. Servisni ishga tushiring.
+5. `/api/health` ni tekshiring.
+
+Tiklashni oyda bir marta test serverda sinab ko'ring.
+
+## 9. Yangilash
+1. Zaxira: `node backup.js`.
+2. Yangi kodni alohida papkaga oching: `/srv/smart3d-<sana>`; `npm ci --omit=dev`.
+3. Test portida tekshiring (bazaning **nusxasi** bilan).
+4. Asosiy papkani almashtiring va servisni qayta ishga tushiring (admin).
+5. `/api/health` ni tekshiring.
+
+**Orqaga qaytish:** oldingi papka va 1-qadamdagi zaxira.
+
+## 10. Hali hal qilinmagan
+- **L1:** mijozlarning shaxsiy ma'lumotlari O'zbekistondagi serverda saqlanishi — yurist xulosasi kerak.
+- **Monitoring:** hozircha `/api/health` va PM2 / systemd logi. Tashqi monitoring keyin.

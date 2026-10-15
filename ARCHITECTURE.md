@@ -58,7 +58,7 @@
 # Har bir serverda CPU core sonida worker
 # Masalan: 8 core → 8 worker process
 
-# ecosystem.config.js (PM2)
+# ecosystem.config.cjs (PM2)
 module.exports = {
   apps: [{
     name: 'smart3d-api',
@@ -428,7 +428,7 @@ cd server && npm ci --production
 npm run migrate
 
 # 4. PM2 restart (zero-downtime)
-pm2 reload ecosystem.config.js
+pm2 reload ecosystem.config.cjs
 
 # 5. Health check
 sleep 5
