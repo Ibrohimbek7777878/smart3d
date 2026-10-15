@@ -211,8 +211,8 @@ c7(bigNest, 'C7 katta');
 /* ══ [5] GibLab .project — K2 (yo'qotishsiz) + K4 (tayyor/kesim) ══ */
 console.log('\n[5] GibLab .project (K2 + K4)');
 const { buildProject } = await import(B + 'js/engine/giblab.js');
-const { execFileSync } = await import('child_process');
-const GLCHK = '/tmp/opencode/giblab_check.py';
+/* TZ-02: mustaqil tekshiruvchi repoda (Bittada giblab_raskroy.py modeli, Node) — Python va /tmp kerak emas */
+const { checkProject } = await import('./giblab_check.mjs');
 
 function glRun(clists, nestObj, label, expectWarn) {
   const gl = buildProject({
@@ -251,28 +251,41 @@ function glRun(clists, nestObj, label, expectWarn) {
     if (!fitsAny) tooBigIndep++;
   }
 
-  const f = `/tmp/opencode/_k2_${label.replace(/[^a-z0-9]+/gi, '')}.project`;
-  fs.writeFileSync(f, gl.xml, 'utf8');
   try {
-    const out = execFileSync('python3', [GLCHK, f], { encoding: 'utf8' }).trim();
-    const line = out.split('\n').find(l => l.includes('render xato')) || '';
-    const m = /render xato=(\d+) \| ustma-ust=(\d+) \| joylashtirilmagan=(\d+)/.exec(line);
-    const miss = m ? +m[3] : -1;
-    if (m && +m[1] === 0 && +m[2] === 0 && miss === st.excluded) {
-      ok(`Python renderer round-trip: 0 xato, 0 ustma-ust, yo'qolgan 0 (chetlashtirilgan ${st.excluded} — faqat formatga sig'maganlar) (${label})`);
+    const ck = checkProject(gl.xml);
+    if (ck.renderErr === 0 && ck.overlap === 0 && ck.dimErr === 0 && ck.cntErr === 0 && ck.rtOk === ck.ops && ck.missing === st.excluded) {
+      ok(`GibLab renderer round-trip: 0 xato, 0 ustma-ust, yo'qolgan 0 (chetlashtirilgan ${st.excluded} — faqat formatga sig'maganlar) (${label})`);
     } else {
-      bad(`Python renderer: ${line} (kutilgan=${st.excluded}, mustaqil=${tooBigIndep}) (${label})`);
-      console.log(out);
+      bad(`GibLab renderer: ${ck.line} (kutilgan=${st.excluded}, mustaqil=${tooBigIndep}) (${label})`);
+      ck.messages.slice(0, 8).forEach(m => console.log('    ' + m));
     }
     if (st.excluded !== tooBigIndep) bad(`chetlashtirish noto'g'ri: ${st.excluded} ≠ mustaqil hisob ${tooBigIndep} (${label})`);
     else if (st.excluded) ok(`chetlashtirilgan ${st.excluded} ta — mustaqil hisob bilan mos (formatga sig'maydi)`);
   } catch (e) {
-    bad(`Python renderer xato (${label}): ${(e.stdout || e.message || '').toString().slice(0, 600)}`);
+    bad(`GibLab renderer xato (${label}): ${String(e.message).slice(0, 600)}`);
   }
 }
 
 /* 5a) 16 modul (asosiy kroy bilan) */
 glRun(cutlists, nest, '16 modul');
+
+/* 5a') tekshiruvchining o'zi ishlashini isbotlash — ataylab buzilgan fayllar (TZ-02) */
+{
+  const base = buildProject({ cutlists, materials: mats, modelName: 'Test', materialCode: 'LDSP', nest, settings: { kerf: 4, trimL: 8, trimW: 8 } }).xml;
+  const partLines = base.match(/<part l="[^"]*" w="[^"]*" dl=[^>]*\/>\n/g) || [];
+  /* (a) mahsulotdan bitta detal o'chirilgan — kartadagi joylashuv "detal yo'q" bo'lishi shart */
+  const ckA = checkProject(base.replace(partLines[0], ''));
+  /* (b) bitta detalning kesim o'lchami 50 mm o'zgartirilgan — "o'lcham farq" bo'lishi shart */
+  const ckB = checkProject(base.replace(partLines[1], partLines[1].replace(/cl="([\d.]+)"/, (m, v) => `cl="${+v + 50}"`)));
+  /* (c) mahsulotga joylashtirilmagan qo'shimcha detal — "joylashtirilmagan" +1 */
+  const ckC = checkProject(base.replace('</good>', '<part l="100" w="100" cl="100" cw="100" count="1" usedCount="1" id="999999"/>\n</good>'));
+  const ck0 = checkProject(base);
+  if (partLines.length >= 2 && ckA.renderErr >= 1 && ckB.dimErr >= 1 && ckC.missing === ck0.missing + 1) {
+    ok(`tekshiruvchi buzilgan faylni ushlaydi: detal yo'q=${ckA.renderErr}, o'lcham farq=${ckB.dimErr}, joylashtirilmagan +${ckC.missing - ck0.missing}`);
+  } else {
+    bad(`tekshiruvchi buzilgan faylni USHLAMADI: a=${ckA.line} | b=${ckB.line} | c=${ckC.line}`);
+  }
+}
 
 /* 5b) BARCHA 79 fragment — K2 stress: hech narsa tashlanmasligi shart */
 const allCls = [], allParts2 = [];

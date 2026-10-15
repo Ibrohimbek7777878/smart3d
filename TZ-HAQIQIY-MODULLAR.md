@@ -130,7 +130,7 @@ Egasi: "krovat va parta min/max ni dunyo standartlaridan ol va o'zgartirish ham 
 **Orqaga qaytarish:** alohida commit, `git revert`.
 
 **Natija:** jadvaldagidek. `verify_mc` 41/41: 6 modul har standart o'lchamning min / std / max qiymatida — formula xatosi yo'q, hamma detal > 0, tub/ustki panel aynan standart qiymat (KR-02: matras asosi 900×2000). Qolgan 31 modul JSON'da aynan o'zgarmagan; krovat/partalarning detal va zapchastlari ham o'zgarmagan (faqat o'lcham va chegara).
-- **Yon ta'sir (o'zgarishga bog'liq emas):** `tests/verify.mjs` [5] GibLab tekshiruvi `/tmp/opencode/giblab_check.py` ga bog'liq — kompyuter qayta yuklanganda `/tmp` tozalandi, skript repoda yo'q. Test shu joyda to'xtaydi.
+- **Yon ta'sir (o'zgarishga bog'liq emas):** `tests/verify.mjs` [5] GibLab tekshiruvi `/tmp/opencode/giblab_check.py` ga bog'liq — kompyuter qayta yuklanganda `/tmp` tozalandi, skript repoda yo'q. Test shu joyda to'xtaydi. → **TZ-02 da tuzatildi** (tekshiruvchi repoda, `tests/giblab_check.mjs`).
 
 ## 2. Moliya, xavf, orqaga qaytarish
 - **Moliya:** ERP va moliyaga hech narsa yozilmaydi, faqat lokal JSON fayllar o'qiladi. Pul harakati yo'q.

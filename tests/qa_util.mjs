@@ -45,7 +45,7 @@ export default async function run(page) {
     });
 
     STEP = 'screenshot';
-    await page.screenshot({ path: (process.env.QA_OUT || '/tmp/opencode') + '/qa_util.png' });
+    await page.screenshot({ path: (process.env.QA_OUT || 'tests/ui/out') + '/qa_util.png' });
     R.errs = await M(() => document.documentElement.dataset.errs || "(xato yo'q)");
   } catch (e) {
     R.__err = String((e && e.stack) || e).split('\n').slice(0, 3).join(' | ');

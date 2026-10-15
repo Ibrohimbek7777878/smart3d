@@ -85,7 +85,7 @@ async function _run(page, R, step) {
     c.out = document.getElementById('aiOut').textContent.trim().slice(0, 200);
     return c;
   }, FP);
-  await page.screenshot({ path: (process.env.QA_OUT || '/tmp/opencode') + '/qa_ai_u.png' });
+  await page.screenshot({ path: (process.env.QA_OUT || 'tests/ui/out') + '/qa_ai_u.png' });
 
   step('l');
   /* ── A2: L shakl ── */
@@ -104,7 +104,7 @@ async function _run(page, R, step) {
     c.out = document.getElementById('aiOut').textContent.trim().slice(0, 200);
     return c;
   }, FP);
-  await page.screenshot({ path: (process.env.QA_OUT || '/tmp/opencode') + '/qa_ai_l.png' });
+  await page.screenshot({ path: (process.env.QA_OUT || 'tests/ui/out') + '/qa_ai_l.png' });
 
   step('assumed');
   /* ── A1: o'lchamsiz matn → ⚠️ (✅ emas) ── */

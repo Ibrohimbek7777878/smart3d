@@ -64,7 +64,7 @@ export default async function run(page) {
       wallOpts: document.getElementById('oWall').options.length }));
 
     R.errs = await M(() => document.documentElement.dataset.errs || "(xato yo'q)");
-    await page.screenshot({ path: (process.env.QA_OUT || '/tmp/opencode') + '/qa_f1_l.png' });
+    await page.screenshot({ path: (process.env.QA_OUT || 'tests/ui/out') + '/qa_f1_l.png' });
   } catch (e) {
     R.__err = String((e && e.stack) || e).split('\n').slice(0, 3).join(' | ');
     R.__step = STEP.s;

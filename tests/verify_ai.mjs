@@ -1,5 +1,5 @@
 /* A1/A2/A3 tekshiruvi — Smart3D (TZ-QOLGAN-ISHLAR §4 darhol).
-   Ishga tushurish: node /tmp/opencode/verify_ai.mjs */
+   Ishga tushurish: node tests/verify_ai.mjs */
 import { pathToFileURL } from 'node:url';
 import fs from 'node:fs';
 

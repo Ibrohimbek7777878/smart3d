@@ -1,6 +1,6 @@
 # TZ-02 — Testlarni tiklash va `/tmp` ga bog'liqlikni yo'qotish
 
-**Sana:** 2026-10-15 · **Navbat:** 2 · **Holat:** TASDIQ KUTILMOQDA · **Ma'lumot kerak emas.**
+**Sana:** 2026-10-15 · **Navbat:** 2 · **Holat:** BAJARILDI (2026-10-15, egasi: "davom et") · **Ma'lumot kerak emas.**
 
 ## Muammo (tekshirilgan)
 1. **`tests/verify.mjs` [5]** — GibLab `.project` tekshiruvi `/tmp/opencode/giblab_check.py` ga bog'liq ([verify.mjs:214](../tests/verify.mjs#L214)).
@@ -33,6 +33,21 @@ Ilova kodi o'zgarmaydi.
 - **Xavf: PAST** — faqat testlar.
 - **Moliya:** ta'siri yo'q.
 - **Orqaga qaytarish:** `git revert`.
+
+## Natija (2026-10-15)
+- **`tests/giblab_check.mjs`** — Bittada FMS'dagi `giblab_raskroy.py` (o'qish, qayta kodlash, chizish) Node'da aynan takrorlandi. Ustiga ustma-ust tushish va joylashtirilmagan detal tekshiruvi qo'shildi.
+  - Mos Python parser bilan solishtirildi (u faqat o'qildi):
+    - kompyuterdagi 7 ta haqiqiy GibLab fayl — **7/7 bir xil natija**;
+    - Smart3D'ning 120 modulli fayli (1 346 detal) — **bir xil**.
+  - Haqiqiy fayllarda ustma-ust 0 — noto'g'ri xato bermaydi.
+- **`verify.mjs`** endi shu tekshiruvchini chaqiradi — fayl yozmaydi, `/tmp` kerak emas.
+  - Ataylab buzilgan 3 xil fayl (detal yo'q, o'lcham farq, joylashtirilmagan) — **uchalasi ushlandi**.
+- **`qa_*.mjs`**: `/tmp/opencode` o'rniga `tests/ui/out` (gitignore'da). Testlarda `/tmp` ga ishora: 0.
+- **`tests/pre-commit.sh`** — repo ichidan ham, tashqaridan ham ishlaydi.
+  - Hook **o'rnatilmagan** — egasi xohlasa: `ln -s ../../tests/pre-commit.sh .git/hooks/pre-commit`.
+  - Yo'riqnoma: `tests/README.md`.
+- **`bash tests/run-all.sh` — 7/7 yashil.**
+- 4-banddagi hujjatlardagi `/tmp/opencode` ishoralari — tarixiy yozuvlar, o'zgartirilmadi.
 
 ## Qabul
 - Kompyuter qayta yuklangandan keyin ham `bash tests/run-all.sh` — 7/7 yashil.
