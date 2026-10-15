@@ -48,6 +48,7 @@ export default async function run(page) {
     ogohlantirish: /Taxminiy narx/.test(document.getElementById('smMsgs').textContent),
     jadvalda: [...document.querySelectorAll('#smWorkshopTable tbody td:first-child')].map(td => td.textContent).filter(t => /taxminiy/.test(t)),
     guruhlar: window.__s3d.state._res.prod.taxminiy }));
+  R.statikdaKirishYashirin = await M(() => document.getElementById('acctBtn').classList.contains('hidden'));   // TZ-07: serversiz sayt
   R.errs = await M(() => document.documentElement.dataset.errs || "(xato yo'q)");
   return R;
 }

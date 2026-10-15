@@ -365,6 +365,24 @@ table.smeta tfoot td { font-weight: 800; border-top: 2px solid var(--ink); }
 .modal-btns { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 .modal-btns .btn.primary { flex: 1 1 auto; }
 .ask-card { width: min(420px, 100%); }
+/* TZ-07: kirish va loyihalarim */
+.save-state { font-size: 12px; color: #9c927f; white-space: nowrap; flex: 0 0 auto; }
+.save-state[data-kind="ok"] { color: #34d399; }
+.save-state[data-kind="off"] { color: #f87171; }
+.acct-btn { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px; border: 1px solid #4a443b;
+  background: transparent; color: #f5efe4; font-size: 18px; cursor: pointer; }
+.acct-btn.is-in { border-color: var(--accent); background: rgba(217,119,6,.18); }
+.acct-card { width: min(460px, 100%); }
+.acct-lbl { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 10px; }
+.acct-lbl input { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 16px; background: var(--surface-2); color: inherit; }
+.acct-hint { display: block; color: var(--muted); margin: -4px 0 8px; }
+.acct-user { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.acct-h { margin: 14px 0 6px; }
+.acct-list { display: flex; flex-direction: column; gap: 6px; max-height: 50vh; overflow-y: auto; }
+.acct-item { display: grid; grid-template-columns: 1fr auto auto; gap: 6px; align-items: center;
+  padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
+.acct-item.is-current { border-color: var(--accent); }
+.acct-item small { color: var(--muted); }
 /* TZ-08: burish dastagi (2D, tanlangan mebel yonida) — barmoq uchun 44 px */
 .rot-handle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
   background: var(--surface); border: 2px solid var(--accent); color: var(--accent); font-size: 22px; line-height: 1;

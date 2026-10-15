@@ -24,6 +24,7 @@ import { cncBundle, cutGCode } from './engine/cnc.js';
 import { buildSearchIndex, searchMaterial } from './engine/search.js';
 import { applySexStandart } from './engine/standart.js';
 import { aiBuild, startVoice, voiceSupported, parseZamer, suggestLayout, USTKI_Z } from './ai.js';
+import { createAuth } from './auth.js';
 import { VRButton } from '../vendor/three/addons/webxr/VRButton.js';
 import * as THREE from 'three';
 import { render1080p, render360Panorama } from './engine/photo-render.js';
@@ -52,7 +53,7 @@ const state = {
   voice: null
 };
 
-let sp = null, ctl = null, items = null;
+let sp = null, ctl = null, items = null, auth = null;   // auth — TZ-07 (kirish, serverga saqlash)
 
 const PHONE_MQ = window.matchMedia('(max-width: 599px)');   // app.css telefon chegarasi bilan bir xil
 const fmtSum = (n) => SpPrice.fmtSoom(n);
@@ -209,6 +210,7 @@ function doRecalc() {
   renderNest(nest);
   renderCutlist(cutlists);
   renderExCheck(val, doc, cutlists, nest);
+  if (auth) auth.changed();          // TZ-07: kirgan bo'lsa — 2 soniyadan keyin serverga saqlanadi
 }
 
 /** Kotirovka: har modul = uning tannarx ulushi × (1 + ustama). Satrlar yig'indisi = jami
@@ -1258,9 +1260,9 @@ function hideItemCardOnSmall() {}
 
 /* ═══════════════════ SAVE / LOAD ═══════════════════ */
 const LS_KEY = 'smart3d.project.v2';
-function saveProject() {
-  if (!state.doc || !state.doc.placements) { toast('Saqlash uchun loyiha yo\'q', 'bad'); return; }
-  const payload = {
+/** Loyiha fayli shakli — qurilmaga (localStorage) va serverga (TZ-07) bir xil */
+function buildProjectPayload() {
+  return {
     app: 'smart3d', v: 2, ts: Date.now(),
     name: $('#projName').textContent.trim(),
     material: state.materialCode,
@@ -1268,6 +1270,19 @@ function saveProject() {
     sheet: state.sheet ? { sku: state.sheet.sku, name: state.sheet.name, type: state.sheet.type, th: state.sheet.th, l: state.sheet.l, w: state.sheet.w, uzs: state.sheet.uzs } : null,
     doc: state.doc
   };
+}
+/** Loyiha faylini ilovaga qo'llash (tuzilma tekshirilgan bo'lishi kerak) */
+function applyProjectPayload(p) {
+  $('#projName').textContent = p.name || 'Loyiha';
+  state.materialCode = p.material || 'LDSP18';
+  state.fasadCode = p.fasad || 'MDF16';
+  state.sheet = p.sheet || null;
+  renderMaterials(); renderSheetSel(); renderCatalog();
+  setDoc(p.doc, { immediate: true });
+}
+function saveProject() {
+  if (!state.doc || !state.doc.placements) { toast('Saqlash uchun loyiha yo\'q', 'bad'); return; }
+  const payload = buildProjectPayload();
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(payload));
     toast('Loyiha saqlandi (' + state.doc.placements.length + ' mebel)', 'good');
@@ -1288,12 +1303,8 @@ function loadProject() {
     if (p.v && p.v > 2) {
       toast('Loyiha yangi versiyada — ba\'zi funksiyalar ishlamasligi mumkin', 'warn');
     }
-    $('#projName').textContent = p.name || 'Loyiha';
-    state.materialCode = p.material || 'LDSP18';
-    state.fasadCode = p.fasad || 'MDF16';
-    state.sheet = p.sheet || null;
-    renderMaterials(); renderSheetSel(); renderCatalog();
-    setDoc(p.doc, { immediate: true });
+    if (auth) auth.resetCurrent();   // qurilmadan yuklangan — serverda yangi loyiha bo'ladi
+    applyProjectPayload(p);
     toast('Loyiha yuklandi — ' + p.doc.placements.length + ' mebel', 'good');
   } catch (e) {
     toast('Yuklashda xato: ' + e.message, 'bad');
@@ -1304,6 +1315,7 @@ async function newProject() {
       !(await askConfirm('Joriy loyiha (' + state.doc.placements.length + ' mebel) o\'chiriladi. Davom etasizmi?', 'Yangi loyiha'))) return;
   state.doc = { v: 1, kind: 'smart3d', room: freshRoom(), placements: [] };
   $('#projName').textContent = 'Yangi loyiha';
+  if (auth) auth.resetCurrent();     // serverda yangi loyiha ochiladi, eskisi ustidan yozilmaydi
   items.select(null); hideItemCard();
   setDoc(state.doc, { immediate: true });
 }
@@ -1689,6 +1701,19 @@ async function boot() {
     navigator.serviceWorker.register('sw.js').catch(() => { /* offline emas — jim */ });
   }
   connectPriceSocket();
+  /* TZ-07: kirish va serverga saqlash (faqat Smart3D serveri orqali ochilganda) */
+  auth = createAuth({
+    getPayload: buildProjectPayload,
+    applyPayload: (p) => {
+      if (!p || !p.doc || !p.doc.room || !Array.isArray(p.doc.placements)) { toast('Serverdagi loyiha buzilgan', 'bad'); return; }
+      applyProjectPayload(p);
+    },
+    getTotal: () => (state._res && state._res.priceRes ? state._res.priceRes.total : 0),
+    hasWork: () => !!(state.doc && state.doc.placements && state.doc.placements.length),
+    newProject, askConfirm, toast, fmtSum
+  });
+  auth.init();
+  $('#projName').addEventListener('blur', () => auth && auth.changed());
   $('#boot').style.transition = 'opacity .35s';
   $('#boot').style.opacity = '0';
   setTimeout(() => $('#boot').remove(), 400);

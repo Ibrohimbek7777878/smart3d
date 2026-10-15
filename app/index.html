@@ -24,7 +24,10 @@
 <header id="topbar">
   <div class="logo">Smart<span>3D</span></div>
   <div id="projName" contenteditable="true" spellcheck="false">Namuna: oshxona</div>
+  <span id="saveState" class="save-state hidden" role="status"></span>
   <div id="totalPrice">0 so'm<small>jami narx</small></div>
+  <!-- TZ-07: kirish va loyihalarim (faqat Smart3D serveri orqali ochilganda ko'rinadi) -->
+  <button id="acctBtn" class="acct-btn hidden" title="Kirish (telefon + SMS)" aria-label="Kirish (telefon + SMS)">👤</button>
 </header>
 
 <!-- Sahna -->
@@ -321,6 +324,42 @@
       <button class="btn primary" id="ncApply">Qo'llash</button>
       <button class="btn" id="ncReset">Standart</button>
       <button class="btn ghost" id="ncClose">Yopish</button>
+    </div>
+  </div>
+</div>
+
+<!-- TZ-07: kirish (telefon + SMS) va "Loyihalarim" -->
+<div id="acctModal" class="modal-back" hidden role="dialog" aria-modal="true" aria-labelledby="acctTitle">
+  <div class="modal-card acct-card">
+    <h3 id="acctTitle" style="margin-top:0">Kirish</h3>
+    <div id="acctLogin">
+      <label class="acct-lbl">Telefon raqam
+        <input id="acctPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+998 90 123 45 67" value="+998">
+      </label>
+      <label class="acct-lbl">Ismingiz (birinchi kirishda, ixtiyoriy)
+        <input id="acctName" type="text" autocomplete="name" maxlength="100">
+      </label>
+      <div id="acctCodeRow" class="hidden">
+        <label class="acct-lbl">SMS kod
+          <input id="acctCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 xonali kod">
+        </label>
+        <small id="acctDev" class="acct-hint"></small>
+      </div>
+      <div id="acctErr" class="msg err hidden"></div>
+      <div class="modal-btns">
+        <button class="btn primary" id="acctSend">Kod yuborish</button>
+        <button class="btn primary hidden" id="acctVerify">Kirish</button>
+        <button class="btn ghost" id="acctClose1">Yopish</button>
+      </div>
+    </div>
+    <div id="acctIn" class="hidden">
+      <div class="acct-user"><b id="acctUser"></b><button class="btn ghost" id="acctLogout">Chiqish</button></div>
+      <h4 class="acct-h">Loyihalarim</h4>
+      <div id="acctList" class="acct-list"></div>
+      <div class="modal-btns">
+        <button class="btn primary" id="acctNew">+ Yangi loyiha</button>
+        <button class="btn ghost" id="acctClose2">Yopish</button>
+      </div>
     </div>
   </div>
 </div>

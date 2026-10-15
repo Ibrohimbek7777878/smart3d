@@ -1,6 +1,6 @@
 # TZ-07 — Kirish (login) va loyihani serverga saqlash
 
-**Sana:** 2026-10-15 · **Navbat:** 7 · **Holat:** TASDIQ KUTILMOQDA.
+**Sana:** 2026-10-15 · **Navbat:** 7 · **Holat:** BAJARILDI 2026-10-15 (egasi: "hammasini qilib tugatib ber"). Haqiqiy SMS — Eskiz akkaunti serverga qo'yilgach.
 
 ## Muammo (tekshirilgan)
 1. **Sayt serverga ulanmagan.** Faqat `/api/health` chaqiriladi ([app.js:1643](../app/js/app.js#L1643)).
@@ -66,3 +66,35 @@
 - Boshqa foydalanuvchi uni ko'rmaydi.
 - Internetsiz qilingan o'zgarish keyin saqlanadi.
 - Server va brauzer testlari yashil.
+
+## Natija (2026-10-15)
+- **Server (`index.js`, `sms.js`):**
+  - `POST /api/auth/sms/send` va `/verify`: 6 xonali kod, 5 daqiqa, 5 urinish, qayta yuborish 60 soniyadan keyin, IP bo'yicha cheklov. Kod bazada faqat HMAC ko'rinishida.
+  - Telefon S1 bo'yicha `998XXXXXXXXX`; bitta raqam — bitta akkaunt (oxirgi 9 raqam, noyob indeks). `/api/register` ham telefonni shu formatga keltiradi.
+  - Eskiz.uz: `notify.eskiz.uz` — `api/auth/login` va `api/message/sms/send`; 401 bo'lsa qayta kiradi. Manzillar ochiq Eskiz kutubxonasi manbasidan tekshirildi.
+  - Eskiz sozlanmagan bo'lsa: production — 503; dev/test — kod javobda keladi (`dev_code`).
+  - `/api/projects`: ro'yxat, yaratish, ochish, yangilash, o'chirish (= yashirish). Har usta faqat o'zinikini ko'radi.
+  - Jadvallar (`sms_codes`, `projects`) mavjud bazaga ham qo'shiladi (`IF NOT EXISTS`). MebelCity'ning 38 moduli bazaga bir marta qo'shiladi.
+- **Stack:**
+  - `Dockerfile` endi `index.js` va frontendni o'z ichiga oladi — repo ildizidan quriladi;
+  - PM2 — bitta jarayon (`fork`), maxfiy qiymatlarsiz;
+  - `src/` va `production.js` — "ISHLATILMAYDI" deb belgilandi.
+- **Sayt (`auth.js`):**
+  - 👤 tugmasi faqat Smart3D serveri orqali ochilganda ko'rinadi;
+  - kirish oynasi: telefon maskasi, SMS kod, ism;
+  - "Loyihalarim": ochish, yangi, o'chirish o'z oynamiz bilan;
+  - holat belgisi: ☁ ✓ / … / ✕.
+  - **Xavfsiz tartib:**
+    - kirgandan keyin oxirgi loyiha avval serverdan ochiladi, keyin avtomatik saqlash yoqiladi (2 soniya);
+    - "Yangi" yoki qurilmadan yuklash — serverda yangi loyiha (eskisi ustidan yozilmaydi);
+    - birinchi kirishda joriy ish akkauntga saqlanadi;
+    - internet yo'q bo'lsa — navbatda turadi, qaytganda yuboriladi.
+- **Testlar:**
+  - server 20/20 (yangi 7: format, kod, urinishlar, oxirgi 9 raqam, ro'yxat 409, loyihalar va ularning yopiqligi, buzilgan doc 400, MC modullari);
+  - brauzer `tests/ui/kirish.mjs` — Node server bilan vaqtinchalik bazada: kirish → saqlash → qayta ochish → internetsiz navbat → internet qaytdi → yangi → o'chirish → chiqish. 3 marta ketma-ket o'tdi;
+  - statik saytda tugma yashirin (`mc.mjs`); qolgan barcha to'plamlar yashil.
+- **Eslatmalar (TZ-10 uchun):**
+  - token muddati standart 12 soat — SMS bilan kirishda production'da `JWT_EXPIRES=30d` qo'yish tavsiya;
+  - `ecosystem.config.js` CommonJS, `package.json` esa ESM — PM2 da muammo bo'lsa, faylni `.cjs` ga o'zgartirish;
+  - Eskiz'da SMS matni shablon sifatida moderatsiyadan o'tishi talab qilinishi mumkin. Matn: "Smart3D kirish kodi: XXXXXX. Kodni hech kimga bermang."
+

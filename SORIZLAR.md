@@ -227,3 +227,5 @@ Qaysi bri kere hoz
 [joylangan matn: narx jadvali, logo, Claude Design, Eskiz akkaunti, AI API kalit, serverdan namuna fayllar — ro'yxat]
 
 bularn keyinroq qilamzi hozir bita konstruksiya qila olamzmi ozi
+
+79. loyhan bilasan toliq nimalar qila olishn ham bilasan shundaymi toliq tnaishb chiqdingmi oyha bilan

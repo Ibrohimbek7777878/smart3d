@@ -10,7 +10,7 @@
     "init-db": "node init-db.js",
     "admin-password": "node admin-password.js",
     "test": "node --test \"test/**/*.test.js\"",
-    "start:prod": "node src/server.js",
+    "start:prod": "NODE_ENV=production node index.js",
     "migrate": "psql $DATABASE_URL -f schema.sql",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",

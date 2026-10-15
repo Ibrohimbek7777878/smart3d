@@ -21,7 +21,7 @@
 | 04 | [Narx ma'lumotlari: egasi uchun jadval + import](04-narx-malumotlari.md) | **BAJARILDI** 2026-10-15 (vosita) | egasi: `Smart3D_malumot/narx-toldirish-2026-10-15.xlsx` ni to'ldiradi |
 | 05 | [83 ta umumiy modul geometriyasi](05-modul-geometriyasi.md) | PAUZA (egasi: "hozircha tegmang") | — |
 | 06 | [Modullarga teshiklar](06-teshiklar.md) | A varianti — tadqiqot boshlandi | egasi A ni tanladi |
-| 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | TASDIQ KUTILMOQDA | telefon + SMS (Eskiz.uz); Eskiz akkaunti serverga |
+| 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | **BAJARILDI** 2026-10-15 | haqiqiy SMS uchun Eskiz akkaunti serverga |
 | 08 | [Ekrandagi qoida buzilishlari: logo, oyna, burish](08-ui-qoida-tuzatishlari.md) | QISMAN: oyna ✅, burish ✅, logo — kutilmoqda | egasi: Bittada logo fayli |
 | 09 | [Yangi dizayn](09-dizayn.md) | MA'LUMOT KUTILMOQDA | Claude Design natijasi; tarif, aloqa |
 | 10 | [Deploy va zaxira nusxa](10-deploy-va-zaxira.md) | MA'LUMOT KUTILMOQDA | server: Bittada (smart3d.bittada.uz) ✅; L1 (yurist) |

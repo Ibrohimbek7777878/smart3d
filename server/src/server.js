@@ -1,3 +1,5 @@
+/* ISHLATILMAYDI (TZ-07, 2026-10-15): ishlaydigan server — index.js (SQLite). Bu PostgreSQL varianti
+   ishga tushmaydi (AUDIT-2026-10-14 §5); o'chirilmagan, faqat belgilangan. */
 /* ═══════════════════ SMART3D SERVER ═══════════════════ */
 import http from 'http';
 import { WebSocketServer } from 'ws';

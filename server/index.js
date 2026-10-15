@@ -25,6 +25,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { parseZamer, aiBuild } from '../app/js/ai.js';
+import { smsConfigured, sendSms, SMS_TEXT } from './sms.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROD = process.env.NODE_ENV === 'production';
@@ -69,6 +70,47 @@ db.exec(`
   );
 `);
 
+/* TZ-07: telefon + SMS kirish va loyihalar — mavjud bazaga ham qo'shiladi (IF NOT EXISTS) */
+db.exec(`
+  CREATE TABLE IF NOT EXISTS sms_codes (
+    phone TEXT PRIMARY KEY,
+    code_hash TEXT NOT NULL,
+    expires_at INTEGER NOT NULL,
+    attempts INTEGER DEFAULT 0,
+    sent_at INTEGER NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS projects (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    name TEXT DEFAULT '',
+    doc_json TEXT NOT NULL,
+    total_price INTEGER DEFAULT 0,
+    archived INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_projects_user ON projects(user_id, archived);
+`);
+/* S1: bitta raqam — bitta akkaunt (oxirgi 9 raqam bo'yicha). Eski bazada takror bo'lsa — kodda ham tekshiriladi */
+try { db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_phone9 ON users(substr(phone, -9)) WHERE phone <> ''"); }
+catch (e) { console.warn('DIQQAT: telefon noyob indeksi yaratilmadi (bazada takror raqam bor):', e.message); }
+/* MebelCity modullari (fragments-mc.json) — bazada bo'lmasa bir marta qo'shiladi */
+{
+  const has = db.prepare("SELECT COUNT(*) AS n FROM fragments WHERE code LIKE 'MC-%'").get().n;
+  const mcPath = path.join(__dirname, '../app/data/fragments-mc.json');
+  if (!has && fs.existsSync(mcPath)) {
+    const ins = db.prepare(`INSERT OR REPLACE INTO fragments
+      (code, name, category, grp, w, d, h, min_w, max_w, min_d, max_d, stretch_axis, price_mode, price, material_code, production, data_json)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    const mc = JSON.parse(fs.readFileSync(mcPath, 'utf8')).fragments || [];
+    db.transaction(() => { for (const f of mc) ins.run(f.code, f.name, f.category || '', f.group || '', f.w || 0, f.d || 0, f.h || 0,
+      f.min_w || 0, f.max_w || 0, f.min_d || 0, f.max_d || 0, f.stretch_axis || 'xy', f.price_mode || 'unit', f.price || 0,
+      f.material_code || 'LDSP16', f.production || 'panel', JSON.stringify(f)); })();
+    console.log(`MebelCity modullari bazaga qo'shildi: ${mc.length} ta`);
+  }
+}
+
 /* Standart admin paroli bilan ishlamaymiz */
 {
   const admins = db.prepare("SELECT email, password_hash FROM users WHERE role = 'admin'").all();
@@ -109,6 +151,13 @@ function num(v, field, { min = 0, max = 1e12, required = false } = {}) {
   if (!Number.isFinite(n) || n < min || n > max) bad(`${field} ${min}…${max} oralig'idagi son bo'lishi kerak`);
   return n;
 }
+/** S1: telefon → 998XXXXXXXXX ("+998 90 123 45 67", "901234567" ham qabul qilinadi) */
+function phone(v) {
+  const d = String(str(v, 'telefon', { max: 32, required: true })).replace(/\D/g, '');
+  const p = d.length === 9 ? '998' + d : d;
+  if (!/^998\d{9}$/.test(p)) bad('telefon formati: +998 XX XXX XX XX');
+  return p;
+}
 /** Async route'dagi xato Express 4 da ushlanmaydi — next(err) ga o'tkazamiz (aks holda server o'chadi). */
 const ah = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
@@ -142,6 +191,8 @@ function rateLimit({ windowMs, max }) {
 }
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10 });   // 10 xato / 15 daq
 const registerLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10 }); // 10 ro'yxat / soat
+const smsSendLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10 });   // TZ-07: 10 SMS / soat / IP
+const smsVerifyLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 }); // 20 xato kod / 15 daq / IP
 
 /* ── Express ── */
 const app = express();
@@ -188,13 +239,15 @@ app.post('/api/register', registerLimiter.check, ah(async (req, res) => {
   const password = str(b.password, 'parol', { max: 128, required: true });
   if (password.length < 8) bad('parol kamida 8 belgi bo\'lishi kerak');
   const name = plainText(b.name, 'ism', { max: 100 });
-  const phone = str(b.phone, 'telefon', { max: 32 });
-  if (phone && !/^[0-9+()\-\s]+$/.test(phone)) bad('telefon formati noto\'g\'ri');
+  const tel = b.phone ? phone(b.phone) : '';        // S1: 998XXXXXXXXX
+  if (tel && db.prepare("SELECT id FROM users WHERE phone <> '' AND substr(phone, -9) = ?").get(tel.slice(-9))) {
+    return res.status(409).json({ error: 'Bu telefon bilan akkaunt bor' });
+  }
   const exists = db.prepare('SELECT id FROM users WHERE lower(email) = ?').get(em);
   if (exists) return res.status(409).json({ error: 'Email allaqachon bor' });
   const hash = await bcrypt.hash(password, 10);
   const r = db.prepare('INSERT INTO users (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, ?)')
-    .run(name, em, phone, hash, 'user');
+    .run(name, em, tel, hash, 'user');
   const user = { id: Number(r.lastInsertRowid), name, email: em, role: 'user' };
   res.json({ token: signToken(user), user });
 }));
@@ -216,6 +269,112 @@ app.get('/api/me', auth, (req, res) => {
   const u = db.prepare('SELECT id, name, email, phone, role FROM users WHERE id = ?').get(req.user.id);
   if (!u) return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
   res.json(u);
+});
+
+/* ═══════════════════ TELEFON + SMS KIRISH (TZ-07, qoida S1) ═══════════════════
+ * 6 xonali kod, 5 daqiqa, 5 urinish, qayta yuborish 60 soniyadan keyin. Kod bazada faqat HMAC
+ * ko'rinishida. SMS — Eskiz.uz (sms.js). Eskiz sozlanmagan bo'lsa: production'da 503,
+ * dev/test'da kod javobda qaytadi (dev_code) — faqat o'z bazasida sinash uchun (S8). */
+const CODE_TTL = 5 * 60 * 1000, RESEND_MS = 60 * 1000, MAX_ATTEMPTS = 5;
+const codeHash = (p, code) => crypto.createHmac('sha256', JWT_SECRET).update(p + ':' + code).digest('hex');
+
+app.post('/api/auth/sms/send', smsSendLimiter.check, ah(async (req, res) => {
+  const p = phone((req.body || {}).phone);
+  const now = Date.now();
+  const old = db.prepare('SELECT sent_at FROM sms_codes WHERE phone = ?').get(p);
+  if (old && now - old.sent_at < RESEND_MS) {
+    return res.status(429).json({ error: 'Kod yaqinda yuborildi — 1 daqiqadan keyin qayta urinib ko\'ring', retry_after: Math.ceil((RESEND_MS - (now - old.sent_at)) / 1000) });
+  }
+  if (PROD && !smsConfigured()) return res.status(503).json({ error: 'SMS xizmati hali sozlanmagan' });
+  smsSendLimiter.hit(req);
+  const code = String(crypto.randomInt(100000, 1000000));
+  db.prepare(`INSERT INTO sms_codes (phone, code_hash, expires_at, attempts, sent_at) VALUES (?, ?, ?, 0, ?)
+    ON CONFLICT(phone) DO UPDATE SET code_hash = excluded.code_hash, expires_at = excluded.expires_at, attempts = 0, sent_at = excluded.sent_at`)
+    .run(p, codeHash(p, code), now + CODE_TTL, now);
+  if (smsConfigured()) {
+    try { await sendSms(p, SMS_TEXT(code)); }
+    catch (e) {
+      console.error('SMS yuborilmadi:', e.message);
+      db.prepare('DELETE FROM sms_codes WHERE phone = ?').run(p);
+      return res.status(502).json({ error: 'SMS yuborilmadi — keyinroq qayta urinib ko\'ring' });
+    }
+    return res.json({ ok: true, ttl: CODE_TTL / 1000 });
+  }
+  console.warn(`DEV: SMS sozlanmagan — ${p} uchun kod: ${code}`);
+  res.json({ ok: true, ttl: CODE_TTL / 1000, dev_code: code });
+}));
+
+app.post('/api/auth/sms/verify', smsVerifyLimiter.check, ah(async (req, res) => {
+  const b = req.body || {};
+  const p = phone(b.phone);
+  const code = String(str(b.code, 'kod', { max: 10, required: true })).replace(/\D/g, '');
+  const row = db.prepare('SELECT * FROM sms_codes WHERE phone = ?').get(p);
+  if (!row || row.expires_at < Date.now()) return res.status(400).json({ error: 'Kod eskirgan — qayta yuboring' });
+  if (row.attempts >= MAX_ATTEMPTS) return res.status(429).json({ error: 'Urinishlar tugadi — yangi kod so\'rang' });
+  const a = Buffer.from(codeHash(p, code)), e = Buffer.from(row.code_hash);
+  if (a.length !== e.length || !crypto.timingSafeEqual(a, e)) {
+    db.prepare('UPDATE sms_codes SET attempts = attempts + 1 WHERE phone = ?').run(p);
+    smsVerifyLimiter.hit(req);
+    return res.status(400).json({ error: 'Kod noto\'g\'ri' });
+  }
+  db.prepare('DELETE FROM sms_codes WHERE phone = ?').run(p);
+  let u = db.prepare("SELECT id, name, email, phone, role FROM users WHERE phone <> '' AND substr(phone, -9) = ?").get(p.slice(-9));
+  let yangi = false;
+  if (!u) {
+    /* users jadvalida email va parol majburiy (eski sxema) — telefon foydalanuvchisi uchun
+       ichki noyob email va ishlatib bo'lmaydigan tasodifiy parol xeshi */
+    const name = plainText(b.name, 'ism', { max: 100 });
+    const hash = await bcrypt.hash(crypto.randomBytes(24).toString('hex'), 10);
+    const r = db.prepare('INSERT INTO users (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, ?)')
+      .run(name, `tel${p}@telefon.smart3d`, p, hash, 'user');
+    u = { id: Number(r.lastInsertRowid), name, email: `tel${p}@telefon.smart3d`, phone: p, role: 'user' };
+    yangi = true;
+  }
+  res.json({ token: signToken(u), user: { id: u.id, name: u.name, phone: u.phone, role: u.role }, yangi });
+}));
+
+/* ═══════════════════ LOYIHALAR (TZ-07) ═══════════════════
+ * Har foydalanuvchi faqat o'z loyihasini ko'radi. O'chirish — faqat yashirish (archived), qoida 2.7. */
+function projectPayload(b) {
+  const doc = b.doc;
+  if (!doc || typeof doc !== 'object' || Array.isArray(doc)) bad('doc kerak');
+  const inner = doc.doc && typeof doc.doc === 'object' ? doc.doc : doc;     // {app, v, name, doc:{room, placements}} yoki to'g'ridan-to'g'ri doc
+  if (!inner.room || typeof inner.room !== 'object' || !Array.isArray(inner.placements)) bad('doc tuzilmasi noto\'g\'ri (room, placements)');
+  if (inner.placements.length > 500) bad('placements juda ko\'p (max 500)');
+  return {
+    name: plainText(b.name, 'nom', { max: 200 }) || 'Loyiha',
+    doc_json: JSON.stringify(doc),
+    total_price: Math.round(num(b.total_price, 'total_price', { min: 0, max: 1e13 }) || 0)
+  };
+}
+app.get('/api/projects', auth, (req, res) => {
+  res.json(db.prepare('SELECT id, name, total_price, created_at, updated_at FROM projects WHERE user_id = ? AND archived = 0 ORDER BY updated_at DESC, id DESC')
+    .all(req.user.id));
+});
+app.post('/api/projects', auth, (req, res) => {
+  const v = projectPayload(req.body || {});
+  const r = db.prepare('INSERT INTO projects (user_id, name, doc_json, total_price) VALUES (?, ?, ?, ?)')
+    .run(req.user.id, v.name, v.doc_json, v.total_price);
+  res.json({ id: Number(r.lastInsertRowid), ok: true });
+});
+app.get('/api/projects/:id', auth, (req, res) => {
+  const pr = db.prepare('SELECT * FROM projects WHERE id = ? AND user_id = ? AND archived = 0').get(req.params.id, req.user.id);
+  if (!pr) return res.status(404).json({ error: 'Topilmadi' });
+  res.json({ id: pr.id, name: pr.name, total_price: pr.total_price, updated_at: pr.updated_at, doc: JSON.parse(pr.doc_json) });
+});
+app.put('/api/projects/:id', auth, (req, res) => {
+  const pr = db.prepare('SELECT id FROM projects WHERE id = ? AND user_id = ? AND archived = 0').get(req.params.id, req.user.id);
+  if (!pr) return res.status(404).json({ error: 'Topilmadi' });
+  const v = projectPayload(req.body || {});
+  db.prepare('UPDATE projects SET name = ?, doc_json = ?, total_price = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+    .run(v.name, v.doc_json, v.total_price, pr.id);
+  res.json({ ok: true });
+});
+app.delete('/api/projects/:id', auth, (req, res) => {
+  const r = db.prepare('UPDATE projects SET archived = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ? AND archived = 0')
+    .run(req.params.id, req.user.id);
+  if (!r.changes) return res.status(404).json({ error: 'Topilmadi' });
+  res.json({ ok: true });
 });
 
 /* ═══════════════════ MATERIAL API ═══════════════════ */
