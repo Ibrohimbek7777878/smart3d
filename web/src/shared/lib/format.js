@@ -10,6 +10,13 @@ export function sana(t) {
   return isNaN(d) ? '' : p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear();
 }
 
+/** server vaqti (UTC) → "15.10 20:53" (mahalliy) */
+export function vaqt(t) {
+  const s = String(t || ''), d = new Date(s.replace(' ', 'T') + (s.includes('Z') ? '' : 'Z'));
+  const p = (n) => String(n).padStart(2, '0');
+  return isNaN(d) ? '' : p(d.getDate()) + '.' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+
 /** 9 raqam → "90 123 45 67" (yozish paytida) */
 export const telGuruh = (d) => [d.slice(0, 2), d.slice(2, 5), d.slice(5, 7), d.slice(7, 9)].filter(Boolean).join(' ');
 

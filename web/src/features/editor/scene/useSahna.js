@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useSlice, set } from '../../../store/index.js';
+import { report } from '../../../shared/lib/jurnal.js';
+import { xatoMatn } from '../../../../../app/js/xatolar.js';
 import { project } from '../../../store/project.js';
 import { useViewer } from '../../../shared/design3d/useViewer.js';
 import { s3Viewer, s3Mats, s3Box, s3Label, S3_TIPS } from '../../../shared/design3d/engine.js';
@@ -16,7 +18,7 @@ export function useSahnaView() {
   const host = useRef(null), ov = useRef(null);
   useEffect(() => {
     if (!data.ready || !host.current) return undefined;
-    try { mountSahna(host.current, A.roomTap); } catch (e) { console.warn('sahna', e); }
+    try { mountSahna(host.current, A.roomTap); } catch (e) { report('S3D-SCENE-101', { modul: 'editor/scene', err: e }); set('editor', { sceneErr: true }); }
     return unmountSahna;
   }, [data.ready]);
   useEffect(() => { if (scene.sahna) scene.sahna.setMode(ed.view); }, [ed.view]);
@@ -26,6 +28,7 @@ export function useSahnaView() {
   const anyOpen = it ? it.moverKeys(null).some(k => it.isOpen(k)) : false;
   return {
     roomHost: host, roomOv: ov, notLoaded: !ed.sceneOn,
+    loadText: ed.sceneErr ? xatoMatn('S3D-SCENE-101') : data.err || '3D sahna yuklanmoqda…',
     vw: { b2: ed.view === '2d' ? 'var(--acc)' : 'transparent', t2: ed.view === '2d' ? 'var(--ink)' : 'var(--txt)', b3: ed.view === '3d' ? 'var(--acc)' : 'transparent', t3: ed.view === '3d' ? 'var(--ink)' : 'var(--txt)', sb: ed.spin ? 'var(--cyan)' : 'rgba(23,50,57,.9)', st: ed.spin ? '#06231E' : 'var(--txt)' },
     set2D: () => A.setView('2d'), set3D: () => A.setView('3d'), toggleSpin: A.toggleSpin, center: A.center,
     shot: () => faylYukla('rasm'),

@@ -1,7 +1,7 @@
 import { get, set } from '../../store/index.js';
 import { project } from '../../store/project.js';
 import { S } from '../../store/session.js';
-import { toast, confirm } from '../../store/ui.js';
+import { confirm, xato, toast } from '../../store/ui.js';
 
 /* TZ-19 (TZ-09 4.1): sozlamalar — kirgan bo'lsa serverda (/api/settings), aks holda shu qurilmada. */
 const LOCAL = 's3d-settings';
@@ -21,8 +21,8 @@ export async function saveSettings(patch) {
     try {
       const r = await S.api('/api/settings', { method: 'PUT', body: next });
       const j = await r.json().catch(() => ({}));
-      if (!r.ok) { toast('⚠️ ' + (j.error || ('Xato ' + r.status))); return false; }
-    } catch (_) { toast('Server bilan aloqa yo\'q — sozlama saqlanmadi'); return false; }
+      if (!r.ok) { toast(j.error || ('Xato ' + r.status), j.code || 'S3D-SET-101'); return false; }
+    } catch (e) { xato('S3D-NET-101', { matn: 'Server bilan aloqa yo\'q — sozlama saqlanmadi', modul: 'settings', err: e }); return false; }
   } else { try { localStorage.setItem(LOCAL, JSON.stringify(next)); } catch (_) { /* kvota */ } }
   set('settings', { sets: next });
   project.scheduleRecalc(true);
@@ -44,6 +44,18 @@ export function openSettings(section) {
   set('editor', { sel: null, part: null });
   set('settings', { markupIn: null, nestIn: null, stdIn: null });
   if (section) setTimeout(() => { const el = document.querySelector('[data-set="' + section + '"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+}
+
+/** admin: xatolar jurnali (TZ-19 §2). q — bo'sh, kod (S3D-…) yoki so'rov raqami (rid) */
+export async function loadXatolar(q = '') {
+  const t = String(q).trim(), p = new URLSearchParams();
+  if (/^S3D-/i.test(t)) p.set('kod', t.toUpperCase()); else if (t) p.set('rid', t.toLowerCase());
+  try {
+    const r = await S.api('/api/admin/xatolar' + (p.toString() ? '?' + p : ''));
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { toast(j.error || ('Xato ' + r.status), j.code || 'S3D-SET-101'); return; }
+    set('settings', { xatolar: j });
+  } catch (e) { xato('S3D-NET-101', { modul: 'settings/xatolar', err: e }); }
 }
 
 export function askLogout() {

@@ -1,10 +1,11 @@
+import { useEffect } from 'react';
 import { useSlice, get, set } from '../../store/index.js';
 import { project } from '../../store/project.js';
 import { S } from '../../store/session.js';
-import { toast } from '../../store/ui.js';
-import { telefon, son } from '../../shared/lib/format.js';
+import { toast, xato } from '../../store/ui.js';
+import { telefon, son, vaqt } from '../../shared/lib/format.js';
 import { goProjects } from '../projects/actions.js';
-import { saveSettings, askLogout } from './actions.js';
+import { saveSettings, askLogout, loadXatolar } from './actions.js';
 import { STANOK, NEST_F, STD_LABEL, NEST_KEY } from './constants.js';
 
 /* TZ-19: Sozlamalar sahifasi qiymatlari — akkaunt, ustama, logo, stanok profili, raskroy, sex standartlari (TZ-14). */
@@ -52,9 +53,11 @@ async function saveStd(stdIn, std) {
   for (const [t, ks] of Object.entries(stdIn)) for (const [k, v] of Object.entries(ks)) {
     (mod[t] = mod[t] || {})[k] = { min: v.min === '' ? null : Number(v.min), max: v.max === '' ? null : Number(v.max), std: (std[t][k] && std[t][k].std) || [] };
   }
-  const r = await S.api('/api/sex-standartlari', { method: 'PUT', body: { modullar: mod } });
+  let r;
+  try { r = await S.api('/api/sex-standartlari', { method: 'PUT', body: { modullar: mod } }); }
+  catch (e) { xato('S3D-NET-101', { modul: 'settings', err: e }); return; }
   const j = await r.json().catch(() => ({}));
-  if (!r.ok) { toast('⚠️ ' + (j.error || ('Xato ' + r.status))); return; }
+  if (!r.ok) { toast(j.error || ('Xato ' + r.status), j.code || 'S3D-SET-101'); return; }
   project.H.applyStandards(j.standartlar); project.rebuildEstimator();
   setIn({ stdIn: null }); project.scheduleRecalc(true); toast('Sex standartlari saqlandi — katalog chegaralari yangilandi');
 }
@@ -67,6 +70,8 @@ export function useSozlamalar() {
   const stdIn = st.stdIn || Object.fromEntries(Object.entries(std).map(([t, m]) => [t, Object.fromEntries(Object.keys(STD_LABEL).filter(k => m[k]).map(k => [k, { min: m[k].min ?? '', max: m[k].max ?? '' }]))]));
   const nc = st.nestIn || (H ? project.nestCfg() : {});
   const std0 = H ? Math.round(((H.materials.pricing && H.materials.pricing.markup_pct) ?? 0.35) * 100) : 35;
+  useEffect(() => { if (admin) loadXatolar(''); }, [admin]);
+  const xj = st.xatolar;
   const setStd = (t, k, patch) => setIn({ stdIn: { ...stdIn, [t]: { ...stdIn[t], [k]: { ...stdIn[t][k], ...patch } } } });
   return {
     back, backLabel: nav.from === 'app' ? '← Muharrirga' : '← Loyihalarim',
@@ -88,6 +93,16 @@ export function useSozlamalar() {
     std: Object.entries(std).map(([t, m]) => ({ nom: m.nom || t, rows: Object.keys(STD_LABEL).filter(k => m[k]).map(k => ({ label: STD_LABEL[k],
       min: stdIn[t][k].min, max: stdIn[t][k].max,
       onMin: ev => setStd(t, k, { min: ev.target.value }), onMax: ev => setStd(t, k, { max: ev.target.value }) })) })),
-    saveStd: () => saveStd(stdIn, std)
+    saveStd: () => saveStd(stdIn, std),
+    /* admin: xatolar jurnali — kod bo'yicha guruh va oxirgi yozuvlar */
+    xatolar: admin ? {
+      q: st.xq, onQ: ev => setIn({ xq: ev.target.value }), qidir: () => loadXatolar(st.xq),
+      enter: ev => { if (ev.key === 'Enter') loadXatolar(st.xq); },
+      bosh: !!xj && !xj.guruhlar.length,
+      guruhlar: xj ? xj.guruhlar.map(g => ({ code: g.code, src: g.source === 'web' ? 'brauzer' : 'server', n: g.n, vaqt: vaqt(g.oxirgi), msg: g.msg || '',
+        pick: () => { setIn({ xq: g.code }); loadXatolar(g.code); } })) : [],
+      oxirgi: xj ? xj.oxirgi.slice(0, 20).map(x => ({ code: x.code, vaqt: vaqt(x.ts), rid: x.rid, yol: [x.method, x.path].filter(Boolean).join(' '), status: x.status || '', msg: x.msg || '',
+        pick: () => { if (x.rid) { setIn({ xq: x.rid }); loadXatolar(x.rid); } } })) : []
+    } : null
   };
 }

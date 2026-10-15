@@ -2,6 +2,9 @@ import { get, set } from './index.js';
 import { loadData, createHisob } from '../services/hisob.js';
 import * as L from '../services/loyiha.js';
 import { suggestLayout } from '../../../app/js/ai.js';
+import { xatoMatn } from '../../../app/js/xatolar.js';
+import { report } from '../shared/lib/jurnal.js';
+import { xato } from './ui.js';
 
 /* TZ-19: loyiha modeli — ochiq loyiha hujjati (doc), hisob dvigateli (H) va oxirgi hisob natijasi (res).
  * doc — dvigatel o'zi o'zgartiradigan obyekt (eski sayt bilan bir xil shakl), shuning uchun holatda emas, shu yerda turadi.
@@ -23,7 +26,7 @@ export const project = {
     if (!this.ready) {
       this.ready = loadData()
         .then(d => { this.H = createHisob(d); this.est = L.createEstimator(this.H); set('data', { ready: true }); })
-        .catch(e => { console.warn('data', e); set('data', { err: 'Ma\'lumot yuklanmadi — internetni tekshiring' }); });
+        .catch(e => { report('S3D-DATA-101', { modul: 'data', err: e }); set('data', { err: xatoMatn('S3D-DATA-101') }); });
     }
     return this.ready;
   },
@@ -59,7 +62,7 @@ export const project = {
     const s = get(), p = s.project;
     try {
       this.res = this.H.recalc(this.doc, { materialCode: p.matCode, fasadCode: p.fasadCode, sheet: p.sheet, nestCfg: this.nestCfg(), markupPct: s.settings.sets.markup_pct });
-    } catch (e) { console.warn('hisob', e); }
+    } catch (e) { xato('S3D-CALC-101', { modul: 'hisob', err: e }); }
     set('project', st => ({ dv: st.dv + 1 }));
     recalcListeners.forEach(f => f());
   },

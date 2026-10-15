@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { s3Load } from './engine.js';
+import { report } from '../lib/jurnal.js';
 
 /* TZ-19: dizayn 3D ko'rinishlari (s3Viewer — ro'yxat oynasidagi shkaf, "Ichini ko'rish", detal mini-3D) uchun umumiy hook.
  * three.js bir marta yuklanadi; ko'rinish host div paydo bo'lganda yaratiladi va komponent yo'qolganda tozalanadi. */
@@ -14,8 +15,8 @@ export function useViewer(enabled, init, deps) {
     let v = null, dead = false;
     loadThree().then(T => {
       if (dead || !host.current) return;
-      try { v = init(T, host.current, ov.current); } catch (e) { console.warn('3d', e); }
-    }).catch(e => console.warn('three load failed', e));
+      try { v = init(T, host.current, ov.current); } catch (e) { report('S3D-SCENE-102', { modul: 'design3d', err: e }); }
+    }).catch(e => report('S3D-SCENE-102', { modul: 'design3d', xabar: 'three.js yuklanmadi', err: e }));
     return () => { dead = true; if (v) v.dispose(); };
   }, deps);   // eslint-disable-line react-hooks/exhaustive-deps
   return [host, ov];

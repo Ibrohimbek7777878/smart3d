@@ -1,0 +1,58 @@
+/* Smart3D xato kodlari — BITTA MANBA (TZ-19 §2). Server (server/index.js), yangi sayt (web/) va eski sayt shuni ishlatadi.
+ *
+ * Shakl: S3D-<BO'LIM>-<NNN>. 001–099 — server, 101–199 — brauzer. Kod o'zgarmaydi (qo'llab-quvvatlash va jurnal uchun);
+ * eskirsa — o'chirilmaydi, "eski" deb belgilanadi. Matn — foydalanuvchiga ko'rinadigan o'zbekcha izoh.
+ *   AUTH kirish, sessiya   PROJ loyihalar   SET sozlamalar   STD sex standartlari   CALC hisob   EXP fayllar
+ *   SCENE 3D   AI AI va ovoz   DATA ma'lumot   NET tarmoq   VAL kiritish   RATE cheklov   SRV server   UI ekran   LOG jurnal */
+export const XATOLAR = {
+  /* ── server ── */
+  'S3D-AUTH-001': { http: 401, matn: 'Email yoki parol noto\'g\'ri' },
+  'S3D-AUTH-002': { http: 409, matn: 'Email allaqachon bor' },
+  'S3D-AUTH-003': { http: 409, matn: 'Bu telefon bilan akkaunt bor' },
+  'S3D-AUTH-004': { http: 401, matn: 'Token yo\'q' },
+  'S3D-AUTH-005': { http: 401, matn: 'Token yaroqsiz' },
+  'S3D-AUTH-006': { http: 403, matn: 'Admin kerak' },
+  'S3D-AUTH-007': { http: 404, matn: 'Foydalanuvchi topilmadi' },
+  'S3D-AUTH-008': { http: 423, matn: 'Ko\'p xato urinish — akkaunt 15 daqiqaga bloklandi' },
+  'S3D-AUTH-009': { http: 403, matn: 'So\'rov boshqa saytdan keldi — rad etildi' },
+  'S3D-AUTH-010': { http: 503, matn: 'SMS xizmati hali sozlanmagan' },
+  'S3D-AUTH-011': { http: 502, matn: 'SMS yuborilmadi — keyinroq qayta urinib ko\'ring' },
+  'S3D-AUTH-012': { http: 429, matn: 'Kod yaqinda yuborildi — 1 daqiqadan keyin qayta urinib ko\'ring' },
+  'S3D-AUTH-013': { http: 400, matn: 'Kod eskirgan — qayta yuboring' },
+  'S3D-AUTH-014': { http: 429, matn: 'Urinishlar tugadi — yangi kod so\'rang' },
+  'S3D-AUTH-015': { http: 400, matn: 'Kod noto\'g\'ri' },
+  'S3D-PROJ-001': { http: 404, matn: 'Loyiha topilmadi' },
+  'S3D-DATA-001': { http: 404, matn: 'Topilmadi' },
+  'S3D-STD-001': { http: 404, matn: 'Standartlar topilmadi' },
+  'S3D-AI-001': { http: 503, matn: 'AI sozlanmagan — qoidali tahlilchi ishlaydi' },
+  'S3D-AI-002': { http: 502, matn: 'AI javob bermadi — qoidali tahlilchi ishlaydi' },
+  'S3D-AI-003': { http: 501, matn: 'Server ovoz tanish (STT) hali ulanmagan — brauzer ovozidan foydalaning' },
+  'S3D-VAL-001': { http: 400, matn: 'Kiritilgan qiymat noto\'g\'ri' },
+  'S3D-VAL-002': { http: 400, matn: 'JSON noto\'g\'ri' },
+  'S3D-VAL-003': { http: 413, matn: 'So\'rov juda katta' },
+  'S3D-RATE-001': { http: 429, matn: 'Urinishlar juda ko\'p — keyinroq qayta urinib ko\'ring' },
+  'S3D-SRV-001': { http: 500, matn: 'Server xatosi' },
+  'S3D-SRV-002': { http: 404, matn: 'Topilmadi' },
+  'S3D-LOG-001': { http: 400, matn: 'Jurnal yozuvi noto\'g\'ri' },
+
+  /* ── brauzer ── */
+  'S3D-NET-101': { matn: 'Server bilan aloqa yo\'q — internetni tekshiring' },
+  'S3D-NET-102': { matn: 'Server javob bermadi (vaqt tugadi) — qayta urinib ko\'ring' },
+  'S3D-DATA-101': { matn: 'Ma\'lumot yuklanmadi — internetni tekshiring' },
+  'S3D-CALC-101': { matn: 'Hisoblashda xato — narx yangilanmadi' },
+  'S3D-EXP-101': { matn: 'Fayl yaratilmadi' },
+  'S3D-SCENE-101': { matn: '3D sahna ochilmadi' },
+  'S3D-SCENE-102': { matn: '3D ko\'rinish ochilmadi' },
+  'S3D-AI-101': { matn: 'AI xato' },
+  'S3D-AI-102': { matn: 'Ovoz xatosi' },
+  'S3D-PROJ-101': { matn: 'Bu Smart3D loyiha fayli emas' },
+  'S3D-SET-101': { matn: 'Sozlama saqlanmadi' },
+  'S3D-UI-101': { matn: 'Bu bo\'limda xatolik yuz berdi' },
+  'S3D-JS-101': { matn: 'Kutilmagan xato' },
+  'S3D-JS-102': { matn: 'Kutilmagan xato (jarayon)' }
+};
+
+export const KOD_RE = /^S3D-[A-Z]{2,6}-\d{3}$/;
+
+/** foydalanuvchiga: "matn · S3D-…" */
+export const xatoMatn = (code, matn) => (matn || (XATOLAR[code] && XATOLAR[code].matn) || 'Xato') + (code ? ' · ' + code : '');

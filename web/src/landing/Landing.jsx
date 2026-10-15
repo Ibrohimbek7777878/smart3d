@@ -8,6 +8,7 @@ import Imkoniyatlar from './sections/Imkoniyatlar.jsx';
 import Savollar from './sections/Savollar.jsx';
 import Royxat from './sections/Royxat.jsx';
 import Footer from './sections/Footer.jsx';
+import { report } from '../shared/lib/jurnal.js';
 import { s3Load, s3Box, s3cl, s3f1, s3Spec, s3Mats, s3Label, s3Viewer, s3Clear, s3Build, s3Apply, S3_STEPS } from '../shared/design3d/engine.js';
 
 export default class Landing extends React.Component {
@@ -20,9 +21,9 @@ export default class Landing extends React.Component {
     this.onScroll=()=>{const st=document.getElementById('hero');if(st){const r=st.getBoundingClientRect();this.storyP=s3cl(-r.top/Math.max(1,r.height-window.innerHeight))}};
     window.addEventListener('scroll',this.onScroll,{passive:true});this.onScroll();
     s3Load().then(T=>{if(this.dead)return;this.T=T;
-      try{this.initStory()}catch(e){console.warn('story 3D unavailable',e)}
-      try{this.initDemo()}catch(e){console.warn('demo 3D unavailable',e);this.demoFallback()}
-      this.setState({loaded:true})}).catch(e=>{console.warn('three load failed',e);this.setState({loaded:true});this.demoFallback()});
+      try{this.initStory()}catch(e){report('S3D-SCENE-102',{modul:'landing/hero',err:e})}
+      try{this.initDemo()}catch(e){report('S3D-SCENE-102',{modul:'landing/demo',err:e});this.demoFallback()}
+      this.setState({loaded:true})}).catch(e=>{report('S3D-SCENE-102',{modul:'landing',xabar:'three.js yuklanmadi',err:e});this.setState({loaded:true});this.demoFallback()});
   }
   componentWillUnmount(){this.dead=true;this.mini&&this.mini.dispose();window.removeEventListener('scroll',this.onScroll);this.story&&this.story.dispose();this.demo&&this.demo.dispose();this.rvIO&&this.rvIO.disconnect();this.dIO&&this.dIO.disconnect()}
   goApp(screen,extra){const q=new URLSearchParams({s:screen,...(extra||{})});const u=new URL('app.html',location.href);u.hash=q.toString();
@@ -39,7 +40,7 @@ export default class Landing extends React.Component {
       if(p.size[0]>=30)s3Label(v,p.size[0]+'','',an(0,-s[1]/2-.02,s[2]/2+.02),'dim').op=1;
       if(p.size[1]>=30)s3Label(v,p.size[1]+'','',an(s[0]/2+.03,0,s[2]/2),'dim').op=1;
       if(p.size[2]>=30)s3Label(v,p.size[2]+'','',an(s[0]/2+.03,-s[1]/2,0),'dim').op=1;
-    }catch(e){console.warn('mini 3D',e)}}
+    }catch(e){report('S3D-SCENE-102',{modul:'landing/demo',err:e})}}
   setupReveal(){const els=document.querySelectorAll('[data-rv-id]');
     this.rvIO=new IntersectionObserver(es=>{const add={};es.forEach(e=>{if(e.isIntersecting){add[e.target.getAttribute('data-rv-id')]=true;this.rvIO.unobserve(e.target)}});if(Object.keys(add).length)this.setState(s=>({seen:{...s.seen,...add}}))},{threshold:.06});
     els.forEach(e=>this.rvIO.observe(e))}

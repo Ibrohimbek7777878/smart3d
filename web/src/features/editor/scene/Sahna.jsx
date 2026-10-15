@@ -15,7 +15,7 @@ export default function Sahna() {
       </div>
       {v.notLoaded ? (<>
         <div style={{"position":"absolute","inset":"0","display":"grid","placeItems":"center","color":"var(--mut)","fontFamily":"'JetBrains Mono',monospace","fontSize":"13px"}}>
-          {"3D sahna yuklanmoqda…"}
+          {v.loadText}
         </div>
       </>) : null}
       <div style={{"position":"absolute","left":"12px","right":"12px","top":"12px","zIndex":"3","display":"flex","flexWrap":"wrap","gap":"8px","pointerEvents":"none"}}>

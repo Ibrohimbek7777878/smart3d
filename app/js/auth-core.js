@@ -9,7 +9,9 @@
  * o: { getPayload(), getTotal(), applyPayload(doc), hasWork(),
  *      onState(kind, title)  — 'ok' | 'busy' | 'off' | null (saqlash belgisi),
  *      onUser(user|null, sabab) — kirish/chiqish ('login' | 'logout' | 'expired' | 'restore'),
- *      toast(matn, tur) }
+ *      toast(matn, tur, kod) }
+ * TZ-19: server xatosi { error, code, rid } — kod toast'ga va natijaga uzatiladi; so'rov 15 soniyada javob bermasa —
+ * to'xtatiladi (katta yuklama — 45 s) va tarmoq xatosi kabi ishlanadi (internetsiz navbat).
  */
 export const K = { token: 'smart3d.token', user: 'smart3d.user', pending: 'smart3d.pending' };
 const curKey = (u) => 'smart3d.current.' + (u && u.id);
@@ -32,14 +34,23 @@ export function createSession(o) {
   let ready = false, currentId = null;
   let saveTimer = 0, saving = false, dirty = false;
   const state = (kind, title) => { if (o.onState) o.onState(kind, title); };
-  const toast = (t, k) => { if (o.toast) o.toast(t, k); };
+  const toast = (t, k, code) => { if (o.toast) o.toast(t, k, code); };
 
-  const api = async (path, { method = 'GET', body } = {}) => fetch(path, {
-    method, cache: 'no-store',
-    headers: { 'content-type': 'application/json', ...(token ? { authorization: 'Bearer ' + token } : {}) },
-    body: body ? JSON.stringify(body) : undefined
-  });
-  const errText = async (r) => { try { return (await r.json()).error || ('Xato ' + r.status); } catch (e) { return 'Xato ' + r.status; } };
+  const api = async (path, { method = 'GET', body } = {}) => {
+    const data = body ? JSON.stringify(body) : undefined;
+    const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+    const t = ctl ? setTimeout(() => ctl.abort(), data && data.length > 200000 ? 45000 : 15000) : 0;
+    try {
+      return await fetch(path, {
+        method, cache: 'no-store', signal: ctl ? ctl.signal : undefined,
+        headers: { 'content-type': 'application/json', ...(token ? { authorization: 'Bearer ' + token } : {}) },
+        body: data
+      });
+    } finally { clearTimeout(t); }
+  };
+  /** server xatosi → { text, code } */
+  const errInfo = async (r) => { try { const j = await r.json(); return { text: j.error || ('Xato ' + r.status), code: j.code || '' }; } catch (e) { return { text: 'Xato ' + r.status, code: '' }; } };
+  const errText = async (r) => { const e = await errInfo(r); return e.text + (e.code ? ' · ' + e.code : ''); };
   const setCurrent = (id) => { currentId = id; ls.set(curKey(user), id); };
   const setAuth = (j) => { token = j.token; user = j.user; ls.set(K.token, token); ls.set(K.user, user); };
 
@@ -80,7 +91,7 @@ export function createSession(o) {
   async function openProject(id) {
     const r = await api('/api/projects/' + id);
     if (r.status === 401) { logout(true); return false; }
-    if (!r.ok) { toast(await errText(r), 'bad'); return false; }
+    if (!r.ok) { const e = await errInfo(r); toast(e.text, 'bad', e.code); return false; }
     const j = await r.json();
     ready = false;                                       // yuklash paytidagi qayta hisob saqlanmasin
     o.applyPayload(j.doc, j);
@@ -107,8 +118,8 @@ export function createSession(o) {
     try {
       const r = await api(path, { method: 'POST', body });
       const j = await r.json().catch(() => ({}));
-      return r.ok ? Object.assign({ ok: true }, j) : Object.assign({ ok: false, status: r.status, error: j.error || ('Xato ' + r.status) }, j.retry_after ? { retry_after: j.retry_after } : {});
-    } catch (e) { return { ok: false, status: 0, error: "Server bilan aloqa yo'q" }; }
+      return r.ok ? Object.assign({ ok: true }, j) : Object.assign({ ok: false, status: r.status, error: j.error || ('Xato ' + r.status), code: j.code || '' }, j.retry_after ? { retry_after: j.retry_after } : {});
+    } catch (e) { return { ok: false, status: 0, error: "Server bilan aloqa yo'q", code: e && e.name === 'AbortError' ? 'S3D-NET-102' : 'S3D-NET-101' }; }
   }
   /** email + parol (TZ-09 Q2; admin ham shu) */
   async function login(email, password) {
@@ -168,7 +179,7 @@ export function createSession(o) {
   }
 
   return {
-    api, errText, changed, flush, openProject, listProjects, removeProject,
+    api, errText, errInfo, changed, flush, openProject, listProjects, removeProject,
     login, register, smsSend, smsVerify, afterLogin, logout, restore, setCurrent,
     /** "Yangi" yoki kompyuterdan yuklash — keyingi saqlash serverda yangi loyiha ochadi */
     resetCurrent() { if (token) setCurrent(null); },

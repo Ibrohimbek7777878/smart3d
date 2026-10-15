@@ -44,7 +44,7 @@ export function mountSahna(host, onTap) {
     if (navigator.xr && navigator.xr.isSessionSupported) navigator.xr.isSessionSupported('immersive-vr').then(ok => set('editor', { vrOk: !!ok })).catch(() => {});
   } catch (_) { /* WebXR yo'q */ }
   if (ed.sel) sahna.select(ed.sel);
-  set('editor', { sceneOn: true });
+  set('editor', { sceneOn: true, sceneErr: false });
 }
 
 export function unmountSahna() {

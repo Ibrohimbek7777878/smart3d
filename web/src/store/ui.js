@@ -1,13 +1,23 @@
 import { get, set } from './index.js';
+import { report } from '../shared/lib/jurnal.js';
+import { XATOLAR } from '../../../app/js/xatolar.js';
 
 /* TZ-19: umumiy oynalar — qisqa xabar (toast), tasdiq oynasi, pastki varaq. Har modul shu orqali chaqiradi. */
 let toastTimer = 0;
 
-/** qisqa xabar — 3 soniya */
-export function toast(text) {
+/** qisqa xabar — 3 soniya (xato bo'lsa — 5 soniya, kodi bilan) */
+export function toast(text, code) {
   clearTimeout(toastTimer);
-  set('ui', { toast: text });
-  toastTimer = setTimeout(() => set('ui', { toast: '' }), 3000);
+  set('ui', { toast: text, toastCode: code || '' });
+  toastTimer = setTimeout(() => set('ui', { toast: '', toastCode: '' }), code ? 5000 : 3000);
+}
+
+/** foydalanuvchiga ko'rinadigan xato: tushunarli matn + kod; jurnalga ham yoziladi.
+ *  o: { matn (ko'rinadigan matn, bo'lmasa — kod matni), modul, err, xabar (jurnal uchun) } */
+export function xato(code, o = {}) {
+  const matn = o.matn || (XATOLAR[code] && XATOLAR[code].matn) || 'Xato';
+  report(code, { modul: o.modul, err: o.err, xabar: o.xabar || matn });
+  toast(matn, code);
 }
 
 /** tasdiq oynasi: { title, text, ok, danger, yes } */

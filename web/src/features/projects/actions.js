@@ -1,7 +1,7 @@
 import { get, set } from '../../store/index.js';
 import { project } from '../../store/project.js';
 import { S } from '../../store/session.js';
-import { toast, confirm } from '../../store/ui.js';
+import { toast, confirm, xato } from '../../store/ui.js';
 import * as L from '../../services/loyiha.js';
 import { clamp } from '../../shared/lib/format.js';
 import { runAI } from '../editor/ai/actions.js';
@@ -38,7 +38,7 @@ export function newProject() {
 /** onboarding → muharrir: AI matni bo'lsa — AI quradi, aks holda xona (+ oshxona namunasi) */
 export async function openEditor() {
   await project.load();
-  if (!project.H) return;
+  if (!project.H) { xato('S3D-DATA-101', { modul: 'projects' }); return; }
   S.resetCurrent();
   const o = get().onb, ai = get().ai;
   if (o.kind === 'ai' && ai.text.trim()) { project.reset(); await runAI(true); }
@@ -85,7 +85,7 @@ export function openFile(ev) {
   rd.onload = async () => {
     let p = null;
     try { p = JSON.parse(String(rd.result)); } catch (_) { /* pastda tekshiriladi */ }
-    if (!p || p.app !== 'smart3d' || !p.doc || !p.doc.room || !Array.isArray(p.doc.placements)) { toast('Bu Smart3D loyiha fayli emas'); return; }
+    if (!p || p.app !== 'smart3d' || !p.doc || !p.doc.room || !Array.isArray(p.doc.placements)) { xato('S3D-PROJ-101', { modul: 'projects', xabar: 'fayl: ' + f.name.slice(0, 60) }); return; }
     await project.load();
     S.resetCurrent();
     set('nav', EDITOR); set('editor', { step: 2, done: { 1: true }, tip: 3 });
@@ -101,6 +101,6 @@ export function askRemove(p) {
   confirm({ title: 'Loyihani o\'chirasizmi?', text: '"' + (p.name || 'Loyiha') + '" ro\'yxatdan olib tashlanadi.', ok: 'O\'chirish', danger: true,
     yes: async () => {
       if (await S.removeProject(p.id)) { toast('Loyiha o\'chirildi'); goProjects(); }
-      else toast('O\'chirilmadi — internetni tekshiring');
+      else xato('S3D-NET-101', { matn: 'O\'chirilmadi — internetni tekshiring', modul: 'projects' });
     } });
 }

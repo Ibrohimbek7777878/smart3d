@@ -26,7 +26,9 @@ function ok(c, needCutlist) {
   if (needCutlist && !(c.res && c.res.cutlists && c.res.cutlists.length)) { c.toast('Avval smeta hisoblansin (cutlist bo\'sh)'); return false; }
   return true;
 }
-function safe(c, fn) { try { fn(); } catch (e) { console.error('eksport', e); c.toast('Xato: ' + e.message); } }
+/* TZ-19: xato — c.fail(e, nom) orqali (kod bilan xabar va jurnal: S3D-EXP-101); c.fail bo'lmasa — oddiy xabar */
+const failed = (c, e, nom) => { if (c.fail) c.fail(e, nom); else { console.error('eksport', e); c.toast((nom || 'Xato') + ': ' + e.message); } };
+function safe(c, fn) { try { fn(); } catch (e) { failed(c, e, 'Fayl'); } }
 
 export const eksport = {
   /* ── Mijozga ── */
@@ -92,7 +94,7 @@ ${prodRows ? `<h2>2. Ishlab chiqarish xarajati</h2><table><tbody>${prodRows}</tb
       sp.scene.background = new THREE.Color(0x0C1C22);              // mavzu foni shaffof — rasmda dizayn rangi
       const r = await render1080p(sp, { download: true });
       c.toast(`📸 1080p rasm saqlandi (${r.width}×${r.height})`);
-    } catch (e) { console.error(e); c.toast('Rasm xatosi: ' + e.message); }
+    } catch (e) { failed(c, e, 'Rasm'); }
     finally { sp.scene.background = bg; sp.groups.walls3d.children.forEach((w, i) => { w.visible = walls[i]; }); sp._resize(); sp._invalidate(); }
   },
   async panorama(c) {
@@ -104,7 +106,7 @@ ${prodRows ? `<h2>2. Ishlab chiqarish xarajati</h2><table><tbody>${prodRows}</tb
       for (const w of sp.groups.walls3d.children) w.visible = true;   // xona markazidan — hamma devor ko'rinadi
       await render360Panorama(sp, { download: true });
       c.toast('🔄 360° panorama saqlandi');
-    } catch (e) { console.error(e); c.toast('Panorama xatosi: ' + e.message); }
+    } catch (e) { failed(c, e, 'Panorama'); }
     finally { sp.scene.background = bg; sp._resize(); sp._invalidate(); }
   },
   glb(c) {

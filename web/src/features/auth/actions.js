@@ -1,7 +1,7 @@
 import { get, set } from '../../store/index.js';
 import { project } from '../../store/project.js';
 import { S } from '../../store/session.js';
-import { toast } from '../../store/ui.js';
+import { xato } from '../../store/ui.js';
 import { loadSettings } from '../settings/actions.js';
 import { goProjects, openPending } from '../projects/actions.js';
 import { checkAiStatus } from '../editor/ai/actions.js';
@@ -69,9 +69,9 @@ export async function submitAuth() {
     : await S.login(em, f.pass);
   busy = false;
   if (!j.ok) {
-    if (j.status === 0) { toast('Server bilan aloqa yo\'q — internetni tekshiring'); return; }
+    if (j.status === 0) { xato(j.code || 'S3D-NET-101', { modul: 'auth' }); return; }
     const t = String(j.error || '');
-    if (j.status === 409) { if (/telefon/i.test(t)) e.phone = 'Bu raqam bilan akkaunt bor — kirish'; else e.email = 'Bu email bilan akkaunt bor — kirish'; }
+    if (j.status === 409) { if (j.code === 'S3D-AUTH-003' || /telefon/i.test(t)) e.phone = 'Bu raqam bilan akkaunt bor — kirish'; else e.email = 'Bu email bilan akkaunt bor — kirish'; }
     else if (j.status === 401) e.pass = 'Email yoki parol noto\'g\'ri';
     else if (/parol/i.test(t)) e.pass = t; else if (/telefon/i.test(t)) e.phone = t; else if (/ism/i.test(t)) e.name = t; else e.email = t;
     setField({ err: e, tried: true });

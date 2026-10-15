@@ -1,7 +1,7 @@
 import { get, set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { S } from '../../../store/session.js';
-import { toast, confirm } from '../../../store/ui.js';
+import { toast, confirm, xato } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
 import { aiBuild, startVoice, voiceSupported } from '../../../../../app/js/ai.js';
 import { roomBBox } from '../../../../../app/js/engine/rules.js';
@@ -44,7 +44,7 @@ export async function runAI(silent) {
     const bb = roomBBox(res.doc.room.outline);
     toast(res.assumed ? '⚠️ Xona o\'lchami tushunilmadi — 3600×2800 mm taxmin qilindi'
       : '🪄 AI loyihani qurdi: ' + res.doc.placements.length + ' modul · ' + Math.round(bb.w) + '×' + Math.round(bb.h) + ' mm' + (res.unknown.length ? ' · tushunilmadi: ' + res.unknown.join(', ') : ''));
-  } catch (e) { if (!silent) toast('AI xato: ' + e.message); }
+  } catch (e) { if (!silent) xato('S3D-AI-101', { matn: 'AI xato: ' + e.message, modul: 'editor/ai', err: e }); }
 }
 
 /** "Qurish": joriy loyihada mebel bo'lsa — avval tasdiq */
@@ -71,7 +71,7 @@ export function toggleMic() {
       if (voice !== rec) return;
       if (err === 'language-not-supported' && !triedRu) { triedRu = true; rec = start('ru-RU'); voice = rec; return; }
       voice = null; set('ai', { mic: false });
-      if (err && err !== 'no-speech' && err !== 'aborted') toast(VOICE_ERR[err] || ('Ovoz xatosi: ' + err));
+      if (err && err !== 'no-speech' && err !== 'aborted') xato('S3D-AI-102', { matn: VOICE_ERR[err] || ('Ovoz xatosi: ' + err), modul: 'editor/ai' });
     }
   });
   rec = start('uz-UZ'); voice = rec;

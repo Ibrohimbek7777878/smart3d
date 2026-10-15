@@ -27,6 +27,8 @@ import { fileURLToPath } from 'url';
 import { parseZamer, aiBuild } from '../app/js/ai.js';
 import { smsConfigured, sendSms, SMS_TEXT } from './sms.js';
 import { aiConfig, llmParse } from './ai-llm.js';
+import { XATOLAR, KOD_RE } from '../app/js/xatolar.js';
+import { createJurnal } from './jurnal.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROD = process.env.NODE_ENV === 'production';
@@ -53,6 +55,8 @@ if (!fs.existsSync(DB_PATH)) {
 }
 const db = new Database(DB_PATH);
 db.pragma('journal_mode = WAL');
+/* TZ-19: jurnal — JSON qatorlar + error_log jadvali (server/jurnal.js) */
+const jurnal = createJurnal(db);
 
 /* Remnants (Delovoy qoldiqlar) jadvali — Kamchilik 9 */
 db.exec(`
@@ -186,6 +190,13 @@ function phone(v) {
 /** Async route'dagi xato Express 4 da ushlanmaydi — next(err) ga o'tkazamiz (aks holda server o'chadi). */
 const ah = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
+/* TZ-19: xato javobi — doim { error, code, rid }. Kod va matn — app/js/xatolar.js (bitta manba); rid — jurnaldagi so'rov raqami. */
+function fail(res, code, msg, extra) {
+  const x = XATOLAR[code] || XATOLAR['S3D-SRV-001'];
+  res.locals.code = code; res.locals.msg = msg || x.matn;
+  return res.status(x.http).json({ error: msg || x.matn, code, rid: res.req.rid, ...(extra || {}) });
+}
+
 /* ═══════════════════ RATE LIMIT (kutubxonasiz, xotirada) ═══════════════════
  * login — faqat MUVAFFAQIYATSIZ urinishlar sanaladi (bitta NAT ortidagi sex o'zini
  * bloklamaydi); register — alohida hisob. Nginx ortida TRUST_PROXY=1 shart. */
@@ -207,7 +218,7 @@ function rateLimit({ windowMs, max }) {
       const h = entry(req.ip);
       if (h.n >= max) {
         res.set('Retry-After', String(Math.ceil((h.reset - Date.now()) / 1000)));
-        return res.status(429).json({ error: 'Urinishlar juda ko\'p — keyinroq qayta urinib ko\'ring' });
+        return fail(res, 'S3D-RATE-001');
       }
       next();
     },
@@ -219,10 +230,27 @@ const registerLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10 }); // 10 
 const smsSendLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10 });   // TZ-07: 10 SMS / soat / IP
 const smsVerifyLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 }); // 20 xato kod / 15 daq / IP
 const aiLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 60 });         // TZ-12: 60 AI so'rov / soat / IP (pullik)
+const logLimiter = rateLimit({ windowMs: 60 * 1000, max: 30 });             // TZ-19: 30 xato yozuvi / daqiqa / IP
 
 /* ── Express ── */
 const app = express();
 app.disable('x-powered-by');
+/* TZ-19: har so'rovga raqam (rid) — javob sarlavhasida va jurnalda; xato javoblar jurnalga yoziladi
+   (401/403/413/423/429 va 5xx — bazaga ham: hujum va nosozlikni keyin ko'rish uchun) */
+app.use((req, res, next) => {
+  req.rid = crypto.randomBytes(6).toString('hex');
+  res.set('X-Request-Id', req.rid);
+  const t0 = Date.now();
+  res.on('finish', () => {
+    const st = res.statusCode;
+    if (st < 400 || res.locals.logged || !req.originalUrl.startsWith('/api')) return;
+    const code = res.locals.code || (st === 404 ? 'S3D-SRV-002' : st >= 500 ? 'S3D-SRV-001' : 'S3D-VAL-001');
+    const save = st === 401 || st === 403 || st === 413 || st === 423 || st === 429 || st >= 500;
+    jurnal[st >= 500 ? 'error' : 'warn']({ code, rid: req.rid, uid: req.user && req.user.id, method: req.method, path: req.originalUrl.split('?')[0],
+      status: st, msg: res.locals.msg || '', save, meta: { ms: Date.now() - t0, ip: req.ip } });
+  });
+  next();
+});
 if (process.env.TRUST_PROXY) app.set('trust proxy', Number(process.env.TRUST_PROXY) || 1);
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
 app.use(cors({ origin: ALLOWED_ORIGINS.length ? ALLOWED_ORIGINS : false }));
@@ -235,6 +263,7 @@ app.use((req, res, next) => {             // xavfsizlik sarlavhalari (helmet'siz
   });
   next();
 });
+app.use('/api/log', express.json({ limit: '4kb' }));   // brauzer xato yozuvi — kichik (TZ-19)
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname, '../app')));  // frontend
 
@@ -242,16 +271,16 @@ app.use(express.static(path.join(__dirname, '../app')));  // frontend
 function auth(req, res, next) {
   const h = req.headers.authorization || '';
   const token = h.startsWith('Bearer ') ? h.slice(7) : '';
-  if (!token) return res.status(401).json({ error: 'Token yo\'q' });
+  if (!token) return fail(res, 'S3D-AUTH-004');
   try {
     req.user = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
     next();
   } catch (e) {
-    res.status(401).json({ error: 'Token yaroqsiz' });
+    fail(res, 'S3D-AUTH-005');
   }
 }
 function adminOnly(req, res, next) {
-  if (req.user?.role !== 'admin') return res.status(403).json({ error: 'Admin kerak' });
+  if (req.user?.role !== 'admin') return fail(res, 'S3D-AUTH-006');
   next();
 }
 const signToken = (u) => jwt.sign({ id: u.id, email: u.email, role: u.role }, JWT_SECRET,
@@ -268,10 +297,10 @@ app.post('/api/register', registerLimiter.check, ah(async (req, res) => {
   const shop = plainText(b.shop, 'sex nomi', { max: 100 });   // TZ-09: ixtiyoriy
   const tel = b.phone ? phone(b.phone) : '';        // S1: 998XXXXXXXXX
   if (tel && db.prepare("SELECT id FROM users WHERE phone <> '' AND substr(phone, -9) = ?").get(tel.slice(-9))) {
-    return res.status(409).json({ error: 'Bu telefon bilan akkaunt bor' });
+    return fail(res, 'S3D-AUTH-003');
   }
   const exists = db.prepare('SELECT id FROM users WHERE lower(email) = ?').get(em);
-  if (exists) return res.status(409).json({ error: 'Email allaqachon bor' });
+  if (exists) return fail(res, 'S3D-AUTH-002');
   const hash = await bcrypt.hash(password, 10);
   const r = db.prepare('INSERT INTO users (name, email, phone, shop, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)')
     .run(name, em, tel, shop, hash, 'user');
@@ -287,14 +316,14 @@ app.post('/api/login', loginLimiter.check, ah(async (req, res) => {
   const u = db.prepare('SELECT * FROM users WHERE lower(email) = ?').get(em);
   if (!u || !(await bcrypt.compare(password, u.password_hash))) {
     loginLimiter.hit(req);
-    return res.status(401).json({ error: 'Email yoki parol noto\'g\'ri' });
+    return fail(res, 'S3D-AUTH-001');
   }
   res.json({ token: signToken(u), user: { id: u.id, name: u.name, email: u.email, phone: u.phone || '', shop: u.shop || '', role: u.role } });
 }));
 
 app.get('/api/me', auth, (req, res) => {
   const u = db.prepare('SELECT id, name, email, phone, shop, role FROM users WHERE id = ?').get(req.user.id);
-  if (!u) return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
+  if (!u) return fail(res, 'S3D-AUTH-007');
   res.json(u);
 });
 
@@ -310,9 +339,9 @@ app.post('/api/auth/sms/send', smsSendLimiter.check, ah(async (req, res) => {
   const now = Date.now();
   const old = db.prepare('SELECT sent_at FROM sms_codes WHERE phone = ?').get(p);
   if (old && now - old.sent_at < RESEND_MS) {
-    return res.status(429).json({ error: 'Kod yaqinda yuborildi — 1 daqiqadan keyin qayta urinib ko\'ring', retry_after: Math.ceil((RESEND_MS - (now - old.sent_at)) / 1000) });
+    return fail(res, 'S3D-AUTH-012', null, { retry_after: Math.ceil((RESEND_MS - (now - old.sent_at)) / 1000) });
   }
-  if (PROD && !smsConfigured()) return res.status(503).json({ error: 'SMS xizmati hali sozlanmagan' });
+  if (PROD && !smsConfigured()) return fail(res, 'S3D-AUTH-010');
   smsSendLimiter.hit(req);
   const code = String(crypto.randomInt(100000, 1000000));
   db.prepare(`INSERT INTO sms_codes (phone, code_hash, expires_at, attempts, sent_at) VALUES (?, ?, ?, 0, ?)
@@ -321,13 +350,14 @@ app.post('/api/auth/sms/send', smsSendLimiter.check, ah(async (req, res) => {
   if (smsConfigured()) {
     try { await sendSms(p, SMS_TEXT(code)); }
     catch (e) {
-      console.error('SMS yuborilmadi:', e.message);
+      jurnal.error({ code: 'S3D-AUTH-011', rid: req.rid, method: req.method, path: req.path, status: 502, msg: 'SMS yuborilmadi: ' + e.message });
+      res.locals.logged = true;
       db.prepare('DELETE FROM sms_codes WHERE phone = ?').run(p);
-      return res.status(502).json({ error: 'SMS yuborilmadi — keyinroq qayta urinib ko\'ring' });
+      return fail(res, 'S3D-AUTH-011');
     }
     return res.json({ ok: true, ttl: CODE_TTL / 1000 });
   }
-  console.warn(`DEV: SMS sozlanmagan — ${p} uchun kod: ${code}`);
+  console.warn(`DEV: SMS sozlanmagan — ${p.slice(0, 5)}*****${p.slice(-2)} uchun kod: ${code}`);
   res.json({ ok: true, ttl: CODE_TTL / 1000, dev_code: code });
 }));
 
@@ -336,13 +366,13 @@ app.post('/api/auth/sms/verify', smsVerifyLimiter.check, ah(async (req, res) => 
   const p = phone(b.phone);
   const code = String(str(b.code, 'kod', { max: 10, required: true })).replace(/\D/g, '');
   const row = db.prepare('SELECT * FROM sms_codes WHERE phone = ?').get(p);
-  if (!row || row.expires_at < Date.now()) return res.status(400).json({ error: 'Kod eskirgan — qayta yuboring' });
-  if (row.attempts >= MAX_ATTEMPTS) return res.status(429).json({ error: 'Urinishlar tugadi — yangi kod so\'rang' });
+  if (!row || row.expires_at < Date.now()) return fail(res, 'S3D-AUTH-013');
+  if (row.attempts >= MAX_ATTEMPTS) return fail(res, 'S3D-AUTH-014');
   const a = Buffer.from(codeHash(p, code)), e = Buffer.from(row.code_hash);
   if (a.length !== e.length || !crypto.timingSafeEqual(a, e)) {
     db.prepare('UPDATE sms_codes SET attempts = attempts + 1 WHERE phone = ?').run(p);
     smsVerifyLimiter.hit(req);
-    return res.status(400).json({ error: 'Kod noto\'g\'ri' });
+    return fail(res, 'S3D-AUTH-015');
   }
   db.prepare('DELETE FROM sms_codes WHERE phone = ?').run(p);
   let u = db.prepare("SELECT id, name, email, phone, role FROM users WHERE phone <> '' AND substr(phone, -9) = ?").get(p.slice(-9));
@@ -389,12 +419,12 @@ app.post('/api/projects', auth, (req, res) => {
 });
 app.get('/api/projects/:id', auth, (req, res) => {
   const pr = db.prepare('SELECT * FROM projects WHERE id = ? AND user_id = ? AND archived = 0').get(req.params.id, req.user.id);
-  if (!pr) return res.status(404).json({ error: 'Topilmadi' });
+  if (!pr) return fail(res, 'S3D-PROJ-001', 'Topilmadi');
   res.json({ id: pr.id, name: pr.name, client: pr.client || '', total_price: pr.total_price, updated_at: pr.updated_at, doc: JSON.parse(pr.doc_json) });
 });
 app.put('/api/projects/:id', auth, (req, res) => {
   const pr = db.prepare('SELECT id FROM projects WHERE id = ? AND user_id = ? AND archived = 0').get(req.params.id, req.user.id);
-  if (!pr) return res.status(404).json({ error: 'Topilmadi' });
+  if (!pr) return fail(res, 'S3D-PROJ-001', 'Topilmadi');
   const v = projectPayload(req.body || {});
   db.prepare('UPDATE projects SET name = ?, client = ?, doc_json = ?, total_price = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
     .run(v.name, v.client, v.doc_json, v.total_price, pr.id);
@@ -403,7 +433,7 @@ app.put('/api/projects/:id', auth, (req, res) => {
 app.delete('/api/projects/:id', auth, (req, res) => {
   const r = db.prepare('UPDATE projects SET archived = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ? AND archived = 0')
     .run(req.params.id, req.user.id);
-  if (!r.changes) return res.status(404).json({ error: 'Topilmadi' });
+  if (!r.changes) return fail(res, 'S3D-PROJ-001', 'Topilmadi');
   res.json({ ok: true });
 });
 
@@ -428,7 +458,7 @@ app.get('/api/materials', (req, res) => {
 
 app.get('/api/materials/:id', (req, res) => {
   const m = db.prepare('SELECT * FROM materials WHERE id = ?').get(req.params.id);
-  if (!m) return res.status(404).json({ error: 'Topilmadi' });
+  if (!m) return fail(res, 'S3D-DATA-001');
   res.json(m);
 });
 
@@ -437,7 +467,7 @@ app.put('/api/materials/:id/price', auth, adminOnly, (req, res) => {
   const uzs = num(b.uzs, 'uzs', { min: 0, max: 1e12, required: true });
   const usd = num(b.usd, 'usd', { min: 0, max: 1e9 }) || 0;
   const old = db.prepare('SELECT uzs, usd FROM materials WHERE id = ?').get(req.params.id);
-  if (!old) return res.status(404).json({ error: 'Material topilmadi' });
+  if (!old) return fail(res, 'S3D-DATA-001', 'Material topilmadi');
   db.prepare('UPDATE materials SET uzs = ?, usd = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
     .run(uzs, usd, req.params.id);
   db.prepare('INSERT INTO price_history (material_id, old_uzs, new_uzs, old_usd, new_usd, changed_by) VALUES (?, ?, ?, ?, ?, ?)')
@@ -453,7 +483,7 @@ app.get('/api/fragments', (req, res) => {
 
 app.get('/api/fragments/:code', (req, res) => {
   const f = db.prepare('SELECT * FROM fragments WHERE code = ?').get(req.params.code);
-  if (!f) return res.status(404).json({ error: 'Topilmadi' });
+  if (!f) return fail(res, 'S3D-DATA-001');
   res.json(f);
 });
 
@@ -483,7 +513,7 @@ app.get('/api/orders', auth, (req, res) => {
 
 app.get('/api/orders/:id', auth, (req, res) => {
   const o = db.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').get(req.params.id, req.user.id);
-  if (!o) return res.status(404).json({ error: 'Topilmadi' });
+  if (!o) return fail(res, 'S3D-DATA-001');
   res.json({ ...o, room: JSON.parse(o.room_json || '{}'), placements: JSON.parse(o.placements_json || '[]') });
 });
 
@@ -535,7 +565,7 @@ app.put('/api/settings', auth, (req, res) => {
 
 app.get('/api/sex-standartlari', (req, res) => {
   const cur = sexStdCurrent();
-  if (!cur) return res.status(404).json({ error: 'Standartlar topilmadi' });
+  if (!cur) return fail(res, 'S3D-STD-001');
   res.json(cur);
 });
 app.put('/api/sex-standartlari', auth, adminOnly, (req, res) => {
@@ -629,7 +659,7 @@ app.put('/api/remnants/:id/use', auth, adminOnly, (req, res) => {
   const orderId = num((req.body || {}).order_id, 'order_id', { min: 1, max: 1e12 });
   const r = db.prepare('UPDATE remnants SET status = ?, used_order_id = ? WHERE remnant_id = ? OR id = ?')
     .run('used', orderId, req.params.id, req.params.id);
-  if (r.changes === 0) return res.status(404).json({ error: 'Qoldiq topilmadi' });
+  if (r.changes === 0) return fail(res, 'S3D-DATA-001', 'Qoldiq topilmadi');
   res.json({ ok: true, id: req.params.id, status: 'used' });
 });
 
@@ -656,7 +686,7 @@ app.get('/api/ai/status', (req, res) => {
 });
 app.post('/api/ai/parse', auth, aiLimiter.check, ah(async (req, res) => {
   const text = str((req.body || {}).text, 'text', { max: 2000, required: true });
-  if (!aiConfig().enabled) return res.status(503).json({ error: 'AI sozlanmagan — qoidali tahlilchi ishlaydi' });
+  if (!aiConfig().enabled) return fail(res, 'S3D-AI-001');
   aiLimiter.hit(req);
   const log = db.prepare('INSERT INTO ai_log (user_id, text, engine, ok, result_json, error) VALUES (?, ?, ?, ?, ?, ?)');
   try {
@@ -665,8 +695,9 @@ app.post('/api/ai/parse', auth, aiLimiter.check, ah(async (req, res) => {
     res.json({ ok: true, engine: r.engine, parsed: r.parsed });
   } catch (e) {
     log.run(req.user.id, text, aiConfig().provider || '', 0, '', String(e.message || e).slice(0, 300));
-    console.error('AI xatosi:', e.message);
-    res.status(502).json({ error: 'AI javob bermadi — qoidali tahlilchi ishlaydi' });
+    jurnal.error({ code: 'S3D-AI-002', rid: req.rid, uid: req.user.id, method: req.method, path: req.path, status: 502, msg: 'AI xatosi: ' + (e.message || e) });
+    res.locals.logged = true;
+    fail(res, 'S3D-AI-002');
   }
 }));
 
@@ -675,8 +706,45 @@ app.post('/api/ai/voice', auth, (req, res) => {
   const text = str(b.text, 'text', { max: 2000 });
   if (text) return res.json({ ok: true, text, zamer: parseZamer(text), engine: 'client-speech' });
   /* Server STT (Yandex SpeechKit) hali ulanmagan — soxta matn qaytarilmaydi */
-  if (b.audio_base64) return res.status(501).json({ error: 'Server ovoz tanish (STT) hali ulanmagan — brauzer ovozidan foydalaning' });
+  if (b.audio_base64) return fail(res, 'S3D-AI-003');
   bad('Audio yoki text kerak');
+});
+
+/* ═══════════════════ XATOLAR JURNALI (TZ-19 §2) ═══════════════════
+ * Brauzerdagi xato serverga keladi (kod, bo'lim, sahifa, qisqa matn) — kirmagan foydalanuvchidan ham.
+ * Faqat ruxsat etilgan maydonlar, 4 KB gacha, 30 ta/daqiqa/IP; parol, token, email, telefon yuborilmaydi (niqoblanadi ham). */
+const optUser = (req) => {
+  const h = req.headers.authorization || '';
+  if (!h.startsWith('Bearer ')) return null;
+  try { return jwt.verify(h.slice(7), JWT_SECRET, { algorithms: ['HS256'] }); } catch (e) { return null; }
+};
+const logField = (v, field, max, re) => {
+  const s = str(v, field, { max });
+  if (s && re && !re.test(s)) bad(`${field} formati noto'g'ri`);
+  return s;
+};
+app.post('/api/log', logLimiter.check, (req, res) => {
+  logLimiter.hit(req);
+  const b = req.body;
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return fail(res, 'S3D-LOG-001');
+  const extra = Object.keys(b).filter(k => !['code', 'modul', 'sahifa', 'xabar', 'stack'].includes(k));
+  if (extra.length) return fail(res, 'S3D-LOG-001', 'Ruxsat etilmagan maydon: ' + extra.slice(0, 3).join(', '));
+  let e;
+  try {
+    const code = logField(b.code, 'code', 20, KOD_RE);
+    if (!code) bad('code kerak');
+    e = { source: 'web', code, rid: req.rid, path: logField(b.sahifa, 'sahifa', 80, /^[\w./#?=&-]*$/), msg: logField(b.xabar, 'xabar', 300),
+      meta: { modul: logField(b.modul, 'modul', 40, /^[\w/-]*$/), stack: str(b.stack, 'stack', { max: 1000 }), ua: String(req.headers['user-agent'] || '').slice(0, 160) } };
+  } catch (err) { if (err instanceof BadInput) return fail(res, 'S3D-LOG-001', err.message); throw err; }
+  const u = optUser(req);
+  jurnal.warn({ ...e, uid: u && u.id });
+  res.status(204).end();
+});
+/* admin: Sozlamalar → "Xatolar jurnali" — kod bo'yicha guruh va oxirgi yozuvlar; rid yoki kod bo'yicha qidiruv */
+app.get('/api/admin/xatolar', auth, adminOnly, (req, res) => {
+  const rid = logField(req.query.rid, 'rid', 24, /^[a-f0-9]*$/);
+  const kod = logField(req.query.kod, 'kod', 20, /^(S3D-[A-Z]{2,6}-\d{3})?$/);
+  res.json(jurnal.royxat({ rid, kod }));
 });
 
 /* ═══════════════════ HEALTH ═══════════════════ */
@@ -686,15 +754,22 @@ app.get('/api/health', (req, res) => {
 });
 
 /* ═══════════════════ XATOLAR ═══════════════════ */
-app.use('/api', (req, res) => res.status(404).json({ error: 'Topilmadi' }));
+app.use('/api', (req, res) => fail(res, 'S3D-SRV-002'));
 app.use((err, req, res, next) => {          // eslint-disable-line no-unused-vars
-  if (err instanceof BadInput) return res.status(400).json({ error: err.message });
-  if (err.type === 'entity.parse.failed') return res.status(400).json({ error: 'JSON noto\'g\'ri' });
-  if (err.type === 'entity.too.large') return res.status(413).json({ error: 'So\'rov juda katta' });
-  console.error('Server xatosi:', req.method, req.path, err);
-  res.status(500).json({ error: 'Server xatosi' });   // ichki tafsilot mijozga chiqmaydi
+  if (err instanceof BadInput) return fail(res, 'S3D-VAL-001', err.message);
+  if (err.type === 'entity.parse.failed') return fail(res, 'S3D-VAL-002');
+  if (err.type === 'entity.too.large') return fail(res, 'S3D-VAL-003');
+  /* ichki tafsilot (stack) faqat jurnalda; mijozga — kod va rid */
+  jurnal.error({ code: 'S3D-SRV-001', rid: req.rid, uid: req.user && req.user.id, method: req.method, path: req.path, status: 500,
+    msg: String(err && err.message || err), meta: { stack: String(err && err.stack || '').slice(0, 1200) } });
+  res.locals.logged = true;
+  fail(res, 'S3D-SRV-001');
 });
-process.on('unhandledRejection', (e) => console.error('unhandledRejection:', e));
+process.on('unhandledRejection', (e) => jurnal.error({ code: 'S3D-SRV-001', msg: 'unhandledRejection: ' + (e && e.message || e), meta: { stack: String(e && e.stack || '').slice(0, 1200) } }));
+process.on('uncaughtException', (e) => {
+  jurnal.error({ code: 'S3D-SRV-001', msg: 'uncaughtException: ' + (e && e.message || e), meta: { stack: String(e && e.stack || '').slice(0, 1200) } });
+  process.exit(1);   // holati noma'lum jarayon davom etmaydi — pm2/systemd qayta ishga tushiradi
+});
 
 /* ═══════════════════ WebSocket — real-time narx ═══════════════════ */
 const server = http.createServer(app);

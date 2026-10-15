@@ -16,6 +16,39 @@ const ghost = { height: '48px', padding: '0 18px', borderRadius: '14px', border:
 const row = { display: 'flex', justifyContent: 'space-between', gap: '12px', padding: '8px 0', borderTop: '1px solid var(--line)', fontSize: '15px' };
 const chip = (on) => ({ minHeight: '40px', padding: '0 14px', borderRadius: '999px', border: on ? '0' : '1px solid var(--line)', background: on ? 'var(--acc)' : 'var(--sfc)', color: on ? 'var(--ink)' : 'var(--txt)', fontWeight: '700', fontSize: '14px', cursor: 'pointer' });
 
+/* TZ-19 §2 (dizaynda yo'q, faqat admin): xatolar jurnali — kod bo'yicha guruh, oxirgi yozuvlar; kod yoki so'rov raqami bo'yicha qidiruv */
+function XatolarJurnali({ x }) {
+  const mono = { fontFamily: "'JetBrains Mono',monospace", fontSize: '12px' };
+  return (
+    <section style={card} data-set="xatolar">
+      <span style={title}>Xatolar jurnali</span>
+      <span style={hint}>Oxirgi 30 kun. Qidirish: xato kodi (S3D-…) yoki so'rov raqami (rid).</span>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <input value={x.q} onChange={x.onQ} onKeyDown={x.enter} placeholder="S3D-EXP-101 yoki 3f2a9c…" aria-label="Xato kodi yoki so'rov raqami" style={{ ...input, height: '48px' }} />
+        <button onClick={x.qidir} style={ghost}>Qidirish</button>
+      </div>
+      {x.bosh ? <span style={hint}>Xato yo'q</span> : null}
+      {x.guruhlar.map((g, i) => (
+        <button key={i} onClick={g.pick} style={{ border: '0', ...row, width: '100%', background: 'none', color: 'var(--txt)', cursor: 'pointer', textAlign: 'left' }}>
+          <span style={{ display: 'flex', flexDirection: 'column', minWidth: '0' }}>
+            <span><b style={mono}>{g.code}</b> <span style={{ color: 'var(--mut)', fontSize: '12px' }}>· {g.src}</span></span>
+            <span style={{ fontSize: '12px', color: 'var(--mut)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.msg}</span>
+          </span>
+          <span style={{ whiteSpace: 'nowrap', fontWeight: '700', fontVariantNumeric: 'tabular-nums' }}>{g.n}× · {g.vaqt}</span>
+        </button>))}
+      {x.oxirgi.length ? <span style={{ ...hint, paddingTop: '6px' }}>Oxirgi yozuvlar</span> : null}
+      {x.oxirgi.map((r, i) => (
+        <button key={i} onClick={r.pick} style={{ border: '0', ...row, width: '100%', background: 'none', color: 'var(--txt)', cursor: 'pointer', textAlign: 'left', fontSize: '13px' }}>
+          <span style={{ display: 'flex', flexDirection: 'column', minWidth: '0' }}>
+            <span style={mono}>{r.code} {r.status ? '· ' + r.status : ''}</span>
+            <span style={{ color: 'var(--mut)', fontSize: '12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.yol || r.msg}</span>
+          </span>
+          <span style={{ ...mono, color: 'var(--mut)', whiteSpace: 'nowrap' }}>{r.vaqt}{r.rid ? ' · ' + r.rid.slice(0, 6) : ''}</span>
+        </button>))}
+    </section>
+  );
+}
+
 export default function Sozlamalar() {
   const S = useSozlamalar();
   return (
@@ -99,6 +132,8 @@ export default function Sozlamalar() {
             </div>))}
           {S.admin ? <button onClick={S.saveStd} style={btn}>Saqlash</button> : null}
         </section>
+
+        {S.xatolar ? <XatolarJurnali x={S.xatolar} /> : null}
 
       </div>
     </main>
