@@ -4,6 +4,9 @@
 **Kim uchun:** loyiha egasi va Smart3D ustida ishlaydigan dasturchi yoki agent (Claude, OpenCode)
 **Manbalar:** `AUDIT-2026-10-14.md` (kod tekshiruvi), `TZ-Smart3D-Claude-2026-10-13.md` (asosiy TZ), egasining talablari (`SORIZLAR.md`)
 
+> **2026-10-15:** ochiq bandlar endi alohida TZ'larga bo'lindi — `loyiha-tz-lari/` (ro'yxat: `loyiha-tz-lari/00-ROYXAT.md`).
+> Bu fayl manba sifatida qoladi; ziddiyat bo'lsa — `loyiha-tz-lari/` ustun.
+>
 > Bu fayl qolgan ishlarning **yagona** ro'yxati. `KAMCHILIKLAR-VA-TUZATISH-TZ.md` dagi "30/30 tuzatildi" degan da'vo
 > tekshiruvda tasdiqlanmadi — haqiqiy holat shu yerda.
 

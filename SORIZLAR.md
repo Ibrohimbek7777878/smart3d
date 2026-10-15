@@ -199,3 +199,7 @@ Qaysi bri kere hoz
 65. qara prompt ham yozb ber dizyan uchun
 
 66. pauzada ishlarn davom etir
+
+67. boshqatan loyhada qandya kamchilikalr bor
+
+68. bir boshidan boshlaymiz ketma ketlikda har bri uchun alohida tz yoz va tz larni bita faylga loyha tz lari faylni ochda oshanga saqlab ket

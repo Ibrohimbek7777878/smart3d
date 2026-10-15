@@ -1,4 +1,4 @@
-# TZ — Xizmatlar smetaga avtomatik qo'shilmasin (qoida S3)
+# TZ-03 — Xizmatlar smetaga avtomatik qo'shilmasin (qoida S3)
 
 **Sana:** 2026-10-15 · **Holat:** TASDIQ KUTILMOQDA · **Asos:** `qoidalar_qatiy_amalqilinsin.md`, S3 — "Xizmatlar avtomatik qo'shilmaydi — foydalanuvchi o'zi tanlaydi".
 
