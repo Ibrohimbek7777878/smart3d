@@ -378,7 +378,7 @@ function renderExCheck(val, doc, cutlists, nest) {
       </div>`;
   }
   /* AUDIT-2026-10-14 §3: stanok fayllari haqiqiy stanokda sinalmagan */
-  html += `<div class="msg warn">⚠️ <b>SINOV:</b> stanok fayllari (DXF, NC, G-code, PTP, Biesse, Homag, Altendorf)
+  html += `<div class="msg warn">⚠️ <b>SINOV:</b> stanok fayllari (DXF, NC, G-code, PTP, Altendorf)
     hali sexda sinalmagan — ishlab chiqarishda ishlatmang.</div>`;
   $('#exCheck').innerHTML = html;
 }
@@ -1156,7 +1156,7 @@ function cncSafe(fn, filename, mime, okMsg) {
     const content = fn(res.nest, res.cutlists);
     const name = ($('#projName').textContent.trim() || 'smart3d').replace(/\s+/g, '_');
     download(name + filename, content, mime);
-    toast(okMsg, 'good');
+    toast(okMsg + ' — SINOV: sexda tekshirilmagan', 'warn');   // TZ-01
   } catch (e) {
     console.error('CNC export xato:', e);
     toast('CNC xato: ' + e.message, 'bad');

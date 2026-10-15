@@ -15,7 +15,7 @@
 
 | № | TZ | Holat | To'siq — kimdan nima kerak |
 |---|---|---|---|
-| 01 | [Stanok eksportlari: noto'g'ri faylni yashirish](01-stanok-eksport-xavfsizligi.md) | TASDIQ KUTILMOQDA | egasi: BPJ yashirilsinmi (S5) |
+| 01 | [Stanok eksportlari: noto'g'ri faylni yashirish](01-stanok-eksport-xavfsizligi.md) | **BAJARILDI** 2026-10-15 (BPJ bandidan tashqari) | egasi: BPJ yashirilsinmi (S5) |
 | 02 | [Testlarni tiklash, `/tmp` ga bog'liqlikni yo'qotish](02-testlarni-tiklash.md) | TASDIQ KUTILMOQDA | — |
 | 03 | [Xizmatlar avtomatik qo'shilmasin (S3)](03-xizmatlar-S3.md) | TASDIQ KUTILMOQDA | egasi: 2 savol (standart holat; ish haqi xizmatmi) |
 | 04 | [Narx ma'lumotlari: egasi uchun jadval + import](04-narx-malumotlari.md) | TASDIQ KUTILMOQDA | keyin egasi jadvalni to'ldiradi (D1, D3, D4, Q1) |

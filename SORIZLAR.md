@@ -203,3 +203,5 @@ Qaysi bri kere hoz
 67. boshqatan loyhada qandya kamchilikalr bor
 
 68. bir boshidan boshlaymiz ketma ketlikda har bri uchun alohida tz yoz va tz larni bita faylga loyha tz lari faylni ochda oshanga saqlab ket
+
+69. davom et

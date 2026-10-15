@@ -50,8 +50,10 @@ xona o'lchami → tayyor modullar  → mijozga ko'rsatish → detal + kroy + sme
   - narxi bazada yo'q zapchast — **"narx yo'q"** deb ochiq ko'rsatiladi, o'ylab topilmaydi.
 - **Fayllar** — 17 xil:
   - **Mijozga:** chop etiladigan hisobot (A4/PDF), 1080p rasm, 360° panorama, GLB (3D/AR).
-  - **Sexga:** Excel smeta (5 bo'lim), detallar CSV.
-  - **Stanokka:** GibLab (.project), XNC, DXF, G-code, NC (Excellon), PTP, Biesse (.cix), Homag (.mpr), Altendorf formatka.
+  - **Sexga:** Excel smeta (5 bo'lim), smeta CSV, detallar CSV.
+  - **Stanokka:** GibLab (.project), XNC, DXF, G-code, NC (Excellon), PTP, Altendorf formatka.
+    - DXF, NC, G-code, PTP va Altendorf hali sexda sinalmagan — ilovada `SINOV` belgisi bilan.
+    - Biesse (.cix) va Homag (.mpr) — keyingi bosqich, hozir ko'rsatilmaydi.
   - **Boshqa:** OBJ, teshiklar JSON, loyiha fayli (qayta ochish uchun).
 
 **Haqiqiy raqamlar** (marketingda faqat shular ishlatiladi):
@@ -87,7 +89,7 @@ xona o'lchami → tayyor modullar  → mijozga ko'rsatish → detal + kroy + sme
 | Detallarni qo'lda hisoblash — xato, plita isrof | Detallar formulada o'zi chiqadi, raskroy avtomatik |
 | Narxni hisoblash soatlab ketadi, zapchast unutiladi | Har modulning zapchasti ichida; smeta bir zumda |
 | Mijoz chizmani tushunmaydi | 3D, 1080p rasm, 360° tur |
-| Stanokka fayl tayyorlash — alohida dastur | GibLab, DXF, G-code, Biesse, Homag — bir tugma |
+| Stanokka fayl tayyorlash — alohida dastur | GibLab, DXF, G-code, Altendorf — bir tugma |
 | "Narx qayerdan chiqdi?" degan savol | Har raqamning manbasi bor; narxsiz zapchast "narx yo'q" deb belgilanadi |
 
 ---
@@ -229,7 +231,7 @@ Landingning yuragi. Haqiqiy MebelCity moduli — **pastki shkaf "1 polka, 2 eshi
 ### 6.6 Nimalar olasiz — 3 ustun
 - **Mijozga:** 3D, 1080p rasm, 360° tur, PDF hisobot.
 - **Sexga:** detallar ro'yxati, raskroy xaritasi, Excel smeta.
-- **Stanokka:** GibLab, DXF, G-code, Biesse, Homag, Altendorf.
+- **Stanokka:** GibLab, DXF, G-code, Altendorf.
 - Fayl nomlari kichik "chip"larda. Kompaniya logotiplari ishlatilmaydi — faqat format nomi.
 
 ### 6.7 Kimlar uchun
@@ -392,8 +394,10 @@ Hozirgi 5 tab (Zamer, Katalog, AI, Smeta, Export) **4 qadamli yo'lga** aylanadi:
 ### 9.8 ④ Fayllar
 Uch guruh, katta kartalar. Har birida **bitta asosiy tugma**, qolganlari "Yana" ichida:
 - **Mijozga:** `🖨 Hisobot (PDF)` · `📸 Rasm` · `🔄 360°` · `GLB (3D/AR)`
-- **Sexga:** `📊 Excel smeta` · `Detallar (CSV)` · `Loyiha fayli`
-- **Stanokka:** `GibLab` · `DXF` · `G-code` · `Biesse` · `Homag` · `PTP` · `NC` · `XNC` · `Altendorf`
+- **Sexga:** `📊 Excel smeta` · `Smeta (CSV)` · `Detallar (CSV)` · `Loyiha fayli`
+- **Stanokka:** `GibLab` · `XNC` · `DXF` · `G-code` · `PTP` · `NC` · `Altendorf`
+  - Sexda sinalmaganlarida kichik `SINOV` belgisi (`--pch` rangida).
+  - Biesse va Homag — ko'rsatilmaydi (keyingi bosqich).
 
 Qo'shimcha:
 - **Tepada — "Tekshiruv" kartasi:** ✓ yoki ⚠️ ro'yxati (masalan, "2 ta detal sig'madi").
