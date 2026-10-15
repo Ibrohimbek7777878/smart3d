@@ -27,6 +27,45 @@ export function rInt(x) {
 /** Kesim o'lchamidan shu qalinlikdan boshlab kromka ayiriladi (0.4 mm kabi yupqa kromka — yo'q). */
 export const EDGE_DEDUCT_MIN_MM = 1;
 
+/**
+ * Bazis mahkamlash qoidasi (TZ-06): birikish chizig'i uzunligi L → vintlar joyi (chiziq boshidan).
+ * Soni — jadvaldan (L ≤ Length bo'lgan birinchi qator); chetdan kamida S; qo'shni oraliq P ga karrali;
+ * simmetrik. scripts/bazis_teshik.py qoida_t bilan bir xil — 38 modulda Bazis fayli bilan tekshirilgan.
+ */
+export function bazisQoida(L, q) {
+  const jad = q.jadval || [];
+  const row = jad.find(r => L <= r[0] + 1e-6);
+  let n = row ? row[1] : (jad.length ? jad[jad.length - 1][1] : 1);
+  if (n >= 2 && L - 2 * q.S < -1e-6) n = 1;
+  if (n <= 1) return [L / 2];
+  const step = Math.floor((L - 2 * q.S) / ((n - 1) * q.P) + 1e-6) * q.P;
+  const f = (L - step * (n - 1)) / 2;
+  return Array.from({ length: n }, (_, k) => f + k * step);
+}
+
+/**
+ * Bazis birikmalaridan teshiklar — TAYYOR detal koordinatasida (kromka surilmasidan oldin).
+ * Evrovint: A detal plastida o'tuvchi teshik (Ø d1), B detal toretsida (side 'T', Ø d2).
+ * @returns {{holes:[], vintSoni:{zapchast: soni}}}
+ */
+export function birikmaTeshiklari(frag, vars) {
+  const holes = [], vintSoni = {};
+  for (const b of frag.birikmalar || []) {
+    const L = evalFormula(b.L, vars);
+    const ts = b.qoida ? bazisQoida(L, b.qoida) : (b.qolda || []).map(q => (q.dan === 'oxir' ? L - q.t : q.t));
+    if (b.zapchast_soni) vintSoni[b.zapchast] = (vintSoni[b.zapchast] || 0) + ts.length;
+    for (const tp of b.teshiklar || []) {
+      const x0 = evalFormula(tp.x0, vars), y0 = evalFormula(tp.y0, vars);
+      for (const t of ts) {
+        const hl = { part: tp.part, side: tp.side, x: x0 + tp.sx * t, y: y0 + tp.sy * t, dia: tp.dia, depth: tp.depth, kind: tp.kind };
+        if (tp.torets) hl.torets = tp.torets;
+        holes.push(hl);
+      }
+    }
+  }
+  return { holes, vintSoni };
+}
+
 /* Petlya soni eshik balandligiga qarab (petlya ishlab chiqaruvchilarining umumiy qoidasi) */
 function hingesForDoor(heightMm) {
   if (heightMm <= 900) return 2;
@@ -262,11 +301,37 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
     }
   }
 
+  /* ── 3b) Bazis birikmalari (TZ-06): teshik joyi va vint soni modul o'lchamiga qarab ──
+   * Har teshik — detalning BITTA nusxasi uchun (stanok har nusxaga qo'yadi); `nusxa` — detal soni
+   * (prisadka hisobi uchun). Torets teshigi (side 'T') varaqda teshilmaydi — stanok fayliga kirmaydi. */
+  let vintSoni = {};
+  if ((frag.birikmalar || []).length) {
+    try {
+      const bt = birikmaTeshiklari(frag, baseVars);
+      vintSoni = bt.vintSoni;
+      const nusxa = {};
+      for (const p of parts) nusxa[p.code] = (nusxa[p.code] || 0) + 1;
+      const r1 = (v) => Math.round(v * 10) / 10;
+      for (const hl of bt.holes) {
+        holes.push(Object.assign({ fragment: frag.code }, hl, {
+          x: r1(hl.x - dedOf(hl.part, 'F')),
+          y: r1(hl.y - dedOf(hl.part, 'L')),
+          qty: 1,
+          nusxa: nusxa[hl.part] || 1
+        }));
+      }
+    } catch (err) {
+      errors.push({ code: 'E_BAD_EXPR', message: `${frag.code} birikma: ${err.message}` });
+    }
+  }
+
   /* ── 4) Furnitura ────────────────────────────────────────────── */
+  const nomBom = (s) => String(s || '').replace(/\r/g, ' ').replace(/\s+/g, ' ').trim();
   const hardware = (frag.hardware || []).map(hw => ({
     fragment: frag.code,
     code: hw.code,
-    qty: Math.max(1, Math.round(+hw.qty || 1)),
+    /* birikma vintlari soni o'lchamga qarab o'zgaradi (Bazis jadvali) */
+    qty: vintSoni[nomBom(hw.name)] != null ? vintSoni[nomBom(hw.name)] : Math.max(1, Math.round(+hw.qty || 1)),
     id: hw.id,              // ERP furnitura ID (8 xona) — narx shu bo'yicha (TZ-HAQIQIY-MODULLAR A4)
     name: hw.name,
     unit: hw.unit
@@ -295,7 +360,7 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   /* ── 5) Statistika ───────────────────────────────────────────── */
   let areaMm2 = 0;
   for (const p of parts) areaMm2 += p.length * p.width;
-  const holeCount = holes.reduce((s, x) => s + x.qty, 0);
+  const holeCount = holes.reduce((s, x) => s + x.qty * (x.nusxa || 1), 0);
   const edgeMeters = edges.reduce((s, x) => s + x.meters, 0);
 
   return {
@@ -416,7 +481,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       hwAgg[hw.code].qty += hw.qty;
     }
     for (const hl of cl.holes || []) {
-      holeAgg[hl.kind] = (holeAgg[hl.kind] || 0) + (hl.qty || 1);
+      holeAgg[hl.kind] = (holeAgg[hl.kind] || 0) + (hl.qty || 1) * (hl.nusxa || 1);
     }
   }
 
@@ -544,7 +609,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     }
     for (const e of cl.edges || []) cost += e.meters * (edgeByCode[e.material] || edgeByCode[String(e.material).replace(/\./g, '')] || {}).price_m || 0;
     for (const hw of cl.hardware || []) cost += hw.qty * hwUnitPrice(hw);
-    if (teshikOn) for (const hl of cl.holes || []) cost += (hl.qty || 1) * (((holeByKind[hl.kind] || holeByKind.drill || {}).price) || 0);
+    if (teshikOn) for (const hl of cl.holes || []) cost += (hl.qty || 1) * (hl.nusxa || 1) * (((holeByKind[hl.kind] || holeByKind.drill || {}).price) || 0);
     if (totalParts) cost += laborCost * (cl.parts || []).length / totalParts;
     return { cost: Math.round(cost), client: Math.round(cost * (1 + markup)) };
   });

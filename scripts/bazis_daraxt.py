@@ -245,8 +245,11 @@ def parser_yozuvlari(path):
     """fr3d_import uchun: P.parse_objects bilan bir xil shakldagi yozuvlar, lekin
     faqat asosiy modeldan va global joylashuv bilan. Daraxt o'qilmasa — None."""
     obs = daraxt(path)
-    if obs is None:
-        return None
+    return None if obs is None else yozuvlar(obs)
+
+
+def yozuvlar(obs):
+    """daraxt() natijasi → parser yozuvlari; i-yozuv i-obyektga mos."""
     res = []
     for ob in obs:
         q = kvaternion(ob["oqlar"])

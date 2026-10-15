@@ -42,6 +42,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))   # -I rejimida ham scr
 sys.dont_write_bytecode = True   # parser boshqa loyihada — u yerga __pycache__ yozilmasin (faqat o'qish, 2.10)
 import b3d_full_parser as P  # noqa: E402
 import bazis_daraxt  # noqa: E402  — asosiy model daraxti (amallar tarixisiz, global joylashuv)
+import bazis_teshik  # noqa: E402  — mahkamlagichdan teshiklar (TZ-06)
 
 AX = "XYZ"
 AXIS_VAR = {"X": "w", "Y": "h", "Z": "d"}
@@ -171,6 +172,102 @@ def formula_for(v, axis, S, t, n_same=1):
     return f"{var} - {fmt_num(c)}"
 
 
+def coord_formula(c, size, f):
+    """Detal koordinatasi → formula: yaqin chetdan o'zgarmas masofa (uzoq chetda — detal o'lchami formulasidan)."""
+    c = round(c, 1)
+    if c <= size / 2 + 1e-6:
+        return fmt_num(c)
+    r = round(size - c, 1)
+    if abs(r) < 0.05:
+        return f"({f})"
+    return f"({f}) - {fmt_num(r)}" if r > 0 else f"({f}) + {fmt_num(-r)}"
+
+
+def nom_bom(s):
+    return re.sub(r"\s+", " ", str(s or "").replace("\r", " ")).strip()
+
+
+def teshik_birikmalari(jts, part_of, W, H, D, t):
+    """Bazis birikmalari → fragment `birikmalar` (qoida yoki qo'lda joy + detal shablonlari) va Bazis o'lchamidagi nazorat."""
+    S = {"X": W, "Y": H, "Z": D}
+    out, xato = [], []
+    for j in jts:
+        bol = OrderedDict()
+        for it in j["items"]:
+            bol.setdefault((id(it["A"]), id(it["B"])), []).append(it)
+        L = j["L"]
+        Lf = formula_for(L, j["chiziq_ax"], S[j["chiziq_ax"]], t) if j["chiziq_ax"] else "0"
+        for its in bol.values():
+            b = OrderedDict(tur="evrovint", nom=j["nom"], zapchast=nom_bom(its[0]["nom"]), L=Lf)
+            if j["qoida"] and len(bol) == 1:
+                b["qoida"] = j["qoida"]
+            else:
+                b["qolda"] = [OrderedDict(t=round(r["t"], 1), dan="bosh") if r["t"] <= L / 2 + 1e-6
+                              else OrderedDict(t=round(L - r["t"], 1), dan="oxir") for r in its]
+            sh = []
+            for k in (0, 1):                                            # 0 — A (plast), 1 — B (torets)
+                pn = its[0]["A"] if k == 0 else its[0]["B"]
+                if id(pn) not in part_of:
+                    continue                                            # stoleshnitsa bo'lagi — F2 quradi
+                part, vakil = part_of[id(pn)]
+                if not vakil:
+                    continue                                            # boshqa nusxa — teshiklari vakilniki bilan bir xil
+                sx, sy = (round(c) for c in bazis_teshik.detal_yon(pn, j["v"]))
+                hs = [bazis_teshik.vint_teshiklari(r, j["d1"], j["d2"], j["h"], j["markaz"])[k][1] for r in its]
+                x0s = [h["x"] - sx * r["t"] for h, r in zip(hs, its)]
+                y0s = [h["y"] - sy * r["t"] for h, r in zip(hs, its)]
+                if max(x0s) - min(x0s) > 0.6 or max(y0s) - min(y0s) > 0.6 or (k == 1 and not hs[0]["torets"]):
+                    xato.append(f"{j['nom']}: {part['code']} — teshiklar bir chiziqda emas")
+                    continue
+                _, _, wd, ln = bazis_teshik.detal_xy(pn, its[0]["p"])
+                tp = OrderedDict(part=part["code"], side=hs[0]["side"])
+                if hs[0].get("torets"):
+                    tp["torets"] = hs[0]["torets"]
+                tp.update(x0=coord_formula(x0s[0], wd, part["width"]), sx=sx,
+                          y0=coord_formula(y0s[0], ln, part["len"]), sy=sy,
+                          dia=hs[0]["dia"], depth=hs[0]["depth"], kind=hs[0]["kind"])
+                sh.append(tp)
+            b["teshiklar"] = sh
+            out.append(b)
+    return out, xato
+
+
+def teshik_nazorat(birik, jts, part_of, hardware, W, H, D, t):
+    """Bazis o'lchamida: shablondan chiqqan teshiklar = vintlardan to'g'ridan-to'g'ri hisoblangan teshiklar;
+    zapchast soni = vint soni. Qaytaradi: (mos, teshik soni, vint soni, sinxron zapchastlar)."""
+    ev = lambda f: eval_formula(f, W, H, D, t)
+    got, vint = [], Counter()
+    for b in birik:
+        L = ev(b["L"])
+        ts = bazis_teshik.qoida_t(L, b["qoida"]) if b.get("qoida") else [q["t"] if q["dan"] == "bosh" else L - q["t"] for q in b["qolda"]]
+        vint[b["zapchast"]] += len(ts)
+        for tp in b["teshiklar"]:
+            for tt in ts:
+                got.append((tp["part"], tp["side"], tp.get("torets", ""), tp["dia"], tp["depth"], tp["kind"],
+                            ev(tp["x0"]) + tp["sx"] * tt, ev(tp["y0"]) + tp["sy"] * tt))
+    want = []
+    for j in jts:
+        for it in j["items"]:
+            for pn, h in bazis_teshik.vint_teshiklari(it, j["d1"], j["d2"], j["h"], j["markaz"]):
+                if id(pn) in part_of and part_of[id(pn)][1]:
+                    want.append((part_of[id(pn)][0]["code"], h["side"], h.get("torets") or "", h["dia"], h["depth"], h["kind"],
+                                 h["x"], h["y"]))
+    # juftlash: bir xil detal/yuz/tur ichida ±0.6 mm (detal o'lchami formulada butun mm ga yaxlitlanadi)
+    mos = len(got) == len(want)
+    qol = sorted(want)
+    for g in sorted(got):
+        k = next((i for i, w in enumerate(qol) if w[:6] == g[:6] and abs(w[6] - g[6]) <= 0.6 and abs(w[7] - g[7]) <= 0.6), None)
+        if k is None:
+            mos = False
+            break
+        qol.pop(k)
+    hw = Counter()
+    for x in hardware:
+        hw[nom_bom(x["name"])] += x["qty"]
+    sinxron = sorted(z for z in vint if hw.get(z) == vint[z])
+    return mos and not qol, len(want), sum(vint.values()), sinxron
+
+
 def eval_formula(expr, w, h, d, t):
     return eval(expr, {"__builtins__": {}}, {"w": w, "h": h, "d": d, "t": t, "t_korpus": t})  # faqat o'z formulalarimiz
 
@@ -288,16 +385,18 @@ NOT_HW = re.compile(r"^(фрагмент\d*|blok\b|новый фрагмент)"
 
 def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
     sec_path, prefix, category, group, std_tpl = sec
-    objs = load_objects(path)
+    obs = bazis_daraxt.daraxt(path)
+    objs = bazis_daraxt.yozuvlar(obs) if obs is not None else load_objects(path)
     raw = []
-    for o in objs:
+    for i, o in enumerate(objs):
         if o.get("modelCode") != 4002 or not o.get("contour_outer"):
             continue
         size, normal, th = panel_box(o)
         flat = [s for a, s in zip(AX, size) if a != normal]
         raw.append(dict(name=str(o.get("name") or "detal").strip(), material=str(o.get("material") or ""),
                         size=size, normal=normal, th=th, role=role_of(o.get("name"), o.get("material"), normal, th),
-                        bb_m2=flat[0] * flat[1] / 1e6, kontur_m2=P._poly_area(o["contour_outer"]) / 1e6))
+                        bb_m2=flat[0] * flat[1] / 1e6, kontur_m2=P._poly_area(o["contour_outer"]) / 1e6,
+                        tp=bazis_teshik.panel(obs[i], o, P) if obs is not None else None))
     notes = []
     dropped = [p for p in raw if p["role"] == "stoleshnitsa"]
     if dropped:
@@ -315,13 +414,22 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
     H = side_h + min(len(caps), 2) * t if side_h else max((p["size"][1] for p in panels), default=0)
     W, H, D = round(W), round(H), round(D)
 
-    # detallar: bir xil (rol, nom, o'lcham) larni guruhlash
+    # teshiklar (TZ-06): har panel nusxasining Bazis o'lchamidagi teshiklari
+    jts, qoldi = bazis_teshik.birikmalar(obs, [p["tp"] for p in raw]) if obs is not None else ([], [])
+    imzo = {}
+    for j in jts:
+        for it in j["items"]:
+            for pn, h in bazis_teshik.vint_teshiklari(it, j["d1"], j["d2"], j["h"], j["markaz"]):
+                imzo.setdefault(id(pn), []).append((h["kind"], h["side"], h.get("torets") or "", round(h["x"]), round(h["y"])))
+
+    # detallar: bir xil (rol, nom, o'lcham) larni guruhlash; teshiklari farqli nusxalar — alohida satr
     groups = OrderedDict()
     for p in panels:
-        key = (p["role"], p["name"].lower(), tuple(round(s) for s in p["size"]), p["normal"], p["material"])
+        sig = tuple(sorted(imzo.get(id(p["tp"]), [])))
+        key = (p["role"], p["name"].lower(), tuple(round(s) for s in p["size"]), p["normal"], p["material"], sig)
         groups.setdefault(key, []).append(p)
-    parts, used_codes = [], Counter()
-    for (role, _, size, normal, _m), ps in groups.items():
+    parts, used_codes, part_of = [], Counter(), {}
+    for (role, _, size, normal, _m, _sig), ps in groups.items():
         p0 = ps[0]
         n = len(ps)
         in_plane = [a for a in AX if a != normal]
@@ -354,9 +462,13 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
         elif role in ("korpus", "polka"):
             part["edge"] = {"F": "kromka_korpus"}
         parts.append(part)
+        for k, pp in enumerate(ps):
+            part_of[id(pp["tp"])] = (part, k == 0)          # (detal satri, vakil nusxami)
 
-    # furnitura va mahkamlagich — Bazis BOM
-    bom = P.compute_bom(objs)
+    birik, birik_xato = teshik_birikmalari(jts, part_of, W, H, D, t)
+
+    # furnitura va mahkamlagich — Bazis BOM (mahkamlagich guruhi — birikma sxemasi, zapchast emas)
+    bom = P.compute_bom([o for k, o in enumerate(objs) if obs is None or not bazis_teshik.birikma_guruhi(obs, k)])
     hardware = []
     furn, f_by_norm, mats, m_by_norm = matchers
     for x in list(bom.get("fittings", [])) + list(bom.get("fasteners", [])):
@@ -380,7 +492,7 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
 
     # nom, eshik soni, standart
     title = re.sub(r"\s+", " ", path.stem).strip()
-    doors = sum(len(ps) for (role, _, _, _, _), ps in groups.items() if role == "fasad" and not re.search(r"ящик|yash", ps[0]["name"], re.I))
+    doors = sum(len(ps) for (role, _, _, _, _, _), ps in groups.items() if role == "fasad" and not re.search(r"ящик|yash", ps[0]["name"], re.I))
     m = re.search(r"(\d)\s*(?:x\s*)?fasad", title, re.I)
     ndoor = int(m.group(1)) if m else (doors or (1 if W <= 540 else 2))
     std_key = std_tpl.format(n=1 if ndoor <= 1 else 2) if std_tpl else None
@@ -474,6 +586,27 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
         teshiklar_izoh="Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5) — teshiksiz",
         import_izoh=notes)
     frag["manba"]["bazis_olcham"] = [W, D, H]
+    # teshiklar (TZ-06): evrovint — Bazis faylidan; qolganlari — D6 kutilmoqda
+    mos, n_t, n_v, sinxron = teshik_nazorat(birik, jts, part_of, hardware, W, H, D, t)
+    for b in birik:
+        if b["zapchast"] in sinxron:
+            b["zapchast_soni"] = True                                    # cutlist zapchast sonini shu birikmalardan oladi
+    petlya = sum(1 for o in (obs or []) if o["kod"] == 3001 and re.search(r"petl|петл", o["nom"], re.I))
+    ruchka = sum(1 for o in (obs or []) if o["kod"] == 3001 and re.search(r"ручк|ruchk", o["nom"], re.I))
+    jam = OrderedDict()
+    for q in qoldi:                                                   # bir xil nom va sabab — bitta qator
+        jam[(q["nom"], q["sabab"])] = jam.get((q["nom"], q["sabab"]), 0) + q["soni"]
+    kutil = [f"{nm} — {k} ta: {sb}" for (nm, sb), k in jam.items()]
+    if petlya:
+        kutil.append(f"petlya — {petlya} ta: kosa diametri va chetdan masofa faylda yo'q (D6 kerak)")
+    if ruchka:
+        kutil.append(f"ruchka — {ruchka} ta: teshik diametri faylda yo'q (D6 kerak)")
+    frag["birikmalar"] = birik
+    frag["manba"]["teshik"] = OrderedDict(birikma=len(birik), vint=n_v, teshik=n_t, bazis_bilan_mos=mos,
+                                          zapchast_sinxron=sinxron, kutilmoqda=kutil, xato=birik_xato)
+    frag["teshiklar_izoh"] = (f"Evrovint teshiklari Bazis faylidan (TZ-06): {n_v} vint, {n_t} teshik"
+                              + ("" if mos else " — Bazis bilan MOS EMAS, tekshirish kerak")
+                              + (". Kutilmoqda: " + "; ".join(kutil) if kutil else ""))
     return frag
 
 

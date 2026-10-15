@@ -174,7 +174,7 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
         /* teshiklar — cutlist konvensiyasi (x = F chetdan EN bo'ylab, y = L chetdan
          * UZUNLIK bo'ylab) → BPJ kontur kadrida (X = dl = uzunlik, Y = dw = en) */
         const holes = def.holes
-          .filter(hl => hl.kind !== 'cutout')   /* F2: moyka kesimi — BPJ circle emas */
+          .filter(hl => hl.kind !== 'cutout' && hl.side !== 'T')   /* F2: moyka kesimi — BPJ circle emas; torets — sxemada yo'q */
           .map(hl => ({
             x: Math.min(Math.round(cutL), Math.max(0, Math.round(hl.y))),
             y: Math.min(Math.round(cutW), Math.max(0, Math.round(hl.x))),

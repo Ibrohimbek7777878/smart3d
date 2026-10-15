@@ -20,7 +20,7 @@
 | 03 | [Xizmatlar avtomatik qo'shilmasin (S3)](03-xizmatlar-S3.md) | **BAJARILDI** 2026-10-15 | — (prisadka tanlanadi, ish haqi avtomatik) |
 | 04 | [Narx ma'lumotlari: egasi uchun jadval + import](04-narx-malumotlari.md) | **BAJARILDI** 2026-10-15 (vosita) | egasi: `Smart3D_malumot/narx-toldirish-2026-10-15.xlsx` ni to'ldiradi |
 | 05 | [83 ta umumiy modul geometriyasi](05-modul-geometriyasi.md) | PAUZA (egasi: "hozircha tegmang") | — |
-| 06 | [Modullarga teshiklar](06-teshiklar.md) | A varianti — 2-qadam: fayl daraxti ochildi; import xatosi tuzatildi (8 modul) | D6 — petlya, polka ushlagich, ruchka teshiklari; evrovint 7/4.5 yoki 8/5 |
+| 06 | [Modullarga teshiklar](06-teshiklar.md) | **EVROVINT BAJARILDI** 2026-10-15 (724 vint, 1077 teshik, Bazis bilan aynan) | D6 — petlya, polka ushlagich, ruchka, eksantrik; evrovint 7/4.5 yoki 8/5 |
 | 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | **BAJARILDI** 2026-10-15 | haqiqiy SMS uchun Eskiz akkaunti serverga |
 | 08 | [Ekrandagi qoida buzilishlari: logo, oyna, burish](08-ui-qoida-tuzatishlari.md) | QISMAN: oyna ✅, burish ✅, logo — kutilmoqda | egasi: Bittada logo fayli |
 | 09 | [Yangi dizayn](09-dizayn.md) | MA'LUMOT KUTILMOQDA | Claude Design natijasi; tarif, aloqa |

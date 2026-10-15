@@ -3,7 +3,7 @@
   "nima": "Bazis material/zapchast nomi → ERP mahsuloti (8 xonali ID). Narxga faqat 'aniq' va 'tasdiqlangan' kiradi.",
   "tasdiqlash": "Taklifni tasdiqlash: shu yozuvda 'holat' ni 'tasdiqlangan' qiling — qayta import uni saqlaydi.",
   "holat": {
-   "yoq": 57,
+   "yoq": 52,
    "taklif": 2,
    "aniq": 1
   }
@@ -38,12 +38,6 @@
    "sabab": "ERP katalogida mos mahsulot topilmadi"
   },
   {
-   "nom": "Евровинт 7х50 (32) симм",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
    "nom": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
    "tur": "plita",
    "holat": "aniq",
@@ -68,12 +62,6 @@
    "tur": "kromka",
    "holat": "yoq",
    "sabab": "ERP katalogida kromka yo'q (TZ D3)"
-  },
-  {
-   "nom": "POLKADERJATEL",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
   },
   {
    "nom": "Направляющие Салазка",
@@ -166,18 +154,6 @@
    "sabab": "ERP katalogida mos mahsulot topilmadi"
   },
   {
-   "nom": "Евровинт 7х51 (32) Мин60 симм",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "Евровинт 7х50",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
    "nom": "Петля прямая",
    "tur": "furnitura",
    "holat": "taklif",
@@ -219,12 +195,6 @@
   },
   {
    "nom": "Шкант 8х30 404",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "Эксцентрик пл.-шкант",
    "tur": "furnitura",
    "holat": "yoq",
    "sabab": "ERP katalogida mos mahsulot topilmadi"

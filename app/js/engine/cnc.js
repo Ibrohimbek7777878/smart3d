@@ -55,8 +55,9 @@ function collectSheetHoles(nest, cutlists) {
         const pid = ref.includes(':') ? ref.slice(0, ref.indexOf(':')) : null;
         const fragHoles = holesByPlacement[pid] || [];
         for (const h of fragHoles) {
-          /* F2: moyka kesimi (kind=cutout) — CNC drill uchun emas (ichki kontur hali yo'q) */
-          if (h.kind === 'cutout' || !(h.dia > 0)) continue;
+          /* F2: moyka kesimi (kind=cutout) — CNC drill uchun emas (ichki kontur hali yo'q);
+           * TZ-06: torets teshigi (side 'T') varaqda teshilmaydi — gorizontal prisadka stanogida */
+          if (h.kind === 'cutout' || h.side === 'T' || !(h.dia > 0)) continue;
           const refPart = ref.includes(':') ? ref.slice(ref.indexOf(':') + 1) : ref;
           const refBase = refPart.split('#')[0];
           if (h.part !== refBase) continue;

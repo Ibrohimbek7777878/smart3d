@@ -1,6 +1,6 @@
 # TZ-06 — Modullarga teshiklar (prisadka)
 
-**Sana:** 2026-10-15 · **Navbat:** 6 · **Holat:** A VARIANTI — TADQIQOT (egasi tanladi, 2026-10-15).
+**Sana:** 2026-10-15 · **Navbat:** 6 · **Holat:** EVROVINT — BAJARILDI (2026-10-15). Petlya, polka ushlagich, ruchka, eksantrik — D6 KUTILMOQDA.
 
 ## Muammo (tekshirilgan)
 - **MebelCity'ning 38 modulida teshik yo'q.** Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5). Shu sababli bu modullarda:
@@ -100,3 +100,30 @@
   1. Evrovint, eksantrik va shkant teshiklarini panel koordinatasiga tushirish.
   2. O'lcham o'zgarganda teshiklarni Bazis qoidasi bo'yicha qayta joylash.
   3. Bazis o'lchamida fayldagi joy bilan aynan mosligini tekshirish.
+
+## 3-qadam (2026-10-15): evrovint teshiklari — BAJARILDI
+- **Qanday:** `scripts/bazis_teshik.py`.
+  - Har vint uchun A detal (boshi turgan, plastdan o'tuvchi teshik Ø d1) va B detal (toretsga, Ø d2, chuqurligi h − A qalinligi) geometriya bo'yicha topiladi.
+  - Vintning o'z X o'qi — vint yo'nalishi (fayldan tekshirildi).
+  - Tortma konstruktori ichidagi sxemasiz vintlar — o'sha nomli vintning shu fayldagi sxemasidan.
+- **Bazis joylashtirish qoidasi** (fayldagi sxemadan): soni — uzunlik jadvalidan; chetdan kamida StartIndent; qo'shni oraliq qadamga karrali; simmetrik.
+  - 377 birikmadan 360 tasida fayldagi joy bilan aynan mos.
+  - Qolgan 17 tasi Bazis'da qo'lda surilgan — fayldagi joyida (eng yaqin chetdan masofa) saqlanadi.
+- **Fragmentda:** `birikmalar` — qoida yoki qo'lda joy + detal shablonlari (formula bilan). Ilova (`cutlist.js`) teshikni modulning haqiqiy o'lchamida hisoblaydi.
+  - O'lcham o'zgarsa vint soni Bazis jadvali bo'yicha o'zgaradi va zapchast soni unga teng bo'ladi. Misol: "penal polki 5x" chuqurligi 290 → 660 mm — evrovint 12 → 18 ta.
+- **Natija (38 modul):** 724 vint, 1077 teshik. Bazis o'lchamida har modulda fayldagi bilan aynan mos (±0.6 mm — detal o'lchami butun mm).
+- **Detal satrlari:** teshiklari farqli nusxalar endi alohida satr (masalan, 5 polkadan vint bilan qotirilgan bittasi). Kroy va maydon o'zgarmaydi.
+- **Zapchast ro'yxati tuzatildi:** mahkamlagich guruhi ("Евровинт 7х50 (32) симм", "POLKADERJATEL") birikma sxemasi, zapchast emas — endi sanalmaydi. Avval har vint ikki marta chiqardi (vint + guruh).
+- **Stanok fayllari:** varaqdagi fayllarga (DXF, NC, PTP, G-code) faqat plast teshiklari kiradi. Torets teshiklari varaqda teshilmaydi — gorizontal prisadka stanogi uchun (TZ-11). BPJ ga ham kirmaydi.
+  - Stanok fayllari TZ-11 dagi texnolog sinovigacha `SINOV` belgisida qoladi.
+- **Prisadka:** teshik soni barcha nusxalar bo'yicha (`nusxa`). Narxga faqat usta tanlasa kiradi (S3).
+- **Testlar:** `tests/verify_teshik.mjs` (17), `tests/verify_mc.mjs`.
+
+## Ochiq qolgan (egasidan D6)
+- **Petlya:** kosa diametri, chuqurligi, eshik chetidan masofa; yon devordagi planka teshiklari.
+- **Polka ushlagich:** teshik diametri va chuqurligi, polka ostidan markazgacha masofa. Bazis kutubxona obyekti (BZ85) shifrlangan — ochilmaydi.
+- **Ruchka:** teshik diametri (teshiklar orasi nomida bor: 160 mm).
+- **Eksantrik + shkant** (1 modul, Shkaf 001): parametrlar faylda bor (D2=15, H2=12.5 …), lekin qaysi teshik qaysi detalga — texnolog tasdiqlashi kerak.
+- **Evrovint diametri:** fayllarda ikki xil — 7 / 4.5 mm va 8 / 5 mm. Har modul o'z faylidagini oladi. Sexda qaysi biri ishlatilishini tasdiqlang.
+- **Mavjud bo'lmagan qism:** `holes.json` eksporti (OBJ to'plami) hali faqat shablon teshiklarni chiqaradi — MC teshiklari cutlist orqali stanok fayllarida bor.
+
