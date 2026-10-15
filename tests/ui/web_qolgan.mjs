@@ -20,7 +20,6 @@ async function asosiy(page, R) {
   const click = async (re) => { const l = page.getByText(re); const n = await l.count(); if (n) await l.nth(n - 1).click(); return n > 0; };
   const fill = async (ph, v) => { const el = page.locator(`input[placeholder*="${ph}"]`).first(); await el.fill(v); };
   const waitText = async (t, ms = 10000) => { for (let i = 0; i < ms / 200; i++) { if (await has(t)) return true; await page.waitForTimeout(200); } return false; };
-  const tok = () => M(() => JSON.parse(localStorage.getItem('smart3d.token')));
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await M(() => { localStorage.clear(); sessionStorage.clear(); });
@@ -55,7 +54,7 @@ async function asosiy(page, R) {
   R.fayldan = await waitText('Loyiha fayldan ochildi', 6000);
   R.fayldanMebel = await M(() => window.__app.doc.placements.length);
   await page.waitForTimeout(3000);                                     // yangi loyiha bo'lib saqlanadi
-  const ikki = async () => M(async (t) => (await (await fetch('/api/projects', { headers: { authorization: 'Bearer ' + t } })).json()).length, await tok());
+  const ikki = async () => M(async () => (await (await fetch('/api/projects')).json()).length);   // cookie sessiya (TZ-19 X2)
   R.serverdaLoyiha = await ikki();
   await click(/^Loyihalar$/); await page.waitForTimeout(1200);
   await page.locator('button[aria-label^="Loyihani o\'chirish"]').first().click(); await page.waitForTimeout(300);

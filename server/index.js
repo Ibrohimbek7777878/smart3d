@@ -11,7 +11,11 @@
  *                      shu serverning o'zi (frontend shu yerdan beriladi, CORS kerak emas)
  *   DB_PATH          — SQLite fayli, standart server/smart3d.db
  *   TRUST_PROXY      — nginx ortida bo'lsa 1 (rate limit haqiqiy IP bo'yicha ishlashi uchun)
- *   NODE_ENV         — 'production' da xavfsizlik shartlari qat'iy
+ *   NODE_ENV         — 'production' da xavfsizlik shartlari qat'iy (HSTS, Secure cookie, upgrade-insecure-requests)
+ *
+ * TZ-19 §3 himoya: CSP, httpOnly sessiya cookie + CSRF (Origin), chiqishda kalit bekor (jti), parol o'zgarsa — hammasi
+ * (token_version), akkaunt bloklash (5 xato → 15 daq), umumiy so'rov chegarasi, loyiha hujjatini chuqur tekshirish,
+ * WebSocket (Origin, 5 ulanish/IP), bcrypt 12. Tafsilot — himoya.js.
  */
 import express from 'express';
 import cors from 'cors';
@@ -29,6 +33,7 @@ import { smsConfigured, sendSms, SMS_TEXT } from './sms.js';
 import { aiConfig, llmParse } from './ai-llm.js';
 import { XATOLAR, KOD_RE } from '../app/js/xatolar.js';
 import { createJurnal } from './jurnal.js';
+import { securityHeaders, inlineScriptHashes, SESS, msOf, cookieOf, sameOrigin, docXatosi, wsGuard } from './himoya.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROD = process.env.NODE_ENV === 'production';
@@ -121,6 +126,12 @@ function addColumn(table, col, def) {
 addColumn('users', 'shop', "TEXT DEFAULT ''");   // ro'yxatdagi "Sex nomi" (ixtiyoriy)
 addColumn('projects', 'client', "TEXT DEFAULT ''");   // loyiha kartasidagi mijoz ismi (dizayn: "Loyihalarim")
 addColumn('users', 'settings_json', "TEXT DEFAULT ''");   // dizayndagi "Sozlamalar": ustama, stanok profili, sex logosi
+/* TZ-19 §3: sessiya va bloklash */
+addColumn('users', 'token_version', 'INTEGER DEFAULT 0');   // oshsa — shu foydalanuvchining barcha kalitlari bekor (parol almashdi)
+addColumn('users', 'failed_logins', 'INTEGER DEFAULT 0');   // ketma-ket xato parol
+addColumn('users', 'locked_until', 'INTEGER DEFAULT 0');    // shu vaqtgacha kirish yopiq (ms)
+db.exec('CREATE TABLE IF NOT EXISTS revoked_tokens (jti TEXT PRIMARY KEY, exp INTEGER NOT NULL)');   // "Chiqish" qilingan kalitlar
+setInterval(() => db.prepare('DELETE FROM revoked_tokens WHERE exp < ?').run(Math.floor(Date.now() / 1000)), 3600 * 1000).unref();
 /* S1: bitta raqam — bitta akkaunt (oxirgi 9 raqam bo'yicha). Eski bazada takror bo'lsa — kodda ham tekshiriladi */
 try { db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_phone9 ON users(substr(phone, -9)) WHERE phone <> ''"); }
 catch (e) { console.warn('DIQQAT: telefon noyob indeksi yaratilmadi (bazada takror raqam bor):', e.message); }
@@ -200,8 +211,8 @@ function fail(res, code, msg, extra) {
 /* ═══════════════════ RATE LIMIT (kutubxonasiz, xotirada) ═══════════════════
  * login — faqat MUVAFFAQIYATSIZ urinishlar sanaladi (bitta NAT ortidagi sex o'zini
  * bloklamaydi); register — alohida hisob. Nginx ortida TRUST_PROXY=1 shart. */
-function rateLimit({ windowMs, max }) {
-  const hits = new Map();                  // ip → {n, reset}
+function rateLimit({ windowMs, max, key = (req) => req.ip }) {
+  const hits = new Map();                  // kalit (ip yoki foydalanuvchi) → {n, reset}
   setInterval(() => {
     const now = Date.now();
     for (const [k, v] of hits) if (v.reset <= now) hits.delete(k);
@@ -215,14 +226,20 @@ function rateLimit({ windowMs, max }) {
   return {
     /** chegaradan oshgan bo'lsa 429 qaytaradi */
     check: (req, res, next) => {
-      const h = entry(req.ip);
+      const h = entry(key(req));
       if (h.n >= max) {
         res.set('Retry-After', String(Math.ceil((h.reset - Date.now()) / 1000)));
         return fail(res, 'S3D-RATE-001');
       }
       next();
     },
-    hit: (req) => { entry(req.ip).n++; }
+    hit: (req) => { entry(key(req)).n++; },
+    /** sanaydi va chegaradan oshsa 429 (har so'rov uchun) */
+    take: (req, res, next) => {
+      const h = entry(key(req));
+      if (h.n >= max) { res.set('Retry-After', String(Math.ceil((h.reset - Date.now()) / 1000))); return fail(res, 'S3D-RATE-001'); }
+      h.n++; next();
+    }
   };
 }
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10 });   // 10 xato / 15 daq
@@ -231,6 +248,8 @@ const smsSendLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10 });   // TZ
 const smsVerifyLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 }); // 20 xato kod / 15 daq / IP
 const aiLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 60 });         // TZ-12: 60 AI so'rov / soat / IP (pullik)
 const logLimiter = rateLimit({ windowMs: 60 * 1000, max: 30 });             // TZ-19: 30 xato yozuvi / daqiqa / IP
+const apiLimiter = rateLimit({ windowMs: 60 * 1000, max: 300 });            // TZ-19 X5: hamma /api — 300 / daqiqa / IP
+const writeLimiter = rateLimit({ windowMs: 60 * 1000, max: 60, key: (req) => 'u' + req.user.id });   // yozish — 60 / daqiqa / foydalanuvchi
 
 /* ── Express ── */
 const app = express();
@@ -254,37 +273,62 @@ app.use((req, res, next) => {
 if (process.env.TRUST_PROXY) app.set('trust proxy', Number(process.env.TRUST_PROXY) || 1);
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
 app.use(cors({ origin: ALLOWED_ORIGINS.length ? ALLOWED_ORIGINS : false }));
-app.use((req, res, next) => {             // xavfsizlik sarlavhalari (helmet'siz)
-  res.set({
-    'X-Content-Type-Options': 'nosniff',
-    'X-Frame-Options': 'DENY',
-    'Referrer-Policy': 'same-origin',
-    'Permissions-Policy': 'camera=(), geolocation=(), microphone=(self)'
-  });
-  next();
-});
+/* xavfsizlik sarlavhalari (helmet'siz): CSP, HSTS (production), nosniff, ramka taqiqi — himoya.js */
+app.use(securityHeaders({ prod: PROD, scriptHashes: inlineScriptHashes(path.join(__dirname, '../app/index.html')) }));
+app.use('/api', apiLimiter.take);
 app.use('/api/log', express.json({ limit: '4kb' }));   // brauzer xato yozuvi — kichik (TZ-19)
 app.use(express.json({ limit: '2mb' }));
-app.use(express.static(path.join(__dirname, '../app')));  // frontend
+app.use(express.static(path.join(__dirname, '../app'), {   // frontend
+  setHeaders: (res, f) => { if (f.endsWith('.html')) res.set('Cache-Control', 'no-cache'); }   // X11: sahifa doim yangisi
+}));
 
 /* ── Auth middleware ── */
-function auth(req, res, next) {
+/* TZ-19 X2/X3: kalit — sarlavhada (Bearer, eski sayt) yoki httpOnly cookie'da (yangi sayt). Tekshiruv: imzo, muddat,
+   "Chiqish" qilinmagan (jti), parol almashmagan (token_version). Cookie bilan yozuvchi so'rov — faqat shu saytdan (CSRF). */
+const COOKIE_MS = msOf(JWT_EXPIRES);
+const cookieOpts = { httpOnly: true, secure: PROD, sameSite: 'strict', path: '/' };
+const isRevoked = db.prepare('SELECT 1 FROM revoked_tokens WHERE jti = ?');
+const userTv = db.prepare('SELECT token_version FROM users WHERE id = ?');
+function readToken(req) {
   const h = req.headers.authorization || '';
-  const token = h.startsWith('Bearer ') ? h.slice(7) : '';
-  if (!token) return fail(res, 'S3D-AUTH-004');
+  if (h.startsWith('Bearer ')) return { token: h.slice(7), via: 'bearer' };
+  const c = cookieOf(req, SESS);
+  return c ? { token: c, via: 'cookie' } : null;
+}
+function verifyToken(token) {
   try {
-    req.user = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
-    next();
-  } catch (e) {
-    fail(res, 'S3D-AUTH-005');
-  }
+    const p = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
+    if (p.jti && isRevoked.get(p.jti)) return null;
+    const u = userTv.get(p.id);
+    if (!u || (u.token_version || 0) !== (p.tv || 0)) return null;
+    return p;
+  } catch (e) { return null; }
+}
+function auth(req, res, next) {
+  const t = readToken(req);
+  if (!t) return fail(res, 'S3D-AUTH-004');
+  const p = verifyToken(t.token);
+  if (!p) { if (t.via === 'cookie') res.clearCookie(SESS, cookieOpts); return fail(res, 'S3D-AUTH-005'); }
+  if (t.via === 'cookie' && !sameOrigin(req, ALLOWED_ORIGINS)) return fail(res, 'S3D-AUTH-009');
+  req.user = p; req.authVia = t.via;
+  if (req.method !== 'GET' && req.method !== 'HEAD') return writeLimiter.take(req, res, next);   // X5
+  next();
 }
 function adminOnly(req, res, next) {
   if (req.user?.role !== 'admin') return fail(res, 'S3D-AUTH-006');
   next();
 }
-const signToken = (u) => jwt.sign({ id: u.id, email: u.email, role: u.role }, JWT_SECRET,
-  { expiresIn: JWT_EXPIRES, algorithm: 'HS256' });
+const signToken = (u) => jwt.sign({ id: u.id, email: u.email, role: u.role, tv: u.token_version || 0, jti: crypto.randomBytes(12).toString('hex') },
+  JWT_SECRET, { expiresIn: JWT_EXPIRES, algorithm: 'HS256' });
+/** kirish javobi: kalit cookie'ga yoziladi; yangi sayt (sessiya: 'cookie') kalitni javobda olmaydi — JS uni hech qachon ko'rmaydi */
+function sendSession(req, res, u, body) {
+  const token = signToken(u);
+  res.cookie(SESS, token, { ...cookieOpts, maxAge: COOKIE_MS });
+  res.json(req.body && req.body.sessiya === 'cookie' ? body : { token, ...body });
+}
+const BCRYPT_COST = 12;                                    // X10 (eski xeshlar kirishda yangilanadi)
+const DUMMY_HASH = bcrypt.hashSync('smart3d-dummy-' + crypto.randomBytes(8).toString('hex'), BCRYPT_COST);   // yo'q email ham shuncha vaqt oladi
+const LOCK_AFTER = 5, LOCK_MS = 15 * 60 * 1000;           // X4: 5 xato → 15 daqiqa
 
 /* ═══════════════════ AUTH API ═══════════════════ */
 app.post('/api/register', registerLimiter.check, ah(async (req, res) => {
@@ -301,11 +345,11 @@ app.post('/api/register', registerLimiter.check, ah(async (req, res) => {
   }
   const exists = db.prepare('SELECT id FROM users WHERE lower(email) = ?').get(em);
   if (exists) return fail(res, 'S3D-AUTH-002');
-  const hash = await bcrypt.hash(password, 10);
+  const hash = await bcrypt.hash(password, BCRYPT_COST);
   const r = db.prepare('INSERT INTO users (name, email, phone, shop, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)')
     .run(name, em, tel, shop, hash, 'user');
   const user = { id: Number(r.lastInsertRowid), name, email: em, phone: tel, shop, role: 'user' };
-  res.json({ token: signToken(user), user });
+  sendSession(req, res, user, { user });
 }));
 
 app.post('/api/login', loginLimiter.check, ah(async (req, res) => {
@@ -314,12 +358,37 @@ app.post('/api/login', loginLimiter.check, ah(async (req, res) => {
   const password = str(b.password, 'parol', { max: 128, required: true });
   /* lower(email) — eski kod emailni o'zgartirmasdan saqlagan (katta harflar bilan) */
   const u = db.prepare('SELECT * FROM users WHERE lower(email) = ?').get(em);
-  if (!u || !(await bcrypt.compare(password, u.password_hash))) {
+  const now = Date.now();
+  if (u && u.locked_until > now) {                         // X4: bloklangan — to'g'ri parol ham kiritmaydi
     loginLimiter.hit(req);
+    return fail(res, 'S3D-AUTH-008', null, { retry_after: Math.ceil((u.locked_until - now) / 1000) });
+  }
+  const ok = await bcrypt.compare(password, u ? u.password_hash : DUMMY_HASH);
+  if (!u || !ok) {
+    loginLimiter.hit(req);
+    if (u) {
+      const n = (u.failed_logins || 0) + 1;
+      if (n >= LOCK_AFTER) {
+        db.prepare('UPDATE users SET failed_logins = 0, locked_until = ? WHERE id = ?').run(now + LOCK_MS, u.id);
+        jurnal.warn({ code: 'S3D-AUTH-008', rid: req.rid, uid: u.id, method: 'POST', path: '/api/login', status: 401, msg: 'akkaunt bloklandi: ' + LOCK_AFTER + ' ta xato parol', meta: { ip: req.ip } });
+      } else db.prepare('UPDATE users SET failed_logins = ? WHERE id = ?').run(n, u.id);
+    }
     return fail(res, 'S3D-AUTH-001');
   }
-  res.json({ token: signToken(u), user: { id: u.id, name: u.name, email: u.email, phone: u.phone || '', shop: u.shop || '', role: u.role } });
+  if (u.failed_logins || u.locked_until) db.prepare('UPDATE users SET failed_logins = 0, locked_until = 0 WHERE id = ?').run(u.id);
+  if (bcrypt.getRounds(u.password_hash) < BCRYPT_COST) {   // X10: eski (10) xesh — yangisiga
+    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(await bcrypt.hash(password, BCRYPT_COST), u.id);
+  }
+  sendSession(req, res, u, { user: { id: u.id, name: u.name, email: u.email, phone: u.phone || '', shop: u.shop || '', role: u.role } });
 }));
+
+/* X3: "Chiqish" — shu kalit bekor (jti), cookie o'chiriladi; hammasi: true — barcha qurilmalarda (token_version) */
+app.post('/api/logout', auth, (req, res) => {
+  if (req.user.jti) db.prepare('INSERT OR IGNORE INTO revoked_tokens (jti, exp) VALUES (?, ?)').run(req.user.jti, req.user.exp || Math.floor(Date.now() / 1000) + 86400);
+  if ((req.body || {}).hammasi === true) db.prepare('UPDATE users SET token_version = token_version + 1 WHERE id = ?').run(req.user.id);
+  res.clearCookie(SESS, cookieOpts);
+  res.json({ ok: true });
+});
 
 app.get('/api/me', auth, (req, res) => {
   const u = db.prepare('SELECT id, name, email, phone, shop, role FROM users WHERE id = ?').get(req.user.id);
@@ -375,19 +444,19 @@ app.post('/api/auth/sms/verify', smsVerifyLimiter.check, ah(async (req, res) => 
     return fail(res, 'S3D-AUTH-015');
   }
   db.prepare('DELETE FROM sms_codes WHERE phone = ?').run(p);
-  let u = db.prepare("SELECT id, name, email, phone, role FROM users WHERE phone <> '' AND substr(phone, -9) = ?").get(p.slice(-9));
+  let u = db.prepare("SELECT id, name, email, phone, role, token_version FROM users WHERE phone <> '' AND substr(phone, -9) = ?").get(p.slice(-9));
   let yangi = false;
   if (!u) {
     /* users jadvalida email va parol majburiy (eski sxema) — telefon foydalanuvchisi uchun
        ichki noyob email va ishlatib bo'lmaydigan tasodifiy parol xeshi */
     const name = plainText(b.name, 'ism', { max: 100 });
-    const hash = await bcrypt.hash(crypto.randomBytes(24).toString('hex'), 10);
+    const hash = await bcrypt.hash(crypto.randomBytes(24).toString('hex'), BCRYPT_COST);
     const r = db.prepare('INSERT INTO users (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, ?)')
       .run(name, `tel${p}@telefon.smart3d`, p, hash, 'user');
     u = { id: Number(r.lastInsertRowid), name, email: `tel${p}@telefon.smart3d`, phone: p, role: 'user' };
     yangi = true;
   }
-  res.json({ token: signToken(u), user: { id: u.id, name: u.name, phone: u.phone, role: u.role }, yangi });
+  sendSession(req, res, u, { user: { id: u.id, name: u.name, phone: u.phone, role: u.role }, yangi });
 }));
 
 /* ═══════════════════ LOYIHALAR (TZ-07) ═══════════════════
@@ -398,6 +467,8 @@ function projectPayload(b) {
   const inner = doc.doc && typeof doc.doc === 'object' ? doc.doc : doc;     // {app, v, name, doc:{room, placements}} yoki to'g'ridan-to'g'ri doc
   if (!inner.room || typeof inner.room !== 'object' || !Array.isArray(inner.placements)) bad('doc tuzilmasi noto\'g\'ri (room, placements)');
   if (inner.placements.length > 500) bad('placements juda ko\'p (max 500)');
+  const xe = docXatosi(doc);                                // X7: tur, o'lcham, chuqurlik, HTML
+  if (xe) bad(xe);
   return {
     name: plainText(b.name, 'nom', { max: 200 }) || 'Loyiha',
     client: plainText(b.client, 'mijoz', { max: 200 }),
@@ -713,11 +784,7 @@ app.post('/api/ai/voice', auth, (req, res) => {
 /* ═══════════════════ XATOLAR JURNALI (TZ-19 §2) ═══════════════════
  * Brauzerdagi xato serverga keladi (kod, bo'lim, sahifa, qisqa matn) — kirmagan foydalanuvchidan ham.
  * Faqat ruxsat etilgan maydonlar, 4 KB gacha, 30 ta/daqiqa/IP; parol, token, email, telefon yuborilmaydi (niqoblanadi ham). */
-const optUser = (req) => {
-  const h = req.headers.authorization || '';
-  if (!h.startsWith('Bearer ')) return null;
-  try { return jwt.verify(h.slice(7), JWT_SECRET, { algorithms: ['HS256'] }); } catch (e) { return null; }
-};
+const optUser = (req) => { const t = readToken(req); return t ? verifyToken(t.token) : null; };
 const logField = (v, field, max, re) => {
   const s = str(v, field, { max });
   if (s && re && !re.test(s)) bad(`${field} formati noto'g'ri`);
@@ -773,14 +840,19 @@ process.on('uncaughtException', (e) => {
 
 /* ═══════════════════ WebSocket — real-time narx ═══════════════════ */
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 4096 });
+/* X6: begona sayt ulana olmaydi (Origin), IP bo'yicha 5 ulanish; kiruvchi xabarlardan faqat ping */
+/* proksi (nginx) ortida haqiqiy IP — X-Forwarded-For; u yo'q bo'lsa IP noma'lum (hamma 127.0.0.1 bo'lib qolmasin) — chegara qo'llanmaydi */
+const wsg = wsGuard({ allowed: ALLOWED_ORIGINS, maxPerIp: 5, ipOf: (req) => app.get('trust proxy') ? String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() : req.socket.remoteAddress });
+const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 4096, verifyClient: wsg.verifyClient });
 
 function broadcastPrice(materialId, uzs, usd) {
   const msg = JSON.stringify({ type: 'price_update', material_id: materialId, uzs, usd, ts: Date.now() });
   wss.clients.forEach(c => { if (c.readyState === 1) c.send(msg); });
 }
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
+  wsg.track(ws, req);
+  ws.on('error', () => {});
   ws.on('message', (data) => {
     try {
       const msg = JSON.parse(data);

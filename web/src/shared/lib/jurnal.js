@@ -23,9 +23,7 @@ export function report(code, o = {}) {
   const body = JSON.stringify({ code, modul: String(o.modul || '').replace(/[^\w/-]/g, '').slice(0, 40),
     sahifa: (location.pathname.split('/').pop() || 'index.html').replace(/[^\w./-]/g, '').slice(0, 80), xabar,
     stack: tozala(err && err.stack, 1000) });
-  let token = '';
-  try { token = JSON.parse(localStorage.getItem('smart3d.token') || 'null') || ''; } catch (_) { /* yo'q */ }
-  fetch('/api/log', { method: 'POST', keepalive: true, headers: { 'content-type': 'application/json', ...(token ? { authorization: 'Bearer ' + token } : {}) }, body })
+  fetch('/api/log', { method: 'POST', keepalive: true, headers: { 'content-type': 'application/json' }, body })   // kirgan bo'lsa — cookie o'zi boradi
     .catch(() => { /* internet yo'q — faqat konsolda */ });
 }
 

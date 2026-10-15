@@ -6,6 +6,7 @@ import { createSession } from '../../../app/js/auth-core.js';
 /* TZ-19: server bilan sessiya — auth-core.js (eski sayt bilan umumiy: kirish, avtomatik saqlash, internetsiz navbat,
  * loyihalar). Bu yerda faqat ilova holatiga ulanadi. */
 export const S = createSession({
+  cookie: true,                                   // TZ-19 X2: kalit httpOnly cookie'da, JS ko'rmaydi
   toast: (t, kind, code) => toast(t, code),   // server xatosi — kodi bilan (server o'zi jurnalga yozgan)
   onState: (kind, title) => set('auth', { save: kind ? { kind, title } : null }),
   onUser: (u, why) => {

@@ -45,7 +45,7 @@ async function asosiy(page, R) {
   await mk.fill('50'); await mk.press('Enter'); await page.waitForTimeout(1200);
   R.jami50 = await total();
   R.ustamaIshladi = R.jami50 > R.jami35 && Math.abs(R.jami50 / R.jami35 - 1.5 / 1.35) < 0.01;
-  R.server = await M(async () => { const t = JSON.parse(localStorage.getItem('smart3d.token')); return (await (await fetch('/api/settings', { headers: { authorization: 'Bearer ' + t } })).json()); });
+  R.server = await M(async () => (await (await fetch('/api/settings')).json()));   // cookie sessiya (TZ-19 X2)
 
   /* stanok profili: DXF o'chiriladi → Fayllar'da yo'q */
   await page.locator('[data-set="stanok"] button', { hasText: 'DXF' }).click(); await page.waitForTimeout(1000);

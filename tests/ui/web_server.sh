@@ -1,7 +1,7 @@
 # TZ-09: yangi frontend testlari uchun umumiy qism (source qilinadi): Smart3D server (vaqtinchalik baza, S8, SMS va AI o'chiq)
 # + web/ build + vite preview (/api — shu serverga). Natija: $WPORT (sayt), $NPORT (server). Tugaganda ikkalasi PID bo'yicha to'xtaydi.
 free_port() { python3 -I -c 'import socket;s=socket.socket();s.bind(("127.0.0.1",0));print(s.getsockname()[1])'; }
-NPORT=$(free_port); WPORT=$(free_port)
+NPORT=$(free_port); WPORT=$(free_port); export NPORT WPORT   # testlar eski saytni ham (server orqali) ocha oladi
 TMPD="$(mktemp -d)"
 DB_PATH="$TMPD/t.db" ADMIN_PASSWORD='web-test-admin-1' ADMIN_EMAIL='admin@smart3d.uz' node server/init-db.js >/dev/null 2>&1
 env -u ESKIZ_EMAIL -u ESKIZ_PASSWORD -u AI_PROVIDER -u AI_API_KEY -u ANTHROPIC_API_KEY DB_PATH="$TMPD/t.db" PORT="$NPORT" NODE_ENV=test \

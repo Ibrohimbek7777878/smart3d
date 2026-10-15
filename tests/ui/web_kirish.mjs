@@ -52,10 +52,10 @@ async function asosiy(page, R) {
   await click(/^Ro'yxatdan o'tish$/);
   R.onboarding = await waitText('Nima yasaymiz');
   R.server = await M(async () => {
-    const t = JSON.parse(localStorage.getItem('smart3d.token') || 'null');
-    const me = await (await fetch('/api/me', { headers: { authorization: 'Bearer ' + t } })).json();
+    const me = await (await fetch('/api/me')).json();                    // TZ-19 X2: kalit httpOnly cookie'da
     return { email: me.email, phone: me.phone, shop: me.shop, name: me.name };
   });
+  R.kalitJSdaYoq = await M(() => localStorage.getItem('smart3d.token') === null && !document.cookie.includes('s3d_sess'));
   R.serverTogri = R.server.phone === '998901112233' && R.server.shop === 'Sinov Sex' && R.server.email === 'usta.web@test.uz';
 
   R.qadam = '3)';
@@ -65,8 +65,10 @@ async function asosiy(page, R) {
   R.avatar = await M(() => [...document.querySelectorAll('header div')].map(d => d.textContent.trim()).find(t => t === 'US') || null);
 
   R.qadam = '4)';
-  /* 4) chiqish (Sozlamalar sahifasi 7-bosqichda — hozircha kalitni o'chirish) → email esda, kirish */
-  await M(() => { localStorage.removeItem('smart3d.token'); localStorage.removeItem('smart3d.user'); });
+  /* 4) chiqish (Sozlamalar → Chiqish: serverda ham bekor, TZ-19 X3) → email esda, kirish */
+  await page.locator('[aria-label="Sozlamalar"]').click(); await waitText('Akkaunt');
+  await click(/^Chiqish$/); await page.waitForTimeout(400); await click(/^Chiqish$/); await page.waitForTimeout(1200);
+  R.chiqdi = await M(async () => (await fetch('/api/me')).status);
   await yangiSahifa('login'); await page.waitForTimeout(2000);
   R.emailEsda = await M(() => [...document.querySelectorAll('input[type=email]')].map(i => i.value)[0] || '');
   await fill('kamida 8', 'notogri-parol');
@@ -88,6 +90,6 @@ async function asosiy(page, R) {
   R.takrorTelefon = await has('Bu raqam bilan akkaunt bor — kirish');
 
   R.errs = errs;
-  R.ok = R.boshForma.every(Boolean) && R.onboarding && R.serverTogri && R.qaytaOchildi && R.emailEsda === 'usta.web@test.uz' &&
+  R.ok = R.boshForma.every(Boolean) && R.onboarding && R.serverTogri && R.kalitJSdaYoq && R.chiqdi === 401 && R.qaytaOchildi && R.emailEsda === 'usta.web@test.uz' &&
     R.notogriParol && R.kirdi && R.takrorEmail && R.takrorTelefon && errs.length === 0;
 }

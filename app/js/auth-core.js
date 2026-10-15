@@ -12,6 +12,8 @@
  *      toast(matn, tur, kod) }
  * TZ-19: server xatosi { error, code, rid } — kod toast'ga va natijaga uzatiladi; so'rov 15 soniyada javob bermasa —
  * to'xtatiladi (katta yuklama — 45 s) va tarmoq xatosi kabi ishlanadi (internetsiz navbat).
+ * o.cookie = true (yangi sayt, TZ-19 X2): kirish kaliti httpOnly cookie'da — JS uni saqlamaydi va ko'rmaydi (XSS bo'lsa ham
+ * o'g'irlanmaydi); "kirgan" holati — saqlangan foydalanuvchi bo'yicha. Eski sayt — avvalgidek (Bearer, localStorage).
  */
 export const K = { token: 'smart3d.token', user: 'smart3d.user', pending: 'smart3d.pending' };
 const curKey = (u) => 'smart3d.current.' + (u && u.id);
@@ -30,7 +32,10 @@ export function formatPhone(v) {
 }
 
 export function createSession(o) {
-  let token = ls.get(K.token), user = ls.get(K.user);
+  const cookie = !!o.cookie;
+  if (cookie && ls.get(K.token)) ls.set(K.token, null);           // eski usulda saqlangan kalit qoldirilmaydi
+  let token = cookie ? null : ls.get(K.token), user = ls.get(K.user);
+  const has = () => (cookie ? !!user : !!token);
   let ready = false, currentId = null;
   let saveTimer = 0, saving = false, dirty = false;
   const state = (kind, title) => { if (o.onState) o.onState(kind, title); };
@@ -52,18 +57,18 @@ export function createSession(o) {
   const errInfo = async (r) => { try { const j = await r.json(); return { text: j.error || ('Xato ' + r.status), code: j.code || '' }; } catch (e) { return { text: 'Xato ' + r.status, code: '' }; } };
   const errText = async (r) => { const e = await errInfo(r); return e.text + (e.code ? ' · ' + e.code : ''); };
   const setCurrent = (id) => { currentId = id; ls.set(curKey(user), id); };
-  const setAuth = (j) => { token = j.token; user = j.user; ls.set(K.token, token); ls.set(K.user, user); };
+  const setAuth = (j) => { token = cookie ? null : j.token; user = j.user; if (!cookie) ls.set(K.token, token); ls.set(K.user, user); };
 
   /* ── avtomatik saqlash ── */
   function changed() {
-    if (!token || !ready) return;
+    if (!has() || !ready) return;
     dirty = true;
     clearTimeout(saveTimer);
     saveTimer = setTimeout(flush, 2000);
     state('busy', 'Saqlanmoqda…');
   }
   async function flush() {
-    if (!token || !ready || !dirty) return;
+    if (!has() || !ready || !dirty) return;
     if (saving) { clearTimeout(saveTimer); saveTimer = setTimeout(flush, 800); return; }
     saving = true; dirty = false;
     const payload = o.getPayload();
@@ -85,7 +90,7 @@ export function createSession(o) {
       state('off', "Internet yo'q — o'zgarishlar qurilmada, internet qaytganda saqlanadi");
     } finally { saving = false; }
   }
-  window.addEventListener('online', () => { if (token && ready && dirty) flush(); });
+  window.addEventListener('online', () => { if (has() && ready && dirty) flush(); });
 
   /* ── loyihalar ── */
   async function openProject(id) {
@@ -116,7 +121,7 @@ export function createSession(o) {
   /* ── kirish ── */
   async function post(path, body) {
     try {
-      const r = await api(path, { method: 'POST', body });
+      const r = await api(path, { method: 'POST', body: cookie ? Object.assign({ sessiya: 'cookie' }, body) : body });
       const j = await r.json().catch(() => ({}));
       return r.ok ? Object.assign({ ok: true }, j) : Object.assign({ ok: false, status: r.status, error: j.error || ('Xato ' + r.status), code: j.code || '' }, j.retry_after ? { retry_after: j.retry_after } : {});
     } catch (e) { return { ok: false, status: 0, error: "Server bilan aloqa yo'q", code: e && e.name === 'AbortError' ? 'S3D-NET-102' : 'S3D-NET-101' }; }
@@ -161,6 +166,7 @@ export function createSession(o) {
     }
   }
   function logout(expired) {
+    if (!expired && has()) api('/api/logout', { method: 'POST', body: {} }).catch(() => {});   // TZ-19 X3: serverda ham bekor
     token = null; user = null; ready = false; currentId = null;
     ls.set(K.token, null); ls.set(K.user, null);
     clearTimeout(saveTimer);
@@ -169,7 +175,7 @@ export function createSession(o) {
   }
   /** saqlangan kirish kalitini tekshirish (sahifa ochilganda) → true agar kirgan bo'lsa */
   async function restore() {
-    if (!token) return false;
+    if (!has()) return false;
     const me = await api('/api/me');
     if (me.status === 401 || me.status === 404) { logout(true); return false; }
     if (me.ok) { user = Object.assign({}, user, await me.json()); ls.set(K.user, user); }
@@ -182,10 +188,10 @@ export function createSession(o) {
     api, errText, errInfo, changed, flush, openProject, listProjects, removeProject,
     login, register, smsSend, smsVerify, afterLogin, logout, restore, setCurrent,
     /** "Yangi" yoki kompyuterdan yuklash — keyingi saqlash serverda yangi loyiha ochadi */
-    resetCurrent() { if (token) setCurrent(null); },
+    resetCurrent() { if (has()) setCurrent(null); },
     get token() { return token; },
     get user() { return user; },
-    get loggedIn() { return !!token; },
+    get loggedIn() { return has(); },
     get currentId() { return currentId; },
     get ready() { return ready; }
   };

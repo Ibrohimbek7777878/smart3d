@@ -165,7 +165,7 @@ console.log('Settings: default qo\'yildi');
 const adminEmail = (process.env.ADMIN_EMAIL || 'admin@smart3d.uz').trim().toLowerCase();
 const adminPassword = process.env.ADMIN_PASSWORD || '';
 if (adminPassword.length >= 8) {
-  const hash = await bcrypt.hash(adminPassword, 10);
+  const hash = await bcrypt.hash(adminPassword, 12);   // TZ-19 X10
   db.prepare('INSERT OR IGNORE INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)')
     .run('Admin', adminEmail, hash, 'admin');
   console.log(`Admin user: ${adminEmail} (parol — ADMIN_PASSWORD dan)`);

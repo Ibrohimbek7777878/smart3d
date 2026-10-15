@@ -83,13 +83,22 @@ server {
   server_name smart3d.bittada.uz;
   client_max_body_size 3m;
   location /ws { proxy_pass http://127.0.0.1:3070; proxy_http_version 1.1;
-                 proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade"; }
+                 proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade";
+                 proxy_set_header Host $host; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; }
   location / { proxy_pass http://127.0.0.1:3070;
                proxy_set_header Host $host; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                proxy_set_header X-Forwarded-Proto $scheme; }
 }
 ```
 HTTPS — `certbot --nginx -d smart3d.bittada.uz`. Sayt PWA va telefon kamerasi/mikrofoni uchun HTTPS shart.
+
+### Xavfsizlik (TZ-19)
+Sarlavhalarni server o'zi qo'yadi — nginx'da takrorlash shart emas: CSP, HSTS (faqat `NODE_ENV=production`), `X-Frame-Options`, `nosniff`.
+- **HTTPS majburiy.** Kirish cookie'si `Secure` — HTTP orqali production'da kirib bo'lmaydi.
+- **`proxy_set_header Host $host`** — ikkala `location` da ham bo'lsin. Server cookie bilan kelgan so'rovning shu saytdan ekanini Host bo'yicha tekshiradi (CSRF).
+- **`X-Forwarded-For`** — `/ws` da ham bo'lsin. Usiz WebSocket'ning IP chegarasi ishlamaydi (xavfsiz, lekin cheklovsiz).
+- **Jurnal.** Server stdout'iga JSON qatorlar yozadi (`{"t":…,"lvl":…,"code":"S3D-…","rid":…}`). Ogohlantirish va xatolar `error_log` jadvaliga ham tushadi. Admin ularni ilovadagi Sozlamalar → "Xatolar jurnali"dan ko'radi.
+- **Akkaunt bloklangan bo'lsa** (5 xato parol → 15 daqiqa), admin uchun ham. Darhol ochish: `ADMIN_PASSWORD='…' npm run admin-password`. U parolni almashtiradi, blokni yechadi va eski kirishlarni bekor qiladi.
 
 ## 7. Tekshiruv
 ```bash

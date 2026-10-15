@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import path from 'node:path';
+import { csp, inlineScriptHashes } from '../server/himoya.js';
 
 const r = (p) => fileURLToPath(new URL(p, import.meta.url));
 const DATA = r('../app/data');   // ma'lumot — bitta manba (eski sayt bilan umumiy)
@@ -84,7 +85,8 @@ export default defineConfig({
     fs: { allow: [r('..')] },                              // ../app/js/engine importi uchun
     proxy: { '/api': API, '/ws': { target: API.replace(/^http/, 'ws'), ws: true } }
   },
-  preview: { proxy: { '/api': API } },                     // testlar: build + server (tests/ui/web_*.sh)
+  /* testlar: build + server (tests/ui/web_*.sh); CSP — server bilan bir xil (TZ-19 X1), sayt CSP ostida ishlashi tekshiriladi */
+  preview: { proxy: { '/api': API }, headers: { 'Content-Security-Policy': csp({ scriptHashes: inlineScriptHashes(r('../app/index.html')) }) } },
   build: {
     rollupOptions: {
       input: { main: r('./index.html'), app: r('./app.html') },
