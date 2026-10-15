@@ -34,6 +34,12 @@ export default function Sahna({ v }) {
                     <button onClick={v.center} aria-label="Markazga" style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","pointerEvents":"auto","whiteSpace":"nowrap"}}>
                       {"⌖ Markazga"}
                     </button>
+                    {/* TZ-09 8-bosqich (dizaynda yo'q): VR — faqat VR qurilmada ko'rinadi (eski saytdagi WebXR) */}
+                    {v.vrOk ? (<>
+                      <button onClick={v.vr} aria-label="VR" style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer"}}>
+                        {"🥽 VR"}
+                      </button>
+                    </>) : null}
                   </div>
                   {v.tip?.on ? (<>
                     <div style={{"position":"absolute","left":"50%","top":"72px","zIndex":"5","transform":"translateX(-50%)","width":"min(360px,calc(100% - 24px))","background":"var(--cyan)","color":"#06231E","borderRadius":"18px","padding":"14px 16px","display":"flex","flexDirection":"column","gap":"10px","boxShadow":"0 16px 40px rgba(0,0,0,.35)"}}>

@@ -8,6 +8,7 @@ import * as L from './bridge/loyiha.js';
 import { createSahna } from './bridge/sahna.js';
 import { ichkiSpec, detalKarta, ichiniKorsaBoladi } from './bridge/ichki.js';
 import { eksport } from './bridge/eksport.js';
+import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 import AiOyna from './modals/AiOyna.jsx';
 import EditorNav from './editor/EditorNav.jsx';
 import Header from './shell/Header.jsx';
@@ -38,7 +39,8 @@ const STANOK = [['dxf', 'DXF', 'raskroy — CNC/lazer'], ['gcode', 'G-code', 'IS
   ['nc', 'NC', 'teshiklar (Excellon)'], ['xnc', 'XNC', 'GibLab Excel importi'], ['altendorf', 'Altendorf', 'formatli arra — fazali kesim']];
 const NEST_F = [['kerf', 'Arra qalinligi, mm'], ['trimL', 'Trim (old), mm'], ['trimW', 'Trim (yon), mm'], ['remMinA', 'Qoldiq min A, mm'], ['remMinB', 'Qoldiq min B, mm'], ['remUsableMin', 'Delovoy qoldiq min, m²']];
 const STD_LABEL = { w: 'Eni (w)', d: 'Chuqurligi (d)', h: "Bo'yi (h)", uzunlik: 'Asos uzunligi', eni: 'Asos eni' };
-const sana = (t) => { const d = new Date(String(t || '').replace(' ', 'T') + (String(t || '').includes('Z') ? '' : 'Z')); return isNaN(d) ? '' : d.toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.'); };
+/* dizayndagi sana ko'rinishi: 12.10.2026 (server vaqti UTC) */
+const sana = (t) => { const d = new Date(String(t || '').replace(' ', 'T') + (String(t || '').includes('Z') ? '' : 'Z')); const p = (n) => String(n).padStart(2, '0'); return isNaN(d) ? '' : p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear(); };
 
 export default class App extends React.Component {
   state = {
@@ -49,7 +51,8 @@ export default class App extends React.Component {
     cat: 'all', q: '', rk: 0, miss: false, projName: 'Yangi loyiha', pq: '', loaded: false, projects: null,
     matCode: 'LDSP18', fasadCode: 'MDF16', sheet: null,
     sets: { markup_pct: null, stanoklar: null, logo: null }, markupIn: null, nestIn: null, stdIn: null, from: 'projects',
-    vq: null   // dizaynda yo'q qismlar: pastdan chiqadigan varaq (teshik, shakl, material, oshxona)
+    vq: null,   // dizaynda yo'q qismlar: pastdan chiqadigan varaq (teshik, shakl, material, oshxona)
+    client: ''  // loyiha kartasidagi mijoz ismi
   };
   doc = L.newDoc();
   res = null;
@@ -67,11 +70,12 @@ export default class App extends React.Component {
   /** saqlanadigan loyiha fayli — eski buildProjectPayload bilan bir xil shakl (eski sayt ham ocha oladi) */
   projectPayload() {
     const s = this.state, sh = s.sheet;
-    return { app: 'smart3d', v: 2, ts: Date.now(), name: s.projName, material: s.matCode, fasad: s.fasadCode,
+    return { app: 'smart3d', v: 2, ts: Date.now(), name: s.projName, client: s.client, material: s.matCode, fasad: s.fasadCode,
       sheet: sh ? { sku: sh.sku, name: sh.name, type: sh.type, th: sh.th, l: sh.l, w: sh.w, uzs: sh.uzs } : null, doc: this.doc };
   }
-  applyProject(p) {
+  applyProject(p, meta) {
     if (!p || !p.doc) return;
+    this.setState({ client: p.client || (meta && meta.client) || '' });
     this.doc = p.doc;
     if (!this.doc.kitchen) this.doc.kitchen = L.freshKitchen();
     this.setState({ projName: p.name || 'Loyiha', matCode: p.material || 'LDSP18', fasadCode: p.fasad || 'MDF16', sheet: p.sheet || null, sel: null, part: null, warn: {} },
@@ -126,7 +130,7 @@ export default class App extends React.Component {
   sync() {
     const s = this.state;
     const roomEl = this.roomHost.current;
-    if (this.sahna && (s.screen !== 'app' || this.sahna.host !== roomEl)) { this.sahna.dispose(); this.sahna = null; }
+    if (this.sahna && (s.screen !== 'app' || this.sahna.host !== roomEl)) { this.sahna.dispose(); this.sahna = null; if (this.vrBox) { this.vrBox.remove(); this.vrBox = null; this.vrBtn = null; } }
     if (!this.sahna && s.screen === 'app' && s.dataReady && roomEl) {
       try {
         this.sahna = createSahna(roomEl, {
@@ -141,6 +145,14 @@ export default class App extends React.Component {
         this.sahna.setDoc(this.doc, this.H.viewPlacements(this.doc), this.H.catalog);
         this.sahna.setMode(s.view);
         this.sahna.center();                                 // dizayndagi boshlang'ich ko'rinish (camHome)
+        /* VR (WebXR) — eski saytdagidek; tugma faqat qurilma qo'llasa ko'rinadi */
+        try {
+          /* three.js tugmasi o'z ko'rinishini o'zi boshqaradi ("VR NOT SUPPORTED" yozuvi) — yashirin qobiq ichida turadi,
+             ekranda faqat bizning dizayn tugmamiz (v.vrOk) ko'rinadi */
+          this.vrBox = document.createElement('div'); this.vrBox.style.display = 'none';
+          this.vrBtn = VRButton.createButton(this.sahna.sp.renderer); this.vrBox.appendChild(this.vrBtn); document.body.appendChild(this.vrBox);
+          if (navigator.xr && navigator.xr.isSessionSupported) navigator.xr.isSessionSupported('immersive-vr').then(ok => this.setState({ vrOk: !!ok })).catch(() => {});
+        } catch (_) { /* WebXR yo'q */ }
         if (s.sel) this.sahna.select(s.sel);
         this.forceUpdate();
       } catch (e) { console.warn('sahna', e); }
@@ -268,13 +280,28 @@ export default class App extends React.Component {
     const list = await this.S.listProjects().catch(() => null);
     if (list) this.setState({ projects: list });
   }
+  /** loyiha fayli (smart3d-project.json — eski va yangi sayt bir xil shakl) */
+  openFile(ev) {
+    const f = ev.target.files && ev.target.files[0]; ev.target.value = '';
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = async () => {
+      let p = null; try { p = JSON.parse(String(rd.result)); } catch (_) {}
+      if (!p || p.app !== 'smart3d' || !p.doc || !p.doc.room || !Array.isArray(p.doc.placements)) { this.toastMsg('Bu Smart3D loyiha fayli emas'); return; }
+      await this.dataP;
+      this.S.resetCurrent();                              // serverda yangi loyiha bo'lib saqlanadi
+      this.setState({ screen: 'app', step: 2, done: { 1: true }, tip: 3 }, () => { this.applyProject(p); this.S.changed(); });
+      this.toastMsg('Loyiha fayldan ochildi — ' + p.doc.placements.length + ' mebel');
+    };
+    rd.readAsText(f);
+  }
   async openProject(id) {
     await this.dataP;
     if (await this.S.openProject(id)) this.setState({ screen: 'app', step: 2, done: { 1: true }, tip: 3 }, () => this.docChanged('room', true));
   }
   newProject() {
     this.S.resetCurrent(); this.doc = L.newDoc(); this.res = null;
-    this.setState({ screen: 'onb1', projName: 'Yangi loyiha', sel: null, part: null, warn: {} });
+    this.setState({ screen: 'onb1', projName: 'Yangi loyiha', client: '', sel: null, part: null, warn: {} });
   }
 
   /* ── AI (TZ-12): server AI (kirgan va yoqilgan bo'lsa) yoki qoidali tahlilchi ── */
@@ -629,6 +656,7 @@ export default class App extends React.Component {
       ['dobor', 'Dobor', (K.doborH || 60) + ' mm'], ['karniz', 'Karniz', (K.karnizH || 60) + ' mm'],
       ['moyka', 'Moyka', ((K.moyka || {}).size || 500) + ' mm kesim']];
     const pctMarkup = prod ? Math.round((prod.markupPct || 0) * 100) : 0;
+    const xzt = (prod && prod.xizmat_taklif && prod.xizmat_taklif.teshik) || { tanlangan: false, qty: 0, amount: 0 };
     const admin = !!(s.user && s.user.role === 'admin');
     /* dizayndagi ro'yxat; har yorliq — haqiqiy fayl. Biesse/Homag — TZ-11 gacha yo'q (doim namuna detal chiqaradi, TZ-01);
        BPJ — TZ-17 gacha faqat admin, SINOV. "Smeta (CSV)", "OBJ", "Teshiklar (JSON)" — eski saytdagi fayllar yo'qolmasin (5-bo'lim) */
@@ -670,12 +698,18 @@ export default class App extends React.Component {
       goProjects: () => this.goProjects(), newProject: () => this.newProject(),
       pq: s.pq, onPq: ev => this.setState({ pq: ev.target.value }), projEmpty: !pList.length,
       projects: pList.map(p => ({ name: p.name || 'Loyiha', client: p.client || '—', date: sana(p.updated_at), price: s3n(p.total_price || 0) + ' so\'m', mods: (p.modules || 0) + ' modul',
-        t: s3Thumb(1200, 800, 450, '#B4834F', 'door', 2, 100), open: () => this.openProject(p.id) })),
+        t: s3Thumb(1200, 800, 450, '#B4834F', 'door', 2, 100), open: () => this.openProject(p.id),
+        del: () => this.confirm({ title: 'Loyihani o\'chirasizmi?', text: '"' + (p.name || 'Loyiha') + '" ro\'yxatdan olib tashlanadi.', ok: 'O\'chirish', danger: true,
+          yes: async () => { if (await this.S.removeProject(p.id)) { this.toastMsg('Loyiha o\'chirildi'); this.goProjects(); } else this.toastMsg('O\'chirilmadi — internetni tekshiring'); } }) })),
+      openFile: ev => this.openFile(ev),
+      client: s.client, onClient: ev => { this.setState({ client: ev.target.value }); this.S.changed(); },
       nav: ['Xona', 'Mebel', 'Narx', 'Fayllar'].map((l, i) => { const n = i + 1, on = s.step === n, dn = s.done[n]; return { label: l, mark: dn && !on ? '✓' : n, go: () => this.goStep(n), bg: on ? 'var(--sfc2)' : 'transparent', c: on ? 'var(--txt)' : 'var(--mut)', nb: on ? 'var(--acc)' : dn ? 'rgba(95,225,196,.18)' : 'var(--sfc)', nc: on ? 'var(--ink)' : dn ? 'var(--cyan)' : 'var(--mut)' }; }),
       roomHost: this.roomHost, roomOv: this.roomOv, notLoaded: !this.sahna,
       vw: { b2: s.view === '2d' ? 'var(--acc)' : 'transparent', t2: s.view === '2d' ? 'var(--ink)' : 'var(--txt)', b3: s.view === '3d' ? 'var(--acc)' : 'transparent', t3: s.view === '3d' ? 'var(--ink)' : 'var(--txt)', sb: s.spin ? 'var(--cyan)' : 'rgba(23,50,57,.9)', st: s.spin ? '#06231E' : 'var(--txt)' },
       set2D: () => this.setState({ view: '2d', spin: false }), set3D: () => this.setState({ view: '3d' }), toggleSpin: () => this.setState({ spin: !s.spin, view: '3d' }), center: () => this.sahna && this.sahna.center(),
       shot: () => this.fayl('rasm'),
+      vrOk: !!s.vrOk, vr: () => { if (this.vrBtn) { this.setState({ view: '3d' }); this.vrBtn.click(); } },
+      save: s.save ? { on: true, title: s.save.title || '', text: { ok: '☁ ✓', busy: '☁ …', off: '☁ ✕' }[s.save.kind] || '', c: s.save.kind === 'off' ? 'var(--danger)' : s.save.kind === 'ok' ? 'var(--cyan)' : 'var(--mut)' } : { on: false },
       tip: { on: s.screen === 'app' && s.tip < 3, text: S3_TIPS[Math.min(s.tip, 2)], n: Math.min(s.tip, 2) + 1, btn: s.tip >= 2 ? 'Tushunarli' : 'Keyingi' },
       tipNext: () => this.setState({ tip: s.tip + 1 }), tipSkip: () => this.setState({ tip: 3 }),
       hasSel: !!sm, deselect: () => this.select(null),
@@ -716,8 +750,15 @@ export default class App extends React.Component {
       markupLabel: 'Foyda (+' + pctMarkup + '%)', hasMissing: missN > 0, missText: '⚠️ ' + missN + ' ta zapchastning narxi bazada yo\'q — 0 deb olindi',
       missing: prod ? prod.missing.map(m => ({ n: m.name || m.code, c: m.qty ? '×' + m.qty : '' })) : [],
       quote: pr ? pr.lines.map(l => ({ name: l.code + ' · ' + l.name, dim: (l.w || 0) + '×' + (l.d || 0) + '×' + (l.h || 0), n: l.qty, p: s3n(l.amount) })) : [],
-      costRows: prod ? [['Plita', (B.sheetsCount || 0) + ' varaq · ' + String(B.panelAreaM2 || 0).replace('.', ',') + ' m²', prod.sheetCost], ['Kromka', String(B.edgeMeters || 0).replace('.', ',') + ' m', prod.edgeCost],
-        ['Zapchast', (B.hwCount || 0) + ' dona', prod.hwCost], ['Teshiklar', 'присадка · ' + (B.holeCount || 0), prod.holeCost], ['Ish haqi', 'sex', prod.laborCost]].map(r => ({ name: r[0], q: r[1], p: s3n(r[2] || 0) })) : [],
+      /* TZ-04: tasdiqlanmagan narx — "taxminiy" (eski saytdagidek); prisadka tanlanmagan bo'lsa — belgi (S3) */
+      costRows: prod ? [['Plita', (B.sheetsCount || 0) + ' varaq · ' + String(B.panelAreaM2 || 0).replace('.', ',') + ' m²', prod.sheetCost],
+        ['Kromka' + ((prod.taxminiy || []).includes('Kromka') ? ' · taxminiy' : ''), String(B.edgeMeters || 0).replace('.', ',') + ' m', prod.edgeCost],
+        ['Zapchast', (B.hwCount || 0) + ' dona', prod.hwCost],
+        ['Teshiklar' + (xzt.tanlangan ? ((prod.taxminiy || []).includes('Prisadka') ? ' · taxminiy' : '') : ' · tanlanmagan'), 'присадка · ' + (B.holeCount || 0), prod.holeCost],
+        ['Ish haqi', 'sex', prod.laborCost]].map(r => ({ name: r[0], q: r[1], p: s3n(r[2] || 0) })) : [],
+      xz: { on: !!xzt.tanlangan, sub: xzt.qty ? xzt.qty + ' teshik · ' + s3n(xzt.amount) + ' so\'m' : 'loyihada teshik yo\'q',
+        note: !xzt.tanlangan && xzt.qty ? '⚠️ Prisadka smetaga qo\'shilmagan — kerak bo\'lsa belgilang' : '',
+        flip: () => { const on = !xzt.tanlangan; doc.xizmatlar = Object.assign({}, doc.xizmatlar, { teshik: on }); this.scheduleRecalc(true); this.toastMsg(on ? 'Prisadka smetaga qo\'shildi' : 'Prisadka smetadan olindi'); } },
       rk: { n: rk + 1, rects, ar: cur ? cur.L + '/' + cur.W : '2800/2070', summary: (NS.total_sheets || 0) + ' varaq · ' + (NS.panel_count || 0) + ' detal · isrof ' + Math.max(0, Math.round(100 - (NS.utilization_pct || 0))) + '%',
         dots: sheets.map((_, i) => ({ w: i === rk ? '22px' : '6px', c: i === rk ? 'var(--acc)' : 'var(--sfc3)' })) },
       rkPrev: () => this.setState({ rk: (rk + sheets.length - 1) % Math.max(1, sheets.length) }), rkNext: () => this.setState({ rk: (rk + 1) % Math.max(1, sheets.length) }),

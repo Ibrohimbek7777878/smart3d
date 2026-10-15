@@ -15,6 +15,11 @@ export default function Loyihalar({ v }) {
                     <button onClick={v.newProject} style={{"height":"48px","padding":"0 20px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"15px","cursor":"pointer","whiteSpace":"nowrap"}}>
                       {"+ Yangi loyiha"}
                     </button>
+                    {/* TZ-09 8-bosqich (dizaynda yo'q): loyiha faylidan ochish (eski saytdagi "Yuklash" ham shu fayl) */}
+                    <label style={{"height":"48px","padding":"0 18px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"700","fontSize":"15px","cursor":"pointer","whiteSpace":"nowrap","display":"inline-flex","alignItems":"center"}}>
+                      {"📂 Fayldan ochish"}
+                      <input type="file" accept=".json,application/json" onChange={v.openFile} style={{"display":"none"}} />
+                    </label>
                   </div>
                 </div>
                 {v.projEmpty ? (<>
@@ -29,7 +34,8 @@ export default function Loyihalar({ v }) {
                 </>) : null}
                 <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fill,minmax(260px,1fr))","gap":"14px"}}>
                   {(v.projects || []).map((X, $index) => (<React.Fragment key={$index}>
-                    <button onClick={X?.open} style={{"textAlign":"left","borderRadius":"24px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","padding":"12px","cursor":"pointer","display":"flex","flexDirection":"column","gap":"12px","transition":"transform .35s cubic-bezier(.2,.8,.2,1),border-color .2s","transform":"perspective(900px)"}} className="h2">
+                    <div style={{"position":"relative","display":"flex"}}>
+                    <button onClick={X?.open} style={{"flex":"1","minWidth":"0","textAlign":"left","borderRadius":"24px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","padding":"12px","cursor":"pointer","display":"flex","flexDirection":"column","gap":"12px","transition":"transform .35s cubic-bezier(.2,.8,.2,1),border-color .2s","transform":"perspective(900px)"}} className="h2">
                       <div style={{"width":"100%","height":"160px","borderRadius":"16px","display":"grid","placeItems":"center","background":"radial-gradient(circle at 50% 75%,rgba(255,122,69,.2),transparent 70%),var(--bg)"}}>
                         <div style={{"position":"relative","width":"120px","height":"120px","flex":"0 0 auto","background":"transparent","perspective":"600px"}}>
                           <div style={{"position":"absolute","inset":"0","transformStyle":"preserve-3d","transform":"rotateX(-22deg) rotateY(-38deg)"}}>
@@ -56,6 +62,11 @@ export default function Loyihalar({ v }) {
                         </span>
                       </div>
                     </button>
+                    {/* TZ-09 8-bosqich (dizaynda yo'q): o'chirish = yashirish (arxiv), eski saytdagidek */}
+                    <button onClick={X?.del} aria-label={"Loyihani o'chirish: " + (X?.name || '')} style={{"position":"absolute","top":"20px","right":"20px","width":"36px","height":"36px","borderRadius":"12px","border":"1px solid var(--line)","background":"rgba(23,50,57,.9)","color":"var(--danger)","fontSize":"15px","cursor":"pointer"}}>
+                      {"🗑"}
+                    </button>
+                    </div>
                   </React.Fragment>))}
                 </div>
               </main>

@@ -28,6 +28,12 @@ export default function Header({ v }) {
                     {"✎"}
                   </span>
                 </label>
+                {/* TZ-09 8-bosqich (dizaynda yo'q): serverga saqlash holati (TZ-07) — ☁ ✓ / ☁ … / ☁ ✕, tafsiloti — sichqoncha ostida */}
+                {v.save?.on ? (<>
+                  <span role="status" title={v.save?.title} aria-label={v.save?.title} style={{"fontSize":"13px","fontWeight":"700","color":v.save?.c,"whiteSpace":"nowrap","flex":"0 0 auto"}}>
+                    {v.save?.text}
+                  </span>
+                </>) : null}
               </>) : null}
               <div style={{"marginLeft":"auto","display":"flex","alignItems":"center","gap":"8px"}}>
                 {v.isEditor ? (<>

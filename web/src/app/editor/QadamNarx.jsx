@@ -81,6 +81,11 @@ export default function QadamNarx({ v }) {
                           {"so'm"}
                         </span>
                       </div>
+                      {/* TZ-09 8-bosqich (dizaynda yo'q): mijoz ismi — "Loyihalarim" kartasidagi mijoz shu yerdan */}
+                      <label style={{"display":"flex","alignItems":"center","gap":"10px","padding":"0 0 8px","fontSize":"14px","color":"var(--mut)","fontWeight":"700"}}>
+                        {"Mijoz"}
+                        <input value={v.client} onChange={v.onClient} placeholder="Mijoz ismi" style={{"flex":"1","minWidth":"0","height":"44px","borderRadius":"12px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"15px","padding":"0 14px","outline":"none"}} />
+                      </label>
                       {(v.quote || []).map((r, $index) => (<React.Fragment key={$index}>
                         <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"9px 0","borderTop":"1px solid var(--line)","fontSize":"13px"}}>
                           <span style={{"display":"flex","flexDirection":"column","minWidth":"0"}}>
@@ -96,6 +101,24 @@ export default function QadamNarx({ v }) {
                           </span>
                         </div>
                       </React.Fragment>))}
+                    </div>
+                    {/* TZ-09 8-bosqich (dizaynda yo'q): xizmatlar — usta tanlaydi (qoida S3); "Oshxona elementlari" toggle uslubida */}
+                    <div data-xizmat="" style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexDirection":"column","gap":"2px"}}>
+                      <span style={{"fontWeight":"800","paddingBottom":"6px"}}>
+                        {"Xizmatlar — usta tanlaydi"}
+                      </span>
+                      <button onClick={v.xz?.flip} style={{"minHeight":"48px","display":"flex","alignItems":"center","justifyContent":"space-between","gap":"12px","background":"none","border":"0","borderTop":"1px solid var(--line)","color":"var(--txt)","fontSize":"15px","fontWeight":"700","cursor":"pointer","padding":"0","textAlign":"left"}}>
+                        <span style={{"display":"flex","flexDirection":"column"}}>
+                          <span>{"Teshik burg'ilash (prisadka)"}</span>
+                          <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"600"}}>{v.xz?.sub}</span>
+                        </span>
+                        <span style={{"width":"48px","height":"28px","flex":"0 0 48px","borderRadius":"999px","background":v.xz?.on ? "var(--acc)" : "var(--sfc3)","position":"relative","transition":"background .2s"}}>
+                          <span style={{"position":"absolute","left":"3px","top":"3px","width":"22px","height":"22px","borderRadius":"999px","background":"#fff","transform":v.xz?.on ? "translateX(20px)" : "none","transition":"transform .2s ease-out"}}></span>
+                        </span>
+                      </button>
+                      {v.xz?.note ? (<>
+                        <span style={{"fontSize":"13px","color":"var(--danger)","fontWeight":"600","paddingTop":"6px"}}>{v.xz?.note}</span>
+                      </>) : null}
                     </div>
                     <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"4px 16px 8px"}}>
                       <div style={{"padding":"12px 0 6px","fontWeight":"800"}}>
