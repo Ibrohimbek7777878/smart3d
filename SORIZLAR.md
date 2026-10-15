@@ -234,3 +234,39 @@ bularn keyinroq qilamzi hozir bita konstruksiya qila olamzmi ozi
 
 81. end dizaynga teginmaymiz yani dizyan buzmagan holda loyhamizga moslahstriamiz logo ga ham teginma  kirsh paroln olib tashlaymiz va orngia sms qoyamiz yokida emal bilan krish qilamiz va bir nechta dizaynda yoq sahifalarin qoshib ketamiz shunday qilska yaxshimi yokida
 sen hozir menga yana bir md fayl berasan va osha fyan claude desiganga beraman va ozi togirlab berad  qay bir yaxsh va sifatli tez bolad
+
+82. yoq teginma men senga qoida yozganman oldin tz yozasan va tasdiqlasam dizayn qoshasan hozir senga 2ta xil yol berdim qays bri qilgan yaxsh deb bita md fayl yozib loyhan toliq tuzilish va dizaynni loyhaga moslashtrish boyicha lekin qara dizayn buzilmaslig kere hozirg dizyan ideal va mijoz qabul qild
+
+83. hullas qara yozb beradigan md fyling ichida dizayn toliqtogirlab moslashtrish boyicha va hozirg dizyan buzmagan hoaltda togirlash bolish kere hozirg dizayn zor kereli qismlarn keyinroq qoshib olamiz hozir claude desigin bilmayd bzini loyhan shunga u dizayn kam funksiyali qilb qoygan md faylda loyha haqida toliq bolsin shunday qilgan yaxshim yani dizayn togirlash boyicha va yangi funksiyalar qanday qayerga qoshish boyicha sen yozb berasan va claude design beraib togirlataman 
+2chi yol ozing toigrlaysan kereli qismlarn va hammasin 0dan yangitan frontend yozib chiqasan faqat yozgaingda ham 
+hech narsa qilma tavsiya ber faqat
+
+84. hozir react + vite three.js da qaytadan yozb berdi shuni yuklab beraymi senga
+
+85. end hisobot berd qsiqa londa qilb
+
+86. loyhan nech foz bold
+davom et
+
+85. frontend faylin kor yangi react vite three.js da yozilgan fyaln tashladim korib chiq
+
+86. ozing togilrab ketsang boladim desing md fayl bermasdan
+
+87. ha tzn qayta yozb ol
+
+88. 1.yorug rejim kere emas hozirgi bor dizyan boyicha qil ozgartirma 
+2.emal hozircha sms tizimin ham togirlab qoy
+3.bpj boyicha qanday javob kere mendan senga
+qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
+
+89. 1.B
+2.bpj ishlaydim va bpj fayl yaratish tizm toliq qilinganmi
+3.buni ham ozing test qilb kor va real timeda test qilishga toggirlab ket ozim fayk tawab koraman stanokka
+4.buni qosh dizaynda bor narsalarin hammasin qosh backendga yoq bols kdon yozb ket 
+5.ichin korish ham relani ishlasin uni ham qosh
+6.ilova hozircha shart emas ayt qilb turamiz va bot ga ulab qoyamiz uni ham bot uchun mham mini app yozb qoy botni linkn enyroq beraman 
+7.bu qoidan olib tashla kere emas eski saytdan qolb ketgan
+
+90. kirishda email orqali bolsin boldi ha bpj ni davom etir tilni ham qosh rus ingliz uzbek  bolsin va har bir harf har bir text ozgarish kere
+
+91. boshla

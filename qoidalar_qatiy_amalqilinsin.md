@@ -99,8 +99,8 @@ Bu qoidalar har qanday loyihaga tegishli. Loyihaning texnik qoidalari alohida hu
 
 ## 6. INTERFEYS (UI)
 
-- **6.1.** Har qanday ekran elementida qorong'i (Dark) VA yorug' (Light) rejim ikkalasi ham hisobga
-  olinadi.
+- ~~6.1~~ — olib tashlandi (egasi, 2026-10-15: eski saytdan qolgan). Smart3D faqat tasdiqlangan dizayndagi
+  qorong'i rejimda; yorug' rejim qo'shilmaydi.
 - **6.2.** 3D yoki vizual muharrirda obyekt sichqoncha/barmoq ishorasi bilan boshqariladi
   (sudrash, burish, kattalashtirish). Tugmalar — faqat zaxira.
 - **6.3.** Kompaniya logosi har bir chiqariladigan hujjatda (ekran, chop etish, PDF) turadi.
@@ -117,7 +117,8 @@ Manba: `QOIDALAR-Bittada-2026-10-14.txt` (qavsda eski raqami). Bittada ERP'ga te
 - **S3** (7.9). Xizmatlar avtomatik qo'shilmaydi — foydalanuvchi o'zi tanlaydi.
 - **S4** (8.5). Shartnomada (ekran, chop etish, PDF, har bet) Bittada logosi DOIM turadi; usta logosi ham bor,
   lekin kichikroq. Dizayn o'zgarsa ham olib tashlanmaydi.
-- **S5** (9.1). Bazis / SketchUp / .b3d eksport — PAUZA, boshlanmaydi. Shu mavzuda so'rov kelsa eslatiladi.
+- **S5** (9.1). SketchUp / .b3d eksport — PAUZA, boshlanmaydi. Shu mavzuda so'rov kelsa eslatiladi.
+  Bazis BPJ — pauzadan chiqarildi (egasi, 2026-10-15: "bpj ni davom ettir"), TZ-17 bo'yicha.
 - **S6** (9.2). "3D xona / modullar" (ModuleCatalog) — haqiqiy zamer tizimi. Zamer/mebel joylash bo'yicha yangi
   dublikat tizim qurilmaydi, shu tizimga qo'shiladi.
 - **S7** (9.8). kroy.bittada.uz / tunel.bittada.uz — faqat o'qish. code.bittada.uz — hozircha kirilmaydi.

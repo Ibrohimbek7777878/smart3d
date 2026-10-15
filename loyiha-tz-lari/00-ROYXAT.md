@@ -23,13 +23,16 @@
 | 06 | [Modullarga teshiklar](06-teshiklar.md) | **EVROVINT BAJARILDI** 2026-10-15 (724 vint, 1077 teshik, Bazis bilan aynan) | D6 — petlya, polka ushlagich, ruchka, eksantrik; evrovint 7/4.5 yoki 8/5 |
 | 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | **BAJARILDI** 2026-10-15 | haqiqiy SMS uchun Eskiz akkaunti serverga |
 | 08 | [Ekrandagi qoida buzilishlari: logo, oyna, burish](08-ui-qoida-tuzatishlari.md) | QISMAN: oyna ✅, burish ✅, logo — kutilmoqda | egasi: Bittada logo fayli |
-| 09 | [Yangi dizayn](09-dizayn.md) | MA'LUMOT KUTILMOQDA | Claude Design natijasi; tarif, aloqa |
+| 09 | [Yangi frontend: React versiyani loyihaga ulash (dizayn buzilmaydi)](09-dizayn.md) | TASDIQ KUTILMOQDA | egasi: Q1–Q7 qarorlari va "boshla" |
 | 10 | [Deploy va zaxira nusxa](10-deploy-va-zaxira.md) | **REPO QISMI BAJARILDI** 2026-10-15 | admin: `server/DEPLOY.md` bo'yicha o'rnatadi; L1 (yurist) |
 | 11 | [Stanok fayllarini haqiqiy stanokka moslash](11-stanok-postprotsessorlar.md) | MA'LUMOT KUTILMOQDA | stanoklar ✅ (4 tur); D7 namuna fayllar |
 | 12 | [AI: til modeli va ovoz](12-ai-llm.md) | **BAJARILDI** 2026-10-15 (ovozdan tashqari) | real ishlatish uchun API kalit serverga |
 | 13 | [Modullar kutubxonasi — 600 ta](13-modullar-kutubxonasi.md) | MA'LUMOT KUTILMOQDA | D8 (Bazis fayllari) |
 | 14 | [Sex standartlari sahifasi (admin)](14-sex-standartlari-sahifasi.md) | **BAJARILDI** 2026-10-15 | — |
 | 15 | [Katalogdan ustki shkaf balandligi](15-ustki-shkaf-balandligi.md) | **BAJARILDI** 2026-10-15 | — |
+| 16 | [Telegram bot uchun Mini App](16-telegram-mini-app.md) | TASDIQ KUTILMOQDA (TZ-09 dan keyin) | egasi: bot kaliti serverga, bot linki |
+| 17 | [Bazis BPJ faylini to'liq qilish](17-bpj-toliq.md) | TASDIQ KUTILMOQDA (TZ-09 bilan parallel mumkin) | egasi: Bazis'li kompyuterda real sinov |
+| 18 | [Uch til: o'zbek, rus, ingliz](18-uch-til.md) | TASDIQ KUTILMOQDA (TZ-09 dan keyin) | egasi: atamalar jadvali tasdig'i |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.
@@ -44,7 +47,7 @@
 | Xizmatlar (S3) | prisadka — usta tanlaydi; ish haqi — avtomatik |
 | Modul geometriyasi (TZ-05) | hozircha tegilmaydi |
 | Teshiklar (TZ-06) | A — Bazis faylidan o'qish |
-| BPJ (S5) | SINOV belgisi bilan qoladi; dizayndan keyin Bazis'da real sinov |
+| BPJ (S5) | davom ettiriladi — S5 BPJ uchun olindi (TZ-17) |
 | Kirish | telefon + SMS kod, Eskiz.uz |
 | Server | Bittada serveri, smart3d.bittada.uz |
 | Stanoklar | Altendorf, Homag/Holzma, Biesse Rover, kromka va prisadka |
