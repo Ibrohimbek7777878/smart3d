@@ -93,6 +93,42 @@ Usta MebelCity'ning haqiqiy modullaridan oshxona chizadi. Modul o'lchami sex sta
 - **Moliya:** narx hisobi o'zgarmaydi, ERP'ga hech narsa yozilmaydi.
 - **Egasidan kerak bo'lib qoladi:** 69 ta zapchast moslashtirish, kromka narxlari (D3), krovat/parta min/max.
 
+## 1c. C — Krovat va parta min/max (dunyo standartlari) — PAUZA (egasi, 2026-10-15)
+Egasi: "krovat va parta min/max ni dunyo standartlaridan ol va o'zgartirish ham bo'lsin" (2026-10-15).
+
+**Manbalar (tekshirilgan):**
+- **ГОСТ 13025.2-85** (amalda), 3-jadval — krovat va matras: bir kishilik uzunligi **1860–2050**, eni **700 / 800 / 900**; ikki kishilik eni **1100–1800** (100 mm qadam).
+- **ГОСТ 19301.3-2022** (0–3 yosh bolalar krovati): asos uzunligi **900–1400**, eni **500–800**, poldan asosgacha ≥ 300.
+- **ГОСТ 11015-93 (= ISO 5970)** — o'quvchi partasi, 1–7 guruh: balandligi **460 / 520 / 580 / 640 / 700 / 760 / 820**; stol usti chuqurligi ≥ 450 (1-guruh) va ≥ 500; uzunligi bir o'rinli **600**, ikki o'rinli **1200**.
+- Yevropa **EN 1729-1** — 3–6 o'lcham belgisi uchun 590 / 640 / 710 / 760 (solishtirish uchun; asosiy manba — ГОСТ).
+- **Topilmadi:** krovat balandligi uchun raqamli standart (ГОСТ 13025.2 dagi chizma o'qilmadi) — **o'ylab topilmaydi**, bo'yi Bazis'dagidek o'zgarmas qoladi.
+
+**Muammo:** krovat standarti **matras asosiga** (tub panel) tegishli, modul gabaritiga emas. Har modulda tub paneli boshqa formula va o'qda:
+
+| Modul | Bazis gabariti | Tub panel formulasi | Tub (Bazis) | Taklif |
+|---|---|---|---|---|
+| MC-KR-02 spalni 001 | 458×968 | `w` × `d − 10` | 458×958 | shablon kichik o'lchamda saqlangan → standart **900×2000** |
+| MC-KR-03 spalni 002 | 458×968 | `w` × `d − 10` | 458×958 | xuddi shunday → **900×2000** |
+| MC-KR-04 spalni 003 | 1708×2068 | `w` × `d − 10` | 1708×2058 | uzunlik 2058 > 2050 → **2000**; eni 1708 qoladi |
+| MC-KR-05 spalni 005 | 1968×900 | `w − 5` × `d − 2t − 5` (uzun tomoni X) | 1963×863 | ichida — o'zgarmaydi |
+| MC-KR-01 krovat detski | 1468×1484 | tub panel yo'q, ikki ko'zgu yarmi | — | geometriya aniq emas → **o'zgarmas** qoladi |
+| MC-PA-01 Парта _1 | 500×390×500 | ustki `w` × `d + 110` | 500×500, h 500 | eni 500 < 600 → **600**; h 500 qoladi |
+| MC-PA-02 Парта тумба | 800×490×730 | ustki `w` × `d + 110` | 800×600, h 730 | ichida — o'zgarmaydi |
+
+**Bajariladigan ishlar:**
+- **C1. `sex-standartlari.json`** — yangi yozuvlar `krovat`, `krovat_bolalar`, `parta`. Manba va sana bilan. Qiymatlar matras/stol usti o'lchamida yoziladi — usta shu faylda o'zgartiradi (A1 dagidek).
+- **C2. `engine/standart.js`** — standart o'lchami modul o'lchamiga **o'q va siljish** orqali o'tkaziladi (masalan, KR-05: matras uzunligi → `w`, +5 mm). Eski oshxona/shkaf yozuvlari avvalgidek ishlaydi.
+- **C3. `scripts/fr3d_import.py`** — krovatda tub panel, partada ustki panel topiladi; formulasidan o'q va siljish olinadi; Bazis o'lchami standartdan tashqarida bo'lsa — standart qiymat va izoh. Qayta import → `fragments-mc.json`.
+- **C4. Sinov** (`verify_mc.mjs`): har krovat/parta min, standart va max o'lchamda — formula xatosi yo'q, barcha detal > 0, tub/ustki panel standart o'lchamga teng, kroy sig'adi; eski 31 modul natijasi o'zgarmagan; brauzer va to'liq regressiya.
+
+**Tegadigan fayllar:** `app/data/sex-standartlari.json`, `app/js/engine/standart.js`, `scripts/fr3d_import.py`, `app/data/fragments-mc.json`, `tests/verify_mc.mjs`. Min/max'ni o'qiydiganlar: `app.js` (cheklash, katalog), `rules.js` (ogohlantirish) — o'zgarmaydi, faqat qiymat oladi.
+
+**Xavf: O'RTA.** Bazis shabloni (masalan, 458×968) 900×2000 gacha cho'ziladi — formulalar mos, lekin bunday o'lchamda Bazis'da tekshirilmagan. Sinov har detal musbat va tub panel to'g'ri ekanini tasdiqlaydi; 3D'da ko'rib chiqish kerak.
+
+**Moliya:** narx faqat kroy orqali o'zgaradi (katta krovat → ko'p plita). ERP'ga hech narsa yozilmaydi, narx o'ylab topilmaydi.
+
+**Orqaga qaytarish:** alohida commit, `git revert`.
+
 ## 2. Moliya, xavf, orqaga qaytarish
 - **Moliya:** ERP va moliyaga hech narsa yozilmaydi, faqat lokal JSON fayllar o'qiladi. Pul harakati yo'q.
 - **Umumiy xavf: O'RTA.** Faqat yangi modullar va yangi fayllar; eski 83 fragment, kroy dvigateli va eksportlar o'zgarmaydi.

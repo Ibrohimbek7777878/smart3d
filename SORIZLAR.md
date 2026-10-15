@@ -191,3 +191,7 @@ Qaysi bri kere hoz
 61. olchamlarni tasdiqlayman lekin ozgarishtirsh ham bolsin olchamlarni keyinchalik va 2chi savoling dark yokida light uni korib chiqamz tz yoz va ishn boshla
 
 62. ha chiqman kamchiliklarin togirla qoidalr faylin ozgartirb qoy  boshla
+
+63. krovat va parta min/max ni dunyo standartlaridan ol vaozgaritrish ham bolsin va tizimni dizayn qilinganmi toliq
+
+64. buni ham pauzaga qoy  va menga esltib tur pauzadagi ishlarni qisqa qiqlb shuntirlgan holda va hozir loyhan dizayn uchun bita md faylga loyha haqida toliq yozb ber va uni claude design uchun togirlab ideal qilb har atarfalama oylangan bolish kere sodda bolsin ishlatish juda onson bolish kere   md faylda loyha haqida toliq yoizlgna bolish shart va loyhan dizayn qandya bolish haqida ham yozilgan bolish shart reigster bolsin registerdna oldin loyha haqida yani smart 3d nima ozi qandya ishlady qandya muomoga yechim bolad shu haqida malumotlar bolsin caruseli va 3d animatsiyaalr ham bolsin 3d aniamtsiyada mebelni 3d modul va rangili modul rangsiz modul bolsin va har ikkala rangli va rangsiz modulni ham toliq sochib neshta detal ketgan va nimalr ketagan toliq bolsin sodda lekin krigand ausern olib qolish va saytdan foydalanishga majbur qilish kere undna keyingi reigsterndan otgndan song esa loyhadan foydalanish juda onson sodda qulay bolsin
