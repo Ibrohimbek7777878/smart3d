@@ -90,10 +90,10 @@ ${prodRows ? `<h2>2. Ishlab chiqarish xarajati</h2><table><tbody>${prodRows}</tb
     if (!c.sp) return;
     const sp = c.sp, bg = sp.scene.background, walls = sp.groups.walls3d.children.map(w => w.visible);
     try {
-      c.toast('📸 1080p rasm olinmoqda…');
+      c.toast('1080p rasm olinmoqda…');
       sp.scene.background = new THREE.Color(0x0C1C22);              // mavzu foni shaffof — rasmda dizayn rangi
       const r = await render1080p(sp, { download: true });
-      c.toast(`📸 1080p rasm saqlandi (${r.width}×${r.height})`);
+      c.toast(`1080p rasm saqlandi (${r.width}×${r.height})`);
     } catch (e) { failed(c, e, 'Rasm'); }
     finally { sp.scene.background = bg; sp.groups.walls3d.children.forEach((w, i) => { w.visible = walls[i]; }); sp._resize(); sp._invalidate(); }
   },
@@ -101,11 +101,11 @@ ${prodRows ? `<h2>2. Ishlab chiqarish xarajati</h2><table><tbody>${prodRows}</tb
     if (!c.sp) return;
     const sp = c.sp, bg = sp.scene.background;
     try {
-      c.toast('🔄 360° panorama tayyorlanmoqda…');
+      c.toast('360° panorama tayyorlanmoqda…');
       sp.scene.background = new THREE.Color(0x0C1C22);
       for (const w of sp.groups.walls3d.children) w.visible = true;   // xona markazidan — hamma devor ko'rinadi
       await render360Panorama(sp, { download: true });
-      c.toast('🔄 360° panorama saqlandi');
+      c.toast('360° panorama saqlandi');
     } catch (e) { failed(c, e, 'Panorama'); }
     finally { sp.scene.background = bg; sp._resize(); sp._invalidate(); }
   },
@@ -125,7 +125,7 @@ ${prodRows ? `<h2>2. Ishlab chiqarish xarajati</h2><table><tbody>${prodRows}</tb
       const x = buildXLSX({ doc: c.doc, catalog: c.H.catalog, materials: c.H.effectiveMaterials(c.sheet), priceRes: res.priceRes, prod: res.prod,
         nest: res.nest, sheet: c.sheet, materialCode: c.matCode, projectName: c.name || 'Smart3D Loyihasi', services: c.H.services });
       download(fname(c) + '-smeta.xlsx', x, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      c.toast('📊 Excel smeta tayyor (5 ta bo\'lim)');
+      c.toast('Excel smeta tayyor (5 ta bo\'lim)');
     });
   },
   cutlist(c) { if (ok(c, true)) safe(c, () => download('smart3d-cutlist.csv', cutlistCSV(c.res.cutlists), 'text/csv')); },

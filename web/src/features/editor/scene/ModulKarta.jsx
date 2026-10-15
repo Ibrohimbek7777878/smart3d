@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useModulKarta } from './useSahna.js';
 
 /* TZ-19: tanlangan modul kartasi — JSX va stillar tasdiqlangan dizayndan; qiymatlar useModulKarta() dan. */
@@ -17,7 +18,7 @@ export default function ModulKarta() {
           </span>
         </div>
         <button onClick={v.deselect} aria-label="Yopish" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"36px","height":"36px","background":"var(--sfc2)"}}>
-          {"×"}
+          <Ikon n="yopish" size={18} gap={0} />
         </button>
       </div>
       {(v.sm?.rows || []).map((r, $index) => (<React.Fragment key={$index}>
@@ -27,11 +28,11 @@ export default function ModulKarta() {
               <span className="sc-interp">{r?.label}</span>
             </span>
             <button onClick={r?.dec} aria-label="Kamaytirish" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"40px","height":"40px","background":"var(--sfc2)"}}>
-              {"–"}
+              <Ikon n="ayir" size={18} gap={0} />
             </button>
             <input type="number" value={r?.val} onChange={r?.onInput} onBlur={r?.commit} onKeyDown={r?.key} style={{"width":"76px","height":"40px","borderRadius":"12px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","fontWeight":"800","textAlign":"center","fontVariantNumeric":"tabular-nums","outline":"none"}} />
             <button onClick={r?.inc} aria-label="Oshirish" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"40px","height":"40px","background":"var(--sfc2)"}}>
-              {"+"}
+              <Ikon n="qosh" size={18} gap={0} />
             </button>
           </div>
           <span style={{"fontSize":"12px","color":"var(--mut)","textAlign":"right","fontVariantNumeric":"tabular-nums"}}>
@@ -41,28 +42,28 @@ export default function ModulKarta() {
       </React.Fragment>))}
       {v.sm?.hasWarn ? (<>
         <div style={{"padding":"10px 12px","borderRadius":"12px","background":"rgba(255,123,123,.12)","border":"1px solid rgba(255,123,123,.4)","color":"var(--danger)","fontSize":"13px","fontWeight":"700"}}>
-          {"⚠️ "}<span className="sc-interp">{v.sm?.warn}</span>
+          <Ikon n="ogohlantirish" size={15} /><span className="sc-interp">{v.sm?.warn}</span>
         </div>
       </>) : null}
       <div style={{"display":"flex","gap":"6px","flexWrap":"wrap"}}>
         <button onClick={v.moveL} aria-label="Chapga 50 mm" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"var(--sfc2)"}}>
-          {"◀"}
+          <Ikon n="chap" size={20} gap={0} />
         </button>
         <button onClick={v.moveR} aria-label="O'ngga 50 mm" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"var(--sfc2)"}}>
-          {"▶"}
+          <Ikon n="ong" size={20} gap={0} />
         </button>
         <button onClick={v.rotate} aria-label="90 gradus burish" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"var(--sfc2)","fontSize":"14px"}}>
-          {"⟳"}
+          <Ikon n="burish" size={18} gap={0} />
         </button>
         <button onClick={v.dup} aria-label="Nusxa" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"var(--sfc2)"}}>
-          {"⧉"}
+          <Ikon n="nusxa" size={18} gap={0} />
         </button>
         <button onClick={v.askDel} aria-label="O'chirish" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"rgba(255,123,123,.14)","color":"var(--danger)"}}>
-          {"🗑"}
+          <Ikon n="ochirish" size={18} gap={0} />
         </button>
       </div>
       <button onClick={v.toggleModOpen} style={{"height":"48px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
-        {"🚪 "}<span className="sc-interp">{v.sm?.openLabel}</span>
+        <Ikon n="eshik" /><span className="sc-interp">{v.sm?.openLabel}</span>
       </button>
       <span style={{"fontSize":"12px","color":"var(--mut)","textWrap":"pretty"}}>
         {"Eshik yoki tortmani bosing — ochiladi. Ochilgan detalni bosing — ma'lumot chiqadi."}

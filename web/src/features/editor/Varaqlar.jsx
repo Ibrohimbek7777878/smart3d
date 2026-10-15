@@ -7,11 +7,12 @@ import ShaklVaraq from './room/ShaklVaraq.jsx';
 import OshxonaVaraq from './room/OshxonaVaraq.jsx';
 import MaterialVaraq from './catalog/MaterialVaraq.jsx';
 import { materialTitle } from './catalog/material.js';
+import Ikon from '../../shared/ui/Ikon.jsx';
 
 /* TZ-19: muharrirdagi pastki varaqlar (dizaynda yo'q qismlar) — qaysi biri ochiq bo'lsa (ui.vq.kind) o'sha chiziladi. */
 const VARAQ = {
   teshik: { title: () => 'Teshiklar', Body: TeshikVaraq },
-  shakl: { title: () => '✎ Erkin shakl', Body: ShaklVaraq },
+  shakl: { title: () => <><Ikon n="tahrir" size={18} />Erkin shakl</>, label: 'Erkin shakl', Body: ShaklVaraq },
   oshxona: { title: () => 'Oshxona elementlari', Body: OshxonaVaraq },
   material: { title: materialTitle, Body: MaterialVaraq }
 };
@@ -22,5 +23,5 @@ export default function Varaqlar() {
   const v = vq && VARAQ[vq.kind];
   if (!v) return null;
   const { Body } = v;
-  return <Varaq title={v.title(vq)} kind={vq.kind} onClose={closeSheet}><Body /></Varaq>;
+  return <Varaq title={v.title(vq)} label={v.label} kind={vq.kind} onClose={closeSheet}><Body /></Varaq>;
 }

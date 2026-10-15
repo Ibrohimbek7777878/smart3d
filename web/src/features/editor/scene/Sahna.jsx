@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useSahnaView } from './useSahna.js';
 import Maslahat from './Maslahat.jsx';
 import ModulKarta from './ModulKarta.jsx';
@@ -28,21 +29,21 @@ export default function Sahna() {
           </button>
         </div>
         <button onClick={v.shot} style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","pointerEvents":"auto","whiteSpace":"nowrap"}}>
-          {"📸 Rasm"}
+          <Ikon n="rasm" />{"Rasm"}
         </button>
         <button onClick={v.toggleSpin} style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":v.vw?.sb,"border":"1px solid var(--line)","color":v.vw?.st,"fontWeight":"700","fontSize":"14px","cursor":"pointer","pointerEvents":"auto","whiteSpace":"nowrap"}}>
-          {"🔄 360°"}
+          <Ikon n="aylanish" />{"360°"}
         </button>
         <button onClick={v.toggleAllOpen} style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","pointerEvents":"auto","whiteSpace":"nowrap"}}>
-          {"🚪 "}<span className="sc-interp">{v.openAllLabel}</span>
+          <Ikon n="eshik" /><span className="sc-interp">{v.openAllLabel}</span>
         </button>
         <button onClick={v.center} aria-label="Markazga" style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","pointerEvents":"auto","whiteSpace":"nowrap"}}>
-          {"⌖ Markazga"}
+          <Ikon n="markaz" />{"Markazga"}
         </button>
         {/* TZ-09 8-bosqich (dizaynda yo'q): VR — faqat VR qurilmada ko'rinadi (eski saytdagi WebXR) */}
         {v.vrOk ? (<>
           <button onClick={v.vr} aria-label="VR" style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer"}}>
-            {"🥽 VR"}
+            <Ikon n="vr" />{"VR"}
           </button>
         </>) : null}
       </div>
@@ -50,7 +51,7 @@ export default function Sahna() {
       <ModulKarta />
       <DetalKarta />
       <button onClick={v.openAi} aria-label="AI" style={{"position":"absolute","right":"16px","bottom":"16px","zIndex":"4","width":"60px","height":"60px","borderRadius":"20px","border":"0","background":"var(--cyan)","color":"#06231E","fontSize":"24px","fontWeight":"800","cursor":"pointer","boxShadow":"0 14px 36px rgba(95,225,196,.3)"}}>
-        {"✨"}
+        <Ikon n="ai" size={26} gap={0} />
       </button>
     </div>
   );

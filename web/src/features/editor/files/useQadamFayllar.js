@@ -16,8 +16,8 @@ export function useQadamFayllar() {
   const sizeWarn = pr ? pr.warnings.filter(w => /SIZE|CLAMP/.test(w.code)).length : 0;
   const admin = !!(auth.user && auth.user.role === 'admin'), stanoklar = st.sets.stanoklar;
   const groups = [
-    { title: 'Mijozga', col: 'var(--cyan)', sub: 'Bittada logosi bilan', mainLabel: '🖨 Hisobot (PDF)', main: 'hisobot', more: [['📸 Rasm', 'rasm'], ['🔄 360°', 'panorama'], ['GLB (3D/AR)', 'glb']] },
-    { title: 'Sexga', col: 'var(--lav)', sub: (NS.panel_count || 0) + ' detal · ' + (NS.total_sheets || 0) + ' varaq', mainLabel: '📊 Excel smeta', main: 'excel',
+    { title: 'Mijozga', col: 'var(--cyan)', sub: 'Bittada logosi bilan', mainLabel: 'Hisobot (PDF)', mainIkon: 'chop', main: 'hisobot', more: [['Rasm', 'rasm', 'rasm'], ['360°', 'panorama', 'aylanish'], ['GLB (3D/AR)', 'glb']] },
+    { title: 'Sexga', col: 'var(--lav)', sub: (NS.panel_count || 0) + ' detal · ' + (NS.total_sheets || 0) + ' varaq', mainLabel: 'Excel smeta', mainIkon: 'excel', main: 'excel',
       more: [['Detallar (CSV)', 'cutlist'], ['Loyiha fayli', 'loyiha'], ['Smeta (CSV)', 'smetaCsv'], ['OBJ', 'obj'], ['Teshiklar (JSON)', 'teshiklar']] },
     { title: 'Stanokka', col: 'var(--acct)', sub: 'alohida dastursiz', mainLabel: 'GibLab', main: 'giblab',
       more: [['DXF', 'dxf'], ['G-code', 'gcode'], ['Biesse · tez orada', null], ['Homag · tez orada', null], ['PTP', 'ptp'], ['NC', 'nc'], ['XNC', 'xnc'], ['Altendorf', 'altendorf'],
@@ -30,6 +30,6 @@ export function useQadamFayllar() {
       ...(R ? R.val.errors : []).map(x => ({ ok: false, text: x.message || x.code })),
       ...(missN ? [{ ok: false, text: missN + ' ta zapchastning narxi yo\'q' }] : [])],
     fileGroups: groups.map(g => ({ ...g, main: () => faylYukla(g.main),
-      more: g.more.map(([l, k]) => ({ label: l, dis: !k, c: k ? 'var(--txt)' : 'var(--mut)', cur: k ? 'pointer' : 'not-allowed', go: () => { if (k) faylYukla(k); } })) }))
+      more: g.more.map(([l, k, ikon]) => ({ label: l, ikon, dis: !k, c: k ? 'var(--txt)' : 'var(--mut)', cur: k ? 'pointer' : 'not-allowed', go: () => { if (k) faylYukla(k); } })) }))
   };
 }

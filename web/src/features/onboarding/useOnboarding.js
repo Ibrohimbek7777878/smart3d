@@ -4,8 +4,8 @@ import { openEditor } from '../projects/actions.js';
 
 /* TZ-19: yangi loyiha — 1) nima yasaymiz, 2) xona o'lchami yoki AI matni. */
 export const PRESETS = [[3600, 3000, '3.6×3 m'], [4200, 3100, '4.2×3.1 m'], [5000, 4000, '5×4 m'], [6000, 4000, '6×4 m']];
-const KINDS = [['kitchen', '🍳', 'Oshxona', 'Pastki va osma modullar'], ['wardrobe', '🚪', 'Shkaf / garderob', 'Kupe, penal, garderob'],
-  ['other', '🛏', 'Boshqa mebel', 'Krovat, stol, javon'], ['ai', '✨', 'AI\'ga aytib beraman', 'Matn yoki ovoz bilan']];
+const KINDS = [['kitchen', 'oshxona', 'Oshxona', 'Pastki va osma modullar'], ['wardrobe', 'eshik', 'Shkaf / garderob', 'Kupe, penal, garderob'],
+  ['other', 'karavot', 'Boshqa mebel', 'Krovat, stol, javon'], ['ai', 'ai', 'AI\'ga aytib beraman', 'Matn yoki ovoz bilan']];   // ikon — shared/ui/Ikon
 
 const setRoom = (patch) => set('onb', s => ({ room: { ...s.room, ...patch } }));
 /* o'z o'lchami: yozilgan son saqlanadi, chegaraga muharrir ochilganda keltiriladi (openEditor) */

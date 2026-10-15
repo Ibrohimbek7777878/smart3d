@@ -59,10 +59,10 @@ async function asosiy(page, R) {
 
   R.qadam = 'nusxa';
   const n0 = await M(() => document.body.innerText.match(/Nusxa qo'shildi/) ? 1 : 0);
-  await page.locator('button[aria-label*="Nusxa"], button:has-text("⧉")').first().click().catch(() => {});
+  await page.locator('button[aria-label*="Nusxa"]').first().click().catch(() => {});
   await page.waitForTimeout(900);
   R.nusxa = await has("Nusxa qo'shildi");
-  await page.locator('button:has-text("⟳")').first().click().catch(() => {});
+  await page.locator('button[aria-label="90 gradus burish"]').first().click().catch(() => {});
   await page.waitForTimeout(700);
 
   R.qadam = 'narx';

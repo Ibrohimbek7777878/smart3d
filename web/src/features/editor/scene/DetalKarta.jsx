@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useDetalKarta } from './useSahna.js';
 
 /* TZ-19: detal kartasi (mini-3D, o'lcham, material, kromka) — JSX va stillar tasdiqlangan dizayndan. */
@@ -17,7 +18,7 @@ export default function DetalKarta() {
           </span>
         </div>
         <button onClick={v.closePart} aria-label="Yopish" style={{"width":"36px","height":"36px","flex":"0 0 auto","borderRadius":"12px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"17px","cursor":"pointer"}}>
-          {"×"}
+          <Ikon n="yopish" size={18} gap={0} />
         </button>
       </div>
       <div ref={v.miniHost} style={{"position":"relative","height":"190px","flex":"0 0 auto","borderRadius":"16px","overflow":"hidden","background":"radial-gradient(ellipse 70% 60% at 50% 50%,rgba(255,122,69,.16),transparent 70%),var(--bg)","border":"1px solid var(--line)"}}>
@@ -48,7 +49,7 @@ export default function DetalKarta() {
       </div>
       {v.pt?.isMov ? (<>
         <button onClick={v.togglePartOpen} style={{"height":"44px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
-          {"🚪 "}<span className="sc-interp">{v.pt?.movLabel}</span>
+          <Ikon n="eshik" /><span className="sc-interp">{v.pt?.movLabel}</span>
         </button>
       </>) : null}
     </div>

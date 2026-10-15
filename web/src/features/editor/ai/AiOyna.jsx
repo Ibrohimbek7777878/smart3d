@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useSlice } from '../../../store/index.js';
 import Varaq from '../../../shared/ui/Varaq.jsx';
 import { aiView, closeAi, buildFromText } from './actions.js';
@@ -9,7 +10,7 @@ export default function AiOyna() {
   if (!ai.open) return null;
   const v = aiView(ai);
   return (
-    <Varaq title={"✨ AI'ga aytib bering"} kind="ai" onClose={closeAi}>
+    <Varaq title={<><Ikon n="ai" size={20} style={{ color: "var(--cyan)" }} />{"AI'ga aytib bering"}</>} label={"AI'ga aytib bering"} kind="ai" onClose={closeAi}>
       <textarea value={v.aiText} onChange={v.onAiText} rows="4" placeholder="oshxona 3.6x3 m, balandlik 2.7, 4 ta pastki shkaf" style={{"width":"100%","borderRadius":"16px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","padding":"16px","resize":"none","outline":"none"}}></textarea>
       <div style={{"display":"flex","gap":"6px","flexWrap":"wrap"}}>
         {v.aiEx.map((x, i) => (
@@ -19,10 +20,10 @@ export default function AiOyna() {
       </div>
       <div style={{"display":"flex","gap":"8px"}}>
         <button onClick={v.toggleMic} style={{"height":"52px","padding":"0 18px","borderRadius":"14px","border":"1px solid var(--line)","background":v.micBg,"color":v.micT,"fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
-          {"🎤 "}<span className="sc-interp">{v.micLabel}</span>
+          <Ikon n="mikrofon" /><span className="sc-interp">{v.micLabel}</span>
         </button>
         <button onClick={buildFromText} style={{"flex":"1","height":"52px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer"}}>
-          {"🪄 Qurish"}
+          <Ikon n="qurish" size={18} />{"Qurish"}
         </button>
       </div>
     </Varaq>

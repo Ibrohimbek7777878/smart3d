@@ -31,8 +31,8 @@ async function asosiy(page, R) {
   await click(/^Oshxona$/); await page.waitForTimeout(400); await click(/Muharrirni ochish/);
   for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.res)); i++) await page.waitForTimeout(250);
 
-  /* 1) avtomatik saqlash — belgi ☁ ✓ */
-  R.saqlandi = await waitText('☁ ✓', 8000);
+  /* 1) avtomatik saqlash — belgi (ikon, data-save="ok") */
+  R.saqlandi = await (async () => { for (let i = 0; i < 40; i++) { if (await M(() => !!document.querySelector('[data-save="ok"]'))) return true; await page.waitForTimeout(200); } return false; })();
   await page.screenshot({ path: `${OUT}/qolgan-1440-header.png`, clip: { x: 0, y: 0, width: 1440, height: 70 } });
 
   /* 2) mijoz ismi (Narx) + prisadka */

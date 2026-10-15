@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../../shared/ui/Ikon.jsx';
 import Toggle from '../../../shared/ui/Toggle.jsx';
 import { useQadamXona } from './useQadamXona.js';
 
@@ -18,7 +19,7 @@ export default function QadamXona() {
       <div style={{"display":"flex","padding":"4px","gap":"4px","borderRadius":"14px","background":"var(--sfc)"}}>
         {(v.shapes || []).map((x, $index) => (<React.Fragment key={$index}>
           <button onClick={x?.pick} style={{"flex":"1","height":"40px","borderRadius":"10px","border":"0","background":x?.bg,"color":x?.c,"fontWeight":"800","fontSize":"14px","cursor":"pointer","whiteSpace":"nowrap"}}>
-            <span className="sc-interp">{x?.label}</span>
+            <Ikon n={x?.ikon} size={15} /><span className="sc-interp">{x?.label}</span>
           </button>
         </React.Fragment>))}
       </div>
@@ -76,7 +77,7 @@ export default function QadamXona() {
             {"Oshxona elementlari"}
           </span>
           <button onClick={v.openKitchen} aria-label="Oshxona elementlarini sozlash" style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)"}}>
-            {"⚙ Sozlash"}
+            <Ikon n="sozlash" gap={0} />{"Sozlash"}
           </button>
         </div>
         {v.toggles.map((t, i) => <Toggle key={i} label={t.label} sub={t.sub} on={t.on} onFlip={t.flip} />)}

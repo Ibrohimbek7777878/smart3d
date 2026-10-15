@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../shared/ui/Ikon.jsx';
 import { useOnboarding } from './useOnboarding.js';
 
 /* TZ-19: yangi loyiha (1/3, 2/3) — JSX va stillar tasdiqlangan dizayndan; qiymatlar useOnboarding() dan. */
@@ -40,7 +41,7 @@ export default function Onboarding() {
             {(v.onb?.kinds || []).map((k, $index) => (<React.Fragment key={$index}>
               <button onClick={k?.pick} style={{"minHeight":"200px","textAlign":"left","borderRadius":"24px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","padding":"24px","cursor":"pointer","display":"flex","flexDirection":"column","justifyContent":"space-between","gap":"16px","transition":"transform .35s cubic-bezier(.2,.8,.2,1),border-color .2s","transform":"perspective(900px)"}} className="h1">
                 <span style={{"width":"64px","height":"64px","borderRadius":"20px","background":"var(--sfc2)","display":"grid","placeItems":"center","fontSize":"32px"}}>
-                  <span className="sc-interp">{k?.icon}</span>
+                  <Ikon n={k?.icon} size={30} gap={0} style={{ color: "var(--acct)" }} />
                 </span>
                 <span style={{"display":"flex","flexDirection":"column","gap":"4px"}}>
                   <span style={{"fontSize":"22px","fontWeight":"800","letterSpacing":"-.02em"}}>
@@ -108,7 +109,7 @@ export default function Onboarding() {
               <textarea value={v.aiText} onChange={v.onAiText} rows="4" placeholder="oshxona 3.6x3 m, balandlik 2.7, 4 ta pastki shkaf" style={{"width":"100%","borderRadius":"16px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","padding":"16px","resize":"vertical","outline":"none"}}></textarea>
               <div style={{"display":"flex","gap":"8px","flexWrap":"wrap","alignItems":"center"}}>
                 <button onClick={v.toggleMic} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","height":"44px","background":v.micBg,"color":v.micT}}>
-                  {"🎤 "}<span className="sc-interp">{v.micLabel}</span>
+                  <Ikon n="mikrofon" size={16} gap={0} /><span className="sc-interp">{v.micLabel}</span>
                 </button>
                 {(v.aiEx || []).map((x, $index) => (<React.Fragment key={$index}>
                   <button onClick={x?.pick} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"600"}}>

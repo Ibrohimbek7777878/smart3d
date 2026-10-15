@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../shared/ui/Ikon.jsx';
 import { useHeader } from './useHeader.js';
 
 /* TZ-19: sarlavha — JSX va stillar tasdiqlangan dizayndan; qiymatlar useHeader() dan. */
@@ -26,13 +27,13 @@ export default function Header() {
           </span>
           <input value={v.projName} onChange={v.onProjName} style={{"width":"150px","minWidth":"0","background":"transparent","border":"0","color":"var(--txt)","fontWeight":"800","fontSize":"15px","outline":"none"}} />
           <span style={{"color":"var(--mut)"}}>
-            {"✎"}
+            <Ikon n="tahrir" size={15} gap={0} />
           </span>
         </label>
-        {/* TZ-09 8-bosqich (dizaynda yo'q): serverga saqlash holati (TZ-07) — ☁ ✓ / ☁ … / ☁ ✕, tafsiloti — sichqoncha ostida */}
+        {/* TZ-09 8-bosqich (dizaynda yo'q): serverga saqlash holati (TZ-07) — ikon: saqlandi / saqlanmoqda / internet yo'q, tafsiloti — sichqoncha ostida */}
         {v.save?.on ? (<>
-          <span role="status" title={v.save?.title} aria-label={v.save?.title} style={{"fontSize":"13px","fontWeight":"700","color":v.save?.c,"whiteSpace":"nowrap","flex":"0 0 auto"}}>
-            {v.save?.text}
+          <span role="status" data-save={v.save?.kind} title={v.save?.title} aria-label={v.save?.title} style={{"fontSize":"13px","fontWeight":"700","color":v.save?.c,"whiteSpace":"nowrap","flex":"0 0 auto","display":"flex"}}>
+            <Ikon n={v.save?.ikon} size={20} gap={0} />
           </span>
         </>) : null}
       </>) : null}
@@ -49,7 +50,7 @@ export default function Header() {
           </span>
         </>) : null}
         <button onClick={v.langToast} aria-label="Til" data-hide-m="" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto"}}>
-          {"🌐"}
+          <Ikon n="til" size={19} gap={0} />
         </button>
         <div role="button" tabIndex={0} aria-label="Sozlamalar" onClick={v.openSettings} style={{"width":"44px","height":"44px","borderRadius":"999px","background":"var(--sfc2)","border":"1px solid var(--line)","display":"grid","placeItems":"center","fontWeight":"800","fontSize":"14px","color":"var(--cyan)","cursor":"pointer"}}>
           <span className="sc-interp">{v.initials}</span>

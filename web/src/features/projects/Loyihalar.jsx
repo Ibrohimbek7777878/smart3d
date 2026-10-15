@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../shared/ui/Ikon.jsx';
 import { useLoyihalar } from './useLoyihalar.js';
 
 /* TZ-19: "Loyihalarim" — JSX va stillar tasdiqlangan dizayndan; qiymatlar useLoyihalar() dan. */
@@ -17,7 +18,7 @@ export default function Loyihalar() {
           </button>
           {/* TZ-09 8-bosqich (dizaynda yo'q): loyiha faylidan ochish (eski saytdagi "Yuklash" ham shu fayl) */}
           <label style={{"height":"48px","padding":"0 18px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"700","fontSize":"15px","cursor":"pointer","whiteSpace":"nowrap","display":"inline-flex","alignItems":"center"}}>
-            {"📂 Fayldan ochish"}
+            <Ikon n="papka" size={17} />{"Fayldan ochish"}
             <input type="file" accept=".json,application/json" onChange={v.openFile} style={{"display":"none"}} />
           </label>
         </div>
@@ -25,7 +26,7 @@ export default function Loyihalar() {
       {v.projEmpty ? (<>
         <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"48px 24px","display":"flex","flexDirection":"column","alignItems":"center","gap":"14px","textAlign":"center"}}>
           <span style={{"fontSize":"40px"}}>
-            {"🔍"}
+            <Ikon n="qidiruv" size={40} gap={0} style={{ color: "var(--mut)" }} />
           </span>
           <span style={{"fontSize":"18px","fontWeight":"800"}}>
             {"Topilmadi — boshqa so'z bilan qidiring"}
@@ -64,7 +65,7 @@ export default function Loyihalar() {
           </button>
           {/* TZ-09 8-bosqich (dizaynda yo'q): o'chirish = yashirish (arxiv), eski saytdagidek */}
           <button onClick={X?.del} aria-label={"Loyihani o'chirish: " + (X?.name || '')} style={{"position":"absolute","top":"20px","right":"20px","width":"36px","height":"36px","borderRadius":"12px","border":"1px solid var(--line)","background":"rgba(23,50,57,.9)","color":"var(--danger)","fontSize":"15px","cursor":"pointer"}}>
-            {"🗑"}
+            <Ikon n="ochirish" size={16} gap={0} />
           </button>
           </div>
         </React.Fragment>))}

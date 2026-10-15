@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useQadamMebel } from './useQadamMebel.js';
 
 /* TZ-19: ② Mebel (katalog) — JSX va stillar tasdiqlangan dizayndan; qiymatlar useQadamMebel() dan. */
@@ -37,7 +38,7 @@ export default function QadamMebel() {
               <span className="sc-interp">{m?.v}</span>
             </span>
             <span style={{"color":"var(--mut)"}}>
-              {"▾"}
+              <Ikon n="ochiladi" size={8} gap={0} style={{ verticalAlign: "1px" }} />
             </span>
           </button>
         </React.Fragment>))}

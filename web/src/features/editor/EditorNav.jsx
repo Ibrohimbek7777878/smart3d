@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../shared/ui/Ikon.jsx';
 import { useEditorNav } from './useEditorNav.js';
 
 /* TZ-19: muharrir qadamlari (chapda; telefonda pastda) — JSX va stillar tasdiqlangan dizayndan. */
@@ -9,7 +10,7 @@ export default function EditorNav() {
       {(v.nav || []).map((s, $index) => (<React.Fragment key={$index}>
         <button data-navbtn="" onClick={s?.go} style={{"minHeight":"52px","borderRadius":"14px","border":"0","background":s?.bg,"color":s?.c,"display":"flex","alignItems":"center","gap":"12px","padding":"0 12px","fontWeight":"800","fontSize":"15px","cursor":"pointer","textAlign":"left","transition":"background .2s"}}>
           <span style={{"width":"30px","height":"30px","flex":"0 0 30px","borderRadius":"999px","display":"grid","placeItems":"center","fontSize":"13px","fontWeight":"800","background":s?.nb,"color":s?.nc}}>
-            <span className="sc-interp">{s?.mark}</span>
+            {s?.done ? <Ikon n="tayyor" size={16} gap={0} /> : <span className="sc-interp">{s?.mark}</span>}
           </span>
           <span>
             <span className="sc-interp">{s?.label}</span>

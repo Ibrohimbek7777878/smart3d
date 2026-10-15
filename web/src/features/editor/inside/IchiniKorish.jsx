@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useIchiniKorish } from './useIchiniKorish.js';
 
 /* TZ-19: "Ichini ko'rish" (Q6) — JSX va stillar tasdiqlangan dizayndan; qiymatlar useIchiniKorish() dan. */
@@ -58,7 +59,7 @@ export default function IchiniKorish() {
               </>) : null}
             </div>
             <button onClick={v.closeInside} aria-label="Yopish" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto"}}>
-              {"×"}
+              <Ikon n="yopish" size={18} gap={0} />
             </button>
           </div>
           <div style={{"display":"grid","gridTemplateColumns":"1fr 1fr","gap":"8px"}}>

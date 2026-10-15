@@ -5,13 +5,13 @@ import { goStep } from './actions.js';
 
 const STEPS = ['Xona', 'Mebel', 'Narx', 'Fayllar'];
 
-/** muharrir qadamlari: joriy — urg'u, o'tilgan — ✓ */
+/** muharrir qadamlari: joriy — urg'u, o'tilgan — belgi (ikon) */
 export function useEditorNav() {
   const ed = useSlice('editor');
   return {
     nav: STEPS.map((label, i) => {
       const n = i + 1, on = ed.step === n, dn = ed.done[n];
-      return { label, mark: dn && !on ? '✓' : n, go: () => goStep(n),
+      return { label, mark: n, done: !!dn && !on, go: () => goStep(n),
         bg: on ? 'var(--sfc2)' : 'transparent', c: on ? 'var(--txt)' : 'var(--mut)',
         nb: on ? 'var(--acc)' : dn ? 'rgba(95,225,196,.18)' : 'var(--sfc)', nc: on ? 'var(--ink)' : dn ? 'var(--cyan)' : 'var(--mut)' };
     }),

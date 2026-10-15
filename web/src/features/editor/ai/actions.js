@@ -42,8 +42,8 @@ export async function runAI(silent) {
     set('editor', { sel: null, part: null, warn: {} });
     project.changed('room', true);
     const bb = roomBBox(res.doc.room.outline);
-    toast(res.assumed ? '⚠️ Xona o\'lchami tushunilmadi — 3600×2800 mm taxmin qilindi'
-      : '🪄 AI loyihani qurdi: ' + res.doc.placements.length + ' modul · ' + Math.round(bb.w) + '×' + Math.round(bb.h) + ' mm' + (res.unknown.length ? ' · tushunilmadi: ' + res.unknown.join(', ') : ''));
+    toast(res.assumed ? 'Xona o\'lchami tushunilmadi — 3600×2800 mm taxmin qilindi'
+      : 'AI loyihani qurdi: ' + res.doc.placements.length + ' modul · ' + Math.round(bb.w) + '×' + Math.round(bb.h) + ' mm' + (res.unknown.length ? ' · tushunilmadi: ' + res.unknown.join(', ') : ''));
   } catch (e) { if (!silent) xato('S3D-AI-101', { matn: 'AI xato: ' + e.message, modul: 'editor/ai', err: e }); }
 }
 

@@ -39,9 +39,9 @@ export function useQadamXona() {
     ['dobor', 'Dobor', (K.doborH || 60) + ' mm'], ['karniz', 'Karniz', (K.karnizH || 60) + ' mm'],
     ['moyka', 'Moyka', ((K.moyka || {}).size || 500) + ' mm kesim']];
   return {
-    shapes: [['rect', '▣ To\'rtburchak'], ['L', '◩ L-shakl'], ['free', '✎ Erkin']].map(x => {
+    shapes: [['rect', 'To\'rtburchak', 'tortburchak'], ['L', 'L-shakl', 'lShakl'], ['free', 'Erkin', 'tahrir']].map(x => {
       const on = x[0] === 'rect' ? isRect : x[0] === 'L' ? !isRect : false;
-      return { label: x[1], bg: on ? 'var(--acc)' : 'transparent', c: on ? 'var(--ink)' : 'var(--txt)',
+      return { label: x[1], ikon: x[2], bg: on ? 'var(--acc)' : 'transparent', c: on ? 'var(--ink)' : 'var(--txt)',
         pick: () => {
           if (x[0] === 'free') { openShakl(); return; }
           L.applyRoom(doc, { outline: x[0] === 'L' ? L.L_OUTLINE.map(p => p.slice()) : L.rectOutline(room.w, room.d) });

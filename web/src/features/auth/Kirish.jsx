@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../shared/ui/Ikon.jsx';
 import { useKirish } from './useKirish.js';
 
 /* TZ-19: Kirish / Ro'yxatdan o'tish — JSX va stillar tasdiqlangan dizayndan; qiymatlar useKirish() dan. */
@@ -26,19 +27,19 @@ export default function Kirish() {
         <div style={{"display":"flex","flexDirection":"column","gap":"12px","position":"relative","zIndex":"2"}}>
           <span style={{"display":"flex","gap":"12px","alignItems":"center","fontSize":"17px","fontWeight":"700"}}>
             <span style={{"width":"32px","height":"32px","borderRadius":"10px","background":"var(--sfc2)","color":"var(--cyan)","display":"grid","placeItems":"center"}}>
-              {"✓"}
+              <Ikon n="tayyor" size={18} gap={0} />
             </span>
             {"Detal va raskroy — avtomatik"}
           </span>
           <span style={{"display":"flex","gap":"12px","alignItems":"center","fontSize":"17px","fontWeight":"700"}}>
             <span style={{"width":"32px","height":"32px","borderRadius":"10px","background":"var(--sfc2)","color":"var(--cyan)","display":"grid","placeItems":"center"}}>
-              {"✓"}
+              <Ikon n="tayyor" size={18} gap={0} />
             </span>
             {"Smeta zapchasti bilan, bir zumda"}
           </span>
           <span style={{"display":"flex","gap":"12px","alignItems":"center","fontSize":"17px","fontWeight":"700"}}>
             <span style={{"width":"32px","height":"32px","borderRadius":"10px","background":"var(--sfc2)","color":"var(--cyan)","display":"grid","placeItems":"center"}}>
-              {"✓"}
+              <Ikon n="tayyor" size={18} gap={0} />
             </span>
             {"Stanok fayli — bir tugmada"}
           </span>
@@ -52,7 +53,7 @@ export default function Kirish() {
           {v.hasPending ? (<>
             <div style={{"display":"flex","gap":"12px","alignItems":"center","padding":"12px 14px","borderRadius":"16px","background":"rgba(255,122,69,.12)","border":"1px solid rgba(255,122,69,.4)"}}>
               <span style={{"width":"36px","height":"36px","flex":"0 0 36px","borderRadius":"12px","background":"var(--acc)","color":"var(--ink)","display":"grid","placeItems":"center","fontWeight":"800"}}>
-                {"+"}
+                <Ikon n="qosh" size={18} gap={0} />
               </span>
               <span style={{"fontSize":"14px","fontWeight":"700"}}>
                 <span className="sc-interp">{v.pendingText}</span>
@@ -118,7 +119,7 @@ export default function Kirish() {
               <div style={{"display":"flex","alignItems":"center","height":"52px","borderRadius":"14px","background":"var(--bg)","border":`1px solid ${v.f?.bPass}`,"overflow":"hidden"}}>
                 <input type={v.f?.passType} autoComplete={v.f?.passAuto} value={v.f?.pass} onChange={v.onPass} placeholder="kamida 8 belgi" style={{"flex":"1","minWidth":"0","height":"100%","background":"transparent","border":"0","color":"var(--txt)","fontSize":"16px","outline":"none","padding":"0 16px"}} />
                 <button onClick={v.toggleEye} aria-label="Parolni ko'rsatish" style={{"width":"52px","height":"52px","background":"transparent","border":"0","color":"var(--mut)","fontSize":"18px","cursor":"pointer"}}>
-                  <span className="sc-interp">{v.f?.eye}</span>
+                  <Ikon n={v.f?.eye} size={20} gap={0} />
                 </button>
               </div>
               {v.isReg ? (<>

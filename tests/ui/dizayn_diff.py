@@ -15,6 +15,10 @@ KUTILGAN = {
     '7-narx': 'haqiqiy hisob (kotirovka, tannarx, raskroy)',
     '8-fayllar': 'haqiqiy tekshiruv natijasi',
     '9-loyihalar': 'haqiqiy loyihalar ro\'yxati (serverdan)',
+    # TZ-19 §4, egasi qarori: emoji va belgi-ikonlar o'rniga SVG ikonlar (lucide) — faqat ikon joylari farq qiladi
+    '3-onboarding1': 'TZ-19: emoji o\'rniga SVG ikon (tur kartalari)',
+    'sayt-06': 'TZ-19: ✓ va ↗ o\'rniga SVG ikon (Kimlar uchun)',
+    'sayt-07': 'TZ-19: ✓ va ↗ o\'rniga SVG ikon (Kimlar uchun)',
 }
 limit = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
 masks = {}

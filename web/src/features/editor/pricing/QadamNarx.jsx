@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../../shared/ui/Ikon.jsx';
 import Toggle from '../../../shared/ui/Toggle.jsx';
 import { useQadamNarx } from './useQadamNarx.js';
 
@@ -53,9 +54,9 @@ export default function QadamNarx() {
       {v.hasMissing ? (<>
       <div style={{"borderRadius":"16px","background":"rgba(255,123,123,.10)","border":"1px solid rgba(255,123,123,.38)"}}>
         <button onClick={v.toggleMissing} style={{"width":"100%","minHeight":"48px","display":"flex","justifyContent":"space-between","alignItems":"center","gap":"8px","padding":"10px 14px","background":"none","border":"0","color":"var(--danger)","fontWeight":"800","fontSize":"14px","cursor":"pointer","textAlign":"left"}}>
-          {v.missText}
-          <span>
-            <span className="sc-interp">{v.missArrow}</span>
+          <span style={{"display":"flex","alignItems":"center","gap":"8px"}}><Ikon n="ogohlantirish" size={16} gap={0} />{v.missText}</span>
+          <span style={{"display":"flex"}}>
+            <Ikon n={v.missOpen ? "tepa" : "past"} size={18} gap={0} />
           </span>
         </button>
         {v.missOpen ? (<>
@@ -111,7 +112,7 @@ export default function QadamNarx() {
         </span>
         <Toggle label={"Teshik burg'ilash (prisadka)"} sub={v.xz.sub} on={v.xz.on} onFlip={v.xz.flip} />
         {v.xz?.note ? (<>
-          <span style={{"fontSize":"13px","color":"var(--danger)","fontWeight":"600","paddingTop":"6px"}}>{v.xz?.note}</span>
+          <span style={{"fontSize":"13px","color":"var(--danger)","fontWeight":"600","paddingTop":"6px","display":"flex","alignItems":"center","gap":"6px"}}><Ikon n="ogohlantirish" size={15} gap={0} />{v.xz?.note}</span>
         </>) : null}
       </div>
       <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"4px 16px 8px"}}>
@@ -141,10 +142,10 @@ export default function QadamNarx() {
           </span>
           <div style={{"display":"flex","gap":"6px"}}>
             <button onClick={v.rkPrev} aria-label="Oldingi varaq" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"36px","height":"36px","background":"var(--sfc2)"}}>
-              {"←"}
+              <Ikon n="chap" size={18} gap={0} />
             </button>
             <button onClick={v.rkNext} aria-label="Keyingi varaq" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"36px","height":"36px","background":"var(--sfc2)"}}>
-              {"→"}
+              <Ikon n="ong" size={18} gap={0} />
             </button>
           </div>
         </div>
@@ -163,7 +164,7 @@ export default function QadamNarx() {
             {v.rk?.summary}
           </span>
           <button onClick={v.openParams} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)"}}>
-            {"⚙️ Parametrlar"}
+            <Ikon n="sozlash" gap={0} />{"Parametrlar"}
           </button>
         </div>
       </div>

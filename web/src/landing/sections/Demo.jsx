@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../shared/ui/Ikon.jsx';
 
 /* TZ-19: sayt — jonli 3D demo — modul, o'lcham, ichi. JSX va stillar tasdiqlangan dizayndan (o'zgarishsiz); qiymatlar Landing.renderVals() dan. */
 export default function Demo({ v }) {
@@ -60,7 +61,7 @@ export default function Demo({ v }) {
               </span>
             </div>
             <button onClick={v.replay} aria-label="Qayta ko'rish" style={{"position":"absolute","right":"12px","top":"12px","zIndex":"3","width":"44px","height":"44px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"18px","cursor":"pointer"}} className="h12">
-              {"↻"}
+              <Ikon n="qayta" size={19} gap={0} style={{ verticalAlign: "middle" }} />
             </button>
             <div style={{"position":"absolute","left":"0","right":"0","bottom":"12px","zIndex":"1","textAlign":"center","fontSize":"12px","color":"var(--mut)","pointerEvents":"none"}}>
               {"Sudrab aylantiring · detalni bosing"}

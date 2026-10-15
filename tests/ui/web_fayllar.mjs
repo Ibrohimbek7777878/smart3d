@@ -44,13 +44,13 @@ async function asosiy(page, R) {
     } catch (e) { return { xato: String(e.message).split('\n')[0] }; }
   };
   R.fayllar = {};
-  for (const l of ['📊 Excel smeta', 'Detallar (CSV)', 'Loyiha fayli', 'Smeta (CSV)', 'Teshiklar (JSON)', 'GLB (3D/AR)', 'GibLab', 'DXF', 'G-code', 'PTP', 'NC', 'XNC', 'Altendorf', '📸 Rasm']) {
+  for (const l of ['Excel smeta', 'Detallar (CSV)', 'Loyiha fayli', 'Smeta (CSV)', 'Teshiklar (JSON)', 'GLB (3D/AR)', 'GibLab', 'DXF', 'G-code', 'PTP', 'NC', 'XNC', 'Altendorf', 'Rasm']) {
     R.fayllar[l] = await yukla(l);
     await page.waitForTimeout(300);
   }
   /* hisobot (yangi oyna) — logo va jami */
   try {
-    const [pop] = await Promise.all([page.context().waitForEvent('page', { timeout: 15000 }), btn('🖨 Hisobot (PDF)').click()]);
+    const [pop] = await Promise.all([page.context().waitForEvent('page', { timeout: 15000 }), btn('Hisobot (PDF)').click()]);
     await pop.waitForLoadState('domcontentloaded');
     const t = await pop.evaluate(() => document.body.innerText, null, false);
     R.hisobot = { logo: /Smart3D/.test(t) && /by Bittada/.test(t), jami: (t.match(/JAMI: ([\d ]+) so'm/) || [])[1] || null };

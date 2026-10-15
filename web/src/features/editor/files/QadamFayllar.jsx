@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useQadamFayllar } from './useQadamFayllar.js';
 
 /* TZ-19: ④ Fayllar — JSX va stillar tasdiqlangan dizayndan; qiymatlar useQadamFayllar() dan. */
@@ -21,15 +22,15 @@ export default function QadamFayllar() {
         {(v.checks || []).map((k, $index) => (<React.Fragment key={$index}>
           {k?.ok ? (<>
             <span style={{"display":"flex","gap":"10px","fontSize":"14px"}}>
-              <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
-                {"✓"}
+              <span style={{"color":"var(--cyan)","fontWeight":"800","display":"flex","paddingTop":"2px"}}>
+                <Ikon n="tayyor" size={16} gap={0} />
               </span>
               {k?.text}
             </span>
           </>) : (<>
             <span style={{"display":"flex","gap":"10px","fontSize":"14px","color":"var(--danger)"}}>
-              <span style={{"fontWeight":"800"}}>
-                {"⚠️"}
+              <span style={{"fontWeight":"800","display":"flex","paddingTop":"2px"}}>
+                <Ikon n="ogohlantirish" size={16} gap={0} />
               </span>
               {k?.text}
             </span>
@@ -47,7 +48,7 @@ export default function QadamFayllar() {
             </span>
           </div>
           <button onClick={g?.main} style={{"height":"52px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer"}}>
-            <span className="sc-interp">{g?.mainLabel}</span>
+            {g?.mainIkon ? <Ikon n={g.mainIkon} size={18} /> : null}<span className="sc-interp">{g?.mainLabel}</span>
           </button>
           <div style={{"display":"flex","flexWrap":"wrap","gap":"6px"}}>
             <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"700","alignSelf":"center"}}>
@@ -55,7 +56,7 @@ export default function QadamFayllar() {
             </span>
             {(g?.more || []).map((m, $index) => (<React.Fragment key={$index}>
               <button onClick={m?.go} disabled={m?.dis} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","minHeight":"34px","background":"var(--sfc2)","color":m?.c,"fontFamily":"'JetBrains Mono',monospace","fontSize":"12px","cursor":m?.cur}}>
-                <span className="sc-interp">{m?.label}</span>
+                {m?.ikon ? <Ikon n={m.ikon} size={14} gap={0} /> : null}<span className="sc-interp">{m?.label}</span>
               </button>
             </React.Fragment>))}
           </div>

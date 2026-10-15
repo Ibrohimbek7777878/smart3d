@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../shared/ui/Ikon.jsx';
 
 /* TZ-19: sayt — sarlavha va menyu. JSX va stillar tasdiqlangan dizayndan (o'zgarishsiz); qiymatlar Landing.renderVals() dan. */
 export default function Header({ v }) {
@@ -43,7 +44,7 @@ export default function Header({ v }) {
             {"Ro'yxatdan o'tish"}
           </a>
           <button data-mob="" onClick={v.toggleMenu} aria-label="Menyu" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"18px","cursor":"pointer"}}>
-            {"☰"}
+            <Ikon n="menyu" size={20} gap={0} style={{ verticalAlign: "middle" }} />
           </button>
         </div>
       </div>

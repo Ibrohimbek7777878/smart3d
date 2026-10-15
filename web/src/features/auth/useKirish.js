@@ -30,7 +30,7 @@ export function useKirish() {
     f: { title: reg ? 'Ro\'yxatdan o\'tish' : 'Kirish', sub: reg ? '1 daqiqa. Keyin birinchi loyihangizni chizasiz.' : 'Email va parolingiz bilan.',
       cta: reg ? 'Ro\'yxatdan o\'tish' : 'Kirish', alt: reg ? 'Akkauntingiz bormi?' : 'Akkaunt yo\'qmi?', altCta: reg ? 'Kirish' : 'Ro\'yxatdan o\'tish',
       name: f.name, email: f.email, eEmail: !!e.email, eEmailt: e.email || '', bEmail: bd('email'), passAuto: reg ? 'new-password' : 'current-password',
-      phone: telGuruh(f.phone), pass: f.pass, shop: f.shop, passType: f.show ? 'text' : 'password', eye: f.show ? '🙈' : '👁',
+      phone: telGuruh(f.phone), pass: f.pass, shop: f.shop, passType: f.show ? 'text' : 'password', eye: f.show ? 'yashirish' : 'korish',
       bars: [1, 2, 3, 4].map(i => ({ c: i <= sc ? STRENGTH_C[sc] : 'var(--sfc2)' })), strength: ['', 'Zaif', 'O\'rtacha', 'Yaxshi', 'Kuchli'][sc],
       eName: !!e.name, eNamet: e.name || '', ePhone: !!e.phone, ePhonet: e.phone || '', ePass: !!e.pass, ePasst: e.pass || '',
       bName: bd('name'), bPhone: bd('phone'), bPass: bd('pass') },

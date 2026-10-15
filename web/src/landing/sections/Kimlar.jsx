@@ -1,4 +1,5 @@
 import React from 'react';
+import Ikon from '../../shared/ui/Ikon.jsx';
 
 /* TZ-19: sayt — kimlar uchun. JSX va stillar tasdiqlangan dizayndan (o'zgarishsiz); qiymatlar Landing.renderVals() dan. */
 export default function Kimlar({ v }) {
@@ -19,7 +20,7 @@ export default function Kimlar({ v }) {
               {"01"}
             </span>
             <span style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc2)","display":"grid","placeItems":"center","color":"var(--cyan)","fontWeight":"800"}}>
-              {"↗"}
+              <Ikon n="havola" size={20} gap={0} />
             </span>
           </div>
           <div style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
@@ -32,24 +33,24 @@ export default function Kimlar({ v }) {
           </div>
           <div style={{"display":"flex","flexDirection":"column","gap":"10px","paddingTop":"16px","borderTop":"1px solid var(--line)"}}>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
-              <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
-                {"✓"}
+              <span style={{"color":"var(--cyan)","fontWeight":"800","display":"flex","paddingTop":"3px"}}>
+                <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
                 {"O'lchamni kiriting — modul o'zi moslashadi"}
               </span>
             </span>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
-              <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
-                {"✓"}
+              <span style={{"color":"var(--cyan)","fontWeight":"800","display":"flex","paddingTop":"3px"}}>
+                <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
                 {"Mijozga joyida 3D ko'rsating"}
               </span>
             </span>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
-              <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
-                {"✓"}
+              <span style={{"color":"var(--cyan)","fontWeight":"800","display":"flex","paddingTop":"3px"}}>
+                <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
                 {"Smeta zapchasti bilan, bir zumda"}
@@ -63,7 +64,7 @@ export default function Kimlar({ v }) {
               {"02"}
             </span>
             <span style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc2)","display":"grid","placeItems":"center","color":"var(--cyan)","fontWeight":"800"}}>
-              {"↗"}
+              <Ikon n="havola" size={20} gap={0} />
             </span>
           </div>
           <div style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
@@ -76,24 +77,24 @@ export default function Kimlar({ v }) {
           </div>
           <div style={{"display":"flex","flexDirection":"column","gap":"10px","paddingTop":"16px","borderTop":"1px solid var(--line)"}}>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
-              <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
-                {"✓"}
+              <span style={{"color":"var(--cyan)","fontWeight":"800","display":"flex","paddingTop":"3px"}}>
+                <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
                 {"To'liq ekranli 3D ko'rinish"}
               </span>
             </span>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
-              <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
-                {"✓"}
+              <span style={{"color":"var(--cyan)","fontWeight":"800","display":"flex","paddingTop":"3px"}}>
+                <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
                 {"Bir tugmada 1080p rasm"}
               </span>
             </span>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
-              <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
-                {"✓"}
+              <span style={{"color":"var(--cyan)","fontWeight":"800","display":"flex","paddingTop":"3px"}}>
+                <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
                 {"360° tur havolasini yuboring"}
@@ -107,7 +108,7 @@ export default function Kimlar({ v }) {
               {"03"}
             </span>
             <span style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc2)","display":"grid","placeItems":"center","color":"var(--cyan)","fontWeight":"800"}}>
-              {"↗"}
+              <Ikon n="havola" size={20} gap={0} />
             </span>
           </div>
           <div style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
@@ -120,24 +121,24 @@ export default function Kimlar({ v }) {
           </div>
           <div style={{"display":"flex","flexDirection":"column","gap":"10px","paddingTop":"16px","borderTop":"1px solid var(--line)"}}>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
-              <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
-                {"✓"}
+              <span style={{"color":"var(--cyan)","fontWeight":"800","display":"flex","paddingTop":"3px"}}>
+                <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
                 {"Formulali modullar, detal va raskroy"}
               </span>
             </span>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
-              <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
-                {"✓"}
+              <span style={{"color":"var(--cyan)","fontWeight":"800","display":"flex","paddingTop":"3px"}}>
+                <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
                 {"GibLab, DXF, G-code, Biesse, Homag"}
               </span>
             </span>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
-              <span style={{"color":"var(--cyan)","fontWeight":"800"}}>
-                {"✓"}
+              <span style={{"color":"var(--cyan)","fontWeight":"800","display":"flex","paddingTop":"3px"}}>
+                <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
                 {"Brauzerda — kompyuter va telefonda"}

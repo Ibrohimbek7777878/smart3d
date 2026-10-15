@@ -39,7 +39,7 @@ async function asosiy(page, R) {
   for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.res)); i++) await page.waitForTimeout(250);
   await page.waitForTimeout(1500);
   for (const s of ['Xona', 'Mebel', 'Narx', 'Fayllar']) { await click(new RegExp('^' + s + '$')); await page.waitForTimeout(700); }
-  R.saqlandi = await waitText('☁ ✓', 8000);                          // avtomatik saqlash — cookie bilan
+  R.saqlandi = await (async () => { for (let i = 0; i < 40; i++) { if (await M(() => !!document.querySelector('[data-save="ok"]'))) return true; await page.waitForTimeout(200); } return false; })();   // avtomatik saqlash — cookie bilan
 
   /* fayllar: Excel (yuklab olish) va PDF hisobot (yangi oyna o'zi chop etadi) */
   const dl = page.waitForEvent('download', { timeout: 15000 }).catch(() => null);
