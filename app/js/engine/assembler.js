@@ -14,7 +14,36 @@
  *   X: [-w/2 .. +w/2]
  *   Y: [-d/2 .. +d/2] (Y = +d/2 da fasad joylashadi)
  *   Z: [-h/2 .. +h/2] (Z = -h/2 pol/pastki qism, Z = +h/2 qopqoq)
+ *
+ * TZ-09 Q5 / TZ-19: opts.tortma = true — tortmali modulda fasad tortmalarga bo'linadi (faqat 3D ko'rinish: yangi sayt
+ * sahnasi va "Ichini ko'rish"). Soni va nisbiy balandligi — modul detallaridan (Фасад ящика / fasad_kichik / fasad_katta /
+ * tortma_fasad). Kesim, narx, BPJ/OBJ/GLB bu bayroqsiz chaqiradi — ular O'ZGARMAYDI (tests/verify_tortma.mjs).
  */
+import { evalFormula } from './expr.js';
+
+const TORTMA_RE = /ящик|tortma|fasad_kichik|fasad_katta/i;
+const ESHIK_RE = /двер|eshik/i;
+
+/** fasad qatorlari (yuqoridan pastga): tortmalar va eshik qatori, balandligi — detal formulasidan */
+function fasadQatorlari(frag, w, d, h, t, tall) {
+  const vars = { w, d, h, t };
+  const num = (e) => { try { const v = evalFormula(String(e), vars); return v > 0 ? v : 0; } catch (err) { return 0; } };
+  const drawers = [];
+  let door = 0;
+  for (const p of (frag && frag.parts) || []) {
+    if (p.slot !== 'fasad') continue;
+    const nm = (p.nom || p.name || '') + ' ' + (p.code || '');
+    const hh = num(p.len), q = Math.max(1, Math.round(+p.qty || 1));
+    if (!hh) continue;
+    if (TORTMA_RE.test(nm)) for (let i = 0; i < q; i++) drawers.push(hh);
+    else if (ESHIK_RE.test(nm)) door = Math.max(door, hh);
+  }
+  if (!drawers.length) return null;
+  drawers.sort((a, b) => a - b);                             // kichigi tepada (odatiy tartib)
+  const rows = drawers.map(x => ({ kind: 'tortma', h: x }));
+  if (door) return tall ? [{ kind: 'eshik', h: door }, ...rows] : [...rows, { kind: 'eshik', h: door }];   // shkafda tortma pastda
+  return rows;
+}
 
 export function getModulePanels(frag, w, d, h, opts = {}) {
   const t = opts.thickness || 16;       // panel qalinligi (standart 16mm yoki 18mm)
@@ -25,7 +54,8 @@ export function getModulePanels(frag, w, d, h, opts = {}) {
   const doors = [];
 
   // ── 1. Oshxona va Shkaflar (Kabinet, Garderob, Oshxona shkaflari) ──
-  const isStorage = /cabinet|wardrobe|kitchen|shelf/i.test(cat) || /shkaf|tumba|penal/i.test(name);
+  const isStorage = /cabinet|wardrobe|kitchen|shelf/i.test(cat) || /shkaf|tumba|penal/i.test(name)
+    || (!!opts.tortma && /drawer/i.test(cat));                // tortmali modul (drawer_base) — 3D da shkaf + tortmalar
 
   if (isStorage) {
     // Tsokol (oyog'i / kickplate)
@@ -122,8 +152,10 @@ export function getModulePanels(frag, w, d, h, opts = {}) {
       });
     }
 
-    // 7) Ichki tokchalar (polka / shelf)
-    const shelfCount = isWardrobe ? 3 : (netH > 500 ? 1 : 0);
+    // 7) Ichki tokchalar (polka / shelf) — faqat tortmadan iborat modulda javon yo'q (tortma bayrog'i bilan)
+    const isDoorless = /ochiq|polka|shelf/i.test(cat) || /ochiq/i.test(name);
+    const rows = !isDoorless && opts.tortma ? fasadQatorlari(frag, w, d, h, t, isWardrobe) : null;
+    const shelfCount = rows && !rows.some(r => r.kind === 'eshik') ? 0 : isWardrobe ? 3 : (netH > 500 ? 1 : 0);
     if (shelfCount > 0) {
       const step = netH / (shelfCount + 1);
       for (let s = 1; s <= shelfCount; s++) {
@@ -143,9 +175,39 @@ export function getModulePanels(frag, w, d, h, opts = {}) {
     }
 
     // 8) Fasad (Eshiklar / Tortmalar)
-    const isDoorless = /ochiq|polka|shelf/i.test(cat) || /ochiq/i.test(name);
-    if (!isDoorless) {
-      const doorH = Math.max(10, netH - 4);
+    let doorTop = zBase + netH - 2, doorRowH = netH - 4;     // eshik qatori (tortmasiz — butun fasad)
+    if (rows) {
+      /* qatorlar fasad balandligiga nisbatan joylashadi (3 mm oraliq) — 3D uchun; o'lcham kesimda o'zgarmaydi */
+      const gap = 3, total = rows.reduce((a, r) => a + r.h, 0);
+      const k = (netH - 4 - gap * (rows.length - 1)) / total;
+      let top = zBase + netH - 2;
+      rows.forEach((r, i) => {
+        const hh = r.h * k, zc = top - hh / 2;
+        if (r.kind === 'eshik') { doorTop = top; doorRowH = hh; }
+        else {
+          const id = 'tortma_' + (i + 1), bw = Math.max(10, w - 2 * t - 26), bd = Math.max(60, d - 60), bh = Math.max(40, hh - 40);
+          const front = {
+            id, name: 'Tortma fasadi', slot: 'fasad', code: 'tortma', isFasad: true, isDrawer: true,
+            w: Math.max(10, w - 4), d: t, h: hh, x: 0, y: d / 2 + t / 2, z: zc,
+            handle: { x: 0, y: d / 2 + t + 10, z: zc + Math.max(0, hh / 2 - 40), w: Math.min(160, w * 0.4), d: 22, h: 12 }
+          };
+          panels.push(front);
+          doors.push(front);
+          /* tortma qutisi (yon, orqa, tub) — fasad bilan birga suriladi */
+          const by = d / 2 - bd / 2 - 2, bz = zc - hh / 2 + 20 + bh / 2;
+          panels.push(
+            { id: id + '_yon_chap', drawerOf: id, name: 'Tortma yoni', slot: 'korpus', code: 'tortma_yon', w: t, d: bd, h: bh, x: -bw / 2 + t / 2, y: by, z: bz },
+            { id: id + '_yon_ong', drawerOf: id, name: 'Tortma yoni', slot: 'korpus', code: 'tortma_yon', w: t, d: bd, h: bh, x: bw / 2 - t / 2, y: by, z: bz },
+            { id: id + '_orqa', drawerOf: id, name: 'Tortma orqasi', slot: 'korpus', code: 'tortma_orqa', w: Math.max(10, bw - 2 * t), d: t, h: bh, x: 0, y: by - bd / 2 + t / 2, z: bz },
+            { id: id + '_tub', drawerOf: id, name: 'Tortma tubi', slot: 'orqa', code: 'tortma_tub', w: bw, d: bd, h: 3, x: 0, y: by, z: bz - bh / 2 + 1.5 }
+          );
+        }
+        top -= hh + gap;
+      });
+    }
+    if (!isDoorless && (!rows || rows.some(r => r.kind === 'eshik'))) {
+      const doorH = Math.max(10, doorRowH);
+      const zDoor = rows ? doorTop - doorRowH / 2 : zBase + netH / 2;   // tortmasiz — aynan avvalgi qiymat
       const isTwoDoors = w > 600;
 
       if (!isTwoDoors) {
@@ -163,12 +225,12 @@ export function getModulePanels(frag, w, d, h, opts = {}) {
           h: doorH,
           x: 0,
           y: d / 2 + t / 2,
-          z: zBase + netH / 2,
+          z: zDoor,
           hingeSide: 'left',
           handle: {
             x: doorW / 2 - 35,
             y: d / 2 + t + 10,
-            z: zBase + netH / 2,
+            z: zDoor,
             w: 12,
             d: 22,
             h: 120
@@ -192,12 +254,12 @@ export function getModulePanels(frag, w, d, h, opts = {}) {
           h: doorH,
           x: -w / 4,
           y: d / 2 + t / 2,
-          z: zBase + netH / 2,
+          z: zDoor,
           hingeSide: 'left',
           handle: {
             x: -w / 4 + doorW / 2 - 25,
             y: d / 2 + t + 10,
-            z: zBase + netH / 2,
+            z: zDoor,
             w: 12,
             d: 22,
             h: 120
@@ -216,12 +278,12 @@ export function getModulePanels(frag, w, d, h, opts = {}) {
           h: doorH,
           x: w / 4,
           y: d / 2 + t / 2,
-          z: zBase + netH / 2,
+          z: zDoor,
           hingeSide: 'right',
           handle: {
             x: w / 4 - doorW / 2 + 25,
             y: d / 2 + t + 10,
-            z: zBase + netH / 2,
+            z: zDoor,
             w: 12,
             d: 22,
             h: 120

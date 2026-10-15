@@ -243,7 +243,8 @@ function rateLimit({ windowMs, max, key = (req) => req.ip }) {
   };
 }
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10 });   // 10 xato / 15 daq
-const registerLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10 }); // 10 ro'yxat / soat
+/* 10 ro'yxat / soat / IP. Brauzer testlari bitta serverda ko'p akkaunt ochadi — faqat production bo'lmaganda TEST_REGISTER_LIMIT */
+const registerLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: (!PROD && +process.env.TEST_REGISTER_LIMIT) || 10 });
 const smsSendLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10 });   // TZ-07: 10 SMS / soat / IP
 const smsVerifyLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 }); // 20 xato kod / 15 daq / IP
 const aiLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 60 });         // TZ-12: 60 AI so'rov / soat / IP (pullik)
@@ -278,9 +279,25 @@ app.use(securityHeaders({ prod: PROD, scriptHashes: inlineScriptHashes(path.join
 app.use('/api', apiLimiter.take);
 app.use('/api/log', express.json({ limit: '4kb' }));   // brauzer xato yozuvi — kichik (TZ-19)
 app.use(express.json({ limit: '2mb' }));
-app.use(express.static(path.join(__dirname, '../app'), {   // frontend
-  setHeaders: (res, f) => { if (f.endsWith('.html')) res.set('Cache-Control', 'no-cache'); }   // X11: sahifa doim yangisi
-}));
+/* ── sahifalar (TZ-09 Q7): yangi sayt (web/dist) — "/" va "/app.html"; eski sayt — "/eski/" da 2 hafta zaxira.
+   web/dist yo'q bo'lsa (build qilinmagan) — eski sayt avvalgidek "/" da. X11: assets/* — o'zgarmas (nomida xesh),
+   sahifa, service worker, manifest va ma'lumot (narx) — har safar tekshiriladi. */
+const WEB_DIST = path.join(__dirname, '../web/dist');
+const ESKI = path.join(__dirname, '../app');
+const HAS_WEB = fs.existsSync(path.join(WEB_DIST, 'index.html'));
+const noCache = (f) => /\.(html|webmanifest)$/.test(f) || /[\/](sw|registerSW)\.js$/.test(f) || /[\/]data[\/][^\/]+\.json$/.test(f);
+if (HAS_WEB) {
+  app.use('/eski', express.static(ESKI, { setHeaders: (res, f) => { if (noCache(f)) res.set('Cache-Control', 'no-cache'); } }));
+  app.use(express.static(WEB_DIST, {
+    setHeaders: (res, f) => {
+      if (/[\/]assets[\/]/.test(f)) res.set('Cache-Control', 'public, max-age=31536000, immutable');
+      else if (noCache(f)) res.set('Cache-Control', 'no-cache');
+      else res.set('Cache-Control', 'public, max-age=86400');
+    }
+  }));
+} else {
+  app.use(express.static(ESKI, { setHeaders: (res, f) => { if (noCache(f)) res.set('Cache-Control', 'no-cache'); } }));
+}
 
 /* ── Auth middleware ── */
 /* TZ-19 X2/X3: kalit — sarlavhada (Bearer, eski sayt) yoki httpOnly cookie'da (yangi sayt). Tekshiruv: imzo, muddat,
@@ -822,6 +839,11 @@ app.get('/api/health', (req, res) => {
 
 /* ═══════════════════ XATOLAR ═══════════════════ */
 app.use('/api', (req, res) => fail(res, 'S3D-SRV-002'));
+/* noma'lum sahifa — 404 (dizayndagi sahifa, web/dist/404.html) */
+app.use((req, res, next) => {
+  if ((req.method !== 'GET' && req.method !== 'HEAD') || !HAS_WEB) return next();
+  res.status(404).set('Cache-Control', 'no-cache').sendFile(path.join(WEB_DIST, '404.html'), (e) => { if (e) next(); });
+});
 app.use((err, req, res, next) => {          // eslint-disable-line no-unused-vars
   if (err instanceof BadInput) return fail(res, 'S3D-VAL-001', err.message);
   if (err.type === 'entity.parse.failed') return fail(res, 'S3D-VAL-002');

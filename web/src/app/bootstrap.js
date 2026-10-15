@@ -4,6 +4,7 @@ import { S } from '../store/session.js';
 import { readHandoff, initSession } from '../features/auth/actions.js';
 import { loadServerStd } from '../features/settings/actions.js';
 import { installKeyboard } from './klaviatura.js';
+import { eskiKeshniTozala } from '../shared/lib/eskiKesh.js';
 
 /* TZ-19: ilova ishga tushishi — ma'lumot, saytdan o'tish (#hash), saqlangan kirish. Bir marta chaqiriladi (main.jsx). */
 export function bootstrap() {
@@ -13,6 +14,7 @@ export function bootstrap() {
   initSession();
   window.addEventListener('hashchange', readHandoff);
   installKeyboard();
+  eskiKeshniTozala();
   installQA();
 }
 

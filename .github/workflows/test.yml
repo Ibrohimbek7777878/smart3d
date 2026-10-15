@@ -26,12 +26,12 @@ jobs:
         run: npm ci --include=dev
       - name: hisob dvigateli (node testlar)
         run: bash tests/run-all.sh
-      - name: server testlari (xato kodlari, himoya, loyihalar)
-        working-directory: server
-        run: npm test
       - name: sayt build
         working-directory: web
         run: npx vite build
+      - name: server testlari (xato kodlari, himoya, loyihalar, sahifa yo'llari)
+        working-directory: server
+        run: npm test
       - name: zaifliklar (npm audit)
         run: |
           (cd server && npm audit --omit=dev --audit-level=high)

@@ -35,7 +35,8 @@ for s in $SUITES; do
   echo "=== $s"
   URL="http://127.0.0.1:$PORT/"
   NODE_SUITE=0; case "$s" in kirish|standart) NODE_SUITE=1;; esac   # Node server kerak bo'lgan to'plamlar
-  if [ "$NODE_SUITE" = 1 ]; then start_node || continue; URL="http://127.0.0.1:$NPORT/"; fi
+  if [ "$NODE_SUITE" = 1 ]; then start_node || continue; URL="http://127.0.0.1:$NPORT/"
+    [ -f web/dist/index.html ] && URL="http://127.0.0.1:$NPORT/eski/"; fi   # TZ-09 Q7: "/" — yangi sayt, eski — "/eski/"
   node "$BROWSER_MJS" "$URL" --script "tests/ui/$s.mjs" --timeout 90000 2>&1 \
     | sed -n '/^script/,/^console/p' | sed '$d' | tee "$QA_OUT/$s.out" \
     | if [ "$s" = matrix ]; then python3 -I tests/ui/fmt_matrix.py; else cat; fi

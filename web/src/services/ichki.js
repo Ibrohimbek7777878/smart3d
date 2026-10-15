@@ -14,7 +14,7 @@ const matKey = (slot, ustki, glass) => (slot === 'fasad' ? (glass ? 'white' : us
 
 /** frag + o'lcham → dizayn spetsifikatsiyasi { W, D, H, parts, hw, list, hwList, stats } */
 export function ichkiSpec(frag, w, d, h, cutlistRes) {
-  const asm = getModulePanels(frag, w, d, h, {});
+  const asm = getModulePanels(frag, w, d, h, { tortma: true });   // Q5: tortmalar ham (faqat 3D)
   const ustki = isUstki(frag), glass = /shisha|vitr|glass|oyna/i.test(frag.name || '');
   const seen = {};
   const parts = asm.panels.map(p => {

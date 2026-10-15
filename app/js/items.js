@@ -310,6 +310,7 @@ export function createItems(sp, opts = {}) {
         openV[key] = n;
         if (n !== t) busy = true;
         if (mv.type === 'door') mv.obj.rotation.z = mv.sign * n * 1.75;
+        else if (mv.type === 'drawer') mv.obj.position.y = n * mv.dist;   // TZ-09 Q5: tortma oldinga suriladi
       }
     }
     return busy;

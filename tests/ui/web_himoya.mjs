@@ -66,13 +66,21 @@ async function asosiy(page, R) {
   await page.goto(base + '?t=' + Date.now()); await page.waitForTimeout(3000);
   await M(() => window.scrollTo(0, document.documentElement.scrollHeight / 3)); await page.waitForTimeout(1500);
 
-  /* eski sayt — haqiqiy server (Express) orqali, CSP bilan: importmap (xesh) va three.js ishlaydi */
-  await page.goto(`http://127.0.0.1:${process.env.NPORT}/index.html?t=` + Date.now()); await page.waitForTimeout(5000);
+  /* production sxemasi — haqiqiy server (Express): "/" — yangi sayt, "/app.html" — ilova, "/eski/" — eski sayt (TZ-09 Q7) */
+  const SRV = `http://127.0.0.1:${process.env.NPORT}`;
+  await page.goto(SRV + '/?t=' + Date.now()); await page.waitForTimeout(3000);
+  R.prodSayt = await M(() => !!document.querySelector('[data-s3d]'));
+  await page.goto(SRV + '/app.html?t=' + Date.now() + '#s=reg'); await page.waitForTimeout(3000);
+  R.prodIlova = await has('Ro\'yxatdan o\'tish');
+  await page.goto(SRV + '/yoq-sahifa'); await page.waitForTimeout(800);
+  R.prod404 = await has('Sahifa topilmadi');
+  /* eski sayt — CSP bilan: importmap (xesh) va three.js ishlaydi */
+  await page.goto(SRV + '/eski/index.html?t=' + Date.now()); await page.waitForTimeout(5000);
   R.eskiSayt = await M(() => !!(window.__s3d && window.__s3d.state));
   R.eskiCsp = await M(async () => !!(await fetch(location.href)).headers.get('content-security-policy'));
 
   page.off('console', onConsole);
   R.csp = csp; R.errs = errs;
   R.ok = /script-src 'self'/.test(R.cspSarlavha) && R.kalitJSdaYoq && R.saqlandi && R.excel && R.hisobotChop === true &&
-    R.eskiSayt && R.eskiCsp && csp.length === 0 && errs.length === 0;
+    R.prodSayt && R.prodIlova && R.prod404 && R.eskiSayt && R.eskiCsp && csp.length === 0 && errs.length === 0;
 }

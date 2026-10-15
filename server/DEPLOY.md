@@ -19,8 +19,24 @@ git archive --format=tar.gz -o smart3d.tar.gz HEAD
 # serverda:
 mkdir -p /srv/smart3d && tar -xzf smart3d.tar.gz -C /srv/smart3d
 cd /srv/smart3d/server && npm ci --omit=dev
+# yangi sayt (TZ-09/TZ-19) — build:
+cd /srv/smart3d/web && npm ci --include=dev && npx vite build
 ```
-Kerakli papkalar faqat `server/` va `app/` (frontend). `data1/` va `Smart3D_malumot/` serverga **kerak emas**.
+- **Kerakli papkalar:**
+  - `server/`;
+  - `web/` — build natijasi `web/dist/`;
+  - `app/` — ma'lumot va eski sayt.
+- **Kerak emas:** `data1/` va `Smart3D_malumot/`.
+
+**Manzillar (TZ-09 Q7).** Server `web/dist` ni o'zi ko'radi:
+- `/` — yangi sayt;
+- `/app.html` — ilova;
+- `/eski/` — eski sayt, 2 hafta zaxira (keyin alohida TZ bilan olib tashlanadi);
+- noma'lum sahifa — 404.
+
+`web/dist` yo'q bo'lsa, eski sayt avvalgidek `/` da qoladi. Shuning uchun build — majburiy qadam.
+
+Yangi sayt birinchi ochilganda brauzerdagi eski service worker yangisiga almashadi va eski keshlar tozalanadi. Shu sababli birinchi ochilishda eski sayt bir marta ko'rinishi mumkin.
 
 ## 3. Muhit fayli (gitga KIRMAYDI)
 `/etc/smart3d.env` — egasi `root`, guruhi `smart3d`, ruxsat `640`:
@@ -131,7 +147,9 @@ Tiklashni oyda bir marta test serverda sinab ko'ring.
 
 ## 9. Yangilash
 1. Zaxira: `node backup.js`.
-2. Yangi kodni alohida papkaga oching: `/srv/smart3d-<sana>`; `npm ci --omit=dev`.
+2. Yangi kodni alohida papkaga oching: `/srv/smart3d-<sana>`:
+   - `server/` da `npm ci --omit=dev`;
+   - `web/` da `npm ci --include=dev && npx vite build`.
 3. Test portida tekshiring (bazaning **nusxasi** bilan).
 4. Asosiy papkani almashtiring va servisni qayta ishga tushiring (admin).
 5. `/api/health` ni tekshiring.
