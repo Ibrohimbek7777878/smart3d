@@ -1,4 +1,4 @@
-/* TZ-09: yangi frontend hisob ko'prigi (web/src/app/bridge/hisob.js) — Node'da ishlaydi, natija to'g'ri va barqaror.
+/* TZ-09: yangi frontend hisob ko'prigi (web/src/services/hisob.js) — Node'da ishlaydi, natija to'g'ri va barqaror.
  * Eski sayt bilan AYNAN tengligi alohida brauzer testida: tests/ui/hisob_teng.sh */
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
 globalThis.SpPrice = require('../app/js/engine/price.js');          // brauzerda price.js o'zi self.SpPrice ga yozadi
-const { loadData, createHisob, baseForSheet } = await import('../web/src/app/bridge/hisob.js');
+const { loadData, createHisob, baseForSheet } = await import('../web/src/services/hisob.js');
 
 const DATA = fileURLToPath(new URL('../app/data/', import.meta.url));
 let pass = 0, fail = 0;

@@ -1,0 +1,55 @@
+import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
+import { get, set } from '../../../store/index.js';
+import { project } from '../../../store/project.js';
+import { createSahna } from '../../../services/sahna.js';
+
+/* TZ-19: muharrir 3D sahnasi — bizning zamer tizimi (services/sahna.js, qoida S6) dizayn ko'rinishida.
+ * Bitta nusxa: muharrir ochilganda yaratiladi (mount), yopilganda tozalanadi (unmount). 3D da o'zgargan holat
+ * (eshik ochildi va h.k.) — editor.sceneV hisoblagichi orqali ekranga yetadi. */
+export const scene = { sahna: null, vrBtn: null, vrBox: null };
+let offDoc = null;
+
+/** 3D holati o'zgardi — unga bog'liq yozuvlar (masalan "Eshiklarni ochish") yangilanadi */
+export const bumpScene = () => set('editor', s => ({ sceneV: s.sceneV + 1 }));
+
+/** host — dizayndagi roomHost div; onTap — sahnada tegish (actions.roomTap) */
+export function mountSahna(host, onTap) {
+  const H = project.H, ed = get().editor;
+  const sahna = createSahna(host, {
+    getPlacements: () => H.viewPlacements(project.doc),
+    onSelect: (id) => {
+      const e = get().editor;
+      if (e.sel !== id) set('editor', { sel: id || null, raw: {}, part: null });
+      if (id && e.tip === 0) set('editor', { tip: 1 });
+    },
+    onDrag: (id, x, y) => { const p = project.pl(id); if (p) { p.x = x; p.y = y; project.scheduleRecalc(); } },
+    onRotate: (id, rot, x, y) => { const p = project.pl(id); if (p) { p.rot = rot; p.x = x; p.y = y; project.scheduleRecalc(); } },
+    onRotateEnd: () => project.changed('items'),
+    onTap
+  });
+  scene.sahna = sahna;
+  sahna.setDoc(project.doc, H.viewPlacements(project.doc), H.catalog);
+  sahna.setMode(ed.view);
+  sahna.center();                                         // dizayndagi boshlang'ich ko'rinish (camHome)
+  /* loyiha o'zgarsa: xona — devorlar ham va kamera markazga (dizayn), mebel — faqat mebel */
+  offDoc = project.onDocChange((kind) => {
+    if (kind === 'room') { sahna.setDoc(project.doc, H.viewPlacements(project.doc), H.catalog); sahna.center(); }
+    else sahna.setPlacements(H.viewPlacements(project.doc), H.catalog);
+  });
+  /* VR (WebXR): three.js tugmasi o'z yozuvini o'zi boshqaradi ("VR NOT SUPPORTED") — yashirin qobiqda turadi,
+     ekranda faqat dizayn tugmamiz (editor.vrOk) ko'rinadi */
+  try {
+    scene.vrBox = document.createElement('div'); scene.vrBox.style.display = 'none';
+    scene.vrBtn = VRButton.createButton(sahna.sp.renderer); scene.vrBox.appendChild(scene.vrBtn); document.body.appendChild(scene.vrBox);
+    if (navigator.xr && navigator.xr.isSessionSupported) navigator.xr.isSessionSupported('immersive-vr').then(ok => set('editor', { vrOk: !!ok })).catch(() => {});
+  } catch (_) { /* WebXR yo'q */ }
+  if (ed.sel) sahna.select(ed.sel);
+  set('editor', { sceneOn: true });
+}
+
+export function unmountSahna() {
+  if (offDoc) { offDoc(); offDoc = null; }
+  if (scene.sahna) { scene.sahna.dispose(); scene.sahna = null; }
+  if (scene.vrBox) { scene.vrBox.remove(); scene.vrBox = null; scene.vrBtn = null; }
+  set('editor', { sceneOn: false });
+}

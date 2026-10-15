@@ -1,4 +1,4 @@
-/* TZ-09: yangi frontend hisob ko'prigi (web/src/app/bridge/hisob.js) eski sayt bilan AYNAN bir xil natija beradimi.
+/* TZ-09: yangi frontend hisob ko'prigi (web/src/services/hisob.js) eski sayt bilan AYNAN bir xil natija beradimi.
  * Eski sayt (app/index.html) ochiladi, uning hisobi (__s3d.state._res) va ko'prik shu loyiha uchun hisoblagan natija
  * to'liq solishtiriladi: kotirovka, tannarx, raskroy, kesim ro'yxati, ogohlantirishlar. Ishlatish: tests/ui/hisob_teng.sh */
 export default async function run(page) {
@@ -16,7 +16,7 @@ export default async function run(page) {
   const solishtir = () => M(async () => {
     const s = window.__s3d.state;
     if (!window.__hisob) {
-      const m = await import('/web/src/app/bridge/hisob.js');
+      const m = await import('/web/src/services/hisob.js');
       window.__hisob = m.createHisob(await m.loadData(n => fetch('/app/data/' + n).then(r => r.json())));
     }
     const y = window.__hisob.recalc(s.doc, { materialCode: s.materialCode, fasadCode: s.fasadCode, sheet: s.sheet, nestCfg: s.nestCfg });

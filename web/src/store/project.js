@@ -1,0 +1,96 @@
+import { get, set } from './index.js';
+import { loadData, createHisob } from '../services/hisob.js';
+import * as L from '../services/loyiha.js';
+import { suggestLayout } from '../../../app/js/ai.js';
+
+/* TZ-19: loyiha modeli — ochiq loyiha hujjati (doc), hisob dvigateli (H) va oxirgi hisob natijasi (res).
+ * doc — dvigatel o'zi o'zgartiradigan obyekt (eski sayt bilan bir xil shakl), shuning uchun holatda emas, shu yerda turadi.
+ * O'zgarish: changed(kind) → 3D sahna xabar oladi (onDocChange), project.docV oshadi, hisob qayta ishlaydi →
+ * project.dv oshadi va avtomatik saqlash xabar oladi (onRecalc). Hisob — eski sayt bilan aynan bir xil (services/hisob.js). */
+const docListeners = new Set();
+const recalcListeners = new Set();
+let recalcTimer = 0;
+
+export const project = {
+  doc: L.newDoc(),
+  res: null,
+  H: null,
+  est: null,
+  /** ma'lumot yuklanishi (katalog, narx, standartlar) — har amal shuni kutadi */
+  ready: null,
+
+  load() {
+    if (!this.ready) {
+      this.ready = loadData()
+        .then(d => { this.H = createHisob(d); this.est = L.createEstimator(this.H); set('data', { ready: true }); })
+        .catch(e => { console.warn('data', e); set('data', { err: 'Ma\'lumot yuklanmadi — internetni tekshiring' }); });
+    }
+    return this.ready;
+  },
+  /** standartlar o'zgardi (TZ-14) — katalog narx taxmini qayta quriladi */
+  rebuildEstimator() { this.est = L.createEstimator(this.H); },
+
+  pl(id) { return this.doc.placements.find(p => p.id === id) || null; },
+  fr(p) { return (p && this.H && this.H.catalog[p.frg]) || null; },
+  matName(code) { const m = ((this.H && this.H.materials.panel_materials) || []).find(x => x.code === code); return m ? m.name : code; },
+  /** raskroy parametrlari: standart + Sozlamalardagi (eski sayt bilan bir xil kalit) */
+  nestCfg() {
+    const c = Object.assign({}, this.H.nestDefaults);
+    try { Object.assign(c, JSON.parse(localStorage.getItem('s3d-nest-cfg') || 'null') || {}); } catch (_) { /* yo'q */ }
+    delete c._meta;
+    return c;
+  },
+
+  onDocChange(fn) { docListeners.add(fn); return () => docListeners.delete(fn); },
+  onRecalc(fn) { recalcListeners.add(fn); return () => recalcListeners.delete(fn); },
+
+  /** loyiha o'zgardi: 'room' — devorlar ham, 'items' — faqat mebel; keyin hisob (now — darhol, aks holda 220 ms dan keyin) */
+  changed(kind, now) {
+    if (this.H) docListeners.forEach(f => f(kind));
+    set('project', s => ({ docV: s.docV + 1 }));
+    this.scheduleRecalc(now);
+  },
+  scheduleRecalc(now) {
+    clearTimeout(recalcTimer);
+    if (now) this.recalc(); else recalcTimer = setTimeout(() => this.recalc(), 220);
+  },
+  recalc() {
+    if (!this.H) return;
+    const s = get(), p = s.project;
+    try {
+      this.res = this.H.recalc(this.doc, { materialCode: p.matCode, fasadCode: p.fasadCode, sheet: p.sheet, nestCfg: this.nestCfg(), markupPct: s.settings.sets.markup_pct });
+    } catch (e) { console.warn('hisob', e); }
+    set('project', st => ({ dv: st.dv + 1 }));
+    recalcListeners.forEach(f => f());
+  },
+
+  /** yangi hujjat: bo'sh yoki namuna bilan */
+  reset(doc) { this.doc = doc || L.newDoc(); },
+  /** yangi loyiha: xona (onboarding) + oshxona tanlansa — eski saytdagi namuna (3 pastki + 2 ustki) */
+  fromOnboarding(kind, room) {
+    const r = L.freshRoom();
+    r.outline = L.rectOutline(room.w, room.d); r.wall_height = room.h;
+    const doc = L.newDoc(r);
+    if (kind === 'kitchen' && this.H) {
+      doc.placements = suggestLayout({ w: room.w, d: room.d }, this.H.catalog, [{ kind: 'pastki', qty: 3 }, { kind: 'ustki', qty: 2 }])
+        .filter(p => this.H.catalog[p.frg]);
+    }
+    this.doc = doc;
+  },
+
+  /** saqlanadigan loyiha fayli — eski buildProjectPayload bilan bir xil shakl (eski sayt ham ocha oladi) */
+  payload() {
+    const p = get().project, sh = p.sheet;
+    return { app: 'smart3d', v: 2, ts: Date.now(), name: p.name, client: p.client, material: p.matCode, fasad: p.fasadCode,
+      sheet: sh ? { sku: sh.sku, name: sh.name, type: sh.type, th: sh.th, l: sh.l, w: sh.w, uzs: sh.uzs } : null, doc: this.doc };
+  },
+  /** serverdan yoki fayldan kelgan loyihani ochish */
+  apply(p, meta) {
+    if (!p || !p.doc) return;
+    this.doc = p.doc;
+    if (!this.doc.kitchen) this.doc.kitchen = L.freshKitchen();
+    set('project', { client: p.client || (meta && meta.client) || '', name: p.name || 'Loyiha', matCode: p.material || 'LDSP18', fasadCode: p.fasad || 'MDF16', sheet: p.sheet || null });
+    set('editor', { sel: null, part: null, warn: {} });
+    this.changed('room', true);
+  }
+};
