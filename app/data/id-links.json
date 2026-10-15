@@ -3,7 +3,7 @@
   "nima": "Bazis material/zapchast nomi → ERP mahsuloti (8 xonali ID). Narxga faqat 'aniq' va 'tasdiqlangan' kiradi.",
   "tasdiqlash": "Taklifni tasdiqlash: shu yozuvda 'holat' ni 'tasdiqlangan' qiling — qayta import uni saqlaydi.",
   "holat": {
-   "yoq": 70,
+   "yoq": 57,
    "taklif": 2,
    "aniq": 1
   }
@@ -136,7 +136,7 @@
    "sabab": "ERP katalogida mos mahsulot topilmadi"
   },
   {
-   "nom": "BOYARD Мебельная ручка URSULA RC433BL.4 RC433BL.4",
+   "nom": "Выдвижная бутылочница BELLISSIMO (150 мм), хром, левая KR08/1/3/150/L",
    "tur": "furnitura",
    "holat": "yoq",
    "sabab": "ERP katalogida mos mahsulot topilmadi"
@@ -148,121 +148,19 @@
    "sabab": "ERP katalogida mos mahsulot topilmadi"
   },
   {
-   "nom": "Направляющие",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "Выдвижная бутылочница BELLISSIMO (150 мм), хром, левая KR08/1/3/150/L",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
    "nom": "KR08 Корзина 150",
    "tur": "furnitura",
    "holat": "yoq",
    "sabab": "ERP katalogida mos mahsulot topilmadi"
   },
   {
-   "nom": "Бутылочница 200 мм BELLISSIMO левая PUSH KR08/1/4/200/L/GRPH",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "KR08_1_4_Корзина 200 Графит",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "RUCHKA 160 LIK ODDIY",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "евро 51 алкан",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "Саморез с потайной головкой под крестUS3,5 x 16 KB 76",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "Евровинт 7х50 69",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "ЛДСП, 16 мм, Белый Премиум, W1000 ST19, Egger\rEgr 16 W1000 ST19",
-   "tur": "plita",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "ЛДСП, Белый гладкий 4,6кв",
-   "tur": "plita",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
-   "tur": "plita",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-   "tur": "plita",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "ХДФ Белый",
-   "tur": "plita",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "Кромка ПВХ, 19/2 мм, Белый Премиум, W1000 ST19, Egger\rEgr 19/2 W1000 ST 19",
-   "tur": "kromka",
-   "holat": "yoq",
-   "sabab": "ERP katalogida kromka yo'q (TZ D3)"
-  },
-  {
-   "nom": "salazka turkiya samet (vakum) 400 mm",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "salazka turkiya samet (vakum) 250 mm",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "Полкодержатель D5 никель 16",
+   "nom": "Направляющие",
    "tur": "furnitura",
    "holat": "yoq",
    "sabab": "ERP katalogida mos mahsulot topilmadi"
   },
   {
    "nom": "salazka Turkiya Samet (vakum) 400 mm",
-   "tur": "furnitura",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "salazka Turkiya Samet (vakum) 250 mm",
    "tur": "furnitura",
    "holat": "yoq",
    "sabab": "ERP katalogida mos mahsulot topilmadi"
@@ -344,7 +242,49 @@
    "sabab": "ERP katalogida mos mahsulot topilmadi"
   },
   {
+   "nom": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
+   "tur": "plita",
+   "holat": "yoq",
+   "sabab": "ERP katalogida mos mahsulot topilmadi"
+  },
+  {
    "nom": "petle oddiy",
+   "tur": "furnitura",
+   "holat": "yoq",
+   "sabab": "ERP katalogida mos mahsulot topilmadi"
+  },
+  {
+   "nom": "RUCHKA 160 LIK ODDIY",
+   "tur": "furnitura",
+   "holat": "yoq",
+   "sabab": "ERP katalogida mos mahsulot topilmadi"
+  },
+  {
+   "nom": "Саморез с потайной головкой под крестUS3,5 x 16 KB 76",
+   "tur": "furnitura",
+   "holat": "yoq",
+   "sabab": "ERP katalogida mos mahsulot topilmadi"
+  },
+  {
+   "nom": "евро 51 алкан",
+   "tur": "furnitura",
+   "holat": "yoq",
+   "sabab": "ERP katalogida mos mahsulot topilmadi"
+  },
+  {
+   "nom": "Евровинт 7х50 69",
+   "tur": "furnitura",
+   "holat": "yoq",
+   "sabab": "ERP katalogida mos mahsulot topilmadi"
+  },
+  {
+   "nom": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+   "tur": "plita",
+   "holat": "yoq",
+   "sabab": "ERP katalogida mos mahsulot topilmadi"
+  },
+  {
+   "nom": "Полкодержатель D5 никель 16",
    "tur": "furnitura",
    "holat": "yoq",
    "sabab": "ERP katalogida mos mahsulot topilmadi"
@@ -422,28 +362,10 @@
    "sabab": "ERP katalogida mos mahsulot topilmadi"
   },
   {
-   "nom": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-   "tur": "plita",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "ЛДСП 5кв Kronospan 16мм Сухой",
-   "tur": "plita",
-   "holat": "yoq",
-   "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
    "nom": "ЛМДФ 5,5мм",
    "tur": "plita",
    "holat": "yoq",
    "sabab": "ERP katalogida mos mahsulot topilmadi"
-  },
-  {
-   "nom": "Кромка ПВХ, 19/0,4 мм, Дуб Денвер графит, H1387 ST10, Egger\r1719",
-   "tur": "kromka",
-   "holat": "yoq",
-   "sabab": "ERP katalogida kromka yo'q (TZ D3)"
   },
   {
    "nom": "Кромка ПВХ, 35/2 мм, Ваниль, 76399, Rehau",

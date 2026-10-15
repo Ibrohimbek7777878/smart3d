@@ -1101,7 +1101,7 @@
    "w": 200,
    "d": 450,
    "h": 600,
-   "standart": "oshxona_pastki_2e",
+   "standart": "oshxona_pastki_1e",
    "standart_olchamlar": [
     "d",
     "h"
@@ -1181,154 +1181,46 @@
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": "hammasi:kromka_fasad"
-    },
-    {
-     "code": "dno_yashika",
-     "nom": "Дно ящика",
-     "qty": 1,
-     "len": "w - 58",
-     "width": "d - 50",
-     "slot": "orqa",
-     "tekstura": "erkin",
-     "bazis_material": "ХДФ Белый"
-    },
-    {
-     "code": "falshpanel_yashika",
-     "nom": "Фальшпанель ящика",
-     "qty": 1,
-     "len": "117",
-     "width": "w - 90",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "fasad_yashika",
-     "nom": "Фасад ящика",
-     "qty": 1,
-     "len": "h + 146",
-     "width": "w - 2",
-     "slot": "fasad",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": "hammasi:kromka_fasad"
-    },
-    {
-     "code": "fasad_2",
-     "nom": "Фасад",
-     "qty": 2,
-     "len": "h + 147",
-     "width": "w - 3",
-     "slot": "fasad",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, 16 мм, Белый Премиум, W1000 ST19, Egger\rEgr 16 W1000 ST19",
-     "edge": "hammasi:kromka_fasad"
-    },
-    {
-     "code": "xdf",
-     "nom": "xdf",
-     "qty": 1,
-     "len": "h + 148",
-     "width": "w - 2",
-     "slot": "orqa",
-     "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
-    },
-    {
-     "code": "fasad_3",
-     "nom": "Фасад",
-     "qty": 1,
-     "len": "h + 146",
-     "width": "w - 2",
-     "slot": "fasad",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-     "edge": "hammasi:kromka_fasad"
     }
    ],
    "edge": [],
    "holes": [],
    "hardware": [
     {
-     "code": "BZ-kr08_napravlyayushaya_levaya",
-     "name": "KR08 Направляющая левая",
-     "qty": 8,
-     "unit": "komplekt"
-    },
-    {
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
-     "qty": 8,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-boyard_mebelnaya_ruchka_ursula_rc433bl_4",
-     "name": "BOYARD Мебельная ручка URSULA RC433BL.4 RC433BL.4",
-     "qty": 5,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-nakladka_yashika_16_16",
-     "name": "Накладка ящика [←→16] [↑↓16]",
      "qty": 4,
      "unit": "dona"
     },
     {
-     "code": "BZ-napravlyayushie",
-     "name": "Направляющие",
-     "qty": 4,
+     "code": "BZ-kr08_napravlyayushaya_levaya",
+     "name": "KR08 Направляющая левая",
+     "qty": 2,
      "unit": "komplekt"
     },
     {
      "code": "BZ-vidvijnaya_butilochnitsa_bellissimo_150_",
      "name": "Выдвижная бутылочница BELLISSIMO (150 мм), хром, левая KR08/1/3/150/L",
-     "qty": 2,
+     "qty": 1,
+     "unit": "dona"
+    },
+    {
+     "code": "BZ-nakladka_yashika_16_16",
+     "name": "Накладка ящика [←→16] [↑↓16]",
+     "qty": 1,
      "unit": "dona"
     },
     {
      "code": "BZ-kr08_korzina_150",
      "name": "KR08 Корзина 150",
-     "qty": 2,
+     "qty": 1,
      "unit": "dona"
     },
     {
-     "code": "BZ-butilochnitsa_200_mm_bellissimo_levaya_p",
-     "name": "Бутылочница 200 мм BELLISSIMO левая PUSH KR08/1/4/200/L/GRPH",
-     "qty": 2,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-kr08_1_4_korzina_200_grafit",
-     "name": "KR08_1_4_Корзина 200 Графит",
-     "qty": 2,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-napravlyayushie_salazka",
-     "name": "Направляющие Салазка",
+     "code": "BZ-napravlyayushie",
+     "name": "Направляющие",
      "qty": 1,
      "unit": "komplekt"
-    },
-    {
-     "code": "BZ-ruchka_160_lik_oddiy",
-     "name": "RUCHKA 160 LIK ODDIY",
-     "qty": 1,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-evro_51_alkan",
-     "name": "евро 51 алкан",
-     "qty": 16,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-evrovint_7x50_32_simm",
-     "name": "Евровинт 7х50 (32) симм",
-     "qty": 12,
-     "unit": "dona"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -1337,15 +1229,9 @@
      "unit": "dona"
     },
     {
-     "code": "BZ-samorez_s_potaynoy_golovkoy_pod_krestus3",
-     "name": "Саморез с потайной головкой под крестUS3,5 x 16 KB 76",
-     "qty": 8,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-evrovint_7x50_69",
-     "name": "Евровинт 7х50 69",
-     "qty": 2,
+     "code": "BZ-evrovint_7x50_32_simm",
+     "name": "Евровинт 7х50 (32) симм",
+     "qty": 6,
      "unit": "dona"
     }
    ],
@@ -1357,32 +1243,21 @@
      450,
      600
     ],
-    "bazis_panel": 16,
-    "stoleshnitsa_chiqarildi": 2,
-    "bom_kromka_m": 4.62,
+    "bazis_panel": 8,
+    "stoleshnitsa_chiqarildi": 1,
+    "bom_kromka_m": 2.64,
     "bom_maydon_m2": {
      "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 0.775,
-     "Эггер Столешница 4,1х0,6х38 Белый Премиум": 0.3,
-     "ЛДСП, 16 мм, Белый Премиум, W1000 ST19, Egger\rEgr 16 W1000 ST19": 0.294,
-     "ЛДСП, Белый гладкий 4,6кв": 0.161,
-     "ХДФ, 3 мм, Белый лак., Kronostar\r2001": 0.148,
-     "ЛДСП 5кв Kronospan 16мм Белый гладкий": 0.148,
-     "ХДФ Белый": 0.057
+     "Эггер Столешница 4,1х0,6х38 Белый Премиум": 0.12
     },
     "zagotovka_m2": {
-     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 0.776,
-     "ХДФ Белый": 0.057,
-     "ЛДСП, Белый гладкий 4,6кв": 0.161,
-     "ЛДСП, 16 мм, Белый Премиум, W1000 ST19, Egger\rEgr 16 W1000 ST19": 0.294,
-     "ХДФ, 3 мм, Белый лак., Kronostar\r2001": 0.148,
-     "ЛДСП 5кв Kronospan 16мм Белый гладкий": 0.148
+     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 0.776
     },
     "kontur_farq": 0
    },
    "teshiklar_izoh": "Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5) — teshiksiz",
    "import_izoh": [
-    "stoleshnitsa bo'lagi chiqarildi (2 ta) — F2 yaxlit stoleshnitsa quradi",
-    "bir nechta rang: ЛДСП 5кв Kronospan 16мм Белый гладкий · ЛДСП Ультрадекор 4,575 Белый гладкий 16мм · ЛДСП, 16 мм, Белый Премиум, W1000 ST19, Egger\rEgr 16 W1000 ST19 · ЛДСП, Белый гладкий 4,6кв — Smart3D da rangni slot (korpus/fasad) belgilaydi"
+    "stoleshnitsa bo'lagi chiqarildi (1 ta) — F2 yaxlit stoleshnitsa quradi"
    ]
   },
   {
@@ -2083,415 +1958,11 @@
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": "hammasi:kromka_fasad"
-    },
-    {
-     "code": "polka",
-     "nom": "polka",
-     "qty": 1,
-     "len": "w - 2*t_korpus",
-     "width": "d - 40",
-     "slot": "polka",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "bokovina_yashika_levaya_2",
-     "nom": "Боковина ящика левая",
-     "qty": 2,
-     "len": "212",
-     "width": "d - 50",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "bokovina_yashika_pravaya_2",
-     "nom": "Боковина ящика правая",
-     "qty": 2,
-     "len": "212",
-     "width": "d - 50",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "zadnyaya_panel_yashika_2",
-     "nom": "Задняя панель ящика",
-     "qty": 2,
-     "len": "212",
-     "width": "w - 90",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "falshpanel_yashika_2",
-     "nom": "Фальшпанель ящика",
-     "qty": 2,
-     "len": "212",
-     "width": "w - 90",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "dno_yashika_2",
-     "nom": "Дно ящика",
-     "qty": 13,
-     "len": "w - 58",
-     "width": "d - 50",
-     "slot": "orqa",
-     "tekstura": "erkin",
-     "bazis_material": "ХДФ Белый"
-    },
-    {
-     "code": "fasad_yashika_2",
-     "nom": "Фасад ящика",
-     "qty": 2,
-     "len": "h - 256",
-     "width": "w - 2",
-     "slot": "fasad",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": "hammasi:kromka_fasad"
-    },
-    {
-     "code": "bokovina_yashika_levaya_3",
-     "nom": "Боковина ящика левая",
-     "qty": 1,
-     "len": "67",
-     "width": "d - 50",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "bokovina_yashika_pravaya_3",
-     "nom": "Боковина ящика правая",
-     "qty": 1,
-     "len": "67",
-     "width": "d - 50",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "zadnyaya_panel_yashika_3",
-     "nom": "Задняя панель ящика",
-     "qty": 1,
-     "len": "67",
-     "width": "w - 90",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "falshpanel_yashika_3",
-     "nom": "Фальшпанель ящика",
-     "qty": 1,
-     "len": "67",
-     "width": "w - 90",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "fasad_yashika_3",
-     "nom": "Фасад ящика",
-     "qty": 1,
-     "len": "150",
-     "width": "w - 2",
-     "slot": "fasad",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": "hammasi:kromka_fasad"
-    },
-    {
-     "code": "bokovina_yashika_levaya_4",
-     "nom": "Боковина ящика левая",
-     "qty": 2,
-     "len": "206",
-     "width": "d - 50",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "bokovina_yashika_pravaya_4",
-     "nom": "Боковина ящика правая",
-     "qty": 2,
-     "len": "206",
-     "width": "d - 50",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "zadnyaya_panel_yashika_4",
-     "nom": "Задняя панель ящика",
-     "qty": 2,
-     "len": "206",
-     "width": "w - 90",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "falshpanel_yashika_4",
-     "nom": "Фальшпанель ящика",
-     "qty": 2,
-     "len": "206",
-     "width": "w - 90",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "fasad_yashika_4",
-     "nom": "Фасад ящика",
-     "qty": 4,
-     "len": "h - 260",
-     "width": "w - 2",
-     "slot": "fasad",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": "hammasi:kromka_fasad"
-    },
-    {
-     "code": "bokovina_yashika_levaya_5",
-     "nom": "Боковина ящика левая",
-     "qty": 7,
-     "len": "147",
-     "width": "d - 50",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "bokovina_yashika_pravaya_5",
-     "nom": "Боковина ящика правая",
-     "qty": 7,
-     "len": "147",
-     "width": "d - 50",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "zadnyaya_panel_yashika_5",
-     "nom": "Задняя панель ящика",
-     "qty": 7,
-     "len": "147",
-     "width": "w - 90",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "falshpanel_yashika_5",
-     "nom": "Фальшпанель ящика",
-     "qty": 7,
-     "len": "147",
-     "width": "w - 90",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "fasad_yashika_5",
-     "nom": "Фасад ящика",
-     "qty": 2,
-     "len": "208",
-     "width": "w - 2",
-     "slot": "fasad",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": "hammasi:kromka_fasad"
-    },
-    {
-     "code": "fasad_yashika_6",
-     "nom": "Фасад ящика",
-     "qty": 3,
-     "len": "160",
-     "width": "w - 2",
-     "slot": "fasad",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": "hammasi:kromka_fasad"
-    },
-    {
-     "code": "fasad_yashika_7",
-     "nom": "Фасад ящика",
-     "qty": 1,
-     "len": "h - 130",
-     "width": "w - 2",
-     "slot": "fasad",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": "hammasi:kromka_fasad"
-    },
-    {
-     "code": "bokovina_yashika_levaya_6",
-     "nom": "Боковина ящика левая",
-     "qty": 1,
-     "len": "77",
-     "width": "d - 50",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "bokovina_yashika_pravaya_6",
-     "nom": "Боковина ящика правая",
-     "qty": 1,
-     "len": "77",
-     "width": "d - 50",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "zadnyaya_panel_yashika_6",
-     "nom": "Задняя панель ящика",
-     "qty": 1,
-     "len": "77",
-     "width": "w - 90",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "falshpanel_yashika_6",
-     "nom": "Фальшпанель ящика",
-     "qty": 1,
-     "len": "77",
-     "width": "w - 90",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП, Белый гладкий 4,6кв",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "planka_2",
-     "nom": "planka",
-     "qty": 2,
-     "len": "w - 2*t",
-     "width": "80",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-     "edge": {
-      "F": "kromka_korpus"
-     }
     }
    ],
    "edge": [],
    "holes": [],
    "hardware": [
-    {
-     "code": "BZ-napravlyayushie_salazka",
-     "name": "Направляющие Салазка",
-     "qty": 16,
-     "unit": "komplekt"
-    },
-    {
-     "code": "BZ-napravlyayushie_shar_poln_vidv_l400_1045",
-     "name": "Направляющие шар. полн.выдв. L400 1045-16Z оцинков. 3155",
-     "qty": 16,
-     "unit": "komplekt"
-    },
-    {
-     "code": "BZ-sharikovie_napravl_400_lev",
-     "name": "Шариковые направл. 400 лев.",
-     "qty": 15,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-ruchka_160_lik_oddiy",
-     "name": "RUCHKA 160 LIK ODDIY",
-     "qty": 13,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-ruchka_160_mm",
-     "name": "Ручка 160 мм",
-     "qty": 6,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-salazka_turkiya_samet_vakum_400_mm",
-     "name": "salazka turkiya samet (vakum) 400 mm",
-     "qty": 6,
-     "unit": "komplekt"
-    },
-    {
-     "code": "BZ-salazka_turkiya_samet_vakum_250_mm",
-     "name": "salazka turkiya samet (vakum) 250 mm",
-     "qty": 6,
-     "unit": "komplekt"
-    },
     {
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
@@ -2499,10 +1970,10 @@
      "unit": "dona"
     },
     {
-     "code": "BZ-polkoderjatel_d5_nikel_16",
-     "name": "Полкодержатель D5 никель 16",
-     "qty": 4,
-     "unit": "dona"
+     "code": "BZ-napravlyayushie_salazka",
+     "name": "Направляющие Салазка",
+     "qty": 3,
+     "unit": "komplekt"
     },
     {
      "code": "BZ-salazka_turkiya_samet_vakum_400_mm",
@@ -2511,34 +1982,28 @@
      "unit": "komplekt"
     },
     {
+     "code": "BZ-sharikovie_napravl_400_lev",
+     "name": "Шариковые направл. 400 лев.",
+     "qty": 3,
+     "unit": "dona"
+    },
+    {
      "code": "BZ-sharikovie_napravl_400_pr",
      "name": "Шариковые направл. 400 пр.",
      "qty": 3,
      "unit": "dona"
     },
     {
-     "code": "BZ-salazka_turkiya_samet_vakum_250_mm",
-     "name": "salazka Turkiya Samet (vakum) 250 mm",
+     "code": "BZ-ruchka_160_mm",
+     "name": "Ручка 160 мм",
      "qty": 3,
-     "unit": "komplekt"
+     "unit": "dona"
     },
     {
-     "code": "BZ-polkaderjatel",
-     "name": "POLKADERJATEL",
+     "code": "BZ-napravlyayushie_shar_poln_vidv_l400_1045",
+     "name": "Направляющие шар. полн.выдв. L400 1045-16Z оцинков. 3155",
      "qty": 2,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-samorez_s_potaynoy_golovkoy_pod_krestus3",
-     "name": "Саморез с потайной головкой под крестUS3,5 x 16 KB 76",
-     "qty": 192,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-evrovint_7x50_69",
-     "name": "Евровинт 7х50 69",
-     "qty": 88,
-     "unit": "dona"
+     "unit": "komplekt"
     },
     {
      "code": "BZ-samorez_16_mm",
@@ -2555,13 +2020,7 @@
     {
      "code": "BZ-evrovint_7x50_32_simm",
      "name": "Евровинт 7х50 (32) симм",
-     "qty": 10,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-evro_51_alkan",
-     "name": "евро 51 алкан",
-     "qty": 4,
+     "qty": 6,
      "unit": "dona"
     }
    ],
@@ -2573,31 +2032,24 @@
      450,
      550
     ],
-    "bazis_panel": 107,
+    "bazis_panel": 26,
     "stoleshnitsa_chiqarildi": 1,
     "bom_kromka_m": 9.39,
     "bom_maydon_m2": {
-     "ЛДСП, Белый гладкий 4,6кв": 4.131,
-     "ХДФ Белый": 1.778,
      "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 1.482,
      "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart": 0.629,
-     "Эггер Столешница 4,1х0,6х38 Белый Премиум": 0.24,
-     "ЛДСП 5кв Kronospan 16мм Белый гладкий": 0.21
+     "Эггер Столешница 4,1х0,6х38 Белый Премиум": 0.24
     },
     "zagotovka_m2": {
      "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 1.48,
-     "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart": 0.629,
-     "ЛДСП 5кв Kronospan 16мм Белый гладкий": 0.209,
-     "ЛДСП, Белый гладкий 4,6кв": 4.147,
-     "ХДФ Белый": 1.781
+     "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart": 0.629
     },
     "kontur_farq": 0
    },
    "teshiklar_izoh": "Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5) — teshiksiz",
    "import_izoh": [
     "stoleshnitsa bo'lagi chiqarildi (1 ta) — F2 yaxlit stoleshnitsa quradi",
-    "h: Bazis 550 mm standartdan tashqarida → standart 708 mm (formula cho'ziladi)",
-    "bir nechta rang: ЛДСП 5кв Kronospan 16мм Белый гладкий · ЛДСП Ультрадекор 4,575 Белый гладкий 16мм · ЛДСП, Белый гладкий 4,6кв — Smart3D da rangni slot (korpus/fasad) belgilaydi"
+    "h: Bazis 550 mm standartdan tashqarida → standart 708 mm (formula cho'ziladi)"
    ]
   },
   {
@@ -6810,14 +6262,14 @@
    "category": "bed",
    "group": "yotoqxona",
    "w": 1468,
-   "d": 1484,
-   "h": 632,
+   "d": 800,
+   "h": 882,
    "min_w": 1468,
    "max_w": 1468,
-   "min_d": 1484,
-   "max_d": 1484,
-   "min_h": 632,
-   "max_h": 632,
+   "min_d": 800,
+   "max_d": 800,
+   "min_h": 882,
+   "max_h": 882,
    "stretch_axis": "xy",
    "price_mode": "unit",
    "price": 0,
@@ -6833,8 +6285,8 @@
      "code": "ekran",
      "nom": "экран",
      "qty": 2,
-     "len": "h - 248",
-     "width": "w - 700",
+     "len": "384",
+     "width": "d - 2*t",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -6846,8 +6298,8 @@
      "code": "ekran_2",
      "nom": "экран",
      "qty": 1,
-     "len": "h - 166",
-     "width": "w - 700",
+     "len": "h - 416",
+     "width": "d - 2*t",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -6860,7 +6312,7 @@
      "nom": "бак",
      "qty": 1,
      "len": "285",
-     "width": "d",
+     "width": "w + 16",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -6872,8 +6324,8 @@
      "code": "bak_2",
      "nom": "бак",
      "qty": 1,
-     "len": "h - 2*t",
-     "width": "d",
+     "len": "h - 282",
+     "width": "w + 16",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -6885,8 +6337,8 @@
      "code": "ekran_3",
      "nom": "экран",
      "qty": 1,
-     "len": "h + 218",
-     "width": "w - 668",
+     "len": "h - 2*t",
+     "width": "d",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -6898,8 +6350,8 @@
      "code": "frontalnaya1",
      "nom": "Фронтальная1",
      "qty": 2,
-     "len": "h - 248",
-     "width": "w - 700",
+     "len": "384",
+     "width": "d - 2*t",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -6925,7 +6377,7 @@
      "nom": "Боковина ящика левая",
      "qty": 1,
      "len": "230",
-     "width": "440",
+     "width": "d - 360",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -6938,7 +6390,7 @@
      "nom": "Боковина ящика правая",
      "qty": 1,
      "len": "230",
-     "width": "440",
+     "width": "d - 360",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -6977,7 +6429,7 @@
      "nom": "Дно ящика",
      "qty": 1,
      "len": "512",
-     "width": "424",
+     "width": "d - 376",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -7001,7 +6453,7 @@
      "nom": "Боковина ящика левая",
      "qty": 1,
      "len": "230",
-     "width": "450",
+     "width": "d - 350",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -7014,7 +6466,7 @@
      "nom": "Боковина ящика правая",
      "qty": 1,
      "len": "230",
-     "width": "450",
+     "width": "d - 350",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -7053,7 +6505,7 @@
      "nom": "Дно ящика",
      "qty": 1,
      "len": "528",
-     "width": "434",
+     "width": "d - 366",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -7084,262 +6536,6 @@
      "edge": {
       "F": "kromka_korpus"
      }
-    },
-    {
-     "code": "ekran_4",
-     "nom": "экран",
-     "qty": 2,
-     "len": "h - 248",
-     "width": "w - 700",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "ekran_5",
-     "nom": "экран",
-     "qty": 1,
-     "len": "h - 166",
-     "width": "w - 700",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "bak_3",
-     "nom": "бак",
-     "qty": 1,
-     "len": "285",
-     "width": "d",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "bak_4",
-     "nom": "бак",
-     "qty": 1,
-     "len": "h - 2*t",
-     "width": "d",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "ekran_6",
-     "nom": "экран",
-     "qty": 1,
-     "len": "h + 218",
-     "width": "w - 668",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "frontalnaya1_2",
-     "nom": "Фронтальная1",
-     "qty": 2,
-     "len": "h - 248",
-     "width": "w - 700",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "planka_past_2",
-     "nom": "planka past",
-     "qty": 4,
-     "len": "w",
-     "width": "100",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "bokovina_yashika_levaya_3",
-     "nom": "Боковина ящика левая",
-     "qty": 1,
-     "len": "230",
-     "width": "440",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "bokovina_yashika_pravaya_3",
-     "nom": "Боковина ящика правая",
-     "qty": 1,
-     "len": "230",
-     "width": "440",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "zadnyaya_panel_yashika_3",
-     "nom": "Задняя панель ящика",
-     "qty": 1,
-     "len": "219",
-     "width": "512",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "falshpanel_yashika_3",
-     "nom": "Фальшпанель ящика",
-     "qty": 1,
-     "len": "203",
-     "width": "512",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "dno_yashika_3",
-     "nom": "Дно ящика",
-     "qty": 1,
-     "len": "512",
-     "width": "424",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "fasad_yashika_3",
-     "nom": "Фасад ящика",
-     "qty": 1,
-     "len": "297",
-     "width": "w - 728",
-     "slot": "fasad",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": "hammasi:kromka_fasad"
-    },
-    {
-     "code": "bokovina_yashika_levaya_4",
-     "nom": "Боковина ящика левая",
-     "qty": 1,
-     "len": "230",
-     "width": "450",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "bokovina_yashika_pravaya_4",
-     "nom": "Боковина ящика правая",
-     "qty": 1,
-     "len": "230",
-     "width": "450",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "zadnyaya_panel_yashika_4",
-     "nom": "Задняя панель ящика",
-     "qty": 1,
-     "len": "219",
-     "width": "528",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "falshpanel_yashika_4",
-     "nom": "Фальшпанель ящика",
-     "qty": 1,
-     "len": "203",
-     "width": "528",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "dno_yashika_4",
-     "nom": "Дно ящика",
-     "qty": 1,
-     "len": "528",
-     "width": "434",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "fasad_yashika_4",
-     "nom": "Фасад ящика",
-     "qty": 1,
-     "len": "297",
-     "width": "w - 732",
-     "slot": "fasad",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": "hammasi:kromka_fasad"
-    },
-    {
-     "code": "yumshoq_detal_2",
-     "nom": "yumshoq detal",
-     "qty": 2,
-     "len": "131",
-     "width": "w + 13",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Орех Экко",
-     "edge": {
-      "F": "kromka_korpus"
-     }
     }
    ],
    "edge": [],
@@ -7348,20 +6544,8 @@
     {
      "code": "BZ-napravlyayushie_tandem",
      "name": "Направляющие Тандем",
-     "qty": 4,
+     "qty": 2,
      "unit": "komplekt"
-    },
-    {
-     "code": "BZ-napravlyayushie_shar_poln_vidv_l450_1045",
-     "name": "Направляющие шар. полн.выдв. L450 1045-18 Z оцинков. 3191",
-     "qty": 4,
-     "unit": "komplekt"
-    },
-    {
-     "code": "BZ-ruchka_160_lik_oddiy",
-     "name": "RUCHKA 160 LIK ODDIY",
-     "qty": 4,
-     "unit": "dona"
     },
     {
      "code": "BZ-ruchka_160_mm",
@@ -7370,10 +6554,10 @@
      "unit": "dona"
     },
     {
-     "code": "BZ-evro_51_alkan",
-     "name": "евро 51 алкан",
-     "qty": 148,
-     "unit": "dona"
+     "code": "BZ-napravlyayushie_shar_poln_vidv_l450_1045",
+     "name": "Направляющие шар. полн.выдв. L450 1045-18 Z оцинков. 3191",
+     "qty": 2,
+     "unit": "komplekt"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -7384,7 +6568,7 @@
     {
      "code": "BZ-evrovint_7x50_32_simm",
      "name": "Евровинт 7х50 (32) симм",
-     "qty": 66,
+     "qty": 33,
      "unit": "dona"
     },
     {
@@ -7399,27 +6583,24 @@
     "fayl": "data1/modulniy/modulniy/krovat/krovat detski.fr3d",
     "bazis_olcham": [
      1468,
-     1484,
-     632
+     800,
+     882
     ],
-    "bazis_panel": 52,
+    "bazis_panel": 26,
     "stoleshnitsa_chiqarildi": 0,
     "bom_kromka_m": 13.52,
     "bom_maydon_m2": {
-     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 4.036,
-     "ЛДСП 5кв Kronospan 16мм Орех Экко": 4.036
+     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 4.036
     },
     "zagotovka_m2": {
-     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 6.24,
-     "ЛДСП 5кв Kronospan 16мм Орех Экко": 6.24
+     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 6.24
     },
-    "kontur_farq": 10
+    "kontur_farq": 5
    },
    "teshiklar_izoh": "Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5) — teshiksiz",
    "import_izoh": [
     "tub/ustki panel formulasi topilmadi (geometriya aniq emas) — o'lcham o'zgarmas",
-    "10 ta panel shaklli yoki konturi o'qilmadi — kroy to'g'ri to'rtburchak zagotovka bo'yicha",
-    "bir nechta rang: ЛДСП 5кв Kronospan 16мм Орех Экко · ЛДСП Ультрадекор 4,575 Белый гладкий 16мм — Smart3D da rangni slot (korpus/fasad) belgilaydi"
+    "5 ta panel shaklli yoki konturi o'qilmadi — kroy to'g'ri to'rtburchak zagotovka bo'yicha"
    ]
   },
   {
@@ -7588,32 +6769,6 @@
      "edge": {
       "F": "kromka_korpus"
      }
-    },
-    {
-     "code": "krovat_ichki_oyoq_4",
-     "nom": "krovat ichki oyoq",
-     "qty": 3,
-     "len": "h - 116",
-     "width": "w + 10",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Сухой",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "krovat_ichki_planka",
-     "nom": "krovat ichki planka",
-     "qty": 2,
-     "len": "70",
-     "width": "w + 10",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Сухой",
-     "edge": {
-      "F": "kromka_korpus"
-     }
     }
    ],
    "edge": [],
@@ -7622,19 +6777,13 @@
     {
      "code": "BZ-evro_51mm_alkan",
      "name": "Евро 51мм Алкан",
-     "qty": 24,
+     "qty": 12,
      "unit": "dona"
     },
     {
      "code": "BZ-evrovint_7x50_32_simm",
      "name": "Евровинт 7х50 (32) симм",
-     "qty": 10,
-     "unit": "dona"
-    },
-    {
-     "code": "BZ-evro_51_alkan",
-     "name": "евро 51 алкан",
-     "qty": 8,
+     "qty": 6,
      "unit": "dona"
     }
    ],
@@ -7646,16 +6795,14 @@
      968,
      416
     ],
-    "bazis_panel": 23,
+    "bazis_panel": 18,
     "stoleshnitsa_chiqarildi": 0,
     "bom_kromka_m": 3.85,
     "bom_maydon_m2": {
-     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 2.569,
-     "ЛДСП 5кв Kronospan 16мм Сухой": 0.487
+     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 2.569
     },
     "zagotovka_m2": {
-     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 2.567,
-     "ЛДСП 5кв Kronospan 16мм Сухой": 0.486
+     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 2.567
     },
     "kontur_farq": 0
    },
@@ -7663,8 +6810,7 @@
    "import_izoh": [
     "uzunlik (krovat_pol): Bazis 958 mm standart [1860–2050] dan tashqarida → 2000 mm (shablon cho'ziladi)",
     "eni (krovat_pol): Bazis 458 mm standart [700–1800] dan tashqarida → 900 mm (shablon cho'ziladi)",
-    "h: bo'yi uchun raqamli standart topilmadi — Bazis'dagidek o'zgarmas",
-    "bir nechta rang: ЛДСП 5кв Kronospan 16мм Сухой · ЛДСП Ультрадекор 4,575 Белый гладкий 16мм — Smart3D da rangni slot (korpus/fasad) belgilaydi"
+    "h: bo'yi uchun raqamli standart topilmadi — Bazis'dagidek o'zgarmas"
    ]
   },
   {
@@ -7820,32 +6966,6 @@
      "edge": {
       "F": "kromka_korpus"
      }
-    },
-    {
-     "code": "obmanka_4",
-     "nom": "obmanka",
-     "qty": 2,
-     "len": "129",
-     "width": "70",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-     "edge": {
-      "F": "kromka_korpus"
-     }
-    },
-    {
-     "code": "obmanka_5",
-     "nom": "obmanka",
-     "qty": 1,
-     "len": "70",
-     "width": "w + 42",
-     "slot": "korpus",
-     "tekstura": "uzunlik",
-     "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-     "edge": {
-      "F": "kromka_korpus"
-     }
     }
    ],
    "edge": [],
@@ -7859,16 +6979,14 @@
      968,
      416
     ],
-    "bazis_panel": 19,
+    "bazis_panel": 16,
     "stoleshnitsa_chiqarildi": 0,
     "bom_kromka_m": 3.85,
     "bom_maydon_m2": {
-     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 2.334,
-     "ЛДСП 5кв Kronospan 16мм Белый гладкий": 0.053
+     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 2.334
     },
     "zagotovka_m2": {
-     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 2.333,
-     "ЛДСП 5кв Kronospan 16мм Белый гладкий": 0.053
+     "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 2.333
     },
     "kontur_farq": 0
    },
@@ -7876,8 +6994,7 @@
    "import_izoh": [
     "uzunlik (krovat_pol): Bazis 958 mm standart [1860–2050] dan tashqarida → 2000 mm (shablon cho'ziladi)",
     "eni (krovat_pol): Bazis 458 mm standart [700–1800] dan tashqarida → 900 mm (shablon cho'ziladi)",
-    "h: bo'yi uchun raqamli standart topilmadi — Bazis'dagidek o'zgarmas",
-    "bir nechta rang: ЛДСП 5кв Kronospan 16мм Белый гладкий · ЛДСП Ультрадекор 4,575 Белый гладкий 16мм — Smart3D da rangni slot (korpus/fasad) belgilaydi"
+    "h: bo'yi uchun raqamli standart topilmadi — Bazis'dagidek o'zgarmas"
    ]
   },
   {
@@ -7885,9 +7002,9 @@
    "name": "MC · spalni 003",
    "category": "bed",
    "group": "yotoqxona",
-   "w": 1708,
-   "d": 2010,
-   "h": 416,
+   "w": 2000,
+   "d": 1750,
+   "h": 1166,
    "standart": "krovat",
    "standart_olchamlar": [
     "uzunlik",
@@ -7895,17 +7012,17 @@
    ],
    "standart_map": {
     "uzunlik": {
-     "o": "d",
-     "ofset": 10
-    },
-    "eni": {
      "o": "w",
      "ofset": 0
+    },
+    "eni": {
+     "o": "d",
+     "ofset": 42
     }
    },
    "standart_detal": "krovat_pol",
-   "min_h": 416,
-   "max_h": 416,
+   "min_h": 1166,
+   "max_h": 1166,
    "stretch_axis": "xy",
    "price_mode": "unit",
    "price": 0,
@@ -7921,8 +7038,8 @@
      "code": "krovat_bosh",
      "nom": "Krovat bosh",
      "qty": 1,
-     "len": "h + 734",
-     "width": "w + 42",
+     "len": "h - t",
+     "width": "d",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -7934,8 +7051,8 @@
      "code": "krovat_oyoq",
      "nom": "krovat oyoq",
      "qty": 1,
-     "len": "h - t",
-     "width": "w + 42",
+     "len": "400",
+     "width": "d",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -7947,8 +7064,8 @@
      "code": "krovat_bok",
      "nom": "krovat bok",
      "qty": 2,
-     "len": "h - t",
-     "width": "d",
+     "len": "400",
+     "width": "w + 10",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -7960,8 +7077,8 @@
      "code": "krovat_ichki_oyoq",
      "nom": "krovat ichki oyoq",
      "qty": 3,
-     "len": "h - 116",
-     "width": "w + 10",
+     "len": "300",
+     "width": "d - 2*t",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -7974,7 +7091,7 @@
      "nom": "krovat pol",
      "qty": 1,
      "len": "w",
-     "width": "d - 10",
+     "width": "d - 42",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -7987,7 +7104,7 @@
      "nom": "krovat ichki planka",
      "qty": 2,
      "len": "70",
-     "width": "w + 10",
+     "width": "d - 2*t",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -8000,7 +7117,7 @@
      "nom": "obmanka",
      "qty": 2,
      "len": "70",
-     "width": "w + 42",
+     "width": "d",
      "slot": "korpus",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
@@ -8012,7 +7129,7 @@
      "code": "obmanka_2",
      "nom": "obmanka",
      "qty": 2,
-     "len": "h + 263",
+     "len": "h - 487",
      "width": "70",
      "slot": "korpus",
      "tekstura": "uzunlik",
@@ -8025,7 +7142,7 @@
      "code": "obmanka_3",
      "nom": "obmanka",
      "qty": 2,
-     "len": "h - 86",
+     "len": "330",
      "width": "70",
      "slot": "korpus",
      "tekstura": "uzunlik",
@@ -8038,7 +7155,7 @@
      "code": "tortma_bok",
      "nom": "tortma  bok",
      "qty": 4,
-     "len": "h - 186",
+     "len": "230",
      "width": "420",
      "slot": "korpus",
      "tekstura": "uzunlik",
@@ -8103,8 +7220,8 @@
      "code": "dno_yashika",
      "nom": "Дно ящика",
      "qty": 2,
-     "len": "474",
-     "width": "400",
+     "len": "400",
+     "width": "474",
      "slot": "orqa",
      "tekstura": "erkin",
      "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
@@ -8135,21 +7252,15 @@
      "name": "Евро 51мм Алкан",
      "qty": 8,
      "unit": "dona"
-    },
-    {
-     "code": "BZ-evro_51_alkan",
-     "name": "евро 51 алкан",
-     "qty": 8,
-     "unit": "dona"
     }
    ],
    "auto_hardware": false,
    "manba": {
     "fayl": "data1/modulniy/modulniy/krovat/spalni 003.fr3d",
     "bazis_olcham": [
-     1708,
-     2068,
-     416
+     2058,
+     1750,
+     1166
     ],
     "bazis_panel": 32,
     "stoleshnitsa_chiqarildi": 0,
@@ -8375,12 +7486,6 @@
      "unit": "dona"
     },
     {
-     "code": "BZ-evro_51_alkan",
-     "name": "евро 51 алкан",
-     "qty": 28,
-     "unit": "dona"
-    },
-    {
      "code": "BZ-evrovint_7x50_32_simm",
      "name": "Евровинт 7х50 (32) симм",
      "qty": 10,
@@ -8397,7 +7502,7 @@
     ],
     "bazis_panel": 21,
     "stoleshnitsa_chiqarildi": 0,
-    "bom_kromka_m": 32.53,
+    "bom_kromka_m": 13.37,
     "bom_maydon_m2": {
      "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм": 3.762,
      "ЛМДФ 5,5мм": 1.694,
@@ -8529,7 +7634,7 @@
     {
      "code": "BZ-evro_51mm_alkan",
      "name": "Евро 51мм Алкан",
-     "qty": 8,
+     "qty": 4,
      "unit": "dona"
     },
     {

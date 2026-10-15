@@ -3,12 +3,13 @@
 
 Kirish : data1/modulniy/modulniy/**/*.fr3d   (MebelCity'ning 38 ta moduli)
 Parser : mebelcity-platform/client_erp/DOCS/bazis_erp_paket/b3d_full_parser.py — FAQAT O'QISH
+Daraxt : scripts/bazis_daraxt.py — faqat asosiy model (fayl oxiridagi amallar tarixi — undo — olinmaydi)
 Chiqish: app/data/fragments-mc.json  — MC-… fragmentlar (qayta ishga tushirilsa aynan shu natija)
          app/data/id-links.json      — Bazis nomi → ERP mahsuloti (aniq / taklif / yoq)
 
 Asosiy qoidalar:
   · Bazis o'qlari: X = eni (w), Y = bo'yi (h), Z = chuqurligi (d). Panel o'lchami global
-    bbox'dan; POZITSIYA ishlatilmaydi (ichma-ich bloklar siljishi parserda yo'q — 11.7).
+    bbox'dan (guruhlar joylashuvi daraxtda qo'shiladi); detal pozitsiyasi fragmentga yozilmaydi.
   · Gabarit faqat korpus panellaridan: D = yon devor chuqurligi, W = to'liq enli gorizontal
     panel eni, H = yon devor bo'yi + yon devorlarni yopuvchi to'liq enli gorizontallar.
   · Formula: modul bo'ylab cho'zilgan detal (≥ 50% o'q) → "o'q − k·t" yoki "o'q − c";
@@ -37,8 +38,10 @@ FURN = ROOT / "app" / "data" / "furnitura-catalog.json"
 MATIDX = ROOT / "app" / "data" / "materials-index.json"
 
 sys.path.insert(0, str(PARSER_DIR))
+sys.path.insert(0, str(Path(__file__).resolve().parent))   # -I rejimida ham scripts/ dagi modul topilsin
 sys.dont_write_bytecode = True   # parser boshqa loyihada — u yerga __pycache__ yozilmasin (faqat o'qish, 2.10)
 import b3d_full_parser as P  # noqa: E402
+import bazis_daraxt  # noqa: E402  — asosiy model daraxti (amallar tarixisiz, global joylashuv)
 
 AX = "XYZ"
 AXIS_VAR = {"X": "w", "Y": "h", "Z": "d"}
@@ -81,6 +84,11 @@ def slug(s):
 
 # ── Bazis faylini o'qish ─────────────────────────────────────────────────────
 def load_objects(path):
+    """Asosiy model obyektlari. Tekis parser fayl oxiridagi amallar tarixini (undo) ham o'qiydi —
+    shuning uchun avval daraxt; o'qilmasa — eski usul."""
+    objs = bazis_daraxt.parser_yozuvlari(path)
+    if objs is not None:
+        return objs
     raw = path.read_bytes()
     model = P.inflate_biggest(raw)
     if P.looks_encrypted(model):

@@ -75,6 +75,13 @@ for (const f of mc) {
   }
 }
 ok('detallar soni Bazis bilan bir xil (38 modul)', cntBad.length === 0, cntBad.slice(0, 4).join(' | '));
+{
+  /* fayl oxiridagi amallar tarixi (undo: "Удаление 40 объектов", "Зеркальное отражение") detal bo'lmaydi */
+  const qty = (c, nom) => catalog[c].parts.filter(p => p.nom === nom).reduce((s, p) => s + p.qty, 0);
+  ok('amallar tarixi olinmaydi: yash 3 x — 3 tortma (eski 16), krovat detski — 26 panel (eski 52), kargo — 8 (eski 16)',
+    qty('MC-KP-10', 'Фасад ящика') === 3 && catalog['MC-KR-01'].manba.bazis_panel === 26 && catalog['MC-KP-06'].manba.bazis_panel === 8,
+    `${qty('MC-KP-10', 'Фасад ящика')} / ${catalog['MC-KR-01'].manba.bazis_panel} / ${catalog['MC-KP-06'].manba.bazis_panel}`);
+}
 ok('furnitura soni Bazis BOM bilan bir xil (cutlist qo\'shmaydi/tushirmaydi)', hwBad.length === 0, hwBad.slice(0, 4).join(' | '));
 ok('har material maydoni = Bazis panel o\'lchamlari ±0.5% (38 modul)', zagBad.length === 0, zagBad.slice(0, 4).join(' | '));
 console.log(`      kromka (ma'lumot): qoida bo'yicha vs Bazis BOM, ${edgeRep.length} modulda Bazis kromkasi bor — ` +
@@ -100,8 +107,11 @@ const lim = (f) => [f.min_w, f.max_w, f.min_d, f.max_d, f.min_h, f.max_h].join('
 ok('KR-02 chegarasi: eni 700–1800, uzunligi (d = asos + 10) 1870–2060, bo\'yi o\'zgarmas', lim(catalog['MC-KR-02']) === '700,1800,1870,2060,416,416', lim(catalog['MC-KR-02']));
 ok('KR-05 chegarasi: uzunligi X o\'qida (w = asos + 5) 1865–2055, eni (d = asos + 37) 737–1837', lim(catalog['MC-KR-05']) === '1865,2055,737,1837,900,900', lim(catalog['MC-KR-05']));
 ok('PA-01 chegarasi: uzunligi 600–1200, chuqurligi (d = usti − 110) ≥ 340, balandligi 460–820', lim(catalog['MC-PA-01']) === '600,1200,340,,460,820', lim(catalog['MC-PA-01']));
-ok('standart o\'lcham: KR-02/03 900×2010, KR-04 1708×2010, PA-01 eni 600',
-  ['MC-KR-02', 'MC-KR-03'].every(c => catalog[c].w === 900 && catalog[c].d === 2010) && catalog['MC-KR-04'].d === 2010 && catalog['MC-PA-01'].w === 600);
+ok('standart o\'lcham: KR-02/03 900×2010, KR-04 uzunligi X o\'qida 2000, PA-01 eni 600',
+  ['MC-KR-02', 'MC-KR-03'].every(c => catalog[c].w === 900 && catalog[c].d === 2010) && catalog['MC-KR-04'].w === 2000 && catalog['MC-PA-01'].w === 600);
+/* Bazis'da KR-04 karavoti 90° burilgan guruh ichida, tortmalari guruhdan tashqarida — daraxt (bazis_daraxt.py)
+   burilishni qo'shadi: bo'yi bosh qismi bilan 1166 (eski tekis o'qishda 416 chiqqan edi) */
+ok('KR-04: guruh burilishi hisobga olingan — 2000×1750×1166; uzunligi (w) 1860–2050, eni (d = asos + 42) 742–1842, bo\'yi o\'zgarmas', lim(catalog['MC-KR-04']) === '1860,2050,742,1842,1166,1166' && catalog['MC-KR-04'].d === 1750 && catalog['MC-KR-04'].h === 1166, lim(catalog['MC-KR-04']));
 {
   const sx = std.modullar, bad = [];
   for (const f of mc.filter(f => f.standart_map)) {
