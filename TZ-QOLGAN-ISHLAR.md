@@ -17,7 +17,7 @@
 | Smeta va tannarx | ~50% | narx ma'lumotlari to'liq emas; egasining qarori |
 | Kroy | ~50% | GibLab bilan solishtirilmagan; lenta rejimi buzuq |
 | Modullar kutubxonasi | ~10% | 79/600; birortasi ham to'liq formatda emas |
-| Stanok fayllari | ~5% | namuna fayllar yo'q; jiddiy xatolar |
+| Stanok fayllari | ~5% | namuna fayllar serverda bor, hali olinmagan (D7); jiddiy xatolar |
 | AI va ovoz | ~15% | parser zaif; LLM ulanmagan |
 | Backend, deploy | ~30% | frontend serverga ulanmagan; deploy yo'q |
 | **Jami** | **~35%** | eng katta to'siq — kod emas, **ma'lumot** (§2) |
@@ -98,7 +98,7 @@
 | D4 | Ish haqi stavkalari (arralash, kromka, prisadka, yig'ish) | sex | hozirgi stavka taxminiy | yo'q |
 | D5 | Yechim katalogi (8 xonali kod + narx) va furnitura komplektlari | Yechim / ERP | fragmentlardagi 40 ta furnitura kodidan 28 tasi bazada yo'q | 39 qatorli namuna |
 | D6 | **Sex konstruktiv standarti** (1–2 sahifa) | sex texnologi | stanok fayllari va formulalar shunga bog'liq | yo'q |
-| D7 | **Stanok namuna fayllari** — har bir stanokdan 1–2 ta (`.cix/.bpp`, `.mpr`, `.ptx/.saw`, `.nc`) + kerf, trim, maksimal varaq | sex | post-prosessorlarni to'g'rilash | serverda umuman yo'q |
+| D7 | **Stanok namuna fayllari** — har bir stanokdan 1–2 ta (`.cix/.bpp`, `.mpr`, `.ptx/.saw`, `.nc`) + kerf, trim, maksimal varaq | sex | post-prosessorlarni to'g'rilash | **serverda bor** (2026-10-15 tuzatish): Homag `.LC4` 6 439, Altendorf `.gibcut` 2 801, Rover `.tap` 2 (1444, 1448-buyurtmalar), GibLab `.project` ~3 000, 786 kroy natijasi bazada. Kromka va prisadka stanoklari fayllari — sexdagi kompyuterlarda. Hali ko'chirilmagan (`serverdan/` bo'sh) |
 | D8 | 600 ta modul uchun manba `.b3d` fayllar + bazischi vaqti (~50–100 soat) | bazischi | kutubxona | serverda 2 933 + 994 ta fayl bor |
 | D9 | "Oltin to'plam": 20 ta real buyurtma (`.b3d` + `.project` + haqiqiy smeta + rasm) | Bittada | qabul testi | tanlanmagan |
 | D10 | 100–200 ta real usta iborasi (matn va ovoz yozuvi) | ustalar | AI test to'plami | yo'q |
