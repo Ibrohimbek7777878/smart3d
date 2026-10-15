@@ -73,6 +73,9 @@ async function _run(page, R, step) {
   await page.waitForTimeout(300);
   await page.fill('#aiText', "oshxona 3.6 x 3 metr, U shakl, burchakka moyka, o'ng devorga xolodilnik");
   await page.click('#btnBuild');
+  /* TZ-08: mebel bo'lsa o'z tasdiq oynamiz chiqadi */
+  await page.waitForTimeout(150);
+  if (await page.evaluate(() => !document.getElementById('askModal').hidden, null, false)) await page.click('#askOk');
   await page.waitForFunction(() => document.querySelector('#aiOut .msg'), null, { timeout: 20000 });
   await page.waitForTimeout(600);
   R.u = await M((FP) => {
@@ -93,6 +96,9 @@ async function _run(page, R, step) {
   await page.waitForTimeout(300);
   await page.fill('#aiText', "oshxona 4 x 3 metr, L shakl, burchakka moyka, tepasiga osma shkaf, o'ng devorga xolodilnik");
   await page.click('#btnBuild');
+  /* TZ-08: mebel bo'lsa o'z tasdiq oynamiz chiqadi */
+  await page.waitForTimeout(150);
+  if (await page.evaluate(() => !document.getElementById('askModal').hidden, null, false)) await page.click('#askOk');
   await page.waitForTimeout(2500);
   R.l = await M((FP) => {
     eval(FP);
@@ -112,6 +118,9 @@ async function _run(page, R, step) {
   await page.waitForTimeout(300);
   await page.fill('#aiText', 'bu yerda hech qanday o\'lcham yo\'q');
   await page.click('#btnBuild');
+  /* TZ-08: mebel bo'lsa o'z tasdiq oynamiz chiqadi */
+  await page.waitForTimeout(150);
+  if (await page.evaluate(() => !document.getElementById('askModal').hidden, null, false)) await page.click('#askOk');
   await page.waitForTimeout(2500);
   R.assumed = await M(() => {
     const t = document.getElementById('aiOut').textContent;

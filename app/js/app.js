@@ -57,6 +57,29 @@ let sp = null, ctl = null, items = null;
 const PHONE_MQ = window.matchMedia('(max-width: 599px)');   // app.css telefon chegarasi bilan bir xil
 const fmtSum = (n) => SpPrice.fmtSoom(n);
 
+/** TZ-08: o'z tasdiq oynamiz (confirm() o'rniga). Esc yoki fonga bosish — bekor. → Promise<boolean> */
+function askConfirm(text, okLabel = 'Tasdiqlash') {
+  const m = $('#askModal');
+  if (!m) return Promise.resolve(false);                     // oyna belgisi yo'q — xavfsiz tomon: bekor
+  $('#askText').textContent = text;
+  $('#askOk').textContent = okLabel;
+  m.hidden = false;
+  $('#askOk').focus();
+  return new Promise(resolve => {
+    const done = (v) => {
+      m.hidden = true;
+      $('#askOk').removeEventListener('click', yes); $('#askCancel').removeEventListener('click', no);
+      m.removeEventListener('click', back); document.removeEventListener('keydown', key, true);
+      resolve(v);
+    };
+    const yes = () => done(true), no = () => done(false);
+    const back = (e) => { if (e.target === m) done(false); };
+    const key = (e) => { if (e.key === 'Escape') { e.stopPropagation(); done(false); } };
+    $('#askOk').addEventListener('click', yes); $('#askCancel').addEventListener('click', no);
+    m.addEventListener('click', back); document.addEventListener('keydown', key, true);
+  });
+}
+
 function toast(msg, kind) {
   const t = document.createElement('div');
   t.className = 'toast' + (kind ? ' ' + kind : '');
@@ -746,7 +769,7 @@ async function runAI() {
   const text = $('#aiText').value.trim();
   if (!text) { toast('Avval matn yozing yoki ovozni bosing', 'err'); return; }
   if (state.doc.placements.length &&
-      !confirm('AI yangi konstruksiya quradi — joriy ' + state.doc.placements.length + ' ta mebel almashtiriladi. Davom etasizmi?')) return;
+      !(await askConfirm('AI yangi konstruksiya quradi — joriy ' + state.doc.placements.length + ' ta mebel almashtiriladi. Davom etasizmi?', 'Almashtirish'))) return;
   const btn = $('#btnBuild');
   btn.disabled = true; btn.textContent = '⏳ Qurilmoqda…';
   try {
@@ -1263,9 +1286,9 @@ function loadProject() {
     toast('Yuklashda xato: ' + e.message, 'bad');
   }
 }
-function newProject() {
+async function newProject() {
   if (state.doc.placements.length &&
-      !confirm('Joriy loyiha (' + state.doc.placements.length + ' mebel) o\'chiriladi. Davom etasizmi?')) return;
+      !(await askConfirm('Joriy loyiha (' + state.doc.placements.length + ' mebel) o\'chiriladi. Davom etasizmi?', 'Yangi loyiha'))) return;
   state.doc = { v: 1, kind: 'smart3d', room: freshRoom(), placements: [] };
   $('#projName').textContent = 'Yangi loyiha';
   items.select(null); hideItemCard();

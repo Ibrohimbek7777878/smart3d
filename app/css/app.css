@@ -364,6 +364,8 @@ table.smeta tfoot td { font-weight: 800; border-top: 2px solid var(--ink); }
 }
 .modal-btns { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 .modal-btns .btn.primary { flex: 1 1 auto; }
+.ask-card { width: min(420px, 100%); }
+.ask-text { margin: 0 0 4px; font-size: 15px; line-height: 1.45; }
 
 /* 360° panorama oynasi */
 .pano-dlg {

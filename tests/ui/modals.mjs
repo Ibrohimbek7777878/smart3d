@@ -4,7 +4,8 @@ export default async function run(page) {
     const push = s => { const el = document.documentElement; el.dataset.errs = (el.dataset.errs || '') + s + ' || '; };
     addEventListener('error', e => push((e.message || 'resurs') + ' @' + (e.filename || '') + ':' + (e.lineno || '')), true);
   });
-  page.on('dialog', d => d.accept());
+  let nativeDialogs = 0;                                   // TZ-08: brauzerning oddiy oynasi chiqmasligi kerak
+  page.on('dialog', d => { nativeDialogs++; d.accept(); });
   const cdp = await page.context().newCDPSession(page);
   await cdp.send('Emulation.setDeviceMetricsOverride', { width: 360, height: 740, deviceScaleFactor: 3, mobile: true });
   await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
@@ -24,6 +25,18 @@ export default async function run(page) {
   R.panoDialog = await fits('#panoModal');
   R.panoCanvas = await fits('#panoCanvasContainer canvas');
   await page.click('#panoClose');
+  /* TZ-08: "Yangi loyiha" — o'z tasdiq oynamiz: Esc → bekor (mebel qoladi), Tasdiqlash → tozalanadi */
+  await M(() => window.__s3d.openTab('zamer')); await page.waitForTimeout(300);
+  const n0 = await M(() => window.__s3d.state.doc.placements.length);
+  await page.click('#pNew'); await page.waitForTimeout(200);
+  R.askModal = await fits('#askModal .modal-card');
+  await page.keyboard.press('Escape'); await page.waitForTimeout(200);
+  R.askEsc = await M(() => ({ yopildi: document.getElementById('askModal').hidden, mebel: window.__s3d.state.doc.placements.length }));
+  await page.click('#pNew'); await page.waitForTimeout(200);
+  await page.click('#askOk'); await page.waitForTimeout(400);
+  R.askOk = { oldin: n0, keyin: await M(() => window.__s3d.state.doc.placements.length) };
+  await page.reload();
+  await page.waitForFunction(() => !document.getElementById('boot'), null, { timeout: 20000 });
   /* katalogdan qo'shish — panel ochiq qolishi kerak */
   await M(() => window.__s3d.openTab('catalog'));
   await page.waitForTimeout(400);
@@ -42,6 +55,7 @@ export default async function run(page) {
   R.card = await fits('#itemCard');
   const shot = await cdp.send('Page.captureScreenshot', { format: 'png' });
   (await import('fs')).writeFileSync((process.env.QA_OUT || 'tests/ui/out') + '/android-card.png', Buffer.from(shot.data, 'base64'));
+  R.nativeDialogs = nativeDialogs;
   R.errs = await M(() => document.documentElement.dataset.errs || "(xato yo'q)");
   return R;
 }

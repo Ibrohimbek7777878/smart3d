@@ -56,7 +56,8 @@
   - smetada ogohlantirish: "Taxminiy narx — Kromka, Prisadka, Ish haqi";
   - sex tannarxi jadvalida, Excel'da va hisobotda qator nomi oxirida "— taxminiy";
   - summa o'zgarmaydi.
-  - **TZ'dan farq:** kromka ham belgilandi. Uning narxi (800 / 1 500 / 2 000) ham tasdiqlanmagan taxmin — TZ'da faqat ish haqi va teshik yozilgan edi.
+  - **TZ'dan farq (1):** jami yonida alohida `*` qo'yilmadi — o'rniga smetada ogohlantirish qatori chiqadi. Jami yonidagi `*` avvalgidek narxi yo'q qatorlar uchun.
+  - **TZ'dan farq (2):** kromka ham belgilandi. Uning narxi (800 / 1 500 / 2 000) ham tasdiqlanmagan taxmin — TZ'da faqat ish haqi va teshik yozilgan edi.
 - **`scripts/narx_jadval.py`** — 8 varaqli Excel. Sariq kataklar, yo'riqnoma va MISOL qatori bor.
   - Varaqlar: 48 zapchast (har biriga 3 tagacha ERP taklifi, o'xshashlik bahosi bilan), 2 taklif ("ha / yo'q" ro'yxati), 3 kromka, 7 stavka, 184 plita, 187 furnitura, ustama.
   - Yaratildi: `Smart3D_malumot/narx-toldirish-2026-10-15.xlsx` (gitga kirmaydi).
