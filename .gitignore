@@ -9,3 +9,5 @@ node_modules/
 Thumbs.db
 *.log
 tests/ui/out/
+web/node_modules/
+web/dist/

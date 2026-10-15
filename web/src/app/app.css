@@ -1,0 +1,32 @@
+/* App — global qoidalar (prototipdagi <helmet> dan) */
+html,body{margin:0;background:#0F2229}
+*{box-sizing:border-box}
+[data-s3a]{--bg:#0F2229;--sfc:#173239;--sfc2:#204049;--sfc3:#2A4D57;--txt:#ECF4F2;--mut:#9DB8B5;--line:rgba(236,244,242,.12);--acc:#FF7A45;--acct:#FF956B;--ink:#2A1206;--cyan:#5FE1C4;--lav:#B9A6FF;--pch:#FFB59A;--danger:#FF7B7B}
+[data-s3a] a{color:var(--acct);text-decoration:none}
+[data-s3a] a:hover{color:var(--txt)}
+[data-s3a] button,[data-s3a] input,[data-s3a] textarea{font-family:inherit}
+[data-s3a] input::placeholder,[data-s3a] textarea::placeholder{color:#6F8C89}
+[data-s3a] :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+input[type=range]{accent-color:#FF7A45;width:100%;height:40px;margin:0;cursor:pointer}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+@keyframes s3pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,122,69,.5)}50%{box-shadow:0 0 0 10px rgba(255,122,69,0)}}
+@media (max-width:980px){
+[data-ed]{display:flex !important;flex-direction:column !important;height:auto !important}
+[data-ednav]{position:fixed !important;left:0;right:0;bottom:0;z-index:40;flex-direction:row !important;height:72px !important;padding:6px 8px !important;border-right:0 !important;border-top:1px solid var(--line) !important;background:#0F2229 !important;gap:4px !important}
+[data-ednav-x]{display:none !important}
+[data-navbtn]{flex:1 1 0 !important;flex-direction:column !important;gap:2px !important;padding:4px !important;justify-content:center !important;font-size:12px !important;min-height:56px !important}
+[data-scene]{height:58vh !important;min-height:360px}
+[data-panel]{padding-bottom:110px !important;border-left:0 !important;height:auto !important;overflow:visible !important}
+[data-hide-m]{display:none !important}
+[data-auth]{grid-template-columns:1fr !important}
+[data-auth-aside]{display:none !important}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+
+/* hover holatlari (prototipdagi style-hover) */
+.h0:hover{transform:translateY(-1px) !important}
+.h1:hover{transform:perspective(900px) rotateX(5deg) rotateY(-6deg) translateY(-4px) !important;border-color:var(--acc) !important}
+.h2:hover{transform:perspective(900px) rotateX(4deg) rotateY(-5deg) translateY(-4px) !important;border-color:var(--acc) !important}
+.h3:hover{color:var(--txt) !important;background:var(--sfc) !important}
+.h4:hover{color:var(--txt) !important;background:var(--sfc) !important}
+.h5:hover{border-color:var(--acc) !important;transform:translateX(2px) !important}
