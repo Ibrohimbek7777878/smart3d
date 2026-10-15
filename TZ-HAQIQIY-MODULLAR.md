@@ -93,7 +93,7 @@ Usta MebelCity'ning haqiqiy modullaridan oshxona chizadi. Modul o'lchami sex sta
 - **Moliya:** narx hisobi o'zgarmaydi, ERP'ga hech narsa yozilmaydi.
 - **Egasidan kerak bo'lib qoladi:** 69 ta zapchast moslashtirish, kromka narxlari (D3), krovat/parta min/max.
 
-## 1c. C — Krovat va parta min/max (dunyo standartlari) — PAUZA (egasi, 2026-10-15)
+## 1c. C — Krovat va parta min/max (dunyo standartlari) — BAJARILDI (2026-10-15, egasi: "pauzadagi ishlarni davom ettir")
 Egasi: "krovat va parta min/max ni dunyo standartlaridan ol va o'zgartirish ham bo'lsin" (2026-10-15).
 
 **Manbalar (tekshirilgan):**
@@ -128,6 +128,9 @@ Egasi: "krovat va parta min/max ni dunyo standartlaridan ol va o'zgartirish ham 
 **Moliya:** narx faqat kroy orqali o'zgaradi (katta krovat → ko'p plita). ERP'ga hech narsa yozilmaydi, narx o'ylab topilmaydi.
 
 **Orqaga qaytarish:** alohida commit, `git revert`.
+
+**Natija:** jadvaldagidek. `verify_mc` 41/41: 6 modul har standart o'lchamning min / std / max qiymatida — formula xatosi yo'q, hamma detal > 0, tub/ustki panel aynan standart qiymat (KR-02: matras asosi 900×2000). Qolgan 31 modul JSON'da aynan o'zgarmagan; krovat/partalarning detal va zapchastlari ham o'zgarmagan (faqat o'lcham va chegara).
+- **Yon ta'sir (o'zgarishga bog'liq emas):** `tests/verify.mjs` [5] GibLab tekshiruvi `/tmp/opencode/giblab_check.py` ga bog'liq — kompyuter qayta yuklanganda `/tmp` tozalandi, skript repoda yo'q. Test shu joyda to'xtaydi.
 
 ## 2. Moliya, xavf, orqaga qaytarish
 - **Moliya:** ERP va moliyaga hech narsa yozilmaydi, faqat lokal JSON fayllar o'qiladi. Pul harakati yo'q.

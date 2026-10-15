@@ -5,7 +5,8 @@
   "tasdiq": "Loyiha egasi tasdiqladi — 2026-10-15",
   "ozgartirish": "Chegarani o'zgartirish uchun SHU FAYLNI tahrirlang (kodga tegish shart emas). Fragment 'standart' maydoni orqali shu yerdagi turga ulanadi; ilova yuklanganda min/max shu yerdan olinadi.",
   "birlik": "mm",
-  "eslatma": "h — korpus (yon devor) bo'yi, sokol va stoleshnitsasiz. w — modul eni (eshik enidan hisoblangan). Detal turlari (eshik, tortma, polka, sokol) — tekshiruv uchun ma'lumot."
+  "eslatma": "h — korpus (yon devor) bo'yi, sokol va stoleshnitsasiz. w — modul eni (eshik enidan hisoblangan). Detal turlari (eshik, tortma, polka, sokol) — tekshiruv uchun ma'lumot.",
+  "asos": "'olchov': 'asos' — qiymat modul gabaritiga emas, matras asosiga (krovat tub paneli) yoki stol ustiga (parta) tegishli. Modulga har modulning 'standart_map' (o'q + siljish) orqali o'tadi — import paytida tub/ustki panel formulasidan olinadi."
  },
  "modullar": {
   "oshxona_pastki_1e": {
@@ -41,6 +42,31 @@
    "nom": "Shkaf / kupe — korpus",
    "h": { "min": 1780, "max": 2590, "std": [2084, 1984, 1784] },
    "d": { "min": 350, "max": 600, "std": [600, 500, 400] }
+  },
+  "krovat": {
+   "nom": "Krovat — matras asosi (tub panel)",
+   "manba": "ГОСТ 13025.2-85, 3-jadval: bir kishilik L 1860–2050, B 700/800/900; ikki kishilik B 1100–1800 (100 mm qadam). std uzunlik 2000 — Yevropa matrasi 90×200 / 160×200 (eng ko'p sotiladi). Tekshirildi: 2026-10-15",
+   "olchov": "asos",
+   "uzunlik": { "min": 1860, "max": 2050, "std": [2000] },
+   "eni": { "min": 700, "max": 1800, "std": [900, 700, 800, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800] },
+   "izoh": "bo'yi uchun raqamli standart topilmadi — Bazis'dagidek o'zgarmas"
+  },
+  "krovat_bolalar": {
+   "nom": "Bolalar krovati (0–3 yosh) — asos, ichki o'lcham",
+   "manba": "ГОСТ 19301.3-2022, 1-jadval (I tur): L 900–1400, W 500–800; poldan asosgacha ≥ 300. Tekshirildi: 2026-10-15",
+   "olchov": "asos",
+   "uzunlik": { "min": 900, "max": 1400 },
+   "eni": { "min": 500, "max": 800 },
+   "izoh": "hozir hech bir modulga ulanmagan (MC-KR-01 geometriyasi aniq emas)"
+  },
+  "parta": {
+   "nom": "Parta / o'quvchi stoli — stol usti",
+   "manba": "ГОСТ 11015-93 (ISO 5970-79), 1–2-jadval: balandlik 460/520/580/640/700/760/820 (1–7 guruh); stol usti chuqurligi ≥ 450 (1-guruh), ≥ 500; uzunligi bir o'rinli 600, ikki o'rinli 1200. Tekshirildi: 2026-10-15",
+   "olchov": "asos",
+   "h": { "min": 460, "max": 820, "std": [460, 520, 580, 640, 700, 760, 820] },
+   "uzunlik": { "min": 600, "max": 1200, "std": [600, 1200] },
+   "eni": { "min": 450, "std": [500] },
+   "izoh": "chuqurlik uchun ГОСТ faqat minimumni beradi — max yo'q"
   }
  },
  "detallar": {

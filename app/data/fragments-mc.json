@@ -7417,7 +7417,7 @@
    },
    "teshiklar_izoh": "Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5) — teshiksiz",
    "import_izoh": [
-    "sex standarti yo'q — o'lcham o'zgarmas (sex-standartlari.json ga qo'shilsa ishlaydi)",
+    "tub/ustki panel formulasi topilmadi (geometriya aniq emas) — o'lcham o'zgarmas",
     "10 ta panel shaklli yoki konturi o'qilmadi — kroy to'g'ri to'rtburchak zagotovka bo'yicha",
     "bir nechta rang: ЛДСП 5кв Kronospan 16мм Орех Экко · ЛДСП Ультрадекор 4,575 Белый гладкий 16мм — Smart3D da rangni slot (korpus/fasad) belgilaydi"
    ]
@@ -7427,13 +7427,25 @@
    "name": "MC · spalni 001",
    "category": "bed",
    "group": "yotoqxona",
-   "w": 458,
-   "d": 968,
+   "w": 900,
+   "d": 2010,
    "h": 416,
-   "min_w": 458,
-   "max_w": 458,
-   "min_d": 968,
-   "max_d": 968,
+   "standart": "krovat",
+   "standart_olchamlar": [
+    "uzunlik",
+    "eni"
+   ],
+   "standart_map": {
+    "uzunlik": {
+     "o": "d",
+     "ofset": 10
+    },
+    "eni": {
+     "o": "w",
+     "ofset": 0
+    }
+   },
+   "standart_detal": "krovat_pol",
    "min_h": 416,
    "max_h": 416,
    "stretch_axis": "xy",
@@ -7649,7 +7661,9 @@
    },
    "teshiklar_izoh": "Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5) — teshiksiz",
    "import_izoh": [
-    "sex standarti yo'q — o'lcham o'zgarmas (sex-standartlari.json ga qo'shilsa ishlaydi)",
+    "uzunlik (krovat_pol): Bazis 958 mm standart [1860–2050] dan tashqarida → 2000 mm (shablon cho'ziladi)",
+    "eni (krovat_pol): Bazis 458 mm standart [700–1800] dan tashqarida → 900 mm (shablon cho'ziladi)",
+    "h: bo'yi uchun raqamli standart topilmadi — Bazis'dagidek o'zgarmas",
     "bir nechta rang: ЛДСП 5кв Kronospan 16мм Сухой · ЛДСП Ультрадекор 4,575 Белый гладкий 16мм — Smart3D da rangni slot (korpus/fasad) belgilaydi"
    ]
   },
@@ -7658,13 +7672,25 @@
    "name": "MC · spalni 002",
    "category": "bed",
    "group": "yotoqxona",
-   "w": 458,
-   "d": 968,
+   "w": 900,
+   "d": 2010,
    "h": 416,
-   "min_w": 458,
-   "max_w": 458,
-   "min_d": 968,
-   "max_d": 968,
+   "standart": "krovat",
+   "standart_olchamlar": [
+    "uzunlik",
+    "eni"
+   ],
+   "standart_map": {
+    "uzunlik": {
+     "o": "d",
+     "ofset": 10
+    },
+    "eni": {
+     "o": "w",
+     "ofset": 0
+    }
+   },
+   "standart_detal": "krovat_pol",
    "min_h": 416,
    "max_h": 416,
    "stretch_axis": "xy",
@@ -7848,7 +7874,9 @@
    },
    "teshiklar_izoh": "Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5) — teshiksiz",
    "import_izoh": [
-    "sex standarti yo'q — o'lcham o'zgarmas (sex-standartlari.json ga qo'shilsa ishlaydi)",
+    "uzunlik (krovat_pol): Bazis 958 mm standart [1860–2050] dan tashqarida → 2000 mm (shablon cho'ziladi)",
+    "eni (krovat_pol): Bazis 458 mm standart [700–1800] dan tashqarida → 900 mm (shablon cho'ziladi)",
+    "h: bo'yi uchun raqamli standart topilmadi — Bazis'dagidek o'zgarmas",
     "bir nechta rang: ЛДСП 5кв Kronospan 16мм Белый гладкий · ЛДСП Ультрадекор 4,575 Белый гладкий 16мм — Smart3D da rangni slot (korpus/fasad) belgilaydi"
    ]
   },
@@ -7858,12 +7886,24 @@
    "category": "bed",
    "group": "yotoqxona",
    "w": 1708,
-   "d": 2068,
+   "d": 2010,
    "h": 416,
-   "min_w": 1708,
-   "max_w": 1708,
-   "min_d": 2068,
-   "max_d": 2068,
+   "standart": "krovat",
+   "standart_olchamlar": [
+    "uzunlik",
+    "eni"
+   ],
+   "standart_map": {
+    "uzunlik": {
+     "o": "d",
+     "ofset": 10
+    },
+    "eni": {
+     "o": "w",
+     "ofset": 0
+    }
+   },
+   "standart_detal": "krovat_pol",
    "min_h": 416,
    "max_h": 416,
    "stretch_axis": "xy",
@@ -8126,7 +8166,8 @@
    },
    "teshiklar_izoh": "Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5) — teshiksiz",
    "import_izoh": [
-    "sex standarti yo'q — o'lcham o'zgarmas (sex-standartlari.json ga qo'shilsa ishlaydi)",
+    "uzunlik (krovat_pol): Bazis 2058 mm standart [1860–2050] dan tashqarida → 2000 mm (shablon cho'ziladi)",
+    "h: bo'yi uchun raqamli standart topilmadi — Bazis'dagidek o'zgarmas",
     "3 ta panel shaklli yoki konturi o'qilmadi — kroy to'g'ri to'rtburchak zagotovka bo'yicha"
    ]
   },
@@ -8138,10 +8179,22 @@
    "w": 1968,
    "d": 900,
    "h": 900,
-   "min_w": 1968,
-   "max_w": 1968,
-   "min_d": 900,
-   "max_d": 900,
+   "standart": "krovat",
+   "standart_olchamlar": [
+    "uzunlik",
+    "eni"
+   ],
+   "standart_map": {
+    "uzunlik": {
+     "o": "w",
+     "ofset": 5
+    },
+    "eni": {
+     "o": "d",
+     "ofset": 37
+    }
+   },
+   "standart_detal": "pol",
    "min_h": 900,
    "max_h": 900,
    "stretch_axis": "xy",
@@ -8360,7 +8413,7 @@
    "teshiklar_izoh": "Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5) — teshiksiz",
    "import_izoh": [
     "pol: Bazis ЛМДФ 5,5мм (5.5 mm) — Smart3D da yupqa plita 'orqa' slotida (HDF3); kerak bo'lsa usta slotni almashtiradi",
-    "sex standarti yo'q — o'lcham o'zgarmas (sex-standartlari.json ga qo'shilsa ishlaydi)",
+    "h: bo'yi uchun raqamli standart topilmadi — Bazis'dagidek o'zgarmas",
     "1 ta panel shaklli yoki konturi o'qilmadi — kroy to'g'ri to'rtburchak zagotovka bo'yicha"
    ]
   },
@@ -8369,15 +8422,30 @@
    "name": "MC · Парта _1",
    "category": "desk",
    "group": "bolalar",
-   "w": 500,
+   "w": 600,
    "d": 390,
    "h": 500,
-   "min_w": 500,
-   "max_w": 500,
-   "min_d": 390,
-   "max_d": 390,
-   "min_h": 500,
-   "max_h": 500,
+   "standart": "parta",
+   "standart_olchamlar": [
+    "uzunlik",
+    "eni",
+    "h"
+   ],
+   "standart_map": {
+    "uzunlik": {
+     "o": "w",
+     "ofset": 0
+    },
+    "eni": {
+     "o": "d",
+     "ofset": -110
+    },
+    "h": {
+     "o": "h",
+     "ofset": 0
+    }
+   },
+   "standart_detal": "parta_tom",
    "stretch_axis": "xy",
    "price_mode": "unit",
    "price": 0,
@@ -8492,7 +8560,7 @@
    },
    "teshiklar_izoh": "Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5) — teshiksiz",
    "import_izoh": [
-    "sex standarti yo'q — o'lcham o'zgarmas (sex-standartlari.json ga qo'shilsa ishlaydi)"
+    "uzunlik (parta_tom): Bazis 500 mm standart [600–1200] dan tashqarida → 600 mm (shablon cho'ziladi)"
    ]
   },
   {
@@ -8503,12 +8571,27 @@
    "w": 800,
    "d": 490,
    "h": 730,
-   "min_w": 800,
-   "max_w": 800,
-   "min_d": 490,
-   "max_d": 490,
-   "min_h": 730,
-   "max_h": 730,
+   "standart": "parta",
+   "standart_olchamlar": [
+    "uzunlik",
+    "eni",
+    "h"
+   ],
+   "standart_map": {
+    "uzunlik": {
+     "o": "w",
+     "ofset": 0
+    },
+    "eni": {
+     "o": "d",
+     "ofset": -110
+    },
+    "h": {
+     "o": "h",
+     "ofset": 0
+    }
+   },
+   "standart_detal": "parta_tom",
    "stretch_axis": "xy",
    "price_mode": "unit",
    "price": 0,
@@ -8828,9 +8911,7 @@
     "kontur_farq": 0
    },
    "teshiklar_izoh": "Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5) — teshiksiz",
-   "import_izoh": [
-    "sex standarti yo'q — o'lcham o'zgarmas (sex-standartlari.json ga qo'shilsa ishlaydi)"
-   ]
+   "import_izoh": []
   }
  ]
 }

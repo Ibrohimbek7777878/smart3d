@@ -50,8 +50,8 @@ SECTIONS = [
     ("kuxnya/antirsol", "KA", "wall_cabinet", "kuxnya-antresol", None),
     ("kuxnya/penal", "KK", "tall_cabinet", "kuxnya-kolonna", "oshxona_penal"),
     ("shkaf", "SH", "wardrobe", "garderob", "shkaf"),
-    ("krovat", "KR", "bed", "yotoqxona", None),
-    ("parta", "PA", "desk", "bolalar", None),
+    ("krovat", "KR", "bed", "yotoqxona", "krovat"),
+    ("parta", "PA", "desk", "bolalar", "parta"),
 ]
 # standart o'lchami bo'lmagan maxsus modullar — shu o'lchamlar o'zgarmas qoladi
 SPECIAL_FIXED = [(re.compile(r"vityachka|вытяжк", re.I), ["w", "d", "h"]),   # vityajka — texnikaga moslangan
@@ -241,6 +241,38 @@ def link(name, kind, furn, f_by_norm, mats, m_by_norm, old):
     return rec
 
 
+# ── 'asos' standarti (krovat, parta) ─────────────────────────────────────────
+# Standart matras asosiga (tub panel) yoki stol ustiga tegishli — modul gabaritiga emas.
+ASOS_RX = {"bed": re.compile(r"^(krovat_)?pol$"), "desk": re.compile(r"^parta_tom$")}
+
+
+def find_asos(parts, category, W, H, D, t):
+    """Tub/ustki panel va uning formulasidan: {uzunlik: (o'q, siljish, Bazis qiymati), eni: (...), detal}.
+    Formula o'qqa 1:1 chiziqli bo'lishi shart (masalan "d - 10", "w - 5", "d + 110")."""
+    rx = ASOS_RX.get(category)
+    cands = [p for p in parts if rx and rx.match(p["code"])]
+    if not cands:
+        return None
+    val = lambda f, w=W, h=H, d=D: eval_formula(str(f), w, h, d, t)  # noqa: E731
+    p = max(cands, key=lambda q: val(q["len"]) * val(q["width"]))
+    out = []
+    for f in (str(p["len"]), str(p["width"])):
+        vs = [v for v in ("w", "d", "h") if re.search(rf"\b{v}\b", f)]
+        if len(vs) != 1:
+            return None
+        v = vs[0]
+        a = dict(w=W, h=H, d=D)
+        a[v] += 100
+        if abs(val(f, **a) - val(f) - 100) > 0.01:                 # 1:1 chiziqli emas
+            return None
+        base = {"w": W, "d": D, "h": H}[v]
+        out.append((v, round(base - val(f)), round(val(f))))
+    if out[0][0] == out[1][0]:
+        return None
+    uz, en = (out[0], out[1]) if out[0][2] >= out[1][2] else (out[1], out[0])
+    return {"uzunlik": uz, "eni": en, "detal": p["code"]}
+
+
 # ── bitta modul ──────────────────────────────────────────────────────────────
 NOT_HW = re.compile(r"^(фрагмент\d*|blok\b|новый фрагмент)", re.I)
 
@@ -348,7 +380,35 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
     if category == "cabinet" and re.search(r"yash|ящик|kargo", title, re.I):
         frag["category"] = "drawer_base" if not re.search(r"kargo", title, re.I) else "cargo_base"
     fixed_dims = []
-    if std_key and std_key in std["modullar"]:
+    st_asos = std_key and std["modullar"].get(std_key, {}).get("olchov") == "asos"
+    asos = find_asos(parts, frag["category"], W, H, D, t) if st_asos else None
+    if st_asos and not asos:
+        fixed_dims = ["w", "d", "h"]
+        notes.append("tub/ustki panel formulasi topilmadi (geometriya aniq emas) — o'lcham o'zgarmas")
+    elif st_asos:
+        st = std["modullar"][std_key]
+        dims, smap, covered = [], OrderedDict(), set()
+        for k in ("uzunlik", "eni", "h"):
+            if k not in st:
+                continue
+            var, ofset, own = ("h", 0, frag["h"]) if k == "h" else asos[k]
+            lo, hi = st[k].get("min"), st[k].get("max")
+            dims.append(k)
+            covered.add(var)
+            smap[k] = OrderedDict(o=var, ofset=ofset)
+            if (lo is not None and own < lo) or (hi is not None and own > hi):
+                newv = (st[k].get("std") or [lo if lo is not None and own < lo else hi])[0]
+                notes.append(f"{k} ({asos['detal'] if k != 'h' else 'bo`yi'}): Bazis {own} mm standart "
+                             f"[{lo}–{hi if hi is not None else '…'}] dan tashqarida → {newv} mm (shablon cho'ziladi)")
+                frag[var] = newv + ofset
+        fixed_dims = [k for k in ("w", "d", "h") if k not in covered]
+        if "h" in fixed_dims and st.get("izoh"):
+            notes.append("h: " + st["izoh"])
+        frag["standart"] = std_key
+        frag["standart_olchamlar"] = dims
+        frag["standart_map"] = smap
+        frag["standart_detal"] = asos["detal"]
+    elif std_key and std_key in std["modullar"]:
         st = std["modullar"][std_key]
         dims = []
         for k in ("w", "d", "h"):

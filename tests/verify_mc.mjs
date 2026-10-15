@@ -92,7 +92,41 @@ const v = validateDoc({ room: { outline: [[0, 0], [4000, 0], [4000, 3000], [0, 3
 ok('bo\'yi 1000 > 880 → W_SIZE_CLAMP ogohlantirishi', v.warnings.some(w => w.code === 'W_SIZE_CLAMP' && /bo'yi/.test(w.message)), JSON.stringify(v.warnings));
 const vit = catalog['MC-KU-09'];
 ok('vityajka — o\'lchami o\'zgarmas (texnikaga moslangan)', vit.min_w === vit.max_w && vit.min_h === vit.max_h);
-ok('krovat — standart yo\'q → o\'zgarmas', catalog['MC-KR-02'].min_w === catalog['MC-KR-02'].max_w);
+ok('krovat detski — tub panel aniq emas → o\'zgarmas', catalog['MC-KR-01'].min_w === catalog['MC-KR-01'].max_w && catalog['MC-KR-01'].min_d === catalog['MC-KR-01'].max_d);
+
+/* ══ [3b] krovat va parta — ГОСТ (C): matras asosi / stol usti standart o'lchamga teng ══ */
+console.log('\n[3b] Krovat va parta (ГОСТ 13025.2-85, ГОСТ 11015-93)');
+const lim = (f) => [f.min_w, f.max_w, f.min_d, f.max_d, f.min_h, f.max_h].join(',');
+ok('KR-02 chegarasi: eni 700–1800, uzunligi (d = asos + 10) 1870–2060, bo\'yi o\'zgarmas', lim(catalog['MC-KR-02']) === '700,1800,1870,2060,416,416', lim(catalog['MC-KR-02']));
+ok('KR-05 chegarasi: uzunligi X o\'qida (w = asos + 5) 1865–2055, eni (d = asos + 37) 737–1837', lim(catalog['MC-KR-05']) === '1865,2055,737,1837,900,900', lim(catalog['MC-KR-05']));
+ok('PA-01 chegarasi: uzunligi 600–1200, chuqurligi (d = usti − 110) ≥ 340, balandligi 460–820', lim(catalog['MC-PA-01']) === '600,1200,340,,460,820', lim(catalog['MC-PA-01']));
+ok('standart o\'lcham: KR-02/03 900×2010, KR-04 1708×2010, PA-01 eni 600',
+  ['MC-KR-02', 'MC-KR-03'].every(c => catalog[c].w === 900 && catalog[c].d === 2010) && catalog['MC-KR-04'].d === 2010 && catalog['MC-PA-01'].w === 600);
+{
+  const sx = std.modullar, bad = [];
+  for (const f of mc.filter(f => f.standart_map)) {
+    const st = sx[f.standart], mp = f.standart_map;
+    /* har standart o'lchamni min / std / max qiymatida tekshiramiz, qolganlari — modulning o'zi */
+    for (const k of f.standart_olchamlar) {
+      const vals = [st[k].min, (st[k].std || [])[0], st[k].max].filter(v => v != null);
+      for (const v of vals) {
+        const size = { w: f.w, d: f.d, h: f.h };
+        size[mp[k].o] = v + mp[k].ofset;
+        const cl = cutlist(f, size.w, size.d, size.h, mats, { projectSlots: SLOTS });
+        const tag = `${f.code} ${k}=${v}`;
+        if (cl.errors.length) { bad.push(tag + ': ' + cl.errors[0].message); continue; }
+        if (cl.parts.some(p => !(p.finish_length > 0 && p.finish_width > 0))) { bad.push(tag + ': manfiy/0 detal'); continue; }
+        if (k === 'h') continue;
+        /* asos paneli: o'lchamlaridan biri aynan standart qiymat */
+        const a = cl.parts.find(p => p.code === f.standart_detal);
+        if (!a || ![a.finish_length, a.finish_width].includes(v)) bad.push(`${tag}: ${f.standart_detal} ${a && a.finish_length}×${a && a.finish_width}`);
+      }
+    }
+  }
+  ok('6 modul × min/std/max: formula xatosi yo\'q, hamma detal > 0, asos paneli = standart qiymat', bad.length === 0, bad.slice(0, 4).join(' | '));
+  const k2 = cutlist(catalog['MC-KR-02'], 900, 2010, 416, mats, { projectSlots: SLOTS }).parts.find(p => p.code === 'krovat_pol');
+  ok('KR-02 standart o\'lchamda matras asosi 900×2000', k2 && k2.finish_length === 900 && k2.finish_width === 2000, k2 && `${k2.finish_length}×${k2.finish_width}`);
+}
 
 /* ══ [4] formula cho'zilishi ══ */
 console.log('\n[4] Formula');
