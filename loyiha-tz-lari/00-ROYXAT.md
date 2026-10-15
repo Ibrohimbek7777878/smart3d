@@ -17,10 +17,10 @@
 |---|---|---|---|
 | 01 | [Stanok eksportlari: noto'g'ri faylni yashirish](01-stanok-eksport-xavfsizligi.md) | **BAJARILDI** 2026-10-15 (BPJ bandidan tashqari) | egasi: BPJ yashirilsinmi (S5) |
 | 02 | [Testlarni tiklash, `/tmp` ga bog'liqlikni yo'qotish](02-testlarni-tiklash.md) | **BAJARILDI** 2026-10-15 | — |
-| 03 | [Xizmatlar avtomatik qo'shilmasin (S3)](03-xizmatlar-S3.md) | TASDIQ KUTILMOQDA | egasi: 2 savol (standart holat; ish haqi xizmatmi) |
+| 03 | [Xizmatlar avtomatik qo'shilmasin (S3)](03-xizmatlar-S3.md) | **BAJARILDI** 2026-10-15 | — (prisadka tanlanadi, ish haqi avtomatik) |
 | 04 | [Narx ma'lumotlari: egasi uchun jadval + import](04-narx-malumotlari.md) | **BAJARILDI** 2026-10-15 (vosita) | egasi: `Smart3D_malumot/narx-toldirish-2026-10-15.xlsx` ni to'ldiradi |
-| 05 | [83 ta umumiy modul geometriyasi](05-modul-geometriyasi.md) | TASDIQ KUTILMOQDA | egasi: konstruksiya qoidasi |
-| 06 | [Modullarga teshiklar](06-teshiklar.md) | QAROR KUTILMOQDA | egasi: variant A yoki B; B uchun D6 |
+| 05 | [83 ta umumiy modul geometriyasi](05-modul-geometriyasi.md) | PAUZA (egasi: "hozircha tegmang") | — |
+| 06 | [Modullarga teshiklar](06-teshiklar.md) | A varianti — tadqiqot boshlandi | egasi A ni tanladi |
 | 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | TASDIQ KUTILMOQDA | egasi: telefon + parol bilan kirish |
 | 08 | [Ekrandagi qoida buzilishlari: logo, oyna, burish](08-ui-qoida-tuzatishlari.md) | QISMAN: oyna ✅, burish ✅, logo — kutilmoqda | egasi: Bittada logo fayli |
 | 09 | [Yangi dizayn](09-dizayn.md) | MA'LUMOT KUTILMOQDA | Claude Design natijasi; tarif, aloqa |

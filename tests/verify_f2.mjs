@@ -99,7 +99,7 @@ cls.forEach(c => c.parts.forEach(x => allParts.push(Object.assign({}, x, { id: c
 const nest = nestProject(allParts, mats, {});
 ok((nest.summary?.placed_count || 0) === allParts.length, 'raskroy: hammasi sig\'di (' + allParts.length + ' det.');
 ok((nest.summary?.unplaced_count || 0) === 0 || !nest.by_material || Object.values(nest.by_material).every(r => !(r.unplaced || []).length), 'sig\'magan yo\'q');
-const prod = productionCost(cls, mats, { nestResult: nest });
+const prod = productionCost(cls, mats, { nestResult: nest, xizmatlar: { teshik: true } });   // TZ-03: prisadka tanlangan holat
 ok(prod.clientTotal > 0, 'tannarx > 0: ' + prod.clientTotal);
 ok((prod.missing || []).some(m => m.code === 'hole:cutout'), 'moyka kesimi smetada "narx yo\'q" ro\'yxatida (to\'liq emas belgisi)');
 ok(prod.perModule && prod.perModule.length === cls.length, 'perModule = cutlist soni (buildQuote uchun)');

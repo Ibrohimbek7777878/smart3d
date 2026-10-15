@@ -17,7 +17,8 @@ const ok = (name, cond, extra = '') => { n++; if (!cond) { fails++; console.log(
 console.log('\n[1] Taxminiy belgisi');
 const frag = J('fragments.json').find(f => (f.holes || []).length && (f.parts || []).length > 3);
 const cl = cutlist(frag, frag.w, frag.d, frag.h, mats, {});
-const p0 = productionCost([cl], mats, {});
+const XZ = { xizmatlar: { teshik: true } };   // TZ-03: prisadka tanlangan holatda tekshiriladi
+const p0 = productionCost([cl], mats, XZ);
 const tx = (p) => p.lines.filter(l => l.taxminiy).map(l => l.group);
 ok(`tasdiqlanmagan manba → taxminiy: ${p0.taxminiy.join(', ')}`,
   ['Kromka', 'Prisadka', 'Ish haqi'].every(g => p0.taxminiy.includes(g)), JSON.stringify(p0.taxminiy));
@@ -26,12 +27,12 @@ const m2 = JSON.parse(JSON.stringify(mats));
 m2.edge_materials.forEach(e => { e.price_src = 'egasi, test'; });
 m2.hole_kinds.forEach(h => { h.price_src = 'egasi, test'; });
 m2.labor.price_src = 'egasi, test';
-const p1 = productionCost([cl], m2, {});
+const p1 = productionCost([cl], m2, XZ);
 /* eslatma: kroysiz hisobda plita qatori o'zi "(~N varaq, taxminiy)" — bu boshqa belgi, bu yerda tekshirilmaydi */
 ok('egasi tasdiqlagach — taxminiy yo\'q, nomda belgi yo\'q', p1.taxminiy.length === 0 && !p1.lines.some(l => l.taxminiy || / — taxminiy$/.test(l.name)));
 ok('belgi summaga ta\'sir qilmaydi', p0.totalCost === p1.totalCost && p0.clientTotal === p1.clientTotal, `${p0.totalCost} vs ${p1.totalCost}`);
 const m3 = JSON.parse(JSON.stringify(mats)); m3.hole_kinds.forEach(h => { h.price = 0; });
-ok('narxi yo\'q teshik — "taxminiy" emas, "narx yo\'q"', !productionCost([cl], m3, {}).taxminiy.includes('Prisadka'));
+ok('narxi yo\'q teshik — "taxminiy" emas, "narx yo\'q"', !productionCost([cl], m3, XZ).taxminiy.includes('Prisadka'));
 
 /* ══ [2] jadval va import (Python) ══ */
 console.log('\n[2] Narx jadvali va import');

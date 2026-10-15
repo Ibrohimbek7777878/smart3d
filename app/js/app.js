@@ -197,7 +197,7 @@ function doRecalc() {
   const nest = nestProject(allParts, mats, state.nestCfg || {});
 
   /* 5) ishlab chiqarish tannarxi (haqiqiy varaqlar soni bilan) */
-  const prod = productionCost(cutlists, mats, { nestResult: nest, furnituraById: state.furnById });
+  const prod = productionCost(cutlists, mats, { nestResult: nest, furnituraById: state.furnById, xizmatlar: state.doc.xizmatlar || {} });
 
   /* 6) mijoz kotirovkasi — tannarx × (1 + ustama), modullarga taqsimlangan */
   const priceRes = buildQuote(doc, cutlists, prod, sizeCheck.warnings);
@@ -289,11 +289,18 @@ function renderSmeta(priceRes, prod) {
   if (wTb && prod) {
     const b = prod.breakdown || {};
     const tx = (g) => (prod.taxminiy || []).includes(g);
+    const xzt = (prod.xizmat_taklif && prod.xizmat_taklif.teshik) || { tanlangan: false, qty: 0, amount: 0 };
+    /* TZ-03: xizmat tanlovi bloki — belgi holati loyihadan, summa har doim ko'rinadi */
+    if ($('#xzTeshik')) {
+      $('#xzTeshik').checked = !!xzt.tanlangan;
+      $('#xzTeshikInfo').textContent = xzt.qty ? `— ${xzt.qty} teshik · ${fmtSum(xzt.amount)}` : "— loyihada teshik yo'q";
+      $('#xzNote').classList.toggle('hidden', !!xzt.tanlangan || !xzt.qty);
+    }
     const rows = [
       { name: 'Varaqlar (LDSP/MDF/HDF)', qty: `${b.sheetsCount || 0} dona (${b.panelAreaM2 || 0} m²)`, unit: '-', amount: prod.sheetCost },
       { name: 'Kromka (qirra lenta)' + (tx('Kromka') ? ' — taxminiy' : ''), qty: `${b.edgeMeters || 0} metr`, unit: '-', amount: prod.edgeCost },
       { name: 'Furnitura / apparatura', qty: `${b.hwCount || 0} dona`, unit: '-', amount: prod.hwCost },
-      { name: 'Prisadka (burg\'ulash)' + (tx('Prisadka') ? ' — taxminiy' : ''), qty: `${b.holeCount || 0} ta teshik`, unit: '-', amount: prod.holeCost },
+      { name: 'Prisadka (burg\'ulash)' + (xzt.tanlangan ? (tx('Prisadka') ? ' — taxminiy' : '') : ' — tanlanmagan'), qty: `${b.holeCount || 0} ta teshik`, unit: '-', amount: prod.holeCost },
       { name: 'Ish haqi / Usta mehnati' + (tx('Ish haqi') ? ' — taxminiy' : ''), qty: 'Loyiha', unit: '-', amount: prod.laborCost }
     ];
     if (prod.missing.length) rows.push({ name: '⚠️ Narxi bazada yo\'q (0 deb olindi)', qty: prod.missing.length + ' ta', unit: '-', amount: 0 });
@@ -554,12 +561,13 @@ function renderCatalog() {
 const estCache = { key: '', map: {} };
 function estimateFragment(f) {
   const sh = state.sheet;
-  const key = state.materialCode + '|' + state.fasadCode + '|' + (sh ? sh.sku + sh.name + '@' + sh.uzs : '');
+  const xz = state.doc.xizmatlar || {};
+  const key = state.materialCode + '|' + state.fasadCode + '|' + (sh ? sh.sku + sh.name + '@' + sh.uzs : '') + '|xz' + (xz.teshik ? 1 : 0);
   if (estCache.key !== key) { estCache.key = key; estCache.map = {}; estCache.mats = null; }
   if (estCache.map[f.code] == null) {
     const mats = estCache.mats || (estCache.mats = effectiveMaterials());   // nusxa — faqat kesh bo'sh bo'lsa
     const cl = cutlist(f, f.w, f.d, f.h, mats, { projectSlots: projectSlots() });
-    estCache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: state.furnById }).clientTotal;
+    estCache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: state.furnById, xizmatlar: xz }).clientTotal;
   }
   return estCache.map[f.code];
 }
@@ -1569,6 +1577,13 @@ async function boot() {
   };
   ['icW', 'icD', 'icH', 'icX'].forEach((id, i) => {
     $('#' + id).addEventListener('change', numPatch(['w', 'd', 'h', 'x'][i]));
+  });
+  /* TZ-03: xizmat tanlovi loyiha hujjatida saqlanadi (doc.xizmatlar) */
+  $('#xzTeshik').addEventListener('change', (e) => {
+    state.doc.xizmatlar = Object.assign({}, state.doc.xizmatlar, { teshik: e.target.checked });
+    scheduleRecalc(true);
+    renderCatalog();
+    toast(e.target.checked ? "Prisadka smetaga qo'shildi" : "Prisadka smetadan olindi", 'good');
   });
   $('#icLeft').addEventListener('click', () => nudge(-50, 0));
   $('#icRight').addEventListener('click', () => nudge(50, 0));

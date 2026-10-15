@@ -4,7 +4,7 @@
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 FAIL=0
-for t in verify verify_ai verify_f1 verify_f2 verify_glb verify_util_export verify_mc verify_narx; do
+for t in verify verify_ai verify_f1 verify_f2 verify_glb verify_util_export verify_mc verify_narx verify_xizmat; do
   printf '%-22s ' "$t:"
   if out=$(node "$HERE/$t.mjs" 2>&1); then
     echo "$(echo "$out" | tail -1)"

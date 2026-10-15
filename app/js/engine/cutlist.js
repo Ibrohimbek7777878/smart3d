@@ -323,7 +323,8 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
  *
  * @param {Array} cutlists — barcha modullar cutlist natijalari (doc.placements tartibida)
  * @param {Object} materials — materials.json (effektiv: tanlangan ERP varag'i bilan)
- * @param {Object} [opt] — { nestResult, markupPct, areaEstimate, furnituraById }
+ * @param {Object} [opt] — { nestResult, markupPct, areaEstimate, furnituraById, xizmatlar }
+ *   xizmatlar: { teshik: true } — usta tanlagan xizmatlar (S3); berilmasa teshik burg'ilash tannarxga kirmaydi
  *   furnituraById: ERP furnitura ID → {name, uzs, no_price} (hw.id bor bo'lsa narx shu yerdan)
  *   areaEstimate: kroysiz taxmin (katalog kartasi uchun) — varaq maydoni ÷ 0.85, butun varaqqa yaxlitlanmaydi
  * @returns {{lines, totalCost, clientTotal, perModule:[{cost, client}], missing:[], breakdown}}
@@ -341,6 +342,10 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   const holeByKind = {};
   (materials.hole_kinds || []).forEach(m => { holeByKind[m.code] = m; });
   const labor = materials.labor || {};
+  /* TZ-03 (qoida S3): xizmatni usta o'zi tanlaydi. Teshik burg'ilash (prisadka, moyka kesimi ham)
+     faqat opt.xizmatlar.teshik === true bo'lsa tannarxga kiradi; aks holda summasi faqat taklif
+     sifatida qaytadi (xizmat_taklif). Ish haqi — sexning doimiy xarajati, avtomatik (egasi qarori). */
+  const teshikOn = !!(opt.xizmatlar && opt.xizmatlar.teshik === true);
   const markup = opt.markupPct != null ? opt.markupPct
     : (materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0.35);
 
@@ -481,9 +486,23 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     });
   }
 
-  /* 4) Teshik burg'ilash — turi bo'yicha (petlya, shkant, kam, oddiy) */
-  let holeCost = 0, totalHoles = 0;
-  for (const kind in holeAgg) {
+  /* 4) Teshik burg'ilash — turi bo'yicha (petlya, shkant, kam, oddiy) — faqat usta tanlasa (S3) */
+  let holeCost = 0, totalHoles = 0, holeTaklif = 0;
+  if (!teshikOn) {
+    for (const kind in holeAgg) {
+      const m = holeByKind[kind] || holeByKind.drill;
+      totalHoles += holeAgg[kind];
+      holeTaklif += holeAgg[kind] * (m && m.price > 0 ? m.price : 0);   // narx yo'q ro'yxatiga yozilmaydi
+    }
+    if (totalHoles) {
+      lines.push({
+        group: 'Xizmatlar', code: 'hole:tanlanmagan', info: true,
+        name: `Teshik burg'ilash (prisadka) — tanlanmagan: ${totalHoles} teshik, ${holeTaklif} so'm`,
+        qty: totalHoles, unit: 'dona', unit_price: 0, amount: 0, no_price: false
+      });
+    }
+  }
+  for (const kind in (teshikOn ? holeAgg : {})) {
     const qty = holeAgg[kind];
     const price = holePrice(kind);
     const amount = qty * price;
@@ -525,7 +544,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     }
     for (const e of cl.edges || []) cost += e.meters * (edgeByCode[e.material] || edgeByCode[String(e.material).replace(/\./g, '')] || {}).price_m || 0;
     for (const hw of cl.hardware || []) cost += hw.qty * hwUnitPrice(hw);
-    for (const hl of cl.holes || []) cost += (hl.qty || 1) * (((holeByKind[hl.kind] || holeByKind.drill || {}).price) || 0);
+    if (teshikOn) for (const hl of cl.holes || []) cost += (hl.qty || 1) * (((holeByKind[hl.kind] || holeByKind.drill || {}).price) || 0);
     if (totalParts) cost += laborCost * (cl.parts || []).length / totalParts;
     return { cost: Math.round(cost), client: Math.round(cost * (1 + markup)) };
   });
@@ -546,6 +565,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     perModule,
     missing,
     taxminiy,
+    xizmat_taklif: { teshik: { tanlangan: teshikOn, qty: totalHoles, amount: teshikOn ? holeCost : holeTaklif } },
     sheetCost,
     edgeCost,
     hwCost,

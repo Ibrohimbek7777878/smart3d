@@ -1,6 +1,6 @@
 # TZ-03 — Xizmatlar smetaga avtomatik qo'shilmasin (qoida S3)
 
-**Sana:** 2026-10-15 · **Holat:** TASDIQ KUTILMOQDA · **Asos:** `qoidalar_qatiy_amalqilinsin.md`, S3 — "Xizmatlar avtomatik qo'shilmaydi — foydalanuvchi o'zi tanlaydi".
+**Sana:** 2026-10-15 · **Holat:** BAJARILDI (2026-10-15; egasi tanlovi: "Prisadka tanlanadi, ish haqi o'zi") · **Asos:** `qoidalar_qatiy_amalqilinsin.md`, S3 — "Xizmatlar avtomatik qo'shilmaydi — foydalanuvchi o'zi tanlaydi".
 
 ## 0. Hozirgi holat (tekshirilgan)
 `productionCost` (`app/js/engine/cutlist.js`) tannarxga ikki xizmatni **so'ramasdan** qo'shadi:
@@ -49,3 +49,29 @@ Server (`server/index.js`) tannarxni hisoblamaydi — tegilmaydi.
 ## 5. Egasi hal qiladi (TZ'dan oldin)
 1. **Standart holat:** S3 bo'yicha **belgilanmagan** (tavsiya). Yoki "oxirgi tanlovni eslab qolsin"mi?
 2. **"Kesim va yig'ish ish haqi"** xizmat hisoblanadimi (tanlanadimi) yoki sexning doimiy xarajati sifatida avtomatik qolsinmi?
+
+## 6. Egasining qarori va natija (2026-10-15)
+- **Qaror:**
+  - prisadka (teshik burg'ilash, moyka kesimi ham) — usta tanlaydi, boshida belgilanmagan;
+  - ish haqi — sexning doimiy xarajati, avtomatik qoladi.
+  - Shuning uchun X1–X4 faqat prisadka uchun bajarildi.
+- **Dvigatel:** `productionCost(…, { xizmatlar: { teshik } })`.
+  - Tanlanmasa: teshik tannarxga, mijoz narxiga va modullarga taqsimlashga kirmaydi.
+  - Smetada 0 so'mlik ma'lumot qatori: "Teshik burg'ilash (prisadka) — tanlanmagan: N teshik, X so'm".
+  - Summa `xizmat_taklif.teshik` da qaytadi; narxi yo'q moyka kesimi "narx yo'q" ro'yxatiga tushmaydi.
+- **Ekran (Smeta):**
+  - "Xizmatlar — usta tanlaydi" bloki: belgi, teshik soni va summasi;
+  - tanlanmagan bo'lsa ogohlantirish chiqadi;
+  - sex tannarxi qatorida "— tanlanmagan" yoki "— taxminiy".
+  - Tanlov `doc.xizmatlar` da saqlanadi; katalog narxlari ham shunga qarab hisoblanadi.
+- **Excel va hisobot:** qatorlar prod.lines dan olinadi — tanlanmagan bo'lsa ma'lumot qatori chiqadi.
+- **Testlar:**
+  - yangi `tests/verify_xizmat.mjs` 10/10 — standart holat; tanlanganda farq aynan teshik summasi; taqsimot teng; ish haqi o'zgarmaydi;
+  - `verify_f2` va `verify_narx` "prisadka tanlangan" holatda tekshiradi;
+  - brauzer `tests/ui/xizmat.mjs`:
+    - standart: belgilanmagan, 106 teshik · 75 000 so'm faqat taklif;
+    - belgilansa tannarx +75 000;
+    - saqlash → qayta yuklash → tanlov saqlangan;
+    - belgi olinsa narx qaytadi.
+  - Node 9/9, brauzer 9 to'plam yashil; "UI = jadval = Excel" mos.
+

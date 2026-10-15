@@ -1,6 +1,6 @@
 # TZ-05 — 83 ta umumiy modul geometriyasini to'g'rilash
 
-**Sana:** 2026-10-15 · **Navbat:** 5 · **Holat:** TASDIQ KUTILMOQDA · **Bog'liq:** egasi konstruksiya qoidasini tasdiqlaydi.
+**Sana:** 2026-10-15 · **Navbat:** 5 · **Holat:** PAUZA (egasi: "Hozircha tegmang", 2026-10-15) · **Bog'liq:** egasi konstruksiya qoidasini tasdiqlaydi.
 
 ## Muammo (tekshirilgan, `app/data/fragments.json`)
 1. **42 ta modulda polka `"w-36"`** deb qattiq yozilgan (2 × 18 mm). 16 mm plita tanlansa, polka yon devorlar orasida 4 mm qisqa bo'ladi.

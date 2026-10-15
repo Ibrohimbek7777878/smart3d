@@ -209,3 +209,9 @@ Qaysi bri kere hoz
 70. davom et
 
 71. davom etaver
+
+72. qisqa londa qilb shuntirb ber nimalar qodl va loyhan rela prodcutionga nechi ofiz tayyor
+
+73. davom etaver
+
+74. (savollarga javob) BPJ: nega puazda qolgan qilinaidgna va qolgan ishlarn qyatadna shuntirb ber · Xizmatlar: Prisadka tanlanadi, ish haqi o'zi (Tavsiya) · Konstruksiya: Hozircha tegmang · Teshiklar: A — Bazis faylidan o'qish (Tavsiya)
