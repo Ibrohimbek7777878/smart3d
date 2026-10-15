@@ -455,7 +455,8 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
   if (typeof opts.llm === 'function') {
     try {
       const r = await opts.llm(text);
-      if (r && r.room && r.room.outline) {
+      /* TZ-12: o'lcham aytilmagan bo'lsa ham AI tushungan buyurtmalar qabul qilinadi (o'lcham — "taxmin" deb ko'rsatiladi) */
+      if (r && r.room && Array.isArray(r.orders)) {
         parsed = r;
         source = 'llm';
       }

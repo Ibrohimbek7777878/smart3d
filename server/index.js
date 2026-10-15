@@ -26,6 +26,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { parseZamer, aiBuild } from '../app/js/ai.js';
 import { smsConfigured, sendSms, SMS_TEXT } from './sms.js';
+import { aiConfig, llmParse } from './ai-llm.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROD = process.env.NODE_ENV === 'production';
@@ -91,6 +92,16 @@ db.exec(`
     FOREIGN KEY (user_id) REFERENCES users(id)
   );
   CREATE INDEX IF NOT EXISTS idx_projects_user ON projects(user_id, archived);
+  CREATE TABLE IF NOT EXISTS ai_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    text TEXT DEFAULT '',
+    engine TEXT DEFAULT '',
+    ok INTEGER DEFAULT 0,
+    result_json TEXT DEFAULT '',
+    error TEXT DEFAULT '',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 /* S1: bitta raqam — bitta akkaunt (oxirgi 9 raqam bo'yicha). Eski bazada takror bo'lsa — kodda ham tekshiriladi */
 try { db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_phone9 ON users(substr(phone, -9)) WHERE phone <> ''"); }
@@ -193,6 +204,7 @@ const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10 });   // 10 x
 const registerLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10 }); // 10 ro'yxat / soat
 const smsSendLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10 });   // TZ-07: 10 SMS / soat / IP
 const smsVerifyLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 }); // 20 xato kod / 15 daq / IP
+const aiLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 60 });         // TZ-12: 60 AI so'rov / soat / IP (pullik)
 
 /* ── Express ── */
 const app = express();
@@ -540,6 +552,29 @@ app.post('/api/ai/build', auth, ah(async (req, res) => {
   }
   const result = await aiBuild(inputText, catalog);
   res.json({ ok: true, ...result });
+}));
+
+/* ═══════════════════ AI — istalgan provayder (TZ-12) ═══════════════════
+ * Kalit faqat serverda. Til modeli matnni tuzilmaga o'giradi, joylashtirishni sayt dvigateli qiladi.
+ * Har so'rov jurnalga yoziladi (A6): matn, natija, xato — "usta nima dedi → AI nima tushundi". */
+app.get('/api/ai/status', (req, res) => {
+  const c = aiConfig();
+  res.json({ enabled: c.enabled, provider: c.provider, model: c.model });
+});
+app.post('/api/ai/parse', auth, aiLimiter.check, ah(async (req, res) => {
+  const text = str((req.body || {}).text, 'text', { max: 2000, required: true });
+  if (!aiConfig().enabled) return res.status(503).json({ error: 'AI sozlanmagan — qoidali tahlilchi ishlaydi' });
+  aiLimiter.hit(req);
+  const log = db.prepare('INSERT INTO ai_log (user_id, text, engine, ok, result_json, error) VALUES (?, ?, ?, ?, ?, ?)');
+  try {
+    const r = await llmParse(text);
+    log.run(req.user.id, text, r.engine, 1, JSON.stringify(r.parsed), '');
+    res.json({ ok: true, engine: r.engine, parsed: r.parsed });
+  } catch (e) {
+    log.run(req.user.id, text, aiConfig().provider || '', 0, '', String(e.message || e).slice(0, 300));
+    console.error('AI xatosi:', e.message);
+    res.status(502).json({ error: 'AI javob bermadi — qoidali tahlilchi ishlaydi' });
+  }
 }));
 
 app.post('/api/ai/voice', auth, (req, res) => {

@@ -788,7 +788,7 @@ async function runAI() {
   const btn = $('#btnBuild');
   btn.disabled = true; btn.textContent = '⏳ Qurilmoqda…';
   try {
-    const res = await aiBuild(text, state.catalog);
+    const res = await aiBuild(text, state.catalog, { llm: auth && auth.aiReady ? auth.aiParse : null });   // TZ-12
     res.doc.placements = res.doc.placements.filter(p => state.catalog[p.frg]);
     /* F1/F2: AI yangi xona quradi — lekin quvur/rozetka va oshxona sozlamalari saqlanadi */
     res.doc.room.utilities = (state.doc.room && state.doc.room.utilities) || [];
@@ -801,7 +801,7 @@ async function runAI() {
         ? `<div class="msg warn">⚠️ Xona o'lchami tushunilmadi — 3600×2800 mm taxmin qilindi.
            Matnda "3x4 metr", "3.5 ga 2.8" kabi yozing.</div>`
         : `<div class="msg ok">✅ ${(() => { const b = roomBBox(res.doc.room.outline); return Math.round(b.w) + '×' + Math.round(b.h); })()}×${res.doc.room.wall_height} mm —
-       ${res.doc.placements.length} mebel qo'yildi (manba: ${res.source === 'llm' ? 'LLM' : 'qoida engine'})</div>`) +
+       ${res.doc.placements.length} mebel qo'yildi (manba: ${res.source === 'llm' ? 'AI — ' + esc((auth && auth.aiEngine) || 'LLM') : 'qoida engine'})</div>`) +
       (res.unknown.length ? `<div class="msg warn">Tushunilmadi: ${esc(res.unknown.join(', '))}</div>` : '') +
       ((res.notes || []).length ? `<div class="msg warn">⚠️ ${esc(res.notes.join(' · '))}</div>` : '');
     toast('Konstruksiya tayyor!', 'good');

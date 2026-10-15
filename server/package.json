@@ -17,6 +17,7 @@
     "docker:logs": "docker-compose logs -f"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.131.0",
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^11.0.0",
     "cors": "^2.8.5",
@@ -26,6 +27,16 @@
   },
   "_postgres_variant": {
     "note": "src/server.js (PostgreSQL + Redis) hali ishga tushmaydi — AUDIT-2026-10-14 §5. Kerak bo'lganda: npm i pg ioredis helmet winston zod prom-client uuid express-rate-limit rate-limit-redis",
-    "dependencies": ["pg", "ioredis", "helmet", "winston", "zod", "prom-client", "uuid", "express-rate-limit", "rate-limit-redis"]
+    "dependencies": [
+      "pg",
+      "ioredis",
+      "helmet",
+      "winston",
+      "zod",
+      "prom-client",
+      "uuid",
+      "express-rate-limit",
+      "rate-limit-redis"
+    ]
   }
 }

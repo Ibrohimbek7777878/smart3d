@@ -23,6 +23,7 @@ before(async () => {
   base = `http://127.0.0.1:${port}`;
   const env = { ...process.env, PORT: String(port), DB_PATH: db, JWT_SECRET: 'auth-test-' + 'y'.repeat(40), NODE_ENV: 'test' };
   delete env.ESKIZ_EMAIL; delete env.ESKIZ_PASSWORD;                 // haqiqiy SMS yuborilmasin
+  for (const k of ['AI_PROVIDER', 'AI_API_KEY', 'AI_MODEL', 'AI_BASE_URL', 'ANTHROPIC_API_KEY']) delete env[k];
   proc = spawn(process.execPath, ['index.js'], { cwd: SERVER_DIR, env });
   await new Promise((resolve, reject) => {
     let out = '';
@@ -118,6 +119,12 @@ test('loyiha: tokensiz 401, buzilgan doc 400', async () => {
   for (const doc of [null, [], { room: {} }, { doc: { room: {}, placements: 'x' } }]) {
     assert.equal((await api('/api/projects', { method: 'POST', token: A.token, body: { name: 'x', doc } })).status, 400, JSON.stringify(doc));
   }
+});
+
+test('AI sozlanmagan: status o\'chiq, parse — 503 (sayt qoidali tahlilchi bilan ishlaydi)', async () => {
+  assert.deepEqual(await (await api('/api/ai/status')).json(), { enabled: false, provider: null, model: null });
+  const A = await login('998991110009');
+  assert.equal((await api('/api/ai/parse', { method: 'POST', token: A.token, body: { text: 'oshxona 3x4' } })).status, 503);
 });
 
 test('MebelCity modullari bazada (38 ta)', async () => {

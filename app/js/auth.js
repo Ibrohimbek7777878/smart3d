@@ -26,6 +26,7 @@ export function createAuth(o) {
   const $ = (s) => document.querySelector(s);
   let token = ls.get(K.token), user = ls.get(K.user);
   let serverOk = false, ready = false, currentId = null;
+  let ai = { enabled: false }, aiEngine = '';            // TZ-12: serverdagi AI holati
   let saveTimer = 0, saving = false, dirty = false, resendTimer = 0;
 
   const api = async (path, { method = 'GET', body } = {}) => fetch(path, {
@@ -229,6 +230,7 @@ export function createAuth(o) {
     } catch (e) { serverOk = false; }
     updateBtn();
     if (!serverOk) return;
+    try { ai = await (await fetch('/api/ai/status', { cache: 'no-store' })).json(); } catch (e) { ai = { enabled: false }; }
     $('#acctBtn').addEventListener('click', show);
     $('#acctClose1').addEventListener('click', hide);
     $('#acctClose2').addEventListener('click', hide);
@@ -246,8 +248,22 @@ export function createAuth(o) {
     await afterLogin(false);
   }
 
+  /** TZ-12: matn → tuzilma (server AI). Kirmagan, AI o'chiq yoki xato — null (qoidali tahlilchi ishlaydi) */
+  async function aiParse(text) {
+    if (!token || !ai.enabled) return null;
+    try {
+      const r = await api('/api/ai/parse', { method: 'POST', body: { text } });
+      if (!r.ok) return null;
+      const j = await r.json();
+      aiEngine = j.engine || '';
+      return j.parsed || null;
+    } catch (e) { return null; }
+  }
+
   return {
-    init, changed, flush,
+    init, changed, flush, aiParse,
+    get aiEngine() { return aiEngine; },
+    get aiReady() { return !!(token && ai.enabled); },
     /** "Yangi" yoki kompyuterdan yuklash — keyingi saqlash serverda yangi loyiha ochadi */
     resetCurrent() { if (token) setCurrent(null); },
     get loggedIn() { return !!token; }

@@ -229,3 +229,5 @@ Qaysi bri kere hoz
 bularn keyinroq qilamzi hozir bita konstruksiya qila olamzmi ozi
 
 79. loyhan bilasan toliq nimalar qila olishn ham bilasan shundaymi toliq tnaishb chiqdingmi oyha bilan
+
+80. qara /home/ibrohim/Desktop/bittada sunpin/Smart3D/frontend  bu yerda loyhan frontend qism uchun claude designda qilingan dizyan bor va yana bir nechata fayllar ham bor korib toliq tanishb chiq hozir boshqa chatda ham claude ishlayabd unga tegib ketma  knstruksiyan qila olamizmi hozir va loyhan realn prodcutionga 2kunda chiqara olamzmi
