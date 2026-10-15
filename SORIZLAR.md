@@ -207,3 +207,5 @@ Qaysi bri kere hoz
 69. davom et
 
 70. davom et
+
+71. davom etaver

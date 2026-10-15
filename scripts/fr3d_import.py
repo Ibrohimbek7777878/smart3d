@@ -37,6 +37,7 @@ FURN = ROOT / "app" / "data" / "furnitura-catalog.json"
 MATIDX = ROOT / "app" / "data" / "materials-index.json"
 
 sys.path.insert(0, str(PARSER_DIR))
+sys.dont_write_bytecode = True   # parser boshqa loyihada — u yerga __pycache__ yozilmasin (faqat o'qish, 2.10)
 import b3d_full_parser as P  # noqa: E402
 
 AX = "XYZ"
@@ -222,7 +223,7 @@ def best_candidate(name, pool, strict=False):
 def link(name, kind, furn, f_by_norm, mats, m_by_norm, old):
     """kind: furnitura | plita | kromka. Avval qo'lda tasdiqlangan yozuv saqlanadi."""
     prev = old.get(name)
-    if prev and prev.get("holat") == "tasdiqlangan":
+    if prev and prev.get("holat") in ("tasdiqlangan", "rad_etilgan"):   # egasining qarori saqlanadi (TZ-04)
         return prev
     rec = OrderedDict(nom=name, tur=kind)
     if kind == "kromka":

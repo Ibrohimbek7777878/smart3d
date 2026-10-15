@@ -345,6 +345,10 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     : (materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0.35);
 
   const missing = [];
+  /* TZ-04: narx manbasi egasi tasdig'i bo'lmasa (price_src "egasi, <sana>" emas) — qator "taxminiy" */
+  const taxminiy = [];
+  const tasdiqlangan = (m) => /^egasi/.test(String((m && m.price_src) || ''));
+  const markTaxminiy = (group) => { if (!taxminiy.includes(group)) taxminiy.push(group); return ' — taxminiy'; };
   const noteMissing = (group, code, name) => {
     if (!missing.some(m => m.group === group && m.code === code)) missing.push({ group, code, name: name || code });
   };
@@ -454,10 +458,12 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     const price = edgePrice(a.material);
     const amount = Math.round(a.meters * price);
     edgeCost += amount;
+    const em = edgeByCode[a.material] || edgeByCode[String(a.material).replace(/\./g, '')];
+    const tx = price > 0 && !tasdiqlangan(em);
     lines.push({
       group: 'Kromka', code: a.material,
-      name: (edgeByCode[a.material] || {}).name || a.name || a.material,
-      qty: Math.round(a.meters * 100) / 100, unit: 'm', unit_price: price, amount, no_price: !(price > 0)
+      name: ((em || {}).name || a.name || a.material) + (tx ? markTaxminiy('Kromka') : ''),
+      qty: Math.round(a.meters * 100) / 100, unit: 'm', unit_price: price, amount, no_price: !(price > 0), taxminiy: tx
     });
   }
 
@@ -483,10 +489,11 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     const amount = qty * price;
     holeCost += amount;
     totalHoles += qty;
+    const tx = price > 0 && !tasdiqlangan(holeByKind[kind] || holeByKind.drill);
     lines.push({
       group: 'Xizmatlar', code: 'hole:' + kind,
-      name: `${((holeByKind[kind] || holeByKind.drill || {}).name) || "Teshik burg'ilash"} (${qty} dona)`,
-      qty, unit: 'dona', unit_price: price, amount, no_price: !(price > 0)
+      name: `${((holeByKind[kind] || holeByKind.drill || {}).name) || "Teshik burg'ilash"} (${qty} dona)` + (tx ? markTaxminiy('Prisadka') : ''),
+      qty, unit: 'dona', unit_price: price, amount, no_price: !(price > 0), taxminiy: tx
     });
   }
 
@@ -496,10 +503,11 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   const laborCost = Math.max(pieceLabor, fragLabor);
   if (!(labor.panel_per_piece > 0 || labor.per_fragment_min > 0) && totalParts) noteMissing('Ish haqi', 'labor', 'Ish haqi stavkasi');
   if (laborCost > 0) {
+    const tx = !tasdiqlangan(labor);
     lines.push({
       group: 'Ish haqi', code: 'labor',
-      name: `Arralash, kromka urish va sex yig'ish (${totalParts} detal)`,
-      qty: totalParts, unit: 'detal', unit_price: Math.round(laborCost / (totalParts || 1)), amount: laborCost
+      name: `Arralash, kromka urish va sex yig'ish (${totalParts} detal)` + (tx ? markTaxminiy('Ish haqi') : ''),
+      qty: totalParts, unit: 'detal', unit_price: Math.round(laborCost / (totalParts || 1)), amount: laborCost, taxminiy: tx
     });
   }
 
@@ -537,6 +545,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     clientTotal,
     perModule,
     missing,
+    taxminiy,
     sheetCost,
     edgeCost,
     hwCost,

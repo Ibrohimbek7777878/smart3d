@@ -42,6 +42,12 @@ export default async function run(page) {
   });
   await M(() => window.__s3d.openTab('plan')); await page.waitForTimeout(600);
   await page.screenshot({ path: (process.env.QA_OUT || 'tests/ui/out') + '/mc.png' });
+  /* TZ-04: tasdiqlanmagan narx — smetada ogohlantirish va sex tannarxi jadvalida belgi */
+  await M(() => window.__s3d.openTab('smeta')); await page.waitForTimeout(400);
+  R.taxminiy = await M(() => ({
+    ogohlantirish: /Taxminiy narx/.test(document.getElementById('smMsgs').textContent),
+    jadvalda: [...document.querySelectorAll('#smWorkshopTable tbody td:first-child')].map(td => td.textContent).filter(t => /taxminiy/.test(t)),
+    guruhlar: window.__s3d.state._res.prod.taxminiy }));
   R.errs = await M(() => document.documentElement.dataset.errs || "(xato yo'q)");
   return R;
 }

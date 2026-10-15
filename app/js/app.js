@@ -181,7 +181,7 @@ function doRecalc() {
 
   state._res = { priceRes, val, cutlists, prod, nest };
   renderTotal(priceRes);
-  renderMsgs(val, priceRes);
+  renderMsgs(val, priceRes, prod);
   renderSmeta(priceRes, prod);
   renderNest(nest);
   renderCutlist(cutlists);
@@ -224,7 +224,7 @@ function renderTotal(priceRes) {
   $('#smSub').innerHTML = n + ' dona mebel<br>korpus: ' + esc(state.materialCode) + ' · fasad: ' + esc(state.fasadCode);
 }
 
-function renderMsgs(val, priceRes) {
+function renderMsgs(val, priceRes, prod) {
   const box = $('#smMsgs');
   const items = [];
   for (const e of val.errors) items.push(`<div class="msg err">❌ ${esc(e.code)} — ${esc(e.message)}</div>`);
@@ -237,6 +237,10 @@ function renderMsgs(val, priceRes) {
   if (priceRes.missing && priceRes.missing.length) {
     items.push(`<div class="msg warn">⚠️ <b>Smeta to'liq emas</b> — ${priceRes.missing.length} ta narx bazada yo'q
       (0 so'm deb olindi, o'ylab topilmaydi): ${priceRes.missing.map(m => esc(m.name)).join(', ')}</div>`);
+  }
+  if (prod && prod.taxminiy && prod.taxminiy.length) {
+    items.push(`<div class="msg warn">⚠️ <b>Taxminiy narx</b> — ${prod.taxminiy.map(esc).join(', ')}: egasi hali tasdiqlamagan
+      (narx-toldirish jadvali, TZ-04)</div>`);
   }
   if (!items.length) items.push('<div class="msg ok">✅ Chizma to\'g\'ri — xato yo\'q</div>');
   box.innerHTML = items.join('');
@@ -261,12 +265,13 @@ function renderSmeta(priceRes, prod) {
   const wTf = $('#smWorkshopTable')?.querySelector('tfoot');
   if (wTb && prod) {
     const b = prod.breakdown || {};
+    const tx = (g) => (prod.taxminiy || []).includes(g);
     const rows = [
       { name: 'Varaqlar (LDSP/MDF/HDF)', qty: `${b.sheetsCount || 0} dona (${b.panelAreaM2 || 0} m²)`, unit: '-', amount: prod.sheetCost },
-      { name: 'Kromka (qirra lenta)', qty: `${b.edgeMeters || 0} metr`, unit: '-', amount: prod.edgeCost },
+      { name: 'Kromka (qirra lenta)' + (tx('Kromka') ? ' — taxminiy' : ''), qty: `${b.edgeMeters || 0} metr`, unit: '-', amount: prod.edgeCost },
       { name: 'Furnitura / apparatura', qty: `${b.hwCount || 0} dona`, unit: '-', amount: prod.hwCost },
-      { name: 'Prisadka (burg\'ulash)', qty: `${b.holeCount || 0} ta teshik`, unit: '-', amount: prod.holeCost },
-      { name: 'Ish haqi / Usta mehnati (taxminiy stavka)', qty: 'Loyiha', unit: '-', amount: prod.laborCost }
+      { name: 'Prisadka (burg\'ulash)' + (tx('Prisadka') ? ' — taxminiy' : ''), qty: `${b.holeCount || 0} ta teshik`, unit: '-', amount: prod.holeCost },
+      { name: 'Ish haqi / Usta mehnati' + (tx('Ish haqi') ? ' — taxminiy' : ''), qty: 'Loyiha', unit: '-', amount: prod.laborCost }
     ];
     if (prod.missing.length) rows.push({ name: '⚠️ Narxi bazada yo\'q (0 deb olindi)', qty: prod.missing.length + ' ta', unit: '-', amount: 0 });
     wTb.innerHTML = rows.map(r => `

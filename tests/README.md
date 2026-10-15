@@ -2,7 +2,7 @@
 
 | Buyruq | Nima tekshiradi |
 |---|---|
-| `bash tests/run-all.sh` | Node testlari (7 to'plam): kroy, GibLab, BPJ, AI tahlilchi, poligon xona, oshxona elementlari, GLB, eksportlar, MebelCity modullari |
+| `bash tests/run-all.sh` | Node testlari (8 to'plam): kroy, GibLab, BPJ, AI tahlilchi, poligon xona, oshxona elementlari, GLB, eksportlar, MebelCity modullari, narx jadvali va "taxminiy" belgisi |
 | `bash tests/ui/run.sh` | Brauzer testlari: 7 qurilma, teginish, oynalar, smeta, MC modullari, eksport. Natija: `tests/ui/out/` (yoki `QA_OUT=...`) |
 | `cd server && NODE_ENV=test npm test` | Server: kirish, xavfsizlik, API |
 | `node tests/giblab_check.mjs FAYL.project` | Istalgan GibLab `.project` faylini tekshirish |
