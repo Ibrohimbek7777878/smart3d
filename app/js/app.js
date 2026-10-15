@@ -23,7 +23,7 @@ import { buildProject as buildGlProject } from './engine/giblab.js';
 import { cncBundle, cutGCode } from './engine/cnc.js';
 import { buildSearchIndex, searchMaterial } from './engine/search.js';
 import { applySexStandart } from './engine/standart.js';
-import { aiBuild, startVoice, voiceSupported, parseZamer, suggestLayout } from './ai.js';
+import { aiBuild, startVoice, voiceSupported, parseZamer, suggestLayout, USTKI_Z } from './ai.js';
 import { VRButton } from '../vendor/three/addons/webxr/VRButton.js';
 import * as THREE from 'three';
 import { render1080p, render360Panorama } from './engine/photo-render.js';
@@ -466,8 +466,13 @@ function setDoc(doc, opts = {}) {
 function addPlacement(frag) {
   const bb = roomBBox(state.doc.room.outline);
   const id = 'p' + (state.idSeq++);
+  /* TZ-15: ustki (osma) modul — AI bilan bir xil balandlikda; bo'sh joy faqat balandligi
+     kesishadigan modullar orasidan (ustki — ustkilar, pastki — pastkilar orasidan) */
+  const ustki = /^(wall_cabinet|wall_corner)$/.test(frag.category) || /^kuxnya-(ustki|antresol)$/.test(frag.group || '');
+  const z0 = frag.default_z != null ? +frag.default_z : (ustki ? USTKI_Z : 0);
+  const zKesishadi = (p) => { const pz = +p.z || 0; return pz < z0 + (+frag.h || 0) && z0 < pz + (+p.h || 0); };
   // devor bo'ylab eng chap bo'sh joy — rot'li modullar uchun ham (footprint, A2)
-  const row = state.doc.placements.filter(p => footprint(p).y0 < 300 + bb.minY)
+  const row = state.doc.placements.filter(p => footprint(p).y0 < 300 + bb.minY && zKesishadi(p))
     .sort((a, b) => footprint(a).x0 - footprint(b).x0);
   let x = bb.minX;
   for (const p of row) {
@@ -479,7 +484,7 @@ function addPlacement(frag) {
   // qarama-qarshi devor band bo'lsa — markazga
   const p = {
     id, frg: frag.code, name: frag.name,
-    x: Math.round(x / 50) * 50, y: 50, z: frag.default_z || 0,
+    x: Math.round(x / 50) * 50, y: 50, z: z0,
     w: frag.w, d: frag.d, h: frag.h, rot: 0, qty: 1
   };
   state.doc.placements.push(p);
@@ -507,7 +512,7 @@ function showItemCard(id) {
   $('#itemCard').classList.remove('hidden');
   $('#icName').textContent = p.name || frag.name || p.frg;
   $('#icCode').textContent = p.frg;
-  $('#icW').value = p.w; $('#icD').value = p.d; $('#icH').value = p.h; $('#icX').value = p.x;
+  $('#icW').value = p.w; $('#icD').value = p.d; $('#icH').value = p.h; $('#icX').value = p.x; $('#icZ').value = p.z || 0;
   checkClamp(p, frag);
 }
 function hideItemCard() { $('#itemCard').classList.add('hidden'); $('#icWarn').classList.add('hidden'); }
@@ -1566,7 +1571,7 @@ async function boot() {
     if (!state.selectedId) return;
     const p = state.doc.placements.find(x => x.id === state.selectedId);
     const frag = state.catalog[p.frg] || {};
-    const patch = { [key]: Math.round(+e.target.value || 0) };
+    const patch = { [key]: key === 'z' ? Math.max(0, Math.round(+e.target.value || 0)) : Math.round(+e.target.value || 0) };
     Object.assign(p, patch);
     const want = { w: p.w, d: p.d, h: p.h };        // usta kiritgan — ogohlantirish shu bo'yicha
     const cl = clampSize(p, frag);
@@ -1575,8 +1580,8 @@ async function boot() {
     checkClamp(want, frag, true);
     scheduleRecalc();
   };
-  ['icW', 'icD', 'icH', 'icX'].forEach((id, i) => {
-    $('#' + id).addEventListener('change', numPatch(['w', 'd', 'h', 'x'][i]));
+  ['icW', 'icD', 'icH', 'icX', 'icZ'].forEach((id, i) => {
+    $('#' + id).addEventListener('change', numPatch(['w', 'd', 'h', 'x', 'z'][i]));
   });
   /* TZ-03: xizmat tanlovi loyiha hujjatida saqlanadi (doc.xizmatlar) */
   $('#xzTeshik').addEventListener('change', (e) => {

@@ -133,7 +133,7 @@ body.panel-open.panel-tall #stage { bottom: calc(var(--sheet-tall-h) + var(--saf
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #itemCard .ic-code { font-size: 10px; color: var(--muted); background: var(--surface-2);
   border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; }
-.ic-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; align-items: end; }
+.ic-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; align-items: end; }
 .ic-grid label { font-size: 10px; color: var(--muted); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ic-grid input, .ic-grid select {
   width: 100%; padding: 7px 8px; border: 1px solid var(--line);

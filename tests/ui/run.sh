@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Smart3D — brauzer regressiya testlari (TZ-SAYT-BARQARORLIK-RESPONSIVE §7).
 #   bash tests/ui/run.sh            # hammasi
-#   bash tests/ui/run.sh matrix     # bittasi: phase1 | matrix | touch | modals | phase3 | mc | eksport | burish | xizmat
+#   bash tests/ui/run.sh matrix     # bittasi: phase1 | matrix | touch | modals | phase3 | mc | eksport | burish | xizmat | ustki
 # Kerak: Node + browser-automation skill (patchright). Natija va skrinshotlar: tests/ui/out/
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -17,7 +17,7 @@ SRV=$!
 trap 'kill $SRV 2>/dev/null || true' EXIT          # faqat o'zimiz ochgan server (PID bo'yicha)
 sleep 1
 
-SUITES="${*:-phase1 matrix touch modals phase3 mc eksport burish xizmat}"
+SUITES="${*:-phase1 matrix touch modals phase3 mc eksport burish xizmat ustki}"
 for s in $SUITES; do
   echo "=== $s"
   node "$BROWSER_MJS" "http://127.0.0.1:$PORT/" --script "tests/ui/$s.mjs" --timeout 60000 2>&1 \

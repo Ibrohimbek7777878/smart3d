@@ -34,6 +34,9 @@ function parseNum(s) {
  * O'zbek tilidagi erkin zamer va buyurtma matnini tahlil qiladi.
  * Masalan: "3x4 metr oshxona, L shakl, burchakka tumba, gaz plita, tepasiga osma shkaf, xolodilnik"
  */
+/** Ustki (osma) shkaf balandligi poldan, mm — AI ham, katalog ham shuni ishlatadi (TZ-15) */
+export const USTKI_Z = 1450;
+
 export function parseZamer(text) {
   let t = String(text || '').toLowerCase();
   const unknown = [];
@@ -343,14 +346,14 @@ export function suggestLayout(room, catalog = {}, orders = []) {
     while (uX + 600 <= maxWallX) {
       const uFrag = (uX + 900 <= maxWallX) ? upperWide : upperStandard;
       const uW = (uX + 900 <= maxWallX) ? 900 : 600;
-      place(uFrag, uX, margin, 1450, 0, uW);
+      place(uFrag, uX, margin, USTKI_Z, 0, uW);
       uX += uW;
     }
 
     // Chap devor ustki qatori (rot 270: anchor = uY + 600, footprint [uY, uY+600])
     let uY = margin + 600;
     while (uY + 600 <= (feat.fridge ? maxWallY - 600 : maxWallY)) {
-      place(upperStandard, margin, uY + 600, 1450, 270, 600);
+      place(upperStandard, margin, uY + 600, USTKI_Z, 270, 600);
       uY += 600;
     }
 
@@ -431,7 +434,7 @@ export function suggestLayout(room, catalog = {}, orders = []) {
   while (uX + 600 <= curX) {
     const uFrag = (uX + 900 <= curX) ? upperWide : upperStandard;
     const uW = (uX + 900 <= curX) ? 900 : 600;
-    place(uFrag, uX, margin, 1450, 0, uW);
+    place(uFrag, uX, margin, USTKI_Z, 0, uW);
     uX += uW;
   }
 
