@@ -1,6 +1,6 @@
 # Loyiha TZ'lari — ro'yxat va navbat
 
-**Yangilandi:** 2026-10-16 (kechqurun)
+**Yangilandi:** 2026-10-17
 
 ## Qanday ishlaydi
 - Har ish uchun alohida TZ shu papkada. Bajarish **navbat bilan**.
@@ -40,6 +40,7 @@
 | 23 | [3D ko'rinish Bazis-Cloud darajasida, rang va material tanlash, backend funksiyalari interfeysda](23-3d-korinish-va-backend-interfeys.md) | **BAJARILDI** 2026-10-16 (`dizayn`) — C1 (buyurtma) pauza; **A1 tuzatish** (aylantirganda ekran yangilanmaydi, #132) — bajarildi (TZ-25 ichida) | egasi: parolsiz email bilan kirish usuli (#119-3), yangi oynalar skrinshoti (3.3) |
 | 24 | [O'z modulini chizish va tayyor promptlar kutubxonasi](24-modul-chizish-va-tayyor-promptlar.md) | **BAJARILDI** 2026-10-16 (`dizayn`) | egasi: yangi oynalar skrinshoti (3.3), 4 savol; texnolog: qoidalar raqamlari |
 | 25 | [Bosh ish joyi — Bazis kabi bitta ekran: matn qatori, Bazis faylini ochish, xona va mebel chizish](25-bosh-ish-joyi.md) | **BAJARILDI** 2026-10-17 (`dizayn`) | egasi: yangi ish joyini ko'rib chiqish (skrinshotlar `tests/ui/out/web/ishjoyi-*.png`) |
+| 26 | [AI konstruksiya: usta matni → Claude → tizim tili → ideal chizma](26-ai-konstruksiya.md) | **BAJARILDI** 2026-10-17 (`dizayn`) — AI'siz tahlilchi ishlaydi | admin: Claude kaliti serverga (`AI_PROVIDER=anthropic`, `ANTHROPIC_API_KEY`) — `server/DEPLOY.md` |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.
