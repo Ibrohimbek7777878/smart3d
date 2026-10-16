@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 import { useKirish } from './useKirish.js';
 
@@ -29,26 +30,26 @@ export default function Kirish() {
             <span style={{"width":"32px","height":"32px","borderRadius":"10px","background":"var(--sfc2)","color":"var(--cyan)","display":"grid","placeItems":"center"}}>
               <Ikon n="tayyor" size={18} gap={0} />
             </span>
-            {"Detal va raskroy — avtomatik"}
+            {t('kirish.detal_va_raskroy_avtomatik')}
           </span>
           <span style={{"display":"flex","gap":"12px","alignItems":"center","fontSize":"17px","fontWeight":"700"}}>
             <span style={{"width":"32px","height":"32px","borderRadius":"10px","background":"var(--sfc2)","color":"var(--cyan)","display":"grid","placeItems":"center"}}>
               <Ikon n="tayyor" size={18} gap={0} />
             </span>
-            {"Smeta zapchasti bilan, bir zumda"}
+            {t('kirish.smeta_zapchasti_bilan_bir')}
           </span>
           <span style={{"display":"flex","gap":"12px","alignItems":"center","fontSize":"17px","fontWeight":"700"}}>
             <span style={{"width":"32px","height":"32px","borderRadius":"10px","background":"var(--sfc2)","color":"var(--cyan)","display":"grid","placeItems":"center"}}>
               <Ikon n="tayyor" size={18} gap={0} />
             </span>
-            {"Stanok fayli — bir tugmada"}
+            {t('kirish.stanok_fayli_bir_tugmada')}
           </span>
         </div>
       </aside>
       <main style={{"display":"flex","alignItems":"center","justifyContent":"center","padding":"32px 16px"}}>
         <div style={{"width":"min(440px,100%)","display":"flex","flexDirection":"column","gap":"22px"}}>
           <a href="index.html" style={{"alignSelf":"flex-start","color":"var(--mut)","fontWeight":"700","fontSize":"15px","minHeight":"44px","display":"flex","alignItems":"center"}}>
-            {"← Saytga qaytish"}
+            {t('kirish.saytga_qaytish')}
           </a>
           {v.hasPending ? (<>
             <div style={{"display":"flex","gap":"12px","alignItems":"center","padding":"12px 14px","borderRadius":"16px","background":"rgba(255,122,69,.12)","border":"1px solid rgba(255,122,69,.4)"}}>
@@ -72,9 +73,9 @@ export default function Kirish() {
             {v.isReg ? (<>
               <label style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
                 <span style={{"fontSize":"14px","fontWeight":"700","color":"var(--txt)"}}>
-                  {"Ismingiz"}
+                  {t('kirish.ismingiz')}
                 </span>
-                <input autoComplete="name" value={v.f?.name} onChange={v.onName} placeholder="Jasur Aliyev" style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","borderColor":v.f?.bName}} />
+                <input autoComplete="name" value={v.f?.name} onChange={v.onName} placeholder={t('kirish.jasur_aliyev')} style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","borderColor":v.f?.bName}} />
                 {v.f?.eName ? (<>
                   <span style={{"fontSize":"13px","color":"var(--danger)","fontWeight":"600"}}>
                     <span className="sc-interp">{v.f?.eNamet}</span>
@@ -85,9 +86,9 @@ export default function Kirish() {
             {/* TZ-09 Q2: email bilan kirish — "Ismingiz" maydoni uslubida */}
             <label style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
               <span style={{"fontSize":"14px","fontWeight":"700","color":"var(--txt)"}}>
-                {"Email"}
+                {t('kirish.email')}
               </span>
-              <input type="email" inputMode="email" autoComplete="email" value={v.f?.email} onChange={v.onEmail} placeholder="jasur@mail.uz" style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","borderColor":v.f?.bEmail}} />
+              <input type="email" inputMode="email" autoComplete="email" value={v.f?.email} onChange={v.onEmail} placeholder={t('kirish.jasur_mail_uz')} style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","borderColor":v.f?.bEmail}} />
               {v.f?.eEmail ? (<>
                 <span style={{"fontSize":"13px","color":"var(--danger)","fontWeight":"600"}}>
                   <span className="sc-interp">{v.f?.eEmailt}</span>
@@ -97,7 +98,7 @@ export default function Kirish() {
             {v.isReg ? (<>
             <label style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
               <span style={{"fontSize":"14px","fontWeight":"700","color":"var(--txt)"}}>
-                {"Telefon"}
+                {t('kirish.telefon')}
               </span>
               <div style={{"display":"flex","alignItems":"center","height":"52px","borderRadius":"14px","background":"var(--bg)","border":`1px solid ${v.f?.bPhone}`,"overflow":"hidden"}}>
                 <span style={{"padding":"0 4px 0 16px","fontWeight":"700","color":"var(--mut)","fontVariantNumeric":"tabular-nums"}}>
@@ -114,11 +115,11 @@ export default function Kirish() {
             </>) : null}
             <label style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
               <span style={{"fontSize":"14px","fontWeight":"700","color":"var(--txt)"}}>
-                {"Parol"}
+                {t('kirish.parol')}
               </span>
               <div style={{"display":"flex","alignItems":"center","height":"52px","borderRadius":"14px","background":"var(--bg)","border":`1px solid ${v.f?.bPass}`,"overflow":"hidden"}}>
-                <input type={v.f?.passType} autoComplete={v.f?.passAuto} value={v.f?.pass} onChange={v.onPass} placeholder="kamida 8 belgi" style={{"flex":"1","minWidth":"0","height":"100%","background":"transparent","border":"0","color":"var(--txt)","fontSize":"16px","outline":"none","padding":"0 16px"}} />
-                <button onClick={v.toggleEye} aria-label="Parolni ko'rsatish" style={{"width":"52px","height":"52px","background":"transparent","border":"0","color":"var(--mut)","fontSize":"18px","cursor":"pointer"}}>
+                <input type={v.f?.passType} autoComplete={v.f?.passAuto} value={v.f?.pass} onChange={v.onPass} placeholder={t('kirish.kamida_8_belgi')} style={{"flex":"1","minWidth":"0","height":"100%","background":"transparent","border":"0","color":"var(--txt)","fontSize":"16px","outline":"none","padding":"0 16px"}} />
+                <button onClick={v.toggleEye} aria-label={t('kirish.parolni_korsatish')} style={{"width":"52px","height":"52px","background":"transparent","border":"0","color":"var(--mut)","fontSize":"18px","cursor":"pointer"}}>
                   <Ikon n={v.f?.eye} size={20} gap={0} />
                 </button>
               </div>
@@ -143,12 +144,12 @@ export default function Kirish() {
             {v.isReg ? (<>
               <label style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
                 <span style={{"fontSize":"14px","fontWeight":"700","color":"var(--txt)"}}>
-                  {"Sex nomi "}
+                  {t('kirish.sex_nomi')}
                   <span style={{"color":"var(--mut)","fontWeight":"500"}}>
-                    {"· ixtiyoriy"}
+                    {t('kirish.ixtiyoriy')}
                   </span>
                 </span>
-                <input value={v.f?.shop} onChange={v.onShop} placeholder="Mebel-Pro" style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none"}} />
+                <input value={v.f?.shop} onChange={v.onShop} placeholder={t('kirish.mebel_pro')} style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none"}} />
               </label>
             </>) : null}
           </div>

@@ -4,6 +4,9 @@ import { confirmNo, confirmYes } from '../store/ui.js';
 import Tasdiq from '../shared/ui/Tasdiq.jsx';
 import Toast from '../shared/ui/Toast.jsx';
 import XatoChegarasi from '../shared/ui/XatoChegarasi.jsx';
+import TilMenyu from '../shared/ui/TilMenyu.jsx';
+import { useTil } from '../i18n/index.js';
+import { set } from '../store/index.js';
 import Kirish from '../features/auth/Kirish.jsx';
 import Onboarding from '../features/onboarding/Onboarding.jsx';
 import Header from '../features/shell/Header.jsx';
@@ -22,6 +25,7 @@ const M = ({ m, joy, children }) => <XatoChegarasi modul={m} joy={joy}>{children
 
 export default function App() {
   const { screen } = useSlice('nav');
+  useTil();                                         // TZ-18: til almashsa — hamma matn qayta chiziladi (sahifa yuklanmaydi)
   const ui = useSlice('ui');
   const [Page, pageM] = SHELL[screen] || [];
   return (
@@ -39,6 +43,7 @@ export default function App() {
       <Tasdiq cf={ui.cf} onNo={confirmNo} onYes={confirmYes} />
       <M m="editor/varaq"><Varaqlar /></M>
       <Toast text={ui.toast} code={ui.toastCode} />
+      <TilMenyu pos={ui.tilMenu} onClose={() => set('ui', { tilMenu: null })} />
     </div>
   );
 }

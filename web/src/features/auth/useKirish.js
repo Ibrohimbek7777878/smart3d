@@ -3,6 +3,7 @@ import { telGuruh } from '../../shared/lib/format.js';
 import { useViewer } from '../../shared/design3d/useViewer.js';
 import { s3Viewer, s3Mats, s3Build, s3Apply, s3Spec } from '../../shared/design3d/engine.js';
 import { setField, submitAuth, swapAuth } from './actions.js';
+import { t } from '../../i18n/index.js';
 
 /* ro'yxat oynasidagi aylanuvchi shkaf — dizayn animatsiyasi (marketing namunasi, o'zgarishsiz) */
 function regViewer(T, h, o) {
@@ -26,12 +27,12 @@ export function useKirish() {
   const pd = nav.pending;
   return {
     isReg: reg, regHost, regOv,
-    hasPending: !!pd, pendingText: pd ? (pd.mod + (pd.w ? ' · ' + pd.w + ' mm' : '') + ' — ro\'yxatdan keyin loyihangizda turadi') : '',
-    f: { title: reg ? 'Ro\'yxatdan o\'tish' : 'Kirish', sub: reg ? '1 daqiqa. Keyin birinchi loyihangizni chizasiz.' : 'Email va parolingiz bilan.',
-      cta: reg ? 'Ro\'yxatdan o\'tish' : 'Kirish', alt: reg ? 'Akkauntingiz bormi?' : 'Akkaunt yo\'qmi?', altCta: reg ? 'Kirish' : 'Ro\'yxatdan o\'tish',
+    hasPending: !!pd, pendingText: pd ? t('kirish.pending', { mod: pd.mod + (pd.w ? ' · ' + pd.w + ' ' + t('umumiy.mm') : '') }) : '',
+    f: { title: reg ? t('kirish.royxat') : t('kirish.kirish'), sub: reg ? t('kirish.royxat_sub') : t('kirish.kirish_sub'),
+      cta: reg ? t('kirish.royxat') : t('kirish.kirish'), alt: reg ? t('kirish.akkaunt_bormi') : t('kirish.akkaunt_yoqmi'), altCta: reg ? t('kirish.kirish') : t('kirish.royxat'),
       name: f.name, email: f.email, eEmail: !!e.email, eEmailt: e.email || '', bEmail: bd('email'), passAuto: reg ? 'new-password' : 'current-password',
       phone: telGuruh(f.phone), pass: f.pass, shop: f.shop, passType: f.show ? 'text' : 'password', eye: f.show ? 'yashirish' : 'korish',
-      bars: [1, 2, 3, 4].map(i => ({ c: i <= sc ? STRENGTH_C[sc] : 'var(--sfc2)' })), strength: ['', 'Zaif', 'O\'rtacha', 'Yaxshi', 'Kuchli'][sc],
+      bars: [1, 2, 3, 4].map(i => ({ c: i <= sc ? STRENGTH_C[sc] : 'var(--sfc2)' })), strength: ['', t('kirish.zaif'), t('kirish.ortacha'), t('kirish.yaxshi'), t('kirish.kuchli')][sc],
       eName: !!e.name, eNamet: e.name || '', ePhone: !!e.phone, ePhonet: e.phone || '', ePass: !!e.pass, ePasst: e.pass || '',
       bName: bd('name'), bPhone: bd('phone'), bPass: bd('pass') },
     onName: ev => setField({ name: ev.target.value }),

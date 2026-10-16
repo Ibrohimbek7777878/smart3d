@@ -11,6 +11,8 @@ export default async function run(page) {
   const masks = {};
   page.on('pageerror', e => errs.push(String(e).slice(0, 200)));
   await page.setViewportSize({ width: W, height: H });
+  /* TZ-18: test brauzeri ingliz tilida — React sahifa o'zbek tilida solishtiriladi (dizayn — o'zbekcha) */
+  if (TAG === 'react') { await page.evaluate(() => localStorage.setItem('s3d-til', 'uz'), undefined, false); await page.reload(); }
   /* animatsiyalarni to'xtatmaymiz (dizaynga aralashmaslik uchun) — faqat yetarli kutamiz */
   await page.waitForTimeout(3500);
 

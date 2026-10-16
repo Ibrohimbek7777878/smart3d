@@ -24,7 +24,7 @@ async function asosiy(page, R) {
   const app = (fn) => M(fn);
 
   await page.setViewportSize({ width: 1440, height: 900 });
-  await M(() => { localStorage.clear(); sessionStorage.clear(); });
+  await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
   await page.reload(); await page.waitForTimeout(1500);
   await fill('Jasur', 'Varaq Usta'); await fill('jasur@', 'varaq' + Date.now() + '@test.uz');
   const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));

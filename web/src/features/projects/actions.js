@@ -5,6 +5,7 @@ import { toast, confirm, xato } from '../../store/ui.js';
 import * as L from '../../services/loyiha.js';
 import { clamp } from '../../shared/lib/format.js';
 import { runAI } from '../editor/ai/actions.js';
+import { t } from '../../i18n/index.js';
 
 /* TZ-19: loyiha hayoti — ro'yxat, ochish, yangi, fayldan, o'chirish, saytdan kelgan modul. */
 const EDITOR = { screen: 'app' };
@@ -30,7 +31,7 @@ export async function openProject(id) {
 /** "+ Yangi loyiha" → onboarding */
 export function newProject() {
   S.resetCurrent(); project.reset(); project.res = null;
-  set('project', { name: 'Yangi loyiha', client: '' });
+  set('project', { name: t('umumiy.yangi_loyiha'), client: '' });
   set('editor', { sel: null, part: null, warn: {} });
   set('nav', { screen: 'onb1' });
 }
@@ -63,14 +64,14 @@ export function applyPending() {
   const warn = L.setSize(p, frag, 'w', pd.w);
   set('editor', s => ({ sel: p.id, warn: warn ? { ...s.warn, [p.id]: warn } : s.warn }));
   project.changed('items', true);
-  setTimeout(() => toast('Saytdagi modul loyihaga qo\'shildi: ' + pd.mod + ' · ' + p.w + ' mm'), 400);
+  setTimeout(() => toast(t('loyihalar.saytdan_modul', { kod: pd.mod, w: p.w })), 400);
 }
 
 export async function openPending() {
   await project.load();
   if (!project.H) return;
   S.resetCurrent(); project.reset();
-  set('project', { name: 'Yangi loyiha' });
+  set('project', { name: t('umumiy.yangi_loyiha') });
   set('nav', EDITOR); set('editor', { step: 2, done: { 1: true }, tip: 3 });
   project.changed('room', true);
   applyPending();
@@ -91,16 +92,16 @@ export function openFile(ev) {
     set('nav', EDITOR); set('editor', { step: 2, done: { 1: true }, tip: 3 });
     project.apply(p);
     S.changed();
-    toast('Loyiha fayldan ochildi — ' + p.doc.placements.length + ' mebel');
+    toast(t('loyihalar.fayldan_ochildi', { n: p.doc.placements.length }));
   };
   rd.readAsText(f);
 }
 
 /** o'chirish = yashirish (arxiv), eski saytdagidek */
 export function askRemove(p) {
-  confirm({ title: 'Loyihani o\'chirasizmi?', text: '"' + (p.name || 'Loyiha') + '" ro\'yxatdan olib tashlanadi.', ok: 'O\'chirish', danger: true,
+  confirm({ title: t('loyihalar.ochirish_sarlavha'), text: t('loyihalar.ochirish_matn', { nom: p.name || t('umumiy.loyiha') }), ok: t('umumiy.ochirish'), danger: true,
     yes: async () => {
-      if (await S.removeProject(p.id)) { toast('Loyiha o\'chirildi'); goProjects(); }
-      else xato('S3D-NET-101', { matn: 'O\'chirilmadi — internetni tekshiring', modul: 'projects' });
+      if (await S.removeProject(p.id)) { toast(t('loyihalar.ochirildi')); goProjects(); }
+      else xato('S3D-NET-101', { matn: t('loyihalar.ochirilmadi'), modul: 'projects' });
     } });
 }

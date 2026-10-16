@@ -5,6 +5,7 @@ import * as L from '../../../services/loyiha.js';
 import { detalKarta, ichiniKorsaBoladi } from '../../../services/ichki.js';
 import { select } from '../actions.js';
 import { scene, bumpScene } from './sahna.js';
+import { t } from '../../../i18n/index.js';
 
 /* TZ-19: sahna va modul kartasi amallari (dizayndagi roomClick, modul kartasi tugmalari, eshik/tortma). */
 const items = () => scene.sahna && scene.sahna.items;
@@ -49,12 +50,12 @@ export function rotate() { const p = selected(); if (p) { L.rotate90(p); project
 export function duplicate() {
   const p = selected(); if (!p) return;
   const c = L.duplicatePlacement(project.doc, p.id);
-  set('editor', { sel: c.id }); project.changed('items'); toast('Nusxa qo\'shildi');
+  set('editor', { sel: c.id }); project.changed('items'); toast(t('sahna.nusxa_qoshildi'));
 }
 export function askDelete() {
   const p = selected(); if (!p) return;
-  confirm({ title: 'Modulni o\'chirasizmi?', text: p.frg + ' · ' + (p.name || '') + ' loyihadan olib tashlanadi.', ok: 'O\'chirish', danger: true,
-    yes: () => { L.removePlacement(project.doc, p.id); select(null); project.changed('items', true); toast('Modul o\'chirildi'); } });
+  confirm({ title: t('sahna.ochirish_sarlavha'), text: t('sahna.ochirish_matn', { kod: p.frg, nom: p.name || '' }), ok: t('umumiy.ochirish'), danger: true,
+    yes: () => { L.removePlacement(project.doc, p.id); select(null); project.changed('items', true); toast(t('sahna.ochirildi')); } });
 }
 /** "Ichini ko'rish" (Q6) — faqat MebelCity modullari */
 export function openInside() {

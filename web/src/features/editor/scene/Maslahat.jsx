@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../../i18n/index.js';
 import { useMaslahat } from './useSahna.js';
 
 /* TZ-19: birinchi ochilishdagi maslahat (3 qadam) — JSX va stillar tasdiqlangan dizayndan. */
@@ -17,7 +18,7 @@ export default function Maslahat() {
       </div>
       <div style={{"display":"flex","gap":"8px","justifyContent":"flex-end"}}>
         <button onClick={v.tipSkip} style={{"height":"36px","padding":"0 12px","borderRadius":"10px","border":"0","background":"transparent","color":"#06231E","fontWeight":"700","cursor":"pointer"}}>
-          {"O'tkazib yuborish"}
+          {t('sahna.otkazib_yuborish')}
         </button>
         <button onClick={v.tipNext} style={{"height":"36px","padding":"0 14px","borderRadius":"10px","border":"0","background":"#06231E","color":"var(--cyan)","fontWeight":"800","cursor":"pointer"}}>
           <span className="sc-interp">{v.tip?.btn}</span>

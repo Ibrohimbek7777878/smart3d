@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 import { report } from '../lib/jurnal.js';
 
 /* TZ-19 §2: modul chegarasi (React ErrorBoundary). Bo'lim yiqilsa — faqat o'sha joyda xabar va "Qayta urinish",
@@ -21,9 +22,9 @@ export default class XatoChegarasi extends React.Component {
     return (
       <div role="alert" style={page ? { minHeight: '60vh', display: 'grid', placeItems: 'center', padding: '16px' } : undefined}>
         <div style={card}>
-          <span style={{ fontWeight: '800', fontSize: '16px' }}>Bu bo'limda xatolik yuz berdi</span>
-          <span style={{ fontSize: '13px', color: 'var(--mut, #9DB8B5)' }}>Qolgan qismlar ishlayveradi. Kod: <b style={{ fontFamily: "'JetBrains Mono',monospace" }}>S3D-UI-101</b> · {this.props.modul}</span>
-          <button onClick={() => this.setState({ err: null })} style={btn}>Qayta urinish</button>
+          <span style={{ fontWeight: '800', fontSize: '16px' }}>{t('umumiy.bu_bolimda_xatolik_yuz_berdi')}</span>
+          <span style={{ fontSize: '13px', color: 'var(--mut, #9DB8B5)' }}>{t('umumiy.qolgan_qismlar_ishlayveradi')} <b style={{ fontFamily: "'JetBrains Mono',monospace" }}>S3D-UI-101</b> · {this.props.modul}</span>
+          <button onClick={() => this.setState({ err: null })} style={btn}>{t('umumiy.qayta_urinish')}</button>
         </div>
       </div>
     );

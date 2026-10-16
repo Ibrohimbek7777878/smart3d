@@ -6,6 +6,7 @@ import { raqam } from '../../../shared/lib/format.js';
 import { openSettings } from '../../settings/actions.js';
 import { goStep } from '../actions.js';
 import { narxKorinishi } from './narx.js';
+import { t } from '../../../i18n/index.js';
 
 /* TZ-19: ③ Narx — mijoz narxi, tannarx, foyda, kotirovka, xizmatlar (S3), tannarx tarkibi, raskroy varaqlari, detallar. */
 const RANGLAR = ['#FF7A45', '#5FE1C4', '#B9A6FF', '#FFB59A', '#F3F0E9'];    // dizayndagi raskroy ranglari
@@ -28,7 +29,7 @@ function raskroy(R, idx) {
 function flipPrisadka(on) {
   project.doc.xizmatlar = Object.assign({}, project.doc.xizmatlar, { teshik: on });
   project.scheduleRecalc(true);
-  toast(on ? 'Prisadka smetaga qo\'shildi' : 'Prisadka smetadan olindi');
+  toast(on ? t('narx.prisadka_qoshildi') : t('narx.prisadka_olindi'));
 }
 
 export function useQadamNarx() {
@@ -42,28 +43,28 @@ export function useQadamNarx() {
   if (R) for (const cl of R.cutlists) for (const pt of cl.parts) { const k = pt.material || '—'; det[k] = (det[k] || 0) + (+pt.qty || 1); }
   return {
     price: narxKorinishi(R),
-    markupLabel: 'Foyda (+' + (prod ? Math.round((prod.markupPct || 0) * 100) : 0) + '%)',
-    hasMissing: missN > 0, missText: missN + ' ta zapchastning narxi bazada yo\'q — 0 deb olindi',
+    markupLabel: t('narx.foyda', { n: prod ? Math.round((prod.markupPct || 0) * 100) : 0 }),
+    hasMissing: missN > 0, missText: t('narx.zapchast_narxi_yoq', { n: missN }),
     toggleMissing: () => set('editor', { miss: !ed.miss }), missOpen: ed.miss,
     missing: prod ? prod.missing.map(m => ({ n: m.name || m.code, c: m.qty ? '×' + m.qty : '' })) : [],
     client: pj.client, onClient: ev => { set('project', { client: ev.target.value }); S.changed(); },
     quote: pr ? pr.lines.map(l => ({ name: l.code + ' · ' + l.name, dim: (l.w || 0) + '×' + (l.d || 0) + '×' + (l.h || 0), n: l.qty, p: raqam(l.amount) })) : [],
     /* TZ-04: tasdiqlanmagan narx — "taxminiy" (eski saytdagidek); prisadka tanlanmagan bo'lsa — belgi (S3) */
-    costRows: prod ? [['Plita', (B.sheetsCount || 0) + ' varaq · ' + dec(B.panelAreaM2) + ' m²', prod.sheetCost],
-      ['Kromka' + (taxminiy.includes('Kromka') ? ' · taxminiy' : ''), dec(B.edgeMeters) + ' m', prod.edgeCost],
-      ['Zapchast', (B.hwCount || 0) + ' dona', prod.hwCost],
-      ['Teshiklar' + (xzt.tanlangan ? (taxminiy.includes('Prisadka') ? ' · taxminiy' : '') : ' · tanlanmagan'), 'присадка · ' + (B.holeCount || 0), prod.holeCost],
-      ['Ish haqi', 'sex', prod.laborCost]].map(r => ({ name: r[0], q: r[1], p: raqam(r[2] || 0) })) : [],
-    xz: { on: !!xzt.tanlangan, sub: xzt.qty ? xzt.qty + ' teshik · ' + raqam(xzt.amount) + ' so\'m' : 'loyihada teshik yo\'q',
-      note: !xzt.tanlangan && xzt.qty ? 'Prisadka smetaga qo\'shilmagan — kerak bo\'lsa belgilang' : '',
+    costRows: prod ? [[t('narx.plita'), t('narx.plita_q', { n: B.sheetsCount || 0, m: dec(B.panelAreaM2) }), prod.sheetCost],
+      [t('narx.kromka') + (taxminiy.includes('Kromka') ? t('narx.taxminiy') : ''), t('narx.metr', { n: dec(B.edgeMeters) }), prod.edgeCost],
+      [t('narx.zapchast'), t('narx.dona_n', { n: B.hwCount || 0 }), prod.hwCost],
+      [t('narx.teshiklar') + (xzt.tanlangan ? (taxminiy.includes('Prisadka') ? t('narx.taxminiy') : '') : t('narx.tanlanmagan')), t('narx.prisadka_q', { n: B.holeCount || 0 }), prod.holeCost],
+      [t('narx.ish_haqi'), t('narx.sex'), prod.laborCost]].map(r => ({ name: r[0], q: r[1], p: raqam(r[2] || 0) })) : [],
+    xz: { on: !!xzt.tanlangan, sub: xzt.qty ? t('narx.teshik_sub', { n: xzt.qty, s: raqam(xzt.amount) }) : t('narx.teshik_yoq'),
+      note: !xzt.tanlangan && xzt.qty ? t('narx.prisadka_eslatma') : '',
       flip: () => flipPrisadka(!xzt.tanlangan) },
     rk: { n: rs.rk + 1, rects: rs.rects, ar: rs.cur ? rs.cur.L + '/' + rs.cur.W : '2800/2070',
-      summary: (NS.total_sheets || 0) + ' varaq · ' + (NS.panel_count || 0) + ' detal · isrof ' + Math.max(0, Math.round(100 - (NS.utilization_pct || 0))) + '%',
+      summary: t('narx.raskroy_summary', { v: NS.total_sheets || 0, d: NS.panel_count || 0, i: Math.max(0, Math.round(100 - (NS.utilization_pct || 0))) }),
       dots: Array.from({ length: rs.n }, (_, i) => ({ w: i === rs.rk ? '22px' : '6px', c: i === rs.rk ? 'var(--acc)' : 'var(--sfc3)' })) },
     rkPrev: () => set('editor', { rk: (rs.rk + rs.n - 1) % Math.max(1, rs.n) }),
     rkNext: () => set('editor', { rk: (rs.rk + 1) % Math.max(1, rs.n) }),
     openParams: () => openSettings('raskroy'),
-    detGroups: Object.entries(det).map(([mc, n]) => ({ n: project.H ? project.matName(mc) : mc, c: n + ' detal' })),
+    detGroups: Object.entries(det).map(([mc, n]) => ({ n: project.H ? project.matName(mc) : mc, c: t('narx.detal_n', { n }) })),
     goStep4: () => goStep(4)
   };
 }

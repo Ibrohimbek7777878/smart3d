@@ -10,6 +10,7 @@ import { goStep } from '../actions.js';
 import { teshikRoyxati, openTeshik } from './teshik.js';
 import { openShakl } from './shakl.js';
 import { openOshxona } from './oshxona.js';
+import { t } from '../../../i18n/index.js';
 
 /* TZ-19: ① Xona — shakl, o'lcham, teshiklar, oshxona elementlari. */
 const LIM = { w: [1500, 9000], d: [1500, 9000], h: [2200, 4000] };
@@ -34,12 +35,13 @@ export function useQadamXona() {
     commit: () => { if (raw[key] !== undefined) { applySize(key, raw[key], room); setRaw(r => ({ ...r, [key]: undefined })); } },
     key: ev => { if (ev.key === 'Enter') ev.target.blur(); }
   });
-  const kt = [['stoleshnitsa', 'Stoleshnitsa', H && H.catalog['SP-ST-001'] ? H.catalog['SP-ST-001'].h + ' mm, yaxlit' : 'yaxlit'],
-    ['sokol', 'Sokol', H && H.catalog['SP-ST-002'] ? H.catalog['SP-ST-002'].d + ' mm' : ''],   // tik planka: balandligi = d (kitchen.js)
-    ['dobor', 'Dobor', (K.doborH || 60) + ' mm'], ['karniz', 'Karniz', (K.karnizH || 60) + ' mm'],
-    ['moyka', 'Moyka', ((K.moyka || {}).size || 500) + ' mm kesim']];
+  const mm = ' ' + t('umumiy.mm');
+  const kt = [['stoleshnitsa', t('xona.stoleshnitsa'), H && H.catalog['SP-ST-001'] ? t('xona.yaxlit', { n: H.catalog['SP-ST-001'].h }) : t('xona.yaxlit0')],
+    ['sokol', t('xona.sokol'), H && H.catalog['SP-ST-002'] ? H.catalog['SP-ST-002'].d + mm : ''],   // tik planka: balandligi = d (kitchen.js)
+    ['dobor', t('xona.dobor'), (K.doborH || 60) + mm], ['karniz', t('xona.karniz'), (K.karnizH || 60) + mm],
+    ['moyka', t('xona.moyka'), t('xona.kesim', { n: (K.moyka || {}).size || 500 })]];
   return {
-    shapes: [['rect', 'To\'rtburchak', 'tortburchak'], ['L', 'L-shakl', 'lShakl'], ['free', 'Erkin', 'tahrir']].map(x => {
+    shapes: [['rect', t('xona.tortburchak'), 'tortburchak'], ['L', t('xona.lshakl'), 'lShakl'], ['free', t('xona.erkin'), 'tahrir']].map(x => {
       const on = x[0] === 'rect' ? isRect : x[0] === 'L' ? !isRect : false;
       return { label: x[1], ikon: x[2], bg: on ? 'var(--acc)' : 'transparent', c: on ? 'var(--ink)' : 'var(--txt)',
         pick: () => {
@@ -54,10 +56,10 @@ export function useQadamXona() {
       return { label: p[2], bg: on ? 'var(--acc)' : 'var(--sfc)', c: on ? 'var(--ink)' : 'var(--txt)', pick: () => { L.applyRoom(doc, { outline: L.rectOutline(p[0], p[1]) }); project.changed('room', true); } };
     }),
     holes: teshikRoyxati(doc), addHole: openTeshik, openKitchen: openOshxona,
-    toggles: kt.map(t => ({ label: t[1], sub: t[2], on: t[0] === 'moyka' ? !!(K.moyka && K.moyka.on) : !!K[t[0]],
+    toggles: kt.map(r => ({ label: r[1], sub: r[2], on: r[0] === 'moyka' ? !!(K.moyka && K.moyka.on) : !!K[r[0]],
       flip: () => {
         const k = doc.kitchen || (doc.kitchen = L.freshKitchen());
-        if (t[0] === 'moyka') { k.moyka = k.moyka || { on: false, offset: 600, fromBack: 100, size: 500 }; k.moyka.on = !k.moyka.on; } else k[t[0]] = !k[t[0]];
+        if (r[0] === 'moyka') { k.moyka = k.moyka || { on: false, offset: 600, fromBack: 100, size: 500 }; k.moyka.on = !k.moyka.on; } else k[r[0]] = !k[r[0]];
         project.changed('room', true);
       } })),
     goStep2: () => goStep(2)

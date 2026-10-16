@@ -25,7 +25,7 @@ async function asosiy(page, R) {
   const narx = () => M(() => { const b = [...document.querySelectorAll('header button')].find(x => /so'm/.test(x.textContent)); return b ? b.textContent.replace(/\s+/g, ' ').trim() : null; });
 
   await page.setViewportSize({ width: 1440, height: 900 });
-  await M(() => { localStorage.clear(); sessionStorage.clear(); });
+  await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
   await page.reload(); await page.waitForTimeout(1500);
 
   R.qadam = 'royxat';

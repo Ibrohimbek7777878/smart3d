@@ -2,6 +2,7 @@ import { get, set } from '../../store/index.js';
 import { project } from '../../store/project.js';
 import { S } from '../../store/session.js';
 import { confirm, xato, toast } from '../../store/ui.js';
+import { t, serverXato } from '../../i18n/index.js';
 
 /* TZ-19 (TZ-09 4.1): sozlamalar — kirgan bo'lsa serverda (/api/settings), aks holda shu qurilmada. */
 const LOCAL = 's3d-settings';
@@ -21,8 +22,8 @@ export async function saveSettings(patch) {
     try {
       const r = await S.api('/api/settings', { method: 'PUT', body: next });
       const j = await r.json().catch(() => ({}));
-      if (!r.ok) { toast(j.error || ('Xato ' + r.status), j.code || 'S3D-SET-101'); return false; }
-    } catch (e) { xato('S3D-NET-101', { matn: 'Server bilan aloqa yo\'q — sozlama saqlanmadi', modul: 'settings', err: e }); return false; }
+      if (!r.ok) { toast(serverXato(j.error, j.code) || t('umumiy.xato_n', { n: r.status }), j.code || 'S3D-SET-101'); return false; }
+    } catch (e) { xato('S3D-NET-101', { matn: t('sozlama.aloqa_yoq'), modul: 'settings', err: e }); return false; }
   } else { try { localStorage.setItem(LOCAL, JSON.stringify(next)); } catch (_) { /* kvota */ } }
   set('settings', { sets: next });
   project.scheduleRecalc(true);
@@ -48,18 +49,18 @@ export function openSettings(section) {
 
 /** admin: xatolar jurnali (TZ-19 §2). q — bo'sh, kod (S3D-…) yoki so'rov raqami (rid) */
 export async function loadXatolar(q = '') {
-  const t = String(q).trim(), p = new URLSearchParams();
-  if (/^S3D-/i.test(t)) p.set('kod', t.toUpperCase()); else if (t) p.set('rid', t.toLowerCase());
+  const qq = String(q).trim(), p = new URLSearchParams();
+  if (/^S3D-/i.test(qq)) p.set('kod', qq.toUpperCase()); else if (qq) p.set('rid', qq.toLowerCase());
   try {
     const r = await S.api('/api/admin/xatolar' + (p.toString() ? '?' + p : ''));
     const j = await r.json().catch(() => ({}));
-    if (!r.ok) { toast(j.error || ('Xato ' + r.status), j.code || 'S3D-SET-101'); return; }
+    if (!r.ok) { toast(serverXato(j.error, j.code) || t('umumiy.xato_n', { n: r.status }), j.code || 'S3D-SET-101'); return; }
     set('settings', { xatolar: j });
   } catch (e) { xato('S3D-NET-101', { modul: 'settings/xatolar', err: e }); }
 }
 
 export function askLogout() {
-  confirm({ title: 'Akkauntdan chiqasizmi?', text: 'Loyihalaringiz serverda saqlangan — qayta kirganda ochiladi.', ok: 'Chiqish', danger: true,
+  confirm({ title: t('sozlama.chiqish_sarlavha'), text: t('sozlama.chiqish_matn'), ok: t('umumiy.chiqish'), danger: true,
     yes: () => {
       S.logout(false);
       set('nav', { screen: 'login' });

@@ -25,7 +25,7 @@ async function asosiy(page, R) {
 
   for (const [W, H] of [[1440, 900], [390, 844]]) {
     await page.setViewportSize({ width: W, height: H });
-    await M(() => { localStorage.clear(); sessionStorage.clear(); });
+    await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
     await page.goto(page.url().split('#')[0]);
     await page.waitForTimeout(2500);
     await page.screenshot({ path: `${OUT}/kirish-${W}-1-royxat.png` });

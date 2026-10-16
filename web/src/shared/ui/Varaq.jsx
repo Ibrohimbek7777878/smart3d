@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 import { iconBtn } from './styles.js';
 import Ikon from './Ikon.jsx';
 
@@ -12,7 +13,7 @@ export default function Varaq({ title, label, kind, onClose, children }) {
         <span style={{ alignSelf: 'center', width: '44px', height: '5px', borderRadius: '9px', background: 'var(--sfc3)' }}></span>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: '20px', fontWeight: '800', display: 'flex', alignItems: 'center' }}>{title}</span>
-          <button onClick={onClose} aria-label="Yopish" style={{ ...iconBtn, background: 'var(--sfc2)' }}><Ikon n="yopish" size={18} gap={0} /></button>
+          <button onClick={onClose} aria-label={t('umumiy.yopish')} style={{ ...iconBtn, background: 'var(--sfc2)' }}><Ikon n="yopish" size={18} gap={0} /></button>
         </div>
         {children}
       </div>

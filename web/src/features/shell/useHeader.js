@@ -1,7 +1,6 @@
 import { useSlice, set } from '../../store/index.js';
 import { project } from '../../store/project.js';
 import { S } from '../../store/session.js';
-import { toast } from '../../store/ui.js';
 import { bosh } from '../../shared/lib/format.js';
 import { narxKorinishi } from '../editor/pricing/narx.js';
 import { goStep } from '../editor/actions.js';
@@ -21,7 +20,8 @@ export function useHeader() {
     projName: pj.name, onProjName: ev => { set('project', { name: ev.target.value }); S.changed(); },
     save: sv ? { on: true, kind: sv.kind, title: sv.title || '', ikon: SAVE_IKON[sv.kind] || 'bulut', c: sv.kind === 'off' ? 'var(--danger)' : sv.kind === 'ok' ? 'var(--cyan)' : 'var(--mut)' } : { on: false },
     price: narxKorinishi(project.res),
-    langToast: () => toast('O\'zbekcha · Русский — tez orada'),
+    /* TZ-18: 🌐 — til menyusi tugma ostida */
+    tilMenu: ev => { const r = ev.currentTarget.getBoundingClientRect(); set('ui', { tilMenu: { top: Math.round(r.bottom + 8), right: Math.round(window.innerWidth - r.right) } }); },
     initials: bosh(u.name || auth.f.name, u.email)
   };
 }

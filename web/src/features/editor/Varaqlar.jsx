@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 import { useSlice } from '../../store/index.js';
 import { closeSheet } from '../../store/ui.js';
 import Varaq from '../../shared/ui/Varaq.jsx';
@@ -11,9 +12,9 @@ import Ikon from '../../shared/ui/Ikon.jsx';
 
 /* TZ-19: muharrirdagi pastki varaqlar (dizaynda yo'q qismlar) — qaysi biri ochiq bo'lsa (ui.vq.kind) o'sha chiziladi. */
 const VARAQ = {
-  teshik: { title: () => 'Teshiklar', Body: TeshikVaraq },
-  shakl: { title: () => <><Ikon n="tahrir" size={18} />Erkin shakl</>, label: 'Erkin shakl', Body: ShaklVaraq },
-  oshxona: { title: () => 'Oshxona elementlari', Body: OshxonaVaraq },
+  teshik: { title: () => t('xona.teshiklar_sarlavha'), Body: TeshikVaraq },
+  shakl: { title: () => <><Ikon n="tahrir" size={18} />{t('varaq.erkin_shakl')}</>, label: 'xona.erkin_shakl', Body: ShaklVaraq },
+  oshxona: { title: () => t('xona.oshxona_elementlari'), Body: OshxonaVaraq },
   material: { title: materialTitle, Body: MaterialVaraq }
 };
 
@@ -23,5 +24,5 @@ export default function Varaqlar() {
   const v = vq && VARAQ[vq.kind];
   if (!v) return null;
   const { Body } = v;
-  return <Varaq title={v.title(vq)} label={v.label} kind={vq.kind} onClose={closeSheet}><Body /></Varaq>;
+  return <Varaq title={v.title(vq)} label={v.label && t(v.label)} kind={vq.kind} onClose={closeSheet}><Body /></Varaq>;
 }

@@ -1,16 +1,17 @@
 import { useEffect, useRef } from 'react';
 import { useSlice, set } from '../../../store/index.js';
 import { report } from '../../../shared/lib/jurnal.js';
-import { xatoMatn } from '../../../../../app/js/xatolar.js';
+import { xatoMatni } from '../../../i18n/index.js';
 import { project } from '../../../store/project.js';
 import { useViewer } from '../../../shared/design3d/useViewer.js';
-import { s3Viewer, s3Mats, s3Box, s3Label, S3_TIPS } from '../../../shared/design3d/engine.js';
+import { s3Viewer, s3Mats, s3Box, s3Label } from '../../../shared/design3d/engine.js';
 import { ichiniKorsaBoladi } from '../../../services/ichki.js';
 import { faylYukla, preloadEksport } from '../files/actions.js';
 import { openAi } from '../ai/actions.js';
 import { select } from '../actions.js';
 import { scene, mountSahna, unmountSahna } from './sahna.js';
 import * as A from './actions.js';
+import { t } from '../../../i18n/index.js';
 
 /** sahna: yaratish/tozalash va ko'rinish (2D/3D, aylanish, tanlov) — 3D bilan sinxron */
 export function useSahnaView() {
@@ -31,12 +32,12 @@ export function useSahnaView() {
   const anyOpen = it ? it.moverKeys(null).some(k => it.isOpen(k)) : false;
   return {
     roomHost: host, roomOv: ov, notLoaded: !ed.sceneOn,
-    loadText: ed.sceneErr ? xatoMatn('S3D-SCENE-101') : data.err || '3D sahna yuklanmoqda…',
+    loadText: ed.sceneErr ? xatoMatni('S3D-SCENE-101') : data.err ? xatoMatni('S3D-DATA-101') : t('sahna.yuklanmoqda'),
     vw: { b2: ed.view === '2d' ? 'var(--acc)' : 'transparent', t2: ed.view === '2d' ? 'var(--ink)' : 'var(--txt)', b3: ed.view === '3d' ? 'var(--acc)' : 'transparent', t3: ed.view === '3d' ? 'var(--ink)' : 'var(--txt)', sb: ed.spin ? 'var(--cyan)' : 'rgba(23,50,57,.9)', st: ed.spin ? '#06231E' : 'var(--txt)' },
     set2D: () => A.setView('2d'), set3D: () => A.setView('3d'), toggleSpin: A.toggleSpin, center: A.center,
     shot: () => faylYukla('rasm'),
     vrOk: ed.vrOk, vr: A.vr,
-    toggleAllOpen: () => A.toggleOpen(null), openAllLabel: anyOpen ? 'Hammasini yopish' : 'Eshiklarni ochish',
+    toggleAllOpen: () => A.toggleOpen(null), openAllLabel: anyOpen ? t('sahna.hammasini_yopish') : t('sahna.eshiklarni_ochish'),
     openAi
   };
 }
@@ -45,7 +46,7 @@ export function useSahnaView() {
 export function useMaslahat() {
   const nav = useSlice('nav'), ed = useSlice('editor');
   return {
-    tip: { on: nav.screen === 'app' && ed.tip < 3, text: S3_TIPS[Math.min(ed.tip, 2)], n: Math.min(ed.tip, 2) + 1, btn: ed.tip >= 2 ? 'Tushunarli' : 'Keyingi' },
+    tip: { on: nav.screen === 'app' && ed.tip < 3, text: t('sahna.maslahat' + (Math.min(ed.tip, 2) + 1)), n: Math.min(ed.tip, 2) + 1, btn: ed.tip >= 2 ? t('sahna.tushunarli') : t('sahna.keyingi') },
     tipNext: A.tipNext, tipSkip: A.tipSkip
   };
 }
@@ -67,9 +68,9 @@ export function useModulKarta() {
   const canIns = ichiniKorsaBoladi(smF);
   return {
     show: true, deselect: () => select(null),
-    sm: { openLabel: (smOpen ? 'Yopish' : 'Ochish') + (smF.category === 'drawer_base' ? ' · tortmalar' : ' · eshiklar'), canIns, noIns: !canIns,
+    sm: { openLabel: (smOpen ? t('umumiy.yopish') : t('sahna.ochish')) + (smF.category === 'drawer_base' ? t('sahna.tortmalar') : t('sahna.eshiklar')), canIns, noIns: !canIns,
       name: sm.name || smF.name, code: sm.frg, warn: ed.warn[sm.id] || '', hasWarn: !!ed.warn[sm.id],
-      rows: [dimRow('w', 'Eni'), dimRow('d', 'Chuqurligi'), dimRow('h', 'Bo\'yi')] },
+      rows: [dimRow('w', t('sahna.eni')), dimRow('d', t('sahna.chuqurligi')), dimRow('h', t('sahna.boyi'))] },
     moveL: () => A.moveBy(-50), moveR: () => A.moveBy(50), rotate: A.rotate, dup: A.duplicate, askDel: A.askDelete,
     toggleModOpen: () => A.toggleOpen(sm.id), openInside: A.openInside
   };
@@ -96,6 +97,6 @@ export function useDetalKarta() {
   const [miniHost, miniOv] = useViewer(!!P, P ? miniViewer(P) : null, [P && P.id]);
   return {
     hasPart: !!P, closePart: A.closePart, miniHost, miniOv, togglePartOpen: A.togglePartOpen,
-    pt: P ? { name: P.name, dim: P.dim + ' mm', mat: P.mat, edge: P.edge, code: P.code, isMov: !!P.key, movLabel: it && P.key && it.isOpen(P.key) ? 'Yopish' : 'Ochish' } : {}
+    pt: P ? { name: P.name, dim: P.dim + ' ' + t('umumiy.mm'), mat: P.mat, edge: P.edge, code: P.code, isMov: !!P.key, movLabel: it && P.key && it.isOpen(P.key) ? t('umumiy.yopish') : t('sahna.ochish') } : {}
   };
 }

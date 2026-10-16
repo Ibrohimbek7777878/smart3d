@@ -4,12 +4,13 @@ import { closeAi } from '../features/editor/ai/actions.js';
 import { closePart } from '../features/editor/scene/actions.js';
 import { select } from '../features/editor/actions.js';
 
-/* TZ-19 §5 (qulaylik): Esc — eng ustdagi oynani yopadi: tasdiq → varaq → AI → "Ichini ko'rish" → detal kartasi → tanlov. */
+/* TZ-19 §5 (qulaylik): Esc — eng ustdagi oynani yopadi: til menyusi → tasdiq → varaq → AI → "Ichini ko'rish" → detal kartasi → tanlov. */
 export function installKeyboard() {
   window.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape' || e.defaultPrevented) return;
     const s = get();
-    if (s.ui.cf) confirmNo();
+    if (s.ui.tilMenu) set('ui', { tilMenu: null });
+    else if (s.ui.cf) confirmNo();
     else if (s.ui.vq) closeSheet();
     else if (s.ai.open) closeAi();
     else if (s.ins.id) set('ins', { id: null });

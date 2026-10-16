@@ -1,4 +1,5 @@
 import { createStore, useStoreSlice } from './store.js';
+import { t } from '../i18n/index.js';
 
 /* TZ-19: ilovaning yagona holati. Har bo'lim — bitta modul egaligida:
  *   nav       ekran va o'tishlar (app, features/*)            auth      kirish, foydalanuvchi, saqlash belgisi (features/auth)
@@ -12,10 +13,10 @@ import { createStore, useStoreSlice } from './store.js';
 export const store = createStore({
   nav: { screen: 'reg', from: 'projects', pending: null },
   auth: { user: null, save: null, f: { name: '', email: '', phone: '', pass: '', shop: '', show: false, err: {}, tried: false } },
-  ui: { toast: '', toastCode: '', cf: null, vq: null },
+  ui: { toast: '', toastCode: '', cf: null, vq: null, tilMenu: null },
   data: { ready: false, err: '' },
   onb: { kind: 'kitchen', room: { w: 3600, d: 3000, h: 2700 } },
-  project: { name: 'Yangi loyiha', client: '', matCode: 'LDSP18', fasadCode: 'MDF16', sheet: null, docV: 0, dv: 0 },
+  project: { name: t('umumiy.yangi_loyiha'), client: '', matCode: 'LDSP18', fasadCode: 'MDF16', sheet: null, docV: 0, dv: 0 },
   editor: { step: 2, done: { 1: true }, tip: 3, view: '3d', spin: false, sel: null, part: null, raw: {}, warn: {},
     cat: 'all', q: '', rk: 0, miss: false, vrOk: false, sceneOn: false, sceneErr: false, sceneV: 0 },
   ai: { open: false, text: '', mic: false },

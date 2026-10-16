@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 import { useOnboarding } from './useOnboarding.js';
 
@@ -31,10 +32,10 @@ export default function Onboarding() {
         {v.isOnb1 ? (<>
           <div style={{"display":"flex","flexDirection":"column","gap":"8px"}}>
             <h1 style={{"margin":"0","fontSize":"clamp(30px,4vw,48px)","letterSpacing":"-.04em","lineHeight":"1.05","fontWeight":"800"}}>
-              {"Nima yasaymiz?"}
+              {t('onb.nima_yasaymiz')}
             </h1>
             <p style={{"margin":"0","color":"var(--mut)","fontSize":"17px"}}>
-              {"Tanlang — keyin hammasini o'zgartirsa bo'ladi."}
+              {t('onb.tanlang_keyin_hammasini')}
             </p>
           </div>
           <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fit,minmax(220px,1fr))","gap":"12px"}}>
@@ -58,7 +59,7 @@ export default function Onboarding() {
         {v.isOnb2 ? (<>
           <div style={{"display":"flex","flexDirection":"column","gap":"8px"}}>
             <button onClick={v.onbBack} style={{"alignSelf":"flex-start","background":"none","border":"0","color":"var(--mut)","fontWeight":"700","fontSize":"15px","cursor":"pointer","padding":"0"}}>
-              {"← Orqaga"}
+              {t('onb.orqaga')}
             </button>
             <h1 style={{"margin":"0","fontSize":"clamp(30px,4vw,48px)","letterSpacing":"-.04em","lineHeight":"1.05","fontWeight":"800"}}>
               <span className="sc-interp">{v.onb?.t2}</span>
@@ -82,23 +83,23 @@ export default function Onboarding() {
             </div>
             <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexWrap":"wrap","gap":"12px","alignItems":"flex-end"}}>
               <span style={{"flex":"1 0 100%","fontSize":"12px","fontWeight":"800","letterSpacing":".08em","textTransform":"uppercase","color":"var(--mut)"}}>
-                {"Yoki o'z o'lchamingiz"}
+                {t('onb.yoki_oz_olchamingiz')}
               </span>
               <label style={{"flex":"1 1 140px","display":"flex","flexDirection":"column","gap":"6px"}}>
                 <span style={{"fontSize":"13px","color":"var(--mut)","fontWeight":"700"}}>
-                  {"Eni, mm"}
+                  {t('umumiy.eni_mm')}
                 </span>
                 <input type="number" value={v.room?.w} onChange={v.onRoomW} style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","fontVariantNumeric":"tabular-nums"}} />
               </label>
               <label style={{"flex":"1 1 140px","display":"flex","flexDirection":"column","gap":"6px"}}>
                 <span style={{"fontSize":"13px","color":"var(--mut)","fontWeight":"700"}}>
-                  {"Chuqurligi, mm"}
+                  {t('onb.chuqurligi_mm')}
                 </span>
                 <input type="number" value={v.room?.d} onChange={v.onRoomD} style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","fontVariantNumeric":"tabular-nums"}} />
               </label>
               <label style={{"flex":"1 1 140px","display":"flex","flexDirection":"column","gap":"6px"}}>
                 <span style={{"fontSize":"13px","color":"var(--mut)","fontWeight":"700"}}>
-                  {"Bo'yi, mm"}
+                  {t('onb.boyi_mm')}
                 </span>
                 <input type="number" value={v.room?.h} onChange={v.onRoomH} style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","fontVariantNumeric":"tabular-nums"}} />
               </label>
@@ -106,7 +107,7 @@ export default function Onboarding() {
           </>) : null}
           {v.onb?.isAi ? (<>
             <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexDirection":"column","gap":"12px","padding":"20px"}}>
-              <textarea value={v.aiText} onChange={v.onAiText} rows="4" placeholder="oshxona 3.6x3 m, balandlik 2.7, 4 ta pastki shkaf" style={{"width":"100%","borderRadius":"16px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","padding":"16px","resize":"vertical","outline":"none"}}></textarea>
+              <textarea value={v.aiText} onChange={v.onAiText} rows="4" placeholder={t('umumiy.oshxona_3_6x3_m_balandlik_2_7')} style={{"width":"100%","borderRadius":"16px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","padding":"16px","resize":"vertical","outline":"none"}}></textarea>
               <div style={{"display":"flex","gap":"8px","flexWrap":"wrap","alignItems":"center"}}>
                 <button onClick={v.toggleMic} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","height":"44px","background":v.micBg,"color":v.micT}}>
                   <Ikon n="mikrofon" size={16} gap={0} /><span className="sc-interp">{v.micLabel}</span>
@@ -121,7 +122,7 @@ export default function Onboarding() {
           </>) : null}
           <div style={{"display":"flex","justifyContent":"flex-end"}}>
             <button onClick={v.openEditor} style={{"height":"56px","padding":"0 28px","borderRadius":"16px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer"}}>
-              {"Muharrirni ochish →"}
+              {t('onb.muharrirni_ochish')}
             </button>
           </div>
         </>) : null}

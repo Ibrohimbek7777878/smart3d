@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../../i18n/index.js';
 import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useQadamMebel } from './useQadamMebel.js';
 
@@ -10,17 +11,17 @@ export default function QadamMebel() {
       <div style={{"display":"flex","justifyContent":"space-between","alignItems":"flex-end","gap":"8px"}}>
         <div style={{"display":"flex","flexDirection":"column","gap":"4px"}}>
           <span style={{"fontSize":"12px","fontWeight":"800","letterSpacing":".08em","textTransform":"uppercase","color":"var(--mut)"}}>
-            {"② Qadam"}
+            {t('mebel.qadam')}
           </span>
           <h2 style={{"margin":"0","fontSize":"22px","fontWeight":"800","letterSpacing":"-.02em"}}>
-            {"Mebel"}
+            {t('mebel.mebel')}
           </h2>
         </div>
         <span style={{"fontSize":"13px","color":"var(--mut)","fontWeight":"700"}}>
           {v.catCount}
         </span>
       </div>
-      <input value={v.q} onChange={v.onQ} placeholder="shkaf 2 eshik…" style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","height":"48px","background":"var(--sfc)","flex":"0 0 auto"}} />
+      <input value={v.q} onChange={v.onQ} placeholder={t('mebel.shkaf_2_eshik')} style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","height":"48px","background":"var(--sfc)","flex":"0 0 auto"}} />
       <div style={{"display":"flex","gap":"6px","overflowX":"auto","flex":"0 0 auto","paddingBottom":"2px"}}>
         {(v.cats || []).map((c, $index) => (<React.Fragment key={$index}>
           <button onClick={c?.pick} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","flex":"0 0 auto","background":c?.bg,"color":c?.c,"whiteSpace":"nowrap"}}>
@@ -46,10 +47,10 @@ export default function QadamMebel() {
       {v.catEmpty ? (<>
         <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"32px 16px","textAlign":"center","display":"flex","flexDirection":"column","gap":"6px"}}>
           <span style={{"fontWeight":"800"}}>
-            {"Topilmadi — boshqa so'z bilan qidiring"}
+            {t('umumiy.topilmadi_boshqa_soz_bilan')}
           </span>
           <span style={{"color":"var(--mut)","fontSize":"14px"}}>
-            {"Masalan: \"pastki\", \"osma\", \"tortma\""}
+            {t('mebel.masalan_pastki_osma_tortma')}
           </span>
         </div>
       </>) : null}

@@ -22,7 +22,7 @@ async function asosiy(page, R) {
   const waitText = async (t, ms = 10000) => { for (let i = 0; i < ms / 200; i++) { if (await has(t)) return true; await page.waitForTimeout(200); } return false; };
 
   await page.setViewportSize({ width: 1440, height: 900 });
-  await M(() => { localStorage.clear(); sessionStorage.clear(); });
+  await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
   await page.goto(page.url().split('#')[0] + '?t=' + Date.now() + '#s=login'); await page.waitForTimeout(1500);
 
   /* 1) noto'g'ri parol — maydon ostida xabar (kod ko'rinmaydi, bu tekshiruv xatosi) */

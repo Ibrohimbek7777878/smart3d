@@ -2,16 +2,17 @@ import { set } from './index.js';
 import { project } from './project.js';
 import { toast } from './ui.js';
 import { createSession } from '../../../app/js/auth-core.js';
+import { t, serverXato } from '../i18n/index.js';
 
 /* TZ-19: server bilan sessiya — auth-core.js (eski sayt bilan umumiy: kirish, avtomatik saqlash, internetsiz navbat,
  * loyihalar). Bu yerda faqat ilova holatiga ulanadi. */
 export const S = createSession({
   cookie: true,                                   // TZ-19 X2: kalit httpOnly cookie'da, JS ko'rmaydi
-  toast: (t, kind, code) => toast(t, code),   // server xatosi — kodi bilan (server o'zi jurnalga yozgan)
+  toast: (matn, kind, code) => toast(serverXato(matn, code), code),   // server xatosi — kodi bilan (server o'zi jurnalga yozgan)
   onState: (kind, title) => set('auth', { save: kind ? { kind, title } : null }),
   onUser: (u, why) => {
     set('auth', { user: u });
-    if (why === 'expired') { toast('Kirish muddati tugadi — qayta kiring'); set('nav', { screen: 'login' }); }
+    if (why === 'expired') { toast(t('kirish.muddat_tugadi')); set('nav', { screen: 'login' }); }
   },
   getPayload: () => project.payload(),
   getTotal: () => (project.res ? project.res.priceRes.total : 0),

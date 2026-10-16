@@ -13,7 +13,9 @@ export default async function run(page) {
 
 async function asosiy(page, R) {
   const errs = [], csp = [];
-  const onConsole = (m) => { const t = m.text(); if (/Content Security Policy|Refused to (execute|load|apply|connect)/i.test(t)) csp.push(t.slice(0, 200)); };
+  const konsol = [];   // har qanday konsol xatosi (4xx tarmoq javobi — kutilgan, masalan noto'g'ri parol — bundan mustasno)
+  const onConsole = (m) => { const t = m.text(); if (/Content Security Policy|Refused to (execute|load|apply|connect)/i.test(t)) csp.push(t.slice(0, 200));
+    else if (m.type() === 'error' && !/Failed to load resource/.test(t)) konsol.push(t.slice(0, 160)); };
   page.on('console', onConsole);
   page.on('pageerror', e => errs.push(String(e).slice(0, 240)));
   const M = (fn, arg) => page.evaluate(fn, arg, false);
@@ -25,7 +27,7 @@ async function asosiy(page, R) {
   const base = page.url().split(/[?#]/)[0].replace(/app\.html$/, '');
 
   await page.setViewportSize({ width: 1440, height: 900 });
-  await M(() => { localStorage.clear(); sessionStorage.clear(); });
+  await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
   await page.goto(base + 'app.html?t=' + Date.now() + '#s=reg'); await page.waitForTimeout(2500);   // ro'yxat oynasidagi 3D ham
   R.cspSarlavha = await M(async () => (await fetch(location.href)).headers.get('content-security-policy') || '');
 
@@ -75,12 +77,14 @@ async function asosiy(page, R) {
   await page.goto(SRV + '/yoq-sahifa'); await page.waitForTimeout(800);
   R.prod404 = await has('Sahifa topilmadi');
   /* eski sayt — CSP bilan: importmap (xesh) va three.js ishlaydi */
+  const yangiKonsol = konsol.length;
   await page.goto(SRV + '/eski/index.html?t=' + Date.now()); await page.waitForTimeout(5000);
   R.eskiSayt = await M(() => !!(window.__s3d && window.__s3d.state));
   R.eskiCsp = await M(async () => !!(await fetch(location.href)).headers.get('content-security-policy'));
 
+  /* eski sayt (/eski/) — eski kod, bu tekshiruvga kirmaydi: undan oldingi xatolar soni */
   page.off('console', onConsole);
-  R.csp = csp; R.errs = errs;
+  R.csp = csp; R.errs = errs; R.konsol = konsol;
   R.ok = /script-src 'self'/.test(R.cspSarlavha) && R.kalitJSdaYoq && R.saqlandi && R.excel && R.hisobotChop === true &&
-    R.prodSayt && R.prodIlova && R.prod404 && R.eskiSayt && R.eskiCsp && csp.length === 0 && errs.length === 0;
+    R.prodSayt && R.prodIlova && R.prod404 && R.eskiSayt && R.eskiCsp && csp.length === 0 && yangiKonsol === 0 && errs.length === 0;
 }

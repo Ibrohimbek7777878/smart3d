@@ -144,7 +144,7 @@ function s3Viewer(T,host,overlay){
   const root=new T.Group();scene.add(root);if(svg){scene.add(new T.AmbientLight(0xffffff,.42));key.intensity=.7;fill.intensity=.28;rim.intensity=.18}
   const sc=document.createElement('canvas');sc.width=sc.height=256;const g=sc.getContext('2d');const gr=g.createRadialGradient(128,128,0,128,128,128);gr.addColorStop(0,'rgba(0,0,0,.42)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,256,256);
   const shadow=new T.Mesh(new T.PlaneGeometry(1,1),new T.MeshBasicMaterial({map:new T.CanvasTexture(sc),transparent:true,depthWrite:false}));shadow.rotation.x=-Math.PI/2;root.add(shadow);if(svg)shadow.visible=false;const grid=new T.GridHelper(8,40,svg?0x24474F:0x3A7A84,svg?0x1A353C:0x214C56);grid.material.transparent=true;grid.material.opacity=.6;grid.renderOrder=-2;root.add(grid);if(svg)grid.visible=false;
-  const v={r,scene,cam,root,host,overlay,shadow,grid,svg,theta:-.6,phi:.32,dist:3,target:new T.Vector3(),auto:true,labels:[],visible:true,lastUser:0};
+  const v={r,scene,cam,root,host,overlay,shadow,grid,svg,theta:-.6,phi:.32,dist:3,target:new T.Vector3(),auto:true,labels:[],visible:true,lastUser:0,sized:false};
   let down=null;
   const NS='http://www.w3.org/2000/svg',lsv=document.createElementNS(NS,'svg');lsv.setAttribute('style','position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;opacity:0');
   const lp1=document.createElementNS(NS,'path');lp1.setAttribute('fill','none');lp1.setAttribute('stroke','rgba(236,244,242,.4)');lp1.setAttribute('stroke-width','1');
@@ -154,10 +154,12 @@ function s3Viewer(T,host,overlay){
   el.addEventListener('pointerup',e=>{if(down&&!down.moved&&v.onClick){const b=el.getBoundingClientRect();v.onClick((e.clientX-b.left)/b.width*2-1,-(e.clientY-b.top)/b.height*2+1)}down=null;el.style.cursor='grab'});
   el.addEventListener('pointercancel',()=>{down=null;el.style.cursor='grab'});
   v.isDown=()=>!!down;
-  const ro=new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;r.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()});ro.observe(host);
+  /* TZ-18: o'lcham ma'lum bo'lmaguncha chizilmaydi — aks holda SVG zaxirada (WebGL'siz brauzer) yo'llar NaN bo'lib konsolni to'ldiradi */
+  const fit=()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;r.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();v.sized=true};
+  const ro=new ResizeObserver(fit);ro.observe(host);
   const io=new IntersectionObserver(es=>{v.visible=es[0].isIntersecting});io.observe(host);
   const tmp=new T.Vector3();let last=performance.now(),raf;
-  const loop=now=>{raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;if(!v.visible)return;
+  const loop=now=>{raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;if(!v.visible||!v.sized)return;
     if(v.auto&&!down&&now-v.lastUser>2500)v.theta+=dt*.28;
     if(v.onTick)v.onTick(dt,now/1000);
     const c=Math.cos(v.phi);cam.position.set(v.target.x+Math.sin(v.theta)*c*v.dist,v.target.y+Math.sin(v.phi)*v.dist,v.target.z+Math.cos(v.theta)*c*v.dist);cam.lookAt(v.target);

@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 
 /* TZ-19: tasdiq oynasi (dizayndagi "cf"): { title, text, ok, danger } */
 export default function Tasdiq({ cf, onNo, onYes }) {
@@ -14,7 +15,7 @@ export default function Tasdiq({ cf, onNo, onYes }) {
         </span>
         <div style={{"display":"flex","gap":"8px","justifyContent":"flex-end","paddingTop":"8px"}}>
           <button onClick={onNo} autoFocus style={{"height":"48px","padding":"0 18px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"800","cursor":"pointer"}}>
-            {"Bekor"}
+            {t('umumiy.bekor')}
           </button>
           <button onClick={onYes} style={{"height":"48px","padding":"0 18px","borderRadius":"14px","border":"0","background":cf.danger ? 'var(--danger)' : 'var(--acc)',"color":cf.danger ? '#2A0A0A' : 'var(--ink)',"fontWeight":"800","cursor":"pointer"}}>
             <span className="sc-interp">{cf.ok}</span>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../../i18n/index.js';
 import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useDetalKarta } from './useSahna.js';
 
@@ -17,31 +18,31 @@ export default function DetalKarta() {
             <span className="sc-interp">{v.pt?.code}</span>
           </span>
         </div>
-        <button onClick={v.closePart} aria-label="Yopish" style={{"width":"36px","height":"36px","flex":"0 0 auto","borderRadius":"12px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"17px","cursor":"pointer"}}>
+        <button onClick={v.closePart} aria-label={t('umumiy.yopish')} style={{"width":"36px","height":"36px","flex":"0 0 auto","borderRadius":"12px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"17px","cursor":"pointer"}}>
           <Ikon n="yopish" size={18} gap={0} />
         </button>
       </div>
       <div ref={v.miniHost} style={{"position":"relative","height":"190px","flex":"0 0 auto","borderRadius":"16px","overflow":"hidden","background":"radial-gradient(ellipse 70% 60% at 50% 50%,rgba(255,122,69,.16),transparent 70%),var(--bg)","border":"1px solid var(--line)"}}>
         <div ref={v.miniOv} style={{"position":"absolute","inset":"0","pointerEvents":"none","zIndex":"2"}}></div>
         <span style={{"position":"absolute","left":"10px","bottom":"8px","zIndex":"3","fontSize":"11px","color":"var(--mut)","fontWeight":"700"}}>
-          {"Detal alohida · aylantiring"}
+          {t('sahna.detal_alohida_aylantiring')}
         </span>
       </div>
       <div style={{"display":"grid","gridTemplateColumns":"auto 1fr","gap":"6px 14px","fontSize":"14px"}}>
         <span style={{"color":"var(--mut)"}}>
-          {"O'lcham"}
+          {t('sahna.olcham')}
         </span>
         <span style={{"fontWeight":"800","fontVariantNumeric":"tabular-nums","color":"var(--cyan)"}}>
           <span className="sc-interp">{v.pt?.dim}</span>
         </span>
         <span style={{"color":"var(--mut)"}}>
-          {"Material"}
+          {t('sahna.material')}
         </span>
         <span style={{"fontWeight":"700"}}>
           <span className="sc-interp">{v.pt?.mat}</span>
         </span>
         <span style={{"color":"var(--mut)"}}>
-          {"Kromka"}
+          {t('sahna.kromka')}
         </span>
         <span style={{"fontWeight":"700"}}>
           <span className="sc-interp">{v.pt?.edge}</span>

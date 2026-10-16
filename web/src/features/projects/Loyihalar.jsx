@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 import { useLoyihalar } from './useLoyihalar.js';
 
@@ -9,16 +10,16 @@ export default function Loyihalar() {
     <main style={{"maxWidth":"1240px","width":"100%","margin":"0 auto","padding":"clamp(20px,4vw,40px) clamp(16px,4vw,32px) 64px","display":"flex","flexDirection":"column","gap":"24px"}}>
       <div style={{"display":"flex","flexWrap":"wrap","gap":"12px","alignItems":"center","justifyContent":"space-between"}}>
         <h1 style={{"margin":"0","fontSize":"clamp(28px,3.4vw,40px)","letterSpacing":"-.035em","fontWeight":"800"}}>
-          {"Loyihalarim"}
+          {t('loyihalar.loyihalarim')}
         </h1>
         <div style={{"display":"flex","gap":"8px","flexWrap":"wrap","flex":"1 1 320px","justifyContent":"flex-end"}}>
-          <input value={v.pq} onChange={v.onPq} placeholder="Qidirish: nom yoki mijoz" style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","height":"48px","flex":"1 1 220px","maxWidth":"340px","background":"var(--sfc)"}} />
+          <input value={v.pq} onChange={v.onPq} placeholder={t('loyihalar.qidirish_nom_yoki_mijoz')} style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","height":"48px","flex":"1 1 220px","maxWidth":"340px","background":"var(--sfc)"}} />
           <button onClick={v.newProject} style={{"height":"48px","padding":"0 20px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"15px","cursor":"pointer","whiteSpace":"nowrap"}}>
-            {"+ Yangi loyiha"}
+            {t('loyihalar.yangi_loyiha')}
           </button>
           {/* TZ-09 8-bosqich (dizaynda yo'q): loyiha faylidan ochish (eski saytdagi "Yuklash" ham shu fayl) */}
           <label style={{"height":"48px","padding":"0 18px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"700","fontSize":"15px","cursor":"pointer","whiteSpace":"nowrap","display":"inline-flex","alignItems":"center"}}>
-            <Ikon n="papka" size={17} />{"Fayldan ochish"}
+            <Ikon n="papka" size={17} />{t('loyihalar.fayldan_ochish')}
             <input type="file" accept=".json,application/json" onChange={v.openFile} style={{"display":"none"}} />
           </label>
         </div>
@@ -29,7 +30,7 @@ export default function Loyihalar() {
             <Ikon n="qidiruv" size={40} gap={0} style={{ color: "var(--mut)" }} />
           </span>
           <span style={{"fontSize":"18px","fontWeight":"800"}}>
-            {"Topilmadi — boshqa so'z bilan qidiring"}
+            {t('umumiy.topilmadi_boshqa_soz_bilan')}
           </span>
         </div>
       </>) : null}
@@ -64,7 +65,7 @@ export default function Loyihalar() {
             </div>
           </button>
           {/* TZ-09 8-bosqich (dizaynda yo'q): o'chirish = yashirish (arxiv), eski saytdagidek */}
-          <button onClick={X?.del} aria-label={"Loyihani o'chirish: " + (X?.name || '')} style={{"position":"absolute","top":"20px","right":"20px","width":"36px","height":"36px","borderRadius":"12px","border":"1px solid var(--line)","background":"rgba(23,50,57,.9)","color":"var(--danger)","fontSize":"15px","cursor":"pointer"}}>
+          <button onClick={X?.del} aria-label={t('loyihalar.ochirish_aria', { nom: X?.name || '' })} style={{"position":"absolute","top":"20px","right":"20px","width":"36px","height":"36px","borderRadius":"12px","border":"1px solid var(--line)","background":"rgba(23,50,57,.9)","color":"var(--danger)","fontSize":"15px","cursor":"pointer"}}>
             <Ikon n="ochirish" size={16} gap={0} />
           </button>
           </div>

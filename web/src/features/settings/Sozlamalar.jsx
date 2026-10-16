@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 import Toggle from '../../shared/ui/Toggle.jsx';
 import { input } from '../../shared/ui/styles.js';
 import { useSozlamalar } from './useSozlamalar.js';
@@ -21,13 +22,13 @@ function XatolarJurnali({ x }) {
   const mono = { fontFamily: "'JetBrains Mono',monospace", fontSize: '12px' };
   return (
     <section style={card} data-set="xatolar">
-      <span style={title}>Xatolar jurnali</span>
-      <span style={hint}>Oxirgi 30 kun. Qidirish: xato kodi (S3D-…) yoki so'rov raqami (rid).</span>
+      <span style={title}>{t('sozlama.xatolar_jurnali')}</span>
+      <span style={hint}>{t('sozlama.oxirgi_30_kun_qidirish_xato')}</span>
       <div style={{ display: 'flex', gap: '8px' }}>
-        <input value={x.q} onChange={x.onQ} onKeyDown={x.enter} placeholder="S3D-EXP-101 yoki 3f2a9c…" aria-label="Xato kodi yoki so'rov raqami" style={{ ...input, height: '48px' }} />
-        <button onClick={x.qidir} style={ghost}>Qidirish</button>
+        <input value={x.q} onChange={x.onQ} onKeyDown={x.enter} placeholder={t('sozlama.s3d_exp_101_yoki_3f2a9c')} aria-label={t('sozlama.xato_kodi_yoki_sorov_raqami')} style={{ ...input, height: '48px' }} />
+        <button onClick={x.qidir} style={ghost}>{t('sozlama.qidirish')}</button>
       </div>
-      {x.bosh ? <span style={hint}>Xato yo'q</span> : null}
+      {x.bosh ? <span style={hint}>{t('sozlama.xato_yoq')}</span> : null}
       {x.guruhlar.map((g, i) => (
         <button key={i} onClick={g.pick} style={{ border: '0', ...row, width: '100%', background: 'none', color: 'var(--txt)', cursor: 'pointer', textAlign: 'left' }}>
           <span style={{ display: 'flex', flexDirection: 'column', minWidth: '0' }}>
@@ -36,7 +37,7 @@ function XatolarJurnali({ x }) {
           </span>
           <span style={{ whiteSpace: 'nowrap', fontWeight: '700', fontVariantNumeric: 'tabular-nums' }}>{g.n}× · {g.vaqt}</span>
         </button>))}
-      {x.oxirgi.length ? <span style={{ ...hint, paddingTop: '6px' }}>Oxirgi yozuvlar</span> : null}
+      {x.oxirgi.length ? <span style={{ ...hint, paddingTop: '6px' }}>{t('sozlama.oxirgi_yozuvlar')}</span> : null}
       {x.oxirgi.map((r, i) => (
         <button key={i} onClick={r.pick} style={{ border: '0', ...row, width: '100%', background: 'none', color: 'var(--txt)', cursor: 'pointer', textAlign: 'left', fontSize: '13px' }}>
           <span style={{ display: 'flex', flexDirection: 'column', minWidth: '0' }}>
@@ -54,54 +55,62 @@ export default function Sozlamalar() {
   return (
     <main style={{ maxWidth: '1240px', width: '100%', margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,32px) 64px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h1 style={{ margin: '0', fontSize: 'clamp(28px,3.4vw,40px)', letterSpacing: '-.035em', fontWeight: '800' }}>Sozlamalar</h1>
+        <h1 style={{ margin: '0', fontSize: 'clamp(28px,3.4vw,40px)', letterSpacing: '-.035em', fontWeight: '800' }}>{t('umumiy.sozlamalar')}</h1>
         <button onClick={S.back} style={ghost}>{S.backLabel}</button>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(320px,1fr))', gap: '14px', alignItems: 'start' }}>
 
         <section style={card} data-set="akkaunt">
-          <span style={title}>Akkaunt</span>
+          <span style={title}>{t('sozlama.akkaunt')}</span>
           {(S.akkaunt || []).map((r, i) => (<div key={i} style={row}><span style={{ color: 'var(--mut)' }}>{r[0]}</span><span style={{ fontWeight: '700', textAlign: 'right' }}>{r[1]}</span></div>))}
-          <button onClick={S.logout} style={{ ...ghost, color: 'var(--danger)' }}>Chiqish</button>
+          <button onClick={S.logout} style={{ ...ghost, color: 'var(--danger)' }}>{t('sozlama.chiqish')}</button>
+        </section>
+
+        <section style={card} data-set="til">
+          <span style={title}>{t('sozlama.til')}</span>
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            {S.tillar.map((m, i) => (<button key={i} onClick={m.pick} aria-pressed={m.on} style={chip(m.on)}>{m.label}</button>))}
+          </div>
+          <span style={hint}>{t('sozlama.til_izoh')}</span>
         </section>
 
         <section style={card} data-set="ustama">
-          <span style={title}>Narx ustamasi</span>
-          <label style={lbl}>Foyda, %
+          <span style={title}>{t('sozlama.narx_ustamasi')}</span>
+          <label style={lbl}>{t('sozlama.foyda')}
             <input type="number" inputMode="decimal" min="0" max="300" value={S.markup} onChange={S.onMarkup} onBlur={S.saveMarkup} onKeyDown={S.enter} placeholder={S.markupPh} style={input} />
           </label>
-          <span style={hint}>Mijoz narxi = tannarx × (1 + ustama). Bo'sh qoldirilsa — standart {S.markupStd}%.</span>
+          <span style={hint}>{S.markupIzoh}</span>
         </section>
 
         <section style={card} data-set="logo">
-          <span style={title}>Sex logosi</span>
+          <span style={title}>{t('sozlama.sex_logosi')}</span>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <div style={{ width: '72px', height: '72px', flex: '0 0 72px', borderRadius: '16px', background: 'var(--bg)', border: '1px solid var(--line)', display: 'grid', placeItems: 'center', overflow: 'hidden' }}>
-              {S.logo ? <img src={S.logo} alt="Sex logosi" style={{ maxWidth: '100%', maxHeight: '100%' }} /> : <span style={hint}>yo'q</span>}
+              {S.logo ? <img src={S.logo} alt={t('sozlama.sex_logosi')} style={{ maxWidth: '100%', maxHeight: '100%' }} /> : <span style={hint}>{t('sozlama.yoq')}</span>}
             </div>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <label style={{ ...btn, display: 'inline-flex', alignItems: 'center' }}>Yuklash
+              <label style={{ ...btn, display: 'inline-flex', alignItems: 'center' }}>{t('sozlama.yuklash')}
                 <input type="file" accept="image/png,image/jpeg,image/webp" onChange={S.onLogo} style={{ display: 'none' }} />
               </label>
-              {S.logo ? <button onClick={S.removeLogo} style={ghost}>Olib tashlash</button> : null}
+              {S.logo ? <button onClick={S.removeLogo} style={ghost}>{t('sozlama.olib_tashlash')}</button> : null}
             </div>
           </div>
-          <span style={hint}>PNG, JPEG yoki WEBP, 300 KB gacha. Hisobotda Bittada belgisidan kichikroq chiqadi.</span>
+          <span style={hint}>{t('sozlama.png_jpeg_yoki_webp_300_kb')}</span>
         </section>
 
         <section style={{ ...card, gap: '2px' }} data-set="stanok">
-          <span style={{ ...title, paddingBottom: '6px' }}>Stanok profili</span>
-          <span style={{ ...hint, paddingBottom: '8px' }}>"Fayllar → Stanokka" bo'limida ko'rinadigan fayllar. GibLab doim bor.</span>
+          <span style={{ ...title, paddingBottom: '6px' }}>{t('sozlama.stanok_profili')}</span>
+          <span style={{ ...hint, paddingBottom: '8px' }}>{t('sozlama.fayllar_stanokka_bolimida')}</span>
           {S.stanoklar.map((t, i) => <Toggle key={i} label={t.label} sub={t.sub} on={t.on} onFlip={t.flip} />)}
         </section>
 
         <section style={card} data-set="raskroy">
-          <span style={title}>Raskroy parametrlari</span>
-          <span style={{ ...hint }}>Joylashtirish</span>
+          <span style={title}>{t('sozlama.raskroy_parametrlari')}</span>
+          <span style={{ ...hint }}>{t('sozlama.joylashtirish')}</span>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {(S.modes || []).map((m, i) => (<button key={i} onClick={m.pick} style={chip(m.on)}>{m.label}</button>))}
           </div>
-          <span style={{ ...hint }}>Aylantirish</span>
+          <span style={{ ...hint }}>{t('sozlama.aylantirish')}</span>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {(S.rots || []).map((m, i) => (<button key={i} onClick={m.pick} style={chip(m.on)}>{m.label}</button>))}
           </div>
@@ -112,25 +121,25 @@ export default function Sozlamalar() {
               </label>))}
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={S.saveNest} style={{ ...btn, flex: '1' }}>Saqlash</button>
-            <button onClick={S.resetNest} style={ghost}>Standart</button>
+            <button onClick={S.saveNest} style={{ ...btn, flex: '1' }}>{t('umumiy.saqlash')}</button>
+            <button onClick={S.resetNest} style={ghost}>{t('sozlama.standart')}</button>
           </div>
         </section>
 
         <section style={card} data-set="standart">
-          <span style={title}>Sex standartlari</span>
+          <span style={title}>{t('sozlama.sex_standartlari')}</span>
           <span style={hint}>{S.stdNote}</span>
-          {(S.std || []).map((t, i) => (
+          {(S.std || []).map((tr, i) => (
             <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '8px', borderTop: '1px solid var(--line)' }}>
-              <span style={{ fontWeight: '700', fontSize: '14px' }}>{t.nom}</span>
-              {t.rows.map((r, j) => (
+              <span style={{ fontWeight: '700', fontSize: '14px' }}>{tr.nom}</span>
+              {tr.rows.map((r, j) => (
                 <div key={j} style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '8px', alignItems: 'center' }}>
                   <span style={{ fontSize: '13px', color: 'var(--mut)' }}>{r.label}</span>
-                  <input type="number" inputMode="numeric" aria-label={t.nom + ' ' + r.label + ' min'} value={r.min} onChange={r.onMin} disabled={!S.admin} placeholder="min" style={{ ...input, height: '44px' }} />
-                  <input type="number" inputMode="numeric" aria-label={t.nom + ' ' + r.label + ' max'} value={r.max} onChange={r.onMax} disabled={!S.admin} placeholder="max" style={{ ...input, height: '44px' }} />
+                  <input type="number" inputMode="numeric" aria-label={tr.nom + ' ' + r.label + ' min'} value={r.min} onChange={r.onMin} disabled={!S.admin} placeholder={t('sozlama.min')} style={{ ...input, height: '44px' }} />
+                  <input type="number" inputMode="numeric" aria-label={tr.nom + ' ' + r.label + ' max'} value={r.max} onChange={r.onMax} disabled={!S.admin} placeholder={t('sozlama.max')} style={{ ...input, height: '44px' }} />
                 </div>))}
             </div>))}
-          {S.admin ? <button onClick={S.saveStd} style={btn}>Saqlash</button> : null}
+          {S.admin ? <button onClick={S.saveStd} style={btn}>{t('umumiy.saqlash')}</button> : null}
         </section>
 
         {S.xatolar ? <XatolarJurnali x={S.xatolar} /> : null}

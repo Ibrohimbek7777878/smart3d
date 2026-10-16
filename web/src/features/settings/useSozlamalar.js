@@ -6,7 +6,8 @@ import { toast, xato } from '../../store/ui.js';
 import { telefon, son, vaqt } from '../../shared/lib/format.js';
 import { goProjects } from '../projects/actions.js';
 import { saveSettings, askLogout, loadXatolar } from './actions.js';
-import { STANOK, NEST_F, STD_LABEL, NEST_KEY } from './constants.js';
+import { STANOK, NEST_F, STD_DIMS, NEST_KEY } from './constants.js';
+import { t, serverXato, TILLAR, til, setTil } from '../../i18n/index.js';
 
 /* TZ-19: Sozlamalar sahifasi qiymatlari — akkaunt, ustama, logo, stanok profili, raskroy, sex standartlari (TZ-14). */
 const setIn = (patch) => set('settings', patch);
@@ -19,33 +20,33 @@ function back() {
 async function saveMarkup() {
   const raw = get().settings.markupIn;
   if (raw == null) return;
-  const t = String(raw).trim(), n = son(t);
-  if (t !== '' && !(n >= 0 && n <= 300)) { toast('Ustama 0–300% oralig\'ida bo\'lsin'); return; }
-  if (await saveSettings({ markup_pct: t === '' ? null : Math.round(n * 10) / 1000 })) { setIn({ markupIn: null }); toast('Ustama saqlandi — narx yangilandi'); }
+  const v = String(raw).trim(), n = son(v);
+  if (v !== '' && !(n >= 0 && n <= 300)) { toast(t('sozlama.ustama_chegara')); return; }
+  if (await saveSettings({ markup_pct: v === '' ? null : Math.round(n * 10) / 1000 })) { setIn({ markupIn: null }); toast(t('sozlama.ustama_saqlandi')); }
 }
 
 function onLogo(ev) {
   const f = ev.target.files && ev.target.files[0];
   ev.target.value = '';
   if (!f) return;
-  if (!/^image\/(png|jpeg|webp)$/.test(f.type)) { toast('Faqat PNG, JPEG yoki WEBP'); return; }
-  if (f.size > 300 * 1024) { toast('Logo 300 KB dan kichik bo\'lsin'); return; }
+  if (!/^image\/(png|jpeg|webp)$/.test(f.type)) { toast(t('sozlama.logo_tur')); return; }
+  if (f.size > 300 * 1024) { toast(t('sozlama.logo_hajm')); return; }
   const rd = new FileReader();
-  rd.onload = async () => { if (await saveSettings({ logo: String(rd.result) })) toast('Sex logosi saqlandi'); };
+  rd.onload = async () => { if (await saveSettings({ logo: String(rd.result) })) toast(t('sozlama.logo_saqlandi')); };
   rd.readAsDataURL(f);
 }
 
 function saveNest(nc) {
   const out = {};
-  for (const [k] of NEST_F) { const n = son(nc[k]); if (!(n >= 0)) { toast('Raskroy: son kiriting'); return; } out[k] = n; }
+  for (const k of NEST_F) { const n = son(nc[k]); if (!(n >= 0)) { toast(t('sozlama.raskroy_son')); return; } out[k] = n; }
   out.mode = nc.mode; out.maxRot = +nc.maxRot || 2;
   try { localStorage.setItem(NEST_KEY, JSON.stringify(out)); } catch (_) { /* kvota */ }
-  setIn({ nestIn: null }); project.scheduleRecalc(true); toast('Raskroy parametrlari saqlandi');
+  setIn({ nestIn: null }); project.scheduleRecalc(true); toast(t('sozlama.raskroy_saqlandi'));
 }
 
 function resetNest() {
   try { localStorage.removeItem(NEST_KEY); } catch (_) { /* yo'q */ }
-  setIn({ nestIn: null }); project.scheduleRecalc(true); toast('Raskroy — standart parametrlar');
+  setIn({ nestIn: null }); project.scheduleRecalc(true); toast(t('sozlama.raskroy_standart'));
 }
 
 async function saveStd(stdIn, std) {
@@ -57,9 +58,9 @@ async function saveStd(stdIn, std) {
   try { r = await S.api('/api/sex-standartlari', { method: 'PUT', body: { modullar: mod } }); }
   catch (e) { xato('S3D-NET-101', { modul: 'settings', err: e }); return; }
   const j = await r.json().catch(() => ({}));
-  if (!r.ok) { toast(j.error || ('Xato ' + r.status), j.code || 'S3D-SET-101'); return; }
+  if (!r.ok) { toast(serverXato(j.error, j.code) || t('umumiy.xato_n', { n: r.status }), j.code || 'S3D-SET-101'); return; }
   project.H.applyStandards(j.standartlar); project.rebuildEstimator();
-  setIn({ stdIn: null }); project.scheduleRecalc(true); toast('Sex standartlari saqlandi — katalog chegaralari yangilandi');
+  setIn({ stdIn: null }); project.scheduleRecalc(true); toast(t('sozlama.std_saqlandi'));
 }
 
 export function useSozlamalar() {
@@ -67,33 +68,34 @@ export function useSozlamalar() {
   useSlice('data');
   const H = project.H, u = auth.user || {}, admin = u.role === 'admin', sets = st.sets;
   const std = (H && H.sexStd && H.sexStd.modullar) || {};
-  const stdIn = st.stdIn || Object.fromEntries(Object.entries(std).map(([t, m]) => [t, Object.fromEntries(Object.keys(STD_LABEL).filter(k => m[k]).map(k => [k, { min: m[k].min ?? '', max: m[k].max ?? '' }]))]));
+  const stdIn = st.stdIn || Object.fromEntries(Object.entries(std).map(([t, m]) => [t, Object.fromEntries(STD_DIMS.filter(k => m[k]).map(k => [k, { min: m[k].min ?? '', max: m[k].max ?? '' }]))]));
   const nc = st.nestIn || (H ? project.nestCfg() : {});
   const std0 = H ? Math.round(((H.materials.pricing && H.materials.pricing.markup_pct) ?? 0.35) * 100) : 35;
   useEffect(() => { if (admin) loadXatolar(''); }, [admin]);
   const xj = st.xatolar;
-  const setStd = (t, k, patch) => setIn({ stdIn: { ...stdIn, [t]: { ...stdIn[t], [k]: { ...stdIn[t][k], ...patch } } } });
+  const setStd = (tur, k, patch) => setIn({ stdIn: { ...stdIn, [tur]: { ...stdIn[tur], [k]: { ...stdIn[tur][k], ...patch } } } });
   return {
-    back, backLabel: nav.from === 'app' ? '← Muharrirga' : '← Loyihalarim',
-    akkaunt: [['Ism', u.name || '—'], ['Email', u.email || '—'], ['Telefon', telefon(u.phone)], ['Sex nomi', u.shop || '—']].concat(admin ? [['Rol', 'admin']] : []),
+    back, backLabel: nav.from === 'app' ? t('sozlama.muharrirga') : t('sozlama.loyihalarimga'),
+    akkaunt: [[t('sozlama.ism'), u.name || '—'], [t('sozlama.email'), u.email || '—'], [t('sozlama.telefon'), telefon(u.phone)], [t('sozlama.sex_nomi'), u.shop || '—']].concat(admin ? [[t('sozlama.rol'), 'admin']] : []),
     logout: askLogout,
-    markup: st.markupIn ?? (sets.markup_pct != null ? Math.round(sets.markup_pct * 1000) / 10 : ''), markupPh: std0 + ' (standart)', markupStd: std0,
+    markup: st.markupIn ?? (sets.markup_pct != null ? Math.round(sets.markup_pct * 1000) / 10 : ''), markupPh: t('sozlama.standart_ph', { n: std0 }), markupStd: std0, markupIzoh: t('sozlama.ustama_izoh', { n: std0 }),
     onMarkup: ev => setIn({ markupIn: ev.target.value }), saveMarkup,
     enter: ev => { if (ev.key === 'Enter') ev.target.blur(); },
-    logo: sets.logo, onLogo, removeLogo: async () => { if (await saveSettings({ logo: null })) toast('Sex logosi olib tashlandi'); },
+    logo: sets.logo, onLogo, removeLogo: async () => { if (await saveSettings({ logo: null })) toast(t('sozlama.logo_olindi')); },
     stanoklar: STANOK.map(([k, l, sub]) => {
       const on = !sets.stanoklar || sets.stanoklar.includes(k);
-      return { label: l, sub, on, flip: () => { const cur = sets.stanoklar || STANOK.map(x => x[0]); saveSettings({ stanoklar: on ? cur.filter(x => x !== k) : cur.concat(k) }); } };
+      return { label: l, sub: t(sub), on, flip: () => { const cur = sets.stanoklar || STANOK.map(x => x[0]); saveSettings({ stanoklar: on ? cur.filter(x => x !== k) : cur.concat(k) }); } };
     }),
-    modes: [['bssf', 'Guillotine (BSSF)'], ['strip', 'Lenta (LSTR)']].map(([k, l]) => ({ label: l, on: nc.mode === k, pick: () => setIn({ nestIn: { ...nc, mode: k } }) })),
-    rots: [[1, 'Yo\'q — tekstura'], [2, '90° — zichroq']].map(([k, l]) => ({ label: l, on: +nc.maxRot === k, pick: () => setIn({ nestIn: { ...nc, maxRot: k } }) })),
-    nest: NEST_F.map(([k, l]) => ({ label: l, val: nc[k] ?? '', on: ev => setIn({ nestIn: { ...nc, [k]: ev.target.value } }) })),
+    modes: [['bssf', 'sozlama.bssf'], ['strip', 'sozlama.lenta']].map(([k, l]) => ({ label: t(l), on: nc.mode === k, pick: () => setIn({ nestIn: { ...nc, mode: k } }) })),
+    rots: [[1, 'sozlama.aylantirmaslik'], [2, 'sozlama.aylantirish90']].map(([k, l]) => ({ label: t(l), on: +nc.maxRot === k, pick: () => setIn({ nestIn: { ...nc, maxRot: k } }) })),
+    nest: NEST_F.map(k => ({ label: t('sozlama.n_' + k), val: nc[k] ?? '', on: ev => setIn({ nestIn: { ...nc, [k]: ev.target.value } }) })),
     saveNest: () => saveNest(nc), resetNest,
-    admin, stdNote: admin ? 'Admin: chegarani o\'zgartirsangiz — katalog va ogohlantirishlar darhol yangilanadi.' : 'Modul o\'lcham chegaralari (mm). O\'zgartirish — faqat admin.',
-    std: Object.entries(std).map(([t, m]) => ({ nom: m.nom || t, rows: Object.keys(STD_LABEL).filter(k => m[k]).map(k => ({ label: STD_LABEL[k],
-      min: stdIn[t][k].min, max: stdIn[t][k].max,
-      onMin: ev => setStd(t, k, { min: ev.target.value }), onMax: ev => setStd(t, k, { max: ev.target.value }) })) })),
+    admin, stdNote: admin ? t('sozlama.std_admin') : t('sozlama.std_usta'),
+    std: Object.entries(std).map(([tur, m]) => ({ nom: m.nom || tur, rows: STD_DIMS.filter(k => m[k]).map(k => ({ label: t('sozlama.d_' + k),
+      min: stdIn[tur][k].min, max: stdIn[tur][k].max,
+      onMin: ev => setStd(tur, k, { min: ev.target.value }), onMax: ev => setStd(tur, k, { max: ev.target.value }) })) })),
     saveStd: () => saveStd(stdIn, std),
+    tillar: TILLAR.map(([kod, nom]) => ({ label: nom, on: kod === til(), pick: () => setTil(kod) })),
     /* admin: xatolar jurnali — kod bo'yicha guruh va oxirgi yozuvlar */
     xatolar: admin ? {
       q: st.xq, onQ: ev => setIn({ xq: ev.target.value }), qidir: () => loadXatolar(st.xq),

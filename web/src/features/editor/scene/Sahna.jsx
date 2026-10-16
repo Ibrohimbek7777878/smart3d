@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../../i18n/index.js';
 import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useSahnaView } from './useSahna.js';
 import Maslahat from './Maslahat.jsx';
@@ -29,7 +30,7 @@ export default function Sahna() {
           </button>
         </div>
         <button onClick={v.shot} style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","pointerEvents":"auto","whiteSpace":"nowrap"}}>
-          <Ikon n="rasm" />{"Rasm"}
+          <Ikon n="rasm" />{t('sahna.rasm')}
         </button>
         <button onClick={v.toggleSpin} style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":v.vw?.sb,"border":"1px solid var(--line)","color":v.vw?.st,"fontWeight":"700","fontSize":"14px","cursor":"pointer","pointerEvents":"auto","whiteSpace":"nowrap"}}>
           <Ikon n="aylanish" />{"360°"}
@@ -37,8 +38,8 @@ export default function Sahna() {
         <button onClick={v.toggleAllOpen} style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","pointerEvents":"auto","whiteSpace":"nowrap"}}>
           <Ikon n="eshik" /><span className="sc-interp">{v.openAllLabel}</span>
         </button>
-        <button onClick={v.center} aria-label="Markazga" style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","pointerEvents":"auto","whiteSpace":"nowrap"}}>
-          <Ikon n="markaz" />{"Markazga"}
+        <button onClick={v.center} aria-label={t('sahna.markazga')} style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","pointerEvents":"auto","whiteSpace":"nowrap"}}>
+          <Ikon n="markaz" />{t('sahna.markazga')}
         </button>
         {/* TZ-09 8-bosqich (dizaynda yo'q): VR — faqat VR qurilmada ko'rinadi (eski saytdagi WebXR) */}
         {v.vrOk ? (<>

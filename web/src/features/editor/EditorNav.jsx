@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 import { useEditorNav } from './useEditorNav.js';
 
@@ -19,10 +20,10 @@ export default function EditorNav() {
       </React.Fragment>))}
       <div data-ednav-x="" style={{"height":"1px","background":"var(--line)","margin":"10px 4px"}}></div>
       <button data-ednav-x="" onClick={v.goProjects} style={{"minHeight":"44px","borderRadius":"12px","border":"0","background":"transparent","color":"var(--mut)","fontWeight":"700","fontSize":"15px","cursor":"pointer","textAlign":"left","padding":"0 12px"}} className="h3">
-        {"Loyihalar"}
+        {t('qadam.loyihalar')}
       </button>
       <button data-ednav-x="" onClick={v.settingsToast} style={{"minHeight":"44px","borderRadius":"12px","border":"0","background":"transparent","color":"var(--mut)","fontWeight":"700","fontSize":"15px","cursor":"pointer","textAlign":"left","padding":"0 12px"}} className="h4">
-        {"Sozlamalar"}
+        {t('umumiy.sozlamalar')}
       </button>
     </nav>
   );

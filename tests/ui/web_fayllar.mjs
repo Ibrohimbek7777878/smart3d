@@ -21,7 +21,7 @@ async function asosiy(page, R) {
   const waitText = async (t, ms = 10000) => { for (let i = 0; i < ms / 200; i++) { if (await has(t)) return true; await page.waitForTimeout(200); } return false; };
 
   await page.setViewportSize({ width: 1440, height: 900 });
-  await M(() => { localStorage.clear(); sessionStorage.clear(); });
+  await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
   await page.reload(); await page.waitForTimeout(1500);
   await fill('Jasur', 'Fayl Usta'); await fill('jasur@', 'fayl' + Date.now() + '@test.uz');
   const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));

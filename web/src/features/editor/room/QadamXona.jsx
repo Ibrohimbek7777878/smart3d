@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../../i18n/index.js';
 import Ikon from '../../../shared/ui/Ikon.jsx';
 import Toggle from '../../../shared/ui/Toggle.jsx';
 import { useQadamXona } from './useQadamXona.js';
@@ -10,10 +11,10 @@ export default function QadamXona() {
     <>
       <div style={{"display":"flex","flexDirection":"column","gap":"4px"}}>
         <span style={{"fontSize":"12px","fontWeight":"800","letterSpacing":".08em","textTransform":"uppercase","color":"var(--mut)"}}>
-          {"① Qadam"}
+          {t('xona.qadam')}
         </span>
         <h2 style={{"margin":"0","fontSize":"22px","fontWeight":"800","letterSpacing":"-.02em"}}>
-          {"Xona"}
+          {t('xona.xona')}
         </h2>
       </div>
       <div style={{"display":"flex","padding":"4px","gap":"4px","borderRadius":"14px","background":"var(--sfc)"}}>
@@ -26,19 +27,19 @@ export default function QadamXona() {
       <div style={{"display":"grid","gridTemplateColumns":"repeat(3,minmax(0,1fr))","gap":"8px"}}>
         <label style={{"display":"flex","flexDirection":"column","gap":"4px"}}>
           <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"700"}}>
-            {"Eni, mm"}
+            {t('umumiy.eni_mm')}
           </span>
           <input type="number" value={v.w.val} onChange={v.w.on} onBlur={v.w.commit} onKeyDown={v.w.key} style={{"height":"44px","borderRadius":"12px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","fontWeight":"800","padding":"0 10px","fontVariantNumeric":"tabular-nums","outline":"none","width":"100%"}} />
         </label>
         <label style={{"display":"flex","flexDirection":"column","gap":"4px"}}>
           <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"700"}}>
-            {"Chuqurligi"}
+            {t('xona.chuqurligi')}
           </span>
           <input type="number" value={v.d.val} onChange={v.d.on} onBlur={v.d.commit} onKeyDown={v.d.key} style={{"height":"44px","borderRadius":"12px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","fontWeight":"800","padding":"0 10px","fontVariantNumeric":"tabular-nums","outline":"none","width":"100%"}} />
         </label>
         <label style={{"display":"flex","flexDirection":"column","gap":"4px"}}>
           <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"700"}}>
-            {"Bo'yi"}
+            {t('xona.boyi')}
           </span>
           <input type="number" value={v.h.val} onChange={v.h.on} onBlur={v.h.commit} onKeyDown={v.h.key} style={{"height":"44px","borderRadius":"12px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","fontWeight":"800","padding":"0 10px","fontVariantNumeric":"tabular-nums","outline":"none","width":"100%"}} />
         </label>
@@ -53,10 +54,10 @@ export default function QadamXona() {
       <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexDirection":"column","gap":"10px"}}>
         <div style={{"display":"flex","justifyContent":"space-between","alignItems":"center"}}>
           <span style={{"fontWeight":"800"}}>
-            {"Teshiklar"}
+            {t('xona.teshiklar')}
           </span>
           <button onClick={v.addHole} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)","minHeight":"32px"}}>
-            {"+ Qo'shish"}
+            {t('xona.qoshish')}
           </button>
         </div>
         {(v.holes || []).map((h, $index) => (<React.Fragment key={$index}>
@@ -74,16 +75,16 @@ export default function QadamXona() {
         {/* TZ-09 8-bosqich (dizaynda yo'q): ⚙ — dobor/karniz balandligi, moyka o'lchami; "+ Qo'shish" tugmasi uslubida */}
         <div style={{"display":"flex","justifyContent":"space-between","alignItems":"center","paddingBottom":"6px"}}>
           <span style={{"fontWeight":"800"}}>
-            {"Oshxona elementlari"}
+            {t('xona.oshxona_elementlari')}
           </span>
-          <button onClick={v.openKitchen} aria-label="Oshxona elementlarini sozlash" style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)"}}>
-            <Ikon n="sozlash" gap={0} />{"Sozlash"}
+          <button onClick={v.openKitchen} aria-label={t('xona.oshxona_elementlarini_sozlash')} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)"}}>
+            <Ikon n="sozlash" gap={0} />{t('xona.sozlash')}
           </button>
         </div>
         {v.toggles.map((t, i) => <Toggle key={i} label={t.label} sub={t.sub} on={t.on} onFlip={t.flip} />)}
       </div>
       <button onClick={v.goStep2} style={{"height":"52px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer","flex":"0 0 auto"}}>
-        {"Keyingi: Mebel →"}
+        {t('xona.keyingi_mebel')}
       </button>
     </>
   );

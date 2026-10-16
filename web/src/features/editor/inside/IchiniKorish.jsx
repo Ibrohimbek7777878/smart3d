@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../../i18n/index.js';
 import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useIchiniKorish } from './useIchiniKorish.js';
 
@@ -15,7 +16,7 @@ export default function IchiniKorish() {
           </div>
           <div style={{"position":"absolute","left":"16px","top":"16px","zIndex":"3","display":"flex","flexDirection":"column","gap":"2px","pointerEvents":"none"}}>
             <span style={{"fontSize":"13px","fontWeight":"800","letterSpacing":".08em","textTransform":"uppercase","color":"var(--acct)"}}>
-              {"Ichini ko'rish"}
+              {t('ichki.ichini_korish')}
             </span>
             <span style={{"fontSize":"22px","fontWeight":"800"}}>
               <span className="sc-interp">{v.ins?.name}</span>
@@ -24,16 +25,16 @@ export default function IchiniKorish() {
           <div style={{"position":"absolute","left":"16px","right":"16px","bottom":"16px","zIndex":"3","display":"flex","flexWrap":"wrap","gap":"12px","alignItems":"center","padding":"10px 16px","borderRadius":"18px","background":"rgba(23,50,57,.92)","border":"1px solid var(--line)"}}>
             <div style={{"display":"flex","padding":"4px","gap":"4px","borderRadius":"12px","background":"var(--sfc2)"}}>
               <button onClick={v.insColor} style={{"height":"36px","padding":"0 12px","borderRadius":"9px","border":"0","background":v.ins?.cB,"color":v.ins?.cT,"fontWeight":"800","fontSize":"13px","cursor":"pointer"}}>
-                {"Rangli"}
+                {t('ichki.rangli')}
               </button>
               <button onClick={v.insPlain} style={{"height":"36px","padding":"0 12px","borderRadius":"9px","border":"0","background":v.ins?.pB,"color":v.ins?.pT,"fontWeight":"800","fontSize":"13px","cursor":"pointer"}}>
-                {"Rangsiz"}
+                {t('ichki.rangsiz')}
               </button>
             </div>
             <label style={{"flex":"1 1 180px","display":"flex","flexDirection":"column"}}>
               <span style={{"display":"flex","justifyContent":"space-between","fontSize":"12px","color":"var(--mut)","fontWeight":"700"}}>
                 <span>
-                  {"Sochish"}
+                  {t('ichki.sochish')}
                 </span>
                 <span style={{"color":"var(--txt)"}}>
                   <span className="sc-interp">{v.ins?.ex}</span>{"%"}
@@ -58,7 +59,7 @@ export default function IchiniKorish() {
                 </span>
               </>) : null}
             </div>
-            <button onClick={v.closeInside} aria-label="Yopish" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto"}}>
+            <button onClick={v.closeInside} aria-label={t('umumiy.yopish')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto"}}>
               <Ikon n="yopish" size={18} gap={0} />
             </button>
           </div>
@@ -68,7 +69,7 @@ export default function IchiniKorish() {
                 <span className="sc-interp">{v.ins?.detal}</span>
               </div>
               <div style={{"fontSize":"12px","color":"var(--mut)"}}>
-                {"detal"}
+                {t('ichki.detal')}
               </div>
             </div>
             <div style={{"background":"var(--sfc)","borderRadius":"16px","padding":"12px"}}>
@@ -76,7 +77,7 @@ export default function IchiniKorish() {
                 <span className="sc-interp">{v.ins?.zap}</span>
               </div>
               <div style={{"fontSize":"12px","color":"var(--mut)"}}>
-                {"zapchast"}
+                {t('ichki.zapchast')}
               </div>
             </div>
           </div>

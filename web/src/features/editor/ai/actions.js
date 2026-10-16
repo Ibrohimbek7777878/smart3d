@@ -5,10 +5,11 @@ import { toast, confirm, xato } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
 import { aiBuild, startVoice, voiceSupported } from '../../../../../app/js/ai.js';
 import { roomBBox } from '../../../../../app/js/engine/rules.js';
+import { t } from '../../../i18n/index.js';
 
 /* TZ-19 (TZ-12): AI — server til modeli (kirgan va serverda yoqilgan bo'lsa) yoki qoidali tahlilchi (ai.js), ovoz — brauzer. */
-export const AI_EX = ['oshxona 3.6x3 m, balandlik 2.7, 4 ta pastki shkaf', '4.2x3.1 xona, 1 garderob, 1 stol', '5x4 mehmonxona, divan, 2 ta toko'];
-const VOICE_ERR = { 'not-allowed': 'Mikrofonga ruxsat bering (brauzer sozlamalari)', 'service-not-allowed': 'Mikrofonga ruxsat bering (brauzer sozlamalari)', 'audio-capture': 'Mikrofon topilmadi', network: 'Ovoz xizmati uchun internet kerak' };
+export const AI_EX = ['ai.misol1', 'ai.misol2', 'ai.misol3'];   // AI ham uch tilni tushunadi (TZ-18 8-bosqich)
+const VOICE_ERR = { 'not-allowed': 'ai.mikrofon_ruxsat', 'service-not-allowed': 'ai.mikrofon_ruxsat', 'audio-capture': 'ai.mikrofon_yoq', network: 'ai.ovoz_internet' };
 
 let aiOn = false;
 let voice = null;
@@ -30,7 +31,7 @@ async function aiParse(text) {
 /** matndan loyiha quriladi (joriy loyiha almashadi; teshiklar va oshxona sozlamasi saqlanadi) */
 export async function runAI(silent) {
   const text = get().ai.text.trim();
-  if (!text) { toast('Avval matn yozing yoki ovozni bosing'); return; }
+  if (!text) { toast(t('ai.avval_matn')); return; }
   const H = project.H;
   try {
     const res = await aiBuild(text, H.catalog, { llm: (t) => aiParse(t) });
@@ -42,15 +43,15 @@ export async function runAI(silent) {
     set('editor', { sel: null, part: null, warn: {} });
     project.changed('room', true);
     const bb = roomBBox(res.doc.room.outline);
-    toast(res.assumed ? 'Xona o\'lchami tushunilmadi — 3600×2800 mm taxmin qilindi'
-      : 'AI loyihani qurdi: ' + res.doc.placements.length + ' modul · ' + Math.round(bb.w) + '×' + Math.round(bb.h) + ' mm' + (res.unknown.length ? ' · tushunilmadi: ' + res.unknown.join(', ') : ''));
-  } catch (e) { if (!silent) xato('S3D-AI-101', { matn: 'AI xato: ' + e.message, modul: 'editor/ai', err: e }); }
+    toast(res.assumed ? t('ai.olcham_taxmin')
+      : t('ai.qurdi', { n: res.doc.placements.length, w: Math.round(bb.w), h: Math.round(bb.h) }) + (res.unknown.length ? t('ai.tushunilmadi', { s: res.unknown.join(', ') }) : ''));
+  } catch (e) { if (!silent) xato('S3D-AI-101', { matn: t('ai.xato', { s: e.message }), modul: 'editor/ai', err: e }); }
 }
 
 /** "Qurish": joriy loyihada mebel bo'lsa — avval tasdiq */
 export function buildFromText() {
   const n = project.doc.placements.length;
-  if (n) confirm({ title: 'Loyihani almashtirasizmi?', text: 'Joriy ' + n + ' ta mebel almashtiriladi. Davom etasizmi?', ok: 'Almashtirish', yes: () => runAI() });
+  if (n) confirm({ title: t('ai.almashtirish_sarlavha'), text: t('ai.almashtirish_matn', { n }), ok: t('ai.almashtirish'), yes: () => runAI() });
   else runAI();
 }
 
@@ -63,7 +64,7 @@ function stopVoice() { if (voice) { voice.stop(); voice = null; } }
 /** mikrofon: o'zbekcha, qo'llamasa — ruscha */
 export function toggleMic() {
   if (voice) { stopVoice(); set('ai', { mic: false }); return; }
-  if (!voiceSupported()) { toast('Bu brauzer ovozni qo\'llab-quvvatlamaydi (Chrome/Edge kiriting)'); return; }
+  if (!voiceSupported()) { toast(t('ai.brauzer_ovozsiz')); return; }
   let triedRu = false, rec = null;
   const start = (lang) => startVoice({
     lang, onText: (t) => set('ai', { text: t }),
@@ -71,7 +72,7 @@ export function toggleMic() {
       if (voice !== rec) return;
       if (err === 'language-not-supported' && !triedRu) { triedRu = true; rec = start('ru-RU'); voice = rec; return; }
       voice = null; set('ai', { mic: false });
-      if (err && err !== 'no-speech' && err !== 'aborted') xato('S3D-AI-102', { matn: VOICE_ERR[err] || ('Ovoz xatosi: ' + err), modul: 'editor/ai' });
+      if (err && err !== 'no-speech' && err !== 'aborted') xato('S3D-AI-102', { matn: VOICE_ERR[err] ? t(VOICE_ERR[err]) : t('ai.ovoz_xatosi', { s: err }), modul: 'editor/ai' });
     }
   });
   rec = start('uz-UZ'); voice = rec;
@@ -82,7 +83,7 @@ export function toggleMic() {
 export function aiView(ai) {
   return {
     aiText: ai.text, onAiText: ev => setText(ev.target.value),
-    aiEx: AI_EX.map(t => ({ t, pick: () => setText(t) })),
-    toggleMic, micLabel: ai.mic ? 'Tinglanmoqda…' : 'Ovoz', micBg: ai.mic ? 'var(--danger)' : 'var(--sfc2)', micT: ai.mic ? '#2A0A0A' : 'var(--txt)'
+    aiEx: AI_EX.map(k => { const m = t(k); return { t: m, pick: () => setText(m) }; }),
+    toggleMic, micLabel: ai.mic ? t('ai.tinglanmoqda') : t('ai.ovoz'), micBg: ai.mic ? 'var(--danger)' : 'var(--sfc2)', micT: ai.mic ? '#2A0A0A' : 'var(--txt)'
   };
 }

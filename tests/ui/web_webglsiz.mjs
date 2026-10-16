@@ -12,8 +12,11 @@ export default async function run(page) {
 
 async function asosiy(page, R) {
   const OUT = process.env.QA_OUT;
-  const errs = [];
+  const errs = [], konsol = [];
   page.on('pageerror', e => errs.push(String(e).slice(0, 240)));
+  /* konsoldagi xatolar ham (SVG zaxirada NaN yo'l va h.k.) — 4xx tarmoq javoblari bundan mustasno */
+  /* (testning o'zi qo'shgan WebGL'ni o'chirish skriptini CSP bloklashi — ilova xatosi emas) */
+  page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|Executing inline script violates/.test(m.text())) konsol.push(m.text().slice(0, 160)); });
   const M = (fn, arg) => page.evaluate(fn, arg, false);
   const txt = () => M(() => document.body.innerText);
   const has = async (t) => (await txt()).includes(t);
@@ -27,7 +30,7 @@ async function asosiy(page, R) {
     HTMLCanvasElement.prototype.getContext = function (type, ...a) { return /webgl/i.test(String(type)) ? null : orig.call(this, type, ...a); };
   });
   await page.setViewportSize({ width: 1440, height: 900 });
-  await M(() => { localStorage.clear(); sessionStorage.clear(); });
+  await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
   const base = page.url().split(/[?#]/)[0].replace(/app\.html$/, '');
   await page.goto(base + 'app.html?t=' + Date.now() + '#s=reg'); await page.waitForTimeout(2000);
   R.webglYoq = await M(() => !document.createElement('canvas').getContext('webgl'));
@@ -50,6 +53,7 @@ async function asosiy(page, R) {
   await page.goto(base + '?t=' + Date.now()); await page.waitForTimeout(3000);
   R.sayt = await M(() => !!document.querySelector('[data-s3d]') && document.body.innerText.length > 200);
 
+  R.konsolXato = konsol.length; R.konsolNamuna = konsol.slice(0, 3);
   R.errs = errs;
-  R.ok = R.webglYoq && R.xabar && R.narx > 0 && R.excel && R.sayt && errs.length === 0;
+  R.ok = konsol.length === 0 && R.webglYoq && R.xabar && R.narx > 0 && R.excel && R.sayt && errs.length === 0;
 }

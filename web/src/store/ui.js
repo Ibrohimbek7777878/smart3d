@@ -1,6 +1,6 @@
 import { get, set } from './index.js';
 import { report } from '../shared/lib/jurnal.js';
-import { XATOLAR } from '../../../app/js/xatolar.js';
+import { t } from '../i18n/index.js';
 
 /* TZ-19: umumiy oynalar — qisqa xabar (toast), tasdiq oynasi, pastki varaq. Har modul shu orqali chaqiradi. */
 let toastTimer = 0;
@@ -15,7 +15,7 @@ export function toast(text, code) {
 /** foydalanuvchiga ko'rinadigan xato: tushunarli matn + kod; jurnalga ham yoziladi.
  *  o: { matn (ko'rinadigan matn, bo'lmasa — kod matni), modul, err, xabar (jurnal uchun) } */
 export function xato(code, o = {}) {
-  const matn = o.matn || (XATOLAR[code] && XATOLAR[code].matn) || 'Xato';
+  const matn = o.matn || t('xato.' + code);
   report(code, { modul: o.modul, err: o.err, xabar: o.xabar || matn });
   toast(matn, code);
 }

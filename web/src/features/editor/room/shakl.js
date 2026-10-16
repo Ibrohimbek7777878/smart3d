@@ -4,6 +4,7 @@ import { toast, openSheet, patchSheet, closeSheet } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
 import { son } from '../../../shared/lib/format.js';
 import { roomBBox } from '../../../../../app/js/engine/rules.js';
+import { t } from '../../../i18n/index.js';
 
 /* TZ-19 (TZ-09 8-bosqich): erkin xona — burchak nuqtalari (dizayndagi "✎ Erkin"). Kamida 3 nuqta. */
 const asText = (pts) => pts.map(p => [String(p[0]), String(p[1])]);
@@ -22,12 +23,12 @@ export function useShaklVaraq() {
     lShakl: () => setPts(asText(L.L_OUTLINE)),
     qolla: () => {
       const o = pts.map(p => [Math.round(son(p[0])), Math.round(son(p[1]))]);
-      if (o.length < 3 || o.some(p => !isFinite(p[0]) || !isFinite(p[1]))) { toast('Kamida 3 ta to\'g\'ri nuqta kiriting'); return; }
+      if (o.length < 3 || o.some(p => !isFinite(p[0]) || !isFinite(p[1]))) { toast(t('xona.nuqta_kam')); return; }
       L.applyRoom(project.doc, { outline: o });
       project.changed('room', true);
       closeSheet();
       const b = roomBBox(o);
-      toast('Xona: ' + o.length + ' nuqta · ' + Math.round(b.w) + '×' + Math.round(b.h) + ' mm');
+      toast(t('xona.shakl_toast', { n: o.length, w: Math.round(b.w), h: Math.round(b.h) }));
     }
   };
 }

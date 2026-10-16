@@ -5,6 +5,7 @@ import { xato } from '../../store/ui.js';
 import { loadSettings } from '../settings/actions.js';
 import { goProjects, openPending } from '../projects/actions.js';
 import { checkAiStatus } from '../editor/ai/actions.js';
+import { t } from '../../i18n/index.js';
 
 /* TZ-19 (TZ-09 Q2): kirish — email + parol (server: /api/register, /api/login). SMS (TZ-07) auth-core.js da tayyor. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -58,10 +59,10 @@ export function readHandoff() {
 /** "Ro'yxatdan o'tish" / "Kirish" tugmasi */
 export async function submitAuth() {
   const st = get(), f = st.auth.f, reg = st.nav.screen === 'reg', e = {}, em = f.email.trim();
-  if (reg && !f.name.trim()) e.name = 'Ismingizni yozing';
-  if (!EMAIL_RE.test(em)) e.email = 'Emailni to\'g\'ri yozing';
-  if (reg && f.phone.length !== 9) e.phone = 'Telefon 9 raqam bo\'lishi kerak';
-  if (f.pass.length < 8) e.pass = 'Parol kamida 8 belgi';
+  if (reg && !f.name.trim()) e.name = t('kirish.ism_yozing');
+  if (!EMAIL_RE.test(em)) e.email = t('kirish.email_xato');
+  if (reg && f.phone.length !== 9) e.phone = t('kirish.telefon_9');
+  if (f.pass.length < 8) e.pass = t('kirish.parol_8');
   if (Object.keys(e).length) { setField({ err: e, tried: true }); return; }
   if (busy) return;
   busy = true;
@@ -70,10 +71,10 @@ export async function submitAuth() {
   busy = false;
   if (!j.ok) {
     if (j.status === 0) { xato(j.code || 'S3D-NET-101', { modul: 'auth' }); return; }
-    const t = String(j.error || '');
-    if (j.status === 409) { if (j.code === 'S3D-AUTH-003' || /telefon/i.test(t)) e.phone = 'Bu raqam bilan akkaunt bor — kirish'; else e.email = 'Bu email bilan akkaunt bor — kirish'; }
-    else if (j.status === 401) e.pass = 'Email yoki parol noto\'g\'ri';
-    else if (/parol/i.test(t)) e.pass = t; else if (/telefon/i.test(t)) e.phone = t; else if (/ism/i.test(t)) e.name = t; else e.email = t;
+    const msg = String(j.error || '');
+    if (j.status === 409) { if (j.code === 'S3D-AUTH-003' || /telefon/i.test(msg)) e.phone = t('kirish.raqam_bor'); else e.email = t('kirish.email_bor'); }
+    else if (j.status === 401) e.pass = t('kirish.parol_xato');
+    else if (/parol/i.test(msg)) e.pass = msg; else if (/telefon/i.test(msg)) e.phone = msg; else if (/ism/i.test(msg)) e.name = msg; else e.email = msg;
     setField({ err: e, tried: true });
     return;
   }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../../i18n/index.js';
 import { SonMaydon } from '../../../shared/ui/Chiplar.jsx';
 import { btnPrimary } from '../../../shared/ui/styles.js';
 import { useOshxonaVaraq } from './oshxona.js';
@@ -8,6 +9,6 @@ export default function OshxonaVaraq() {
   const s = useOshxonaVaraq();
   return (<>
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: '8px' }}>{s.maydonlar.map((f, i) => <SonMaydon key={i} f={f} />)}</div>
-    <button onClick={s.saqla} style={btnPrimary}>Saqlash</button>
+    <button onClick={s.saqla} style={btnPrimary}>{t('umumiy.saqlash')}</button>
   </>);
 }
