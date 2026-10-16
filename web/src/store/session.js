@@ -3,6 +3,7 @@ import { project } from './project.js';
 import { toast } from './ui.js';
 import { createSession } from '../../../app/js/auth-core.js';
 import { t, serverXato } from '../i18n/index.js';
+import { TELEGRAM } from '../app/bridge/telegram.js';
 
 /* TZ-19: server bilan sessiya — auth-core.js (eski sayt bilan umumiy: kirish, avtomatik saqlash, internetsiz navbat,
  * loyihalar). Bu yerda faqat ilova holatiga ulanadi. */
@@ -18,7 +19,8 @@ function saqlashIzoh(kind, title) {
 }
 
 export const S = createSession({
-  cookie: true,                                   // TZ-19 X2: kalit httpOnly cookie'da, JS ko'rmaydi
+  cookie: !TELEGRAM,                              // TZ-19 X2: kalit httpOnly cookie'da, JS ko'rmaydi
+  xotira: TELEGRAM,                               // TZ-16: Telegram ichida — kalit faqat xotirada (ramkada cookie ishlamaydi)
   toast: (matn, kind, code) => toast(serverXato(matn, code), code),   // server xatosi — kodi bilan (server o'zi jurnalga yozgan)
   onState: (kind, title) => set('auth', { save: kind ? { kind, title: saqlashIzoh(kind, title) } : null }),
   onUser: (u, why) => {

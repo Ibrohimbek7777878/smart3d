@@ -6,6 +6,8 @@ import { loadSettings } from '../settings/actions.js';
 import { goProjects, openPending } from '../projects/actions.js';
 import { checkAiStatus } from '../editor/ai/actions.js';
 import { t, serverXato } from '../../i18n/index.js';
+import { TELEGRAM } from '../../app/bridge/telegram.js';
+import { telegramUlash } from '../telegram/telegram.js';
 
 /* TZ-19 (TZ-09 Q2): kirish — email + parol (server: /api/register, /api/login). SMS (TZ-07) auth-core.js da tayyor. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -81,6 +83,7 @@ export async function submitAuth() {
   try { localStorage.setItem('s3d-last-email', em); } catch (_) { /* kvota */ }
   setField({ name: (j.user && j.user.name) || f.name, pass: '', err: {} });
   set('auth', { user: j.user });
+  if (TELEGRAM) await telegramUlash();             // TZ-16: Telegram ichida — saytdagi akkaunt shu Telegram'ga ulanadi
   if (reg) {
     await S.afterLogin(true).catch(() => {});
     if (get().nav.pending) { openPending(); return; }

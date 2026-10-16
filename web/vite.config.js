@@ -86,7 +86,8 @@ export default defineConfig({
     proxy: { '/api': API, '/ws': { target: API.replace(/^http/, 'ws'), ws: true } }
   },
   /* testlar: build + server (tests/ui/web_*.sh); CSP — server bilan bir xil (TZ-19 X1), sayt CSP ostida ishlashi tekshiriladi */
-  preview: { proxy: { '/api': API }, headers: { 'Content-Security-Policy': csp({ scriptHashes: inlineScriptHashes(r('../app/index.html')) }) } },
+  /* preview (brauzer testlari): ilova sahifasidagidek — Telegram skriptiga ruxsat (TZ-16, server/himoya.js) */
+  preview: { proxy: { '/api': API }, headers: { 'Content-Security-Policy': csp({ scriptHashes: inlineScriptHashes(r('../app/index.html')), scriptExtra: ['https://telegram.org'] }) } },
   build: {
     rollupOptions: {
       input: { main: r('./index.html'), app: r('./app.html'), notfound: r('./404.html') },   // 404 — TZ-19

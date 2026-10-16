@@ -33,8 +33,11 @@ export function formatPhone(v) {
 
 export function createSession(o) {
   const cookie = !!o.cookie;
+  /* o.xotira = true (TZ-16, Telegram Mini App): kalit faqat xotirada — saqlanmaydi, har ochilishda Telegram imzosi bilan
+   * qayta olinadi (Telegram Web'da ilova ramka ichida — cookie ishlamaydi) */
+  const xotira = !!o.xotira && !cookie;
   if (cookie && ls.get(K.token)) ls.set(K.token, null);           // eski usulda saqlangan kalit qoldirilmaydi
-  let token = cookie ? null : ls.get(K.token), user = ls.get(K.user);
+  let token = cookie || xotira ? null : ls.get(K.token), user = xotira ? null : ls.get(K.user);
   const has = () => (cookie ? !!user : !!token);
   let ready = false, currentId = null;
   let saveTimer = 0, saving = false, dirty = false;
@@ -57,7 +60,7 @@ export function createSession(o) {
   const errInfo = async (r) => { try { const j = await r.json(); return { text: j.error || ('Xato ' + r.status), code: j.code || '' }; } catch (e) { return { text: 'Xato ' + r.status, code: '' }; } };
   const errText = async (r) => { const e = await errInfo(r); return e.text + (e.code ? ' · ' + e.code : ''); };
   const setCurrent = (id) => { currentId = id; ls.set(curKey(user), id); };
-  const setAuth = (j) => { token = cookie ? null : j.token; user = j.user; if (!cookie) ls.set(K.token, token); ls.set(K.user, user); };
+  const setAuth = (j) => { token = cookie ? null : j.token; user = j.user; if (!cookie && !xotira) ls.set(K.token, token); if (!xotira) ls.set(K.user, user); };
 
   /* ── avtomatik saqlash ── */
   function changed() {
@@ -145,6 +148,18 @@ export function createSession(o) {
     if (j.ok) { setAuth(j); if (o.onUser) o.onUser(user, 'login'); }
     return j;
   }
+  /** TZ-16: Telegram imzosi bilan kirish (initData — Telegram bergan satr, server tekshiradi) */
+  async function telegram(initData) {
+    const j = await post('/api/auth/telegram', { initData });
+    if (j.ok) { setAuth(j); if (o.onUser) o.onUser(user, 'login'); }
+    return j;
+  }
+  /** TZ-16: email+parol bilan kirilgan akkauntni shu Telegram'ga ulash */
+  async function telegramUlash(initData) {
+    const j = await post('/api/telegram/ulash', { initData });
+    if (j.ok) { setAuth(j); if (o.onUser) o.onUser(user, 'login'); }
+    return j;
+  }
   /** kirgandan keyin: oxirgi loyihani ochish yoki joriy ishni birinchi loyiha qilib saqlash */
   async function afterLogin(fresh) {
     currentId = ls.get(curKey(user));
@@ -168,7 +183,7 @@ export function createSession(o) {
   function logout(expired) {
     if (!expired && has()) api('/api/logout', { method: 'POST', body: {} }).catch(() => {});   // TZ-19 X3: serverda ham bekor
     token = null; user = null; ready = false; currentId = null;
-    ls.set(K.token, null); ls.set(K.user, null);
+    if (!xotira) { ls.set(K.token, null); ls.set(K.user, null); }
     clearTimeout(saveTimer);
     state(null);
     if (o.onUser) o.onUser(null, expired ? 'expired' : 'logout');
@@ -178,7 +193,7 @@ export function createSession(o) {
     if (!has()) return false;
     const me = await api('/api/me');
     if (me.status === 401 || me.status === 404) { logout(true); return false; }
-    if (me.ok) { user = Object.assign({}, user, await me.json()); ls.set(K.user, user); }
+    if (me.ok) { user = Object.assign({}, user, await me.json()); if (!xotira) ls.set(K.user, user); }
     if (o.onUser) o.onUser(user, 'restore');
     await afterLogin(false);
     return true;
@@ -186,7 +201,7 @@ export function createSession(o) {
 
   return {
     api, errText, errInfo, changed, flush, openProject, listProjects, removeProject,
-    login, register, smsSend, smsVerify, afterLogin, logout, restore, setCurrent,
+    login, register, smsSend, smsVerify, telegram, telegramUlash, afterLogin, logout, restore, setCurrent,
     /** "Yangi" yoki kompyuterdan yuklash — keyingi saqlash serverda yangi loyiha ochadi */
     resetCurrent() { if (has()) setCurrent(null); },
     get token() { return token; },

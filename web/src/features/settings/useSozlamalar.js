@@ -76,7 +76,7 @@ export function useSozlamalar() {
   const setStd = (tur, k, patch) => setIn({ stdIn: { ...stdIn, [tur]: { ...stdIn[tur], [k]: { ...stdIn[tur][k], ...patch } } } });
   return {
     back, backLabel: nav.from === 'app' ? t('sozlama.muharrirga') : t('sozlama.loyihalarimga'),
-    akkaunt: [[t('sozlama.ism'), u.name || '—'], [t('sozlama.email'), u.email || '—'], [t('sozlama.telefon'), telefon(u.phone)], [t('sozlama.sex_nomi'), u.shop || '—']].concat(admin ? [[t('sozlama.rol'), 'admin']] : []),
+    akkaunt: [[t('sozlama.ism'), u.name || '—'], [t('sozlama.email'), /@telegram\.smart3d$/.test(u.email || '') ? 'Telegram' : (u.email || '—')], [t('sozlama.telefon'), telefon(u.phone)], [t('sozlama.sex_nomi'), u.shop || '—']].concat(admin ? [[t('sozlama.rol'), 'admin']] : []),
     logout: askLogout,
     markup: st.markupIn ?? (sets.markup_pct != null ? Math.round(sets.markup_pct * 1000) / 10 : ''), markupPh: t('sozlama.standart_ph', { n: std0 }), markupStd: std0, markupIzoh: t('sozlama.ustama_izoh', { n: std0 }),
     onMarkup: ev => setIn({ markupIn: ev.target.value }), saveMarkup,

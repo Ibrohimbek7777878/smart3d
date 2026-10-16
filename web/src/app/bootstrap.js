@@ -1,19 +1,31 @@
-import { get } from '../store/index.js';
+import { get, set } from '../store/index.js';
 import { project } from '../store/project.js';
 import { S } from '../store/session.js';
-import { readHandoff, initSession } from '../features/auth/actions.js';
-import { loadServerStd } from '../features/settings/actions.js';
+import { readHandoff, initSession, afterLogin } from '../features/auth/actions.js';
+import { loadServerStd, loadSettings } from '../features/settings/actions.js';
 import { installKeyboard } from './klaviatura.js';
 import { eskiKeshniTozala } from '../shared/lib/eskiKesh.js';
 import { s3SetT } from '../shared/design3d/engine.js';
-import { tr } from '../i18n/index.js';
+import { tr, setTil } from '../i18n/index.js';
+import { TELEGRAM, TG_TIL } from './bridge/telegram.js';
+import { telegramIshga } from '../features/telegram/telegram.js';
 
 /* TZ-19: ilova ishga tushishi — ma'lumot, saytdan o'tish (#hash), saqlangan kirish. Bir marta chaqiriladi (main.jsx). */
 export function bootstrap() {
   document.body.style.background = '#0F2229';
   project.load().then(() => { if (project.H) loadServerStd(); });
+  if (TELEGRAM) {                                   // TZ-16: Telegram ichida — kirish formasi o'rniga kutish ekrani
+    set('nav', { screen: 'tg' });
+    let tanlangan = null;
+    try { tanlangan = localStorage.getItem('s3d-til'); } catch (_) { /* yo'q */ }
+    if (!tanlangan && ['uz', 'ru', 'en'].includes(TG_TIL)) setTil(TG_TIL);   // Telegram tili (TZ-18 §3), birinchi chizishdan
+  }
   readHandoff();
   initSession();
+  if (TELEGRAM) telegramIshga(async (j) => {
+    if (j.yangi) { loadSettings(); await S.afterLogin(true).catch(() => {}); set('nav', { screen: 'onb1' }); }
+    else await afterLogin();
+  });
   window.addEventListener('hashchange', readHandoff);
   installKeyboard();
   s3SetT(tr);                                       // TZ-18: 3D yorliqlar tanlangan tilda

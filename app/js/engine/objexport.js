@@ -329,8 +329,14 @@ export function xncCSV(cutlists, materials, catalog) {
   return rows.map(r => r.join(';')).join('\r\n') + '\r\n';
 }
 
+/* TZ-16: muqobil yuklash (Telegram Mini App — fayl bot chatiga yuboriladi); null — oddiy brauzer yuklab olishi */
+let downloadHandler = null;
+export function setDownloadHandler(fn) { downloadHandler = typeof fn === 'function' ? fn : null; }
+export const hasDownloadHandler = () => !!downloadHandler;
+
 /** Brauzerda faylni xavfsiz yuklab olish yordamchisi. */
 export function download(filename, content, mime) {
+  if (downloadHandler) return downloadHandler(filename, content, mime);
   if (typeof window === 'undefined' || !window.document) return;
   const blob = content instanceof Blob ? content : new Blob([content], { type: mime || 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);

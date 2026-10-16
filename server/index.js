@@ -567,7 +567,7 @@ app.post('/api/telegram/webhook', ah(async (req, res) => {
 }));
 
 /* faylni bot orqali foydalanuvchining o'z chatiga (Telegram ichida brauzer yuklab olishi ishlamasa) */
-const TG_FAYL = /^[\p{L}\p{N} _.()'-]{1,120}\.(pdf|xlsx|csv|dxf|nc|xnc|ptp|tap|gcode|bpj|json|glb|obj|zip|png|jpg|project|xml|txt|mpr|cix|bpp)$/iu;
+const TG_FAYL = /^[\p{L}\p{N} _.()'-]{1,120}\.(pdf|xlsx|csv|dxf|nc|xnc|ptp|tap|gcode|bpj|json|glb|obj|mtl|zip|png|jpg|project|xml|txt|mpr|cix|bpp)$/iu;
 app.post('/api/telegram/fayl', auth, ah(async (req, res) => {
   if (!tgToken()) return fail(res, 'S3D-TG-001');
   const men = db.prepare('SELECT telegram_id FROM users WHERE id = ?').get(req.user.id);

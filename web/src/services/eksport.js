@@ -4,7 +4,7 @@
  * Stanok fayllari (TZ-01): SINOV belgisi bilan; Biesse/Homag — TZ-11 gacha berilmaydi; BPJ — faqat admin (TZ-17 gacha). */
 import * as THREE from 'three';
 import { validateDoc } from '../../../app/js/engine/rules.js';
-import { buildOBJ, cutlistCSV, smetaCSV, xncCSV, download } from '../../../app/js/engine/objexport.js';
+import { buildOBJ, cutlistCSV, smetaCSV, xncCSV, download, hasDownloadHandler } from '../../../app/js/engine/objexport.js';
 import { buildGLB } from '../../../app/js/engine/glbexport.js';
 import { buildXLSX, XLSX_YORLIQ_UZ } from '../../../app/js/engine/xlsxexport.js';
 import { buildBPJ } from '../../../app/js/engine/bpj.js';
@@ -14,6 +14,9 @@ import { render1080p, render360Panorama } from '../../../app/js/engine/photo-ren
 import { s3n } from '../shared/design3d/engine.js';
 import { t, til } from '../i18n/index.js';
 import { modulNomi, materialNomi } from './loyiha.js';
+
+/** data:URL → Blob (rasm Telegram'ga yuborilganda) */
+const dataUrlBlob = (u) => { const [h, b] = String(u).split(','); const bin = atob(b || ''); const a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new Blob([a], { type: (/data:([^;]+)/.exec(h) || [])[1] || 'application/octet-stream' }); };
 
 /* TZ-18 6-bosqich: hujjat (PDF hisobot, Excel) va xabarlar — tanlangan tilda. O'zbekchada satr nomlari dvigatel
    yozganicha (avvalgi hujjat bilan aynan); rus/inglizda — tuzilgan maydonlardan qayta yig'iladi.
@@ -129,7 +132,8 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
     try {
       c.toast(t('hujjat.t_rasm'));
       sp.scene.background = new THREE.Color(0x0C1C22);              // mavzu foni shaffof — rasmda dizayn rangi
-      const r = await render1080p(sp, { download: true });
+      const r = await render1080p(sp, { download: !hasDownloadHandler() });
+      if (hasDownloadHandler()) download(fname(c) + '-1080p.png', dataUrlBlob(r.dataUrl), 'image/png');   // TZ-16: Telegram — bot chatiga
       c.toast(t('hujjat.t_rasm_ok', { w: r.width, h: r.height }));
     } catch (e) { failed(c, e, t('hujjat.f_rasm')); }
     finally { sp.scene.background = bg; sp.groups.walls3d.children.forEach((w, i) => { w.visible = walls[i]; }); sp._resize(); sp._invalidate(); }
@@ -141,7 +145,8 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
       c.toast(t('hujjat.t_pano'));
       sp.scene.background = new THREE.Color(0x0C1C22);
       for (const w of sp.groups.walls3d.children) w.visible = true;   // xona markazidan — hamma devor ko'rinadi
-      await render360Panorama(sp, { download: true });
+      const r = await render360Panorama(sp, { download: !hasDownloadHandler() });
+      if (hasDownloadHandler()) download(fname(c) + '-360.jpg', dataUrlBlob(r.dataUrl), 'image/jpeg');
       c.toast(t('hujjat.t_pano_ok'));
     } catch (e) { failed(c, e, t('hujjat.f_pano')); }
     finally { sp.scene.background = bg; sp._resize(); sp._invalidate(); }
