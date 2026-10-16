@@ -50,10 +50,10 @@ export default function Header() {
             {v.price?.note}
           </span>
         </>) : null}
-        <button onClick={v.tilMenu} aria-label={t('sarlavha.til')} data-hide-m="" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto"}}>
+        <button onClick={v.tilMenu} aria-label={t('sarlavha.til')} data-til-menyu data-hide-m="" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto"}}>
           <Ikon n="til" size={19} gap={0} />
         </button>
-        <div role="button" tabIndex={0} aria-label={t('umumiy.sozlamalar')} onClick={v.openSettings} onKeyDown={v.avatarKey} style={{"width":"44px","height":"44px","borderRadius":"999px","background":"var(--sfc2)","border":"1px solid var(--line)","display":"grid","placeItems":"center","fontWeight":"800","fontSize":"14px","color":"var(--cyan)","cursor":"pointer"}}>
+        <div role="button" tabIndex={0} aria-label={t('umumiy.sozlamalar')} data-sozlamalar onClick={v.openSettings} onKeyDown={v.avatarKey} style={{"width":"44px","height":"44px","borderRadius":"999px","background":"var(--sfc2)","border":"1px solid var(--line)","display":"grid","placeItems":"center","fontWeight":"800","fontSize":"14px","color":"var(--cyan)","cursor":"pointer"}}>
           <span className="sc-interp">{v.initials}</span>
         </div>
       </div>

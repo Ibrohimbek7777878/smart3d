@@ -36,7 +36,7 @@ async function asosiy(page, R) {
   const yuklandi = await M(() => { window.__belgi = 1; return 1; });
 
   /* 🌐 → Русский */
-  await page.locator('button[aria-label="Til"]').click(); await page.waitForTimeout(300);
+  await page.locator('button[data-til-menyu]').click(); await page.waitForTimeout(300);
   R.menyu = await M(() => [...document.querySelectorAll('[role=menuitemradio]')].map(b => b.textContent.trim()));
   await page.screenshot({ path: `${OUT}/til-1440-menyu.png`, clip: { x: 900, y: 0, width: 540, height: 260 } });
   await page.locator('[role=menuitemradio][lang=ru]').click(); await page.waitForTimeout(600);
@@ -46,7 +46,7 @@ async function asosiy(page, R) {
   await page.screenshot({ path: `${OUT}/til-1440-ru.png` });
 
   /* Esc menyuni yopadi */
-  await page.locator('button[aria-label="Til"]').click(); await page.waitForTimeout(200);
+  await page.locator('button[data-til-menyu]').click(); await page.waitForTimeout(200);
   await page.keyboard.press('Escape'); await page.waitForTimeout(200);
   R.escYopdi = await M(() => !document.querySelector('[role=menu]'));
 
@@ -55,7 +55,7 @@ async function asosiy(page, R) {
   R.eslabQoldi = await M(() => document.documentElement.lang);
 
   /* Sozlamalar → Til → English, keyin O'zbekcha */
-  await page.locator('[aria-label="Sozlamalar"]').click(); await page.waitForTimeout(1200);
+  await page.locator('[data-sozlamalar]').click(); await page.waitForTimeout(1200);   // ru rejimida yorliq "Настройки" — tildan mustaqil belgi
   R.sozlamaTil = await M(() => [...document.querySelectorAll('[data-set="til"] button')].map(b => b.textContent.trim()));
   await page.locator('[data-set="til"] button', { hasText: 'English' }).click(); await page.waitForTimeout(400);
   R.en = await M(() => document.documentElement.lang);

@@ -139,7 +139,7 @@ export default function QadamNarx() {
       <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexDirection":"column","gap":"10px"}}>
         <div style={{"display":"flex","justifyContent":"space-between","alignItems":"center","gap":"8px"}}>
           <span style={{"fontWeight":"800"}}>
-            {t('narx.raskroy')}<span className="sc-interp">{v.rk?.n}</span>{t('narx.varaq')}
+            {t('narx.raskroy_varaq', { n: v.rk?.n })}
           </span>
           <div style={{"display":"flex","gap":"6px"}}>
             <button onClick={v.rkPrev} aria-label={t('narx.oldingi_varaq')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"36px","height":"36px","background":"var(--sfc2)"}}>
