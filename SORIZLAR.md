@@ -310,3 +310,5 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 109. yaxsh hozir narx qoyib turamiz unda boshqa glavniy konstruksiya chizb bera oladimi va hammasin ieal qilb berish kere  va ishlab chiqarishga berganda ham natijan aniq bolish kere stanoklar oqiydigan qabul qiladigan bolish shart va bazis fayllarin ham qosin hamda ozi tizmni ozi suniy intelektsiz konstruksiya qilish kere
 
 110. hozir senga qanday faylalr kere va qanday faylalrn berishm kere shuni roxyatn ber
+
+111. yaxsh end servern run qil va ish qayerga keld nimalar qilind va nimalar qold hamda end nimalar qilinad  umumiy loyhan tartib bilan shuntir xavfsizlig nima bold men biroz chalkashib ketdim ketma ekt sorov yuboridm va sen har doim har xil tz yozding sorovlar ham xar xil edi end tohtaymiz va hammasin tartilbab olamiz qara eski dizayn ham korsat menga
