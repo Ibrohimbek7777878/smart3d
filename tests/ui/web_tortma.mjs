@@ -27,8 +27,8 @@ async function asosiy(page, R) {
   await fill('Jasur', 'Tortma Usta'); await fill('jasur@', 'tortma' + Date.now() + '@test.uz');
   const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
   await fill('kamida 8', 'parol12345');
-  await click(/^Ro'yxatdan o'tish$/); await waitText('Nima yasaymiz');
-  await click(/^Boshqa mebel$/); await page.waitForTimeout(400); await click(/Muharrirni ochish/);
+  await click(/^Ro'yxatdan o'tish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: darhol ish joyi
+  await page.waitForTimeout(400);   // TZ-25: bo'sh ish joyi (standart xona)
   for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.state.sceneOn)); i++) await page.waitForTimeout(250);
 
   /* MC-KP-10 "yash 3x" — 3 tortmali modul */

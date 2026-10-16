@@ -39,6 +39,7 @@ export async function mountSahna(host, onTap, alive = () => true) {
   /* loyiha o'zgarsa: xona — devorlar ham va kamera markazga (dizayn), mebel — faqat mebel */
   offDoc = project.onDocChange((kind) => {
     if (kind === 'room') { sahna.setDoc(project.doc, joylar(), H.catalog); sahna.center(); }
+    else if (kind === 'devor') sahna.setDoc(project.doc, joylar(), H.catalog, { kamera: false });   // TZ-25: devor tahriri — kamera joyida
     else sahna.setPlacements(joylar(), H.catalog);
   });
   /* VR (WebXR): three.js tugmasi o'z yozuvini o'zi boshqaradi ("VR NOT SUPPORTED") — yashirin qobiqda turadi,

@@ -46,10 +46,10 @@ async function asosiy(page, R) {
   await fill('Jasur', 'Bazis Usta'); await fill('jasur@', 'bazis' + Date.now() + '@test.uz');
   const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
   await fill('kamida 8', 'parol12345');
-  await click(/^Ro'yxatdan o'tish$/); await waitText('Nima yasaymiz');
-  await click(/^Oshxona$/); await page.waitForTimeout(400); await click(/Muharrirni ochish/);
+  await click(/^Ro'yxatdan o'tish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: darhol ish joyi
+  await page.locator('[data-tez="kitchen"]').click(); await page.waitForTimeout(800);   // TZ-25: tez boshlash — oshxona
   for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.res)); i++) await page.waitForTimeout(250);
-  await click(/^Loyihalar$/); await waitText('Loyihalarim');
+  await page.locator('[data-sarlavha="loyihalar"]').click(); await waitText('Loyihalarim');
   R.tugma = await M(() => !!document.querySelector('label[data-bazis-yukla]'));
   await page.screenshot({ path: `${OUT}/bazis-1440-loyihalar.png`, clip: { x: 0, y: 0, width: 1440, height: 160 } });
 
@@ -70,7 +70,7 @@ async function asosiy(page, R) {
   await inp().setInputFiles({ name: 'namuna.bpj', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(bpj)) });
   R.bpj = await (async () => { for (let i = 0; i < 60; i++) { if (await M(() => !!document.querySelector('[data-varaq="bazis"]'))) return await M(() => window.__app.doc.bazis && window.__app.doc.bazis.hisobot.detal); await page.waitForTimeout(250); } return null; })();
   if (await page.locator('[data-varaq="bazis"]').count()) { await page.locator('[data-varaq="bazis"] button', { hasText: 'Yopish' }).last().click(); await page.waitForTimeout(400); }
-  await click(/^Loyihalar$/); await waitText('Loyihalarim');
+  await page.locator('[data-sarlavha="loyihalar"]').click(); await waitText('Loyihalarim');
 
   if (!fayl) { R.skip = 'namuna Bazis fayli yo\'q (data1 / Smart3D_toplam)'; R.errs = errs; R.ok = R.tugma && R.buzuqKod && R.bpj === 2 && errs.length === 0; return; }
 
@@ -136,7 +136,7 @@ async function asosiy(page, R) {
   /* 5) saqlanadi va qayta ochilganda Bazis moduli tiklanadi */
   await page.waitForTimeout(3500);
   R.serverda = await M(async () => (await (await fetch('/api/projects')).json()).length);
-  await click(/^Loyihalar$/); await page.waitForTimeout(1500);
+  await page.locator('[data-sarlavha="loyihalar"]').click(); await page.waitForTimeout(1500);
   await page.locator('main button.h2').first().click(); await page.waitForTimeout(2500);
   for (let i = 0; i < 30 && !(await M(() => window.__app.res && window.__app.res.priceRes)); i++) await page.waitForTimeout(250);
   R.qayta = await M(() => ({ bazis: !!window.__app.doc.bazis, narx: window.__app.res.priceRes.total, almash: !!(window.__app.doc.bazis && window.__app.doc.bazis.almash) }));

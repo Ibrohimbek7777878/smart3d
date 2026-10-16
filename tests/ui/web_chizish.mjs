@@ -30,8 +30,8 @@ async function asosiy(page, R) {
   await fill('Jasur', 'Chizuvchi Usta'); await fill('jasur@', 'chizish' + Date.now() + '@test.uz');
   const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
   await fill('kamida 8', 'parol12345');
-  await click(/^Ro'yxatdan o'tish$/); await waitText('Nima yasaymiz');
-  await click(/^Boshqa mebel$/); await page.waitForTimeout(400); await click(/Muharrirni ochish/);
+  await click(/^Ro'yxatdan o'tish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: darhol ish joyi
+  await page.waitForTimeout(400);   // TZ-25: bo'sh ish joyi (standart xona)
   for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.state.sceneOn)); i++) await page.waitForTimeout(250);
   if (await has("O'tkazib yuborish")) { await click(/^O'tkazib yuborish$/); await page.waitForTimeout(300); }
 
@@ -80,7 +80,7 @@ async function asosiy(page, R) {
 
   /* 7) saqlanadi va qayta ochilganda tiklanadi */
   await page.waitForTimeout(3500);
-  await click(/^Loyihalar$/); await page.waitForTimeout(1500);
+  await page.locator('[data-sarlavha="loyihalar"]').click(); await page.waitForTimeout(1500);
   await page.locator('main button.h2').first().click(); await page.waitForTimeout(2500);
   for (let i = 0; i < 30 && !(await M(() => window.__app.res && window.__app.res.priceRes)); i++) await page.waitForTimeout(250);
   R.qayta = await M(() => { const d = window.__app.doc, k = Object.keys(d.chizmalar || {}); return { k: k.length, katalogda: k.every(x => !!window.__app.H.catalog[x]), n: d.placements.length, narx: window.__app.res.priceRes.total }; });

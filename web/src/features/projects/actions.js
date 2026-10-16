@@ -5,6 +5,7 @@ import { toast, confirm, xato } from '../../store/ui.js';
 import * as L from '../../services/loyiha.js';
 import { clamp } from '../../shared/lib/format.js';
 import { runAI } from '../editor/ai/actions.js';
+import { ishJoyiOch, yangiIshJoyi } from '../editor/ishjoyi/ishjoyi.js';
 import { t } from '../../i18n/index.js';
 
 const POLKA = 'LDSP16';   // polka standarti — 16 mm (egasi #120; ERP: LDSP 16 mm — 439 ta, 18 mm — 16 ta; Bazis buyurtmalarida ham 16)
@@ -25,18 +26,13 @@ export async function goProjects() {
 export async function openProject(id) {
   await project.load();
   if (await S.openProject(id)) {
-    set('nav', EDITOR); set('editor', { step: 2, done: { 1: true }, tip: 3 });
+    ishJoyiOch();
     project.changed('room', true);
   }
 }
 
-/** "+ Yangi loyiha" → onboarding */
-export function newProject() {
-  S.resetCurrent(); project.reset(); project.res = null;
-  set('project', s => ({ name: t('umumiy.yangi_loyiha'), client: '', polkaCode: s.polkaCode || POLKA }));
-  set('editor', { sel: null, part: null, warn: {} });
-  set('nav', { screen: 'onb1' });
-}
+/** "+ Yangi loyiha" → TZ-25: darhol bo'sh ish joyi (standart xona); "Nima yasaymiz" so'rovnomasi yashirildi (qoida 2.7) */
+export function newProject() { return yangiIshJoyi(); }
 
 /** onboarding → muharrir: AI matni bo'lsa — AI quradi, aks holda xona (+ oshxona namunasi) */
 export async function openEditor() {
@@ -74,7 +70,7 @@ export async function openPending() {
   if (!project.H) return;
   S.resetCurrent(); project.reset();
   set('project', s => ({ name: t('umumiy.yangi_loyiha'), polkaCode: s.polkaCode || POLKA }));
-  set('nav', EDITOR); set('editor', { step: 2, done: { 1: true }, tip: 3 });
+  ishJoyiOch();
   project.changed('room', true);
   applyPending();
 }
@@ -91,7 +87,7 @@ export function openFile(ev) {
     if (!p || p.app !== 'smart3d' || !p.doc || !p.doc.room || !Array.isArray(p.doc.placements)) { xato('S3D-PROJ-101', { modul: 'projects', xabar: 'fayl: ' + f.name.slice(0, 60) }); return; }
     await project.load();
     S.resetCurrent();
-    set('nav', EDITOR); set('editor', { step: 2, done: { 1: true }, tip: 3 });
+    ishJoyiOch();
     project.apply(p);
     S.changed();
     toast(t('loyihalar.fayldan_ochildi', { n: p.doc.placements.length }));

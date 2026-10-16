@@ -28,15 +28,15 @@ async function asosiy(page, R) {
   await fill('Jasur', 'Sozlama Usta'); await fill('jasur@', 'sozlama' + Date.now() + '@test.uz');
   const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
   await fill('kamida 8', 'parol12345'); await fill('Mebel-Pro', 'Sinov Sex');
-  await click(/^Ro'yxatdan o'tish$/); await waitText('Nima yasaymiz');
-  await click(/^Oshxona$/); await page.waitForTimeout(400); await click(/Muharrirni ochish/);
+  await click(/^Ro'yxatdan o'tish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: darhol ish joyi
+  await page.locator('[data-tez="kitchen"]').click(); await page.waitForTimeout(800);   // TZ-25: tez boshlash — oshxona
   for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.res)); i++) await page.waitForTimeout(250);
   await page.waitForTimeout(800);
   const total = () => M(() => window.__app.res.priceRes.total);
   R.jami35 = await total();
 
-  /* sozlamalar sahifasi — chap menyudan */
-  await click(/^Sozlamalar$/); await waitText('Narx ustamasi');
+  /* sozlamalar sahifasi — tepadagi akkaunt tugmasidan (TZ-25: chap menyu o'rnida asboblar) */
+  await page.locator('[data-sozlamalar]').first().click(); await waitText('Narx ustamasi');
   await page.screenshot({ path: `${OUT}/sozlamalar-1440.png`, fullPage: true });
   R.akkaunt = await has('Sinov Sex');
 

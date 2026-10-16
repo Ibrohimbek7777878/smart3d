@@ -95,7 +95,7 @@ export function createSahna(host, o) {
   const korinish = createKorinish({ sp, ctl }, host);     // TZ-23: kamera, yo'nalish, chizish rejimlari, o'lchash
   const api = {
     sp, items, ctl, korinish,
-    setDoc(doc, placements, catalog) { sp.setDoc(doc); items.setPlacements(placements, catalog); korinish.qollash(); },
+    setDoc(doc, placements, catalog, o) { sp.setDoc(doc, o); items.setPlacements(placements, catalog); korinish.qollash(); },
     setPlacements(placements, catalog) { items.setPlacements(placements, catalog); korinish.qollash(); },
     select(id) { if (items.getSelected() !== id) items.select(id); },
     setMode(m) { if (sp.mode !== m) { sp.setMode(m); ctl.updateButtons(); } },

@@ -1,6 +1,6 @@
 /* TZ-23 C4: telefon + SMS bilan kirish (sinov serveri — Eskiz'siz, kod javobda keladi: dev_code; haqiqiy SMS yuborilmaydi, S8).
  * Tekshiriladi: tugma ko'rinadi (server SMS ishlaganda), kod yuboriladi, qayta yuborish taymeri, noto'g'ri kod — xabar,
- * yangi raqam — akkaunt ochiladi (ism bilan) va onboarding; o'sha raqam bilan qayta kirish — "Loyihalarim"; telefon (390).
+ * yangi raqam — akkaunt ochiladi (ism bilan) va ish joyi (TZ-25); o'sha raqam bilan qayta kirish — ish joyi; telefon (390).
  * Ishlatish: bash tests/ui/web.sh sms */
 export default async function run(page) {
   const R = {};
@@ -55,14 +55,14 @@ async function asosiy(page, R) {
   await page.locator('[data-kirish-cta]').click(); await page.waitForTimeout(800);
   R.kodXato = await has("Kod noto'g'ri");
 
-  /* 4) to'g'ri kod + ism → yangi akkaunt → onboarding */
+  /* 4) to'g'ri kod + ism → yangi akkaunt → ish joyi (TZ-25) */
   await page.locator('[data-sms-kod]').fill(kod);
   await page.locator('input[autocomplete=name]').fill('SMS Usta');
   await page.locator('[data-kirish-cta]').click();
-  R.onboarding = await waitText('Nima yasaymiz', 8000);
+  R.onboarding = await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 }).then(() => true, () => false);
   R.user = await M(() => ({ name: window.__app.state.user && window.__app.state.user.name, phone: window.__app.state.user && window.__app.state.user.phone }));
 
-  /* 5) chiqib, o'sha raqam bilan qayta kirish → "Loyihalarim" */
+  /* 5) chiqib, o'sha raqam bilan qayta kirish → ish joyi (TZ-25) */
   await M(async () => { await fetch('/api/logout', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }); localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
   await page.goto(page.url().split('#')[0].split('?')[0] + '?t=' + Date.now() + '#s=login'); await page.waitForTimeout(1500);
   await page.locator('[data-kirish-usul]').click(); await page.waitForTimeout(300);
@@ -70,7 +70,7 @@ async function asosiy(page, R) {
   const kod2 = await kodOl();
   await page.locator('[data-sms-kod]').fill(kod2 || '');
   await page.locator('[data-kirish-cta]').click();
-  R.qaytaKirdi = await waitText('Loyihalarim', 8000);
+  R.qaytaKirdi = await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 }).then(() => true, () => false);
 
   /* 6) telefon (390) — oyna sig'adi */
   await M(async () => { await fetch('/api/logout', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }); localStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });

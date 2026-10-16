@@ -434,7 +434,7 @@ export function createScene(container, opts = {}) {
       w.visible = _v.dot(u.out) <= 0;          // kamera devorning tashqarisida — devor ko'rinmaydi
     }
   }
-  function render() { cullWalls(); renderer.render(scene, active); labelRenderer.render(scene, active); }
+  function render() { cullWalls(); renderer.render(scene, active); labelRenderer.render(scene, active); if (listeners.render) emit('render'); }
   /* XR (VR) rejimida setAnimationLoop SHART — rAF o'rniga */
   function loop() {
     if (listeners.frame) emit('frame');           // TZ-09: animatsiya (eshik ochilishi) — har kadr
@@ -475,8 +475,8 @@ export function createScene(container, opts = {}) {
     toggle: () => applyMode(mode === '2d' ? '3d' : '2d'),
     getMode: () => mode,
 
-    /** Chizmani yangilaydi: devorlar + to'r + pol + kamera. */
-    setDoc(next) {
+    /** Chizmani yangilaydi: devorlar + to'r + pol + kamera. o.kamera === false — 2D kamera joyida qoladi (TZ-25: devor tahriri) */
+    setDoc(next, o = {}) {
       const d = next || {};
       api._doc = d;                       // getDoc() shundan o'qiydi
       const room = d.room || DEFAULT_ROOM;
@@ -488,7 +488,9 @@ export function createScene(container, opts = {}) {
       wallH = Number(room.wall_height) || 2700;
       if (themeLights && themeLights.update) themeLights.update(bbox, wallH);
       buildGrid(bbox);
-      if (mode === '2d') fit2D();
+      /* kamera joyida qolsa ham — xona ko'rinishdan chiqib ketsa, sig'diriladi */
+      const korinadi = bbox.minX >= cam2d.left && bbox.maxX <= cam2d.right && bbox.minY >= cam2d.bottom && bbox.maxY <= cam2d.top;
+      if (mode === '2d' && (o.kamera !== false || !korinadi)) fit2D();
       api._invalidate();
       emit('doc', { walls: walls, bbox: bbox });
       return { walls: walls, bbox: bbox };

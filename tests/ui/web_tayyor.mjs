@@ -30,14 +30,14 @@ async function asosiy(page, R) {
   await fill('Jasur', 'Tayyor Usta'); await fill('jasur@', 'tayyor' + Date.now() + '@test.uz');
   const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
   await fill('kamida 8', 'parol12345');
-  await click(/^Ro'yxatdan o'tish$/); await waitText('Nima yasaymiz');
-  await click(/^Boshqa mebel$/); await page.waitForTimeout(400); await click(/Muharrirni ochish/);
+  await click(/^Ro'yxatdan o'tish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: darhol ish joyi
+  await page.waitForTimeout(400);   // TZ-25: bo'sh ish joyi (standart xona)
   for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.state.sceneOn)); i++) await page.waitForTimeout(250);
 
   if (await has("O'tkazib yuborish")) { await click(/^O'tkazib yuborish$/); await page.waitForTimeout(300); }   // birinchi ochilish maslahatlari
 
   /* 1) AI oynasi → Tayyor so'rovlar */
-  await page.locator('button[aria-label="AI"]').click({ timeout: 5000 }); await page.waitForTimeout(400);
+  await page.locator('[data-matn-menyu]').click({ timeout: 5000 }); await page.waitForTimeout(400);
   R.tablar = await M(() => [...document.querySelectorAll('[data-ai-tab] button')].map(b => b.innerText.trim()));
   await tab("Tayyor so'rovlar"); await page.waitForTimeout(300);
   R.kategoriyalar = await M(() => document.querySelectorAll('[data-tayyor-kat] button').length);
@@ -52,7 +52,7 @@ async function asosiy(page, R) {
   await page.screenshot({ path: `${OUT}/tayyor-1440-oshxona.png` });
 
   /* 2) yotoqxona — mebel bor, avval tasdiq so'raladi */
-  await page.locator('button[aria-label="AI"]').click(); await page.waitForTimeout(300);
+  await page.locator('[data-matn-menyu]').click(); await page.waitForTimeout(300);
   await V('[data-tayyor-kat] button', { hasText: 'Yotoqxona' }).click(); await page.waitForTimeout(200);
   await V('[data-prompt="yotoqxona"]').click(); await page.waitForTimeout(200);
   await V('[data-tayyor-qur]').click(); await page.waitForTimeout(500);
@@ -61,7 +61,7 @@ async function asosiy(page, R) {
   R.yotoqxona = await holat();
 
   /* 3) shablonlar: so'rov va loyiha saqlanadi, ochiladi, o'chiriladi */
-  await page.locator('button[aria-label="AI"]').click(); await page.waitForTimeout(300);
+  await page.locator('[data-matn-menyu]').click(); await page.waitForTimeout(300);
   await tab('Shablonlarim'); await page.waitForTimeout(800);
   await V('[data-shablon-nom]').fill('Mening yotoqxonam');
   await V('[data-shablon-loyiha]').click(); await page.waitForTimeout(1000);
@@ -77,13 +77,13 @@ async function asosiy(page, R) {
   if (await has('Loyihani almashtirasizmi')) { await click(/^Almashtirish$/); await page.waitForTimeout(1500); }
   R.promptdan = await holat();
   /* loyiha shablonini ochish → yotoqxona qaytadi */
-  await page.locator('button[aria-label="AI"]').click(); await page.waitForTimeout(300);
+  await page.locator('[data-matn-menyu]').click(); await page.waitForTimeout(300);
   await tab('Shablonlarim'); await page.waitForTimeout(800);
   await V('[data-shablon-royxat] > div button', { hasText: 'Mening yotoqxonam' }).click(); await page.waitForTimeout(500);
   if (await has('Loyihani almashtirasizmi')) { await click(/^Almashtirish$/); await page.waitForTimeout(1500); }
   R.loyihadan = await holat();
   /* o'chirish */
-  await page.locator('button[aria-label="AI"]').click(); await page.waitForTimeout(300);
+  await page.locator('[data-matn-menyu]').click(); await page.waitForTimeout(300);
   await tab('Shablonlarim'); await page.waitForTimeout(800);
   await V('[data-shablon-royxat] > div button[aria-label="O\'chirish"]').first().click(); await page.waitForTimeout(300);
   await page.locator('[role="dialog"] button, [role="alertdialog"] button', { hasText: "O'chirish" }).last().click().catch(() => {});

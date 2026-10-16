@@ -1,6 +1,6 @@
 /* TZ-18 9-bosqich: yakuniy tekshiruv — 3 til × telefon (390) / planshet (768) / kompyuter (1440), har ekran va oyna:
  * gorizontal aylantirish yo'q; rus va ingliz matni sig'adi — o'zbek tilida yo'q kesilish/toshish rus/inglizda paydo bo'lmagan
- * (o'zbek — tasdiqlangan dizayn, u asos). Ekranlar: sayt, ro'yxat, onboarding (2), muharrir 4 qadam, oynalar (teshik,
+ * (o'zbek — tasdiqlangan dizayn, u asos). Ekranlar: sayt, ro'yxat, ish joyi (bo'sh, devor chizish — TZ-25), 4 panel, oynalar (teshik,
  * oshxona, material, konstruktor, AI), loyihalar, sozlamalar. Tugmalar lug'atdan topiladi — har tilda bir xil yo'l.
  * Ishlatish: bash tests/ui/web.sh ekranlar */
 import { readFileSync } from 'node:fs';
@@ -117,33 +117,36 @@ async function asosiy(page, R) {
     const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
     await page.locator(`input[placeholder="${L['kirish.kamida_8_belgi']}"]`).fill('parol12345');
     await tugma(L['kirish.royxat']).last().click();
-    if (!(await waitText(L['onb.nima_yasaymiz']))) throw new Error(til + ': ro\'yxatdan keyin onboarding ochilmadi');
+    if (!(await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 }).then(() => true, () => false))) throw new Error(til + ': ro\'yxatdan keyin ish joyi ochilmadi');
+    for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.state.sceneOn)); i++) await page.waitForTimeout(250);
+    const asbob = (id) => M((id) => document.querySelector('[data-asbob="' + id + '"]').click(), id);
 
-    /* onboarding */
-    await olch(til, 'onb1');
-    await page.getByText(L['onb.oshxona'], { exact: true }).last().click(); await page.waitForTimeout(500);
-    await olch(til, 'onb2');
-    await page.getByText(L['onb.muharrirni_ochish'], { exact: true }).last().click();
-    for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.res)); i++) await page.waitForTimeout(250);
+    /* TZ-25: bo'sh ish joyi va devor chizish (so'rovnoma o'rnida) */
+    await olch(til, 'ishjoyi');
+    await asbob('devor'); await page.waitForTimeout(600);
+    await olch(til, 'devor');
+    await asbob('devor'); await page.waitForTimeout(300);
+    await M(() => { [...document.querySelectorAll('[data-scene] button')].find(b => b.textContent.trim() === '3D').click(); document.querySelector('[data-tez="kitchen"]').click(); });
+    for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.res && window.__app.doc.placements.length)); i++) await page.waitForTimeout(250);
     await page.waitForTimeout(1200);
 
-    /* muharrir: 4 qadam va oynalar */
-    await bos('button[data-navbtn]', L['qadam.xona'], false); await page.waitForTimeout(700);   // onboarding'dan keyin 2-qadam ochiladi
+    /* ish joyi: 4 panel va oynalar */
+    await asbob('xona'); await page.waitForTimeout(700);
     await olch(til, 'xona');
     await varaq(til, 'teshik', () => bos('button', L['xona.qoshish'].replace(/^\+\s*/, ''), false));
     await varaq(til, 'oshxona', () => bos('button', L['xona.sozlash'], false));
-    await varaq(til, 'ai', () => M(() => document.querySelector('button[aria-label="AI"]').click()));
-    await bos('button[data-navbtn]', L['qadam.mebel'], false); await page.waitForTimeout(700);
+    await varaq(til, 'ai', () => M(() => document.querySelector('[data-matn-menyu]').click()));
+    await asbob('mebel'); await page.waitForTimeout(700);
     await olch(til, 'mebel');
     await varaq(til, 'material', () => bos('[data-panel] button', L['mebel.korpus'], false));
     await varaq(til, 'konstruktor', () => M(() => document.querySelector('button[data-konstruktor]').click()));
-    await bos('button[data-navbtn]', L['qadam.narx'], false); await page.waitForTimeout(900);
+    await asbob('narx'); await page.waitForTimeout(900);
     await olch(til, 'narx');
-    await bos('button[data-navbtn]', L['qadam.fayllar'], false); await page.waitForTimeout(900);
+    await asbob('fayllar'); await page.waitForTimeout(900);
     await olch(til, 'fayllar');
 
     /* loyihalar va sozlamalar */
-    await bos('button[data-ednav-x]', L['qadam.loyihalar']);
+    await M(() => document.querySelector('[data-sarlavha="loyihalar"]').click());
     await waitText(L['loyihalar.loyihalarim']); await page.waitForTimeout(500);
     await olch(til, 'loyihalar');
     await page.locator('[data-sozlamalar]').first().click(); await page.waitForTimeout(1200);

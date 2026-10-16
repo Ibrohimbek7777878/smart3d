@@ -10,13 +10,17 @@ html,body{margin:0;background:#0F2229}
 input[type=range]{accent-color:#FF7A45;width:100%;height:40px;margin:0;cursor:pointer}
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 @keyframes s3pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,122,69,.5)}50%{box-shadow:0 0 0 10px rgba(255,122,69,0)}}
+[data-faqat-tel]{display:none !important}
 @media (max-width:980px){
-[data-ed]{display:flex !important;flex-direction:column !important;height:auto !important}
-[data-ednav]{position:fixed !important;left:0;right:0;bottom:0;z-index:40;flex-direction:row !important;height:72px !important;padding:6px 8px !important;border-right:0 !important;border-top:1px solid var(--line) !important;background:#0F2229 !important;gap:4px !important}
-[data-ednav-x]{display:none !important}
-[data-navbtn]{flex:1 1 0 !important;flex-direction:column !important;gap:2px !important;padding:4px !important;justify-content:center !important;font-size:12px !important;min-height:56px !important}
-[data-scene]{height:58vh !important;min-height:360px}
-[data-panel]{padding-bottom:110px !important;border-left:0 !important;height:auto !important;overflow:visible !important}
+[data-faqat-tel]{display:flex !important}
+/* TZ-25 F: telefonda ish joyi — kanva, asboblar qatori, matn qatori (doim ko'rinadi); o'ng panel — pastdan chiqadigan varaq */
+[data-ed]{display:flex !important;flex-direction:column !important;height:calc(100vh - 64px) !important;height:calc(100dvh - 64px) !important}
+[data-markaz]{display:contents !important}
+[data-kanva]{order:1;flex:1 1 auto !important;min-height:0 !important}
+[data-asboblar]{order:3;flex-direction:row !important;flex:0 0 auto;overflow-x:auto !important;overflow-y:hidden !important;padding:4px 6px !important;border-right:0 !important;border-top:1px solid var(--line) !important;gap:2px !important;scrollbar-width:none}
+[data-asboblar]>*{flex:0 0 64px !important;width:64px !important;min-height:54px !important;font-size:10px !important}
+[data-matn-qatori]{order:4}
+[data-panel]{order:2;flex:0 1 auto !important;max-height:55vh;height:auto !important;border-left:0 !important;border-top:1px solid var(--line) !important;border-radius:22px 22px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.35);padding-bottom:16px !important}
 [data-hide-m]{display:none !important}
 [data-auth]{grid-template-columns:1fr !important}
 [data-auth-aside]{display:none !important}

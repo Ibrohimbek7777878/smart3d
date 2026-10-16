@@ -160,7 +160,7 @@ export function createItems(sp, opts = {}) {
   }
 
   function onDown(e) {
-    if (!e.isPrimary) { drag = null; tap = null; return; }
+    if (!e.isPrimary || sp.asbob) { drag = null; tap = null; return; }   // TZ-25: devor yoki teshik chizilmoqda
     if (e.button !== 0) return;
     const m = pick(e);
     tap = { x: e.clientX, y: e.clientY, id: m ? m.userData.id : null };

@@ -35,9 +35,8 @@ async function asosiy(page, R) {
   const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
   await fill('kamida 8', 'parol12345');
   await click(/^Ro'yxatdan o'tish$/);
-  await waitText('Nima yasaymiz');
-  await click(/^Oshxona$/); await page.waitForTimeout(500);
-  await click(/Muharrirni ochish/);
+  await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: darhol ish joyi
+  await page.locator('[data-tez="kitchen"]').click(); await page.waitForTimeout(800);
 
   R.qadam = 'muharrir';
   R.sahna = await (async () => { for (let i = 0; i < 50; i++) { const c = await M(() => !!document.querySelector('[data-scene] canvas')); if (c) return true; await page.waitForTimeout(200); } return false; })();

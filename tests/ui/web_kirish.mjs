@@ -43,14 +43,14 @@ async function asosiy(page, R) {
   await page.screenshot({ path: `${OUT}/kirish-1440-3-xatolar.png` });
 
   R.qadam = '2)';
-  /* 2) to'g'ri ro'yxat → onboarding; server: ism, email, telefon (S1), sex nomi */
+  /* 2) to'g'ri ro'yxat → TZ-25: darhol ish joyi (so'rovnomasiz); server: ism, email, telefon (S1), sex nomi */
   await fill('Jasur', 'Usta Sinov');
   await fill('jasur@', 'usta.web@test.uz');
   await tel('901112233');
   await fill('kamida 8', 'parol12345');
   await fill('Mebel-Pro', 'Sinov Sex');
   await click(/^Ro'yxatdan o'tish$/);
-  R.onboarding = await waitText('Nima yasaymiz');
+  R.onboarding = await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 }).then(() => true, () => false) && !(await has('Nima yasaymiz'));
   R.server = await M(async () => {
     const me = await (await fetch('/api/me')).json();                    // TZ-19 X2: kalit httpOnly cookie'da
     return { email: me.email, phone: me.phone, shop: me.shop, name: me.name };
@@ -59,9 +59,9 @@ async function asosiy(page, R) {
   R.serverTogri = R.server.phone === '998901112233' && R.server.shop === 'Sinov Sex' && R.server.email === 'usta.web@test.uz';
 
   R.qadam = '3)';
-  /* 3) qayta ochilganda — kirgan holat saqlanadi, loyihalar ekrani */
+  /* 3) qayta ochilganda — kirgan holat saqlanadi, ish joyi (TZ-25) */
   await page.goto(page.url().split('#')[0]); await page.waitForTimeout(2500);
-  R.qaytaOchildi = await has('Loyihalarim');
+  R.qaytaOchildi = await M(() => !!document.querySelector('[data-ishjoyi]'));
   R.avatar = await M(() => [...document.querySelectorAll('header div')].map(d => d.textContent.trim()).find(t => t === 'US') || null);
 
   R.qadam = '4)';
@@ -76,7 +76,7 @@ async function asosiy(page, R) {
   R.notogriParol = await has("Email yoki parol noto'g'ri");
   await fill('kamida 8', 'parol12345');
   await click(/^Kirish$/);
-  R.kirdi = await waitText('Loyihalarim');
+  R.kirdi = await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 }).then(() => true, () => false);   // TZ-25: kirgach — ish joyi
 
   R.qadam = '5)';
   /* 5) takror email va takror telefon — dizayndagi xato matni */

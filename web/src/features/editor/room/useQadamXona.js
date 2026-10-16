@@ -5,6 +5,7 @@ import { openSheet } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
 import { clamp } from '../../../shared/lib/format.js';
 import { roomBBox } from '../../../../../app/js/engine/rules.js';
+import { tayyorShakl, teshiklarniMosla } from '../../../services/devor.js';
 import { PRESETS } from '../../onboarding/useOnboarding.js';
 import { goStep } from '../actions.js';
 import { teshikRoyxati, openTeshik } from './teshik.js';
@@ -27,7 +28,7 @@ export function useQadamXona() {
   const [raw, setRaw] = useState({});
   const doc = project.doc, H = project.H, K = doc.kitchen || L.freshKitchen();
   const bb = roomBBox(doc.room.outline), room = { w: Math.round(bb.w), d: Math.round(bb.h), h: doc.room.wall_height || 2700 };
-  const isRect = (doc.room.outline || []).length === 4;
+  const nO = (doc.room.outline || []).length, shakl = nO === 4 ? 'rect' : nO === 6 ? 'L' : nO === 8 ? 'P' : 'free';   // TZ-25 D4: P shakl
   /* o'lcham: yozish paytida matn saqlanadi, chegaraga — Enter yoki maydondan chiqqanda (oldin har tugmada keltirilardi) */
   const sizeIn = (key) => ({
     val: raw[key] ?? room[key],
@@ -41,12 +42,13 @@ export function useQadamXona() {
     ['dobor', t('xona.dobor'), (K.doborH || 60) + mm], ['karniz', t('xona.karniz'), (K.karnizH || 60) + mm],
     ['moyka', t('xona.moyka'), t('xona.kesim', { n: (K.moyka || {}).size || 500 })]];
   return {
-    shapes: [['rect', t('xona.tortburchak'), 'tortburchak'], ['L', t('xona.lshakl'), 'lShakl'], ['free', t('xona.erkin'), 'tahrir']].map(x => {
-      const on = x[0] === 'rect' ? isRect : x[0] === 'L' ? !isRect : false;
+    shapes: [['rect', t('xona.tortburchak'), 'tortburchak'], ['L', t('xona.lshakl'), 'lShakl'], ['P', t('devor.shakl_P'), 'pShakl'], ['free', t('xona.erkin'), 'tahrir']].map(x => {
+      const on = x[0] !== 'free' && x[0] === shakl;
       return { label: x[1], ikon: x[2], bg: on ? 'var(--acc)' : 'transparent', c: on ? 'var(--ink)' : 'var(--txt)',
         pick: () => {
           if (x[0] === 'free') { openShakl(); return; }
-          L.applyRoom(doc, { outline: x[0] === 'L' ? L.L_OUTLINE.map(p => p.slice()) : L.rectOutline(room.w, room.d) });
+          L.applyRoom(doc, { outline: x[0] === 'L' ? L.L_OUTLINE.map(p => p.slice()) : x[0] === 'P' ? tayyorShakl('P', room.w, room.d) : L.rectOutline(room.w, room.d) });
+          doc.room.openings = teshiklarniMosla(doc.room.outline, doc.room.openings);   // TZ-25: devordan chiqib qolgan teshik bo'lmasin
           project.changed('room', true);
         } };
     }),

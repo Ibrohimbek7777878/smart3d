@@ -3,7 +3,8 @@ import {
   Camera, Rotate3d, DoorOpen, Crosshair, Sparkles, Mic, WandSparkles, Trash2, Copy, RotateCw, RotateCcw, ChevronLeft, ChevronRight,
   ChevronDown, ChevronUp, X, Check, TriangleAlert, FileSpreadsheet, Printer, FolderOpen, Settings, Cloud, CloudCheck, CloudOff,
   Glasses, Search, Pencil, Globe, Eye, EyeOff, ChefHat, Bed, Plus, Minus, Square, ArrowUpRight, Menu, LayoutTemplate, FileBox,
-  Box, PanelTop, PanelLeft, PanelRight, Maximize, ZoomIn, ZoomOut, Ruler, Layers, Orbit, Footprints, Scan, ScanEye, Sun, Palette, Wrench, Archive
+  Box, PanelTop, PanelLeft, PanelRight, Maximize, ZoomIn, ZoomOut, Ruler, Layers, Orbit, Footprints, Scan, ScanEye, Sun, Palette, Wrench, Archive,
+  MousePointer2, BrickWall, AppWindow, SquareDashed, Armchair, PencilRuler, Calculator, Library, CornerDownLeft
 } from 'lucide-react';
 
 /* TZ-19 §4 (egasi qarori): emoji o'rniga SVG ikonlar — lucide-react 1.49.0 (ISC), faqat ishlatilganlari build'ga kiradi.
@@ -13,6 +14,15 @@ function LShakl(p) {   // L-shakl xona (lucide'da yo'q) — lucide uslubida: 24�
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" {...rest}>
       <path d="M4 4h7v9h9v7H4z" />
+    </svg>
+  );
+}
+
+function PShakl(p) {   // P (U) shakl xona — LShakl uslubida (TZ-25 D4)
+  const { size = 24, strokeWidth = 2, ...rest } = p;
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" {...rest}>
+      <path d="M4 4h16v16h-5v-9H9v9H4z" />
     </svg>
   );
 }
@@ -36,7 +46,10 @@ export const IK = {
   /* TZ-23: 3D ko'rinish */
   izo: Box, old: Square, yuqori: PanelTop, chapYon: PanelLeft, ongYon: PanelRight, toliq: Maximize, yaqin: ZoomIn, uzoq: ZoomOut,
   olchash: Ruler, qatlam: Layers, orbit: Orbit, yurish: Footprints, orto: Scan, rentgen: ScanEye, effekt: Sun,
-  material: Palette, furnitura: Wrench, qoldiq: Archive
+  material: Palette, furnitura: Wrench, qoldiq: Archive,
+  /* TZ-25: ish joyi asboblari */
+  tanlash: MousePointer2, devor: BrickWall, deraza: AppWindow, xona: SquareDashed, mebel: Armchair, modulChizish: PencilRuler,
+  narx: Calculator, kutubxona: Library, yuborish: CornerDownLeft, pShakl: PShakl
 };
 
 /** <Ikon n="rasm" /> — matn yonida (o'ngida 6px oraliq); gap={0} — yolg'iz yoki flex ichida */

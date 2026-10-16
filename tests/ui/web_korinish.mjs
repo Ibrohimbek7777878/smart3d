@@ -30,8 +30,8 @@ async function asosiy(page, R) {
   await fill('Jasur', 'Korinish Usta'); await fill('jasur@', 'korinish' + Date.now() + '@test.uz');
   const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
   await fill('kamida 8', 'parol12345');
-  await click(/^Ro'yxatdan o'tish$/); await waitText('Nima yasaymiz');
-  await click(/^Oshxona$/); await page.waitForTimeout(400); await click(/Muharrirni ochish/);
+  await click(/^Ro'yxatdan o'tish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: darhol ish joyi
+  await page.locator('[data-tez="kitchen"]').click(); await page.waitForTimeout(800);   // TZ-25: tez boshlash — oshxona
   for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.sahna && window.__app.res)); i++) await page.waitForTimeout(250);
   await page.waitForTimeout(1200);
 
@@ -142,7 +142,7 @@ async function asosiy(page, R) {
 
   /* 8) Bazis loyihasi — standart: qirralar bilan, xonasiz (saqlangan tanlov bo'lmasa) */
   await M(() => localStorage.removeItem('s3d-korinish'));
-  await click(/^Loyihalar$/); await waitText('Loyihalarim');
+  await page.locator('[data-sarlavha="loyihalar"]').click(); await waitText('Loyihalarim');
   const bpj = { version: '4.2', script: 'BazisUniversalExport', objects: [0, 1].map(i => ({ id: i + 1, name: 'bok', dimensions: { dl: 700, dw: 450, dp: 16 },
     material: { name: 'ЛДСП Кроношпан 4,575 Белый гладкий 16мм' },
     contour: { outer: [[0, 0, 700, 0], [700, 0, 700, 450], [700, 450, 0, 450], [0, 450, 0, 0]].map(([x1, y1, x2, y2]) => ({ type: 'line', x1, y1, x2, y2 })) },

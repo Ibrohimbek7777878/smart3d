@@ -7,9 +7,12 @@ import ModulKarta from './ModulKarta.jsx';
 import DetalKarta from './DetalKarta.jsx';
 import KorinishPanel from './KorinishPanel.jsx';
 import { useTor } from '../../../shared/lib/useTor.js';
+import ChizmaQatlam from '../ishjoyi/ChizmaQatlam.jsx';
+import TeshikPalitra from '../ishjoyi/TeshikPalitra.jsx';
 
-/* TZ-19: muharrir sahnasi — 3D/2D, asboblar paneli, maslahat, modul va detal kartalari, AI tugmasi.
- * JSX va stillar tasdiqlangan dizayndan; qiymatlar useSahnaView() dan. */
+/* TZ-19: muharrir sahnasi — 3D/2D, asboblar paneli, maslahat, modul va detal kartalari.
+ * JSX va stillar tasdiqlangan dizayndan; qiymatlar useSahnaView() dan.
+ * TZ-25: 2D chizma qatlami (devor o'lchamlari, chizish) va eshik/deraza palitrasi; AI tugmasi o'rniga — pastdagi matn qatori. */
 export default function Sahna() {
   const v = useSahnaView(), tor = useTor();
   return (
@@ -17,6 +20,8 @@ export default function Sahna() {
       <div ref={v.roomHost} style={{"position":"absolute","inset":"0"}}>
         <div ref={v.roomOv} style={{"position":"absolute","inset":"0","pointerEvents":"none","zIndex":"2"}}></div>
       </div>
+      <ChizmaQatlam tel={tor} />
+      <TeshikPalitra />
       {v.notLoaded ? (<>
         <div style={{"position":"absolute","inset":"0","display":"grid","placeItems":"center","color":"var(--mut)","fontFamily":"'JetBrains Mono',monospace","fontSize":"13px"}}>
           {v.loadText}
@@ -54,9 +59,6 @@ export default function Sahna() {
       <Maslahat />
       <ModulKarta />
       <DetalKarta />
-      <button onClick={v.openAi} aria-label="AI" style={{"position":"absolute","right":"16px","bottom":"16px","zIndex":"4","width":"60px","height":"60px","borderRadius":"20px","border":"0","background":"var(--cyan)","color":"#06231E","fontSize":"24px","fontWeight":"800","cursor":"pointer","boxShadow":"0 14px 36px rgba(95,225,196,.3)"}}>
-        <Ikon n="ai" size={26} gap={0} />
-      </button>
     </div>
   );
 }

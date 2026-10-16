@@ -32,7 +32,8 @@ async function asosiy(page, R) {
 
   /* 2) admin kiradi */
   await fill('kamida 8', 'web-test-admin-1');
-  await click(/^Kirish$/); await waitText('Loyihalarim');
+  await click(/^Kirish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: kirgach — ish joyi
+  await page.locator('[data-sarlavha="loyihalar"]').click(); await waitText('Loyihalarim');
 
   /* 3) noto'g'ri loyiha fayli → xabar + kod S3D-PROJ-101 (toast) */
   await page.locator('input[type=file][accept*="json"]').setInputFiles({ name: 'rasm.json', mimeType: 'application/json', buffer: Buffer.from('{"salom":1}') });

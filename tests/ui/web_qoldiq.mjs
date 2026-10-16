@@ -28,7 +28,7 @@ async function asosiy(page, R) {
   await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
   await page.goto(page.url().split('#')[0] + '?t=' + Date.now() + '#s=login'); await page.waitForTimeout(1500);
   await fill('jasur@', 'admin@smart3d.uz'); await fill('kamida 8', 'web-test-admin-1');
-  await click(/^Kirish$/); await waitText('Loyihalarim');
+  await click(/^Kirish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: kirgach — ish joyi
 
   /* 1) Sozlamalar → qoldiqlar: bo'sh, admin qo'shadi */
   await page.locator('[aria-label="Sozlamalar"]').click(); await waitText('Qoldiqlar ombori');
@@ -47,9 +47,9 @@ async function asosiy(page, R) {
   await page.screenshot({ path: `${OUT}/qoldiq-1440-sozlama.png` });
 
   /* 2) muharrir: oshxona → Mebel → Furnitura varag'i */
-  await click(/Loyihalarimga|Loyihalarim/); await page.waitForTimeout(600);
-  await click(/Yangi loyiha/); await waitText('Nima yasaymiz');
-  await click(/^Oshxona$/); await page.waitForTimeout(400); await click(/Muharrirni ochish/);
+  await click(/Muharrirga|Loyihalarimga/); await page.waitForTimeout(600);   // TZ-25: kirgach ish joyi ochilgan — sozlamalardan unga qaytiladi
+  await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });
+  await page.locator('[data-tez="kitchen"]').click(); await page.waitForTimeout(800);   // TZ-25: tez boshlash — oshxona
   for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.res && window.__app.state.sceneOn)); i++) await page.waitForTimeout(250);
   await click(/^Mebel$/); await page.waitForTimeout(500);
   for (const kod of ['MC-KP-02', 'MC-KP-10']) {                    // eshikli va tortmali modul — furnitura bor

@@ -27,8 +27,8 @@ async function asosiy(page, R) {
   await fill('Jasur', 'Qolgan Usta'); await fill('jasur@', 'qolgan' + Date.now() + '@test.uz');
   const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
   await fill('kamida 8', 'parol12345');
-  await click(/^Ro'yxatdan o'tish$/); await waitText('Nima yasaymiz');
-  await click(/^Oshxona$/); await page.waitForTimeout(400); await click(/Muharrirni ochish/);
+  await click(/^Ro'yxatdan o'tish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: darhol ish joyi
+  await page.locator('[data-tez="kitchen"]').click(); await page.waitForTimeout(800);   // TZ-25: tez boshlash — oshxona
   for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.res)); i++) await page.waitForTimeout(250);
 
   /* 1) avtomatik saqlash — belgi (ikon, data-save="ok") */
@@ -45,7 +45,7 @@ async function asosiy(page, R) {
   await page.waitForTimeout(3000);                                     // avtomatik saqlash (2 s)
 
   /* 3) Loyihalarim — kartada mijoz, modul soni; fayldan ochish; o'chirish */
-  await click(/^Loyihalar$/); await waitText('Loyihalarim');
+  await page.locator('[data-sarlavha="loyihalar"]').click(); await waitText('Loyihalarim');
   await page.waitForTimeout(1200);
   R.karta = await M(() => document.body.innerText.includes('Aziza Karimova'));
   await page.screenshot({ path: `${OUT}/qolgan-1440-loyihalar.png` });
@@ -56,7 +56,7 @@ async function asosiy(page, R) {
   await page.waitForTimeout(3000);                                     // yangi loyiha bo'lib saqlanadi
   const ikki = async () => M(async () => (await (await fetch('/api/projects')).json()).length);   // cookie sessiya (TZ-19 X2)
   R.serverdaLoyiha = await ikki();
-  await click(/^Loyihalar$/); await page.waitForTimeout(1200);
+  await page.locator('[data-sarlavha="loyihalar"]').click(); await page.waitForTimeout(1200);
   await page.locator('button[aria-label^="Loyihani o\'chirish"]').first().click(); await page.waitForTimeout(300);
   await click(/^O'chirish$/); await page.waitForTimeout(1500);
   R.ochirilgandan = await ikki();

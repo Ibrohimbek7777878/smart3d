@@ -3,7 +3,8 @@ import { project } from '../../store/project.js';
 import { S } from '../../store/session.js';
 import { xato, toast } from '../../store/ui.js';
 import { loadSettings } from '../settings/actions.js';
-import { goProjects, openPending } from '../projects/actions.js';
+import { openPending } from '../projects/actions.js';
+import { ishJoyiOch, yangiIshJoyi } from '../editor/ishjoyi/ishjoyi.js';
 import { checkAiStatus } from '../editor/ai/actions.js';
 import { t, serverXato } from '../../i18n/index.js';
 import { TELEGRAM } from '../../app/bridge/telegram.js';
@@ -16,13 +17,15 @@ let busy = false;
 
 export const setField = (patch) => set('auth', s => ({ f: { ...s.f, ...patch } }));
 
-/** kirgandan keyin: sozlamalar, internetsiz qolgan o'zgarish, keyin saytdan kelgan modul yoki "Loyihalarim" */
+/** kirgandan keyin: sozlamalar, internetsiz qolgan o'zgarish, keyin saytdan kelgan modul; TZ-25 A: oxirgi loyiha
+ *  ish joyida ochiladi, bo'lmasa — bo'sh ish joyi (standart xona) */
 export async function afterLogin() {
   await project.load();
   loadSettings();
   await S.afterLogin(false).catch(() => {});
   if (get().nav.pending) { openPending(); return; }
-  goProjects();
+  if (S.currentId) { ishJoyiOch(); project.changed('room', true); }
+  else yangiIshJoyi();
 }
 
 /** sahifa ochilganda: saqlangan kirish kaliti tekshiriladi */
@@ -88,7 +91,7 @@ export async function submitAuth() {
   if (reg) {
     await S.afterLogin(true).catch(() => {});
     if (get().nav.pending) { openPending(); return; }
-    set('nav', { screen: 'onb1' });
+    yangiIshJoyi();                                  // TZ-25: "Nima yasaymiz" o'rniga — darhol bo'sh ish joyi
   } else afterLogin();
 }
 
@@ -135,10 +138,10 @@ export async function smsKirish() {
   setField({ kod: '', err: {}, yuborildi: false });
   set('auth', { user: j.user });
   if (TELEGRAM) await telegramUlash();
-  if (j.yangi) {                                     // birinchi kirish — ro'yxatdagidek onboarding
+  if (j.yangi) {                                     // birinchi kirish — ro'yxatdagidek: bo'sh ish joyi (TZ-25)
     await S.afterLogin(true).catch(() => {});
     if (get().nav.pending) { openPending(); return; }
-    set('nav', { screen: 'onb1' });
+    yangiIshJoyi();
   } else afterLogin();
 }
 

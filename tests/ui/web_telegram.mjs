@@ -71,12 +71,12 @@ async function asosiy(page, R) {
   R.kutish = !!(await until(() => !!document.querySelector('[data-tg-kutish]'), 1400));
   R.formaYoq = !(await has('Ro\'yxatdan o\'tish'));
   await page.screenshot({ path: `${OUT}/telegram-390-kutish.png` });
-  R.kirdi = await waitText('Nima yasaymiz');
+  R.kirdi = await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 }).then(() => true, () => false);   // TZ-25: darhol ish joyi
   kechiktir = 0;
   R.tg = await M(() => ({ ready: __tg.ready, expand: __tg.expand, header: __tg.header, bg: __tg.bg, swipes: __tg.swipes }));
   R.kalitYoq = await M(() => localStorage.getItem('smart3d.token') === null && localStorage.getItem('smart3d.user') === null && !document.cookie.includes('s3d_sess'));
   R.user = await M(() => window.__app.state.user && { name: window.__app.state.user.name, telegram: window.__app.state.user.telegram });
-  await page.screenshot({ path: `${OUT}/telegram-390-onboarding.png` });
+  await page.screenshot({ path: `${OUT}/telegram-390-ishjoyi.png` });
 
   /* 3) telefon — foydalanuvchi ulashadi, raqam bot chatiga keladi (webhook), ilova o'zi yangilanadi */
   R.raqamSoraldi = !!(await until(() => window.__tg.contact, 5000));
@@ -88,8 +88,7 @@ async function asosiy(page, R) {
   R.raqam = await until(() => window.__app.state.user && window.__app.state.user.phone, 15000);
 
   /* 4) muharrir, saqlash, "Orqaga" */
-  await page.getByText(/^Oshxona$/).last().click(); await page.waitForTimeout(400);
-  await page.getByText(/Muharrirni ochish/).last().click();
+  await page.locator('[data-tez="kitchen"]').click(); await page.waitForTimeout(400);   // TZ-25: tez boshlash — oshxona
   await until(() => window.__app && window.__app.res, 15000);
   R.saqlandi = !!(await until(() => !!document.querySelector('[data-save="ok"]'), 15000));
   R.orqaKorindi = await M(() => window.__tg.back === true);
@@ -100,7 +99,7 @@ async function asosiy(page, R) {
   /* 5) fayl — bot chatiga */
   await page.locator('main button.h2').first().click(); await page.waitForTimeout(1500);
   await until(() => window.__app.res && window.__app.res.priceRes, 15000);
-  await page.locator('button[data-navbtn]', { hasText: 'Fayllar' }).first().click().catch(() => {});
+  await page.locator('[data-asbob="fayllar"]').click().catch(() => {});
   await page.waitForTimeout(800);
   await page.locator('[data-panel] button', { hasText: 'Excel smeta' }).first().click();
   R.toast = await until(() => { const t = document.body.innerText; return /Telegram chatga yuborildi/.test(t) ? 'ok' : (/S3D-TG-\d+/.exec(t) || [])[0]; }, 15000);

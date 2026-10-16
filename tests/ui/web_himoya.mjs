@@ -35,9 +35,9 @@ async function asosiy(page, R) {
   await fill('Jasur', 'Himoya Usta'); await fill('jasur@', 'himoya' + Date.now() + '@test.uz');
   const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
   await fill('kamida 8', 'parol12345');
-  await click(/^Ro'yxatdan o'tish$/); await waitText('Nima yasaymiz');
+  await click(/^Ro'yxatdan o'tish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: darhol ish joyi
   R.kalitJSdaYoq = await M(() => localStorage.getItem('smart3d.token') === null && !document.cookie.includes('s3d_sess'));
-  await click(/^Oshxona$/); await page.waitForTimeout(400); await click(/Muharrirni ochish/);
+  await page.locator('[data-tez="kitchen"]').click(); await page.waitForTimeout(800);   // TZ-25: tez boshlash — oshxona
   for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.res)); i++) await page.waitForTimeout(250);
   await page.waitForTimeout(1500);
   for (const s of ['Xona', 'Mebel', 'Narx', 'Fayllar']) { await click(new RegExp('^' + s + '$')); await page.waitForTimeout(700); }

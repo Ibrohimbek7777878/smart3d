@@ -10,6 +10,7 @@ import { tr, setTil } from '../i18n/index.js';
 import { TELEGRAM, TG_TIL } from './bridge/telegram.js';
 import { telegramIshga } from '../features/telegram/telegram.js';
 import { scene } from '../features/editor/scene/sahna.js';
+import { yangiIshJoyi } from '../features/editor/ishjoyi/ishjoyi.js';
 
 /* TZ-19: ilova ishga tushishi — ma'lumot, saytdan o'tish (#hash), saqlangan kirish. Bir marta chaqiriladi (main.jsx). */
 export function bootstrap() {
@@ -24,7 +25,7 @@ export function bootstrap() {
   readHandoff();
   initSession();
   if (TELEGRAM) telegramIshga(async (j) => {
-    if (j.yangi) { loadSettings(); await S.afterLogin(true).catch(() => {}); set('nav', { screen: 'onb1' }); }
+    if (j.yangi) { loadSettings(); await S.afterLogin(true).catch(() => {}); yangiIshJoyi(); }   // TZ-25: darhol ish joyi
     else await afterLogin();
   });
   window.addEventListener('hashchange', readHandoff);

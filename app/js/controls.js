@@ -38,6 +38,9 @@ export function attachControls(sp, opts = {}) {
   orbit.enabled = false;                       // 2Dda o'chiq
   if (sp.theme && sp.theme.orbit) Object.assign(orbit, sp.theme.orbit);   // TZ-09: mavzu (masofa, burchak chegarasi)
   sp._controls = orbit;
+  /* TZ-23 A1 tuzatish (egasi #132): sahna faqat "qayta chiz" buyrug'ida chiziladi — kamera sichqoncha, g'ildirak yoki
+     barmoq bilan o'zgarganda ham shu buyruq beriladi (oldin berilmasdi: aylantirganda ekran qotib turardi) */
+  orbit.addEventListener('change', () => sp._invalidate());
 
   /* ── 2D: sichqoncha va barmoq (TZ-SAYT-BARQARORLIK-RESPONSIVE §4.2) ──
    *  · bo'sh joyni sudrash (1 barmoq / chap tugma) — pan; o'rta tugma yoki Shift — har doim pan;

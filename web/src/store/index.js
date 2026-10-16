@@ -26,6 +26,9 @@ export const store = createStore({
   /* TZ-23: 3D ko'rinish (kamera, fon, chizish rejimi, rentgen, xona, fasadsiz, o'lchash) — features/editor/scene/korinish.js */
   /* TZ-24 A: modul chizish (features/editor/chizish) */
   chizish: { ochiq: false, kod: null, pl: null, ch: null, yol: [], fasad: true, nom: '', modullarim: null, v: 0, raw: {} },
+  /* TZ-25: bosh ish joyi — faol asbob (tanlash | devor | teshik), chizilayotgan devor nuqtalari, palitrada tanlangan teshik,
+     o'lcham tahriri ({ i, val }), tanlangan eshik/deraza ({ idx, en, joy }) — features/editor/ishjoyi */
+  ishjoyi: { asbob: 'tanlash', nuqtalar: [], teshikTur: null, tahrir: null, tanlov: null, menyu: false },
   korinish: { kamera: 'orbit', fon: null, chizish: 'boyalgan', rentgen: false, xona: true, fasadsiz: false, olchash: false, menyu: false, olcham: null },
   settings: { sets: { markup_pct: null, stanoklar: null, logo: null, til: null }, markupIn: null, nestIn: null, stdIn: null, xq: '', xatolar: null, qoldiqlar: null, qHolat: 'available', qQ: '', qForm: null }
 });

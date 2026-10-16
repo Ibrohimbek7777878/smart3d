@@ -7,7 +7,6 @@ import { useViewer } from '../../../shared/design3d/useViewer.js';
 import { s3Viewer, s3Mats, s3Box, s3Label } from '../../../shared/design3d/engine.js';
 import { ichiniKorsaBoladi } from '../../../services/ichki.js';
 import { faylYukla, preloadEksport } from '../files/actions.js';
-import { openAi } from '../ai/actions.js';
 import { select } from '../actions.js';
 import { scene, mountSahna, unmountSahna } from './sahna.js';
 import * as A from './actions.js';
@@ -43,8 +42,7 @@ export function useSahnaView() {
     shot: () => faylYukla('rasm'),
     vrOk: ed.vrOk, vr: A.vr,
     toggleAllOpen: bazis ? A.bazisFasadsiz : () => A.toggleOpen(null),
-    openAllLabel: bazis ? (kr.fasadsiz ? t('sahna.fasadlarni_korsatish') : t('sahna.fasadsiz_korish')) : anyOpen ? t('sahna.hammasini_yopish') : t('sahna.eshiklarni_ochish'),
-    openAi
+    openAllLabel: bazis ? (kr.fasadsiz ? t('sahna.fasadlarni_korsatish') : t('sahna.fasadsiz_korish')) : anyOpen ? t('sahna.hammasini_yopish') : t('sahna.eshiklarni_ochish')
   };
 }
 
