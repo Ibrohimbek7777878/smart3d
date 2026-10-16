@@ -1,6 +1,6 @@
 # TZ-11 — Stanok fayllarini haqiqiy stanokka moslash
 
-**Sana:** 2026-10-15 · **Navbat:** 11 · **Holat:** MA'LUMOT KUTILMOQDA — D7 (serverdan namuna fayllar) va Q7 (stanok modellari).
+**Sana:** 2026-10-15 (2-tahrir: 2026-10-16) · **Navbat:** 11 · **Holat:** 2-TAHRIR — EGASI TASDIG'I KUTILMOQDA. 1-band (namunalarni o'rganish) bajarildi — pastda "2-tahrir" bo'limi; kod "boshla" dan keyin
 **Bog'liq:** TZ-01, TZ-06.
 
 ## Muammo (tekshirilgan, `app/js/engine/cnc.js`)
@@ -55,3 +55,54 @@
 ## Qabul
 - Har stanok fayli namuna bilan formati bo'yicha bir xil.
 - Sinov detali to'g'ri kesildi; texnolog tasdiqladi.
+
+---
+
+## 2-tahrir (2026-10-16) — namunalar o'rganildi, yondashuv o'zgaradi
+
+### Namunalardan nima chiqdi
+Manba: `Smart3D_toplam_2026-10-16/01_buyurtma_fayllari`. 30 ta haqiqiy buyurtma, faqat o'qildi. Gitga qo'shilmaydi — mijoz ma'lumoti.
+
+Sexdagi haqiqiy zanjir:
+1. **Bazis → GibLab `.project`** (`importBMV 1.84`, windows-1251). 30 buyurtmaning hammasida bor. Tarkibi:
+   - mahsulot va detallar — tayyor o'lcham `dl/dw`, nomi, tekstura;
+   - kromka — har qirra uchun `@operation#N` havolasi orqali;
+   - plita — `good sheet`: qalinlik, ERP nomi va kodi, list o'lchami;
+   - arra operatsiyasi `CS` va kromka operatsiyasi `EL` (band: eni, qalinligi, nomi);
+   - har detalning prisadka dasturi `XNC`, ichida XML. 3888 ta dastur, teglari: `bf` — yuza teshigi, `bl/br/bt/bb` — qirra teshiklari, `var` — chuqurlik formulasi.
+2. **GibLab** kesishni o'zi optimallashtiradi va arra fayllarini o'zi chiqaradi: Altendorf `.gibcut`, Homag/Holzma `.LC4`. Bu turdagi 31 ta fayl — GibLab saqlagan, kesim xaritasi bilan.
+3. **Prisadka** — har detalga bitta KDT `.xml` (2044 fayl): kontur, kromka (`Banding`), teshiklar (turi, diametri, chuqurligi).
+4. **CNC (Rover)** — `.ncc` / `.tap`. Faqat frezalanadigan detallar uchun, kam.
+5. Kromka stanogi uchun alohida fayl yo'q — kromka `.project` va KDT ichida.
+
+**Xulosa.** Altendorf va Homag uchun alohida post-protsessor yozish shart emas — ularni sexda GibLab yaratadi. Smart3D'ning ishi — GibLab'ga Bazis'nikidek `.project` va prisadkaga KDT `.xml` berish. Hozirgi `giblab.js` boshqa narsa qiladi: o'z kesim xaritamizni GibLab'ning saqlangan fayli shaklida yozadi.
+
+### Bajariladigan ishlar (2-tahrir)
+1. **`.project` — Bazis eksportidek** (`importBMV 1.84`):
+   - detallar (tayyor o'lcham, tekstura);
+   - kromka (`EL` + band — haqiqiy kromka nomi, eni, qalinligi);
+   - plita (`sheet` — ERP nomi va kodi, list o'lchami);
+   - `CS` va har detal uchun `XNC` dasturi (teshiklar, TZ-06).
+   - Kesimni GibLab o'zi optimallashtiradi. Hozirgi fayl (bizning kesim xaritasi bilan) — tanlov sifatida qoladi.
+2. **KDT `.xml` (prisadka)** — har detalga bitta fayl, haqiqiy KDT shaklida (kontur, `Banding`, teshiklar), ZIP qilib beriladi.
+3. **Haqiqiy buyurtmalar bilan tekshiruv** — avtomatik test, fayllar gitda emas. 30 buyurtmaning Bazis fayli TZ-21 orqali Smart3D loyihasiga o'tadi, bizning `.project` va KDT chiqariladi va sexdagi asl fayllar bilan detalma-detal solishtiriladi:
+   - soni, o'lchami, materiali, kromka tomonlari;
+   - teshiklar: soni, diametri, joyi.
+
+   Farqlar ro'yxat bilan ko'rsatiladi.
+4. **Teshiklar.** Bazis faylidan (TZ-06 usuli — mahkamlagichlardan) va KDT statistikasidan (`07_teshiklar_prisadka`). Petlya, polka ushlagich va ruchka teshiklari D6 jadvali bo'yicha — texnolog tasdiqlaydi.
+5. **G-code / Rover** — avvalgi tuzatishlar (C2, C3, C5, C8). Ustuvorlik pastroq: Rover faqat frezalanadigan detallar uchun.
+6. **Sinov (C10)** — avval sexda GibLab'ga bizning `.project` import qilinadi. Ko'rinishi Bazis faylidagidek bo'lishi kerak. Keyin 1 ta arzon detal kesiladi va prisadka qilinadi, texnolog tasdiqlaydi. Shundan keyin `SINOV` belgisi olinadi.
+
+### Xavf
+- **YUQORI** — stanok va plita. Hamma yangi fayl `SINOV` belgisi bilan, faqat admin uchun.
+- Haqiqiy buyurtmalarda farq 0 bo'lmaguncha sexga berilmaydi.
+- Kesish faqat egasining ruxsati bilan (5.1).
+
+### Egasidan kerak
+1. **"Boshla"** — 2-tahrir bo'yicha.
+2. Texnolog — D6 jadvali (petlya, polka ushlagich, ruchka teshiklari). Asosi — `Teshiklar_KDT_statistika.xlsx`.
+3. Sinov kuni: GibLab'ga import, keyin 1 ta detal.
+
+### Muddat (taxmin)
+- `.project` + KDT + 30 buyurtma bilan solishtirish — taxminan 2–3 ish kuni. Sinov kuni alohida. Bu taxmin.
