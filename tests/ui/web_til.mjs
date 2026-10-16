@@ -48,6 +48,18 @@ async function asosiy(page, R) {
      (loyiha nomi — foydalanuvchi matni, tekshirilmaydi) */
   const UZ = /(^|[^\p{L}])(Qadam|Mebel|Narx|Fayllar|Xona|Oshxona|pastki|ustki|so'm|Eshiklarni|Markazga|Barchasi|Korpus|Fasad|modul)(?![\p{L}])/u;
   R.ruKatalog = await M(() => [...document.querySelectorAll('[data-panel] button.h5')].slice(0, 6).map(b => (b.innerText.split('\n')[0] || '').trim()));
+  /* TZ-18 6-bosqich: hujjatlar rus tilida — Excel (bo'lim sarlavhalari) va PDF hisobot (sarlavha, jami) */
+  await page.locator('button', { hasText: 'Файлы' }).first().click(); await page.waitForTimeout(800);
+  const dlx = page.waitForEvent('download', { timeout: 20000 }).catch(() => null);
+  await page.locator('[data-panel] button', { hasText: 'Смета Excel' }).first().click();
+  const fx = await dlx;
+  R.ruExcel = fx ? (await (async () => { const b = await (await import('node:fs')).promises.readFile(await fx.path()); const s = b.toString('utf8'); return s.includes('МЕБЕЛЬНЫЕ МОДУЛИ') && s.includes('ИТОГОВАЯ СУММА'); })()) : false;
+  const pop = page.waitForEvent('popup', { timeout: 15000 }).catch(() => null);
+  await page.locator('[data-panel] button', { hasText: 'Отчёт (PDF)' }).first().click();
+  const pw = await pop;
+  R.ruPdf = pw ? await pw.evaluate(() => document.documentElement.lang + '|' + (document.body.innerText.match(/ИТОГО|Коммерческое предложение/g) || []).length) : null;
+  if (pw) await pw.close().catch(() => {});
+  await page.locator('button', { hasText: 'Мебель' }).first().click(); await page.waitForTimeout(600);
   R.ruQolgan = await M((re) => { const body = document.body.cloneNode(true); for (const el of body.querySelectorAll('input, [data-loyiha-nomi]')) el.remove();
     return body.innerText.split('\n').filter(l => new RegExp(re, 'u').test(l)).slice(0, 8); }, UZ.source);
 
@@ -82,7 +94,7 @@ async function asosiy(page, R) {
   await M(() => localStorage.setItem('s3d-til', 'uz'));
 
   R.errs = errs;
-  R.ok = R.ruKatalog.length > 0 && R.ruKatalog.every(n => /[А-Яа-яЁё]/.test(n)) && R.ruQolgan.length === 0 && R.sayt.lang === 'ru' && R.sayt.tugma === 'Русский' && yuklandi && R.menyu.join('|') === 'O\'zbekcha|Русский|English' && R.ru.lang === 'ru' && R.ru.saqlandi === 'ru' && R.ru.menyuYopiq &&
+  R.ok = R.ruExcel && /^ru\|[1-9]/.test(R.ruPdf || '') && R.ruKatalog.length > 0 && R.ruKatalog.every(n => /[А-Яа-яЁё]/.test(n)) && R.ruQolgan.length === 0 && R.sayt.lang === 'ru' && R.sayt.tugma === 'Русский' && yuklandi && R.menyu.join('|') === 'O\'zbekcha|Русский|English' && R.ru.lang === 'ru' && R.ru.saqlandi === 'ru' && R.ru.menyuYopiq &&
     R.ru.qaytaYuklanmadi && R.ru.narx === narxUz && R.ru.server === 'ru' && R.escYopdi && R.eslabQoldi === 'ru' && R.sozlamaTil.length === 3 && R.en === 'en' &&
     R.uz === 'uz' && !R.hScroll && errs.length === 0;
 }

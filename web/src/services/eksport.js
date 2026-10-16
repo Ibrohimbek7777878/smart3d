@@ -6,12 +6,48 @@ import * as THREE from 'three';
 import { validateDoc } from '../../../app/js/engine/rules.js';
 import { buildOBJ, cutlistCSV, smetaCSV, xncCSV, download } from '../../../app/js/engine/objexport.js';
 import { buildGLB } from '../../../app/js/engine/glbexport.js';
-import { buildXLSX } from '../../../app/js/engine/xlsxexport.js';
+import { buildXLSX, XLSX_YORLIQ_UZ } from '../../../app/js/engine/xlsxexport.js';
 import { buildBPJ } from '../../../app/js/engine/bpj.js';
 import { buildProject as buildGlProject } from '../../../app/js/engine/giblab.js';
 import { cncBundle, cutGCode } from '../../../app/js/engine/cnc.js';
 import { render1080p, render360Panorama } from '../../../app/js/engine/photo-render.js';
 import { s3n } from '../shared/design3d/engine.js';
+import { t, til } from '../i18n/index.js';
+import { modulNomi, materialNomi } from './loyiha.js';
+
+/* TZ-18 6-bosqich: hujjat (PDF hisobot, Excel) va xabarlar — tanlangan tilda. O'zbekchada satr nomlari dvigatel
+   yozganicha (avvalgi hujjat bilan aynan); rus/inglizda — tuzilgan maydonlardan qayta yig'iladi.
+   Mahsulot (ERP, Bazis) va furnitura nomlari tarjima qilinmaydi (TZ-18 §2). Stanok fayllari — o'zgarmaydi. */
+const LOC = { uz: 'uz-UZ', ru: 'ru-RU', en: 'en-GB' };
+const BIRLIK = ['varaq', 'm', 'dona', 'detal', 'komplekt'];
+function hujjatTili(c) {
+  const uz = til() === 'uz';
+  const M = (c.H && c.H.materials) || {};
+  const asl = (code) => { const m = [...(M.panel_materials || []), ...(M.edge_materials || [])].find(x => x.code === code); return m ? m.name : code; };
+  const tx = (l) => (l.taxminiy ? t('narx.taxminiy') : '');
+  return {
+    uz, locale: LOC[til()] || 'uz-UZ',
+    modul: (l) => (uz || !c.H || !c.H.catalog[l.code] ? l.name : modulNomi(c.H, c.H.catalog[l.code])),
+    qator: (l) => {
+      if (uz) return l.name;
+      if (/^Plita/.test(l.group)) return materialNomi(c.H, l.code, asl(l.code)) + ' ' + (l.util != null ? t('hujjat.plita_q', { n: l.qty, p: l.util }) : t('hujjat.plita_taxmin', { n: l.qty }));
+      if (l.group === 'Kromka') return materialNomi(c.H, l.code, asl(l.code)) + tx(l);
+      if (l.group === 'Xizmatlar') return (l.code === 'hole:tanlanmagan' ? t('hujjat.teshik_tanlanmagan', { n: l.qty }) : t('hujjat.teshik_q', { n: l.qty })) + tx(l);
+      if (l.group === 'Ish haqi') return t('hujjat.ish_haqi_q', { n: l.qty }) + tx(l);
+      return l.name;
+    },
+    birlik: (u) => (uz || !BIRLIK.includes(u) ? u : t('hujjat.u_' + u)),
+    yorliq: uz ? XLSX_YORLIQ_UZ : {
+      loyiha: t('hujjat.x_loyiha'), sarlavha: t('hujjat.x_sarlavha'), sana: t('hujjat.x_sana'), locale: LOC[til()],
+      b1: t('hujjat.x_b1'), b1h: t('hujjat.x_b1h').split('|'), b1j: t('hujjat.x_b1j'), yoq: t('hujjat.x_yoq'), narxYoq: t('hujjat.x_narx_yoq'),
+      b2: t('hujjat.x_b2'), b2h: t('hujjat.x_b2h').split('|'), b2j: t('hujjat.x_b2j'), b3: t('hujjat.x_b3'), b3h: t('hujjat.x_b3h').split('|'), b3j: t('hujjat.x_b3j'),
+      b4: t('hujjat.x_b4'), b4h: t('hujjat.x_b4h').split('|'), b4j: t('hujjat.x_b4j'), b5: t('hujjat.x_b5'), b5h: t('hujjat.x_b5h').split('|'),
+      tannarx: t('hujjat.x_tannarx'), tannarxT: t('hujjat.x_tannarx_t'), tannarxA: t('hujjat.x_tannarx_a'),
+      ustama: t('hujjat.x_ustama'), ustamaT: t('hujjat.x_ustama_t'), ustamaA: t('hujjat.x_ustama_a'),
+      yakuniy: t('hujjat.x_yakuniy'), toliqEmas: t('hujjat.x_toliq_emas'), dona: t('hujjat.x_dona')
+    }
+  };
+}
 
 const fname = (c) => (c.name || 'smart3d').trim().replace(/\s+/g, '_');
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -19,32 +55,33 @@ const view = (c) => Object.assign({}, c.doc, { placements: c.H.viewPlacements(c.
 
 /** Eksportdan oldin tekshiruv — fayl/modul buzilmasligi uchun (eski integrityCheck) */
 function ok(c, needCutlist) {
-  if (!c.doc || !c.doc.placements || !c.doc.placements.length) { c.toast('Loyiha bo\'sh — mebel qo\'ying'); return false; }
-  if (!c.H) { c.toast('Bazalar yuklanmagan'); return false; }
+  if (!c.doc || !c.doc.placements || !c.doc.placements.length) { c.toast(t('hujjat.t_bosh')); return false; }
+  if (!c.H) { c.toast(t('hujjat.t_baza')); return false; }
   const v = validateDoc(c.doc, { catalog: c.H.catalog });
-  if (!v.ok) { c.toast('Validatsiya xatosi: ' + ((v.errors[0] && v.errors[0].message) || '')); return false; }
-  if (needCutlist && !(c.res && c.res.cutlists && c.res.cutlists.length)) { c.toast('Avval smeta hisoblansin (cutlist bo\'sh)'); return false; }
+  if (!v.ok) { c.toast(t('hujjat.t_valid', { s: (v.errors[0] && v.errors[0].message) || '' })); return false; }
+  if (needCutlist && !(c.res && c.res.cutlists && c.res.cutlists.length)) { c.toast(t('hujjat.t_cutlist')); return false; }
   return true;
 }
 /* TZ-19: xato — c.fail(e, nom) orqali (kod bilan xabar va jurnal: S3D-EXP-101); c.fail bo'lmasa — oddiy xabar */
-const failed = (c, e, nom) => { if (c.fail) c.fail(e, nom); else { console.error('eksport', e); c.toast((nom || 'Xato') + ': ' + e.message); } };
-function safe(c, fn) { try { fn(); } catch (e) { failed(c, e, 'Fayl'); } }
+const failed = (c, e, nom) => { if (c.fail) c.fail(e, nom); else { console.error('eksport', e); c.toast((nom || t('hujjat.f_xato')) + ': ' + e.message); } };
+function safe(c, fn) { try { fn(); } catch (e) { failed(c, e, t('hujjat.f_fayl')); } }
 
 export const eksport = {
   /* ── Mijozga ── */
   hisobot(c) {
     const res = c.res;
-    if (!res || !res.priceRes) { c.toast('Avval smeta hisoblansin'); return; }
+    if (!res || !res.priceRes) { c.toast(t('hujjat.t_avval')); return; }
+    const T = hujjatTili(c), th = t('hujjat.r_th').split('|');
     const name = c.name || 'Smart3D';
     const pr = res.priceRes, prod = res.prod, s = (res.nest && res.nest.summary) || {};
     const fmt = (x) => s3n(x == null ? 0 : x);
     const rows = pr.lines.map(l =>
-      `<tr><td>${esc(l.name)}<br><small>${esc(l.code)} · ${Number(l.w) || 0}×${Number(l.d) || 0} mm</small></td><td class=n>${Number(l.qty) || 0}</td><td class=n>${fmt(l.unit_price)}</td><td class=n>${fmt(l.amount)}</td></tr>`
-    ).join('') || '<tr><td colspan=4>Mebel qo\'yilmagan</td></tr>';
+      `<tr><td>${esc(T.modul(l))}<br><small>${esc(l.code)} · ${Number(l.w) || 0}×${Number(l.d) || 0} ${esc(t('umumiy.mm'))}</small></td><td class=n>${Number(l.qty) || 0}</td><td class=n>${fmt(l.unit_price)}</td><td class=n>${fmt(l.amount)}</td></tr>`
+    ).join('') || `<tr><td colspan=4>${esc(t('hujjat.r_bosh'))}</td></tr>`;
     const prodRows = ((prod && prod.lines) || []).map(l =>
-      `<tr><td>${esc(l.name || l.material || '')}</td><td class=n>${esc(l.unit || '')}</td><td class=n>${fmt(l.amount != null ? l.amount : l.cost)}</td></tr>`).join('');
+      `<tr><td>${esc(T.qator(l) || l.material || '')}</td><td class=n>${esc(T.birlik(l.unit || ''))}</td><td class=n>${fmt(l.amount != null ? l.amount : l.cost)}</td></tr>`).join('');
     /* qoidalar S4/6.3: hujjatda logo — dizayndagi belgi; Bittada logo fayli kelganda shu joyga (TZ-08) */
-    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(name)} — hisobot</title>
+    const html = `<!DOCTYPE html><html lang="${til()}"><head><meta charset="utf-8"><title>${esc(t('hujjat.r_title', { nom: name }))}</title>
 <style>
   body{font-family:Manrope,Segoe UI,Arial,sans-serif;color:#111;margin:28px;font-size:13px}
   .logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
@@ -61,52 +98,52 @@ export const eksport = {
   footer{margin-top:24px;color:#777;font-size:11px;border-top:1px solid #ccc;padding-top:6px}
   @media print{body{margin:12mm}}
 </style></head><body>
-<div class="logo"><i>3D</i><span><b>Smart3D</b><small>by Bittada</small></span>${/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(c.logo || '') ? `<img class="usta" src="${c.logo}" alt="Sex logosi">` : ''}</div>
+<div class="logo"><i>3D</i><span><b>Smart3D</b><small>by Bittada</small></span>${/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(c.logo || '') ? `<img class="usta" src="${c.logo}" alt="${esc(t('hujjat.r_logo_alt'))}">` : ''}</div>
 <h1>${esc(name)}</h1>
-<div class="meta">Smart3D hisobot · ${new Date().toLocaleDateString('uz-UZ')} · material: ${esc(c.matCode)}</div>
-<h2>1. Kotirovka (mijozga)</h2>
-<table><thead><tr><th>Mebel</th><th class=n>Miq.</th><th class=n>Narx</th><th class=n>Summa</th></tr></thead>
+<div class="meta">${esc(t('hujjat.r_meta', { d: new Date().toLocaleDateString(T.locale), m: c.matCode }))}</div>
+<h2>${esc(t('hujjat.r_k'))}</h2>
+<table><thead><tr><th>${esc(th[0])}</th><th class=n>${esc(th[1])}</th><th class=n>${esc(th[2])}</th><th class=n>${esc(th[3])}</th></tr></thead>
 <tbody>${rows}</tbody></table>
-<div class="tot">JAMI: ${fmt(pr.total)} so'm${pr.incomplete ? ' *' : ''}</div>
-${pr.incomplete ? '<div class="meta">* ba\'zi zapchastlarning narxi bazada yo\'q — to\'liq emas</div>' : ''}
-${prodRows ? `<h2>2. Ishlab chiqarish xarajati</h2><table><tbody>${prodRows}</tbody></table>
-<div class="tot">Jami ishlab chiqarish: ${fmt(prod.total)} so'm</div>` : ''}
-<h2>3. Raskroy</h2>
+<div class="tot">${esc(t('hujjat.r_jami', { s: fmt(pr.total) }))}${pr.incomplete ? ' *' : ''}</div>
+${pr.incomplete ? `<div class="meta">${esc(t('hujjat.r_toliq_emas'))}</div>` : ''}
+${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody></table>
+<div class="tot">${esc(t('hujjat.r_ich_jami', { s: fmt(prod.total) }))}</div>` : ''}
+<h2>${esc(t('hujjat.r_raskroy'))}</h2>
 <div class="stats">
-  <span><b>${s.total_sheets || 0}</b> varaq</span>
-  <span><b>${s.utilization_pct || 0}%</b> foydalanish</span>
-  <span><b>${s.waste_m2 || 0}</b> m² ochiq</span>
-  <span><b>${s.remnant_count || 0}</b> qoldiq (${s.remnant_usable_m2 || 0} m²)</span>
-  <span><b>${fmt(s.material_cost)}</b> varaq xarajati</span>
+  <span><b>${s.total_sheets || 0}</b> ${esc(t('hujjat.r_varaq'))}</span>
+  <span><b>${s.utilization_pct || 0}%</b> ${esc(t('hujjat.r_foyd'))}</span>
+  <span><b>${s.waste_m2 || 0}</b> ${esc(t('hujjat.r_ochiq'))}</span>
+  <span><b>${s.remnant_count || 0}</b> ${esc(t('hujjat.r_qoldiq', { m: s.remnant_usable_m2 || 0 }))}</span>
+  <span><b>${fmt(s.material_cost)}</b> ${esc(t('hujjat.r_varaq_x'))}</span>
 </div>
-<footer>Smart3D by Bittada · ${esc(name)} · ${new Date().toISOString().slice(0, 10)} · sahifa 1/1</footer>
+<footer>Smart3D by Bittada · ${esc(name)} · ${new Date().toISOString().slice(0, 10)} · ${esc(t('hujjat.r_sahifa'))}</footer>
 <script>window.onload = () => { window.print(); };</script>
 </body></html>`;
     const w = window.open('', '_blank');
-    if (!w) { c.toast('Brauzer yangi oynani yopdi — ruxsat bering'); return; }
+    if (!w) { c.toast(t('hujjat.t_oyna')); return; }
     w.document.write(html); w.document.close();
   },
   async rasm(c) {
     if (!c.sp) return;
     const sp = c.sp, bg = sp.scene.background, walls = sp.groups.walls3d.children.map(w => w.visible);
     try {
-      c.toast('1080p rasm olinmoqda…');
+      c.toast(t('hujjat.t_rasm'));
       sp.scene.background = new THREE.Color(0x0C1C22);              // mavzu foni shaffof — rasmda dizayn rangi
       const r = await render1080p(sp, { download: true });
-      c.toast(`1080p rasm saqlandi (${r.width}×${r.height})`);
-    } catch (e) { failed(c, e, 'Rasm'); }
+      c.toast(t('hujjat.t_rasm_ok', { w: r.width, h: r.height }));
+    } catch (e) { failed(c, e, t('hujjat.f_rasm')); }
     finally { sp.scene.background = bg; sp.groups.walls3d.children.forEach((w, i) => { w.visible = walls[i]; }); sp._resize(); sp._invalidate(); }
   },
   async panorama(c) {
     if (!c.sp) return;
     const sp = c.sp, bg = sp.scene.background;
     try {
-      c.toast('360° panorama tayyorlanmoqda…');
+      c.toast(t('hujjat.t_pano'));
       sp.scene.background = new THREE.Color(0x0C1C22);
       for (const w of sp.groups.walls3d.children) w.visible = true;   // xona markazidan — hamma devor ko'rinadi
       await render360Panorama(sp, { download: true });
-      c.toast('360° panorama saqlandi');
-    } catch (e) { failed(c, e, 'Panorama'); }
+      c.toast(t('hujjat.t_pano_ok'));
+    } catch (e) { failed(c, e, t('hujjat.f_pano')); }
     finally { sp.scene.background = bg; sp._resize(); sp._invalidate(); }
   },
   glb(c) {
@@ -114,7 +151,7 @@ ${prodRows ? `<h2>2. Ishlab chiqarish xarajati</h2><table><tbody>${prodRows}</tb
     safe(c, () => {
       const r = buildGLB(view(c), c.H.catalog);
       download(fname(c) + '-model.glb', r.glb, 'model/gltf-binary');
-      c.toast(`GLB tayyor — ${r.stats.totalBoxes} panel (${Math.round(r.stats.byteLength / 1024)} KB)`);
+      c.toast(t('hujjat.t_glb', { n: r.stats.totalBoxes, kb: Math.round(r.stats.byteLength / 1024) }));
     });
   },
   /* ── Sexga ── */
@@ -122,10 +159,12 @@ ${prodRows ? `<h2>2. Ishlab chiqarish xarajati</h2><table><tbody>${prodRows}</tb
     if (!ok(c, true)) return;
     safe(c, () => {
       const res = c.res;
+      const T = hujjatTili(c);
       const x = buildXLSX({ doc: c.doc, catalog: c.H.catalog, materials: c.H.effectiveMaterials(c.sheet), priceRes: res.priceRes, prod: res.prod,
-        nest: res.nest, sheet: c.sheet, materialCode: c.matCode, projectName: c.name || 'Smart3D Loyihasi', services: c.H.services });
+        nest: res.nest, sheet: c.sheet, materialCode: c.matCode, projectName: c.name || (T.uz ? 'Smart3D Loyihasi' : T.yorliq.loyiha), services: c.H.services,
+        yorliq: T.yorliq, modulNomi: T.modul, qatorNomi: T.qator, birlik: T.birlik });
       download(fname(c) + '-smeta.xlsx', x, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      c.toast('Excel smeta tayyor (5 ta bo\'lim)');
+      c.toast(t('hujjat.t_excel'));
     });
   },
   cutlist(c) { if (ok(c, true)) safe(c, () => download('smart3d-cutlist.csv', cutlistCSV(c.res.cutlists), 'text/csv')); },
@@ -143,7 +182,7 @@ ${prodRows ? `<h2>2. Ishlab chiqarish xarajati</h2><table><tbody>${prodRows}</tb
     const r = buildOBJ(view(c), c.H.catalog);
     download('smart3d-model.obj', r.obj, 'text/plain');
     setTimeout(() => download('smart3d-model.mtl', r.mtl, 'text/plain'), 350);
-    c.toast('OBJ + MTL — ' + r.placements.length + ' guruh');
+    c.toast(t('hujjat.t_obj', { n: r.placements.length }));
   },
   teshiklar(c) {
     if (!ok(c, false)) return;
@@ -159,31 +198,31 @@ ${prodRows ? `<h2>2. Ishlab chiqarish xarajati</h2><table><tbody>${prodRows}</tb
         settings: { kerf: n.kerf, trimL: n.trimL, trimW: n.trimW } });
       download(fname(c) + '.project', gl.xml, 'application/xml');
       const ops = (gl.xml.match(/<operation /g) || []).length, st = gl.stats || {};
-      c.toast(`GibLab tayyor — ${ops} operatsiya, ${st.placed}/${st.parts} detal, ${st.sheets} varaq`);
+      c.toast(t('hujjat.t_giblab', { o: ops, p: st.placed, d: st.parts, v: st.sheets }));
       if (gl.warnings && gl.warnings.length) console.warn('GibLab ogohlantirish:', gl.warnings);
     });
   },
   xnc(c) {
     if (!ok(c, true)) return;
     download(fname(c) + '-xnc.csv', '﻿' + xncCSV(c.res.cutlists, c.H.materials, c.H.catalog), 'text/csv');
-    c.toast('XNC CSV tayyor — GibLab import uchun');
+    c.toast(t('hujjat.t_xnc'));
   },
   _cnc(c, fn, suffix, mime, msg) {
     if (!ok(c, true)) return;
-    safe(c, () => { download(fname(c) + suffix, fn(c.res.nest, c.res.cutlists), mime); c.toast(msg + ' — SINOV: sexda tekshirilmagan'); });
+    safe(c, () => { download(fname(c) + suffix, fn(c.res.nest, c.res.cutlists), mime); c.toast(msg + t('hujjat.t_sinov')); });
   },
-  dxf(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).dxf, '-raskroy.dxf', 'application/dxf', 'DXF tayyor — raskroy'); },
-  gcode(c) { this._cnc(c, (n, cl) => cutGCode(n, cl, { toolDia: 6.0, addTabs: true }), '-kesim.nc', 'text/plain', 'G-code (ISO) tayyor'); },
-  ptp(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).ptp, '-ptp.csv', 'text/csv', 'PTP pozitsiya tayyor'); },
-  nc(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).nc, '-teshik.nc', 'text/plain', 'NC (Excellon) tayyor'); },
-  altendorf(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).altendorf, '-altendorf-fazali-kesim.txt', 'text/plain', 'Altendorf kesim xaritasi tayyor'); },
+  dxf(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).dxf, '-raskroy.dxf', 'application/dxf', t('hujjat.t_dxf')); },
+  gcode(c) { this._cnc(c, (n, cl) => cutGCode(n, cl, { toolDia: 6.0, addTabs: true }), '-kesim.nc', 'text/plain', t('hujjat.t_gcode')); },
+  ptp(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).ptp, '-ptp.csv', 'text/csv', t('hujjat.t_ptp')); },
+  nc(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).nc, '-teshik.nc', 'text/plain', t('hujjat.t_nc')); },
+  altendorf(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).altendorf, '-altendorf-fazali-kesim.txt', 'text/plain', t('hujjat.t_alt')); },
   /** BPJ (TZ-17 gacha faqat admin, SINOV) */
   bpj(c) {
     if (!ok(c, false)) return;
     safe(c, () => {
       const b = buildBPJ(view(c), c.H.catalog, c.H.materials, { modelName: c.name || 'Smart3D', materialCode: c.matCode, cutlists: c.res && c.res.cutlists });
       download(fname(c) + '.bpj', JSON.stringify(b, null, 2), 'application/json');
-      c.toast('BPJ tayyor — ' + b.meta.totalPanels + ' panel — SINOV: Bazis\'da tekshirilmagan');
+      c.toast(t('hujjat.t_bpj', { n: b.meta.totalPanels }));
     });
   }
 };

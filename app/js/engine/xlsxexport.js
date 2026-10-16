@@ -235,6 +235,22 @@ const STYLES_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
 /* ── 3. Smeta Ma'lumotlarini Yig'ish va Sheet1 Generatsiyasi ── */
 
+/* TZ-18: yorliqlar — standart o'zbekcha (eski sayt va testlar uchun aynan avvalgi matn); yangi sayt opts.yorliq bilan
+   tanlangan tildagi matnni beradi. {nom}, {d}, {p}, {n} — o'rniga qo'yiladi. */
+export const XLSX_YORLIQ_UZ = {
+  loyiha: 'Smart3D Mebel Loyihasi', sarlavha: 'SMART3D · {nom}', sana: "Sana: {d} · Valyuta: UZS (so'm)", locale: 'uz-UZ',
+  b1: '1. MEBEL MODULLARI VA MIJOZ KOTIROVKASI', b1h: ['№', 'Modul kodi', 'Modul nomi', "O'lchamlari (K×Ch×B mm)", 'Soni', 'Birlik narxi', 'Summa'],
+  b1j: "1-BO'LIM JAMI (Kotirovka):", yoq: "— yo'q —", narxYoq: "narx yo'q",
+  b2: '2. PLITA VA KROMKA MATERIALLARI', b2h: ['№', 'Material', 'Format / qalinlik', 'Birlik', 'Miqdori', 'Birlik narxi', 'Summa'], b2j: "2-BO'LIM JAMI (Materiallar):",
+  b3: '3. FURNITURA VA MEXANIZMLAR', b3h: ['№', 'Artikul / Kod', 'Furnitura nomi', 'Birlik', 'Miqdori', 'Birlik narxi', 'Summa'], b3j: "3-BO'LIM JAMI (Furnitura):",
+  b4: '4. ISHLAB CHIQARISH XIZMATLARI VA ISH HAQI', b4h: ['№', 'Kod', 'Nomi', "O'lchov birligi", 'Hajmi', 'Tarif', 'Summa'], b4j: "4-BO'LIM JAMI (Xizmatlar):",
+  b5: '5. TANNARX, FOYDA VA YAKUNIY XULOSA', b5h: ['№', 'Modda', 'Tavsif', 'Hisob asosi', '', 'Ulush (%)', 'Summa'],
+  tannarx: 'Tannarx', tannarxT: 'Materiallar + Furnitura + Xizmatlar va ish haqi', tannarxA: "2 + 3 + 4 bo'limlar",
+  ustama: 'Ustama (foyda)', ustamaT: 'Tannarxga nisbatan', ustamaA: '{p}% ustama',
+  yakuniy: "MIJOZ TO'LAYDIGAN YAKUNIY SUMMA:", toliqEmas: "* Smeta to'liq emas: {n} ta narx bazada yo'q (0 so'm deb olingan) — ", dona: 'dona'
+};
+const qoy = (s, v) => String(s).replace(/\{(\w+)\}/g, (m, k) => (v[k] != null ? v[k] : m));
+
 /**
  * 5-bo'limli to'liq Excel smetasini yaratish.
  * @param {Object} opts — {materials, priceRes, prod, projectName}  (2–5-bo'limlar — prod.lines dan)
@@ -243,7 +259,11 @@ const STYLES_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 export function buildXLSX(opts = {}) {
   const priceRes = opts.priceRes || { lines: [], total: 0 };
   const prod = opts.prod || { lines: [], total: 0 };
-  const projectName = opts.projectName || 'Smart3D Mebel Loyihasi';
+  const Y = Object.assign({}, XLSX_YORLIQ_UZ, opts.yorliq || {});
+  const projectName = opts.projectName || Y.loyiha;
+  const modulNomi = opts.modulNomi || ((l) => l.name || '');        // 1-bo'lim: modul nomi (tanlangan tilda)
+  const qatorNomi = opts.qatorNomi || ((l) => l.name);              // 2–4-bo'lim: tannarx satri nomi
+  const birlik = opts.birlik || ((u) => u);                         // varaq / m / dona / detal
 
   const rowsXml = [];
   let rowIdx = 1;
@@ -265,21 +285,13 @@ export function buildXLSX(opts = {}) {
   }
 
   // Sarlavha
-  addRow([{ v: `SMART3D · ${projectName.toUpperCase()}`, s: 1 }], 28);
-  addRow([{ v: `Sana: ${new Date().toLocaleDateString('uz-UZ')} · Valyuta: UZS (so'm)`, s: 0 }]);
+  addRow([{ v: qoy(Y.sarlavha, { nom: projectName.toUpperCase() }), s: 1 }], 28);
+  addRow([{ v: qoy(Y.sana, { d: new Date().toLocaleDateString(Y.locale) }), s: 0 }]);
   addRow([]); // bo'sh qator
 
   /* ════════ 1-BO'LIM: MEBEL MODULLARI (KOTIROVKA) ════════ */
-  addRow([{ v: "1. MEBEL MODULLARI VA MIJOZ KOTIROVKASI", s: 2 }], 22);
-  addRow([
-    { v: "№", s: 3 },
-    { v: "Modul kodi", s: 3 },
-    { v: "Modul nomi", s: 3 },
-    { v: "O'lchamlari (K×Ch×B mm)", s: 3 },
-    { v: "Soni", s: 3 },
-    { v: "Birlik narxi", s: 3 },
-    { v: "Summa", s: 3 }
-  ], 20);
+  addRow([{ v: Y.b1, s: 2 }], 22);
+  addRow(Y.b1h.map(h => ({ v: h, s: 3 })), 20);
 
   let p1Sum = 0;
   let idx = 1;
@@ -289,7 +301,7 @@ export function buildXLSX(opts = {}) {
     addRow([
       { v: idx++, s: 4 },
       { v: l.code || '', s: 4 },
-      { v: l.name || '', s: 4 },
+      { v: modulNomi(l) || '', s: 4 },
       { v: `${l.w || 0} × ${l.d || 0} × ${l.h || 0}`, s: 4 },
       { v: +l.qty || 1, s: 6 },
       { v: +l.unit_price || 0, s: 5 },
@@ -299,7 +311,7 @@ export function buildXLSX(opts = {}) {
   addRow([
     { v: "", s: 7 },
     { v: "", s: 7 },
-    { v: "1-BO'LIM JAMI (Kotirovka):", s: 7 },
+    { v: Y.b1j, s: 7 },
     { v: "", s: 7 },
     { v: "", s: 7 },
     { v: "", s: 7 },
@@ -322,7 +334,7 @@ export function buildXLSX(opts = {}) {
       sum += +l.amount || 0;
       addRow([{ v: i++, s: 4 }].concat(cellsOf(l)));
     }
-    if (!lines.length) addRow([{ v: '', s: 4 }, { v: "— yo'q —", s: 4 }]);
+    if (!lines.length) addRow([{ v: '', s: 4 }, { v: Y.yoq, s: 4 }]);
     addRow([
       { v: "", s: 7 }, { v: "", s: 7 }, { v: totalLabel, s: 7 },
       { v: "", s: 7 }, { v: "", s: 7 }, { v: "", s: 7 }, { v: sum, s: 7 }
@@ -330,47 +342,36 @@ export function buildXLSX(opts = {}) {
     addRow([]);
     return sum;
   }
-  const priceCell = (l) => (l.no_price ? { v: "narx yo'q", s: 4 } : { v: +l.unit_price || 0, s: 5 });
+  const priceCell = (l) => (l.no_price ? { v: Y.narxYoq, s: 4 } : { v: +l.unit_price || 0, s: 5 });
 
   const p2Sum = costSection(
-    "2. PLITA VA KROMKA MATERIALLARI",
-    ["№", "Material", "Format / qalinlik", "Birlik", "Miqdori", "Birlik narxi", "Summa"],
+    Y.b2, Y.b2h,
     prodLines.filter(l => /^Plita|^Kromka/.test(l.group)),
-    "2-BO'LIM JAMI (Materiallar):",
+    Y.b2j,
     (l) => {
       const m = panelMeta[l.code];
       const fmt = m && m.sheets && m.sheets[0] ? `${m.sheets[0][0]} × ${m.sheets[0][1]} · ${m.thickness} mm` : '';
-      return [{ v: l.name || l.code, s: 4 }, { v: fmt, s: 4 }, { v: l.unit || '', s: 4 },
+      return [{ v: qatorNomi(l) || l.code, s: 4 }, { v: fmt, s: 4 }, { v: birlik(l.unit || ''), s: 4 },
               { v: +l.qty || 0, s: 6 }, priceCell(l), { v: +l.amount || 0, s: 5 }];
     });
 
   const p3Sum = costSection(
-    "3. FURNITURA VA MEXANIZMLAR",
-    ["№", "Artikul / Kod", "Furnitura nomi", "Birlik", "Miqdori", "Birlik narxi", "Summa"],
+    Y.b3, Y.b3h,
     prodLines.filter(l => l.group === 'Furnitura'),
-    "3-BO'LIM JAMI (Furnitura):",
-    (l) => [{ v: l.code || '', s: 4 }, { v: l.name || '', s: 4 }, { v: l.unit || 'dona', s: 4 },
+    Y.b3j,
+    (l) => [{ v: l.code || '', s: 4 }, { v: qatorNomi(l) || '', s: 4 }, { v: birlik(l.unit || Y.dona), s: 4 },
             { v: +l.qty || 0, s: 6 }, priceCell(l), { v: +l.amount || 0, s: 5 }]);
 
   const p4Sum = costSection(
-    "4. ISHLAB CHIQARISH XIZMATLARI VA ISH HAQI",
-    ["№", "Kod", "Nomi", "O'lchov birligi", "Hajmi", "Tarif", "Summa"],
+    Y.b4, Y.b4h,
     prodLines.filter(l => l.group === 'Xizmatlar' || l.group === 'Ish haqi'),
-    "4-BO'LIM JAMI (Xizmatlar):",
-    (l) => [{ v: l.code || '', s: 4 }, { v: l.name || '', s: 4 }, { v: l.unit || '', s: 4 },
+    Y.b4j,
+    (l) => [{ v: l.code || '', s: 4 }, { v: qatorNomi(l) || '', s: 4 }, { v: birlik(l.unit || ''), s: 4 },
             { v: +l.qty || 0, s: 6 }, priceCell(l), { v: +l.amount || 0, s: 5 }]);
 
   /* ════════ 5-BO'LIM: YAKUNIY FOYDA VA TANNARX XULOSASI ════════ */
-  addRow([{ v: "5. TANNARX, FOYDA VA YAKUNIY XULOSA", s: 2 }], 22);
-  addRow([
-    { v: "№", s: 3 },
-    { v: "Modda", s: 3 },
-    { v: "Tavsif", s: 3 },
-    { v: "Hisob asosi", s: 3 },
-    { v: "", s: 3 },
-    { v: "Ulush (%)", s: 3 },
-    { v: "Summa", s: 3 }
-  ], 20);
+  addRow([{ v: Y.b5, s: 2 }], 22);
+  addRow(Y.b5h.map(h => ({ v: h, s: 3 })), 20);
 
   /* UI va 1-bo'lim bilan bir xil: tannarx = 2+3+4, mijoz narxi = tannarx × (1 + ustama) */
   const directCost = p2Sum + p3Sum + p4Sum;
@@ -381,18 +382,18 @@ export function buildXLSX(opts = {}) {
 
   addRow([
     { v: 1, s: 4 },
-    { v: "Tannarx", s: 4 },
-    { v: "Materiallar + Furnitura + Xizmatlar va ish haqi", s: 4 },
-    { v: "2 + 3 + 4 bo'limlar", s: 4 },
+    { v: Y.tannarx, s: 4 },
+    { v: Y.tannarxT, s: 4 },
+    { v: Y.tannarxA, s: 4 },
     { v: "", s: 4 },
     { v: pct(directCost), s: 4 },
     { v: directCost, s: 5 }
   ]);
   addRow([
     { v: 2, s: 4 },
-    { v: "Ustama (foyda)", s: 4 },
-    { v: "Tannarxga nisbatan", s: 4 },
-    { v: `${markupPct}% ustama`, s: 4 },
+    { v: Y.ustama, s: 4 },
+    { v: Y.ustamaT, s: 4 },
+    { v: qoy(Y.ustamaA, { p: markupPct }), s: 4 },
     { v: "", s: 4 },
     { v: pct(marginAmt), s: 4 },
     { v: marginAmt, s: 5 }
@@ -400,7 +401,7 @@ export function buildXLSX(opts = {}) {
 
   addRow([
     { v: "★", s: 8 },
-    { v: "MIJOZ TO'LAYDIGAN YAKUNIY SUMMA:", s: 8 },
+    { v: Y.yakuniy, s: 8 },
     { v: "", s: 8 },
     { v: "", s: 8 },
     { v: "", s: 8 },
@@ -409,8 +410,7 @@ export function buildXLSX(opts = {}) {
   ], 26);
   if ((prod.missing || []).length) {
     addRow([]);
-    addRow([{ v: `* Smeta to'liq emas: ${prod.missing.length} ta narx bazada yo'q (0 so'm deb olingan) — `
-      + prod.missing.map(m => m.name || m.code).join(', '), s: 0 }]);
+    addRow([{ v: qoy(Y.toliqEmas, { n: prod.missing.length }) + prod.missing.map(m => m.name || m.code).join(', '), s: 0 }]);
   }
 
   // Ustun kengliklari

@@ -520,7 +520,8 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     sheetCost += amount;
     totalSheetsCount += qty;
     sheetCostByMat[mat] = amount;
-    lines.push({ group, code: mat, name, qty, unit: 'varaq', unit_price: unitPrice, amount, no_price: !(unitPrice > 0) });
+    lines.push({ group, code: mat, name, qty, unit: 'varaq', unit_price: unitPrice, amount, no_price: !(unitPrice > 0),
+      util: nm && !opt.areaEstimate && nm.stats ? nm.stats.utilization_pct : null });   // TZ-18: hujjat tilida qayta yig'ish uchun
   }
 
   /* 2) Kromka */
