@@ -7,6 +7,7 @@ import { openSettings } from '../../settings/actions.js';
 import { goStep } from '../actions.js';
 import { narxKorinishi } from './narx.js';
 import { t } from '../../../i18n/index.js';
+import * as L from '../../../services/loyiha.js';
 
 /* TZ-19: ③ Narx — mijoz narxi, tannarx, foyda, kotirovka, xizmatlar (S3), tannarx tarkibi, raskroy varaqlari, detallar. */
 const RANGLAR = ['#FF7A45', '#5FE1C4', '#B9A6FF', '#FFB59A', '#F3F0E9'];    // dizayndagi raskroy ranglari
@@ -48,7 +49,7 @@ export function useQadamNarx() {
     toggleMissing: () => set('editor', { miss: !ed.miss }), missOpen: ed.miss,
     missing: prod ? prod.missing.map(m => ({ n: m.name || m.code, c: m.qty ? '×' + m.qty : '' })) : [],
     client: pj.client, onClient: ev => { set('project', { client: ev.target.value }); S.changed(); },
-    quote: pr ? pr.lines.map(l => ({ name: l.code + ' · ' + l.name, dim: (l.w || 0) + '×' + (l.d || 0) + '×' + (l.h || 0), n: l.qty, p: raqam(l.amount) })) : [],
+    quote: pr ? pr.lines.map(l => ({ name: l.code + ' · ' + (project.H && project.H.catalog[l.code] ? L.modulNomi(project.H, project.H.catalog[l.code]) : l.name), dim: (l.w || 0) + '×' + (l.d || 0) + '×' + (l.h || 0), n: l.qty, p: raqam(l.amount) })) : [],
     /* TZ-04: tasdiqlanmagan narx — "taxminiy" (eski saytdagidek); prisadka tanlanmagan bo'lsa — belgi (S3) */
     costRows: prod ? [[t('narx.plita'), t('narx.plita_q', { n: B.sheetsCount || 0, m: dec(B.panelAreaM2) }), prod.sheetCost],
       [t('narx.kromka') + (taxminiy.includes('Kromka') ? t('narx.taxminiy') : ''), t('narx.metr', { n: dec(B.edgeMeters) }), prod.edgeCost],

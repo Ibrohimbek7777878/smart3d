@@ -54,7 +54,7 @@ export function duplicate() {
 }
 export function askDelete() {
   const p = selected(); if (!p) return;
-  confirm({ title: t('sahna.ochirish_sarlavha'), text: t('sahna.ochirish_matn', { kod: p.frg, nom: p.name || '' }), ok: t('umumiy.ochirish'), danger: true,
+  confirm({ title: t('sahna.ochirish_sarlavha'), text: t('sahna.ochirish_matn', { kod: p.frg, nom: L.joyNomi(project.H, p, project.fr(p)) }), ok: t('umumiy.ochirish'), danger: true,
     yes: () => { L.removePlacement(project.doc, p.id); select(null); project.changed('items', true); toast(t('sahna.ochirildi')); } });
 }
 /** "Ichini ko'rish" (Q6) — faqat MebelCity modullari */

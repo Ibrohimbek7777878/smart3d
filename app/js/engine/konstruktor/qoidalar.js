@@ -10,7 +10,7 @@ export const QOIDALAR = {
     pastki: { bir: 'MC-KP-01', ikki: 'MC-KP-02', tortma: 'MC-KP-10', moyka2: 'MC-KP-08', moyka1: 'MC-KP-07', burchak: 'MC-KP-05' },
     ustki: { bir: 'MC-KU-06', ikki: 'MC-KU-07', ochiq: 'MC-KU-08', burchak: 'MC-KU-02', vityajka: 'MC-KU-10' },
     dobor: { pastki: 'SP-ST-005', ustki: 'SP-ST-006' },
-    texnika: { xolodilnik: 'SP-T-004', plita: 'SP-T-007' }
+    texnika: { xolodilnik: 'SP-T-004', plita: 'SP-T-008' }
   },
   /* o'lchamlar: MC modullari (Bazis) va sex standarti (egasi tasdiqlagan 2026-10-15) */
   pastki: { h: 708, d: 450, manba: 'MC-KP-* (Bazis): h 708, d 450 — sex standarti std[0]' },

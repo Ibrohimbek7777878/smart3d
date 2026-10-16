@@ -9,6 +9,19 @@ import { cutlist, productionCost } from '../../../app/js/engine/cutlist.js';
 import { USTKI_Z } from '../../../app/js/ai.js';
 import { projectSlots } from './hisob.js';
 import { searchMaterial } from '../../../app/js/engine/search.js';
+import { til } from '../i18n/index.js';
+
+/* TZ-18: modul va material nomi tanlangan tilda (app/data/nomlar.{ru,en}.json); o'zbekcha — asl nom. Asl fayllar o'zgarmaydi. */
+export function modulNomi(H, fr) {
+  const n = H && H.nomlar && H.nomlar[til()];
+  return (fr && n && n.modullar && n.modullar[fr.code]) || (fr && fr.name) || '';
+}
+export function materialNomi(H, code, asl) {
+  const n = H && H.nomlar && H.nomlar[til()];
+  return (n && n.materiallar && n.materiallar[code]) || asl || code;
+}
+/** joylashuv nomi: foydalanuvchi o'zgartirmagan bo'lsa (= modul nomi) — tanlangan tilda */
+export const joyNomi = (H, p, fr) => (p && p.name && fr && p.name !== fr.name ? p.name : modulNomi(H, fr) || (p && p.name) || '');
 
 /* scene.js DEFAULT_ROOM bilan bir xil (scene.js three.js'ni yuklaydi — bu modul esa Node'da ham ishlaydi) */
 export const DEFAULT_ROOM = {

@@ -12,6 +12,7 @@ import { select } from '../actions.js';
 import { scene, mountSahna, unmountSahna } from './sahna.js';
 import * as A from './actions.js';
 import { t } from '../../../i18n/index.js';
+import * as L from '../../../services/loyiha.js';
 
 /** sahna: yaratish/tozalash va ko'rinish (2D/3D, aylanish, tanlov) — 3D bilan sinxron */
 export function useSahnaView() {
@@ -69,7 +70,7 @@ export function useModulKarta() {
   return {
     show: true, deselect: () => select(null),
     sm: { openLabel: (smOpen ? t('umumiy.yopish') : t('sahna.ochish')) + (smF.category === 'drawer_base' ? t('sahna.tortmalar') : t('sahna.eshiklar')), canIns, noIns: !canIns,
-      name: sm.name || smF.name, code: sm.frg, warn: ed.warn[sm.id] || '', hasWarn: !!ed.warn[sm.id],
+      name: L.joyNomi(project.H, sm, smF), code: sm.frg, warn: ed.warn[sm.id] || '', hasWarn: !!ed.warn[sm.id],
       rows: [dimRow('w', t('sahna.eni')), dimRow('d', t('sahna.chuqurligi')), dimRow('h', t('sahna.boyi'))] },
     moveL: () => A.moveBy(-50), moveR: () => A.moveBy(50), rotate: A.rotate, dup: A.duplicate, askDel: A.askDelete,
     toggleModOpen: () => A.toggleOpen(sm.id), openInside: A.openInside

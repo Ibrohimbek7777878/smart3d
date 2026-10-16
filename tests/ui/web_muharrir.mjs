@@ -91,6 +91,6 @@ async function asosiy(page, R) {
   await shot('7-eshiklar');
 
   R.errs = errs;
-  R.ok = R.sahna && R.namunaNarxEmas && R.recalcXato === 'ok' && /\d/.test(R.narx1 || '') && R.katalog === '123' &&   // TZ-22: +2 yon dobor (SP-ST-005/006)
+  R.ok = R.sahna && R.namunaNarxEmas && R.recalcXato === 'ok' && /\d/.test(R.narx1 || '') && R.katalog === '124' &&   // TZ-22: +2 yon dobor (SP-ST-005/006)
     R.qoshildi && R.nusxa && !!R.narxBosqich.raskroy && !!R.tekshiruv && errs.length === 0;
 }

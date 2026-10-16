@@ -44,6 +44,12 @@ async function asosiy(page, R) {
     menyuYopiq: await M(() => !document.querySelector('[role=menu]')), qaytaYuklanmadi: await M(() => window.__belgi === 1),
     narx: await M(() => window.__app.res.priceRes.total), server: await M(async () => (await (await fetch('/api/settings')).json()).til) };
   await page.screenshot({ path: `${OUT}/til-1440-ru.png` });
+  /* TZ-18 5-bosqich: rus rejimida — katalogdagi modul nomlari ruscha, muharrirda o'zbekcha so'z qolmagan
+     (loyiha nomi — foydalanuvchi matni, tekshirilmaydi) */
+  const UZ = /(^|[^\p{L}])(Qadam|Mebel|Narx|Fayllar|Xona|Oshxona|pastki|ustki|so'm|Eshiklarni|Markazga|Barchasi|Korpus|Fasad|modul)(?![\p{L}])/u;
+  R.ruKatalog = await M(() => [...document.querySelectorAll('[data-panel] button.h5')].slice(0, 6).map(b => (b.innerText.split('\n')[0] || '').trim()));
+  R.ruQolgan = await M((re) => { const body = document.body.cloneNode(true); for (const el of body.querySelectorAll('input, [data-loyiha-nomi]')) el.remove();
+    return body.innerText.split('\n').filter(l => new RegExp(re, 'u').test(l)).slice(0, 8); }, UZ.source);
 
   /* Esc menyuni yopadi */
   await page.locator('button[data-til-menyu]').click(); await page.waitForTimeout(200);
@@ -76,7 +82,7 @@ async function asosiy(page, R) {
   await M(() => localStorage.setItem('s3d-til', 'uz'));
 
   R.errs = errs;
-  R.ok = R.sayt.lang === 'ru' && R.sayt.tugma === 'Русский' && yuklandi && R.menyu.join('|') === 'O\'zbekcha|Русский|English' && R.ru.lang === 'ru' && R.ru.saqlandi === 'ru' && R.ru.menyuYopiq &&
+  R.ok = R.ruKatalog.length > 0 && R.ruKatalog.every(n => /[А-Яа-яЁё]/.test(n)) && R.ruQolgan.length === 0 && R.sayt.lang === 'ru' && R.sayt.tugma === 'Русский' && yuklandi && R.menyu.join('|') === 'O\'zbekcha|Русский|English' && R.ru.lang === 'ru' && R.ru.saqlandi === 'ru' && R.ru.menyuYopiq &&
     R.ru.qaytaYuklanmadi && R.ru.narx === narxUz && R.ru.server === 'ru' && R.escYopdi && R.eslabQoldi === 'ru' && R.sozlamaTil.length === 3 && R.en === 'en' &&
     R.uz === 'uz' && !R.hScroll && errs.length === 0;
 }

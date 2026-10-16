@@ -37,7 +37,7 @@ export const project = {
 
   pl(id) { return this.doc.placements.find(p => p.id === id) || null; },
   fr(p) { return (p && this.H && this.H.catalog[p.frg]) || null; },
-  matName(code) { const m = ((this.H && this.H.materials.panel_materials) || []).find(x => x.code === code); return m ? m.name : code; },
+  matName(code) { const m = ((this.H && this.H.materials.panel_materials) || []).find(x => x.code === code); return L.materialNomi(this.H, code, m ? m.name : code); },
   /** raskroy parametrlari: standart + Sozlamalardagi (eski sayt bilan bir xil kalit) */
   nestCfg() {
     const c = Object.assign({}, this.H.nestDefaults);

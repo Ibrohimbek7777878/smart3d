@@ -60,13 +60,13 @@
    "note": "Plita ustida, devorga osiladi"
   },
   {
-   "code": "SP-T-007",
+   "code": "SP-T-008",
    "name": "Gaz plita (erkin turuvchi) 600",
    "w": 600,
    "d": 600,
    "h": 850,
    "z": 0,
-   "note": "Nishon 600×600×850 — pastki modullar orasida, stoleshnitsa shu joyda uziladi (TZ-22)"
+   "note": "Nishon 600×600×850 — pastki modullar orasida, stoleshnitsa shu joyda uziladi (TZ-22; SP-T-007 — fragments.json dagi 'Uy ish stoli', kod to'qnashmasin)"
   }
  ]
 }

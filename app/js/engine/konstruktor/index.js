@@ -3,7 +3,7 @@
  * konstruksiya(room, talab, catalog, opt) → { variantlar: [...], xato? }
  *   room   — doc.room (outline, openings: eshik/deraza, utilities: quvur)
  *   talab  — { shakl: 'auto'|'I'|'L'|'U', devor?: indeks, xolodilnik: bool, plita: 'erkin'|false, moyka: bool, ustki: bool }
- *   catalog — sex standarti qo'llangan katalog (MC-* modullari, SP-ST-005/006 dobor, SP-T-004/007 texnika)
+ *   catalog — sex standarti qo'llangan katalog (MC-* modullari, SP-ST-005/006 dobor, SP-T-004/008 texnika)
  * Har variant: { shakl, devorlar, placements, kitchen, izohlar[], ogohlantirishlar[], baho }
  *
  * Tartib: shakl → devor bo'laklari (eshik/deraza, burchak) → langarlar (muzlatgich chetda, moyka quvur yonida,

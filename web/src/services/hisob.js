@@ -24,7 +24,8 @@ export const DATA_FILES = {
   frags: 'fragments.json', mats: 'materials.json', nestDef: 'nesting-defaults.json',
   sheetCat: 'sheet-catalog.json', matIdx: 'materials-index.json', services: 'services.json',
   appliances: 'appliances.json', mcFrags: 'fragments-mc.json', sexStd: 'sex-standartlari.json',
-  furnCat: 'furnitura-catalog.json'
+  furnCat: 'furnitura-catalog.json',
+  nomlarRu: 'nomlar.ru.json', nomlarEn: 'nomlar.en.json'          // TZ-18: modul va material nomlari (rus, ingliz)
 };
 const REQUIRED = new Set(['frags', 'mats']);   // eski boot(): qolganlari .catch(() => null)
 
@@ -40,7 +41,7 @@ export async function loadData(read = (n) => fetch('data/' + n).then(r => r.json
 
 /** Katalog va ma'lumotlar — eski boot() dagi yig'ish bilan bir xil. */
 export function createHisob(data) {
-  const { frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat } = data;
+  const { frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat, nomlarRu, nomlarEn } = data;
   const furnById = {};
   for (const it of (furnCat && furnCat.items) || []) if (it.id) furnById[it.id] = it;
   const catalog = {};
@@ -63,6 +64,7 @@ export function createHisob(data) {
 
   const H = {
     catalog, materials: mats, sheetCatalog: sheetCat, services, sexStd, furnById, searchIndex, nestDefaults,
+    nomlar: { ru: nomlarRu || null, en: nomlarEn || null },     // TZ-18: modul/material nomi tanlangan tilda (L.modulNomi)
 
     /** Serverdagi sex standartlari (admin o'zgartiradi, TZ-14) — eski applyStandards bilan bir xil */
     applyStandards(std) {
