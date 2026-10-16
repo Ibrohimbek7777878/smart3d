@@ -318,3 +318,5 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 113. /home/ibrohim/Desktop/bittada sunpin/Smart3D/Smart3D_toplam_2026-10-16    mana kerlei fayllar korib chiq va hozir nima qilayotganing ham aytb ket
 
 114. davom et unda
+
+115. (2 ta skrinshot: Bazis-Cloud Web-Viewer — "Shodiyor aka ishxona kuxnya", va Smart3D muharriri — shu loyiha 3D) 1rasmdagi bazis oblakadagi korinish va erkin ayalntirsh bor nega biznikda bu narsa ochib qolgan syatin ozin frontend qismida bu anrsa bor edi va erkin aylantirsh bor edi buni ham qosh 2rasmdagi esa bizni loyhadag korinish va biznik yaxsh ustun jihatlar bolish shart backend bor funksiyalar toliq ishlash kere frontendga qosh backend bor funksiyalar chriyoli interface orqlai chiqish kere bolad
