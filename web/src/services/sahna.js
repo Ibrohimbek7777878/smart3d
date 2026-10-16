@@ -69,7 +69,7 @@ export function dizaynMavzu() {
   };
 }
 
-/** Sahna: host — dizayndagi roomHost div. o: { catalog, getPlacements, onSelect, onDrag, onRotate, onRotateEnd, onTap } */
+/** Sahna: host — dizayndagi roomHost div. o: { catalog, getPlacements, getRoom (eshik burchaklari, TZ-22), onSelect, onDrag, onRotate, onRotateEnd, onTap } */
 export function createSahna(host, o) {
   const theme = dizaynMavzu();
   const sp = createScene(host, { mode: '3d', theme, insetTop: 72 });   // 72 px — dizayndagi toolbar
@@ -77,7 +77,7 @@ export function createSahna(host, o) {
   const ctl = attachControls(sp, { hitTest: (e) => !!(items && items.hitTest(e)) });
   items = createItems(sp, {
     theme,
-    getPlacements: o.getPlacements,
+    getPlacements: o.getPlacements, getRoom: o.getRoom,
     onSelect: o.onSelect, onDrag: o.onDrag, onRotate: o.onRotate, onRotateEnd: o.onRotateEnd, onTap: o.onTap
   });
   const api = {

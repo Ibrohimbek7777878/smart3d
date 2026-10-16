@@ -2,6 +2,7 @@ import { get, set } from './index.js';
 import { loadData, createHisob } from '../services/hisob.js';
 import * as L from '../services/loyiha.js';
 import { suggestLayout } from '../../../app/js/ai.js';
+import { konstruksiya } from '../../../app/js/engine/konstruktor/index.js';
 import { report } from '../shared/lib/jurnal.js';
 import { xato } from './ui.js';
 import { t } from '../i18n/index.js';
@@ -69,14 +70,21 @@ export const project = {
 
   /** yangi hujjat: bo'sh yoki namuna bilan */
   reset(doc) { this.doc = doc || L.newDoc(); },
-  /** yangi loyiha: xona (onboarding) + oshxona tanlansa — eski saytdagi namuna (3 pastki + 2 ustki) */
+  /** yangi loyiha: xona (onboarding) + oshxona tanlansa — avtomatik konstruktor (TZ-22, AI'siz) eng yaxshi varianti;
+   *  konstruktor variant topolmasa — eski namuna (3 pastki + 2 ustki) */
   fromOnboarding(kind, room) {
     const r = L.freshRoom();
     r.outline = L.rectOutline(room.w, room.d); r.wall_height = room.h;
     const doc = L.newDoc(r);
     if (kind === 'kitchen' && this.H) {
-      doc.placements = suggestLayout({ w: room.w, d: room.d }, this.H.catalog, [{ kind: 'pastki', qty: 3 }, { kind: 'ustki', qty: 2 }])
-        .filter(p => this.H.catalog[p.frg]);
+      let v = null;
+      /* devor 0 — 3D da kameraga qaragan (orqa) devor */
+      try { v = konstruksiya(r, { devor: 0 }, this.H.catalog).variantlar[0] || null; } catch (e) { xato('S3D-KONS-104', { modul: 'konstruktor', err: e }); }
+      if (v) { doc.placements = v.placements; doc.kitchen = Object.assign(L.freshKitchen(), v.kitchen); }
+      else {
+        doc.placements = suggestLayout({ w: room.w, d: room.d }, this.H.catalog, [{ kind: 'pastki', qty: 3 }, { kind: 'ustki', qty: 2 }])
+          .filter(p => this.H.catalog[p.frg]);
+      }
     }
     this.doc = doc;
   },

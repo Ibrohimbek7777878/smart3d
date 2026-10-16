@@ -7,6 +7,7 @@
 import * as THREE from 'three';
 import { CSS2DObject } from '../vendor/three/addons/renderers/CSS2DRenderer.js';
 import { makeItemMesh } from './materials3d.js';
+import { eshikBurchaklari } from './engine/konstruktor/eshik.js';
 
 const SEL_EDGE = 0xd97706, EDGE = 0x8a8072;
 
@@ -42,6 +43,7 @@ export function createItems(sp, opts = {}) {
      cyan o'lcham yorliqlari, eshik ochilishi, detal tanlash. Berilmasa — hammasi avvalgidek. */
   const TH = opts.theme || null;
   const open = {};                    // 'modulId:eshikId' → 1 (ochiq)
+  let doorMax = {};                   // 'modulId:eshikId' → xavfsiz ochilish burchagi (radian, TZ-22)
   const openV = {};                   // joriy ochilish 0..1 (silliq)
   let focus = null;                   // { id, part } — detal kartasi
   let catalog = {};
@@ -69,7 +71,7 @@ export function createItems(sp, opts = {}) {
       if (!frag) continue;
       const w = +p.w || +frag.w, d = +p.d || +frag.d, h = +p.h || +frag.h;
       const rot = ((+p.rot || 0) % 360 + 360) % 360;
-      const mesh = makeItemMesh(THREE, frag, w, d, h, TH ? { theme: TH } : {});
+      const mesh = makeItemMesh(THREE, frag, w, d, h, TH ? { theme: TH, hinge: p.hinge } : {});
 
       // Agar oddiy mesh bo'lsa geometriyani siljitadi (Group allaqachon markazlashgan)
       if (mesh.geometry && mesh.geometry.translate) {
@@ -103,7 +105,11 @@ export function createItems(sp, opts = {}) {
       group.add(mesh);
       meshes.push(mesh);
     }
-    if (TH) { applyMovers(true); applyFocus(); }
+    /* TZ-22: har eshikning xavfsiz ochilish burchagi — devor, mebel, tutqich va qo'shni eshikka tegmaydi (100° → 90° …) */
+    if (TH) {
+      try { doorMax = eshikBurchaklari(placements || [], catalog, opts.getRoom ? opts.getRoom() : null); } catch (e) { doorMax = {}; }
+      applyMovers(true); applyFocus();
+    }
     updateHandle();
     sp._invalidate();
   }
@@ -309,7 +315,7 @@ export function createItems(sp, opts = {}) {
         const n = Math.abs(t - c) < 0.001 ? t : c + (t - c) * k;
         openV[key] = n;
         if (n !== t) busy = true;
-        if (mv.type === 'door') mv.obj.rotation.z = mv.sign * n * 1.75;
+        if (mv.type === 'door') mv.obj.rotation.z = mv.sign * n * (doorMax[key] || 1.75);
         else if (mv.type === 'drawer') mv.obj.position.y = n * mv.dist;   // TZ-09 Q5: tortma oldinga suriladi
       }
     }

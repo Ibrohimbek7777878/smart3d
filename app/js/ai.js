@@ -480,7 +480,18 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
     room.outline = [[0, 0], [room.w, 0], [room.w, room.d], [0, room.d]];
   }
 
-  const placements = suggestLayout(room, catalog, parsed.orders);
+  /* TZ-22: opts.konstruktor (yangi sayt) — oshxona avtomatik konstruktor (qoidalar, AI'siz) bilan quriladi;
+     variant topilmasa yoki oshxona bo'lmasa — avvalgi suggestLayout */
+  let placements = null, kitchen = null, izohlar = null;
+  const oshxona = /^(L|U|linear)$/.test(room.layoutType || 'linear') && !(parsed.orders || []).some(o => o.kind === 'shkaf');
+  if (typeof opts.konstruktor === 'function' && oshxona) {
+    const f = room.features || {};
+    const shakl = room.layoutType === 'L' ? 'L' : room.layoutType === 'U' ? 'U' : 'auto';
+    const v = opts.konstruktor({ outline: room.outline, wall_height: room.h || 2700, openings: room.openings || [] },
+      { shakl, xolodilnik: f.fridge !== false, plita: f.stove === false ? false : 'erkin', ustki: true });
+    if (v) { placements = v.placements; kitchen = v.kitchen; izohlar = v.izohlar; }
+  }
+  if (!placements) placements = suggestLayout(room, catalog, parsed.orders);
 
   /* So'ralgan son sig'madi — jim o'tib ketmaydi (A1) */
   const notes = [];
@@ -503,7 +514,7 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
     placements
   };
 
-  return { doc, orders: parsed.orders, unknown: parsed.unknown, notes, source, assumed };
+  return { doc, orders: parsed.orders, unknown: parsed.unknown, notes, source, assumed, kitchen, izohlar };
 }
 
 /* ── 4. Ovoz Tizimi (Web Speech API) ── */

@@ -359,7 +359,9 @@ function variantQur(sh, room, talab, Q, catalog) {
   for (const e of v.errors) ogoh.push({ kod: e.code, matn: e.message });
   for (const w of v.warnings) ogoh.push({ kod: w.code, matn: w.message });
   for (const t of eshikToqnashuvlari(placements, catalog, room, { burchak: Q.eshik.burchak })) ogoh.push({ kod: 'W_ESHIK', tur: t.tur, matn: t.a + ' ~ ' + (t.b || t.tur) });
-  const baho = eng.cost + ogoh.length * 50 + (sh.shakl === 'I' ? 0 : sh.shakl === 'L' ? 2 : 4);
+  /* talab.devor (masalan, kameraga qaragan orqa devor) — shu devorsiz variantga kichik jarima */
+  const baho = eng.cost + ogoh.length * 50 + (sh.shakl === 'I' ? 0 : sh.shakl === 'L' ? 2 : 4)
+    + (talab.devor != null && !sh.walls.some(d => d.i === +talab.devor) ? 15 : 0);
   return {
     shakl: sh.shakl, nom: SHAKL_NOMI[sh.shakl], devorlar: sh.walls.map(d => d.i), placements, kitchen, izohlar, ogohlantirishlar: ogoh, baho,
     modullar: placements.length, uzunlik: Math.round(reja.reduce((a, r) => a + r.dv.len, 0))
@@ -373,9 +375,9 @@ export function konstruksiya(room, talab = {}, catalog = {}, opt = {}) {
   const Q = qoidalar(opt.qoidalar);
   const t = Object.assign({ shakl: 'auto', xolodilnik: true, plita: 'erkin', moyka: true, ustki: true }, talab);
   const W = devorlar(room);
-  if (!W.length) return { variantlar: [], xato: 'S3D-KONS-001' };
+  if (!W.length) return { variantlar: [], xato: 'S3D-KONS-101' };
   const yoq = Object.values(Q.modul).flatMap(g => Object.values(g)).filter(c => !catalog[c]);
-  if (yoq.length) return { variantlar: [], xato: 'S3D-KONS-002', yoq };
+  if (yoq.length) return { variantlar: [], xato: 'S3D-KONS-102', yoq };
   let nomzod = shakllar(W, t, Q);
   if (t.shakl !== 'auto') nomzod = nomzod.filter(s => s.shakl === t.shakl);
   /* joy yetmasa — bosqichma-bosqich: muzlatgichsiz → muzlatgichsiz va qisqa oraliqlar → plitasiz (har biri izoh bilan) */
@@ -399,5 +401,5 @@ export function konstruksiya(room, talab = {}, catalog = {}, opt = {}) {
       return { variantlar };
     }
   }
-  return { variantlar: [], xato: 'S3D-KONS-003' };
+  return { variantlar: [], xato: 'S3D-KONS-103' };
 }

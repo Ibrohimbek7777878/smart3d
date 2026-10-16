@@ -5,6 +5,7 @@ import { toast, confirm, xato } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
 import { aiBuild, startVoice, voiceSupported } from '../../../../../app/js/ai.js';
 import { roomBBox } from '../../../../../app/js/engine/rules.js';
+import { konstruksiya } from '../../../../../app/js/engine/konstruktor/index.js';
 import { t } from '../../../i18n/index.js';
 
 /* TZ-19 (TZ-12): AI — server til modeli (kirgan va serverda yoqilgan bo'lsa) yoki qoidali tahlilchi (ai.js), ovoz — brauzer. */
@@ -34,10 +35,13 @@ export async function runAI(silent) {
   if (!text) { toast(t('ai.avval_matn')); return; }
   const H = project.H;
   try {
-    const res = await aiBuild(text, H.catalog, { llm: (t) => aiParse(t) });
+    const quvur = (project.doc.room && project.doc.room.utilities) || [];
+    /* TZ-22: oshxona — avtomatik konstruktor (qoidalar, AI'siz); AI faqat matnni tushunadi */
+    const konstruktor = (room, talab) => konstruksiya(Object.assign({}, room, { utilities: quvur }), talab, H.catalog).variantlar[0] || null;
+    const res = await aiBuild(text, H.catalog, { llm: (t) => aiParse(t), konstruktor });
     res.doc.placements = res.doc.placements.filter(p => H.catalog[p.frg]);
-    res.doc.room.utilities = (project.doc.room && project.doc.room.utilities) || [];
-    res.doc.kitchen = project.doc.kitchen || L.freshKitchen();
+    res.doc.room.utilities = quvur;
+    res.doc.kitchen = res.kitchen ? Object.assign(L.freshKitchen(), res.kitchen) : (project.doc.kitchen || L.freshKitchen());
     project.reset(res.doc);
     set('ai', { open: false, mic: false });
     set('editor', { sel: null, part: null, warn: {} });

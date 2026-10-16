@@ -18,6 +18,7 @@ export async function mountSahna(host, onTap, alive = () => true) {
   const H = project.H, ed = get().editor;
   const sahna = createSahna(host, {
     getPlacements: () => H.viewPlacements(project.doc),
+    getRoom: () => project.doc.room,
     onSelect: (id) => {
       const e = get().editor;
       if (e.sel !== id) set('editor', { sel: id || null, raw: {}, part: null });

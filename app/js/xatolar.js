@@ -3,7 +3,7 @@
  * Shakl: S3D-<BO'LIM>-<NNN>. 001–099 — server, 101–199 — brauzer. Kod o'zgarmaydi (qo'llab-quvvatlash va jurnal uchun);
  * eskirsa — o'chirilmaydi, "eski" deb belgilanadi. Matn — foydalanuvchiga ko'rinadigan o'zbekcha izoh.
  *   AUTH kirish, sessiya   PROJ loyihalar   SET sozlamalar   STD sex standartlari   CALC hisob   EXP fayllar
- *   SCENE 3D   AI AI va ovoz   DATA ma'lumot   NET tarmoq   VAL kiritish   RATE cheklov   SRV server   UI ekran   LOG jurnal */
+ *   SCENE 3D   AI AI va ovoz   KONS avtomatik konstruktor   DATA ma'lumot   NET tarmoq   VAL kiritish   RATE cheklov   SRV server   UI ekran   LOG jurnal */
 export const XATOLAR = {
   /* ── server ── */
   'S3D-AUTH-001': { http: 401, matn: 'Email yoki parol noto\'g\'ri' },
@@ -45,6 +45,10 @@ export const XATOLAR = {
   'S3D-SCENE-102': { matn: '3D ko\'rinish ochilmadi' },
   'S3D-AI-101': { matn: 'AI xato' },
   'S3D-AI-102': { matn: 'Ovoz xatosi' },
+  'S3D-KONS-101': { matn: 'Avtomatik konstruksiya: xona devorlari aniqlanmadi' },
+  'S3D-KONS-102': { matn: 'Avtomatik konstruksiya: katalogda kerakli modul yo\'q' },
+  'S3D-KONS-103': { matn: 'Avtomatik konstruksiya: bu xonaga oshxona sig\'madi' },
+  'S3D-KONS-104': { matn: 'Avtomatik konstruksiyada xato' },
   'S3D-PROJ-101': { matn: 'Bu Smart3D loyiha fayli emas' },
   'S3D-SET-101': { matn: 'Sozlama saqlanmadi' },
   'S3D-UI-101': { matn: 'Bu bo\'limda xatolik yuz berdi' },

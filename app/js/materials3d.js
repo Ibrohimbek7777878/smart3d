@@ -45,7 +45,8 @@ const SEL_COLOR = 0xd97706; // tanlanganlik sarg'ish-oltin
 export function makeItemMesh(THREE, frag, w, d, h, opts = {}) {
   const group = new THREE.Group();
   /* TZ-09 Q5: yangi sayt (mavzu) — tortmalar ham (faqat 3D; eski sayt va eksportlar — avvalgidek) */
-  const asm = getModulePanels(frag, w, d, h, opts.theme ? Object.assign({}, opts, { tortma: true }) : opts);
+  /* TZ-22: yangi sayt — eshik soni/eni Bazis detallaridan, bitta eshik petlyasi — joylashuvdan (opts.hinge) */
+  const asm = getModulePanels(frag, w, d, h, opts.theme ? Object.assign({}, opts, { tortma: true, eshiklar: true }) : opts);
   if (opts.theme) return themedMesh(THREE, frag, w, d, h, asm, opts.theme, group);
 
   // Ranglar
