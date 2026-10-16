@@ -5,7 +5,7 @@ import { suggestLayout } from '../../../app/js/ai.js';
 import { konstruksiya } from '../../../app/js/engine/konstruktor/index.js';
 import { materiallarniQosh } from '../../../app/js/engine/bazis/loyiha.js';
 import { eskiKodlar } from '../../../app/js/engine/kodlar.js';
-import { erpUla, erpSaqla } from '../services/erpMaterial.js';
+import { erpUla, erpSaqla, bazisAlmash } from '../services/erpMaterial.js';
 import { report } from '../shared/lib/jurnal.js';
 import { xato } from './ui.js';
 import { t } from '../i18n/index.js';
@@ -78,7 +78,7 @@ export const project = {
     if (this.H && this.doc) erpUla(this.H, this.doc);     // TZ-23 E: loyihada tanlangan ERP plitalari (material kodlari)
     const b = this.doc && this.doc.bazis;
     if (!b || !b.fragment || !this.H) return;
-    this.H.catalog[b.fragment.code] = b.fragment;
+    this.H.catalog[b.fragment.code] = bazisAlmash(b.fragment, b.almash);   // TZ-23 E: almashtirilgan materiallar
     materiallarniQosh(this.H.materials, b.materiallar);
   },
   /** yangi loyiha: xona (onboarding) + oshxona tanlansa — avtomatik konstruktor (TZ-22, AI'siz) eng yaxshi varianti;

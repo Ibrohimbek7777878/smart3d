@@ -88,9 +88,44 @@ async function asosiy(page, R) {
   R.detal = await M(() => window.__app.res.prod && window.__app.res.prod.breakdown && window.__app.res.prod.breakdown.sheetsCount);
   await page.waitForTimeout(1200);
   await page.screenshot({ path: `${OUT}/bazis-1440-3d.png` });
+  /* TZ-23 A5: egri panel (o'z konturi), oyoq va ruchkalar, material rangi (oq dekor) */
+  R.aniq = await M(() => {
+    const s = window.__app.sahna, fr = window.__app.doc.bazis.fragment; let shakl = 0, furn = 0; const rang = new Set();
+    s.sp.groups.items.traverse(o => {
+      if (!o.isMesh) return;
+      if (o.geometry && o.geometry.type === 'ExtrudeGeometry') shakl++;
+      if (o.userData && o.userData.kind === 'furn') furn++;
+      if (o.userData && o.userData.slot && o.material && o.material.color) rang.add(o.material.color.getHex());
+    });
+    return { shakl, furn, rang: [...rang], kutilgan: { shakl: (fr.bazisShakl || []).length, furn: (fr.bazisFurn || []).length } };
+  });
+
+  /* TZ-23 B: "Eshiklarni ochish" o'rniga — fasadsiz ko'rinish, izoh bilan */
+  R.fasadsizTugma = await click(/^Fasadsiz ko'rish$/); await page.waitForTimeout(400);
+  R.fasadsiz = await M(() => { let n = 0; window.__app.sahna.sp.groups.items.traverse(o => { if (o.isMesh && o.userData && o.userData.slot === 'fasad' && !o.visible) n++; }); return n; });
+  R.fasadsizIzoh = await has('petlya tomoni');
+  await click(/^Fasadlarni ko'rsatish$/); await page.waitForTimeout(400);
+  R.fasadQaytdi = await M(() => !window.__app.sahna.korinish.holat.fasadsiz && !document.body.innerText.includes('Fasadlarni ko\'rsatish'));
 
   /* 3) Mebel qadamida "Bazis hisoboti" qayta ochiladi */
   R.qaytaTugma = await M(() => !!document.querySelector('button[data-bazis-hisobot]'));
+
+  /* 3b) TZ-23 E: Bazis materialini almashtirish — ERP dekori → narx va kesim; asliga qaytish; qayta almashtirib saqlanadi */
+  const almashtir = async () => {
+    await page.locator('button[data-bazis-hisobot]').first().click(); await page.waitForTimeout(500);
+    await page.locator('[data-bazis-material="0"] button').click(); await page.waitForTimeout(500);
+    await page.locator('[data-varaq="material"] [data-material-royxat] button', { hasText: "so'm" }).first().click(); await page.waitForTimeout(1500);
+  };
+  await almashtir();
+  R.almash = await M(() => { const b = window.__app.doc.bazis, a = b.almash || {}, k = Object.keys(a)[0]; const fr = window.__app.H.catalog[b.fragment.code];
+    return { k, v: a[k], qismlar: fr.parts.filter(p => p.material_code === a[k]).length, narx: window.__app.res.priceRes.total }; });
+  await page.screenshot({ path: `${OUT}/bazis-1440-almash.png` });
+  await page.locator('[data-material-asli]').click(); await page.waitForTimeout(1500);
+  R.asli = await M(() => ({ almash: !!window.__app.doc.bazis.almash, narx: window.__app.res.priceRes.total }));
+  await page.locator('[data-varaq="material"] button[aria-label="Yopish"]').click(); await page.waitForTimeout(300);
+  await almashtir();
+  await page.locator('[data-varaq="material"] button[aria-label="Yopish"]').click(); await page.waitForTimeout(300);
+  R.narxAlmash = await M(() => window.__app.res.priceRes.total);
 
   /* 4) Fayllar → Excel smeta */
   await click(/^Fayllar$/); await page.waitForTimeout(800);
@@ -104,7 +139,7 @@ async function asosiy(page, R) {
   await click(/^Loyihalar$/); await page.waitForTimeout(1500);
   await page.locator('main button.h2').first().click(); await page.waitForTimeout(2500);
   for (let i = 0; i < 30 && !(await M(() => window.__app.res && window.__app.res.priceRes)); i++) await page.waitForTimeout(250);
-  R.qayta = await M(() => ({ bazis: !!window.__app.doc.bazis, narx: window.__app.res.priceRes.total }));
+  R.qayta = await M(() => ({ bazis: !!window.__app.doc.bazis, narx: window.__app.res.priceRes.total, almash: !!(window.__app.doc.bazis && window.__app.doc.bazis.almash) }));
 
   /* telefon: hisobot sig'adi */
   await page.setViewportSize({ width: 390, height: 844 }); await page.waitForTimeout(400);
@@ -116,5 +151,8 @@ async function asosiy(page, R) {
 
   R.errs = errs;
   R.ok = R.tugma && /S3D-BAZIS-10[34]/.test(R.buzuqKod || '') && R.turKod.some(k => k === 'S3D-BAZIS-101') && R.bpj === 2 && R.hisobot && R.doc.n === 1 && /^BZ-/.test(R.doc.frg) && R.doc.bazis &&
-    R.narx > 0 && R.qaytaTugma && R.excel && R.serverda >= 1 && R.qayta.bazis && Math.abs(R.qayta.narx - R.narx) < 1 && !R.hScroll && errs.length === 0;
+    R.narx > 0 && R.qaytaTugma && R.excel && R.serverda >= 1 && R.qayta.bazis && R.qayta.almash && Math.abs(R.qayta.narx - R.narxAlmash) < 1 && !R.hScroll &&
+    R.fasadsizTugma && R.fasadsiz > 0 && R.fasadsizIzoh && R.fasadQaytdi &&
+    R.aniq.shakl === R.aniq.kutilgan.shakl && R.aniq.furn > 0 && R.aniq.kutilgan.furn > 0 && R.aniq.rang.includes(0xeeece6) &&
+    /^ERP-/.test(R.almash.v || '') && R.almash.qismlar > 0 && R.almash.narx !== R.narx && !R.asli.almash && Math.abs(R.asli.narx - R.narx) < 1 && errs.length === 0;
 }

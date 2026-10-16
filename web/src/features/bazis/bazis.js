@@ -5,6 +5,8 @@ import { toast, xato, openSheet } from '../../store/ui.js';
 import * as L from '../../services/loyiha.js';
 import { raqam } from '../../shared/lib/format.js';
 import { t } from '../../i18n/index.js';
+import { openBazisMaterial } from '../editor/catalog/material.js';
+import { dekorRang } from '../../../../app/js/engine/rang.js';
 
 /* TZ-21: Bazis faylini yuklash (.b3d, .fr3d, .bpj) — brauzerda o'qiladi (xom fayl serverga yuborilmaydi), natija — yangi loyiha:
  * Bazis'dagi mebel bitta joylashuv (o'lchami qat'iy), kesim ro'yxati, raskroy, smeta va fayllar odatdagidek.
@@ -80,11 +82,16 @@ export function useBazisVaraq() {
       [t('bazis.furnitura'), t('bazis.turi_n', { n: h.furnitura })],
       [t('bazis.mahkamlagich'), t('bazis.turi_n', { n: h.mahkamlagich })]
     ],
+    /* TZ-23 E: har Bazis materiali — almashtirish mumkin (ERP dekori yoki umumiy tur); rang — nomidan (taxminiy) */
     materiallar: h.materiallar.map(m => {
       const x = mat.find(y => y.code === m.code) || {};
-      return { nom: m.name, d: t('bazis.material_d', { t: m.thickness, n: m.detal, v: (x.sheets && x.sheets[0] ? x.sheets[0].join('×') : '—'), a: m.asos }) };
+      const yk = b.almash && b.almash[m.code], y = yk ? mat.find(z => z.code === yk) : null;
+      const r = dekorRang(y ? y.name : m.name);
+      return { nom: m.name, d: t('bazis.material_d', { t: m.thickness, n: m.detal, v: (x.sheets && x.sheets[0] ? x.sheets[0].join('×') : '—'), a: m.asos }),
+        yangi: y ? t('bazis.almashtirildi', { nom: y.name }) : null, rang: r ? '#' + r.rang.toString(16).padStart(6, '0') : null,
+        almashtir: () => openBazisMaterial(m.code) };
     }),
     chiqarildi: Object.entries(h.chiqarildi || {}).map(([k, v]) => ({ nom: t('bazis.chiq_' + k), n: v.soni, misol: v.misol.join(', ') })),
-    eslatma: [t('bazis.eslatma_narx'), t('bazis.eslatma_teshik')].concat(h.kesildi3d ? [t('bazis.eslatma_3d')] : []).concat(h.usul === 'tekis' ? [t('bazis.eslatma_tekis')] : [])
+    eslatma: [t('bazis.eslatma_narx'), t('bazis.eslatma_teshik'), t('bazis.eslatma_rang')].concat(h.kesildi3d ? [t('bazis.eslatma_3d')] : []).concat(h.usul === 'tekis' ? [t('bazis.eslatma_tekis')] : [])
   };
 }

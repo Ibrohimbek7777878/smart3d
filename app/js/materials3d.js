@@ -173,13 +173,31 @@ function themedMesh(THREE, frag, w, d, h, asm, theme, group, rang) {
   if (R.orqa) mats.orqa = dekor(R.orqa);
   mats.polka = R.polka ? dekor(R.polka) : mats.korpus;
   mats.stol = R.stol ? dekor(R.stol) : mats.korpus;
+  /* TZ-23 A5: Bazis paneli — o'z materiali rangida (nomidan, taxminiy; almashtirilgan bo'lsa — yangisi: rang.bazis[mi]) */
+  const bzMat = new Map();
+  const bazisMat = (p) => {
+    const r = (R.bazis && R.bazis[p.mi]) || p.rang;
+    if (!r || !theme.rangMat || (p.slot === 'fasad' && glass)) return null;
+    const k = r.rang + (r.yogoch ? 'y' : '');
+    if (!bzMat.has(k)) bzMat.set(k, theme.rangMat(r));
+    return bzMat.get(k);
+  };
   const hitGeo = new THREE.BoxGeometry(w, d, h);
   const hitMesh = new THREE.Mesh(hitGeo, new THREE.MeshBasicMaterial({ visible: false }));
   hitMesh.userData = { kind: 'hitBox' };
   group.add(hitMesh);
   const movers = [], drawers = {};
   for (const p of asm.panels) {
-    const mat = p.slot === 'fasad' ? mats.fasad : p.slot === 'orqa' ? mats.orqa : p.slot === 'polka' ? mats.polka : p.slot === 'stoleshnitsa' ? mats.stol : mats.korpus;
+    const mat = (p.code === 'bazis' && bazisMat(p)) || (p.slot === 'fasad' ? mats.fasad : p.slot === 'orqa' ? mats.orqa : p.slot === 'polka' ? mats.polka : p.slot === 'stoleshnitsa' ? mats.stol : mats.korpus);
+    if (p.shakl) {                                            // TZ-23 A5: egri / o'yiqli Bazis paneli — o'z konturi bo'yicha
+      const mesh = shaklMesh(THREE, p.shakl, mat);
+      if (mesh) {
+        mesh.castShadow = true; mesh.receiveShadow = true;
+        mesh.userData = { panelId: p.id, name: p.name, slot: p.slot, part: { id: p.id, name: p.name, slot: p.slot, size: [p.w, p.d, p.h] } };
+        group.add(mesh);
+        continue;
+      }
+    }
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(p.w, p.d, p.h), mat);
     mesh.castShadow = true; mesh.receiveShadow = true;
     mesh.userData = { panelId: p.id, name: p.name, slot: p.slot, part: { id: p.id, name: p.name, slot: p.slot, size: [p.w, p.d, p.h] } };
@@ -228,9 +246,47 @@ function themedMesh(THREE, frag, w, d, h, asm, theme, group, rang) {
     }
     parent.add(mesh);
   }
+  for (const f of asm.furn || []) group.add(furnMesh(THREE, f, mats.handle));   // TZ-23 A5: Bazis oyoq va ruchkalari
   group.userData = {
     kind: 'item', code, name: frag ? frag.name : '', category: frag ? frag.category : 'other',
     w, d, h, panelsCount: asm.panels.length, doorsCount: asm.doors.length, movers, themed: true
   };
   return group;
+}
+
+/* TZ-23 A5: Bazis paneli konturi → ExtrudeGeometry. s: { o: boshi, m: [o'qX, o'qY, o'qZ] (9), t, p: [x, y …], h: [[x, y …]] }.
+ * Chap qo'lli o'qlar (det < 0) — Y teskari (shakl ham), yuzalar to'g'ri tomonga qaraydi. */
+function shaklMesh(THREE, s, mat) {
+  const m = s.m, ax = m.slice(0, 3), az = m.slice(6, 9);
+  let ay = m.slice(3, 6);
+  const det = ax[0] * (ay[1] * az[2] - ay[2] * az[1]) - ax[1] * (ay[0] * az[2] - ay[2] * az[0]) + ax[2] * (ay[0] * az[1] - ay[1] * az[0]);
+  const fy = det < 0 ? -1 : 1;
+  if (fy < 0) ay = ay.map(v => -v);
+  const yol = (a) => { const v = []; for (let k = 0; k + 1 < a.length; k += 2) v.push(new THREE.Vector2(a[k], fy * a[k + 1])); return v; };
+  const tash = yol(s.p);
+  if (tash.length < 3) return null;
+  const shape = new THREE.Shape(tash);
+  for (const h of s.h || []) { const v = yol(h); if (v.length >= 3) shape.holes.push(new THREE.Path(v)); }
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: s.t, bevelEnabled: false, curveSegments: 1 });
+  geo.applyMatrix4(new THREE.Matrix4().set(ax[0], ay[0], az[0], s.o[0], ax[1], ay[1], az[1], s.o[1], ax[2], ay[2], az[2], s.o[2], 0, 0, 0, 1));
+  return new THREE.Mesh(geo, mat);
+}
+
+/* TZ-23 A5: oyoq (silindr Ø30, o'qZ bo'ylab l mm) va ruchka (o'qX bo'ylab l+24 mm planka, fasaddan 28 mm, 2 ustuncha) — soddalashtirilgan */
+function furnMesh(THREE, f, mat) {
+  const g = new THREE.Group();
+  const X = new THREE.Vector3(...f.ax).normalize(), Z = new THREE.Vector3(...f.az).normalize(), Y = new THREE.Vector3().crossVectors(Z, X).normalize();
+  g.matrixAutoUpdate = true;
+  g.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(X, Y, Z));
+  g.position.set(f.o[0], f.o[1], f.o[2]);
+  const qism = (geo, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; m.userData = { kind: 'furn', tur: f.tur }; g.add(m); };
+  if (f.tur === 'oyoq') {
+    const c = new THREE.CylinderGeometry(15, 15, f.l, 16);
+    c.rotateX(Math.PI / 2);                                   // silindr o'qi — lokal Z
+    qism(c, 0, 0, f.l / 2);
+  } else {
+    qism(new THREE.BoxGeometry(f.l + 24, 12, 10), 0, 0, 28);
+    for (const s of [-1, 1]) qism(new THREE.BoxGeometry(10, 10, 24), s * f.l / 2, 0, 12);
+  }
+  return g;
 }

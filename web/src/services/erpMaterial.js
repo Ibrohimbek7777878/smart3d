@@ -53,6 +53,7 @@ export function erpQosh(H, doc, sh) {
 export function erpSaqla(H, doc, kodlar) {
   const used = new Set((kodlar || []).filter(c => /^ERP-/.test(c || '')));
   for (const p of (doc && doc.placements) || []) for (const c of Object.values(p.slots || {})) if (/^ERP-/.test(c || '')) used.add(c);
+  for (const c of Object.values((doc && doc.bazis && doc.bazis.almash) || {})) if (/^ERP-/.test(c || '')) used.add(c);
   const pl = (H && H.materials && H.materials.panel_materials) || [], eski = (doc && doc.erpMat) || {}, yangi = {};
   for (const c of used) { const m = eski[c] || pl.find(x => x.code === c); if (m) yangi[c] = m; }
   if (Object.keys(yangi).length) doc.erpMat = yangi; else delete doc.erpMat;
@@ -65,18 +66,31 @@ export function materialRang(H, code) {
   return m ? dekorRang(m.name) : null;
 }
 
+/** TZ-23 E: Bazis materialini almashtirish — fragment nusxasi, detallar yangi materialda (asl fragment o'zgarmaydi).
+ *  almash — { 'BZM-…': 'ERP-…' | 'LDSP16' … } (doc.bazis.almash) */
+export function bazisAlmash(frag, almash) {
+  if (!frag || !almash || !Object.keys(almash).length) return frag;
+  return Object.assign({}, frag, { parts: (frag.parts || []).map(p => (almash[p.material_code] ? Object.assign({}, p, { material_code: almash[p.material_code] }) : p)) });
+}
+
 const QISM_SLOT = { korpus: 'korpus', polka: 'polka', fasad: 'fasad', orqa: 'orqa', stol: 'stoleshnitsa' };
 /** 3D uchun: joylashuvlar nusxasi + _rang { korpus, polka, fasad, orqa, stol } (modul tanlovi, bo'lmasa loyihadagi;
- *  nomi rangni aytmaydigan material — yo'q, dizayndagi standart ko'rinish). pj — { matCode, polkaCode, fasadCode, orqaCode, stolCode } */
-export function joyRanglari(H, placements, pj) {
+ *  nomi rangni aytmaydigan material — yo'q, dizayndagi standart ko'rinish). pj — { matCode, polkaCode, fasadCode, orqaCode, stolCode }.
+ *  bazis (doc.bazis) — almashtirilgan Bazis materiallari: _rang.bazis { [bazisMat indeksi]: rang } */
+export function joyRanglari(H, placements, pj, bazis) {
   const kesh = new Map(), rangi = (c) => { if (!c) return null; if (!kesh.has(c)) kesh.set(c, materialRang(H, c)); return kesh.get(c); };
   const loyiha = { korpus: pj.matCode, polka: pj.polkaCode || pj.matCode, fasad: pj.fasadCode, orqa: pj.orqaCode, stol: pj.stolCode };
+  let bz = null;
+  if (bazis && bazis.fragment && bazis.almash) {
+    (bazis.fragment.bazisMat || []).forEach(([, kod], i) => { const v = kod && bazis.almash[kod] && rangi(bazis.almash[kod]); if (v) (bz || (bz = {}))[i] = v; });
+  }
   return (placements || []).map(p => {
     let r = null;
     for (const [q, s] of Object.entries(QISM_SLOT)) {
       const v = rangi((p.slots && p.slots[s]) || loyiha[q]);
       if (v) (r || (r = {}))[q] = v;
     }
+    if (bz && bazis.fragment.code === p.frg) (r || (r = {})).bazis = bz;
     return r ? Object.assign({}, p, { _rang: r }) : p;
   });
 }

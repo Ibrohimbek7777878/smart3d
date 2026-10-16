@@ -14,7 +14,7 @@ const QOIDA = [
   [/капучино|латте|cappuccino|latte|мокко|mocha/, 0xb39a7e, 'bej', false],
   [/бежев|беж|ваниль|крем|слоновая|ivory|cream|beige|vanil/, 0xe0d4bd, 'bej', false],
   [/бел|white|oq\b|snow|арктик|arctic/, 0xeeece6, 'oq', false],
-  [/светло-сер|св\.сер|light grey|light gray/, 0xc3c4c4, 'kulrang', false],
+  [/светло-сер|св\.сер|light grey|light gray|сильвер|silver|серебр/, 0xc3c4c4, 'kulrang', false],
   [/сер|grey|gray|kulrang|бетон|beton|concrete|цемент/, 0x9a9b9c, 'kulrang', false],
   [/орех|walnut|yong'oq/, 0x7d5536, 'yogoch_toq', true],
   [/вишн|cherry|олив|махагон|mahogany/, 0x8e4a2c, 'yogoch_toq', true],

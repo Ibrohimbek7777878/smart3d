@@ -21,6 +21,7 @@
  */
 import { evalFormula } from './expr.js';
 import { hasJoy, joyPanellar } from './joy.js';
+import { dekorRang } from './rang.js';
 
 const TORTMA_RE = /ящик|tortma|fasad_kichik|fasad_katta/i;
 const ESHIK_RE = /двер|eshik/i;
@@ -66,10 +67,19 @@ export function eshikTuzilmasi(frag, w, d, h, t = 16) {
 }
 
 export function getModulePanels(frag, w, d, h, opts = {}) {
-  /* TZ-21: Bazis faylidan yuklangan loyiha — panellar fayldagi joyida (engine/bazis/loyiha.js: [x, y, z, w, d, h, slot]) */
+  /* TZ-21: Bazis faylidan yuklangan loyiha — panellar fayldagi joyida (engine/bazis/loyiha.js: [x, y, z, w, d, h, slot, mi]).
+     TZ-23 A5: material nomi va dekor rangi (taxminiy), egri panel — o'z konturi (shakl), oyoq va ruchka (furn) */
   if (frag && Array.isArray(frag.bazis3d)) {
-    const SL = ['korpus', 'fasad', 'orqa'];
-    return { panels: frag.bazis3d.map((b, i) => ({ id: 'bz' + i, name: frag.name, slot: SL[b[6]] || 'korpus', code: 'bazis', x: b[0], y: b[1], z: b[2], w: b[3], d: b[4], h: b[5] })), doors: [] };
+    const SL = ['korpus', 'fasad', 'orqa'], BM = frag.bazisMat || [], rangi = new Map();
+    const dekor = (mi) => { if (!rangi.has(mi)) rangi.set(mi, BM[mi] ? dekorRang(BM[mi][0]) : null); return rangi.get(mi); };
+    const shakl = new Map((frag.bazisShakl || []).map(s => [s[0], { o: s[1], m: s[2], t: s[3], p: s[4], h: s[5] || [] }]));
+    const panels = frag.bazis3d.map((b, i) => {
+      const mi = b[7] == null ? -1 : b[7], m = BM[mi];
+      return { id: 'bz' + i, name: frag.name, slot: SL[b[6]] || 'korpus', code: 'bazis', x: b[0], y: b[1], z: b[2], w: b[3], d: b[4], h: b[5],
+        mi, material: m ? m[0] : '', rang: dekor(mi), shakl: shakl.get(i) || null };
+    });
+    const furn = (frag.bazisFurn || []).map(f => ({ tur: f[0] ? 'ruchka' : 'oyoq', o: [f[1], f[2], f[3]], ax: [f[4], f[5], f[6]], az: [f[7], f[8], f[9]], l: f[10] }));
+    return { panels, doors: [], furn };
   }
   const t = opts.thickness || 16;       // panel qalinligi (standart 16mm yoki 18mm)
   const cat = (frag && frag.category) || 'cabinet';

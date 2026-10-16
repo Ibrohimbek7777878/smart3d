@@ -103,6 +103,42 @@ if (existsSync(BPJ1)) {
   ok('1.bpj (haqiqiy eksport): 125 panel, materiallar BPJ hisobi bilan bir xil (89 / 25 / 11)', r1.hisobot.detal === 125 && Object.values(mm).sort((a, b) => b - a).join() === '89,25,11', JSON.stringify(mm));
 } else skip('1.bpj (mebelcity-platform yo\'q)');
 
+/* ── 3c) TZ-23 A5: 3D aniqligi — egri kontur (elementlar tartibsiz), o'yiq, material rangi, oyoq va ruchka ── */
+const { docXatosi } = await import('../server/himoya.js');
+/** shakl nuqtalari (z = 0 va t) o'qlar bilan o'girilganda — bazis3d qutisiga tushadimi (tartib va o'qlar to'g'riligi) */
+const shaklQutida = (fr, tol = 2) => (fr.bazisShakl || []).every(([i, o, m, t, pts]) => {
+  const b = fr.bazis3d[i], lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+  for (let k = 0; k < pts.length; k += 2) for (const z of [0, t]) for (let a = 0; a < 3; a++) {
+    const v = o[a] + pts[k] * m[a] + pts[k + 1] * m[3 + a] + z * m[6 + a]; lo[a] = Math.min(lo[a], v); hi[a] = Math.max(hi[a], v);
+  }
+  return [0, 1, 2].every(a => Math.abs(lo[a] - (b[a] - b[3 + a] / 2)) <= tol && Math.abs(hi[a] - (b[a] + b[3 + a] / 2)) <= tol);
+});
+const L = (x1, y1, x2, y2) => ({ type: 'line', p1: [x1, y1], p2: [x2, y2] });
+const egriObs = [
+  /* stoleshnitsa: burchagi yumaloq (R 50), elementlar aralash tartibda va biri teskari; moyka o'yig'i */
+  { modelCode: B.PANEL_CODE, name: 'Столешница', material: 'Столешница 26мм', thickness: 26,
+    contour_outer: [L(0, 600, 0, 0), { type: 'arc', center: [550, 550], p1: [600, 550], p2: [550, 600], dir: true }, L(0, 0, 600, 0), L(600, 0, 600, 550), L(550, 600, 0, 600)],
+    contour_inner: [[L(100, 100, 400, 100), L(400, 100, 400, 400), L(400, 400, 100, 400), L(100, 400, 100, 100)]],
+    tf: { pos: [0, 850, 0], oq: [[1, 0, 0], [0, 0, -1], [0, 1, 0]] } },
+  { modelCode: B.PANEL_CODE, name: 'bok', material: 'ЛДСП Кроношпан 4,575 Белый гладкий 16мм', thickness: 16,
+    contour_outer: [L(0, 0, 600, 0), L(600, 0, 600, 750), L(600, 750, 0, 750), L(0, 750, 0, 0)], tf: { pos: [0, 100, 0], oq: [[0, 0, -1], [0, 1, 0], [1, 0, 0]] } },
+  { modelCode: 3001, name: 'nojka nikel 100 mm', tf: { pos: [100, 100, -100], oq: [[0, 0, -1], [1, 0, 0], [0, -1, 0]] } },
+  { modelCode: 3001, name: 'Ручка 160 мм', tf: { pos: [300, 500, 10], oq: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } },
+  { modelCode: 2004, name: 'Ручка-профиль Gola', tf: { pos: [300, 700, 10], oq: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } },
+  { modelCode: 3001, name: 'Евро 51мм Алкан', tf: { pos: [5, 5, 5], oq: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+];
+const eg = bazisLoyiha(egriObs, { fayl: 'egri.b3d' }).fragment;
+const sh0 = (eg.bazisShakl || [])[0];
+ok('A5: egri stoleshnitsa — o\'z konturi (tartibsiz elementlar ulandi, yoy bo\'laklandi, moyka o\'yig\'i), to\'g\'ri burchakli yon devor — quti',
+  (eg.bazisShakl || []).length === 1 && sh0[0] === 0 && sh0[4].length / 2 > 6 && sh0[5].length === 1 && sh0[5][0].length === 8, JSON.stringify(eg.bazisShakl).slice(0, 200));
+ok('A5: shakl o\'qlari to\'g\'ri — nuqtalar panel qutisiga tushadi', shaklQutida(eg));
+ok('A5: material — har panelga indeks (nom va BZM kodi)', eg.bazisMat.length === 2 && eg.bazis3d.every(b => eg.bazisMat[b[7]]) && /^BZM-/.test(eg.bazisMat[eg.bazis3d[1][7]][1]));
+const fu = eg.bazisFurn || [];
+ok('A5: oyoq (100 mm, pastga) va ruchka (160 mm); profil-ruchka va mahkamlagich — yo\'q', fu.length === 2 && fu[0][0] === 0 && fu[0][10] === 100 && Math.abs(fu[0][9] + 1) < 1e-6 && fu[1][0] === 1 && fu[1][10] === 160, JSON.stringify(fu));
+const ea = getModulePanels(eg, eg.w, eg.d, eg.h, {});
+ok('A5: 3D — shakl, dekor rangi (oq), furnitura assembler orqali', !!ea.panels[0].shakl && ea.panels[1].rang && ea.panels[1].rang.guruh === 'oq' && ea.furn.length === 2 && ea.furn[0].tur === 'oyoq');
+ok('A5: server cheklovlari (himoya.js) — o\'tadi', !docXatosi({ v: 1, room: {}, placements: [], bazis: { fragment: eg } }));
+
 /* ── 4) mahalliy ma'lumot (bo'lsa) ── */
 const fayllar = (dir) => { const out = []; (function w(d) { for (const f of readdirSync(d)) { const p = join(d, f); statSync(p).isDirectory() ? w(p) : /\.(b3d|fr3d)$/i.test(f) && out.push(p); } })(dir); return out; };
 const MC = join(ROOT, '..', 'Smart3D', 'data1', 'modulniy', 'modulniy');
@@ -180,6 +216,27 @@ if (topF.length && existsSync(join(TOPLAM, '01_arra'))) {
   ok(`har buyurtmada kamida 70% (eng pasti ${(100 * eng).toFixed(0)}% — Bazis va GibLab fayllari boshqa versiya bo'lishi mumkin)`, eng >= 0.7);
   ok(`eng uzoq fayl ${sekin} ms (< 3000)`, sekin < 3000);
 } else skip('30 ta haqiqiy buyurtma (Smart3D_toplam_2026-10-16 yo\'q)');
+
+if (topF.length) {
+  /* TZ-23 A5: haqiqiy fayllarda — egri panellar o'z konturi bilan, oyoq va ruchkalar, server cheklovlari */
+  let sh = 0, oy = 0, ru = 0, qutida = 0, xatoli = [], yonida = 0;
+  /* furnitura nuqtasi biror panel yonida (±30 mm) — joyi to'g'ri o'qilgan */
+  const yon = (fr, f) => fr.bazis3d.some(b => [0, 1, 2].every(a => Math.abs(f[1 + a] - b[a]) <= b[3 + a] / 2 + 30));
+  for (const f of topF.filter(x => /\.b3d$/i.test(x))) {
+    const r = daraxt(new Uint8Array(readFileSync(f)), { inflate });
+    if (!r || !r.objects) continue;
+    const rs = bazisLoyiha(r.objects, { fayl: 'x.b3d' });
+    if (rs.xato) continue;
+    const fr = rs.fragment;
+    sh += (fr.bazisShakl || []).length; oy += (fr.bazisFurn || []).filter(x => x[0] === 0).length; ru += (fr.bazisFurn || []).filter(x => x[0] === 1).length;
+    yonida += (fr.bazisFurn || []).filter(x => yon(fr, x)).length;
+    if (shaklQutida(fr)) qutida++; else xatoli.push(f.split('/').pop());
+    const xe = docXatosi({ v: 1, room: {}, placements: [], bazis: { fragment: fr, materiallar: rs.materiallar, hisobot: rs.hisobot } });
+    if (xe) xatoli.push(f.split('/').pop() + ': ' + xe);
+  }
+  ok(`A5: ${topF.length} ta haqiqiy faylda ${sh} egri panel, ${oy} oyoq, ${ru} ruchka; shakllar qutida, server cheklovlari ichida`, sh >= 100 && oy >= 150 && ru >= 150 && !xatoli.length, xatoli.slice(0, 3).join('; '));
+  ok(`A5: oyoq va ruchkalar panel yonida — ${yonida}/${oy + ru}`, yonida === oy + ru, yonida + '/' + (oy + ru));
+} else skip('A5 haqiqiy fayllar (Smart3D_toplam_2026-10-16 yo\'q)');
 
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);
 process.exit(fail ? 1 : 0);

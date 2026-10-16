@@ -32,6 +32,8 @@ export function useSahnaView() {
   useEffect(() => { if (scene.sahna) scene.sahna.select(ed.sel); }, [ed.sel]);
   const it = scene.sahna && scene.sahna.items;
   const anyOpen = it ? it.moverKeys(null).some(k => it.isOpen(k)) : false;
+  /* TZ-23 B: Bazis loyihasida eshik ochilmaydi (faylda petlya tomoni yo'q) — o'rniga fasadsiz ko'rinish */
+  const kr = useSlice('korinish'), bazis = !!(project.doc && project.doc.bazis);
   return {
     roomHost: host, roomOv: ov, notLoaded: !ed.sceneOn,
     loadText: ed.sceneErr ? xatoMatni('S3D-SCENE-101') : data.err ? xatoMatni('S3D-DATA-101') : t('sahna.yuklanmoqda'),
@@ -39,7 +41,8 @@ export function useSahnaView() {
     set2D: () => A.setView('2d'), set3D: () => A.setView('3d'), toggleSpin: A.toggleSpin, center: A.center,
     shot: () => faylYukla('rasm'),
     vrOk: ed.vrOk, vr: A.vr,
-    toggleAllOpen: () => A.toggleOpen(null), openAllLabel: anyOpen ? t('sahna.hammasini_yopish') : t('sahna.eshiklarni_ochish'),
+    toggleAllOpen: bazis ? A.bazisFasadsiz : () => A.toggleOpen(null),
+    openAllLabel: bazis ? (kr.fasadsiz ? t('sahna.fasadlarni_korsatish') : t('sahna.fasadsiz_korish')) : anyOpen ? t('sahna.hammasini_yopish') : t('sahna.eshiklarni_ochish'),
     openAi
   };
 }

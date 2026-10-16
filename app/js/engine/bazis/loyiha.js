@@ -84,6 +84,52 @@ export function konturBox(els) {
 
 const ESHIK = /двер|dver|eshik|фасад|fasad|ящик/i;
 const PANEL3D_MAX = 2000;
+/* TZ-23 A5: 3D aniqligi — server cheklovlari ichida (ro'yxat ≤ 2000, jami tugun ≤ 60000; himoya.js LIM) */
+const SHAKL_MAX = 300, SHAKL_NUQTA = 12000, NUQTA_MAX = 400, FURN_MAX = 400;
+const OYOQ = /nojka|ножк|опор|oyoq/i, RUCHKA = /ручк|ruchk|tutqich/i, PROFIL = /профил|profil|gola/i;
+const r1 = (v) => Math.round(v * 10) / 10, r4 = (v) => Math.round(v * 1e4) / 1e4;
+/** Bazis vektori → Smart3D (x = −X, y = Z, z = Y) */
+const S3 = (v) => [-v[0], v[2], v[1]];
+
+/** Bazis kontur elementlarini tartibsiz saqlaydi — uchma-uch ulab yopiq zanjir (kerak bo'lsa element teskari: yoyda yo'nalish ham);
+ *  ulanmasa — null (panel quti bo'lib qoladi) */
+function zanjir(els, tol = 1) {
+  if (!els || els.length < 2) return null;
+  const yaqin = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]) <= tol;
+  const teskari = (e) => Object.assign({}, e, { p1: e.p2, p2: e.p1 }, e.type === 'arc' ? { dir: !e.dir } : {});
+  const qoldi = els.slice(1), out = [els[0]];
+  while (qoldi.length) {
+    const end = out[out.length - 1].p2;
+    let k = qoldi.findIndex(e => yaqin(e.p1, end)), e;
+    if (k >= 0) e = qoldi[k];
+    else { k = qoldi.findIndex(x => yaqin(x.p2, end)); if (k < 0) return null; e = teskari(qoldi[k]); }
+    qoldi.splice(k, 1); out.push(e);
+  }
+  return yaqin(out[out.length - 1].p2, out[0].p1) ? out : null;
+}
+
+/** kontur → ko'pburchak (yoylar bo'laklanadi — b3d.js contourPolygon kabi); yopiq bo'lmasa — null */
+function konturNuqtalar(els0) {
+  const els = zanjir((els0 || []).filter(e => e && e.p1 && e.p2));
+  if (!els) return null;
+  const pts = [];
+  for (const e of els) {
+    if (!e || !e.p1 || !e.p2) return null;
+    pts.push([e.p1[0], e.p1[1]]);
+    if (e.type !== 'arc' || !e.center) continue;
+    const cx = e.center[0], cy = e.center[1], rr = Math.hypot(e.p1[0] - cx, e.p1[1] - cy);
+    let a1 = Math.atan2(e.p1[1] - cy, e.p1[0] - cx), a2 = Math.atan2(e.p2[1] - cy, e.p2[0] - cx);
+    if (e.dir) { while (a2 <= a1) a2 += Math.PI * 2; } else { while (a2 >= a1) a2 -= Math.PI * 2; }
+    const n = Math.max(2, Math.min(32, Math.ceil(Math.abs(a2 - a1) / (Math.PI / 16))));
+    for (let k = 1; k < n; k++) { const a = a1 + (a2 - a1) * k / n; pts.push([cx + rr * Math.cos(a), cy + rr * Math.sin(a)]); }
+  }
+  const a = els[0].p1, b = els[els.length - 1].p2;
+  if (pts.length < 3 || Math.hypot(a[0] - b[0], a[1] - b[1]) > 1) return null;
+  return pts;
+}
+/** to'g'ri to'rtburchakmi (4 chiziq, o'qlarga parallel) — quti yetarli */
+const tortburchak = (els) => els.length === 4 && els.every(e => e.type === 'line' && (Math.abs(e.p1[0] - e.p2[0]) < 0.5 || Math.abs(e.p1[1] - e.p2[1]) < 0.5));
+const mm = (nom, d) => { const m = String(nom || '').match(/(\d{2,3})\s*(?:mm|мм)/i); return m ? +m[1] : d; };
 
 /**
  * @param {Array} objects — daraxt.js / b3d.js obyektlari
@@ -94,7 +140,8 @@ export function bazisLoyiha(objects, o = {}) {
   const panels = (objects || []).filter(x => x.modelCode === PANEL_CODE && x.contour_outer && x.contour_outer.length);
   const matlar = new Map(), kromkalar = new Map(), guruh = new Map();
   const chiqarildi = {};
-  const boxes = [];
+  const boxes = [], shakllar = [], matIdx = new Map(), bazisMat = [];
+  let nuqtaJami = 0;
   let mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
 
   for (const p of panels) {
@@ -114,7 +161,24 @@ export function bazisLoyiha(objects, o = {}) {
     const a0 = [-c1[0], c0[2], c0[1]], a1 = [-c0[0], c1[2], c1[1]];
     for (let i = 0; i < 3; i++) { mn[i] = Math.min(mn[i], a0[i]); mx[i] = Math.max(mx[i], a1[i]); }
     const slot = mt.tur === 'hdf' ? 'orqa' : (ESHIK.test(nom) || mt.tur === 'akril') ? 'fasad' : 'korpus';
-    if (boxes.length < PANEL3D_MAX) boxes.push({ a0, a1, slot, nom });
+    const mkod = mt.ishlab ? 'BZM-' + fnv(mnom + '|' + t) : null;
+    /* TZ-23 A5: material (3D rangi va almashtirish uchun) — [nom, BZM kodi] */
+    const mk = mnom + '|' + (mkod || '');
+    if (!matIdx.has(mk) && bazisMat.length < PANEL3D_MAX) { matIdx.set(mk, bazisMat.length); bazisMat.push([mnom, mkod]); }
+    if (boxes.length < PANEL3D_MAX) {
+      boxes.push({ a0, a1, slot, nom, mi: matIdx.has(mk) ? matIdx.get(mk) : -1 });
+      /* egri yoki o'yiqli panel — o'z konturi bo'yicha (quti emas) */
+      if (!tortburchak(p.contour_outer) && shakllar.length < SHAKL_MAX) {
+        const tash = konturNuqtalar(p.contour_outer);
+        const ich = (p.contour_inner || []).map(konturNuqtalar).filter(x => x && x.length >= 3);
+        const n = tash ? tash.length + ich.reduce((a, x) => a + x.length, 0) : 0;
+        if (tash && n <= NUQTA_MAX && nuqtaJami + n * 2 <= SHAKL_NUQTA) {
+          nuqtaJami += n * 2;
+          shakllar.push({ i: boxes.length - 1, o: S3(tf.pos), m: [S3(tf.oq[0]), S3(tf.oq[1]), S3(tf.oq[2])], t,
+            p: tash.flat().map(r1), h: ich.map(x => x.flat().map(r1)) });
+        }
+      }
+    }
 
     if (!mt.ishlab) {
       const k = mt.tur === 'yoq' ? 'materialsiz' : mt.tur;
@@ -123,7 +187,6 @@ export function bazisLoyiha(objects, o = {}) {
       continue;
     }
     /* material — sintetik kod (dekor bo'yicha alohida list) */
-    const mkod = 'BZM-' + fnv(mnom + '|' + t);
     if (!matlar.has(mkod)) matlar.set(mkod, { code: mkod, name: mnom, thickness: t, tur: mt.tur, asos: mt.asos, varaq: mt.varaq, detal: 0 });
     matlar.get(mkod).detal++;
     /* kromka: tomon → kromka kodi */
@@ -151,7 +214,24 @@ export function bazisLoyiha(objects, o = {}) {
   const bazis3d = boxes.map(b => [
     Math.round((b.a0[0] + b.a1[0]) / 2 - cx), Math.round((b.a0[1] + b.a1[1]) / 2 - cy), Math.round((b.a0[2] + b.a1[2]) / 2 - cz),
     Math.max(1, Math.round(b.a1[0] - b.a0[0])), Math.max(1, Math.round(b.a1[1] - b.a0[1])), Math.max(1, Math.round(b.a1[2] - b.a0[2])),
-    SLOT.indexOf(b.slot)]);
+    SLOT.indexOf(b.slot), b.mi]);
+  /* TZ-23 A5: egri panellar — [indeks, [boshi x,y,z], [o'qX, o'qY, o'qZ] (9), qalinlik, [tashqi x,y …], [[o'yiq x,y …]]]
+     (panel lokal tekisligida; nuqta = boshi + x·o'qX + y·o'qY + z·o'qZ, z ∈ [0, qalinlik]; markazga nisbatan) */
+  const bazisShakl = shakllar.map(s => [s.i, [r1(s.o[0] - cx), r1(s.o[1] - cy), r1(s.o[2] - cz)], s.m.flat().map(r4), s.t, s.p, s.h]);
+  /* oyoq va ruchka — daraxt (global joylashuv, o'qlar) bo'lsa: [tur (0 oyoq, 1 ruchka), x, y, z, o'qX (3), o'qZ (3), uzunlik].
+     Oyoq — doim tik (yuqori nuqtasidan pastga); 4001 (model obyekti) — boshi boshqa joyda, shakli bolasida (30 ta buyurtmada
+     tekshirildi: 3001 — 190/190 o'z joyida, 4001 — 24/24 bolasining joyida). Ruchka — o'z o'qlari bilan (246/246). */
+  const bazisFurn = [], objs = objects || [];
+  objs.forEach((x, i) => {
+    if (bazisFurn.length >= FURN_MAX) return;
+    if (x.modelCode === PANEL_CODE || !x.tf || !x.tf.oq || !x.tf.pos || !x.name) return;
+    const tur = OYOQ.test(x.name) ? 0 : RUCHKA.test(x.name) && !PROFIL.test(x.name) ? 1 : -1;
+    if (tur < 0 || x.tf.pos.every(v => v === 0)) return;
+    const bola = objs[i + 1] && objs[i + 1].chuqur === x.chuqur + 1 && objs[i + 1].tf ? objs[i + 1] : null;
+    const o3 = S3(tur === 0 && x.modelCode === 4001 && bola ? bola.tf.pos : x.tf.pos);
+    const ax = tur === 0 ? [1, 0, 0] : S3(x.tf.oq[0]).map(r4), az = tur === 0 ? [0, 0, -1] : S3(x.tf.oq[2]).map(r4);
+    bazisFurn.push([tur, r1(o3[0] - cx), r1(o3[1] - cy), r1(o3[2] - cz), ...ax, ...az, mm(x.name, tur ? 128 : 100)]);
+  });
 
   const parts = [], edge = [];
   let n = 0;
@@ -174,7 +254,8 @@ export function bazisLoyiha(objects, o = {}) {
     min_w: W, max_w: W, min_d: D, max_d: D, min_h: H, max_h: H, stretch_axis: '',
     price_mode: 'unit', price: 0, production: 'panel', auto_hardware: false,
     slots: { korpus: 'LDSP16', fasad: 'LDSP16', orqa: 'HDF3' },
-    parts, edge, holes: [], hardware, bazis3d,
+    parts, edge, holes: [], hardware, bazis3d, bazisMat,
+    ...(bazisShakl.length ? { bazisShakl } : {}), ...(bazisFurn.length ? { bazisFurn } : {}),
     manba: { bazis: true, fayl: toza(o.fayl), format: o.format || '', panellar: panels.length }
   };
   const hisobot = {
@@ -186,7 +267,8 @@ export function bazisLoyiha(objects, o = {}) {
     kromkalar: [...kromkalar.values()],
     furnitura: (o.fittings || []).length, mahkamlagich: (o.fasteners || []).length,
     olcham: [W, D, H],
-    kesildi3d: panels.length > PANEL3D_MAX
+    kesildi3d: panels.length > PANEL3D_MAX,
+    shakl3d: bazisShakl.length, furn3d: bazisFurn.length
   };
   return { fragment, materiallar: { panel: [...matlar.values()], edge: [...kromkalar.values()] }, hisobot };
 }

@@ -18,7 +18,7 @@ export async function mountSahna(host, onTap, alive = () => true) {
   const [{ createSahna }, { VRButton }] = await Promise.all([import('../../../services/sahna.js'), import('three/examples/jsm/webxr/VRButton.js')]);
   if (!alive()) return;
   const H = project.H, ed = get().editor;
-  const joylar = () => joyRanglari(H, H.viewPlacements(project.doc), get().project);   // TZ-23 E: tanlangan material dekori 3D da
+  const joylar = () => joyRanglari(H, H.viewPlacements(project.doc), get().project, project.doc.bazis);   // TZ-23 E: tanlangan material dekori 3D da
   const sahna = createSahna(host, {
     getPlacements: () => joylar(),
     getRoom: () => project.doc.room,

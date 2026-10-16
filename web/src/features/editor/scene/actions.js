@@ -6,6 +6,7 @@ import { detalKarta, ichiniKorsaBoladi } from '../../../services/ichki.js';
 import { select } from '../actions.js';
 import { scene, bumpScene } from './sahna.js';
 import { t } from '../../../i18n/index.js';
+import { korinishOzgar } from './korinish.js';
 
 /* TZ-19: sahna va modul kartasi amallari (dizayndagi roomClick, modul kartasi tugmalari, eshik/tortma). */
 const items = () => scene.sahna && scene.sahna.items;
@@ -30,6 +31,12 @@ export function toggleOpen(id) {
   const keys = it.moverKeys(id);
   it.setOpen(keys, !keys.some(k => it.isOpen(k)));
   set('editor', { part: null }); it.setFocus(null); bumpScene();
+}
+/** TZ-23 B: Bazis loyihasi — eshik ochilmaydi (faylda petlya tomoni yo'q), o'rniga fasadsiz ko'rinish (izoh bilan) */
+export function bazisFasadsiz() {
+  const yoq = !get().korinish.fasadsiz;
+  korinishOzgar({ fasadsiz: yoq });
+  if (yoq) toast(t('sahna.bazis_eshik_izoh'));
 }
 export function togglePartOpen() {
   const P = get().editor.part, it = items();
