@@ -1,5 +1,6 @@
 import { get, set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
+import { korinishBoshla } from './korinish.js';
 
 /* TZ-19: muharrir 3D sahnasi — bizning zamer tizimi (services/sahna.js, qoida S6) dizayn ko'rinishida.
  * Bitta nusxa: muharrir ochilganda yaratiladi (mount), yopilganda tozalanadi (unmount). 3D da o'zgargan holat
@@ -46,6 +47,7 @@ export async function mountSahna(host, onTap, alive = () => true) {
     if (navigator.xr && navigator.xr.isSessionSupported) navigator.xr.isSessionSupported('immersive-vr').then(ok => set('editor', { vrOk: !!ok })).catch(() => {});
   } catch (_) { /* WebXR yo'q */ }
   if (ed.sel) sahna.select(ed.sel);
+  korinishBoshla();                                       // TZ-23: ko'rinish holati (eslab qolingan yoki Bazis standarti)
   set('editor', { sceneOn: true, sceneErr: false });
 }
 

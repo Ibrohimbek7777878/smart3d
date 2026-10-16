@@ -5,11 +5,13 @@ import { useSahnaView } from './useSahna.js';
 import Maslahat from './Maslahat.jsx';
 import ModulKarta from './ModulKarta.jsx';
 import DetalKarta from './DetalKarta.jsx';
+import KorinishPanel from './KorinishPanel.jsx';
+import { useTor } from '../../../shared/lib/useTor.js';
 
 /* TZ-19: muharrir sahnasi — 3D/2D, asboblar paneli, maslahat, modul va detal kartalari, AI tugmasi.
  * JSX va stillar tasdiqlangan dizayndan; qiymatlar useSahnaView() dan. */
 export default function Sahna() {
-  const v = useSahnaView();
+  const v = useSahnaView(), tor = useTor();
   return (
     <div data-scene="" style={{"position":"relative","minWidth":"0","height":"100%","overflow":"hidden","background":"radial-gradient(ellipse 70% 60% at 50% 40%,rgba(255,122,69,.10),transparent 70%),#0C1C22"}}>
       <div ref={v.roomHost} style={{"position":"absolute","inset":"0"}}>
@@ -48,6 +50,7 @@ export default function Sahna() {
           </button>
         </>) : null}
       </div>
+      <KorinishPanel tel={tor} />
       <Maslahat />
       <ModulKarta />
       <DetalKarta />

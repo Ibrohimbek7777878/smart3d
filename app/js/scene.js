@@ -94,6 +94,8 @@ export function createScene(container, opts = {}) {
 
   let active = cam2d;                 // joriy kamera (toggle almashadi)
   let mode = '2d';
+  /* TZ-23 (D1): 3D da ortografik kamera (Orto — perspektivasiz, chizmadagidek). Ixtiyoriy: setOrto(true) chaqirilmasa — yo'q */
+  let cam3o = null, orto = false;
 
   let themeLights = null;
   if (TH && TH.lights) themeLights = TH.lights(scene, THREE);
@@ -381,12 +383,28 @@ export function createScene(container, opts = {}) {
     gGrid.visible = TH ? mode === '2d' : true;
 
     if (mode === '2d') { fit2D(); active = cam2d; }
-    else { fit3D(); active = cam3d; if (api._controls) { api._controls.enabled = true; } }
+    else {
+      fit3D();
+      if (orto && cam3o) { ortoMos(cam3d.position.distanceTo(api._controls ? api._controls.target : new THREE.Vector3(bbox.cx, bbox.cy, 0))); active = cam3o; }
+      else active = cam3d;
+      if (api._controls) { api._controls.enabled = true; }
+    }
 
     lastToggleMs = performance.now() - t0;
     api._invalidate();
     emit('toggle', { mode: mode, ms: lastToggleMs });
     return lastToggleMs;
+  }
+
+  /* orto kamera: perspektiva kamerasining joyi va yo'nalishi, ko'rinish o'lchami — nishongacha masofa bo'yicha */
+  function ortoMos(dist) {
+    if (!cam3o) return;
+    const W = Math.max(container.clientWidth, 1), H = Math.max(container.clientHeight, 1);
+    const hh = Math.max(150, dist * Math.tan(THREE.MathUtils.degToRad(cam3d.fov / 2)));
+    cam3o.position.copy(cam3d.position); cam3o.quaternion.copy(cam3d.quaternion);
+    cam3o.top = hh; cam3o.bottom = -hh; cam3o.left = -hh * W / H; cam3o.right = hh * W / H;
+    cam3o.near = -300000; cam3o.far = 300000; cam3o.zoom = 1;
+    cam3o.updateProjectionMatrix();
   }
 
   /* ── Hajam ─────────────────────────────────────────────────────────── */
@@ -395,6 +413,7 @@ export function createScene(container, opts = {}) {
     renderer.setSize(w, h, false);
     cam3d.aspect = w / h;
     cam3d.updateProjectionMatrix();
+    if (cam3o) { const hh = (cam3o.top - cam3o.bottom) / 2; cam3o.left = -hh * w / h; cam3o.right = hh * w / h; cam3o.updateProjectionMatrix(); }
     if (mode === '2d') fit2D();
     if (labelRenderer) labelRenderer.setSize(w, h);
     api._invalidate();
@@ -435,6 +454,17 @@ export function createScene(container, opts = {}) {
     get camera() { return active; },
     get cam2d() { return cam2d; },
     get cam3d() { return cam3d; },
+    get cam3o() { return cam3o; },
+    get orto() { return orto; },
+    /** TZ-23: 3D da ortografik kamera (on) yoki perspektiva; nishon — orbit markazi. Qaytaradi — endi faol 3D kamera */
+    setOrto(on, target) {
+      orto = !!on;
+      if (orto && !cam3o) { cam3o = new THREE.OrthographicCamera(-1, 1, 1, -1, -300000, 300000); cam3o.up.set(0, 0, 1); }
+      if (orto) ortoMos(target ? cam3d.position.distanceTo(target) : 5000);
+      if (mode === '3d') active = orto ? cam3o : cam3d;
+      api._invalidate();
+      return orto ? cam3o : cam3d;
+    },
     get mode() { return mode; },
     get bbox() { return bbox; },
     /** 3D aylanish markazi (mavzu bo'lsa — uning ko'rinishi) */

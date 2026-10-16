@@ -9,6 +9,7 @@ import { attachControls } from '../../../app/js/controls.js';
 import { createItems } from '../../../app/js/items.js';
 import { s3Mats } from '../shared/design3d/engine.js';
 import { isUstki } from './loyiha.js';
+import { createKorinish } from './korinish.js';
 
 export const DIZAYN_RANG = {
   bg: 0x0C1C22, wall3D: 0x22424A, wallSide: 0x1C3940, floor: 0x14292F,
@@ -50,8 +51,9 @@ export function dizaynMavzu() {
       const d = Math.max(5200, bb.w * 1.6);
       return { pos: [t[0] + Math.sin(0.38) * Math.cos(0.24) * d, t[1] + Math.cos(0.38) * Math.cos(0.24) * d, t[2] + Math.sin(0.24) * d], target: t };
     },
-    /* dizayn: masofa 2.2–12 m, burchak -0.05…1.1 rad (gorizontdan) */
-    orbit: { minDistance: 2200, maxDistance: 12000, minPolarAngle: Math.PI / 2 - 1.1, maxPolarAngle: Math.PI / 2 + 0.05, enablePan: false },
+    /* TZ-23 (egasi #115, #119): to'liq erkin — istalgan burchak (pol ostidan ham), 0.3–40 m, siljitish, kursorga yaqinlashish
+       (dizayndagi cheklov: 2.2–12 m, −0.05…1.1 rad, siljitishsiz — Bazis-Cloud'dagidek emas edi) */
+    orbit: { minDistance: 300, maxDistance: 40000, minPolarAngle: 0, maxPolarAngle: Math.PI, enablePan: true, screenSpacePanning: true, zoomToCursor: true },
     mat(k) {
       switch (k) {
         case 'wood': return M.wood();
@@ -80,10 +82,11 @@ export function createSahna(host, o) {
     getPlacements: o.getPlacements, getRoom: o.getRoom,
     onSelect: o.onSelect, onDrag: o.onDrag, onRotate: o.onRotate, onRotateEnd: o.onRotateEnd, onTap: o.onTap
   });
+  const korinish = createKorinish({ sp, ctl }, host);     // TZ-23: kamera, yo'nalish, chizish rejimlari, o'lchash
   const api = {
-    sp, items, ctl,
-    setDoc(doc, placements, catalog) { sp.setDoc(doc); items.setPlacements(placements, catalog); },
-    setPlacements(placements, catalog) { items.setPlacements(placements, catalog); },
+    sp, items, ctl, korinish,
+    setDoc(doc, placements, catalog) { sp.setDoc(doc); items.setPlacements(placements, catalog); korinish.qollash(); },
+    setPlacements(placements, catalog) { items.setPlacements(placements, catalog); korinish.qollash(); },
     select(id) { if (items.getSelected() !== id) items.select(id); },
     setMode(m) { if (sp.mode !== m) { sp.setMode(m); ctl.updateButtons(); } },
     /** ⌖ Markazga — dizayndagi boshlang'ich ko'rinish */
@@ -94,7 +97,7 @@ export function createSahna(host, o) {
     },
     /** 🔄 — avto-aylanish (dizayn: 0.5 rad/s) */
     spin(on) { ctl.orbit.autoRotate = !!on; ctl.orbit.autoRotateSpeed = 0.5 * 60 / (2 * Math.PI); if (on) sp._startLoop(); },
-    dispose() { items.dispose(); ctl.dispose(); sp.dispose(); }
+    dispose() { korinish.dispose(); items.dispose(); ctl.dispose(); sp.dispose(); }
   };
   return api;
 }

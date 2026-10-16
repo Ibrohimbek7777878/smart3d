@@ -9,6 +9,7 @@ import { s3SetT } from '../shared/design3d/engine.js';
 import { tr, setTil } from '../i18n/index.js';
 import { TELEGRAM, TG_TIL } from './bridge/telegram.js';
 import { telegramIshga } from '../features/telegram/telegram.js';
+import { scene } from '../features/editor/scene/sahna.js';
 
 /* TZ-19: ilova ishga tushishi — ma'lumot, saytdan o'tish (#hash), saqlangan kirish. Bir marta chaqiriladi (main.jsx). */
 export function bootstrap() {
@@ -43,6 +44,8 @@ function installQA() {
       const s = get();
       return { ...s.nav, ...s.data, dataReady: s.data.ready, dataErr: s.data.err, ...s.project, ...s.editor, user: s.auth.user, loggedIn: S.loggedIn };
     },
+    /** TZ-23: 3D sahna (kamera, ko'rinish) — brauzer testlari uchun */
+    get sahna() { return scene.sahna; },
     nestCfg: () => project.nestCfg(),
     projectPayload: () => project.payload()
   };
