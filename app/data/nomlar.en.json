@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "nima": "TZ-18 5-bosqich: modul va material nomlari (en). Asl nomlar fragments*.json / materials.json da o'zgarmaydi; kod to'qnashgan SP-T-001…006 — katalogda ko'rinadigan texnika nomi",
+  "nima": "TZ-18 5-bosqich: modul va material nomlari (en). Asl nomlar fragments*.json / materials.json da o'zgarmaydi; texnika — SP-TX-…, stollar — SP-T-… (kod to'qnashuvi 2026-10-16 tuzatildi)",
   "yangilandi": "2026-10-16"
  },
  "modullar": {
@@ -110,14 +110,13 @@
   "SP-ST-004": "Cornice (kitchen)",
   "SP-ST-005": "Side filler (base)",
   "SP-ST-006": "Side filler (wall)",
-  "SP-T-001": "Built-in oven 600",
-  "SP-T-002": "Built-in dishwasher 600",
-  "SP-T-003": "Microwave (built-in) 600",
-  "SP-T-004": "Built-in fridge 600",
-  "SP-T-005": "Hob 600",
-  "SP-T-006": "Cooker hood 600",
+  "SP-T-001": "Office desk",
+  "SP-T-002": "Classic dining table (6 seats)",
+  "SP-T-003": "Coffee table (to layout)",
+  "SP-T-004": "Work desk",
+  "SP-T-005": "Computer desk",
+  "SP-T-006": "Karolina (side table)",
   "SP-T-007": "Home desk",
-  "SP-T-008": "Gas cooker (freestanding) 600",
   "SP-W-001": "Classic wardrobe (2 doors)",
   "SP-W-002": "Sliding wardrobe (2 doors)",
   "SP-W-003": "Small wardrobe (1 door)",
@@ -127,7 +126,14 @@
   "SP-W-007": "Wardrobe (4 doors)",
   "SP-W-008": "Shoe cabinet",
   "SP-W-009": "Corner wardrobe",
-  "SP-WI-001": "Window"
+  "SP-WI-001": "Window",
+  "SP-TX-001": "Built-in oven 600",
+  "SP-TX-002": "Built-in dishwasher 600",
+  "SP-TX-003": "Microwave (built-in) 600",
+  "SP-TX-004": "Built-in fridge 600",
+  "SP-TX-005": "Hob 600",
+  "SP-TX-006": "Cooker hood 600",
+  "SP-TX-008": "Gas cooker (freestanding) 600"
  },
  "materiallar": {
   "HDF3": "HDF 3mm (back panel)",

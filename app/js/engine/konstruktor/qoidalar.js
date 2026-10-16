@@ -10,7 +10,7 @@ export const QOIDALAR = {
     pastki: { bir: 'MC-KP-01', ikki: 'MC-KP-02', tortma: 'MC-KP-10', moyka2: 'MC-KP-08', moyka1: 'MC-KP-07', burchak: 'MC-KP-05' },
     ustki: { bir: 'MC-KU-06', ikki: 'MC-KU-07', ochiq: 'MC-KU-08', burchak: 'MC-KU-02', vityajka: 'MC-KU-10' },
     dobor: { pastki: 'SP-ST-005', ustki: 'SP-ST-006' },
-    texnika: { xolodilnik: 'SP-T-004', plita: 'SP-T-008' }
+    texnika: { xolodilnik: 'SP-TX-004', plita: 'SP-TX-008' }
   },
   /* o'lchamlar: MC modullari (Bazis) va sex standarti (egasi tasdiqlagan 2026-10-15) */
   pastki: { h: 708, d: 450, manba: 'MC-KP-* (Bazis): h 708, d 450 — sex standarti std[0]' },
@@ -23,7 +23,7 @@ export const QOIDALAR = {
   dobor: { devor: [40, 100], burchak: [50, 100], texnika: [40, 100], ustki: [30, 100], taklif: true },
   plita: { eni: 600, yon: 300, derazadan: 300, taklif: true },        // plita yonida kamida 300 mm ish yuzasi / modul
   moyka: { eni: 600, plitadan: 400, taklif: true },                    // moyka bilan plita orasida kamida 400 mm
-  xolodilnik: { eni: 600, manba: 'appliances.json SP-T-004 (nishon)' },
+  xolodilnik: { eni: 600, manba: 'appliances.json SP-TX-004 (nishon)' },
   xonaEshigi: { oraliq: 100, taklif: true },                           // xona eshigi chetidan bo'sh joy
   deraza: { oraliq: 50, taklif: true },                                // deraza chetidan ustki shkafgacha
   eshik: { burchak: 90 },                                              // tekshiruvdagi ochilish burchagi (Bazis: "Петля 90º")

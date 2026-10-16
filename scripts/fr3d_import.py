@@ -604,6 +604,13 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
     std_key = std_tpl.format(n=1 if ndoor <= 1 else 2) if std_tpl else None
     frag = OrderedDict(code=f"MC-{prefix}-{idx:02d}", name=f"MC · {title}", category=category, group=group,
                        w=W, d=D, h=H)
+    # oyoq va sokol (2026-10-16, egasi #119): Bazis'da pol — Y=0; korpus oyoqda bo'lsa (pastki shkaflar — 100 mm)
+    # modul shu balandlikda turadi va sokol modulning o'z detali (korpus ostida) — oshxona qatoriga ikkinchi sokol qo'yilmaydi
+    oyoq = round(O[1])
+    if oyoq > 0:
+        frag["default_z"] = oyoq
+    if any(p["mn"][1] < O[1] - 1 and p["role"] == "korpus" for p in panels):
+        frag["sokol_ichida"] = True
     if category == "cabinet" and re.search(r"yash|ящик|kargo", title, re.I):
         frag["category"] = "drawer_base" if not re.search(r"kargo", title, re.I) else "cargo_base"
     fixed_dims = []

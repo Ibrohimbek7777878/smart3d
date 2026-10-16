@@ -3,7 +3,7 @@
  * konstruksiya(room, talab, catalog, opt) → { variantlar: [...], xato? }
  *   room   — doc.room (outline, openings: eshik/deraza, utilities: quvur)
  *   talab  — { shakl: 'auto'|'I'|'L'|'U', devor?: indeks, xolodilnik: bool, plita: 'erkin'|false, moyka: bool, ustki: bool }
- *   catalog — sex standarti qo'llangan katalog (MC-* modullari, SP-ST-005/006 dobor, SP-T-004/008 texnika)
+ *   catalog — sex standarti qo'llangan katalog (MC-* modullari, SP-ST-005/006 dobor, SP-TX-004/008 texnika)
  * Har variant: { shakl, devorlar, placements, kitchen, izohlar[], ogohlantirishlar[], baho }
  *
  * Tartib: shakl → devor bo'laklari (eshik/deraza, burchak) → langarlar (muzlatgich chetda, moyka quvur yonida,
@@ -299,7 +299,8 @@ function joylash(dv, e, qatlam, Q, catalog, id) {
     xolodilnik: M.texnika.xolodilnik, plita: M.texnika.plita
   }[e.tur];
   const f = catalog[frg] || {};
-  let w = e.w || +f.w, d = P ? Q.pastki.d : Q.ustki.d, h = P ? Q.pastki.h : Q.ustki.h, z = P ? 0 : Q.ustki.z;
+  /* pastki modul — o'z oyog'ida (MC: Bazis'dagidek 100 mm, sokol modulning o'z detali; default_z — fr3d_import) */
+  let w = e.w || +f.w, d = P ? Q.pastki.d : Q.ustki.d, h = P ? Q.pastki.h : Q.ustki.h, z = P ? (+f.default_z || 0) : Q.ustki.z;
   if (e.tur === 'xolodilnik' || e.tur === 'plita') { d = +f.d || d; h = +f.h || h; z = 0; }
   if (e.tur === 'vityajka') { d = +f.d || d; h = +f.h || 400; z = Q.ustki.z + Q.ustki.h - h; }
   if (e.tur === 'burchak') w = +f.w;

@@ -6,7 +6,7 @@
  },
  "appliances": [
   {
-   "code": "SP-T-001",
+   "code": "SP-TX-001",
    "name": "O'rnatma pech (duxovka) 600",
    "w": 600,
    "d": 600,
@@ -15,7 +15,7 @@
    "note": "Nishon 600×600×600, pastki modul ichida"
   },
   {
-   "code": "SP-T-002",
+   "code": "SP-TX-002",
    "name": "O'rnatma posudomoyka 600",
    "w": 600,
    "d": 600,
@@ -24,7 +24,7 @@
    "note": "Standart peshtaxta balandligi ostida"
   },
   {
-   "code": "SP-T-003",
+   "code": "SP-TX-003",
    "name": "Mikroto'lqin (o'rnatma) 600",
    "w": 595,
    "d": 380,
@@ -33,7 +33,7 @@
    "note": "Ustki modul ichida"
   },
   {
-   "code": "SP-T-004",
+   "code": "SP-TX-004",
    "name": "O'rnatma muzlatgich 600",
    "w": 600,
    "d": 600,
@@ -42,7 +42,7 @@
    "note": "Ustun (kolonna) ko'rinishi"
   },
   {
-   "code": "SP-T-005",
+   "code": "SP-TX-005",
    "name": "Plita (ish stoli) 600",
    "w": 600,
    "d": 520,
@@ -51,7 +51,7 @@
    "note": "Stoleshnitsa ustida"
   },
   {
-   "code": "SP-T-006",
+   "code": "SP-TX-006",
    "name": "Chimenee (havalandirish) 600",
    "w": 600,
    "d": 500,
@@ -60,7 +60,7 @@
    "note": "Plita ustida, devorga osiladi"
   },
   {
-   "code": "SP-T-008",
+   "code": "SP-TX-008",
    "name": "Gaz plita (erkin turuvchi) 600",
    "w": 600,
    "d": 600,

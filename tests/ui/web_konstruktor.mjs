@@ -36,7 +36,7 @@ async function asosiy(page, R) {
 
   /* namuna oshxona — konstruktor bilan: faqat MebelCity modullari, dobor va texnika */
   R.namuna = await M(() => window.__app.doc.placements.map(p => p.frg));
-  R.namunaMC = R.namuna.length > 0 && R.namuna.every(c => /^(MC-|SP-ST-00[56]|SP-T-00[48])/.test(c));
+  R.namunaMC = R.namuna.length > 0 && R.namuna.every(c => /^(MC-|SP-ST-00[56]|SP-TX-00[48])/.test(c));
 
   /* xona: deraza (1-devor, 1200) va quvur (1-devor, 1900 mm) */
   await click(/^Xona$/); await page.waitForTimeout(600);

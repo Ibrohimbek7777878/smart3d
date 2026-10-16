@@ -143,7 +143,7 @@ ok(!/Cutout/.test(nc), 'Excellon NC: cutout teshik sifatida YOQ (faqat drill)');
 
 /* ── 11) o'rnatma texnika: bo'sh korpus — cutlist 0 detal, tannarx 0 ── */
 const appl = {
-  code: 'SP-T-001', name: "O'rnatma pech", category: 'appliance', group: 'texnika',
+  code: 'SP-TX-001', name: "O'rnatma pech", category: 'appliance', group: 'texnika',
   w: 600, d: 600, h: 600, price_mode: 'unit', price: 0, parts: [], holes: [], hardware: [], edge: []
 };
 const acl = cutlist(appl, 600, 600, 600, mats, { projectSlots: {} });

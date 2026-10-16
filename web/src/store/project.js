@@ -4,6 +4,7 @@ import * as L from '../services/loyiha.js';
 import { suggestLayout } from '../../../app/js/ai.js';
 import { konstruksiya } from '../../../app/js/engine/konstruktor/index.js';
 import { materiallarniQosh } from '../../../app/js/engine/bazis/loyiha.js';
+import { eskiKodlar } from '../../../app/js/engine/kodlar.js';
 import { report } from '../shared/lib/jurnal.js';
 import { xato } from './ui.js';
 import { t } from '../i18n/index.js';
@@ -70,7 +71,7 @@ export const project = {
   },
 
   /** yangi hujjat: bo'sh yoki namuna bilan */
-  reset(doc) { this.doc = doc || L.newDoc(); this.bazisUla(); },
+  reset(doc) { this.doc = doc || L.newDoc(); eskiKodlar(this.doc); this.bazisUla(); },   // eski katalog kodlari — yangisiga
   /** TZ-21: Bazis'dan yuklangan loyiha — o'z fragmenti va materiallari hisob bazasiga (katalog ro'yxatida ko'rinmaydi) */
   bazisUla() {
     const b = this.doc && this.doc.bazis;

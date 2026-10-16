@@ -204,7 +204,7 @@ const upper = { id: 'p2', frg: 'SP-K-002', x: 500, y: 500, z: 1450, w: 600, d: 3
   const UZ = lug('uz'), RU = lug('ru'), EN = lug('en');
   const izi = (r) => JSON.stringify([r.room.w, r.room.d, r.room.h, r.room.layoutType,
     Object.entries(r.room.features).filter(([, v]) => v).map(([k]) => k), r.orders]);
-  /* AI oynasidagi namunalar — tarjimasi o'zbekchadagidek tushuniladi (3-namunadagi "toko" — dizayn so'zi, faqat o'lcham) */
+  /* AI oynasidagi namunalar — tarjimasi o'zbekchadagidek tushuniladi (3-namuna "tokcha" — polka; tahlilchi uni miqdor deb sanamaydi, faqat o'lcham) */
   for (const k of ['ai.misol1', 'ai.misol2']) {
     const u = izi(parseZamer(UZ[k]));
     eq('TZ-18 ' + k + ' ru = uz', JSON.parse(izi(parseZamer(RU[k]))), JSON.parse(u));

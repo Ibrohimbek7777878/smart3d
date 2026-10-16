@@ -23,6 +23,7 @@ import { buildProject as buildGlProject } from './engine/giblab.js';
 import { cncBundle, cutGCode } from './engine/cnc.js';
 import { buildSearchIndex, searchMaterial } from './engine/search.js';
 import { applySexStandart } from './engine/standart.js';
+import { eskiKodlar } from './engine/kodlar.js';
 import { aiBuild, startVoice, voiceSupported, parseZamer, suggestLayout, USTKI_Z } from './ai.js';
 import { createAuth } from './auth.js';
 import { VRButton } from '../vendor/three/addons/webxr/VRButton.js';
@@ -456,6 +457,7 @@ function viewPlacements() {
 
 function setDoc(doc, opts = {}) {
   state.doc = doc;
+  eskiKodlar(doc);                                   // eski katalog kodlari (texnika SP-T → SP-TX) — yangisiga
   if (!doc.kitchen) doc.kitchen = freshKitchen();   /* F2 */
   state.idSeq = Math.max(state.idSeq,
     1 + doc.placements.reduce((m, p) => Math.max(m, parseInt(String(p.id).replace(/\D/g, ''), 10) || 0), 0));

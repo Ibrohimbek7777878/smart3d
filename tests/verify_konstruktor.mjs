@@ -74,7 +74,7 @@ for (const X of XONALAR) {
     /* bo'shliq 0: har devorda pastki qator — oraliqlar faqat xona eshigi / past deraza / burchak zonasida */
     for (const wi of v.devorlar) {
       const dv = W.find(d => d.i === wi);
-      const pas = v.placements.filter(p => (+p.z || 0) === 0 && p.rot === dv.rot && Math.abs((dv.n[0] ? p.x : p.y) - (dv.n[0] ? dv.S[0] : dv.S[1])) < 1)
+      const pas = v.placements.filter(p => (+p.z || 0) < 1000 && p.rot === dv.rot   /* pastki qator — oyoqda (z 0…100) */ && Math.abs((dv.n[0] ? p.x : p.y) - (dv.n[0] ? dv.S[0] : dv.S[1])) < 1)
         .map(p => { const f = footprint(p); const a = dv.u[0] ? [f.x0, f.x1] : [f.y0, f.y1]; const s0 = dv.u[0] + dv.u[1] > 0 ? a[0] - (dv.u[0] ? dv.S[0] : dv.S[1]) : (dv.u[0] ? dv.S[0] : dv.S[1]) - a[1]; return [Math.round(s0), Math.round(s0 + (a[1] - a[0]))]; })
         .sort((a, b) => a[0] - b[0]);
       const blok = (room.openings || []).filter(o => +o.wall === wi && (o.type === 'door' || (+o.sill || 0) < QOIDALAR.pastki.h + 40)).map(o => dv.oraliq(+o.offset, +o.width));
@@ -161,6 +161,23 @@ const pl0 = [
 ok('rasmdagi holat: 100° da eshiklar kesishadi (aniqlanadi)', eshikToqnashuvlari(pl0, cat, room0, { burchak: 100 }).some(t => t.tur === 'juft'));
 const bur = eshikBurchaklari(pl0, cat, room0);
 ok('xavfsiz burchak: hech bir eshik 100° dan oshmaydi, to\'qnashganlari ≤ 90°', Object.values(bur).every(v => v <= 100 * Math.PI / 180 + 1e-9) && bur['p2:fasad_ong'] <= Math.PI / 2 + 1e-9 && bur['p4:fasad_ong'] <= Math.PI / 2 + 1e-9);
+
+/* 2026-10-16 (egasi #119, Bazis buyurtmalari bilan solishtirildi): MC pastki shkaf — 100 mm oyoqda, sokol — modulning o'z detali;
+   oshxona qatoriga ikkinchi sokol qo'yilmaydi; stoleshnitsa korpus ustida */
+{
+  const room = { outline: rect(3600, 3000), utilities: [pipe(0, 1500)] };
+  const v = konstruksiya(room, { shakl: 'I' }, cat).variantlar[0];
+  const kp = v.placements.filter(p => /^MC-KP/.test(p.frg));
+  ok('MC pastki shkaf oyoqda: z = 100 (Bazis: korpus Y=100, sokol 10…100)', kp.length > 0 && kp.every(p => p.z === 100), kp.map(p => p.z).join());
+  const kit = deriveKitchen({ room, placements: v.placements, kitchen: v.kitchen }, cat);
+  const sok = kit.filter(p => p.frg === 'SP-ST-002');
+  const ozi = kp.reduce((s, p) => s + cutlist(cat[p.frg], p.w, p.d, p.h, mats, {}).parts.filter(q => q.code === 'frontalnaya').length, 0);
+  const ust = (a, b) => Math.min(a[1], b[1]) - Math.max(a[0], b[0]) > 1;
+  const kesish = sok.filter(s => kp.some(p => { const f = footprint(p), g = footprint(s); return ust([f.x0, f.x1], [g.x0, g.x1]) && ust([f.y0, f.y1], [g.y0 - 50, g.y1 + 50]); }));
+  ok(`sokol bir marta: modullarning o'z sokoli ${ozi} ta, qator sokoli ular ostida yo'q`, ozi === kp.length && kesish.length === 0, kesish.length + ' ta ustma-ust');
+  const st = kit.find(p => p.frg === 'SP-ST-001');
+  ok('stoleshnitsa korpus ustida: z = 100 + 708', st && st.z === 100 + QOIDALAR.pastki.h, st && st.z);
+}
 
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);
 process.exit(fail ? 1 : 0);

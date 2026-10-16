@@ -21,7 +21,9 @@ const SIZES = (f) => [[f.w, f.d, f.h], [f.w + 137, f.d, f.h], [400, 450, 708], [
 const out = [];
 for (const f of frs) for (const [w, d, h] of SIZES(f)) out.push(getModulePanels(f, w, d, h, {}), getModulePanels(f, w, d, h, { thickness: 18 }));
 const iz = crypto.createHash('sha256').update(JSON.stringify(out)).digest('hex');
-ok('bayroqsiz chiqish o\'zgarmagan (BPJ/OBJ/GLB/eski sayt)', iz === 'f9c989204386a46817d18d92e523c6784064c317955047bfd3f3b92290d8302a', iz);
+/* 2026-10-16 (egasi #119): MC pastki shkaf va penal (sokol_ichida) — korpus oyoqda, sokol korpus ostida (Bazis'dagidek) — ataylab
+   o'zgardi: 6 modul (MC-KP-01/02/05/07/08, MC-KK-01). Qolgan 115 modul eski kod bilan aynan (har modul bo'yicha solishtirildi). */
+ok('bayroqsiz chiqish o\'zgarmagan (BPJ/OBJ/GLB/eski sayt)', iz === '04fa8a2f66b4614c599684b88ebb75b8ae9a80a2078cba61872872690573d07f', iz);
 
 /* 2) bayroq bilan */
 const TORTMA = /ящик|tortma|fasad_kichik|fasad_katta/i;

@@ -20,6 +20,7 @@
  * tortma_fasad). Kesim, narx, BPJ/OBJ/GLB bu bayroqsiz chaqiradi — ular O'ZGARMAYDI (tests/verify_tortma.mjs).
  */
 import { evalFormula } from './expr.js';
+import { hasJoy, joyPanellar } from './joy.js';
 
 const TORTMA_RE = /ящик|tortma|fasad_kichik|fasad_katta/i;
 const ESHIK_RE = /двер|eshik/i;
@@ -85,7 +86,9 @@ export function getModulePanels(frag, w, d, h, opts = {}) {
     // Tsokol (oyog'i / kickplate)
     const isWallCabinet = /osma|tepa|wall/i.test(group) || /osma/i.test(name) || (h <= 750 && d <= 400);
     const isWardrobe = h >= 1600;
-    const cokolH = isWallCabinet ? 0 : (isWardrobe ? 80 : 100);
+    /* MC (Bazis): korpus oyoqda turadi, sokol — modulning o'z detali korpus OSTIDA (modul balandligidan tashqarida, joy formulasi) */
+    const ostiSokol = !!frag.sokol_ichida && hasJoy(frag);
+    const cokolH = ostiSokol || isWallCabinet ? 0 : (isWardrobe ? 80 : 100);
 
     const netH = h - cokolH;
     const zBase = -h / 2 + cokolH;
@@ -161,6 +164,11 @@ export function getModulePanels(frag, w, d, h, opts = {}) {
     });
 
     // 6) Tsokol (Plintus / kickplate, agar bor bo'lsa)
+    if (ostiSokol) {
+      for (const q of joyPanellar(frag, w, d, h, { t }).filter(q => q.z + q.h / 2 <= -h / 2 + 1)) {
+        panels.push({ id: 'cokol', name: 'Tsokol planka', slot: 'korpus', code: q.code, w: q.w, d: q.d, h: q.h, x: q.x, y: q.y, z: q.z });
+      }
+    }
     if (cokolH > 0) {
       panels.push({
         id: 'cokol',

@@ -13,7 +13,15 @@ let pass = 0, fail = 0;
 const ok = (name, cond, info = '') => { if (cond) { pass++; console.log('  ✓', name); } else { fail++; console.log('  ✗', name, info); } };
 
 const H = createHisob(await loadData(n => Promise.resolve(JSON.parse(readFileSync(DATA + n, 'utf8')))));
-ok('katalog: 124 modul (83 + 2 yon dobor + 38 + gaz plita nishoni SP-T-008 — TZ-22)', Object.keys(H.catalog).length === 124, Object.keys(H.catalog).length);
+ok('katalog: 130 modul (85 umumiy — 7 stol va 2 yon dobor bilan, 38 MC, 7 texnika nishoni SP-TX-…; kod to\'qnashuvi yo\'q)', Object.keys(H.catalog).length === 130, Object.keys(H.catalog).length);
+{
+  /* 2026-10-16: texnika kodlari stollar bilan to'qnashardi — texnika SP-TX-…, eski loyihalar ochilganda ko'chadi */
+  const { eskiKodlar } = await import('../app/js/engine/kodlar.js');
+  ok('stollar katalogda (SP-T-001 — stol, SP-TX-001 — texnika)', H.catalog['SP-T-001'].category === 'table' && H.catalog['SP-TX-001'].category === 'appliance');
+  const d = { placements: [{ frg: 'SP-T-004', name: "O'rnatma muzlatgich 600" }, { frg: 'SP-T-008', name: 'Gaz plita (erkin turuvchi) 600' }, { frg: 'SP-T-001' }, { frg: 'SP-T-001', name: 'Ofis stoli' }, { frg: 'MC-KP-02' }] };
+  const n = eskiKodlar(d);
+  ok('eski loyiha: texnika SP-TX ga ko\'chdi, nomi stol bo\'lsa — stol qoldi', n === 3 && d.placements.map(p => p.frg).join() === 'SP-TX-004,SP-TX-008,SP-TX-001,SP-T-001,MC-KP-02', d.placements.map(p => p.frg).join());
+}
 ok('ERP furnitura ID bo\'yicha', Object.keys(H.furnById).length > 1000, Object.keys(H.furnById).length);
 ok('material qidiruv indeksi', !!H.searchIndex);
 

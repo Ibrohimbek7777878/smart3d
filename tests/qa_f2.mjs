@@ -55,9 +55,9 @@ export default async function run(page) {
     STEP = 'appliances';
     R.appl = await M(() => {
       const c = window.__s3d.state.catalog;
-      return { has001: !!c['SP-T-001'], has006: !!c['SP-T-006'],
-               cat: c['SP-T-001'] && c['SP-T-001'].category,
-               parts0: c['SP-T-001'] && c['SP-T-001'].parts.length };
+      return { has001: !!c['SP-TX-001'], has006: !!c['SP-TX-006'],
+               cat: c['SP-TX-001'] && c['SP-TX-001'].category,
+               parts0: c['SP-TX-001'] && c['SP-TX-001'].parts.length };
     });
 
     STEP = 'sink-mesh';

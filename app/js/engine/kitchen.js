@@ -113,6 +113,15 @@ function backSide(run, cx, cy) {
   return (run.x0 + run.x1) / 2 >= cx ? 'x1' : 'x0';
 }
 
+/** segment {s0, len} dan oraliqlarni [a, b] ayirish → qolgan bo'laklar (50 mm dan kichigi tashlanadi) */
+function ayir(seg, band) {
+  let qism = [[seg.s0, seg.s0 + seg.len]];
+  for (const [a, b] of band) {
+    qism = qism.flatMap(([u, v]) => (b <= u || a >= v) ? [[u, v]] : [[u, Math.max(u, a)], [Math.min(v, b), v]].filter(([p, q]) => q - p > 0));
+  }
+  return qism.filter(([u, v]) => v - u >= 50).map(([u, v]) => ({ s0: Math.round(u), len: Math.round(v - u) }));
+}
+
 /** Strip qo'yish (sokol/dobor/karniz): devor chekkasida t = qalinlik.
  * Vertikal run'larda rot=90 (detal uzunligi W bo'lishi uchun — raskroyda
  * 3600mm planka W=3600 sifatida kesiladi, aks holda varaqdan chiqmasdi). */
@@ -170,11 +179,17 @@ export function deriveKitchen(doc, catalog) {
         });
       });
     }
-    /* sokol (no3d — 3D kickplate assembler'da; cutlist/smeta shu yerdan) */
+    /* sokol (no3d — 3D kickplate assembler'da; cutlist/smeta shu yerdan). O'z sokoli bor modul (MC — Bazis'dagidek korpus
+     * ostida, frag.sokol_ichida) ostiga qator sokoli qo'yilmaydi — kesim ro'yxatida sokol ikki marta chiqmasin */
     if (k.sokol) {
-      segs.forEach((seg, segIdx) => {
+      const band = (run.members || []).filter(p => catalog[p.frg] && catalog[p.frg].sokol_ichida).map(p => {
+        const f = footprint(p);
+        return run.axis === 'h' ? [f.x0 - run.x0, f.x1 - run.x0] : [f.y0 - run.y0, f.y1 - run.y0];
+      });
+      const qism = band.length ? segs.flatMap(seg => ayir(seg, band)) : segs;
+      qism.forEach((seg, segIdx) => {
         out.push(stripPlacement(run, side, 18, seg, 0, 100, 'SP-ST-002', 'Sokol planka',
-          '__ksk' + (n++), { no3d: true, runIdx, segIdx, segCount: segs.length }));
+          '__ksk' + (n++), { no3d: true, runIdx, segIdx, segCount: qism.length }));
       });
     }
     /* dobor (backsplash — stoleshnitsa ustida, devor chekkasida) */
