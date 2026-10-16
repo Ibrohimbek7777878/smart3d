@@ -36,7 +36,7 @@ const XONALAR = [
   { n: '3.6×3, deraza+quvur, eshik', r: { outline: rect(3600, 3000), openings: [win(0, 1300, 1200), door(2, 400)], utilities: [pipe(0, 1900)] } },
   { n: '3×3 bo\'sh', r: { outline: rect(3000, 3000) } },
   { n: '2.4×3 kichik', r: { outline: rect(2400, 3000), openings: [door(2, 800)] } },
-  { n: '1.8×2.4 juda kichik', r: { outline: rect(1800, 2400), openings: [door(2, 500)] }, t: { shakl: 'I' }, diqqat: 'konstruktor.iz_joy_xolodilnik' },
+  { n: '1.8×2.4 juda kichik', r: { outline: rect(1800, 2400), openings: [door(2, 500)] }, t: { shakl: 'I' }, diqqat: 'joy_xolodilnik' },
   { n: '4.2×3.2 katta', r: { outline: rect(4200, 3200), openings: [win(0, 1500, 1500), door(2, 600, 900)], utilities: [pipe(0, 2200)] } },
   { n: '5×3.5', r: { outline: rect(5000, 3500), openings: [win(1, 1000, 1200)], utilities: [pipe(1, 1600)] } },
   { n: '2.7×4 tor uzun', r: { outline: rect(2700, 4000), openings: [door(0, 900), win(2, 700, 1200)] } },
@@ -78,9 +78,9 @@ for (const X of XONALAR) {
         .map(p => { const f = footprint(p); const a = dv.u[0] ? [f.x0, f.x1] : [f.y0, f.y1]; const s0 = dv.u[0] + dv.u[1] > 0 ? a[0] - (dv.u[0] ? dv.S[0] : dv.S[1]) : (dv.u[0] ? dv.S[0] : dv.S[1]) - a[1]; return [Math.round(s0), Math.round(s0 + (a[1] - a[0]))]; })
         .sort((a, b) => a[0] - b[0]);
       const blok = (room.openings || []).filter(o => +o.wall === wi && (o.type === 'door' || (+o.sill || 0) < QOIDALAR.pastki.h + 40)).map(o => dv.oraliq(+o.offset, +o.width));
-      const k = v.devorlar.indexOf(wi), oxir = k < v.devorlar.length - 1;
-      const run1 = oxir ? dv.len - Dp : dv.len;
-      let cur = 0, bosh = true;
+      const k = v.devorlar.indexOf(wi), boshda = k > 0;
+      const run1 = dv.len;
+      let cur = boshda ? Dp : 0, bosh = true;
       const bo = [];
       for (const [a, b] of pas) {
         if (a > cur + 0.5) { const m = blok.some(([x0, x1]) => x0 - QOIDALAR.xonaEshigi.oraliq <= cur + 1 && x1 + QOIDALAR.xonaEshigi.oraliq >= a - 1); if (!m) bo.push([cur, a]); }
@@ -106,6 +106,16 @@ for (const X of XONALAR) {
       const dv = W.find(d => d.i === +u.wall);
       const mo = v.placements.find(p => /MC-KP-0[78]/.test(p.frg));
       ok(tag + ': moyka quvur devorida', mo && mo.rot === dv.rot);
+    }
+    /* burchak modullari (gluxoy): ko'r qism burchakka qaragan (eshik emas) — Bazis'dagi "chap" modul */
+    for (const p of v.placements.filter(p => p.frg === QOIDALAR.modul.pastki.burchak || p.frg === QOIDALAR.modul.ustki.burchak)) {
+      const f = cat[p.frg], pan = getModulePanels(f, p.w, p.d, p.h, { eshiklar: true }).panels;
+      const r = (p.rot || 0) * Math.PI / 180, c = Math.round(Math.cos(r)), sn = Math.round(Math.sin(r));
+      const cx = p.x + (p.w / 2) * c - (p.d / 2) * sn, cy = p.y + (p.w / 2) * sn + (p.d / 2) * c;
+      const W = (lx) => [cx + lx * c, cy + lx * sn];
+      const near = (pt) => Math.min(...room.outline.map(([x, y]) => Math.hypot(pt[0] - x, pt[1] - y)));
+      const kor = pan.find(q => q.code === 'gluxoy'), esh = pan.find(q => q.isDoor);
+      ok(tag + ': ' + p.frg + ' — ko\'r qism burchakda', kor && esh && near(W(kor.x)) < near(W(esh.x)));
     }
     /* detal ro'yxati va raskroy */
     const doc = { room, placements: v.placements, kitchen: v.kitchen };
@@ -134,7 +144,8 @@ const kp02 = cat['MC-KP-02'], kp05 = cat['MC-KP-05'], ku05 = cat['MC-KU-05'], kp
 ok('MC-KP-02 600: Bazis bo\'yicha 2 eshik (bayroqsiz — avvalgidek 1)', getModulePanels(kp02, 600, 450, 708, { eshiklar: true }).panels.filter(p => p.isDoor).length === 2 && getModulePanels(kp02, 600, 450, 708, {}).panels.filter(p => p.isDoor).length === 1);
 const g = getModulePanels(kp05, 780, 450, 708, { eshiklar: true });
 const gd = g.panels.find(p => p.isDoor);
-ok('MC-KP-05 gluxoy: eshik 308, o\'ngda, petlya chap chetida + qo\'zg\'almas fasad', gd && gd.w === 308 && gd.x > 0 && gd.hingeSide === 'left' && g.panels.some(p => p.code === 'gluxoy'));
+/* bizda lokal +x — tomoshabinning chapi; Bazis'da eshik o'ngda → lokal −x, petlya ko'r qism tomonida (+x chet) */
+ok('MC-KP-05 gluxoy: eshik 308, tomoshabinning o\'ngida, petlya ko\'r qism tomonida + qo\'zg\'almas fasad', gd && gd.w === 308 && gd.x < 0 && gd.hingeSide === 'right' && g.panels.some(p => p.code === 'gluxoy' && p.x > 0));
 ok('MC-KU-05 ochiq javon: eshiksiz', getModulePanels(ku05, 200, 300, 721, { eshiklar: true }).panels.filter(p => p.isDoor).length === 0);
 const r1 = getModulePanels(kp01, 400, 450, 708, { eshiklar: true, hinge: 'right' }).panels.find(p => p.isDoor);
 ok('MC-KP-01: petlya o\'ngda — tutqich chapda', r1.hingeSide === 'right' && r1.handle.x < 0);

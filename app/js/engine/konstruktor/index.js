@@ -50,14 +50,17 @@ function shaklRejasi(sh, room, Q, catalog) {
   const Wkp = (catalog[Q.modul.pastki.burchak] || {}).w || 780, Wku = (catalog[Q.modul.ustki.burchak] || {}).w || 600;
   const n = sh.walls.length;
   return sh.walls.map((dv, k) => {
-    const bosh = k > 0, oxir = k < n - 1;              // k>0: boshida burchak moduli; k<n-1: oxirida keyingi qanot
+    /* Xona ichidan devorga qaraganda s (modul lokal +x) CHAPGA o'sadi (reja o'ng qo'l tizimida, 2D: y tepaga).
+       MC gluxoy modullari Bazis'da "chap" — ko'r qismi tomoshabinning chapida = lokal +x tomonda. Shuning uchun
+       burchak moduli burchak devorning OXIRIDA (E, s = len) turadi, keyingi qanot esa boshida (S) burchak zonasidan boshlanadi. */
+    const bosh = k > 0, oxir = k < n - 1;              // k>0: boshida oldingi qanot burchagi; k<n-1: oxirida burchak moduli
     const ts = tosiqlar(room, dv, Q);
-    const p0 = bosh ? Wkp : 0, p1 = oxir ? dv.len - Dp : dv.len;
-    const u0 = bosh ? Wku : 0, u1 = oxir ? dv.len - Du : dv.len;
+    const p0 = bosh ? Dp : 0, p1 = oxir ? dv.len - Wkp : dv.len;
+    const u0 = bosh ? Du : 0, u1 = oxir ? dv.len - Wku : dv.len;
     return {
-      dv, ts, bosh, oxir,
-      pastki: { s0: p0, s1: p1, b0: bosh ? 'modul' : 'devor', b1: oxir ? 'burchak' : 'devor' },
-      ustki: { s0: u0, s1: u1, b0: bosh ? 'modul' : 'devor', b1: oxir ? 'burchak' : 'devor' },
+      dv, ts, bosh, oxir, Wkp, Wku,
+      pastki: { s0: p0, s1: p1, b0: bosh ? 'burchak' : 'devor', b1: oxir ? 'modul' : 'devor' },
+      ustki: { s0: u0, s1: u1, b0: bosh ? 'burchak' : 'devor', b1: oxir ? 'modul' : 'devor' },
       erkinUch: [!bosh ? 'S' : null, !oxir ? 'E' : null].filter(Boolean)
     };
   });
@@ -202,7 +205,7 @@ function pastkiQidir(reja, room, talab, Q, chek) {
 function pastkiElementlar(eng, reja, Q) {
   return reja.map((r, k) => {
     const out = [];
-    if (r.bosh) out.push({ s0: 0, w: 0, tur: 'burchak' });
+    if (r.oxir) out.push({ s0: r.dv.len - r.Wkp, w: 0, tur: 'burchak' });
     for (const s of eng.segs[k]) {
       if (s.langar) { out.push({ s0: s.s0, w: s.s1 - s.s0, tur: s.langar }); continue; }
       let x = s.s0;
@@ -225,7 +228,7 @@ function pastkiElementlar(eng, reja, Q) {
 function ustkiElementlar(reja, past, Q, chek) {
   return reja.map((r, k) => {
     const out = [];
-    if (r.bosh) out.push({ s0: 0, w: 0, tur: 'burchak' });
+    if (r.oxir) out.push({ s0: r.dv.len - r.Wku, w: 0, tur: 'burchak' });
     const bl = r.ts.ustki.slice();
     for (const e of past[k]) {
       if (e.tur === 'xolodilnik') bl.push([e.s0, e.s0 + e.w, 'xolodilnik']);
@@ -342,13 +345,17 @@ function variantQur(sh, room, talab, Q, catalog) {
   const top = (t) => pl.find(p => p._tur === t);
   const devorN = (p) => p._devor + 1;
   const mo = top('moyka'), pt = top('plita'), xl = top('xolodilnik');
-  const quvur = (room.utilities || []).find(u => u.type === 'pipe');
-  if (mo) izohlar.push({ kalit: 'konstruktor.iz_moyka', v: { d: devorN(mo), s: Math.round(mo._s0), sabab: quvur ? 'quvur' : 'deraza' } });
-  if (pt) izohlar.push({ kalit: 'konstruktor.iz_plita', v: { d: devorN(pt), s: Math.round(pt._s0) } });
-  if (xl) izohlar.push({ kalit: 'konstruktor.iz_xolodilnik', v: { d: devorN(xl) } });
+  /* izohlar — qisqa kalit (ekranda: t('konstruktor.iz_' + kalit, v)) */
+  if (mo) {
+    const sabab = (room.utilities || []).some(u => u.type === 'pipe' && +u.wall === mo._devor) ? 'quvur'
+      : (room.openings || []).some(o => o.type === 'window' && +o.wall === mo._devor) ? 'deraza' : 'devor';
+    izohlar.push({ kalit: 'moyka_' + sabab, v: { d: devorN(mo), s: Math.round(mo._s0) } });
+  }
+  if (pt) izohlar.push({ kalit: 'plita', v: { d: devorN(pt), s: Math.round(pt._s0), yon: Q.plita.yon } });
+  if (xl) izohlar.push({ kalit: 'xolodilnik', v: { d: devorN(xl) } });
   const dob = pl.filter(p => p._tur === 'dobor');
-  if (dob.length) izohlar.push({ kalit: 'konstruktor.iz_dobor', v: { n: dob.length, w: dob.map(p => p.w).join(', ') } });
-  if ((room.openings || []).some(o => o.type === 'window' && reja.some(r => r.dv.i === +o.wall))) izohlar.push({ kalit: 'konstruktor.iz_deraza', v: {} });
+  if (dob.length) izohlar.push({ kalit: 'dobor', v: { n: dob.length, w: [...new Set(dob.map(p => p.w))].join(', ') } });
+  if ((room.openings || []).some(o => o.type === 'window' && reja.some(r => r.dv.i === +o.wall))) izohlar.push({ kalit: 'deraza', v: {} });
 
   const placements = pl.map(p => { const o = Object.assign({}, p); for (const k of Object.keys(o)) if (k[0] === '_') delete o[k]; return o; });
   const kitchen = { stoleshnitsa: true, stoleshnitsaD: Q.stoleshnitsa.d, sokol: true, dobor: false, karniz: false, moyka: { on: false, offset: 600, fromBack: 100, size: 500 } };
@@ -382,10 +389,10 @@ export function konstruksiya(room, talab = {}, catalog = {}, opt = {}) {
   if (t.shakl !== 'auto') nomzod = nomzod.filter(s => s.shakl === t.shakl);
   /* joy yetmasa — bosqichma-bosqich: muzlatgichsiz → muzlatgichsiz va qisqa oraliqlar → plitasiz (har biri izoh bilan) */
   const bosqich = [{ t }];
-  if (t.xolodilnik) bosqich.push({ t: Object.assign({}, t, { xolodilnik: false }), izoh: 'konstruktor.iz_joy_xolodilnik' });
+  if (t.xolodilnik) bosqich.push({ t: Object.assign({}, t, { xolodilnik: false }), izoh: 'joy_xolodilnik' });
   if (t.plita) {
-    bosqich.push({ t: Object.assign({}, t, { xolodilnik: false }), q: { plita: { yon: 150 }, moyka: { plitadan: 300 } }, izoh: 'konstruktor.iz_joy_qisqa' });
-    bosqich.push({ t: Object.assign({}, t, { xolodilnik: false, plita: false }), izoh: 'konstruktor.iz_joy_plita' });
+    bosqich.push({ t: Object.assign({}, t, { xolodilnik: false }), q: { plita: { yon: 150 }, moyka: { plitadan: 300 } }, izoh: 'joy_qisqa' });
+    bosqich.push({ t: Object.assign({}, t, { xolodilnik: false, plita: false }), izoh: 'joy_plita' });
   }
   for (const b of bosqich) {
     const Qb = b.q ? qoidalar(Object.assign({}, opt.qoidalar || {}, b.q)) : Q;

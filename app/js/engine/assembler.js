@@ -47,8 +47,10 @@ function fasadQatorlari(frag, w, d, h, t, tall) {
 
 /** TZ-22: eshik qatori modul detallaridan — bitta eshik detali, soni 1 yoki 2. Aniqlab bo'lmasa null (eski qoida: w > 600 → 2).
  *  Bazis'dan olingan modulda (frag.manba.fayl) eshik detali yo'q bo'lsa — eshiksiz (ochiq javon).
- *  Qisman eshik (eni < w − 20, masalan gluxoy burchak: 308 / 258) — Bazis faylidagidek o'ng tomonda, petlya eshikning chap chetida
- *  (gluxoy chap.fr3d, gluxoy 2 etaj *.fr3d, antirsol gluxoy 1000 o'ng.fr3d — 2026-10-16 da tekshirildi). */
+ *  Qisman eshik (eni < w − 20, masalan gluxoy burchak: 308 / 258) — Bazis faylidagidek tomoshabinning o'ngida, petlya eshikning
+ *  ko'r qism tomonidagi chetida (gluxoy chap.fr3d, gluxoy 2 etaj *.fr3d, antirsol gluxoy 1000 o'ng.fr3d — 2026-10-16 da tekshirildi).
+ *  Diqqat: bizda lokal +x — tomoshabinning CHAPI (reja o'ng qo'l tizimida), Bazis'da +X — o'ngi; shuning uchun eshik lokal −x da.
+ *  hingeSide / opts.hinge: 'left' — petlya lokal −x chetida (xonadan qaraganda o'ng chet), 'right' — lokal +x chetida. */
 export function eshikTuzilmasi(frag, w, d, h, t = 16) {
   const parts = (frag && frag.parts) || [];
   const vars = { w, d, h, t };
@@ -231,16 +233,17 @@ export function getModulePanels(frag, w, d, h, opts = {}) {
       const isTwoDoors = ed ? ed.soni === 2 : w > 600;
 
       if (ed && ed.qisman) {
-        /* gluxoy burchak: eshik o'ngda (petlya — eshikning chap chetida), qolgani — qo'zg'almas fasad */
-        const doorW = Math.min(ed.eni, w - 4), x = w / 2 - 2 - doorW / 2, bw = Math.max(10, w - 4 - doorW - 2);
+        /* gluxoy burchak: eshik tomoshabinning o'ngida (lokal −x), petlya — ko'r qism tomonidagi chetida (+x),
+           tutqich — tashqi chetida; qolgani (lokal +x tomoni) — qo'zg'almas fasad */
+        const doorW = Math.min(ed.eni, w - 4), x = -w / 2 + 2 + doorW / 2, bw = Math.max(10, w - 4 - doorW - 2);
         const door = {
           id: 'fasad_1', name: 'Fasad eshik', slot: 'fasad', code: 'eshik', isFasad: true, isDoor: true,
-          w: doorW, d: t, h: doorH, x, y: d / 2 + t / 2, z: zDoor, hingeSide: 'left',
-          handle: { x: x + doorW / 2 - 35, y: d / 2 + t + 10, z: zDoor, w: 12, d: 22, h: 120 }
+          w: doorW, d: t, h: doorH, x, y: d / 2 + t / 2, z: zDoor, hingeSide: 'right',
+          handle: { x: x - doorW / 2 + 35, y: d / 2 + t + 10, z: zDoor, w: 12, d: 22, h: 120 }
         };
         panels.push(door, {
           id: 'gluxoy_fasad', name: 'Gluxoy fasad', slot: 'fasad', code: 'gluxoy', isFasad: true,
-          w: bw, d: t, h: doorH, x: -w / 2 + 2 + bw / 2, y: d / 2 + t / 2, z: zDoor
+          w: bw, d: t, h: doorH, x: w / 2 - 2 - bw / 2, y: d / 2 + t / 2, z: zDoor
         });
         doors.push(door);
       } else if (!isTwoDoors) {

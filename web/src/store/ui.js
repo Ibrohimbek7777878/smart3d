@@ -29,7 +29,7 @@ export function confirmYes() {
   if (yes) yes();
 }
 
-/** pastki varaq (dizaynda yo'q qismlar): kind — 'teshik' | 'shakl' | 'material' | 'oshxona', qolgani — varaq maydonlari */
+/** pastki varaq (dizaynda yo'q qismlar): kind — 'teshik' | 'shakl' | 'material' | 'oshxona' | 'konstruktor', qolgani — varaq maydonlari */
 export function openSheet(kind, fields) { set('ui', { vq: { kind, ...fields } }); }
 export function patchSheet(patch) { set('ui', s => ({ vq: s.vq ? { ...s.vq, ...patch } : s.vq })); }
 export function closeSheet() { set('ui', { vq: null }); }

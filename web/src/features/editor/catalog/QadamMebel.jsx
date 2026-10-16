@@ -2,6 +2,8 @@ import React from 'react';
 import { t } from '../../../i18n/index.js';
 import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useQadamMebel } from './useQadamMebel.js';
+import { openKonstruktor } from '../konstruktor/konstruktor.js';
+import { btnGhost } from '../../../shared/ui/styles.js';
 
 /* TZ-19: ② Mebel (katalog) — JSX va stillar tasdiqlangan dizayndan; qiymatlar useQadamMebel() dan. */
 export default function QadamMebel() {
@@ -21,6 +23,10 @@ export default function QadamMebel() {
           {v.catCount}
         </span>
       </div>
+      {/* TZ-22 (dizaynda yo'q — egasi skrinshot bilan tasdiqlaydi): avtomatik konstruksiya */}
+      <button onClick={openKonstruktor} data-konstruktor style={{ ...btnGhost, height: '48px', flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+        <Ikon n="konstruktor" size={18} gap={0} />{t('konstruktor.tugma')}
+      </button>
       <input value={v.q} onChange={v.onQ} placeholder={t('mebel.shkaf_2_eshik')} style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","height":"48px","background":"var(--sfc)","flex":"0 0 auto"}} />
       <div style={{"display":"flex","gap":"6px","overflowX":"auto","flex":"0 0 auto","paddingBottom":"2px"}}>
         {(v.cats || []).map((c, $index) => (<React.Fragment key={$index}>
