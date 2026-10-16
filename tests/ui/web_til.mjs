@@ -32,6 +32,8 @@ async function asosiy(page, R) {
   await page.locator('button', { hasText: /^Регистрация$/ }).last().click();
   R.ruServer = await (async () => { for (let i = 0; i < 25; i++) { if (await has('Введено неверное значение')) return true; await page.waitForTimeout(200); } return false; })();
   R.ruServerUz = await has('mumkin emas');
+  /* ro'yxat oynasidagi 3D yorliqlar ham ruscha ("Yon devor ×2" — soni bilan ham) */
+  R.ruYorliq = await M(() => document.body.innerText.split('\n').filter(l => /Yon devor|Planka|Eshik|Orqa devor|Polka|tomoni/.test(l)).slice(0, 5));
   await page.screenshot({ path: `${OUT}/til-1440-ru-server-xato.png`, clip: { x: 0, y: 0, width: 1440, height: 700 } });
 
   await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
@@ -105,7 +107,7 @@ async function asosiy(page, R) {
   await M(() => localStorage.setItem('s3d-til', 'uz'));
 
   R.errs = errs;
-  R.ok = R.ruServer && !R.ruServerUz && R.ruExcel && /^ru\|[1-9]/.test(R.ruPdf || '') && R.ruKatalog.length > 0 && R.ruKatalog.every(n => /[А-Яа-яЁё]/.test(n)) && R.ruQolgan.length === 0 && R.sayt.lang === 'ru' && R.sayt.tugma === 'Русский' && yuklandi && R.menyu.join('|') === 'O\'zbekcha|Русский|English' && R.ru.lang === 'ru' && R.ru.saqlandi === 'ru' && R.ru.menyuYopiq &&
+  R.ok = R.ruServer && !R.ruServerUz && R.ruYorliq.length === 0 && R.ruExcel && /^ru\|[1-9]/.test(R.ruPdf || '') && R.ruKatalog.length > 0 && R.ruKatalog.every(n => /[А-Яа-яЁё]/.test(n)) && R.ruQolgan.length === 0 && R.sayt.lang === 'ru' && R.sayt.tugma === 'Русский' && yuklandi && R.menyu.join('|') === 'O\'zbekcha|Русский|English' && R.ru.lang === 'ru' && R.ru.saqlandi === 'ru' && R.ru.menyuYopiq &&
     R.ru.qaytaYuklanmadi && R.ru.narx === narxUz && R.ru.server === 'ru' && R.escYopdi && R.eslabQoldi === 'ru' && R.sozlamaTil.length === 3 && R.en === 'en' &&
     R.uz === 'uz' && !R.hScroll && errs.length === 0;
 }

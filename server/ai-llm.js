@@ -29,7 +29,7 @@ export const AI_SCHEMA = obj({
   unknown: { type: 'array', items: { type: 'string' } }
 });
 
-const SYSTEM = `Siz mebel ustasining (o'zbek, rus yoki aralash tilda, og'zaki) gapini tuzilmaga o'girasiz.
+const SYSTEM = `Siz mebel ustasining (o'zbek, rus, ingliz yoki aralash tilda, og'zaki) gapini tuzilmaga o'girasiz.
 Faqat matnda AYTILGAN narsani yozing, hech narsani o'ylab topmang:
 - room.w_mm, room.d_mm — xona eni va chuqurligi, millimetrda ("3.6x3 m" → 3600 va 3000). Aytilmagan bo'lsa 0.
 - room.h_mm — shift balandligi, mm. Aytilmagan bo'lsa 0. Mebel balandligi xona balandligi EMAS.

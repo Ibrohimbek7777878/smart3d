@@ -6,7 +6,7 @@ import * as L from '../../../services/loyiha.js';
 import { aiBuild, startVoice, voiceSupported } from '../../../../../app/js/ai.js';
 import { roomBBox } from '../../../../../app/js/engine/rules.js';
 import { konstruksiya } from '../../../../../app/js/engine/konstruktor/index.js';
-import { t } from '../../../i18n/index.js';
+import { t, til } from '../../../i18n/index.js';
 
 /* TZ-19 (TZ-12): AI — server til modeli (kirgan va serverda yoqilgan bo'lsa) yoki qoidali tahlilchi (ai.js), ovoz — brauzer. */
 export const AI_EX = ['ai.misol1', 'ai.misol2', 'ai.misol3'];   // AI ham uch tilni tushunadi (TZ-18 8-bosqich)
@@ -65,7 +65,8 @@ export function closeAi() { stopVoice(); set('ai', { open: false, mic: false });
 
 function stopVoice() { if (voice) { voice.stop(); voice = null; } }
 
-/** mikrofon: o'zbekcha, qo'llamasa — ruscha */
+/** mikrofon: tanlangan tilda (TZ-18); o'zbekchani brauzer qo'llamasa — ruscha */
+const OVOZ_TIL = { uz: 'uz-UZ', ru: 'ru-RU', en: 'en-US' };
 export function toggleMic() {
   if (voice) { stopVoice(); set('ai', { mic: false }); return; }
   if (!voiceSupported()) { toast(t('ai.brauzer_ovozsiz')); return; }
@@ -79,7 +80,9 @@ export function toggleMic() {
       if (err && err !== 'no-speech' && err !== 'aborted') xato('S3D-AI-102', { matn: VOICE_ERR[err] ? t(VOICE_ERR[err]) : t('ai.ovoz_xatosi', { s: err }), modul: 'editor/ai' });
     }
   });
-  rec = start('uz-UZ'); voice = rec;
+  const lang = OVOZ_TIL[til()] || 'uz-UZ';
+  triedRu = lang !== 'uz-UZ';                     // zaxira (ruscha) — faqat o'zbekcha uchun
+  rec = start(lang); voice = rec;
   set('ai', { mic: !!rec });
 }
 

@@ -197,5 +197,65 @@ const upper = { id: 'p2', frg: 'SP-K-002', x: 500, y: 500, z: 1450, w: 600, d: 3
   ok('A1 sig\'magan buyurtma → "so\'raldi … sig\'di" ogohlantirishi', (s.notes || []).some(x => /pastki: 9 ta so'raldi/.test(x)), JSON.stringify(s.notes));
 }
 
+/* ══════════════ TZ-18 8-bosqich: AI uch tilda (internetsiz qoidali tahlilchi) ══════════════ */
+{
+  const I18N = join(APP, '..', 'web', 'src', 'i18n');
+  const lug = (l) => JSON.parse(fs.readFileSync(join(I18N, l + '.json'), 'utf8'));
+  const UZ = lug('uz'), RU = lug('ru'), EN = lug('en');
+  const izi = (r) => JSON.stringify([r.room.w, r.room.d, r.room.h, r.room.layoutType,
+    Object.entries(r.room.features).filter(([, v]) => v).map(([k]) => k), r.orders]);
+  /* AI oynasidagi namunalar — tarjimasi o'zbekchadagidek tushuniladi (3-namunadagi "toko" — dizayn so'zi, faqat o'lcham) */
+  for (const k of ['ai.misol1', 'ai.misol2']) {
+    const u = izi(parseZamer(UZ[k]));
+    eq('TZ-18 ' + k + ' ru = uz', JSON.parse(izi(parseZamer(RU[k]))), JSON.parse(u));
+    eq('TZ-18 ' + k + ' en = uz', JSON.parse(izi(parseZamer(EN[k]))), JSON.parse(u));
+  }
+  for (const L of [RU, EN]) { const r = parseZamer(L['ai.misol3']); eq('TZ-18 ai.misol3 o\'lcham (' + (L === RU ? 'ru' : 'en') + ')', [r.room.w, r.room.d], [5000, 4000]); }
+
+  const sum = (o, k) => o.filter(x => x.kind === k).reduce((s, x) => s + x.qty, 0);
+  let r = parseZamer('П-образная кухня 4 на 3 метра, мойка, плита, холодильник, три верхних шкафа, окно 120 см');
+  eq('TZ-18 ru: П-образная 4 на 3 метра → U 4000×3000', [r.room.layoutType, r.room.w, r.room.d], ['U', 4000, 3000]);
+  ok('TZ-18 ru: мойка, плита, холодильник', r.room.features.sink && r.room.features.stove && r.room.features.fridge);
+  eq('TZ-18 ru: "три верхних" → 3 ustki; окно 120 см → 1200', [sum(r.orders, 'ustki'), r.room.openings.map(o => o.type + o.width)], [3, ['window1200']]);
+  r = parseZamer('кухня 3 с половиной на 2.8 м, высота потолка 2.6, мойка в углу, 3 штуки нижних');
+  eq('TZ-18 ru: "3 с половиной на 2.8", потолок 2.6, "в углу" → L, 3 штуки нижних',
+    [r.room.w, r.room.d, r.room.h, r.room.layoutType, sum(r.orders, 'pastki')], [3500, 2800, 2600, 'L', 3]);
+  r = parseZamer('внутри шкафа полка');
+  eq('TZ-18 ru: "внутри" — "три" emas (miqdor yo\'q)', r.orders, []);
+  r = parseZamer('3 столешницы');
+  eq('TZ-18 ru: столешница — stol emas', r.orders, []);
+
+  r = parseZamer('L-shaped kitchen 3.6m x 3m, sink, stove, fridge, 3 upper cabinets');
+  eq('TZ-18 en: L-shaped 3.6m x 3m → L 3600×3000', [r.room.layoutType, r.room.w, r.room.d], ['L', 3600, 3000]);
+  ok('TZ-18 en: sink, stove, fridge, upper', r.room.features.sink && r.room.features.stove && r.room.features.fridge && r.room.features.upper);
+  eq('TZ-18 en: 3 upper → 3 ustki', sum(r.orders, 'ustki'), 3);
+  r = parseZamer('U-shaped kitchen 4 by 3 m, ceiling 2.8, window 1.2 m, two base cabinets, 2 tables');
+  eq('TZ-18 en: 4 by 3 m, ceiling 2.8, window 1.2 m, two base, 2 tables',
+    [r.room.layoutType, r.room.w, r.room.d, r.room.h, r.room.openings.map(o => o.type + o.width), sum(r.orders, 'pastki'), sum(r.orders, 'stol')],
+    ['U', 4000, 3000, 2800, ['window1200'], 2, 2]);
+  r = parseZamer('kitchen with 2 doors');
+  eq('TZ-18 en: "with 2" — xona balandligi emas', r.room.h, 2700);
+  r = parseZamer('cabinet height 2400, kitchen 3x4');
+  eq('TZ-18 en: "cabinet height 2400" — mebel balandligi, xona emas', [r.room.h, r.unknown.length], [2700, 1]);
+  r = parseZamer('3600 mm x 3000 mm kitchen');
+  eq('TZ-18: "3600 mm x 3000 mm" → 3600×3000', [r.room.w, r.room.d], [3600, 3000]);
+  r = parseZamer('360 sm x 300 sm');
+  eq('TZ-18: "360 sm x 300 sm" → 3600×3000', [r.room.w, r.room.d], [3600, 3000]);
+  r = parseZamer('oshxona 3000x4000 mebel');
+  eq('TZ-18: "3000x4000 mebel" — "m" birlik emas', [r.room.w, r.room.d], [3000, 4000]);
+
+  /* bitta oshxona uch tilda — bir xil loyiha */
+  const uch = ['oshxona 4x3, L shakl, moyka, plita, xolodilnik, 3 ta ustki',
+    'угловая кухня 4x3, мойка, плита, холодильник, 3 верхних',
+    'L-shaped kitchen 4x3, sink, stove, fridge, 3 upper'];
+  const qur = [];
+  for (const m of uch) qur.push(await aiBuild(m, catalog));
+  const iz = (b) => JSON.stringify(b.doc.placements.map(p => [p.frg, p.x, p.y, p.rot]).sort());
+  ok('TZ-18 aiBuild: uz/ru/en — bir xil joylashuv', iz(qur[0]) === iz(qur[1]) && iz(qur[1]) === iz(qur[2]) && qur[0].doc.placements.length > 0,
+    qur.map(b => b.doc.placements.length).join('/'));
+  const vr = validateDoc(qur[1].doc, { catalog });
+  ok('TZ-18 aiBuild ru: ustma-ust yo\'q', !vr.warnings.concat(vr.errors).some(w => /OVERLAP/.test(w.code)), JSON.stringify(vr.warnings));
+}
+
 console.log('\n' + (fails === 0 ? `=== HAMMASI OK (${n} ta tekshiruv) ===` : `=== ${fails}/${n} XATO ===`));
 process.exit(fails ? 1 : 0);

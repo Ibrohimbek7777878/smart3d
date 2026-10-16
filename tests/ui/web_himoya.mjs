@@ -72,8 +72,10 @@ async function asosiy(page, R) {
   const SRV = `http://127.0.0.1:${process.env.NPORT}`;
   await page.goto(SRV + '/?t=' + Date.now()); await page.waitForTimeout(3000);
   R.prodSayt = await M(() => !!document.querySelector('[data-s3d]'));
+  await M(() => localStorage.setItem('s3d-til', 'uz'));   // boshqa port — boshqa origin: birinchi ochilishda brauzer tili (en-US) olinardi (TZ-18 §3)
   await page.goto(SRV + '/app.html?t=' + Date.now() + '#s=reg'); await page.waitForTimeout(3000);
   R.prodIlova = await has('Ro\'yxatdan o\'tish');
+  if (!R.prodIlova) { R.prodIlovaMatn = (await txt()).slice(0, 200); await page.screenshot({ path: `${process.env.QA_OUT}/himoya-prod-ilova.png` }); }
   await page.goto(SRV + '/yoq-sahifa'); await page.waitForTimeout(800);
   R.prod404 = await has('Sahifa topilmadi');
   /* eski sayt — CSP bilan: importmap (xesh) va three.js ishlaydi */

@@ -126,7 +126,7 @@ function s3HwMesh(T,M,kind,r){let g,m;
   const me=new T.Mesh(g,m);if(r==='x')me.rotation.z=Math.PI/2;if(r==='z')me.rotation.x=Math.PI/2;return me}
 /* TZ-18: yorliq matni tarjimasi — sayt/ilova o'rnatadi (s3SetT), til almashsa s3Retitle(v) yorliqlarni joyida yangilaydi */
 let S3_T=x=>x;
-const s3SetT=f=>{S3_T=f};
+const s3SetT=f=>{S3_T=x=>{const m=/^(.*\S) (×\d+)$/.exec(x||'');return m?f(m[1])+' '+m[2]:f(x)}};   // "Yon devor ×2" — nom tarjima qilinadi, soni qoladi
 function s3Retitle(v){for(const L of v.labels){if(!L.raw)continue;const sp=L.el.children;if(L.kind==='tag')L.el.textContent=S3_T(L.raw[0])+'  →';else if(sp.length){sp[0].textContent=S3_T(L.raw[0]);if(sp[1])sp[1].textContent=S3_T(L.raw[1])}}}
 function s3Label(v,title,sub,obj,kind){const el=document.createElement('div');const raw=[title,sub];title=S3_T(title);sub=S3_T(sub);
   const base='position:absolute;left:0;top:0;opacity:0;white-space:nowrap;font-family:"Plus Jakarta Sans",sans-serif;font-variant-numeric:tabular-nums;will-change:transform,opacity;';
