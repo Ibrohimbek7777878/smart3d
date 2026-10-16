@@ -1,6 +1,6 @@
 # TZ-18 — Uch til: o'zbek, rus, ingliz (har bir matn)
 
-**Sana:** 2026-10-15 · **Navbat:** 18 · **Holat:** TASDIQLANDI 2026-10-15 ("boshla", commit de95f2a) — BAJARILMOQDA: 1-bosqich — [atamalar jadvali](18-atamalar.md) egasi tasdig'ida, 2-bosqich (tuzilma, til tanlash) — boshlandi
+**Sana:** 2026-10-15 · **Navbat:** 18 · **Holat:** BAJARILDI 2026-10-16 (`dizayn` tarmog'i; "boshla" — commit de95f2a, atamalar jadvali tasdiqlandi 2026-10-16) — sexdan bir kishi ruscha matnni ko'rib chiqishi tavsiya etiladi (§6)
 **Asos:** egasi (2026-10-15): "tilni ham qo'sh, rus, ingliz, o'zbek bo'lsin va har bir harf, har bir text o'zgarishi kerak".
 **Bog'liq:** TZ-09 (yangi frontend — o'zbekcha matnlar shu yerda lug'atga olinadi), TZ-16 (Telegram — til Telegram'dan olinadi), TZ-12 (AI).
 
@@ -97,3 +97,28 @@
 
 ## 13. Muddat (taxmin)
 - Taxminan **3–4 ish kuni**, TZ-09 dan keyin. Bu taxmin, aniq hisob emas.
+
+## Natija (2026-10-16, `dizayn` tarmog'i, commitlar `d7cf5f5` … `2e72c63`)
+| Bosqich | Natija |
+|---|---|
+| 1. Atamalar | [18-atamalar.md](18-atamalar.md) — egasi tasdiqladi |
+| 2. Tuzilma | `web/src/i18n/{uz,ru,en}.json`, `t()`; 🌐 menyu (sarlavha, sayt pastida, Sozlamalar → Til); tanlov qurilmada va akkauntda; birinchi ochilishda — brauzer tili, mos kelmasa — o'zbek; almashganda sahifa qayta yuklanmaydi |
+| 3–4. Sayt va ilova | 673 kalit, uchala tilda 100% (`verify_til --qatiy` run-all ichida); 3D yorliqlar ham tarjimada |
+| 5. Dvigatel, modul va material nomlari | `app/data/nomlar.{ru,en}.json` — 130 modul, 13 material (asl `fragments*.json` o'zgarmagan); detal nomlari `d3.*` |
+| 6. Hujjatlar | PDF hisobot va Excel smeta tanlangan tilda; o'zbekcha natija baytma-bayt avvalgidek (eski sayt o'zgarmaydi); ERP/Bazis mahsulot nomlari va stanok fayllari tarjima qilinmaydi (§2) |
+| 7. Server | har xato javobida kod (S3D-*), ekran uni tanlangan tilda ko'rsatadi — 52 kodning har biri ru/en'da (test bilan); til akkauntda (`settings.til`, server uz/ru/en dan boshqasini rad etadi) |
+| 8. AI | internetsiz tahlilchi rus va ingliz tilini tushunadi (shakl, o'lcham "4 на 3 метра" / "4 by 3 m" / "3.6m x 3m", jihozlar, miqdor "три верхних" / "two base cabinets"); mikrofon tanlangan tilda; server AI ko'rsatmasida ingliz tili. Bitta oshxona 3 tilda — bir xil loyiha (test) |
+| 9. Yakuniy | yangi `web_ekranlar`: 17 ekran va oyna × 390/768/1440 × 3 til — gorizontal aylantirish 0, rus/inglizda yangi kesilish 0. Narx 3 tilda bir xil (`web_til`). O'zbek tilida dizayn o'zgarmagan (`dizayn.sh`) |
+
+**Yo'lda topilgan va tuzatilgan xatolar:**
+1. AI: "kitchen with 2 doors" xona balandligini 2000 mm qilardi; "внутри" so'zidagi "три" miqdor sanalardi; "3.6m x 3m" hech bir tilda o'qilmasdi.
+2. Rus/ingliz rejimida "Yon devor ×2" kabi sonli 3D yorliqlar o'zbekcha qolardi.
+3. Ro'yxatdan o'tishda server rad etgan maydon xatosi rus/ingliz rejimida ham o'zbekcha chiqardi.
+4. Ruscha telefonda: xona shakli tanlovi sig'masdi ("Своя"), narx kartasida "Себестоимость" toshardi ("Затраты цеха") — dizayn o'zgarmadi, qisqaroq tarjima olindi (§5).
+
+**TZ'dan farqi (kichik):**
+- `users.lang` alohida ustun emas — mavjud `users.settings_json` ichida `til` (boshqa sozlamalar bilan bir joyda, migratsiyasiz).
+- Modul nomlari fayli: `app/data/nomlar.{ru,en}.json` (TZ'da `app/data/i18n/modules.*.json`) — modul va material nomlari bitta faylda.
+
+**Egasiga savol:**
+- AI oynasidagi 3-namuna (tasdiqlangan dizayndan): "5x4 mehmonxona, divan, 2 ta toko" — "toko" nima? Tahlilchi bu so'zni tanimaydi; ruschasi "2 тумбы", inglizchasi "2 cabinets" deb tarjima qilingan.
