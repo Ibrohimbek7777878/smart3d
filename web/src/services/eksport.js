@@ -10,6 +10,11 @@ import { buildXLSX, XLSX_YORLIQ_UZ } from '../../../app/js/engine/xlsxexport.js'
 import { buildBPJ } from '../../../app/js/engine/bpj.js';
 import { buildProject as buildGlProject } from '../../../app/js/engine/giblab.js';
 import { cncBundle, cutGCode } from '../../../app/js/engine/cnc.js';
+import { SimpleZip } from '../../../app/js/engine/xlsxexport.js';
+import { stanokModeli } from '../../../app/js/engine/post/smart3d.js';
+import { projectYoz } from '../../../app/js/engine/post/project.js';
+import { kdtFayllar } from '../../../app/js/engine/post/kdt.js';
+import { cp1251 } from '../../../app/js/engine/post/xml.js';
 import { render1080p, render360Panorama } from '../../../app/js/engine/photo-render.js';
 import { s3n } from '../shared/design3d/engine.js';
 import { t, til } from '../i18n/index.js';
@@ -221,6 +226,34 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
   ptp(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).ptp, '-ptp.csv', 'text/csv', t('hujjat.t_ptp')); },
   nc(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).nc, '-teshik.nc', 'text/plain', t('hujjat.t_nc')); },
   altendorf(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).altendorf, '-altendorf-fazali-kesim.txt', 'text/plain', t('hujjat.t_alt')); },
+  /* TZ-11: sexdagi zanjir — Bazis eksportidek GibLab .project (GibLab kesimni o'zi optimallashtiradi, arra fayllarini o'zi
+     chiqaradi) va KDT prisadka fayllari (ZIP). 30 ta haqiqiy buyurtmada tekshirilgan; texnolog sinovigacha — SINOV, faqat admin. */
+  _stanok(c) {
+    return stanokModeli({ cutlists: c.res.cutlists, placements: c.res.placements, catalog: c.H.catalog, materials: c.H.materials, nom: c.name || 'Smart3D' });
+  },
+  giblabBazis(c) {
+    if (!ok(c, true)) return;
+    safe(c, () => {
+      const { model, ogoh } = this._stanok(c);
+      download(fname(c) + '-bazis.project', cp1251(projectYoz(model)), 'application/xml');
+      c.toast(t('hujjat.t_giblab_bazis', { d: model.detallar.length, s: model.detallar.reduce((a, d) => a + d.soni, 0) })
+        + (ogoh.spTeshik ? t('hujjat.t_sp_teshik', { n: ogoh.spTeshik }) : '') + t('hujjat.t_sinov'));
+    });
+  },
+  kdt(c) {
+    if (!ok(c, true)) return;
+    safe(c, () => {
+      const { model, ogoh } = this._stanok(c), zip = new SimpleZip();
+      const kq = (id) => (model.kromkalar.find(k => k.id === id) || {}).t || 0;
+      let n = 0;
+      for (const d of model.detallar) {
+        const kr = Object.fromEntries(Object.entries(d.kromka).map(([q, id]) => [q, id ? kq(id) : 0]));
+        for (const f of kdtFayllar({ kod: d.kod, nom: d.nom, dl: d.dl, dw: d.dw, t: d.t, kromka: kr }, d.xnc)) { zip.addFile(f.nom, f.matn); n++; }
+      }
+      download(fname(c) + '-kdt.zip', new Blob([zip.generate()], { type: 'application/zip' }), 'application/zip');
+      c.toast(t('hujjat.t_kdt', { n, d: model.detallar.length }) + (ogoh.spTeshik ? t('hujjat.t_sp_teshik', { n: ogoh.spTeshik }) : '') + t('hujjat.t_sinov'));
+    });
+  },
   /** BPJ (TZ-17 gacha faqat admin, SINOV) */
   bpj(c) {
     if (!ok(c, false)) return;

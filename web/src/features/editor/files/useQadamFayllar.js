@@ -22,7 +22,9 @@ export function useQadamFayllar() {
       more: [[t('fayllar.detallar_csv'), 'cutlist'], [t('fayllar.loyiha_fayli'), 'loyiha'], [t('fayllar.smeta_csv'), 'smetaCsv'], ['OBJ', 'obj'], [t('fayllar.teshiklar_json'), 'teshiklar']] },
     { title: t('fayllar.stanokka'), col: 'var(--acct)', sub: t('fayllar.dastursiz'), mainLabel: 'GibLab', main: 'giblab',
       more: [['DXF', 'dxf'], ['G-code', 'gcode'], [t('fayllar.tez_orada', { nom: 'Biesse' }), null], [t('fayllar.tez_orada', { nom: 'Homag' }), null], ['PTP', 'ptp'], ['NC', 'nc'], ['XNC', 'xnc'], ['Altendorf', 'altendorf'],
-        admin ? [t('fayllar.sinov', { nom: 'Bazis (BPJ)' }), 'bpj'] : [t('fayllar.tez_orada', { nom: 'Bazis (BPJ)' }), null]]
+        admin ? [t('fayllar.sinov', { nom: 'Bazis (BPJ)' }), 'bpj'] : [t('fayllar.tez_orada', { nom: 'Bazis (BPJ)' }), null],
+        /* TZ-11: Bazis eksportidek GibLab .project va KDT prisadka — texnolog sinovigacha faqat admin, SINOV */
+        ...(admin ? [[t('fayllar.sinov', { nom: 'GibLab (Bazis)' }), 'giblabBazis'], [t('fayllar.sinov', { nom: 'KDT prisadka' }), 'kdt']] : [])]
         .filter(([, k]) => !k || !stanoklar || !STANOK.some(x => x[0] === k) || stanoklar.includes(k)) }];
   return {
     checks: [

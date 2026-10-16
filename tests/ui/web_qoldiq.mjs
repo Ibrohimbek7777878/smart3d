@@ -77,6 +77,21 @@ async function asosiy(page, R) {
   if (R.omborgaTugma) { await page.locator('[data-qoldiq-omborga]').click(); await page.waitForTimeout(1200); }
   R.omborgaToast = await has('qoldiq qo\'shildi');
 
+  /* 3b) TZ-11: Fayllar → GibLab (Bazis uslubi) va KDT prisadka (admin, SINOV) */
+  await click(/^Fayllar$/); await page.waitForTimeout(800);
+  const yukla = async (matn) => {
+    const dl = page.waitForEvent('download', { timeout: 20000 }).catch(() => null);
+    await page.locator('[data-panel] button', { hasText: matn }).first().click();
+    const d = await dl;
+    if (!d) return null;
+    const { readFileSync } = await import('node:fs');
+    return { nom: d.suggestedFilename(), b: readFileSync(await d.path()) };
+  };
+  const gp = await yukla('GibLab (Bazis)');
+  R.giblabBazis = gp ? { nom: gp.nom, bosh: gp.b.slice(0, 80).toString('latin1'), cp1251: !gp.b.includes(Buffer.from('Ð')), mc: new TextDecoder('windows-1251').decode(gp.b).includes('name="pol"'), xnc: (gp.b.toString('latin1').match(/typeId="XNC"/g) || []).length } : null;
+  const kz = await yukla('KDT prisadka');
+  R.kdt = kz ? { nom: kz.nom, zip: kz.b[0] === 0x50 && kz.b[1] === 0x4b, fayllar: (kz.b.toString('latin1').match(/_[12]\.XML/g) || []).length / 2, kdtFormat: kz.b.toString('latin1').includes('<KDTPanelFormat>') } : null;
+
   /* 4) Sozlamalar: ombor ko'paydi; bittasi ishlatildi → "Ishlatilgan" da */
   await page.locator('[aria-label="Sozlamalar"]').click(); await waitText('Qoldiqlar ombori'); await page.waitForTimeout(1000);
   R.ombor = (await qatorlar()).length;
@@ -94,6 +109,8 @@ async function asosiy(page, R) {
   R.errs = errs;
   R.ok = R.bosh && R.qoshildi.length === 1 && /900 × 400 × 16/.test(R.qoshildi[0]) && R.qidiruvYoq === 0 && R.qidiruv === 1 && R.xatoOlcham &&
     R.joylar >= 2 && R.furnLoyiha.n > 1 && /Furnitura jami/.test(R.furnLoyiha.matn) && /Katalog \(19\d\d\)/.test(R.katalogTab) && R.qidiruvPetlya > 0 && R.toifa.n > 0 && R.toifa.n === R.toifa.hammasi &&
-    (R.nestQoldiq === 0 || (R.omborgaTugma === 1 && R.omborgaToast && R.ombor === 1 + R.nestQoldiq)) && R.omborKeyin === R.ombor - 1 && R.ishlatilgan === 1 &&
+    (R.nestQoldiq === 0 || (R.omborgaTugma === 1 && R.omborgaToast && R.ombor === 1 + R.nestQoldiq)) &&
+    R.giblabBazis && /^<\?xml version="1.0" encoding="windows-1251"\?><project importBMV="1.84">/.test(R.giblabBazis.bosh) && R.giblabBazis.mc && R.giblabBazis.xnc > 0 &&
+    R.kdt && R.kdt.zip && R.kdt.fayllar > 5 && R.kdt.kdtFormat && R.omborKeyin === R.ombor - 1 && R.ishlatilgan === 1 &&
     R.tel.sigadi && !R.tel.hScroll && errs.length === 0;
 }

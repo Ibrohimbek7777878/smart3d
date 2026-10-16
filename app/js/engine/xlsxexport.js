@@ -32,7 +32,7 @@ function crc32(buf) {
   return (crc ^ 0xFFFFFFFF) >>> 0;
 }
 
-class SimpleZip {
+export class SimpleZip {   // TZ-11: KDT fayllari ZIP ham shu bilan
   constructor() {
     this.files = [];
   }

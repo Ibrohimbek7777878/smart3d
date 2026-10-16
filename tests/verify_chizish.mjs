@@ -34,6 +34,26 @@ for (const [kod, ch] of [
   ok(`${kod} ni qo'lda chizsak — detallari aynan bir xil (${a.split(' ').length} ta)`, a === b, '\n    MC ' + a + '\n    CH ' + b);
 }
 
+/* 1b) birikma teshiklari (TZ-11) — sex modullari qo'lda chizilsa, konfirmat teshiklari aynan (nomlar: pol → tub, bok → yon) */
+{
+  const NOM = { pol: 'tub', bok: 'yon', tepa_poltom: 'tub' };
+  const tim = (cl, nomlar) => { const by = {}; for (const h of cl.holes) (by[nomlar ? (NOM[h.part] || h.part) : h.part] = by[nomlar ? (NOM[h.part] || h.part) : h.part] || []).push([h.side, h.torets || '', h.x, h.y, h.dia, h.depth].join(',')); return Object.fromEntries(Object.entries(by).map(([k, v]) => [k, v.sort().join(' ')])); };
+  for (const [kod, ch] of [
+    ['MC-KP-02', { w: 600, d: 450, h: 708, tag: { tur: 'sokol', h: 100 }, qopqoq: 'planka', ichki: { eshik: 2, polka: 1 } }],
+    ['MC-KP-01', { w: 300, d: 450, h: 708, tag: { tur: 'sokol', h: 100 }, qopqoq: 'planka', ichki: { eshik: 1, polka: 1 } }],
+    ['MC-KU-07', { tur: 'ustki', w: 600, d: 300, h: 721, tag: { tur: 'yoq', h: 0 }, ichki: { eshik: 2, polka: 2 } }]
+  ]) {
+    const f = H.catalog[kod], c = chiz(ch);
+    const a = tim(cutlist(f, f.w, f.d, f.h, H.materials, { projectSlots: S16 }), true), b = tim(cutlist(C.chizmaKatalog(c, 'CH-T', 't'), c.w, c.d, c.h, H.materials, { projectSlots: S16 }));
+    const umumiy = Object.keys(a).filter(k => b[k] != null);
+    ok(`${kod}: konfirmat teshiklari (joyi, diametri, chuqurligi) sexdagi modul bilan aynan — ${umumiy.join(', ')}`, umumiy.length >= 2 && umumiy.every(k => a[k] === b[k]), JSON.stringify(umumiy.filter(k => a[k] !== b[k]).map(k => [k, a[k], b[k]])));
+  }
+  const sk = C.yangiChizma('shkaf'), k1 = C.chizmaFragment(sk, 1200, 600, 2200, {});
+  const cl = cutlist(C.chizmaKatalog(sk, 'CH-S', 's'), 1200, 600, 2200, H.materials, { projectSlots: S16 });
+  const ts = (k1.hardware.find(x => x.code === 'TS-1730') || {}).qty, th = cl.holes.filter(h => h.side === 'B').reduce((a, h) => a + (h.nusxa || 1), 0);
+  ok('shkaf: konfirmat soni = o\'tuvchi teshiklar soni (har nusxa; bo\'lgich, pol, tepa, sokol birikmalari)', ts > 0 && ts === th, ts + ' / ' + th);
+}
+
 /* 2) har tur: 3D = kesim, BPJ joyi = 3D, hisob xatosiz */
 for (const tur of C.CHIZMA_TURLARI) {
   const c = C.yangiChizma(tur), fr = C.chizmaKatalog(c, 'CH-' + tur, tur);

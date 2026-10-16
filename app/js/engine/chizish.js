@@ -262,30 +262,87 @@ export function chizmaPanellar(ch, w, d, h, o = {}) {
   return { panels, doors: panels.filter(p => p.isDoor), furn: J.furn, ogoh: J.ogoh };
 }
 
+/* ── birikmalar (TZ-11): konfirmat — sex Bazis modullaridagidek (fragments-mc.json birikmalar, TZ-06) ──
+ * Bir detalning toretsi (uchi yoki qirrasi) ikkinchisining yuzasiga tegsa: yuza detalda Ø7 o'tuvchi teshik, torets detalda
+ * Ø4,5 × 35 (detal qalinligi o'rtasida); planka birikmasi — Ø8 va Ø5 (sex modullaridagidek); joylari birikish chizig'i
+ * bo'ylab Bazis qoidasi bilan (chetdan 60, qadam 32). Tekshiruv: MC-KP-01/02, MC-KU-07 qo'lda chizilsa — teshiklar aynan.
+ * Mahalliy o'qlar (cutlist teshik formati): y — uzunlik bo'ylab L uchidan, x — eni bo'ylab F (old) qirradan;
+ * torets: L/R — uzunlik uchlari, F/B — bo'ylama qirralar. Faqat korpus detallari (polka — ushlagichda, tortma, fasad, HDF — yo'q). */
+const LW = { X: ['Y', 'Z'], Y: ['X', 'Z'], Z: ['Y', 'X'] };
+const BQ = { S: 60, P: 32, jadval: [[150, 1], [600, 2], [1200, 3], [2400, 4]] };
+const BIRIKADI = new Set(['yon', 'tub', 'qopqoq', 'planka', 'bolgich', 'bolgich_g', 'sokol']);
+function bqoida(L) {                                             // cutlist.js bazisQoida bilan bir xil (aylana importsiz)
+  const row = BQ.jadval.find(r => L <= r[0] + 1e-6);
+  let n = row ? row[1] : BQ.jadval[BQ.jadval.length - 1][1];
+  if (n >= 2 && L - 2 * BQ.S < -1e-6) n = 1;
+  if (n <= 1) return [L / 2];
+  const step = Math.floor((L - 2 * BQ.S) / ((n - 1) * BQ.P) + 1e-6) * BQ.P, f = (L - step * (n - 1)) / 2;
+  return Array.from({ length: n }, (_, k) => f + k * step);
+}
+function birikmalar(qutilar, w, d, h) {
+  /* Bazis o'qlari: X = w/2 − x, Y = z + h/2, Z = y + d/2 */
+  const B = qutilar.map((q, i) => ({ i, q, ok: BIRIKADI.has(q.code) && !q.drawerOf && q.slot === 'korpus',
+    lo: { X: w / 2 - q.x1, Y: q.z0 + h / 2, Z: q.y0 + d / 2 }, hi: { X: w / 2 - q.x0, Y: q.z1 + h / 2, Z: q.y1 + d / 2 } }));
+  const tesh = qutilar.map(() => []);
+  const mahalliy = (b, P) => { const [la, wa] = LW[b.q.o]; return { y: r1(P[la] - b.lo[la]), x: r1(b.hi[wa] - P[wa]) }; };
+  let soni = 0;
+  for (const A of B) for (const F of B) {
+    if (A === F || !A.ok || !F.ok) continue;
+    const a = F.q.o;                                             // tegish o'qi — yuza detal normali
+    if (A.q.o === a) continue;                                   // yuzama-yuza — birikma emas
+    const yuqori = Math.abs(A.hi[a] - F.lo[a]) < 0.6, past = Math.abs(A.lo[a] - F.hi[a]) < 0.6;
+    if (!yuqori && !past) continue;
+    const boshqa = ['X', 'Y', 'Z'].filter(k => k !== a);
+    const ust = boshqa.map(k => [Math.max(A.lo[k], F.lo[k]), Math.min(A.hi[k], F.hi[k])]);
+    if (ust.some(([u0, u1]) => u1 - u0 < 0.5)) continue;
+    const r = boshqa.find(k => k !== A.q.o), [r0, r1_] = ust[boshqa.indexOf(r)];
+    const c = (A.lo[A.q.o] + A.hi[A.q.o]) / 2, tA = A.hi[A.q.o] - A.lo[A.q.o], tF = F.hi[a] - F.lo[a];
+    const [la, wa] = LW[A.q.o];
+    const torets = a === la ? (yuqori ? 'R' : 'L') : (yuqori ? 'B' : 'F');
+    const planka = A.q.code === 'planka', dF = planka ? 8 : 7, dA = planka ? 5 : 4.5;
+    for (const s of bqoida(r1_ - r0)) {
+      const P = { [a]: yuqori ? A.hi[a] : A.lo[a], [r]: r0 + s, [A.q.o]: c };
+      tesh[F.i].push(Object.assign({ side: 'B', dia: dF, depth: r1(tF), kind: 'evrovint' }, mahalliy(F, P)));
+      const m = mahalliy(A, P);
+      if (torets === 'L') m.y = 0; else if (torets === 'R') m.y = r1(A.hi[la] - A.lo[la]); else if (torets === 'F') m.x = 0; else m.x = r1(A.hi[wa] - A.lo[wa]);
+      tesh[A.i].push(Object.assign({ side: 'T', torets, dia: dA, depth: 35, kind: 'evrovint_torets' }, m));
+      soni++;
+    }
+    void tA;
+  }
+  return { tesh, soni };
+}
+
 /**
  * Detallar (katalog formati): bir xil o'lchamdagi detallar bitta qatorda (soni bilan), joyi — har nusxa (joy, BPJ).
  * Formula o'rnida son (shu o'lcham uchun) — chizma har safar shu o'lchamga qayta hisoblanadi.
+ * birikmalar — konfirmat teshiklari (cutlist birikma formati, har teshik alohida: L = 0, qo'lda t = 0).
  */
 export function chizmaFragment(ch, w, d, h, o = {}) {
   const J = joylash(ch, w, d, h, o);
+  const BK = birikmalar(J.qutilar, w, d, h);
+  const tim = (arr) => arr.map(x => [x.side, x.torets || '', x.x, x.y, x.dia, x.depth].join(',')).sort().join(';');
   const guruh = new Map();
-  for (const q of J.qutilar) {
+  for (const [qi, q] of J.qutilar.entries()) {
     const S = ol(q);
     const [len, wid] = q.o === 'X' ? [S.Y, S.Z] : q.o === 'Y' ? [S.X, S.Z] : [S.Y, S.X];
-    const key = [q.code, q.slot, r1(len), r1(wid), JSON.stringify(q.edge)].join('|');
-    if (!guruh.has(key)) guruh.set(key, { code: q.code, nom: q.nom, slot: q.slot, len: r1(len), wid: r1(wid), edge: q.edge, o: q.o, p: [] });
+    const key = [q.code, q.slot, r1(len), r1(wid), JSON.stringify(q.edge), tim(BK.tesh[qi])].join('|');
+    if (!guruh.has(key)) guruh.set(key, { code: q.code, nom: q.nom, slot: q.slot, len: r1(len), wid: r1(wid), edge: q.edge, o: q.o, p: [], tesh: BK.tesh[qi] });
     /* joy: Bazis o'qlarida min burchak (joy.js: x = w/2 − (X + S.X/2), y = Z + S.Z/2 − d/2, z = Y + S.Y/2 − h/2) */
     guruh.get(key).p.push([String(r1(w / 2 - q.x1)), String(r1(q.z0 + h / 2)), String(r1(q.y0 + d / 2))]);
   }
   const g = [...guruh.values()].sort((a, b) => (TARTIB[a.slot] - TARTIB[b.slot]) || (b.len * b.wid - a.len * a.wid));
-  const sanoq = {};
+  const sanoq = {}, birik = [];
   const parts = g.map(x => {
     sanoq[x.code] = (sanoq[x.code] || 0) + 1;
     const code = sanoq[x.code] > 1 ? x.code + '_' + sanoq[x.code] : x.code;
+    for (const t of x.tesh) birik.push({ tur: 'evrovint', L: '0', qolda: [{ t: 0 }], teshiklar: [Object.assign({ part: code, x0: String(t.x), sx: 0, y0: String(t.y), sy: 0 }, t)] });
     return { code, nom: x.nom, qty: x.p.length, len: String(x.len), width: String(x.wid), slot: x.slot,
       tekstura: x.slot === 'orqa' ? 'erkin' : 'uzunlik', edge: x.edge, joy: { o: x.o, p: x.p } };
   });
-  return { parts, hardware: J.hardware, ogoh: J.ogoh, furn: J.furn };
+  /* konfirmat soni — haqiqiy birikmalardan (har teshik juftligi — bitta vint) */
+  const hardware = J.hardware.map(x => (x.code === 'TS-1730' ? Object.assign({}, x, { qty: BK.soni }) : x)).filter(x => x.qty > 0);
+  return { parts, hardware, ogoh: J.ogoh, furn: J.furn, birikmalar: birik };
 }
 
 /** muharrir uchun: bo'limlar (yo'li va old ko'rinishdagi to'rtburchagi), bo'lgichlar (sudrash), panellar, ogohlantirishlar */
@@ -367,5 +424,5 @@ export function chizmaKatalog(ch, code, nom) {
 export function chizmaYech(frag, w, d, h, o = {}) {
   if (!frag || !frag.chizma) return frag;
   const f = chizmaFragment(frag.chizma, w, d, h, o);
-  return Object.assign({}, frag, { parts: f.parts, hardware: f.hardware, chizmaOgoh: f.ogoh });
+  return Object.assign({}, frag, { parts: f.parts, hardware: f.hardware, birikmalar: f.birikmalar, chizmaOgoh: f.ogoh });
 }
