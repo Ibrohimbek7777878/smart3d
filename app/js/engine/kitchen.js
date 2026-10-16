@@ -149,7 +149,8 @@ export function deriveKitchen(doc, catalog) {
     /* yaxlit stoleshnitsa (vertikal run → rot=90: detal uzunligi W bo'lib, varaqqa sig'adi) */
     if (k.stoleshnitsa !== false) {
       const isV = run.axis === 'v';
-      const depth = isV ? run.x1 - run.x0 : run.y1 - run.y0;
+      /* TZ-22: k.stoleshnitsaD — stoleshnitsa chuqurligi (MC Bazis: 600, devordan); berilmasa — run chuqurligi (avvalgidek) */
+      const depth = +k.stoleshnitsaD > 0 ? +k.stoleshnitsaD : (isV ? run.x1 - run.x0 : run.y1 - run.y0);
       segs.forEach((seg, segIdx) => {
         const mk = (runIdx === 0 && segIdx === 0 && k.moyka && k.moyka.on)
           ? { offset: Math.max(0, +k.moyka.offset || 0), fromBack: Math.max(0, +k.moyka.fromBack || 0),
@@ -159,7 +160,7 @@ export function deriveKitchen(doc, catalog) {
           id: '__kst' + (n++), auto: true, frg: 'SP-ST-001',
           name: 'Yaxlit stoleshnitsa',
           x: Math.round(isV ? (side === 'x1' ? run.x1 : run.x0 + depth) : run.x0 + seg.s0),
-          y: Math.round(run.y0 + (isV ? seg.s0 : 0)),
+          y: Math.round(isV ? run.y0 + seg.s0 : (side === 'y1' ? run.y1 - depth : run.y0)),
           z: Math.round(run.h),
           w: Math.round(seg.len),
           d: Math.round(depth),

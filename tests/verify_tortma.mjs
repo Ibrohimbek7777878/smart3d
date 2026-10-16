@@ -10,7 +10,9 @@ import { fileURLToPath } from 'node:url';
 import { getModulePanels } from '../app/js/engine/assembler.js';
 
 const DATA = fileURLToPath(new URL('../app/data/', import.meta.url));
-const frs = [...JSON.parse(readFileSync(DATA + 'fragments.json', 'utf8')), ...JSON.parse(readFileSync(DATA + 'fragments-mc.json', 'utf8')).fragments];
+/* TZ-22 da qo'shilgan yon doborlar (SP-ST-005/006) barmoq izi ro'yxatiga kirmaydi — iz 121 eski modul bo'yicha */
+const frs = [...JSON.parse(readFileSync(DATA + 'fragments.json', 'utf8')), ...JSON.parse(readFileSync(DATA + 'fragments-mc.json', 'utf8')).fragments]
+  .filter(f => !['SP-ST-005', 'SP-ST-006'].includes(f.code));
 let pass = 0, fail = 0;
 const ok = (name, cond, info = '') => { if (cond) { pass++; console.log('  ✓', name); } else { fail++; console.log('  ✗', name, info); } };
 const SIZES = (f) => [[f.w, f.d, f.h], [f.w + 137, f.d, f.h], [400, 450, 708], [900, 560, 2100]];

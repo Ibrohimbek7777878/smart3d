@@ -13,7 +13,7 @@ let pass = 0, fail = 0;
 const ok = (name, cond, info = '') => { if (cond) { pass++; console.log('  ✓', name); } else { fail++; console.log('  ✗', name, info); } };
 
 const H = createHisob(await loadData(n => Promise.resolve(JSON.parse(readFileSync(DATA + n, 'utf8')))));
-ok('katalog: 121 modul (83 + 38; dizayndagi "121 ta modul")', Object.keys(H.catalog).length === 121, Object.keys(H.catalog).length);
+ok('katalog: 123 modul (83 + 2 yon dobor (TZ-22) + 38)', Object.keys(H.catalog).length === 123, Object.keys(H.catalog).length);
 ok('ERP furnitura ID bo\'yicha', Object.keys(H.furnById).length > 1000, Object.keys(H.furnById).length);
 ok('material qidiruv indeksi', !!H.searchIndex);
 

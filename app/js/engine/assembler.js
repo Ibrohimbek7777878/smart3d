@@ -45,6 +45,23 @@ function fasadQatorlari(frag, w, d, h, t, tall) {
   return rows;
 }
 
+/** TZ-22: eshik qatori modul detallaridan — bitta eshik detali, soni 1 yoki 2. Aniqlab bo'lmasa null (eski qoida: w > 600 → 2).
+ *  Bazis'dan olingan modulda (frag.manba.fayl) eshik detali yo'q bo'lsa — eshiksiz (ochiq javon).
+ *  Qisman eshik (eni < w − 20, masalan gluxoy burchak: 308 / 258) — Bazis faylidagidek o'ng tomonda, petlya eshikning chap chetida
+ *  (gluxoy chap.fr3d, gluxoy 2 etaj *.fr3d, antirsol gluxoy 1000 o'ng.fr3d — 2026-10-16 da tekshirildi). */
+export function eshikTuzilmasi(frag, w, d, h, t = 16) {
+  const parts = (frag && frag.parts) || [];
+  const vars = { w, d, h, t };
+  const num = (e) => { try { const v = evalFormula(String(e), vars); return v > 0 ? v : 0; } catch (err) { return 0; } };
+  const nm = (p) => (p.nom || p.name || '') + ' ' + (p.code || '');
+  const ds = parts.filter(p => p.slot === 'fasad' && ESHIK_RE.test(nm(p)) && !TORTMA_RE.test(nm(p)));
+  if (!ds.length) return frag && frag.manba && frag.manba.fayl ? { soni: 0 } : null;
+  if (ds.length !== 1) return null;                           // ustma-ust eshiklar (penal), shkaflar — eski qoida
+  const soni = Math.round(num(ds[0].qty)), eni = num(ds[0].width);
+  if (!(soni === 1 || soni === 2) || !(eni > 0)) return null;
+  return { soni, eni, qisman: soni === 1 && eni < w - 20 };
+}
+
 export function getModulePanels(frag, w, d, h, opts = {}) {
   const t = opts.thickness || 16;       // panel qalinligi (standart 16mm yoki 18mm)
   const cat = (frag && frag.category) || 'cabinet';
@@ -205,14 +222,31 @@ export function getModulePanels(frag, w, d, h, opts = {}) {
         top -= hh + gap;
       });
     }
-    if (!isDoorless && (!rows || rows.some(r => r.kind === 'eshik'))) {
+    /* TZ-22: opts.eshiklar (yangi sayt 3D va eshik tekshiruvi) — eshik soni/eni detallardan, bitta eshik petlyasi — opts.hinge.
+       Bayroqsiz (kesim, narx, BPJ/OBJ/GLB) — avvalgidek. */
+    const ed = opts.eshiklar ? eshikTuzilmasi(frag, w, d, h, t) : null;
+    if (!isDoorless && (!rows || rows.some(r => r.kind === 'eshik')) && !(ed && ed.soni === 0)) {
       const doorH = Math.max(10, doorRowH);
       const zDoor = rows ? doorTop - doorRowH / 2 : zBase + netH / 2;   // tortmasiz — aynan avvalgi qiymat
-      const isTwoDoors = w > 600;
+      const isTwoDoors = ed ? ed.soni === 2 : w > 600;
 
-      if (!isTwoDoors) {
-        // Bitta eshik
+      if (ed && ed.qisman) {
+        /* gluxoy burchak: eshik o'ngda (petlya — eshikning chap chetida), qolgani — qo'zg'almas fasad */
+        const doorW = Math.min(ed.eni, w - 4), x = w / 2 - 2 - doorW / 2, bw = Math.max(10, w - 4 - doorW - 2);
+        const door = {
+          id: 'fasad_1', name: 'Fasad eshik', slot: 'fasad', code: 'eshik', isFasad: true, isDoor: true,
+          w: doorW, d: t, h: doorH, x, y: d / 2 + t / 2, z: zDoor, hingeSide: 'left',
+          handle: { x: x + doorW / 2 - 35, y: d / 2 + t + 10, z: zDoor, w: 12, d: 22, h: 120 }
+        };
+        panels.push(door, {
+          id: 'gluxoy_fasad', name: 'Gluxoy fasad', slot: 'fasad', code: 'gluxoy', isFasad: true,
+          w: bw, d: t, h: doorH, x: -w / 2 + 2 + bw / 2, y: d / 2 + t / 2, z: zDoor
+        });
+        doors.push(door);
+      } else if (!isTwoDoors) {
+        // Bitta eshik (TZ-22: petlya tomoni — joylashuvdan, opts.hinge; tutqich qarama-qarshi chetda)
         const doorW = Math.max(10, w - 4);
+        const ong = !!ed && opts.hinge === 'right';
         const doorPanel = {
           id: 'fasad_1',
           name: 'Fasad eshik',
@@ -226,9 +260,9 @@ export function getModulePanels(frag, w, d, h, opts = {}) {
           x: 0,
           y: d / 2 + t / 2,
           z: zDoor,
-          hingeSide: 'left',
+          hingeSide: ong ? 'right' : 'left',
           handle: {
-            x: doorW / 2 - 35,
+            x: ong ? -(doorW / 2 - 35) : doorW / 2 - 35,
             y: d / 2 + t + 10,
             z: zDoor,
             w: 12,

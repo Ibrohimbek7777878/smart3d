@@ -2,7 +2,7 @@
  "_meta": {
   "desc": "O'rnatma texnika o'lchamlari (F2) — nishon/placeholder o'lchamlari. ERPdan aniq model kelguncha bozordagi standart o'lchamlar.",
   "unit": "mm",
-  "updated": "2026-10-15"
+  "updated": "2026-10-16"
  },
  "appliances": [
   {
@@ -58,6 +58,15 @@
    "h": 400,
    "z": 1500,
    "note": "Plita ustida, devorga osiladi"
+  },
+  {
+   "code": "SP-T-007",
+   "name": "Gaz plita (erkin turuvchi) 600",
+   "w": 600,
+   "d": 600,
+   "h": 850,
+   "z": 0,
+   "note": "Nishon 600×600×850 — pastki modullar orasida, stoleshnitsa shu joyda uziladi (TZ-22)"
   }
  ]
 }
