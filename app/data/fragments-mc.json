@@ -39,7 +39,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "frontalnaya",
@@ -52,6 +62,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "-90",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -65,6 +85,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h - t",
+        "0"
+       ],
+       [
+        "t",
+        "h - t",
+        "d - 80"
+       ]
+      ]
      }
     },
     {
@@ -78,6 +113,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/2 - 8",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -91,6 +136,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -104,6 +159,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -115,7 +185,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -150,6 +230,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/nijniy korpus/1 polk 1 fasad.fr3d",
     "bazis_olcham": [
+     300,
+     450,
+     500
+    ],
+    "joy_olcham": [
      300,
      450,
      500
@@ -473,7 +558,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "frontalnaya",
@@ -486,6 +581,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "-90",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -499,6 +604,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h - t",
+        "0"
+       ],
+       [
+        "t",
+        "h - t",
+        "d - 80"
+       ]
+      ]
      }
     },
     {
@@ -512,6 +632,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/2 - 8",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -525,6 +655,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -538,6 +678,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -549,7 +704,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ],
+       [
+        "w/2 + 1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -584,6 +754,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/nijniy korpus/1 polk 2 fasad .fr3d",
     "bazis_olcham": [
+     500,
+     450,
+     500
+    ],
+    "joy_olcham": [
      500,
      450,
      500
@@ -908,7 +1083,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "frontalnaya",
@@ -921,6 +1106,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "-90",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -934,6 +1129,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "29",
+        "h - 130",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -947,6 +1152,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - 45",
+        "h - 130",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -960,6 +1175,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "45",
+        "h - 130",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -973,6 +1198,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "45",
+        "h - 130",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -983,7 +1218,17 @@
      "width": "d - 50",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "29",
+        "h - 133",
+        "50"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_yashika",
@@ -994,7 +1239,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "h - 153",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "pol",
@@ -1007,6 +1262,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -1020,6 +1285,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -1031,7 +1311,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "planka",
@@ -1044,6 +1334,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h - t",
+        "d - 80"
+       ],
+       [
+        "t",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -1057,6 +1362,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/3 - 3",
+        "0"
+       ]
+      ]
      }
     }
    ],
@@ -1122,6 +1437,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/nijniy korpus/1 yash 1 polk.fr3d",
     "bazis_olcham": [
+     400,
+     450,
+     600
+    ],
+    "joy_olcham": [
      400,
      450,
      600
@@ -1599,6 +1919,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - t",
+        "t",
+        "0"
+       ],
+       [
+        "0",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -1612,6 +1947,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -1625,6 +1970,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h - t",
+        "d - 70"
+       ],
+       [
+        "t",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -1638,6 +1998,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/3 + 1.3",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -1651,6 +2021,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "29",
+        "45.2",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -1664,6 +2044,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - 45",
+        "45.2",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -1677,6 +2067,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "45",
+        "45.2",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -1690,6 +2090,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "45",
+        "45.2",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -1700,7 +2110,17 @@
      "width": "d - 50",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "29",
+        "42.2",
+        "50"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_yashika",
@@ -1711,7 +2131,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1.5",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "frontalnaya",
@@ -1724,6 +2154,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "-90",
+        "d - t"
+       ]
+      ]
      }
     }
    ],
@@ -1789,6 +2229,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/nijniy korpus/duxovoy nije 1 yash.fr3d",
     "bazis_olcham": [
+     450,
+     450,
+     500
+    ],
+    "joy_olcham": [
      450,
      450,
      500
@@ -2347,6 +2792,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -2360,6 +2820,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -2373,6 +2843,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/2",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -2386,6 +2866,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h - t",
+        "d - 80"
+       ]
+      ]
      }
     },
     {
@@ -2396,7 +2886,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "pol",
@@ -2409,6 +2909,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -2422,6 +2932,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "0",
+        "d"
+       ]
+      ]
      }
     },
     {
@@ -2433,7 +2953,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 309",
+        "0",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "frontalnaya",
@@ -2446,6 +2976,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "-90",
+        "d - t"
+       ]
+      ]
      }
     }
    ],
@@ -2493,6 +3033,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/nijniy korpus/gluxoy  chap.fr3d",
     "bazis_olcham": [
+     780,
+     450,
+     550
+    ],
+    "joy_olcham": [
      780,
      450,
      550
@@ -3103,6 +3648,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h - t",
+        "0"
+       ],
+       [
+        "t",
+        "h - t",
+        "d - 70"
+       ]
+      ]
      }
     },
     {
@@ -3116,6 +3676,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -3129,6 +3699,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -3142,6 +3727,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "-90",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -3153,7 +3748,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -3206,6 +3811,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/nijniy korpus/kargo 200.fr3d",
     "bazis_olcham": [
+     200,
+     450,
+     600
+    ],
+    "joy_olcham": [
      200,
      450,
      600
@@ -3507,7 +4117,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "bok",
@@ -3520,6 +4140,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - t",
+        "t",
+        "0"
+       ],
+       [
+        "0",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -3533,6 +4168,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -3546,6 +4191,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "h - 70",
+        "d - t"
+       ],
+       [
+        "t",
+        "h/2 - 27",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -3559,6 +4219,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "-90",
+        "d - t"
+       ]
+      ]
      }
     }
    ],
@@ -3588,6 +4258,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/nijniy korpus/moyka 1 fasad.fr3d",
     "bazis_olcham": [
+     500,
+     450,
+     550
+    ],
+    "joy_olcham": [
      500,
      450,
      550
@@ -3659,6 +4334,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "h/2 - 35",
+        "0"
+       ],
+       [
+        "t",
+        "h - 70",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -3672,6 +4362,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -3685,6 +4385,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -3696,7 +4411,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ],
+       [
+        "w/2 + 1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "frontalnaya",
@@ -3709,6 +4439,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "-90",
+        "d - t"
+       ]
+      ]
      }
     }
    ],
@@ -3738,6 +4478,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/nijniy korpus/moyka 2 fasad.fr3d",
     "bazis_olcham": [
+     600,
+     450,
+     550
+    ],
+    "joy_olcham": [
      600,
      450,
      550
@@ -3806,7 +4551,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "frontalnaya",
@@ -3819,6 +4574,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "-90",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -3832,6 +4597,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h - t",
+        "0"
+       ],
+       [
+        "t",
+        "h - t",
+        "d - 80"
+       ]
+      ]
      }
     },
     {
@@ -3845,6 +4625,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -3858,6 +4648,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -3871,6 +4676,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "29",
+        "29",
+        "50"
+       ],
+       [
+        "29",
+        "h - 246.5",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -3884,6 +4704,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - 45",
+        "29",
+        "50"
+       ],
+       [
+        "w - 45",
+        "h - 246.5",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -3897,6 +4732,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "45",
+        "29",
+        "50"
+       ],
+       [
+        "45",
+        "h - 246.5",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -3910,6 +4760,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "45",
+        "29",
+        "d - t"
+       ],
+       [
+        "45",
+        "h - 246.5",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -3920,7 +4785,22 @@
      "width": "d - 50",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "29",
+        "26",
+        "50"
+       ],
+       [
+        "29",
+        "h - 249.5",
+        "50"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_yashika",
@@ -3931,7 +4811,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ],
+       [
+        "1",
+        "h - 274.5",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -3996,6 +4891,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/nijniy korpus/yash 2x .fr3d",
     "bazis_olcham": [
+     400,
+     450,
+     550
+    ],
+    "joy_olcham": [
      400,
      450,
      550
@@ -4528,6 +5428,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - t",
+        "t",
+        "0"
+       ],
+       [
+        "0",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -4541,6 +5456,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -4554,6 +5479,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h - t",
+        "0"
+       ],
+       [
+        "t",
+        "h - t",
+        "d - 80"
+       ]
+      ]
      }
     },
     {
@@ -4567,6 +5507,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "-90",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -4577,7 +5527,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "bokovina_yashika_levaya",
@@ -4590,6 +5550,26 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "29",
+        "29",
+        "50"
+       ],
+       [
+        "29",
+        "h/2 - 63",
+        "50"
+       ],
+       [
+        "29",
+        "h - 155",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -4603,6 +5583,26 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - 45",
+        "29",
+        "50"
+       ],
+       [
+        "w - 45",
+        "h/2 - 63",
+        "50"
+       ],
+       [
+        "w - 45",
+        "h - 155",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -4616,6 +5616,26 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "45",
+        "29",
+        "50"
+       ],
+       [
+        "45",
+        "h/2 - 63",
+        "50"
+       ],
+       [
+        "45",
+        "h - 155",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -4629,6 +5649,26 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "45",
+        "29",
+        "d - t"
+       ],
+       [
+        "45",
+        "h/2 - 63",
+        "d - t"
+       ],
+       [
+        "45",
+        "h - 155",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -4639,7 +5679,27 @@
      "width": "d - 50",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "29",
+        "26",
+        "50"
+       ],
+       [
+        "29",
+        "h/2 - 66",
+        "50"
+       ],
+       [
+        "29",
+        "h - 158",
+        "50"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_yashika",
@@ -4650,7 +5710,27 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ],
+       [
+        "1",
+        "h/2 - 91",
+        "d"
+       ],
+       [
+        "1",
+        "h - 183",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -4715,6 +5795,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/nijniy korpus/yash 3 x.fr3d",
     "bazis_olcham": [
+     400,
+     450,
+     550
+    ],
+    "joy_olcham": [
      400,
      450,
      550
@@ -5303,6 +6388,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - t",
+        "t",
+        "0"
+       ],
+       [
+        "0",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -5316,6 +6416,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -5329,6 +6439,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h - t",
+        "0"
+       ],
+       [
+        "t",
+        "h - t",
+        "d - 80"
+       ]
+      ]
      }
     },
     {
@@ -5342,6 +6467,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "-90",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -5352,7 +6487,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "bokovina_yashika_levaya",
@@ -5365,6 +6510,26 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "29",
+        "29",
+        "50"
+       ],
+       [
+        "29",
+        "h/2 - 3",
+        "50"
+       ],
+       [
+        "29",
+        "h - 125",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -5378,6 +6543,26 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - 45",
+        "29",
+        "50"
+       ],
+       [
+        "w - 45",
+        "h/2 - 3",
+        "50"
+       ],
+       [
+        "w - 45",
+        "h - 125",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -5391,6 +6576,26 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "45",
+        "29",
+        "50"
+       ],
+       [
+        "45",
+        "h/2 - 3",
+        "50"
+       ],
+       [
+        "45",
+        "h - 125",
+        "50"
+       ]
+      ]
      }
     },
     {
@@ -5404,6 +6609,26 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "45",
+        "29",
+        "d - t"
+       ],
+       [
+        "45",
+        "h/2 - 3",
+        "d - t"
+       ],
+       [
+        "45",
+        "h - 125",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -5414,7 +6639,27 @@
      "width": "d - 50",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "29",
+        "26",
+        "50"
+       ],
+       [
+        "29",
+        "h/2 - 6",
+        "50"
+       ],
+       [
+        "29",
+        "h - 128",
+        "50"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_yashika",
@@ -5425,7 +6670,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_yashika_2",
@@ -5436,7 +6691,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "h/2 - 31",
+        "d"
+       ],
+       [
+        "1",
+        "h - 153",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -5501,6 +6771,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/nijniy korpus/yash 3x, (2_1) .fr3d",
     "bazis_olcham": [
+     400,
+     450,
+     550
+    ],
+    "joy_olcham": [
      400,
      450,
      550
@@ -6090,6 +7365,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "0",
+        "d"
+       ]
+      ]
      }
     },
     {
@@ -6101,7 +7386,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 259",
+        "0",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "tom",
@@ -6114,6 +7409,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -6127,6 +7432,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/2 - 8",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -6140,6 +7455,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - t",
+        "t",
+        "0"
+       ],
+       [
+        "0",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -6153,6 +7483,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -6163,7 +7503,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -6204,6 +7554,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/verxniy/gluxoy 2 etaj 1 polk.fr3d",
     "bazis_olcham": [
+     600,
+     300,
+     500
+    ],
+    "joy_olcham": [
      600,
      300,
      500
@@ -6674,6 +8029,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "0",
+        "d"
+       ]
+      ]
      }
     },
     {
@@ -6685,7 +8050,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 259",
+        "0",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "tom",
@@ -6698,6 +8073,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -6711,6 +8096,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/3",
+        "0"
+       ],
+       [
+        "t",
+        "h*2/3",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -6724,6 +8124,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - t",
+        "t",
+        "0"
+       ],
+       [
+        "0",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -6737,6 +8152,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -6747,7 +8172,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -6788,6 +8223,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/verxniy/gluxoy 2 etaj 2 polk.fr3d",
     "bazis_olcham": [
+     600,
+     300,
+     726
+    ],
+    "joy_olcham": [
      600,
      300,
      726
@@ -7368,7 +8808,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "tepa_poltom",
@@ -7381,6 +8831,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ],
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -7394,6 +8859,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -7405,7 +8885,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "polka",
@@ -7418,6 +8908,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/2 - 8",
+        "0"
+       ]
+      ]
      }
     }
    ],
@@ -7447,6 +8947,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/verxniy/tepa 1 polk 1 fasad.fr3d",
     "bazis_olcham": [
+     300,
+     300,
+     600
+    ],
+    "joy_olcham": [
      300,
      300,
      600
@@ -7689,6 +9194,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/2 - 8",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -7699,7 +9214,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "tepa_poltom",
@@ -7712,6 +9237,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ],
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -7725,6 +9265,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -7736,7 +9291,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ],
+       [
+        "w/2 + 1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -7765,6 +9335,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/verxniy/tepa 1 polk 2 fasad 600.fr3d",
     "bazis_olcham": [
+     500,
+     300,
+     600
+    ],
+    "joy_olcham": [
      500,
      300,
      600
@@ -8007,7 +9582,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "tepa_poltom",
@@ -8020,6 +9605,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ],
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -8033,6 +9633,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -8046,6 +9661,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/2 - 8",
+        "0"
+       ]
+      ]
      }
     }
    ],
@@ -8069,6 +9694,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/verxniy/tepa 1 polk otkritiy.fr3d",
     "bazis_olcham": [
+     200,
+     300,
+     600
+    ],
+    "joy_olcham": [
      200,
      300,
      600
@@ -8308,7 +9938,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "tepa_poltom",
@@ -8321,6 +9961,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ],
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -8334,6 +9989,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -8345,7 +10015,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "polka",
@@ -8358,6 +10038,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/3 - 5.3",
+        "0"
+       ],
+       [
+        "t",
+        "h*2/3 - 10.7",
+        "0"
+       ]
+      ]
      }
     }
    ],
@@ -8387,6 +10082,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/verxniy/tepa 2 polk 1 fasad.fr3d",
     "bazis_olcham": [
+     300,
+     300,
+     721
+    ],
+    "joy_olcham": [
      300,
      300,
      721
@@ -8629,6 +10329,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/3 - 5.3",
+        "0"
+       ],
+       [
+        "t",
+        "h*2/3 - 10.7",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -8639,7 +10354,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "tepa_poltom",
@@ -8652,6 +10377,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ],
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -8665,6 +10405,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -8676,7 +10431,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ],
+       [
+        "w/2 + 1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -8705,6 +10475,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/verxniy/tepa 2 polk 2 fasad.fr3d",
     "bazis_olcham": [
+     500,
+     300,
+     721
+    ],
+    "joy_olcham": [
      500,
      300,
      721
@@ -8947,7 +10722,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "tepa_poltom",
@@ -8960,6 +10745,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ],
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -8973,6 +10773,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -8986,6 +10801,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h*2/3 - 5.3",
+        "0"
+       ],
+       [
+        "t",
+        "h/3 + 5.3",
+        "0"
+       ]
+      ]
      }
     }
    ],
@@ -9009,6 +10839,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/verxniy/tepa 2 polk otkritiy.fr3d",
     "bazis_olcham": [
+     200,
+     300,
+     600
+    ],
+    "joy_olcham": [
      200,
      300,
      600
@@ -9253,6 +11088,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -9266,6 +11111,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - t",
+        "0",
+        "0"
+       ],
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -9279,6 +11139,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -9290,7 +11160,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "2",
+        "3",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -9313,6 +11193,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/verxniy/vityachka 1 fasad.fr3d",
     "bazis_olcham": [
+     450,
+     250,
+     350
+    ],
+    "joy_olcham": [
      450,
      250,
      350
@@ -9578,6 +11463,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -9591,6 +11486,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ],
+       [
+        "w - t",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -9604,6 +11514,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -9615,7 +11535,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ],
+       [
+        "w/2 + 1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -9638,6 +11573,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/verxniy/vityachka 2 fasad.fr3d",
     "bazis_olcham": [
+     450,
+     250,
+     400
+    ],
+    "joy_olcham": [
      450,
      250,
      400
@@ -9901,6 +11841,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -9914,6 +11864,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -9927,6 +11887,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -9938,7 +11913,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "xdf",
@@ -9948,7 +11933,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -9971,6 +11966,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/antirsol/antirsol 1 fasad .fr3d",
     "bazis_olcham": [
+     500,
+     400,
+     350
+    ],
+    "joy_olcham": [
      500,
      400,
      350
@@ -10234,7 +12234,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "tom",
@@ -10247,6 +12257,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -10260,6 +12280,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -10273,6 +12303,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -10284,7 +12329,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ],
+       [
+        "w/2 + 1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -10307,6 +12367,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/antirsol/antirsol 2 fasad.fr3d",
     "bazis_olcham": [
+     450,
+     300,
+     360
+    ],
+    "joy_olcham": [
      450,
      300,
      360
@@ -10573,6 +12638,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -10586,6 +12666,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "0",
+        "d"
+       ]
+      ]
      }
     },
     {
@@ -10596,7 +12686,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "tom",
@@ -10609,6 +12709,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -10622,6 +12732,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -10633,7 +12753,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 259",
+        "1",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -10674,6 +12804,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/antirsol/antirsol gluxoy 1000 o'ng.fr3d",
     "bazis_olcham": [
+     800,
+     300,
+     360
+    ],
+    "joy_olcham": [
      800,
      300,
      360
@@ -11048,6 +13183,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "-90",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -11058,7 +13203,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "polka",
@@ -11071,6 +13226,31 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/4 - 119.3",
+        "0"
+       ],
+       [
+        "t",
+        "h*2/3 - 10.6",
+        "0"
+       ],
+       [
+        "t",
+        "h/2 - 8",
+        "0"
+       ],
+       [
+        "t",
+        "h*3/4 + 103.3",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -11084,6 +13264,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -11095,7 +13285,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "polka_2",
@@ -11108,6 +13308,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/3 - 5.4",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -11121,6 +13331,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - t",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -11132,7 +13357,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "470.3",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "planka",
@@ -11145,6 +13380,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     }
    ],
@@ -11180,6 +13425,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/kuxnya/penal/penal polki 5x.fr3d",
     "bazis_olcham": [
+     300,
+     300,
+     1400
+    ],
+    "joy_olcham": [
      300,
      300,
      1400
@@ -11543,6 +13793,16 @@
      "bazis_material": "ЛДСП 5кв Starwood 16мм Орех Лион",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h*3/4 + 160.5",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -11553,7 +13813,17 @@
      "width": "w - 4",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый\r2001",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "1",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "sr_stoyka",
@@ -11566,6 +13836,16 @@
      "bazis_material": "ЛДСП 5кв Starwood 16мм Орех Лион",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 - 9",
+        "h - 316",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -11579,6 +13859,16 @@
      "bazis_material": "ЛДСП 5кв Starwood 16мм Орех Лион",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "-1",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -11592,6 +13882,16 @@
      "bazis_material": "ЛДСП 5кв Starwood 16мм Орех Лион",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "-1",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -11605,6 +13905,21 @@
      "bazis_material": "ЛДСП 5кв Starwood 16мм Орех Лион",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "t",
+        "0"
+       ],
+       [
+        "w - 18",
+        "t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -11616,7 +13931,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2 - 472",
+        "19",
+        "d - 17"
+       ],
+       [
+        "w/2 + 0.5",
+        "19",
+        "d - 17"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -11675,6 +14005,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/shkaf/Shkaf 001.fr3d",
     "bazis_olcham": [
+     982,
+     520,
+     1970
+    ],
+    "joy_olcham": [
      982,
      520,
      1970
@@ -12050,6 +14385,21 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "d - t"
+       ],
+       [
+        "t",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -12060,7 +14410,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "85",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "pol",
@@ -12073,6 +14433,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "84",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -12086,6 +14456,21 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ],
+       [
+        "w - t",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -12099,6 +14484,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/3 - 8",
+        "100",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -12112,6 +14507,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -12125,6 +14530,31 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h*3/4 + 109.2",
+        "0"
+       ],
+       [
+        "t",
+        "h*2/3 - 124.3",
+        "0"
+       ],
+       [
+        "t",
+        "h/2 - 174.4",
+        "0"
+       ],
+       [
+        "t",
+        "h/4 - 41.2",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -12136,7 +14566,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "85",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "konstruktsiya_panelnix_dverey_2",
@@ -12147,7 +14587,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2 - 299",
+        "485",
+        "d"
+       ],
+       [
+        "w - 599",
+        "485",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "pol_2",
@@ -12160,6 +14615,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "608",
+        "h/4 - 74",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -12173,6 +14638,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w*2/3 - 8",
+        "100",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -12186,6 +14661,31 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 - 279",
+        "118",
+        "200"
+       ],
+       [
+        "w/2 - 279",
+        "h/4 - 232",
+        "200"
+       ],
+       [
+        "w - 579",
+        "118",
+        "200"
+       ],
+       [
+        "w - 579",
+        "h/4 - 232",
+        "200"
+       ]
+      ]
      }
     },
     {
@@ -12199,6 +14699,31 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 + 263",
+        "118",
+        "200"
+       ],
+       [
+        "w/2 + 263",
+        "h/4 - 232",
+        "200"
+       ],
+       [
+        "w - 45",
+        "118",
+        "200"
+       ],
+       [
+        "w - 45",
+        "h/4 - 232",
+        "200"
+       ]
+      ]
      }
     },
     {
@@ -12212,6 +14737,21 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2 - 263",
+        "118",
+        "d/3"
+       ],
+       [
+        "w/2 - 263",
+        "h/4 - 232",
+        "d/3"
+       ]
+      ]
      }
     },
     {
@@ -12225,6 +14765,21 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2 - 263",
+        "118",
+        "d - t"
+       ],
+       [
+        "w/2 - 263",
+        "h/4 - 232",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -12235,7 +14790,22 @@
      "width": "d - 200",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w/2 - 279",
+        "115",
+        "200"
+       ],
+       [
+        "w/2 - 279",
+        "h/4 - 235",
+        "200"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_yashika",
@@ -12246,7 +14816,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2 - 298",
+        "85",
+        "d"
+       ],
+       [
+        "w/2 - 298",
+        "h/4 - 265",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "zadnyaya_panel_yashika_2",
@@ -12259,6 +14844,21 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 563",
+        "118",
+        "d/3"
+       ],
+       [
+        "w - 563",
+        "h/4 - 232",
+        "d/3"
+       ]
+      ]
      }
     },
     {
@@ -12272,6 +14872,21 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 563",
+        "118",
+        "d - t"
+       ],
+       [
+        "w - 563",
+        "h/4 - 232",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -12282,7 +14897,22 @@
      "width": "d - 200",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w - 579",
+        "115",
+        "200"
+       ],
+       [
+        "w - 579",
+        "h/4 - 235",
+        "200"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_yashika_2",
@@ -12293,7 +14923,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 598",
+        "85",
+        "d"
+       ],
+       [
+        "w - 598",
+        "h/4 - 265",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -12340,6 +14985,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/shkaf/shkaf 002.fr3d",
     "bazis_olcham": [
+     1800,
+     600,
+     2200
+    ],
+    "joy_olcham": [
      1800,
      600,
      2200
@@ -13031,6 +15681,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h*2/3 - 76",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13044,6 +15704,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - t",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13057,6 +15727,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13070,6 +15750,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "84",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13083,6 +15773,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - 2*t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13096,6 +15796,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 - 8",
+        "100",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13106,7 +15816,22 @@
      "width": "(w - 2)/2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2",
+        "85",
+        "-3"
+       ],
+       [
+        "1",
+        "85",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "sokol",
@@ -13119,6 +15844,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "20"
+       ]
+      ]
      }
     },
     {
@@ -13132,6 +15867,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -13145,6 +15890,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h*3/4 + 114",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13158,6 +15913,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/4 - 62",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13171,6 +15936,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/3 + 128",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13184,6 +15959,21 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w - 792",
+        "h*3/4 + 164",
+        "0"
+       ],
+       [
+        "w - 792",
+        "h/4 - 154",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13197,6 +15987,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/3 - 44.8",
+        "h/2 - 192",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13208,7 +16008,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2 - 783.5",
+        "110",
+        "d - 56"
+       ],
+       [
+        "w/2",
+        "110",
+        "d - 20"
+       ]
+      ]
+     }
     },
     {
      "code": "polka_6",
@@ -13221,6 +16036,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w/2 - 295.5",
+        "h/2 + 26",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13234,6 +16059,21 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "29",
+        "h/2 - 156",
+        "81"
+       ],
+       [
+        "29",
+        "h/2 + 68.5",
+        "81"
+       ]
+      ]
      }
     },
     {
@@ -13247,6 +16087,21 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/3 - 73.8",
+        "h/2 - 156",
+        "81"
+       ],
+       [
+        "w/3 - 73.8",
+        "h/2 + 68.5",
+        "81"
+       ]
+      ]
      }
     },
     {
@@ -13260,6 +16115,21 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/4 - 355",
+        "h/2 - 156",
+        "81"
+       ],
+       [
+        "w/4 - 355",
+        "h/2 + 68.5",
+        "81"
+       ]
+      ]
      }
     },
     {
@@ -13273,6 +16143,21 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/4 - 355",
+        "h/2 - 156",
+        "d*3/4 + 15"
+       ],
+       [
+        "w/4 - 355",
+        "h/2 + 68.5",
+        "d*3/4 + 15"
+       ]
+      ]
      }
     },
     {
@@ -13283,7 +16168,22 @@
      "width": "d - 200",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "29",
+        "h/2 - 159",
+        "81"
+       ],
+       [
+        "29",
+        "h/2 + 65.5",
+        "81"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_yashika",
@@ -13294,7 +16194,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "19",
+        "h/2 - 189",
+        "d*3/4 + 31"
+       ],
+       [
+        "19",
+        "h/2 + 35.5",
+        "d*3/4 + 31"
+       ]
+      ]
+     }
     },
     {
      "code": "konstruktsiya_panelnix_dverey_2",
@@ -13305,7 +16220,32 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w*3/4 + 1",
+        "h - 15",
+        "d"
+       ],
+       [
+        "w/2 + 1",
+        "h - 15",
+        "d"
+       ],
+       [
+        "w/4 + 1",
+        "h - 15",
+        "d"
+       ],
+       [
+        "1",
+        "h - 15",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "bok_3",
@@ -13318,6 +16258,26 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 - 8",
+        "h",
+        "0"
+       ],
+       [
+        "0",
+        "h",
+        "0"
+       ],
+       [
+        "w - t",
+        "h",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13331,6 +16291,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13344,6 +16314,16 @@
      "bazis_material": "ЛДСП, Крослайн Карамель 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h + 468",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -13354,7 +16334,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "h - 15",
+        "-3"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -13389,6 +16379,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/shkaf/shkaf 003.fr3d",
     "bazis_olcham": [
+     1600,
+     600,
+     2016
+    ],
+    "joy_olcham": [
      1600,
      600,
      2016
@@ -15116,6 +18111,21 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - t",
+        "0",
+        "0"
+       ],
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15129,6 +18139,21 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "d - t"
+       ],
+       [
+        "t",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15139,7 +18164,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "85",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "tom",
@@ -15152,6 +18187,16 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - 2*t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15165,6 +18210,16 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "84",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15178,6 +18233,21 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - t",
+        "h",
+        "0"
+       ],
+       [
+        "0",
+        "h",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15191,6 +18261,16 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h + 568",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15204,6 +18284,16 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15214,7 +18304,17 @@
      "width": "w - 2",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "h - 15",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "sr_bok",
@@ -15227,6 +18327,21 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w*3/4 + 87",
+        "h/4 - 47",
+        "0"
+       ],
+       [
+        "w/4 - 103",
+        "h/4 - 47",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15240,6 +18355,21 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w - 752",
+        "h/4 - 63",
+        "d - 100"
+       ],
+       [
+        "w - 752",
+        "h/4 - 63",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15253,6 +18383,21 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w - 752",
+        "h/3 - 82.7",
+        "0"
+       ],
+       [
+        "t",
+        "h/3 - 82.7",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15264,7 +18409,37 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП 16мм, Ателье Светлый 5,8кв Kronospan",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "85",
+        "d"
+       ],
+       [
+        "w/4 - 94",
+        "85",
+        "d"
+       ],
+       [
+        "w*2/3 - 125.7",
+        "85",
+        "d"
+       ],
+       [
+        "w*3/4 + 96",
+        "85",
+        "d"
+       ],
+       [
+        "w/3 + 127.7",
+        "85",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "planka_2",
@@ -15277,6 +18452,21 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/4 - 63",
+        "d - 100"
+       ],
+       [
+        "t",
+        "h/4 - 63",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15288,7 +18478,37 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП 16мм, Ателье Светлый 5,8кв Kronospan",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "645",
+        "d"
+       ],
+       [
+        "w/4 - 94",
+        "645",
+        "d"
+       ],
+       [
+        "w*2/3 - 125.7",
+        "645",
+        "d"
+       ],
+       [
+        "w*3/4 + 96",
+        "645",
+        "d"
+       ],
+       [
+        "w/3 + 127.7",
+        "645",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "konstruktsiya_panelnix_dverey_3",
@@ -15299,7 +18519,37 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП 16мм, Ателье Светлый 5,8кв Kronospan",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "h - 14",
+        "d"
+       ],
+       [
+        "w/4 - 94",
+        "h - 14",
+        "d"
+       ],
+       [
+        "w*2/3 - 125.7",
+        "h - 14",
+        "d"
+       ],
+       [
+        "w*3/4 + 96",
+        "h - 14",
+        "d"
+       ],
+       [
+        "w/3 + 127.7",
+        "h - 14",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "sr_bok_2",
@@ -15312,6 +18562,21 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/3 + 118.7",
+        "h",
+        "0"
+       ],
+       [
+        "w*2/3 - 134.7",
+        "h",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15325,6 +18590,16 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w/2 - 182",
+        "h/3 - 82.7",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15338,6 +18613,16 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w/2 - 182",
+        "h/4 - 63",
+        "d - 100"
+       ]
+      ]
      }
     },
     {
@@ -15351,6 +18636,16 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/3 + 118.7",
+        "100",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15364,6 +18659,16 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w*2/3 - 134.7",
+        "100",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -15377,6 +18682,26 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "29",
+        "h/4 - 20",
+        "100"
+       ],
+       [
+        "w/3 - 232.3",
+        "h/4 - 20",
+        "100"
+       ],
+       [
+        "w/2 - 169",
+        "h/4 - 20",
+        "100"
+       ]
+      ]
      }
     },
     {
@@ -15390,6 +18715,21 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "343",
+        "h/4 - 20",
+        "100"
+       ],
+       [
+        "w/3 + 89.7",
+        "h/4 - 20",
+        "100"
+       ]
+      ]
      }
     },
     {
@@ -15403,6 +18743,21 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "45",
+        "h/4 - 20",
+        "d/4 - 25"
+       ],
+       [
+        "w - 343",
+        "h/4 - 20",
+        "d/4 - 25"
+       ]
+      ]
      }
     },
     {
@@ -15416,6 +18771,21 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "45",
+        "h/4 - 20",
+        "d - t"
+       ],
+       [
+        "w - 343",
+        "h/4 - 20",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -15426,7 +18796,22 @@
      "width": "d - 100",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "29",
+        "h/4 - 23",
+        "100"
+       ],
+       [
+        "w - 359",
+        "h/4 - 23",
+        "100"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_yashika",
@@ -15437,7 +18822,32 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП 16мм, Ателье Светлый 5,8кв Kronospan",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "h/4 - 53",
+        "d"
+       ],
+       [
+        "w/3 - 252.3",
+        "h/4 - 53",
+        "d"
+       ],
+       [
+        "w/2 - 189",
+        "h/4 - 53",
+        "d"
+       ],
+       [
+        "w*2/3 - 125.7",
+        "h/4 - 53",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "zadnyaya_panel_yashika_2",
@@ -15450,6 +18860,26 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/3 - 216.3",
+        "h/4 - 20",
+        "d/4 - 25"
+       ],
+       [
+        "w/2 - 153",
+        "h/4 - 20",
+        "d/4 - 25"
+       ],
+       [
+        "w*2/3 - 89.7",
+        "h/4 - 20",
+        "d/4 - 25"
+       ]
+      ]
      }
     },
     {
@@ -15463,6 +18893,26 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/3 - 216.3",
+        "h/4 - 20",
+        "d - t"
+       ],
+       [
+        "w/2 - 153",
+        "h/4 - 20",
+        "d - t"
+       ],
+       [
+        "w*2/3 - 89.7",
+        "h/4 - 20",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -15473,7 +18923,27 @@
      "width": "d - 100",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w/3 - 232.3",
+        "h/4 - 23",
+        "100"
+       ],
+       [
+        "w/2 - 169",
+        "h/4 - 23",
+        "100"
+       ],
+       [
+        "w*2/3 - 105.7",
+        "h/4 - 23",
+        "100"
+       ]
+      ]
+     }
     },
     {
      "code": "bokovina_yashika_pravaya_2",
@@ -15486,6 +18956,26 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 + 153",
+        "h/4 - 20",
+        "100"
+       ],
+       [
+        "w*2/3 + 216.3",
+        "h/4 - 20",
+        "100"
+       ],
+       [
+        "w - 45",
+        "h/4 - 20",
+        "100"
+       ]
+      ]
      }
     },
     {
@@ -15499,6 +18989,21 @@
      "bazis_material": "ЛДСП, Антрацит 4,6кв",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w*2/3 - 105.7",
+        "h/4 - 20",
+        "100"
+       ],
+       [
+        "w - 359",
+        "h/4 - 20",
+        "100"
+       ]
+      ]
      }
     },
     {
@@ -15510,7 +19015,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП 16мм, Ателье Светлый 5,8кв Kronospan",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 379",
+        "h/4 - 53",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -15539,6 +19054,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/shkaf/shkaf 004.fr3d",
     "bazis_olcham": [
+     1900,
+     500,
+     2156
+    ],
+    "joy_olcham": [
      1900,
      500,
      2156
@@ -17888,6 +21408,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "d - 26"
+       ]
+      ]
      }
     },
     {
@@ -17901,6 +21431,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "10"
+       ]
+      ]
      }
     },
     {
@@ -17914,6 +21454,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 - 8",
+        "86",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -17927,6 +21477,36 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/4 - 134",
+        "0"
+       ],
+       [
+        "t",
+        "h/3 + 31.3",
+        "0"
+       ],
+       [
+        "t",
+        "h/2 + 12",
+        "0"
+       ],
+       [
+        "t",
+        "h*2/3 - 7.3",
+        "0"
+       ],
+       [
+        "t",
+        "h*3/4 + 158",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -17940,6 +21520,26 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w - 929.5",
+        "h*3/4 + 222",
+        "0"
+       ],
+       [
+        "w - 929.5",
+        "h/4 - 218",
+        "0"
+       ],
+       [
+        "w - 929.5",
+        "h/4 + 2*t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -17953,6 +21553,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 - 8",
+        "0",
+        "26"
+       ]
+      ]
      }
     },
     {
@@ -17966,6 +21576,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - 2*t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -17979,6 +21599,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "70",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -17992,6 +21622,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -18005,6 +21645,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - t",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -18016,7 +21666,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "LDSP ODDIY",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "16.5",
+        "101",
+        "d - 20"
+       ],
+       [
+        "w/2 - t",
+        "101",
+        "d - 56"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_planka",
@@ -18027,7 +21692,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "LDSP ODDIY",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "h - 96",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "anti_bok",
@@ -18040,6 +21715,26 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "h",
+        "0"
+       ],
+       [
+        "w/2 - 8",
+        "h",
+        "0"
+       ],
+       [
+        "w - t",
+        "h",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -18051,7 +21746,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "LDSP ODDIY",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "h - 14",
+        "d"
+       ],
+       [
+        "w/2 + 1",
+        "h - 14",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "anti_tompol",
@@ -18064,6 +21774,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h + 568",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -18077,6 +21797,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -18087,7 +21817,17 @@
      "width": "w",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "70",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "xdf_2",
@@ -18097,7 +21837,17 @@
      "width": "w",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "oyna",
@@ -18107,7 +21857,17 @@
      "width": "w - 937",
      "slot": "oyna",
      "tekstura": "erkin",
-     "bazis_material": "Стекло, 4 мм\r1797"
+     "bazis_material": "Стекло, 4 мм\r1797",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "101",
+        "d - 4"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -18154,6 +21914,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/shkaf/shkaf 005.fr3d",
     "bazis_olcham": [
+     1875,
+     700,
+     2216
+    ],
+    "joy_olcham": [
      1875,
      700,
      2216
@@ -19902,6 +23667,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "d - 26"
+       ]
+      ]
      }
     },
     {
@@ -19915,6 +23690,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "10"
+       ]
+      ]
      }
     },
     {
@@ -19928,6 +23713,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/3 + 92",
+        "86",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -19941,6 +23736,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/3 + 92",
+        "0",
+        "26"
+       ]
+      ]
      }
     },
     {
@@ -19954,6 +23759,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - 2*t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -19967,6 +23782,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "70",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -19980,6 +23805,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -19993,6 +23828,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - t",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -20004,7 +23849,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "LDSP ODDIY",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "16.5",
+        "101",
+        "d - 20"
+       ],
+       [
+        "w/2 - t",
+        "101",
+        "d - 56"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_planka",
@@ -20015,7 +23875,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "LDSP ODDIY",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "h - 96",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "anti_bok",
@@ -20028,6 +23898,26 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "h",
+        "0"
+       ],
+       [
+        "w/2 - 8",
+        "h",
+        "0"
+       ],
+       [
+        "w - t",
+        "h",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -20039,7 +23929,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "LDSP ODDIY",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "1",
+        "h - 14",
+        "d"
+       ],
+       [
+        "w/2 + 1",
+        "h - 14",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "anti_tompol",
@@ -20052,6 +23957,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h + 568",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -20065,6 +23980,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -20075,7 +24000,17 @@
      "width": "w",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "70",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "xdf_2",
@@ -20085,7 +24020,17 @@
      "width": "w",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый лак., Kronostar\r2001",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "h - t",
+        "-3"
+       ]
+      ]
+     }
     },
     {
      "code": "polka",
@@ -20098,6 +24043,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/2 - 27",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -20111,6 +24066,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "733",
+        "h/2 + 19",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -20124,6 +24089,16 @@
      "bazis_material": "LDSP ODDIY",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "733",
+        "h/2 - 131",
+        "0"
+       ]
+      ]
      }
     }
    ],
@@ -20159,6 +24134,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/shkaf/shkaf 006.fr3d",
     "bazis_olcham": [
+     1875,
+     700,
+     2216
+    ],
+    "joy_olcham": [
      1875,
      700,
      2216
@@ -21564,6 +25544,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - 90",
+        "t",
+        "t"
+       ],
+       [
+        "106",
+        "t",
+        "t"
+       ]
+      ]
      }
     },
     {
@@ -21577,6 +25572,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w + t",
+        "0",
+        "t"
+       ]
+      ]
      }
     },
     {
@@ -21590,6 +25595,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "h/2 - 126",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -21603,6 +25618,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -21616,6 +25641,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -21629,6 +25664,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 + 74",
+        "t",
+        "t"
+       ],
+       [
+        "w/2 - 42",
+        "t",
+        "t"
+       ]
+      ]
      }
     },
     {
@@ -21642,6 +25692,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "0",
+        "d - 116"
+       ]
+      ]
      }
     },
     {
@@ -21655,6 +25715,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - 111",
+        "44",
+        "344"
+       ]
+      ]
      }
     },
     {
@@ -21668,6 +25738,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 + 95",
+        "44",
+        "344"
+       ]
+      ]
      }
     },
     {
@@ -21681,6 +25761,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w*2/3 - 133.7",
+        "55",
+        "d/2 - 56"
+       ]
+      ]
      }
     },
     {
@@ -21694,6 +25784,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w*2/3 - 133.7",
+        "71",
+        "d - 2*t"
+       ]
+      ]
      }
     },
     {
@@ -21707,6 +25807,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w*2/3 - 133.7",
+        "55",
+        "360"
+       ]
+      ]
      }
     },
     {
@@ -21718,7 +25828,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "760",
+        "14",
+        "d - t"
+       ]
+      ]
+     }
     },
     {
      "code": "bokovina_yashika_levaya_2",
@@ -21731,6 +25851,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 - 63",
+        "44",
+        "334"
+       ]
+      ]
      }
     },
     {
@@ -21744,6 +25874,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "127",
+        "44",
+        "334"
+       ]
+      ]
      }
     },
     {
@@ -21757,6 +25897,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/3 - 346.3",
+        "55",
+        "d/2 - 66"
+       ]
+      ]
      }
     },
     {
@@ -21770,6 +25920,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/3 - 346.3",
+        "71",
+        "d - 2*t"
+       ]
+      ]
      }
     },
     {
@@ -21783,6 +25943,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w/3 - 346.3",
+        "55",
+        "350"
+       ]
+      ]
      }
     },
     {
@@ -21794,7 +25964,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "20",
+        "14",
+        "d - t"
+       ]
+      ]
+     }
     },
     {
      "code": "planka_past_2",
@@ -21807,6 +25987,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/2 - 41",
+        "d - 116"
+       ],
+       [
+        "t",
+        "h/2 - 41",
+        "t"
+       ]
+      ]
      }
     },
     {
@@ -21820,6 +26015,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "0",
+        "t"
+       ]
+      ]
      }
     },
     {
@@ -21833,6 +26038,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "19",
+        "h*2/3 - 119",
+        "t"
+       ],
+       [
+        "19",
+        "h*2/3 - 119",
+        "d - 2*t"
+       ]
+      ]
      }
     }
    ],
@@ -21874,6 +26094,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/krovat/krovat detski.fr3d",
     "bazis_olcham": [
+     1468,
+     800,
+     882
+    ],
+    "joy_olcham": [
      1468,
      800,
      882
@@ -24744,6 +28969,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/3 + 13.3",
+        "0",
+        "300"
+       ],
+       [
+        "w*3/4 - 25.5",
+        "0",
+        "300"
+       ]
+      ]
      }
     },
     {
@@ -24757,6 +28997,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "d/3 - 38.7"
+       ]
+      ]
      }
     },
     {
@@ -24770,6 +29020,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 124",
+        "0",
+        "d/2 + 30.7"
+       ],
+       [
+        "w - 124",
+        "0",
+        "d*3/4 + 11.4"
+       ]
+      ]
      }
     },
     {
@@ -24783,6 +29048,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "d/2 + 30.7"
+       ],
+       [
+        "t",
+        "0",
+        "d*3/4 + 11.4"
+       ]
+      ]
      }
     },
     {
@@ -24796,6 +29076,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "0",
+        "d + t"
+       ],
+       [
+        "w - 28",
+        "0",
+        "d + t"
+       ]
+      ]
      }
     },
     {
@@ -24809,6 +29104,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "h - 86",
+        "d + t"
+       ],
+       [
+        "0",
+        "h + 114",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -24822,6 +29132,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 28",
+        "h - 15",
+        "0"
+       ],
+       [
+        "0",
+        "h - 15",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -24835,6 +29160,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "21",
+        "h*3/4 - 12",
+        "5"
+       ]
+      ]
      }
     },
     {
@@ -24848,6 +29183,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w + 26",
+        "0",
+        "0"
+       ],
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -24861,6 +29211,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "0",
+        "d"
+       ]
+      ]
      }
     },
     {
@@ -24874,6 +29234,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "0",
+        "-t"
+       ]
+      ]
      }
     }
    ],
@@ -24891,6 +29261,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/krovat/spalni 001.fr3d",
     "bazis_olcham": [
+     458,
+     968,
+     416
+    ],
+    "joy_olcham": [
      458,
      968,
      416
@@ -25239,6 +29614,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "0",
+        "-t"
+       ]
+      ]
      }
     },
     {
@@ -25252,6 +29637,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "0",
+        "d"
+       ]
+      ]
      }
     },
     {
@@ -25265,6 +29660,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ],
+       [
+        "w + 26",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25278,6 +29688,26 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "d*3/4 - 8"
+       ],
+       [
+        "t",
+        "0",
+        "d/4 - 8"
+       ],
+       [
+        "t",
+        "0",
+        "d/2 - 8"
+       ]
+      ]
      }
     },
     {
@@ -25291,6 +29721,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "21",
+        "h*3/4 - 12",
+        "5"
+       ]
+      ]
      }
     },
     {
@@ -25304,6 +29744,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "h*2/3 - 47.3",
+        "d - t"
+       ],
+       [
+        "t",
+        "h*2/3 - 47.3",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25317,6 +29772,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "h + 114",
+        "0"
+       ],
+       [
+        "0",
+        "h - 86",
+        "d + t"
+       ]
+      ]
      }
     },
     {
@@ -25330,6 +29800,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "0",
+        "h - 15",
+        "0"
+       ],
+       [
+        "w - 28",
+        "h - 15",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25343,6 +29828,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 28",
+        "0",
+        "d + t"
+       ],
+       [
+        "0",
+        "0",
+        "d + t"
+       ]
+      ]
      }
     }
    ],
@@ -25353,6 +29853,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/krovat/spalni 002.fr3d",
     "bazis_olcham": [
+     458,
+     968,
+     416
+    ],
+    "joy_olcham": [
      458,
      968,
      416
@@ -25433,6 +29938,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25446,6 +29961,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w + 26",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25459,6 +29984,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "d - t"
+       ],
+       [
+        "t",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25472,6 +30012,26 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w*3/4 + 104.5",
+        "0",
+        "t"
+       ],
+       [
+        "250",
+        "0",
+        "t"
+       ],
+       [
+        "w/2 + 13",
+        "0",
+        "t"
+       ]
+      ]
      }
     },
     {
@@ -25485,6 +30045,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "21",
+        "h/4 + 8.5",
+        "21"
+       ]
+      ]
      }
     },
     {
@@ -25498,6 +30068,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w + 10",
+        "h/4 - 61.5",
+        "t"
+       ],
+       [
+        "t",
+        "h/4 - 61.5",
+        "t"
+       ]
+      ]
      }
     },
     {
@@ -25511,6 +30096,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "t",
+        "h - 86",
+        "0"
+       ],
+       [
+        "w + 42",
+        "h/3 - 58.7",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25524,6 +30124,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "t",
+        "401",
+        "d - 70"
+       ],
+       [
+        "t",
+        "401",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25537,6 +30152,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w + 42",
+        "0",
+        "0"
+       ],
+       [
+        "w + 42",
+        "0",
+        "d - 70"
+       ]
+      ]
      }
     },
     {
@@ -25550,6 +30180,31 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 394",
+        "0",
+        "d - 196"
+       ],
+       [
+        "w - 394",
+        "0",
+        "d*2/3 - 128.7"
+       ],
+       [
+        "w - 394",
+        "0",
+        "180"
+       ],
+       [
+        "w - 394",
+        "0",
+        "d/3 + 112.7"
+       ]
+      ]
      }
     },
     {
@@ -25563,6 +30218,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 394",
+        "87",
+        "d/3 + 83.7"
+       ],
+       [
+        "w - 394",
+        "87",
+        "d*2/3 + 358.3"
+       ]
+      ]
      }
     },
     {
@@ -25576,6 +30246,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w - 394",
+        "87",
+        "d/3 - 374.3"
+       ],
+       [
+        "w - 394",
+        "87",
+        "d*2/3 - 99.7"
+       ]
+      ]
      }
     },
     {
@@ -25589,6 +30274,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - 394",
+        "87",
+        "d/3 - 358.3"
+       ],
+       [
+        "w - 394",
+        "87",
+        "d*2/3 - 83.7"
+       ]
+      ]
      }
     },
     {
@@ -25602,6 +30302,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - 10",
+        "87",
+        "d/3 - 358.3"
+       ],
+       [
+        "w - 10",
+        "87",
+        "d*2/3 - 83.7"
+       ]
+      ]
      }
     },
     {
@@ -25612,7 +30327,22 @@
      "width": "474",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w - 394",
+        "84",
+        "d/3 - 374.3"
+       ],
+       [
+        "w - 394",
+        "84",
+        "d*2/3 - 99.7"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_yashika",
@@ -25623,7 +30353,22 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w + 6",
+        "54",
+        "d/3 - 383.3"
+       ],
+       [
+        "w + 6",
+        "54",
+        "d*2/3 - 108.7"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -25646,6 +30391,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/krovat/spalni 003.fr3d",
     "bazis_olcham": [
+     2058,
+     1750,
+     1166
+    ],
+    "joy_olcham": [
      2058,
      1750,
      1166
@@ -25728,6 +30478,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25741,6 +30501,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w + t",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25754,6 +30524,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -25767,6 +30547,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25780,6 +30570,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - 234",
+        "0",
+        "t"
+       ],
+       [
+        "250",
+        "0",
+        "t"
+       ]
+      ]
      }
     },
     {
@@ -25793,6 +30598,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 + 8",
+        "0",
+        "t"
+       ]
+      ]
      }
     },
     {
@@ -25806,6 +30621,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "t",
+        "h - 70",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25819,6 +30644,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "t",
+        "h/2 - 49",
+        "d - 70"
+       ],
+       [
+        "t",
+        "h/2 - 49",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -25832,6 +30672,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 + 37",
+        "3*t",
+        "d - 416"
+       ]
+      ]
      }
     },
     {
@@ -25845,6 +30695,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w - 263",
+        "3*t",
+        "d - 416"
+       ]
+      ]
      }
     },
     {
@@ -25858,6 +30718,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w*2/3 - 275",
+        "3*t",
+        "d/2 + 34"
+       ],
+       [
+        "w/3 - 361",
+        "3*t",
+        "d/2 + 34"
+       ]
+      ]
      }
     },
     {
@@ -25871,6 +30746,21 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w*2/3 - 275",
+        "3*t",
+        "d - 2*t"
+       ],
+       [
+        "w/3 - 361",
+        "3*t",
+        "d - 2*t"
+       ]
+      ]
      }
     },
     {
@@ -25881,7 +30771,22 @@
      "width": "400",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart"
+     "bazis_material": "ЛХДФ 3мм 2800*2070 Белый 5,796кв Standart",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w*2/3 - 291",
+        "45",
+        "d - 416"
+       ],
+       [
+        "w/2 - 705",
+        "45",
+        "d - 416"
+       ]
+      ]
+     }
     },
     {
      "code": "bokovina_yashika_levaya_2",
@@ -25894,6 +30799,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/4 - 213",
+        "3*t",
+        "d - 416"
+       ]
+      ]
      }
     },
     {
@@ -25907,6 +30822,16 @@
      "bazis_material": "ЛДСП Ультрадекор 4,575 Белый гладкий 16мм",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 - 21",
+        "3*t",
+        "d - 416"
+       ]
+      ]
      }
     },
     {
@@ -25917,7 +30842,17 @@
      "width": "d - 2*t_korpus - 5",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ЛМДФ 5,5мм"
+     "bazis_material": "ЛМДФ 5,5мм",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "t",
+        "h/3",
+        "t"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -25940,6 +30875,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/krovat/spalni 005.fr3d",
     "bazis_olcham": [
+     1968,
+     900,
+     900
+    ],
+    "joy_olcham": [
      1968,
      900,
      900
@@ -26790,6 +31730,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "-55",
+        "h - t",
+        "-55"
+       ]
+      ]
      }
     },
     {
@@ -26803,6 +31753,21 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "-55",
+        "h - 2*t",
+        "-55"
+       ],
+       [
+        "w*3/4 + 20",
+        "h - 2*t",
+        "-55"
+       ]
+      ]
      }
     },
     {
@@ -26816,6 +31781,21 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "-5",
+        "h - 2*t",
+        "d + 5"
+       ],
+       [
+        "-5",
+        "h - 2*t",
+        "-55"
+       ]
+      ]
      }
     },
     {
@@ -26829,6 +31809,21 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ],
+       [
+        "w*3/4 - 1",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -26842,6 +31837,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "134",
+        "20"
+       ]
+      ]
      }
     }
    ],
@@ -26859,6 +31864,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/parta/Парта _1.fr3d",
     "bazis_olcham": [
+     500,
+     390,
+     500
+    ],
+    "joy_olcham": [
      500,
      390,
      500
@@ -27038,7 +32048,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2 - 109",
+        "85",
+        "d"
+       ]
+      ]
+     }
     },
     {
      "code": "polka",
@@ -27051,6 +32071,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w/2 - 94",
+        "h/2 - 59",
+        "t"
+       ]
+      ]
      }
     },
     {
@@ -27064,6 +32094,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2 - 94",
+        "100",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -27077,6 +32117,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "t",
+        "h/2 - 1",
+        "20"
+       ]
+      ]
      }
     },
     {
@@ -27090,6 +32140,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "0",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -27103,6 +32163,21 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "-5",
+        "h - 2*t",
+        "-55"
+       ],
+       [
+        "-5",
+        "h - 2*t",
+        "d + 5"
+       ]
+      ]
      }
     },
     {
@@ -27116,6 +32191,21 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w - 105",
+        "h - 2*t",
+        "-55"
+       ],
+       [
+        "-55",
+        "h - 2*t",
+        "-55"
+       ]
+      ]
      }
     },
     {
@@ -27129,6 +32219,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "-55",
+        "h - t",
+        "-55"
+       ]
+      ]
      }
     },
     {
@@ -27142,6 +32242,21 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2 - 94",
+        "0",
+        "d - t"
+       ],
+       [
+        "w/2 - 94",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -27155,6 +32270,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w/2 - 94",
+        "84",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -27168,6 +32293,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/3 + 23.3",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -27181,6 +32316,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w*3/4 + 74",
+        "0",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -27194,6 +32339,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w/2 - 94",
+        "h - 2*t",
+        "0"
+       ]
+      ]
      }
     },
     {
@@ -27207,6 +32362,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w/2 - 94",
+        "h - 2*t",
+        "d - 70"
+       ]
+      ]
      }
     },
     {
@@ -27220,6 +32385,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 - 81",
+        "h*3/4 + 22.7",
+        "90"
+       ]
+      ]
      }
     },
     {
@@ -27233,6 +32408,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "X",
+      "p": [
+       [
+        "w/2 + 245",
+        "h*3/4 + 22.7",
+        "90"
+       ]
+      ]
      }
     },
     {
@@ -27246,6 +32431,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2 - 65",
+        "h*3/4 + 22.7",
+        "d/4 - 32.5"
+       ]
+      ]
      }
     },
     {
@@ -27259,6 +32454,16 @@
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
      "edge": {
       "F": "kromka_korpus"
+     },
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2 - 65",
+        "h*3/4 + 22.7",
+        "d - t"
+       ]
+      ]
      }
     },
     {
@@ -27269,7 +32474,17 @@
      "width": "d - 90",
      "slot": "orqa",
      "tekstura": "erkin",
-     "bazis_material": "ХДФ, 3 мм, Белый\r2001"
+     "bazis_material": "ХДФ, 3 мм, Белый\r2001",
+     "joy": {
+      "o": "Y",
+      "p": [
+       [
+        "w/2 - 81",
+        "h*3/4 + 19.7",
+        "90"
+       ]
+      ]
+     }
     },
     {
      "code": "fasad_yashika",
@@ -27280,7 +32495,17 @@
      "slot": "fasad",
      "tekstura": "uzunlik",
      "bazis_material": "ЛДСП 5кв Kronospan 16мм Белый гладкий",
-     "edge": "hammasi:kromka_fasad"
+     "edge": "hammasi:kromka_fasad",
+     "joy": {
+      "o": "Z",
+      "p": [
+       [
+        "w/2 - 109",
+        "h*3/4 - 2",
+        "d"
+       ]
+      ]
+     }
     }
    ],
    "edge": [],
@@ -27333,6 +32558,11 @@
    "manba": {
     "fayl": "data1/modulniy/modulniy/parta/Парта тумба.fr3d",
     "bazis_olcham": [
+     800,
+     490,
+     730
+    ],
+    "joy_olcham": [
      800,
      490,
      730

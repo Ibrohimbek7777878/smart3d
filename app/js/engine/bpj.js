@@ -1,33 +1,33 @@
 /* Smart3D engine/bpj.js — BPJ (BazisUniversalExport 4.2) WRITER.
  *
  * Manba: mebelcity-platform/1.bpj (haqiqiy Bazis eksporti, 682 KB) +
- * widget_bazis/bpj_parser.py (qabul qiluvchi tomon) +
- * widget_bazis/static/widget_bazis/viewer/js/{svg.js,file-io.js,pricing.js}
- * (K3: objects[].holes sxemasi — {x,y,diameter,depth,face} — viewer'dan olindi:
- *  svg.js H.x/H.y kontur kadrida, file-io.js face = front|back|edge-*).
+ * widget_bazis/bpj_parser.py (ERP o'quvchisi) + widget_bazis/static/widget_bazis/viewer/bazis/BazisUniversalImport.js
+ * (Bazis'ga import skripti v4.18 — faylni shu skript o'qiydi; tests/bpj_import_mock.mjs uni taqlid qiladi).
  *
  * Format (tekshirilgan real fayldan):
  *   { version:"4.2", script:"BazisUniversalExport", meta, config,
  *     materials[], edgeBands[], furnitures[], blocks[], bom[], objects[],
  *     exports:{giblab, csv, smetaHtml} }
  *
- * K3 qarorlari (real fayl tekshiruvi bilan):
- *   - Panel materiali/qalinligi — DETAL darajasida (cutlist), modul emas.
- *     Real 1.bpj: 3 ta material (ЛДСП/Каштан/ЛХДФ 3мм) — orqa devor alohida.
- *   - bom dl/dw = KESIM o'lchami (real faylda panel bitta o'lchamda);
- *     tayyor o'lcham userProps.smart3d_finish da saqlanadi.
- *   - butts length = panelning o'z qirrasi (= dl/dw, real faylda: 610 = dl).
- *   - position = panelning global bbox min burchagi (hamma panel bitta
- *     nuqtada emas); transform.origin = panel markazi; bbox = haqiqiy 8 burchak.
- *   - config.sheetL/W = eng kichik (barcha panellar sig'adigan) varaq formati.
+ * Panel joyi (TZ-17, real fayl va import skripti bo'yicha):
+ *   - Bazis global o'qlari: X — tomoshabinning o'ngi, Y — yuqori, Z — old tomon (oldda turgan tomoshabin tomon).
+ *     Smart3D dunyo (x, y — reja, z — yuqori) → Bazis: X = OFF − x, Y = z, Z = y (burilish, ko'zgu emas; OFF — X ≥ 0 uchun).
+ *   - transform — panelning o'z ramkasi: origin = kontur (0,0) burchagi va qalinlik boshlanadigan yuz, axisX — dl bo'ylab,
+ *     axisY — dw bo'ylab, axisZ — qalinlik (o'ng qo'l: X × Y = Z). Kontur 0..dl × 0..dw, qalinlik lokal 0..dp.
+ *     Import skripti: AddFrontPanel(0,0,dl,dw,0) → Orient(axisZ, axisY) → Position = origin.
+ *   - dl/dw — panelning geometrik (tayyor) o'lchami, haqiqiy Bazis eksportidagidek; kesim o'lchami userProps.smart3d_kesim.
+ *   - Joy manbasi: MC modullari — Bazis faylidan olingan joy formulalari (engine/joy.js), qolganlari — 3D panel modeli
+ *     (assembler); unda yo'q detal — navbat bilan (ogohlantirish: "geometriya tekshirilmagan").
+ *   - Kromka elemIndex: 0 — y=0 qirra (F, oldi), 1 — x=dl, 2 — y=dw, 3 — x=0 (L). Teshik: x — dl bo'ylab L dan,
+ *     y — dw bo'ylab F dan, z — 0 (old yuz) yoki dp (orqa yuz).
  *
- * Encoder: fayl UTF-8 (BOM'siz) — Bazis ism/litrallari lotin (ASCII-safe).
- * Parser (bpj_parser.py) UTF-8/UTF-16/cp1251 ni avtomatik aniqlaydi.
+ * Encoder: fayl UTF-8 (BOM'siz). Parser (bpj_parser.py) UTF-8/UTF-16/cp1251 ni avtomatik aniqlaydi.
  */
 
 import { evalFormula } from './expr.js';
 import { cutlist } from './cutlist.js';
 import { getModulePanels } from './assembler.js';
+import { hasJoy, joyPanellar } from './joy.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
 
 const r1 = (x) => Math.round(x * 10) / 10;
@@ -36,6 +36,30 @@ const r4 = (x) => Math.round(x * 10000) / 10000;
 
 /** Butta (qirra) → elemIndex: 0=pastki(dl) 1=o'ng(dw) 2=yuqori(dl) 3=chap(dw). */
 const SIDE_TO_ELEM = { F: 0, R: 1, B: 2, L: 3 };
+
+/* vektor yordamchilari (ramka hisobi) */
+const AXV = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+const vmul = (v, k) => v.map(x => x * k);
+const vadd = (a, b) => a.map((x, i) => x + b[i]);
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+
+/**
+ * Panel ramkasi (modul lokal o'qlarida): quti markazi C, o'lchamlari Dm [x, y, z] bo'yicha; detal dl × dw × th.
+ * Qalinlik o'qi — o'lchami th ga eng yaqin; dl o'qi — qolgan ikkitasidan dl ga mosi. F qirra (y=0) — chuqurlik o'qi
+ * bo'lsa old tomonda (lokal +y), aks holda pastda/chapda. Natija: { o: origin, x, y, z: birlik o'qlar }.
+ */
+function panelRamka(C, Dm, dl, dw, th) {
+  const ti = [0, 1, 2].sort((i, j) => Math.abs(Dm[i] - th) - Math.abs(Dm[j] - th) || Dm[i] - Dm[j])[0];
+  const [i1, i2] = [0, 1, 2].filter(i => i !== ti);
+  const li = (Math.abs(Dm[i1] - dl) + Math.abs(Dm[i2] - dw) <= Math.abs(Dm[i2] - dl) + Math.abs(Dm[i1] - dw)) ? i1 : i2;
+  const wi = li === i1 ? i2 : i1;
+  const ex = AXV[li];
+  const ey = wi === 1 ? vmul(AXV[1], -1) : AXV[wi];            // chuqurlik bo'ylab: y=0 — old qirra
+  const ez = cross(ex, ey);
+  const L = Dm[li], W = Dm[wi], T = Dm[ti];
+  const o = vadd(C, vmul(vadd(vadd(vmul(ex, L), vmul(ey, W)), vmul(ez, T)), -0.5));
+  return { o, x: ex, y: ey, z: ez };
+}
 
 /**
  * Smart3D doc → BPJ 4.2 ob'ekti.
@@ -82,11 +106,12 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
   const bomRows = [];      // agregatsiya: frag+size+material → row
   const bomIdx = {};
   const objects = [];
+  const ramkalar = [];     // objects[i] uchun dunyo ramkasi (Smart3D) — oxirida Bazis o'qlariga o'tkaziladi
   const furnitures = [];
   const blocks = [];
   const warnings = [];
   let panelId = 0, totalArea = 0, totalPanels = 0, ovalPanels = 0;
-  let unpositioned = 0;
+  let unpositioned = 0, fromJoy = 0, fromModel = 0;
 
   for (const p of doc.placements || []) {
     const frag = catalog[p.frg];
@@ -94,12 +119,15 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
     const w = +p.w || +frag.w, d = +p.d || +frag.d, h = +p.h || +frag.h;
     const qty = Math.max(1, Math.round(+p.qty || 1));
     const rot = ((+p.rot || 0) % 360 + 360) % 360;
-    const rad = rot * Math.PI / 180, cs = Math.cos(rad), sn = Math.sin(rad);
+    const rad = rot * Math.PI / 180, cs = Math.round(Math.cos(rad) * 1e12) / 1e12, sn = Math.round(Math.sin(rad) * 1e12) / 1e12;
     const ox = +p.x || 0, oy = +p.y || 0, oz = +p.z || 0;
+    /* modul lokal (markazlangan) → dunyo: nuqta va yo'nalish */
+    const toWorld = (v) => { const lx = v[0] + w / 2, ly = v[1] + d / 2; return [ox + lx * cs - ly * sn, oy + lx * sn + ly * cs, oz + v[2] + h / 2]; };
+    const dirWorld = (v) => [v[0] * cs - v[1] * sn, v[0] * sn + v[1] * cs, v[2]];
 
     const cl = clByPlacement.get(p.id) || fallbackCutlist(frag, w, d, h);
     const defs = (cl && cl.parts && cl.parts.length)
-      ? defsFromCutlist(cl, matByCode, matName, thickness)
+      ? defsFromCutlist(cl, matByCode, matName, thickness, frag)
       : defsFromFormulas(frag, w, d, h, matByCode, matName, thickness);
     if (!defs.length) continue;
 
@@ -107,13 +135,21 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
     const fbTotals = { fasad: 0, orqa: 0 };
     for (const d of defs) if (fbTotals[d.slot] != null) fbTotals[d.slot]++;
 
-    /* 3D panel modeli (objexport/glbexport bilan bir xil ramka) — position/boundingBox uchun */
+    /* panel joylari: MC — Bazis faylidan (joy formulalari), qolgani — 3D panel modeli (objexport/glbexport ramkasi) */
     let asmBase = [];
+    const joyli = hasJoy(frag);
+    const tKorpus = (defs.find(x => x.slot === 'korpus') || defs[0]).thickness || thickness;
     try {
-      const asm = getModulePanels(frag, w, d, h, { thickness: defs[0].thickness || thickness });
-      asmBase = (asm && asm.panels) || [];
+      if (joyli) {
+        const thByCode = {};
+        for (const x of defs) thByCode[x.code] = x.thickness;
+        asmBase = joyPanellar(frag, w, d, h, { t: tKorpus, qalinlik: (part) => thByCode[part.code] });
+      } else {
+        const asm = getModulePanels(frag, w, d, h, { thickness: tKorpus });
+        asmBase = (asm && asm.panels) || [];
+      }
     } catch (e) {
-      warnings.push(`${p.id}: 3D panel modeli qurilmadi (${e.message}) — position navbatma-navbat`);
+      warnings.push(`${p.id}: panel joylari hisoblanmadi (${e.message}) — navbat bilan`);
     }
 
     for (let n = 0; n < qty; n++) {
@@ -129,36 +165,36 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
       for (const d of defs) remaining.set(d.code, (remaining.get(d.code) || 0) + 1);
       let unmatched = 0, matched = 0, zIdx = 0;
       const fbCount = { fasad: 0, orqa: 0 };
-      const usedPos = new Set();          // bir modul ichida bir xil nuqta taqiqlanadi
 
       /* — har bir panel (cutlist bo'yicha, qty kengaytirilgan) — */
       for (const def of defs) {
         remaining.set(def.code, (remaining.get(def.code) || 1) - 1);
         panelId++;
         totalPanels++;
-        const cutL = def.cutL, cutW = def.cutW, th = def.thickness;
+        const dl = Math.max(1, Math.round(def.finL)), dw = Math.max(1, Math.round(def.finW)), th = def.thickness;
         const mat = def.material;
-        totalArea += (cutL * cutW) / 1e6;
+        totalArea += (dl * dw) / 1e6;
         blockPanelIds.push(panelId);
 
         /* materials agregatsiyasi (detal materiali bo'yicha) */
         const ma = matAgg[mat] = matAgg[mat] || { name: mat, thickness: th, totalArea: 0, panels: [] };
-        ma.totalArea += (cutL * cutW) / 1e6;
+        ma.totalArea += (dl * dw) / 1e6;
         ma.panels.push(panelId);
 
-        /* butts — fragment.edge bo'yicha, uzunlik = panelning o'z qirrasi (dl/dw) */
+        /* butts — kesim ro'yxati kromkasi (MC detallari ham — ularda kromka detalning o'zida), bo'lmasa fragment.edge;
+         * uzunlik = panelning o'z qirrasi (dl/dw) */
         const butts = [];
-        for (const e of frag.edge || []) {
+        for (const e of def.edges || frag.edge || []) {
           if (e.code !== def.code) continue;
           for (const side of e.sides || []) {
             const ei = SIDE_TO_ELEM[side];
             if (ei == null) continue;
             butts.push({
               elemIndex: ei,
-              material: edgeNames[e.material] || e.material,
+              material: edgeNames[e.material] || e.name || e.material,
               thickness: +(e.thickness || 2),
               width: -1,
-              length: (ei === 0 || ei === 2) ? Math.round(cutL) : Math.round(cutW)
+              length: (ei === 0 || ei === 2) ? dl : dw
             });
           }
         }
@@ -172,33 +208,36 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
         }
 
         /* teshiklar — cutlist konvensiyasi (x = F chetdan EN bo'ylab, y = L chetdan
-         * UZUNLIK bo'ylab) → BPJ kontur kadrida (X = dl = uzunlik, Y = dw = en) */
+         * UZUNLIK bo'ylab) → BPJ kontur kadrida (X = dl = uzunlik, Y = dw = en); z — yuz (import skripti AddHole(x,y,z)) */
         const holes = def.holes
           .filter(hl => hl.kind !== 'cutout' && hl.side !== 'T')   /* F2: moyka kesimi — BPJ circle emas; torets — sxemada yo'q */
           .map(hl => ({
-            x: Math.min(Math.round(cutL), Math.max(0, Math.round(hl.y))),
-            y: Math.min(Math.round(cutW), Math.max(0, Math.round(hl.x))),
+            x: Math.min(dl, Math.max(0, Math.round(hl.y))),
+            y: Math.min(dw, Math.max(0, Math.round(hl.x))),
+            z: hl.side === 'B' ? th : 0,
             diameter: +hl.dia || 5,
             depth: +hl.depth || 13,
             face: hl.side === 'F' ? 'front' : hl.side === 'B' ? 'back' : (hl.side || '')
           }));
 
-        /* bom agregatsiyasi (bir xil detal+kesim+material → bitta qator) */
-        const key = def.code + '|' + cutL + '|' + cutW + '|' + mat;
+        /* bom agregatsiyasi (bir xil detal+o'lcham+material → bitta qator; nom — obyekt nomi bilan bir xil,
+         * ERP (bpj_parser) qator va obyektni nom|dl|dw|dp bo'yicha bog'laydi) */
+        const key = def.code + '|' + dl + '|' + dw + '|' + mat;
         let row = bomIdx[key];
         if (!row) {
           row = bomIdx[key] = {
             no: bomRows.length + 1,
-            name: def.code,
+            name: def.nom,
             artPos: p.frg,
-            dl: Math.round(cutL), dw: Math.round(cutW), dp: th,
+            dl, dw, dp: th,
             material: mat, textureDir: 0, isOval: false,
-            perimeter: Math.round(2 * (cutL + cutW)),
+            perimeter: Math.round(2 * (dl + dw)),
             count: 0,
-            area: r3((cutL * cutW) / 1e6),
+            area: r3((dl * dw) / 1e6),
             totalArea: 0, totalPazLen: 0,
             butts, buttsStr: buttsStr(butts),
-            holesCount: 0
+            holesCount: 0,
+            smart3d_kesim: { dl: def.cutL, dw: def.cutW }
           };
           bomRows.push(row);
         }
@@ -206,65 +245,51 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
         row.holesCount += holes.length;
         row.totalArea = r3(row.area * row.count);
 
-        /* joylashuv — 3D modeldan mos paneldan (yo'q bo'lsa navbatma-navbat) */
+        /* joylashuv — joy formulalari / 3D modeldan mos panel (yo'q bo'lsa navbatma-navbat) */
         const q = takePanel(pool, def, remaining);
-        let cx, cy, cz, ex, ey, ez;
+        let C, Dm;
         if (q) {
           matched++;
-          /* objexport ramkasi: world = placement origin + R·(modul markazi + lokal) */
-          cx = w / 2 + q.x; cy = d / 2 + q.y; cz = h / 2 + q.z;
-          ex = Math.abs(q.w) / 2; ey = Math.abs(q.d) / 2; ez = Math.abs(q.h) / 2;
+          if (q.joy) fromJoy++; else fromModel++;
+          C = [q.x, q.y, q.z];
+          Dm = [Math.abs(q.w), Math.abs(q.d), Math.abs(q.h)];
         } else {
           /* 3D modelda bunda panel yo'q (mas. shift/toka — assembler'da modellashtirilmagan):
-           * fasad → oldinga (X bo'ylab), orqa → orqaga, qolganlari → Z bo'ylab navbat */
+           * fasad → oldinga (X bo'ylab), orqa → orqaga, qolganlari → Z bo'ylab navbat (yotiq) */
           unpositioned++;
           unmatched++;
           const slot = def.slot || '';
+          let cx, cy, cz;
           if ((slot === 'fasad' || slot === 'orqa') && fbTotals[slot]) {
             fbCount[slot]++;
-            cx = (w * fbCount[slot]) / (fbTotals[slot] + 1);
+            cx = (w * fbCount[slot]) / (fbTotals[slot] + 1) - w / 2;
             cy = slot === 'fasad' ? (d / 2 + th / 2) : (-d / 2 + th / 2 + 8);
-            cz = h / 2;
+            cz = 0;
+            Dm = [dw, th, dl];
           } else {
-            cx = w / 2; cy = d / 2;
-            cz = h * (zIdx++ + 0.5) / Math.max(1, defs.length);
+            cx = 0; cy = 0;
+            cz = h * (zIdx++ + 0.5) / Math.max(1, defs.length) - h / 2;
+            Dm = [dl, dw, th];
           }
-          ex = cutL / 2; ey = cutW / 2; ez = th / 2;
+          C = [cx, cy, cz];
         }
-        /* bir xil nuqta bo'lmasligi kerak (kollarizatsiya → z bo'ylab 5mm suramiz) */
-        let wx = 0, wy = 0, wz = 0, pkey = '';
-        for (let t = 0; t < 60; t++) {
-          wx = ox + cx * cs - cy * sn;
-          wy = oy + cx * sn + cy * cs;
-          wz = oz + cz;
-          pkey = Math.round(wx) + ':' + Math.round(wy) + ':' + Math.round(wz);
-          if (!usedPos.has(pkey)) break;
-          cz += 5;
-        }
-        usedPos.add(pkey);
+        const rl = panelRamka(C, Dm, dl, dw, th);
+        ramkalar.push({ o: toWorld(rl.o), x: dirWorld(rl.x), y: dirWorld(rl.y), z: dirWorld(rl.z), dl, dw, th });
 
-        /* objects — haqiqiy panel (contour + transform bilan) */
-        const dl = Math.round(cutL), dw = Math.round(cutW);
-        const bbox = boxGlobal(wx, wy, wz, ex, ey, ez, cs, sn);
+        /* objects — haqiqiy panel (contour + transform bilan; transform/bbox oxirida Bazis o'qlarida to'ldiriladi) */
         objects.push({
           id: panelId,
-          name: def.name,
+          name: def.nom,
           artPos: p.frg,
           isOval: false,
-          area: r3((cutL * cutW) / 1e6),
+          area: r3((dl * dw) / 1e6),
           dimensions: { dl, dw, dp: th },
           perimeter: Math.round(2 * (dl + dw)),
           material: { name: mat, textureDir: 0 },
           materialDetails: { name: mat, thickness: th, sheetWidth: 0 },
           plastics: [],
-          position: { x: bbox.min.x, y: bbox.min.y, z: bbox.min.z },
-          transform: {
-            origin: { x: Math.round(wx), y: Math.round(wy), z: Math.round(wz) },
-            axisX: { x: 1, y: 0, z: 0 },
-            axisY: { x: 0, y: 0, z: -1 },
-            axisZ: { x: 0, y: 1, z: 0 },
-            source: 'ToGlobal'
-          },
+          position: null,
+          transform: null,
           ownerChain: [frag.name || p.frg, 'Model'],
           contour: {
             outer: [
@@ -280,19 +305,22 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
           holes,
           cuts: [],
           boundingBox: {
-            global: bbox,
+            global: null,
             local: { min: { x: 0, y: 0, z: 0 }, max: { x: dl, y: dw, z: th } }
           },
           userProps: {
             smart3d_placement: p.id,
+            smart3d_detal: def.name,
             smart3d_holes: holes.length,
-            smart3d_finish: { l: def.finL, w: def.finW }
+            smart3d_kesim: { dl: def.cutL, dw: def.cutW },
+            smart3d_joy: q ? (q.joy ? 'bazis' : 'model') : 'navbat',
+            ...(q && !q.joy ? { smart3d_model: q.code } : {})
           }
         });
       }
 
       if (unmatched && n === qty - 1) {
-        warnings.push(`${p.id}: ${matched}/${defs.length} panel 3D modeldan joy oldi — qolganlari navbat`);
+        warnings.push(`${p.id}: ${matched}/${defs.length} panel joyini oldi — qolgani navbat bilan (geometriya tekshirilmagan)`);
       }
 
       blocks.push({
@@ -304,6 +332,33 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
       });
     }
   }
+
+  /* Bazis global o'qlari: X = OFF − x, Y = z, Z = y (OFF — barcha panellar X ≥ 0 bo'lishi uchun) */
+  let maxX = 0;
+  const burchaklar = (r) => {
+    const pts = [];
+    for (let k = 0; k < 8; k++) {
+      let v = r.o;
+      if (k & 1) v = vadd(v, vmul(r.x, r.dl));
+      if (k & 2) v = vadd(v, vmul(r.y, r.dw));
+      if (k & 4) v = vadd(v, vmul(r.z, r.th));
+      pts.push(v);
+    }
+    return pts;
+  };
+  for (const r of ramkalar) for (const v of burchaklar(r)) if (v[0] > maxX) maxX = v[0];
+  const OFF = Math.ceil(maxX);
+  const bz = (v) => ({ x: r3(OFF - v[0]), y: r3(v[2]), z: r3(v[1]) });
+  const bzDir = (v) => ({ x: r4(-v[0]) || 0, y: r4(v[2]) || 0, z: r4(v[1]) || 0 });
+  objects.forEach((o, i) => {
+    const r = ramkalar[i];
+    const pts = burchaklar(r).map(bz);
+    const min = { x: Math.min(...pts.map(q => q.x)), y: Math.min(...pts.map(q => q.y)), z: Math.min(...pts.map(q => q.z)) };
+    const max = { x: Math.max(...pts.map(q => q.x)), y: Math.max(...pts.map(q => q.y)), z: Math.max(...pts.map(q => q.z)) };
+    o.transform = { origin: bz(r.o), axisX: bzDir(r.x), axisY: bzDir(r.y), axisZ: bzDir(r.z), source: 'ToGlobal' };
+    o.boundingBox.global = { min, max };
+    o.position = { x: min.x, y: min.y, z: min.z };
+  });
 
   const materialsList = Object.values(matAgg).map(m => ({
     name: m.name, thickness: m.thickness, totalArea: r4(m.totalArea),
@@ -344,7 +399,7 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
     script: 'BazisUniversalExport',
     meta: {
       modelName,
-      exportDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      exportDate: new Date().toISOString().slice(0, 19),
       exporterVersion: '4.5',
       bazisApiVersion: 1001,
       totalPanels,
@@ -368,8 +423,12 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
       smetaHtml: buildSmetaHtml(modelName, bomRows, totalArea)
     },
     smart3d: {
-      version: 2,
-      note: 'Smart3D dan yaratilgan. objects[].holes: {x,y,diameter,depth,face} — x/dl bo\'ylab, y/dw bo\'ylab (Bazis viewer sxemasi).',
+      version: 3,
+      note: 'Smart3D dan yaratilgan (SINOV — real Bazis importi tasdiqlanmagan). Bazis o\'qlari: X o\'ngga, Y yuqoriga, Z oldga; ' +
+        'X = ' + OFF + ' − x, Y = z, Z = y. dl/dw — tayyor o\'lcham, kesim — userProps.smart3d_kesim. ' +
+        'objects[].holes: {x,y,z,diameter,depth,face} — x/dl bo\'ylab, y/dw bo\'ylab.',
+      offsetX: OFF,
+      joy: { bazis: fromJoy, model: fromModel, navbat: unpositioned },
       warnings,
       unpositioned,
       room: doc.room,
@@ -393,11 +452,14 @@ function buttsStr(butts) {
  * cutlist → panel ta'riflari (detal bitta-bitta, qty allaqachon kengaytirilgan).
  * Material/qalinlik — DETAL darajasida (slotResolver natijasi).
  */
-function defsFromCutlist(cl, matByCode, fallbackMat, fallbackTh) {
+function defsFromCutlist(cl, matByCode, fallbackMat, fallbackTh, frag) {
+  const nomOf = partNomi(frag);
   const countByCode = {};
   for (const p of cl.parts || []) countByCode[p.code] = (countByCode[p.code] || 0) + 1;
   const holesByPart = {};
   for (const hl of cl.holes || []) (holesByPart[hl.part] = holesByPart[hl.part] || []).push(hl);
+  const edgesByCode = {};
+  for (const e of cl.edges || []) (edgesByCode[e.code] = edgesByCode[e.code] || []).push(e);
   const seen = {};
   return (cl.parts || []).map(p => {
     const idx = (seen[p.code] = (seen[p.code] || 0) + 1);
@@ -405,6 +467,7 @@ function defsFromCutlist(cl, matByCode, fallbackMat, fallbackTh) {
     return {
       code: p.code,
       name: p.code + (countByCode[p.code] > 1 ? '_' + idx : ''),
+      nom: nomOf(p.code),
       material: (meta && meta.name) || p.material || fallbackMat,
       materialCode: p.material,
       thickness: +p.thickness || (meta && meta.thickness) || fallbackTh,
@@ -414,7 +477,8 @@ function defsFromCutlist(cl, matByCode, fallbackMat, fallbackTh) {
       finW: Math.round(+p.finish_width || +p.width || 1),
       slot: p.slot,
       texture: p.texture,
-      holes: holesByPart[p.code] || []
+      holes: holesByPart[p.code] || [],
+      edges: cl.edges ? (edgesByCode[p.code] || []) : null
     };
   });
 }
@@ -443,6 +507,7 @@ function defsFromFormulas(frag, w, d, h, matByCode, matName, fallbackTh) {
     : ((matByCode[frag.material_code] && matByCode[frag.material_code].thickness) || 16);
   const defs = [];
   const seen = {};
+  const nomOf = partNomi(frag);
   for (const part of frag.parts || []) {
     try {
       const vars = { w, d, h, t: th, qty: 1 };
@@ -454,6 +519,7 @@ function defsFromFormulas(frag, w, d, h, matByCode, matName, fallbackTh) {
         defs.push({
           code: part.code,
           name: part.code + (pqty > 1 || idx > 1 ? '_' + i : ''),
+          nom: nomOf(part.code),
           material,
           materialCode: frag.material_code,
           thickness: th,
@@ -471,12 +537,19 @@ function defsFromFormulas(frag, w, d, h, matByCode, matName, fallbackTh) {
   return defs;
 }
 
+/** detal kodi → Bazis'dagi nomi (MC: "Боковина ящика левая"), bo'lmasa — kod (BOM va obyekt nomi bir xil bo'lsin) */
+function partNomi(frag) {
+  const m = {};
+  for (const pt of (frag && frag.parts) || []) m[pt.code] = pt.nom || pt.name || pt.code;
+  return (code) => m[code] || code;
+}
+
 /** 3D modeldan shu detalga eng yaqin panelni oladi: (1) kod, (2) slot, (3) o'lcham.
  * @param {Map} remaining — joylashmagan detallar kodlari (keyin keladiganlar band emas) */
 function takePanel(pool, def, remaining) {
   const dims = (q) => {
     const A = [+q.w, +q.d, +q.h].map(Math.round).sort((x, y) => x - y);
-    const B = [def.cutL, def.cutW, def.thickness].map(Math.round).sort((x, y) => x - y);
+    const B = [def.finL, def.finW, def.thickness].map(Math.round).sort((x, y) => x - y);
     return Math.abs(A[0] - B[0]) + Math.abs(A[1] - B[1]) + Math.abs(A[2] - B[2]);
   };
   const pick = (pred, tol) => {
@@ -501,27 +574,6 @@ function takePanel(pool, def, remaining) {
 
 /** Kod mos kelmaganda o'lcham bo'yicha qabul qilinadigan maksimall farq (mm, 3 o'lcham yig'indisi). */
 const DIM_MATCH_TOL_MM = 60;
-
-/** Markazi (wx,wy,wz), yarmi o'lchamlari (ex,ey,ez) bilan qutining global bbox'i. */
-function boxGlobal(wx, wy, wz, ex, ey, ez, cs, sn) {
-  let mnx = Infinity, mny = Infinity, mnz = Infinity;
-  let mxx = -Infinity, mxy = -Infinity, mxz = -Infinity;
-  for (let k = 0; k < 8; k++) {
-    const px = (k & 1) ? ex : -ex;
-    const py = (k & 2) ? ey : -ey;
-    const pz = (k & 4) ? ez : -ez;
-    const x = wx + px * cs - py * sn;
-    const y = wy + px * sn + py * cs;
-    const z = wz + pz;
-    if (x < mnx) mnx = x; if (x > mxx) mxx = x;
-    if (y < mny) mny = y; if (y > mxy) mxy = y;
-    if (z < mnz) mnz = z; if (z > mxz) mxz = z;
-  }
-  return {
-    min: { x: Math.round(mnx), y: Math.round(mny), z: Math.round(mnz) },
-    max: { x: Math.round(mxx), y: Math.round(mxy), z: Math.round(mxz) }
-  };
-}
 
 /** Xavfsiz formula ifodasi (expr.js orqali, AST asosida, eval/Function-siz). */
 function evalF(expr, vars) {

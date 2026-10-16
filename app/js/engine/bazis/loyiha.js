@@ -65,7 +65,7 @@ function tomon(el, bb) {
   return mx > (bb.x0 + bb.x1) / 2 ? 'R' : 'L';
 }
 
-function konturBox(els) {
+export function konturBox(els) {
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (const e of els) for (const p of [e.p1, e.p2, e.center].filter(Boolean)) {
     if (e.type === 'arc' && p === e.center) continue;
