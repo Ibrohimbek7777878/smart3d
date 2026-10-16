@@ -1,6 +1,6 @@
 # TZ-17 — Bazis BPJ faylini to'liq va ishonchli qilish
 
-**Sana:** 2026-10-15 · **Navbat:** 17 · **Holat:** TASDIQ KUTILMOQDA
+**Sana:** 2026-10-15 · **Navbat:** 17 · **Holat:** BAJARILDI 2026-10-16 (`dizayn` tarmog'i; egasi: "bunga ruxsat beraman, buni tugat") — real Bazis sinovi kutilmoqda ([BPJ-SINOV-YORIQNOMA.md](../BPJ-SINOV-YORIQNOMA.md)); SINOV belgisi undan keyin olinadi
 **Asos:** egasi (2026-10-15): "bpj ni davom ettir". Qoida S5 BPJ uchun olib tashlandi.
 **Bog'liq:** TZ-01 (BPJ SINOV belgisi), TZ-06 (teshiklar Bazis faylidan), TZ-05 (umumiy modullar geometriyasi, pauza), TZ-09 (Q3, Q5).
 
@@ -72,3 +72,35 @@
 
 ## Muddat (taxmin)
 - Taxminan **2–3 ish kuni** + real sinov kuni. Bu taxmin, aniq hisob emas.
+
+## Natija (2026-10-16, `dizayn` tarmog'i)
+
+**Topilgan asosiy xato — TZ'da yozilganidan jiddiyroq.** Eski BPJ real Bazis'da buzuq model berardi:
+- balandlik Bazis'ning Z (chuqurlik) o'qiga yozilardi — model "chalqancha yotib" chiqardi;
+- barcha panellarga bir xil o'qlar berilardi — yon devor, polka va orqa devor bir xil yotardi;
+- `origin` panel markazida edi, Bazis esa kontur burchagini kutadi.
+
+Bundan tashqari MebelCity'ning 38 modulida 612 paneldan 406 tasi (66%, TZ'da 26% deb yozilgan) joyini olmasdi. Sababi: 3D model bu modullarni yaxlit quti qilib chizadi.
+
+| Ish | Natija |
+|---|---|
+| 1. Format | `tests/bpj_check.mjs`: haqiqiy `1.bpj` dagi 11 bo'lim va obyektning 19 maydoni bizda bor, turi bir xil. `dl/dw` — haqiqiy fayldagidek geometrik (tayyor) o'lcham; kesim o'lchami `userProps.smart3d_kesim` da |
+| 2. Import skripti talablari | Skript o'qiydigan har maydon (`transform`, `contour`, `butts` elemIndex 0–3, `holes` x/y/z, `boundingBox`, `material`, `isOval` …) bor va to'g'ri. O'qlar birlik, o'ng qo'l; bbox transform bilan bir xil (skriptning ikkala usuli bir joyni beradi). Kromka F qirrasi modul oldida (0/90/180/270°) |
+| 3. Bazis taqlidi | `tests/bpj_import_mock.mjs`: skript (o'zgartirilmagan) Node'da soxta Bazis bilan ishlaydi. **38 MC modul — 612/612 panel asl Bazis faylidagi joyida (≤ 0.5 mm)**. Konstruktor oshxonalari (I/L/U, 0°/90°/270°) — har panel modul izida, fasadlar xona tomonda |
+| 4. Joy manbasi | MC — Bazis faylidan joy formulalari (`scripts/fr3d_import.py` → `parts[].joy`, `app/js/engine/joy.js`). Modul cho'zilsa ham to'g'ri yuradi: detal yaqin chetga bog'lanadi, tortma/eshik bloki birga siljiydi. Standart o'lchamda 396/396 formula Bazis bilan aynan. Joysiz panel: **MC 406 → 0**. Umumiy modullar: 171/599 (29%) navbat bilan, "geometriya tekshirilmagan" ogohlantirishi bilan (TZ-05 gacha) |
+| 5. ERP o'quvchisi | `bpj_parser.py` (faqat o'qiladi) xatosiz o'qiydi. Detal soni, o'lcham × qalinlik × material kesim ro'yxati bilan bir xil. BOM va obyekt nomi bir xil (ERP ularni nom bo'yicha bog'laydi) |
+| 6. Yo'riqnoma | [BPJ-SINOV-YORIQNOMA.md](../BPJ-SINOV-YORIQNOMA.md) — 1 modul (kutilgan o'lchamlar jadvali bilan) va L-oshxona; taqlid tekshira olmaydigan 3 taxmin (A, B, C) |
+| 7. Real sinov | **egasi / bazischi** — yo'riqnoma bo'yicha |
+
+**Yo'lda tuzatilgan boshqa xatolar:**
+1. MC modullarida BPJ'da kromka yo'q edi — endi kromka kesim ro'yxatidan olinadi. MC-KP-02 da 0 → 15.
+2. Teshikka `z` qo'shildi (orqa yuz) — import skripti `face` maydonini o'qimaydi.
+
+**Egasi va texnolog uchun savollar:**
+- **Sokol ikki marta, stoleshnitsa past.** MC pastki shkaflari Bazis'da 100 mm oyoqda, sokol modulning o'z detali (Фронтальная). Smart3D konstruktori modulni polga qo'yadi va qatorga alohida "Sokol planka" qo'shadi. Natijada:
+  - sokol kesim ro'yxatida ikki marta chiqadi — 4 modulli oshxonada 2200 + 2400 mm;
+  - stoleshnitsa 726 mm da (Bazis dizaynida taxminan 834 mm).
+
+  Taklif: MC pastki modullari z = 100 da turadi, qatordagi alohida sokol MC uchun o'chiriladi. Bu narx va 3D ga tegadi, shuning uchun ruxsat kerak.
+- **Polka qalinligi.** Smart3D'da MC polkasi 18 mm, Bazis'da 16 mm (48 panel). Qaysi biri to'g'ri?
+- **Egri konturli panellar** (krovat bosh qismi va boshqalar) BPJ'ga to'rtburchak (gabarit) bo'lib chiqadi — Smart3D kesim ro'yxatida kontur yo'q. Ularni kesish uchun Bazis fayli kerak.
