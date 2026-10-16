@@ -37,6 +37,7 @@
 | 20 | [Narx faqat bizning ma'lumotdan (admin "Narxlar" sahifasi)](20-narx-bizning-malumotdan.md) | PAUZA (egasi, 2026-10-16: "narxni qo'yib turamiz") | egasi: Q1 (`NARXLAR.xlsx` 3-ustuni), Q2 (ish haqi, kromka, ustama), Q3, "boshla" |
 | 21 | [Saytga Bazis faylini yuklash (.b3d, .fr3d, .bpj)](21-bazis-fayl-yuklash.md) | **BAJARILDI** 2026-10-16 (`dizayn` tarmog'i) — GibLab bilan 97,7% mos | egasi: yangi tugma va hisobot skrinshoti (3.3) |
 | 22 | [Avtomatik konstruktor (AI'siz, qoidalar bilan)](22-avtomatik-konstruktor.md) | **BAJARILDI** 2026-10-16 (`dizayn` tarmog'i) | texnolog: qoidalar raqamlari va stoleshnitsa qalinligi; egasi: yangi oyna skrinshoti (3.3) |
+| 23 | [3D ko'rinish Bazis-Cloud darajasida va backend funksiyalari interfeysda](23-3d-korinish-va-backend-interfeys.md) | TASDIQ KUTILMOQDA (2026-10-16) | egasi: 5 savol (tavsiyalar bor), "boshla" |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.
