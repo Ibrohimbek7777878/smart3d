@@ -11,7 +11,7 @@
 - **Kutilmoqda:**
   - "parolsiz email bilan kirish" (#119-3) — usul tanlovi egasidan;
   - yangi oynalar skrinshoti (3.3).
-- **A1 tuzatish (2026-10-17, egasi #132) — TASDIQ KUTILMOQDA.** Batafsil — "A1 tuzatish" bo'limida (oxirida).
+- **A1 tuzatish (2026-10-17, egasi #132) — BAJARILDI** TZ-25 ichida (`dizayn` b71c889). Batafsil — "A1 tuzatish" bo'limida (oxirida).
 **Asos:** egasi (2026-10-16, SORIZLAR #115). Ikki skrinshot bilan:
 - **1-rasm — Bazis-Cloud Web-Viewer.** "Shodiyor aka ishxona kuxnya": panellar, eshiklar, ruchka, oyoq, stoleshnitsadagi o'yiq ko'rinadi, model erkin aylanadi.
 - **2-rasm — Smart3D muharririda shu loyiha.** Talab: "erkin aylantirish qo'shilsin, bizda ustun jihatlar bo'lsin, backend'dagi funksiyalar to'liq ishlab, frontendda chiroyli interfeys orqali chiqsin".
@@ -235,7 +235,7 @@ Bu taxmin, aniq hisob emas.
 
 ## A1 tuzatish — sichqoncha va barmoq bilan aylantirganda ekran yangilanmaydi (2026-10-17, egasi #132)
 
-**Holat:** TASDIQ KUTILMOQDA.
+**Holat:** BAJARILDI 2026-10-17 — TZ-25 ichida (egasi #134), `dizayn` b71c889. Test (`web_ishjoyi`): 15 sichqoncha harakatida 75 marta chizildi, g'ildirak — chiziladi.
 **Egasi (#132, skrinshot bilan):** "hali ham Bazis'dagi kabi tez va yengil aylantirib ko'rish yo'q".
 
 ### Sabab (o'lchov bilan, qoida 4.1)

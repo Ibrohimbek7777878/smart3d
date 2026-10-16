@@ -19,7 +19,7 @@
 | 02 | [Testlarni tiklash, `/tmp` ga bog'liqlikni yo'qotish](02-testlarni-tiklash.md) | **BAJARILDI** 2026-10-15 | — |
 | 03 | [Xizmatlar avtomatik qo'shilmasin (S3)](03-xizmatlar-S3.md) | **BAJARILDI** 2026-10-15 | — (prisadka tanlanadi, ish haqi avtomatik) |
 | 04 | [Narx ma'lumotlari: egasi uchun jadval + import](04-narx-malumotlari.md) | **BAJARILDI** 2026-10-15 (vosita) | egasi: `Smart3D_malumot/narx-toldirish-2026-10-15.xlsx` ni to'ldiradi |
-| 05 | [83 ta umumiy modul geometriyasi](05-modul-geometriyasi.md) | PAUZA (egasi: "hozircha tegmang") | — |
+| 05 | [83 ta umumiy modul geometriyasi](05-modul-geometriyasi.md) | **BAJARILDI** 2026-10-17 (`dizayn`) — 50 modul, [hisobot](05-hisobot.md) | — |
 | 06 | [Modullarga teshiklar](06-teshiklar.md) | **EVROVINT BAJARILDI** 2026-10-15 (724 vint, 1077 teshik, Bazis bilan aynan) | D6 — petlya, polka ushlagich, ruchka, eksantrik; evrovint 7/4.5 yoki 8/5 |
 | 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | **BAJARILDI** 2026-10-15 | haqiqiy SMS uchun Eskiz akkaunti serverga |
 | 08 | [Ekrandagi qoida buzilishlari: logo, oyna, burish](08-ui-qoida-tuzatishlari.md) | QISMAN: oyna ✅, burish ✅, logo — kutilmoqda | egasi: Bittada logo fayli |
@@ -37,9 +37,9 @@
 | 20 | [Narx faqat bizning ma'lumotdan (admin "Narxlar" sahifasi)](20-narx-bizning-malumotdan.md) | PAUZA (egasi, 2026-10-16: "narxni qo'yib turamiz") | egasi: Q1 (`NARXLAR.xlsx` 3-ustuni), Q2 (ish haqi, kromka, ustama), Q3, "boshla" |
 | 21 | [Saytga Bazis faylini yuklash (.b3d, .fr3d, .bpj)](21-bazis-fayl-yuklash.md) | **BAJARILDI** 2026-10-16 (`dizayn` tarmog'i) — GibLab bilan 97,7% mos | egasi: yangi tugma va hisobot skrinshoti (3.3) |
 | 22 | [Avtomatik konstruktor (AI'siz, qoidalar bilan)](22-avtomatik-konstruktor.md) | **BAJARILDI** 2026-10-16 (`dizayn` tarmog'i) | texnolog: qoidalar raqamlari va stoleshnitsa qalinligi; egasi: yangi oyna skrinshoti (3.3) |
-| 23 | [3D ko'rinish Bazis-Cloud darajasida, rang va material tanlash, backend funksiyalari interfeysda](23-3d-korinish-va-backend-interfeys.md) | **BAJARILDI** 2026-10-16 (`dizayn`) — C1 (buyurtma) pauza; **A1 tuzatish** (aylantirganda ekran yangilanmaydi, #132) — tasdiq kutilmoqda | egasi: parolsiz email bilan kirish usuli (#119-3), yangi oynalar skrinshoti (3.3) |
+| 23 | [3D ko'rinish Bazis-Cloud darajasida, rang va material tanlash, backend funksiyalari interfeysda](23-3d-korinish-va-backend-interfeys.md) | **BAJARILDI** 2026-10-16 (`dizayn`) — C1 (buyurtma) pauza; **A1 tuzatish** (aylantirganda ekran yangilanmaydi, #132) — bajarildi (TZ-25 ichida) | egasi: parolsiz email bilan kirish usuli (#119-3), yangi oynalar skrinshoti (3.3) |
 | 24 | [O'z modulini chizish va tayyor promptlar kutubxonasi](24-modul-chizish-va-tayyor-promptlar.md) | **BAJARILDI** 2026-10-16 (`dizayn`) | egasi: yangi oynalar skrinshoti (3.3), 4 savol; texnolog: qoidalar raqamlari |
-| 25 | [Bosh ish joyi — Bazis kabi bitta ekran: matn qatori, Bazis faylini ochish, xona va mebel chizish](25-bosh-ish-joyi.md) | TASDIQ KUTILMOQDA (#128–129) | egasi: dizayn namunasi (3.3), bo'sh xona, "boshla" |
+| 25 | [Bosh ish joyi — Bazis kabi bitta ekran: matn qatori, Bazis faylini ochish, xona va mebel chizish](25-bosh-ish-joyi.md) | **BAJARILDI** 2026-10-17 (`dizayn`) | egasi: yangi ish joyini ko'rib chiqish (skrinshotlar `tests/ui/out/web/ishjoyi-*.png`) |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.
@@ -52,7 +52,7 @@
 | Savol | Qaror |
 |---|---|
 | Xizmatlar (S3) | prisadka — usta tanlaydi; ish haqi — avtomatik |
-| Modul geometriyasi (TZ-05) | hozircha tegilmaydi |
+| Modul geometriyasi (TZ-05) | ~~hozircha tegilmaydi~~ → 2026-10-17 "boshla va to'g'irla" (#134) |
 | Teshiklar (TZ-06) | A — Bazis faylidan o'qish |
 | BPJ (S5) | davom ettiriladi — S5 BPJ uchun olindi (TZ-17) |
 | Kirish | telefon + SMS kod, Eskiz.uz |

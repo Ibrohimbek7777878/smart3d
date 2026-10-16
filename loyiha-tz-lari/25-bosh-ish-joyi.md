@@ -1,6 +1,27 @@
 # TZ-25 — Bosh ish joyi: Bazis kabi bitta ekran (matn qatori, Bazis faylini ochish, xona va mebel chizish)
 
-**Sana:** 2026-10-17 · **Navbat:** 25 · **Holat:** TASDIQ KUTILMOQDA (savollarga javob #129; dizayn namunasi va "boshla" kerak)
+**Sana:** 2026-10-17 · **Navbat:** 25 · **Holat:** BAJARILDI 2026-10-17 (`dizayn` b71c889; egasi #134: "TZ-25 ni tugat … namuna yo'q, o'zing tizimga va dizaynga moslab to'g'irlab ket")
+**Egasi qarorlari (#134):**
+- dizayn namunasi — yo'q: tasdiqlangan dizaynning ranglari, shrifti, tugma va kartalari bilan men moslayman (6-bo'lim, 1-savol);
+- bo'sh ish joyidagi xona — tavsiya: standart 3600 × 3000 (6-bo'lim, 2-savol);
+- "Nima yasaymiz" so'rovnomasi o'rniga — matn qatori ustidagi "tez boshlash" tugmalari (Oshxona, Devor chizish, Bazis fayli, Tayyor so'rovlar) — loyiha bo'sh bo'lganda;
+- TZ-23 "A1 tuzatish" (aylantirganda ekran yangilanmaydi, #132) — shu TZ ichida: ish joyining markazi — 3D kanva.
+
+## Natija (2026-10-17)
+- **Ochilish:** kirgach — oxirgi loyiha ish joyida, bo'lmasa bo'sh standart xona (3600 × 3000). Ro'yxatdan o'tish, SMS va Telegram bilan yangi kirish, "Yangi loyiha" — darhol ish joyi. "Nima yasaymiz" so'rovnomasi yashirildi (kodi qoldi).
+- **Joylashuv:**
+  - tepada — logo, loyiha nomi, saqlash belgisi, narx, "Loyihalar", "Fayllar", til, akkaunt (Sozlamalar);
+  - chapda — asboblar: Tanlash, Devor chizish, Eshik va deraza, Xona, Mebel, Modul chizish, O'lchash, Narx, Fayllar, Bazis fayli;
+  - o'ngda — panel faqat kerak bo'lganda (× bilan yopiladi); kompyuterda boshida katalog ochiq, telefonda yopiq;
+  - pastda — matn qatori (mikrofon, tayyor so'rovlar va shablonlar menyusi); AI tugmasi o'rnida.
+- **Matn qatori:** so'rov → Enter → loyiha (AI'siz tahlilchi va konstruktor; AI kaliti bo'lsa — AI ham). Loyiha bo'sh bo'lsa — "tez boshlash": Oshxona, Devor chizish, Tayyor so'rovlar, Bazis fayli. Devor chizishda — buyruq qatori: "3000" (kursor yo'nalishida yoki 90° chapga), "3000 90", bo'sh Enter — yopish.
+- **Devor chizish (2D):** nuqtama-nuqta; 0°/45°/90° ga va 10 mm ga yopishadi (Shift — erkin); oxirgi devor birinchi nuqta qatoriga tekislanadi; birinchi nuqtaga bosilsa, Enter yoki ikki marta bosilsa — yopiladi; Esc — bekor, Backspace — oxirgi nuqta; bo'sh joyni sudrash — siljitish, 2 barmoq — kattalashtirish.
+- **Tahrir:** o'lcham zanjiri doim ko'rinadi — bosilsa uzunlik maydoni (keyingi devor parallel ko'chadi); devorni sudrash — parallel suriladi; eshik/deraza — palitradan devorga sudrab yoki tanlab bosib; bosilsa — eni, joyi, o'chirish kartasi; devor bo'ylab sudraladi. Tayyor shakllar: to'rtburchak, L, P (Xona panelida ham).
+- **Bazis fayli:** ish joyiga sudrab tashlansa ochiladi (mebel bo'lsa — tasdiq bilan).
+- **Telefon:** kanva, asboblar qatori (gorizontal, "Loyihalar" ham shu yerda), matn qatori doim ko'rinadi; panel kanva ostida ochiladi (matn qatorini yopmaydi). 390 da toshish yo'q.
+- **TZ-23 A1:** sichqoncha/barmoq/g'ildirak bilan aylantirganda sahna qayta chiziladi (sinov: 15 harakatda 75 chizish, oldin — 0).
+- **Testlar:** yangi `web_ishjoyi` (ish joyi, oshxona, 3D aylantirish, devor — qatordan va sichqoncha bilan, o'lcham, surish, eshik, qayta ochish, 390), yangi `verify_devor` (18); 23 web test yangi oqimga moslandi; node, server (67) va 24 web to'plam — yashil.
+- **Dizayn:** ranglar, shrift, tugma va kartalar — tasdiqlangan dizayndan; yangi qismlar (asboblar, matn qatori, 2D qatlam, palitra) — dizayn tokenlari bilan. Skrinshotlar: `tests/ui/out/web/ishjoyi-*.png`.
 **Asos:** egasi (#128): "bitta bosh joy bo'lsin, Bazis'dagi kabi; u yerda matn yozadigan joy bo'lsin; Bazis faylni ham chizish bo'lsin; mebel va xonani chiza olish ham bo'lsin; SunPin'ga ko'r, o'shandan zo'r va sodda bo'lsin".
 Savollarga javob (#129):
 - sayt ochilganda — darhol bo'sh ish joyi;

@@ -371,3 +371,7 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 132. bu yerda hali ham bazisdag kabi tez va yengil aylantirb korish yoq erkin aylantirb korish nega qoshilmad men yuqorida aytganlarim
 
 133. modul geometriyas nega pauzada nima kere uni tugaitsh uchun
+
+134. Modul geometriyasi (TZ-05) buni boshla va togirla toliq konstruksiyan ai qila olsin va tizimga claudeni ulab qoy vaqtinchalik u yoizlgan promptini yani ustan konstruksiyan olsin va buyogdagi chizadigan aiga osha ai suniy intelekt shunadigan tilda yozb otakzsin va u chizayotgan ai ortiqcha qyinchilikszi buni togirlab konstruksiyan ideal qilb chizb bersin narxlarin ham nechi fozi togir va hozir bizda umumiy frontenda 130ta modulni korsataybd osha 130ta modulni hammasi togir ishlaydim ularnidagi narxni qayerdan olayabd shuni ayt hammasin togir ketyabadim tz boyicha loyhan nech foiz bold umumiy
+    (iqtibos — TZ-26 taklifi: "Hozir ishlaydi: matndan oshxona qurish … Bu yangi TZ-26 bo'ladi, oldin savollar beraman. Yozaymi?")
+    bu zor oxirsi tizim va suniy intletk bunga roziman tz yozda uni ham boshlayver undan oldin tz 5 va tz 25 ni tugat va tz26 qilb uni ham boshlab tugatib qoy hozir tz 25 uchun mend anauman yoq ozing tizimga moslab va dizyanga ham moslab togirlab ket
