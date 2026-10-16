@@ -1,9 +1,16 @@
-# TZ-23 — 3D ko'rinish Bazis-Cloud darajasida (erkin aylantirish) va backend funksiyalari interfeysda
+# TZ-23 — 3D ko'rinish Bazis-Cloud darajasida (erkin aylantirish, ko'rinish rejimlari), rang va material tanlash, backend funksiyalari interfeysda
 
 **Sana:** 2026-10-16 · **Navbat:** 23 · **Holat:** TASDIQ KUTILMOQDA
 **Asos:** egasi (2026-10-16, SORIZLAR #115). Ikki skrinshot bilan:
 - **1-rasm — Bazis-Cloud Web-Viewer.** "Shodiyor aka ishxona kuxnya": panellar, eshiklar, ruchka, oyoq, stoleshnitsadagi o'yiq ko'rinadi, model erkin aylanadi.
 - **2-rasm — Smart3D muharririda shu loyiha.** Talab: "erkin aylantirish qo'shilsin, bizda ustun jihatlar bo'lsin, backend'dagi funksiyalar to'liq ishlab, frontendda chiroyli interfeys orqali chiqsin".
+
+**Qo'shimcha** (egasi, 2026-10-16, SORIZLAR #116–117). Bazis-Cloud'dagi yana uch skrinshot:
+- kamera rejimi — Orbit, Walk, Ortho;
+- fon rangi;
+- chizish rejimi — Shaded, Shaded with edges, Wireframe, Effects, X-Ray.
+
+"Bular ham bo'lishi kerak … biznikda rang tanlash, material tanlash ham bo'lsin" → 2-bo'lim, D va E.
 
 **Bog'liq:** TZ-21 (Bazis yuklash), TZ-09/19 (yangi frontend), qoida 6.2 (3D sichqoncha va barmoq bilan boshqariladi), TZ-20 (narxlar — PAUZA).
 
@@ -45,6 +52,14 @@ Eslatma: Bazis fayli materialning haqiqiy rangini bermaydi — ERP ham rangni no
 
 Bor va ishlaydi: loyihalar, sozlamalar, sex standartlari (admin), xatolar jurnali (admin), AI, Telegram, Bazis yuklash, barcha fayllar.
 
+### 1.4. Rang va material tanlash — hozir
+- Material tanlash bor, lekin faqat **korpus** va **fasad** uchun. Manba — ERP plitalari (1281 ta), qidiruv, narx (bo'lmasa "narx yo'q") — `web/src/features/editor/catalog/material.js`.
+- Tanlangan material **3D rangiga ta'sir qilmaydi** — sahna umumiy "korpus / fasad" rangida.
+- Orqa devor (HDF) va stoleshnitsa uchun tanlash yo'q.
+- Har modulga alohida material berib bo'lmaydi (masalan pastki — yog'och, ustki — oq).
+- Bazis loyihasida Bazis materialini almashtirib bo'lmaydi.
+- Rang palitrasi yo'q. ERP'da plitaning rasmi yoki rang kodi ham yo'q — dekor rangi faqat nomida ("Белый", "Кашемир", "Дуб").
+
 ## 2. Bajariladigan ishlar
 
 ### A. 3D ko'rinish — Bazis-Cloud darajasida
@@ -67,7 +82,7 @@ Bor va ishlaydi: loyihalar, sozlamalar, sex standartlari (admin), xatolar jurnal
    - oyoq va ruchkalar — Bazis faylidagi joyida, soddalashtirilgan shaklda.
 
    Ma'lumot `bazis3d` ga ixcham qo'shiladi, server cheklovlari ichida (ro'yxat ≤ 2000).
-6. **Ko'rinish rejimlari** (Bazis "ko'z" va "kub" tugmalari kabi): oddiy; fasadsiz (ichini ko'rish); shaffof korpus. **O'lchash** — ikki nuqta orasidagi masofa (Bazis'dagi chizg'ich).
+6. **Fasadsiz rejim** (ichini ko'rish, Bazis "ko'z" tugmasi kabi) va **O'lchash** — ikki nuqta orasidagi masofa (Bazis'dagi chizg'ich). Chizish rejimlari (shaffof, sim karkas …) — D3 da.
 
 ### B. Ustun jihatlar (Bazis-Cloud'da yo'q, bizda bor)
 Bazis loyihasida ham ishlaydi va ko'rinishda tugma bilan turadi: narx va smeta, kesim va raskroy, stanok fayllari, BPJ. Modul tanlanganda o'lchami va narxi chiqadi. AI va avtomatik konstruktor odatdagi loyihada ishlaydi.
@@ -86,12 +101,48 @@ Bazis loyihasida ham ishlaydi va ko'rinishda tugma bilan turadi: narx va smeta, 
 3. **Furnitura katalogi:** Mebel qadamida "Furnitura" varag'i — qidiruv, ERP narxi. Narx bo'lmasa — "narx yo'q" (qoida 4.3).
 4. **SMS bilan kirish** — 3-savolga bog'liq. Kirish ekranida "Telefon orqali" varianti; Eskiz kaliti serverda bo'lsagina ko'rinadi.
 
+### D. Ko'rinish sozlamalari — Bazis-Cloud "kub" menyusi kabi
+Uchala bo'lim tanlovi eslab qolinadi (qurilmada).
+1. **Kamera rejimi:**
+   - **Aylanish (Orbit)** — A1 dagi erkin aylantirish;
+   - **Yurish (Walk)** — xona ichida odam ko'zi balandligida yurish: kompyuterda strelka yoki WASD + sichqoncha, telefonda ekrandagi joystik;
+   - **Orto** — ortografik proyeksiya: o'lchamlar perspektivasiz, chizmadagidek.
+2. **Fon:** oq, och kulrang, kulrang, to'q, qora, "+" (o'z rangingiz), "Standart" (dizayn foni).
+3. **Chizish rejimi:**
+   - **Bo'yalgan;**
+   - **Bo'yalgan + qirralar** — A4;
+   - **Sim karkas** — faqat qirra chiziqlari;
+   - **Effektlar** — yumshoq soya va yorug'lik. Kompyuterda; telefonda tezlik uchun soddalashtiriladi;
+   - **Rentgen (X-Ray)** — panellar shaffof, qirralar ko'rinadi. Boshqa rejim bilan birga yoqiladi, Bazis'dagidek.
+4. Menyu sahna asboblar panelidagi tugmadan ochiladi. Telefonda — pastdan chiqadigan varaq.
+
+### E. Rang va material tanlash
+1. **Material** — ERP katalogidan (1281 plita: LDSP, LMDF, MDF, akril, PET, HDF …), mavjud material varag'i kengaytiriladi (qoida 2.4):
+   - **qismlar:** korpus, fasad (bor), orqa devor (HDF), stoleshnitsa — yangi;
+   - **qidiruv** nom, kod, qalinlik va tur bo'yicha; narx ERP'dan, bo'lmasa — "narx yo'q" (qoida 4.3);
+   - **har modul uchun alohida material:** modul tanlanganda "Material — faqat shu modul" (masalan pastki — yog'och, ustki — oq); qolgan modullar loyiha materialida qoladi;
+   - **Bazis loyihasida** har Bazis materiali (masalan "ЛДСП Кашемир 16мм") ERP materialiga almashtiriladi.
+
+   Material almashsa — kesim, raskroy, narx va 3D birga yangilanadi.
+2. **Rang:**
+   - tanlangan materialning dekori 3D'da ko'rinadi. Rang nomdan olinadi ("Белый" — oq, "Кашемир" — kulrang-bej, "Дуб/Орех/Венге" — yog'och teksturasi), "taxminiy rang" belgisi bilan;
+   - **rang palitrasi:** oq, kulrang, bej, yog'och (och / o'rta / to'q), qora, rangli. Rangni bossangiz — shu rangdagi ERP plitalari chiqadi, keyin material tanlanadi;
+   - rang **faqat material orqali** o'zgaradi (6-savol): ekranda ko'ringan rang ishlab chiqarishdagi material bilan bir xil bo'ladi.
+3. **Narx.** Yangi narx yoki formula yo'q — ERP'dagi mavjud narx ishlatiladi. Har modul uchun alohida material — narx har modul materialidan. Bu test bilan tekshiriladi: loyiha narxi = modullar narxlari yig'indisi.
+
 ## 3. Tegadigan fayllar
 - **3D:**
   - `web/src/services/sahna.js` (kamera chegaralari);
   - `app/js/controls.js` (siljitish, barmoq ishoralari);
   - `app/js/scene.js` (ko'rinish yo'nalishlari, devorlarni yashirish, qirralar, rejimlar, o'lchash);
   - `web/src/features/editor/scene/*` (asboblar paneli).
+- **Ko'rinish sozlamalari (D):** `app/js/scene.js`, `app/js/materials3d.js` (chizish rejimlari, fon), yangi kamera rejimlari (yurish, orto) — `app/js/controls.js`; `web/src/features/editor/scene/*` (menyu).
+- **Rang va material (E):**
+  - `web/src/features/editor/catalog/material.js` (kengaytiriladi);
+  - `app/js/materials3d.js` (dekor rangi);
+  - `app/js/engine/cutlist.js` — har modul materiali; hisob formulasi o'zgarmaydi, faqat qaysi material ekanligi;
+  - `web/src/store/project.js` va `services/hisob.js` — modul materiali hujjatda;
+  - server hujjat tekshiruvi — yangi maydon (`himoya.js` ruxsat ro'yxati).
 - **Bazis:** `app/js/engine/bazis/loyiha.js` (kontur, rang, furnitura `bazis3d` ga), `app/js/engine/assembler.js` (Bazis bo'limi — kontur bo'yicha chizish), `web/src/features/bazis/*`.
 - **Server:**
   - `server/index.js` — `orders.status`, admin buyurtmalar ro'yxati, holatni o'zgartirish;
@@ -107,7 +158,10 @@ Bazis loyihasida ham ishlaydi va ko'rinishda tugma bilan turadi: narx va smeta, 
 - **Xavf: O'RTA.**
   - 3D'ga ko'p o'zgarish: telefonda tezlik, katta loyihada kontur hajmi. Kamaytirish: tezlik testi (`web_tezlik`), kontur nuqtalari cheklanadi.
   - Yangi admin sahifalari: faqat admin, server tekshiradi.
-- **Moliya:** narx va smeta hisobiga tegilmaydi. Buyurtma — faqat ma'lumot, to'lov yo'q. Narx 3 tilda va avvalgidek — testlar bilan tasdiqlanadi.
+- **Moliya:**
+  - A–D va C narx hisobiga tegmaydi. Buyurtma — faqat ma'lumot, to'lov yo'q.
+  - E (material) narxga ta'sir qiladi, lekin yangi narx yoki formula yo'q — faqat ERP'dagi mavjud narx, tanlangan materialga qarab.
+  - Tekshiruv: material o'zgarmagan loyihaning narxi avvalgidek, baytma-bayt. Har modul materiali — loyiha narxi = modullar yig'indisi, 3 tilda bir xil.
 - **Orqaga qaytarish:** har bo'lim alohida commit; `git revert`. Kamera chegarasi bitta sozlamada — qaytarish oson.
 
 ## 5. Egasidan kerak (javob bo'lmasa — tavsiya olinadi)
@@ -115,17 +169,23 @@ Bazis loyihasida ham ishlaydi va ko'rinishda tugma bilan turadi: narx va smeta, 
 2. **Buyurtma** kimga boradi? *Tavsiya:* admin "Buyurtmalar" sahifasiga. Bot ulangan bo'lsa — admin Telegram'iga xabar.
 3. **SMS bilan kirish** qo'shilsinmi (Eskiz kaliti serverda)? *Tavsiya:* ha, email'ga qo'shimcha variant.
 4. **Narxlarni o'zgartirish** (TZ-20) pauzadan chiqadimi? *Tavsiya:* hozircha yo'q (pauza siz tomondan) — faqat ko'rish.
-5. **Yangi sahifalar ko'rinishi** (qoida 3.3): 3D uchun namuna — siz bergan Bazis-Cloud skrinshoti. Buyurtmalar va qoldiqlar sahifalari mavjud "Loyihalarim" va "Sozlamalar" uslubida bo'ladi, skrinshot bilan tasdiqlaysiz.
-6. **"Boshla".**
+5. **Yangi sahifalar ko'rinishi** (qoida 3.3): 3D uchun namuna — siz bergan Bazis-Cloud skrinshotlari. Buyurtmalar va qoldiqlar sahifalari mavjud "Loyihalarim" va "Sozlamalar" uslubida bo'ladi, skrinshot bilan tasdiqlaysiz.
+6. **Rang faqat material orqali** o'zgarsinmi? Yoki "faqat ko'rinish uchun" erkin rang ham kerakmi (ishlab chiqarishga ta'sir qilmaydi)? *Tavsiya:* faqat material orqali — ekrandagi rang sexdagi plita bilan bir xil bo'lsin.
+7. **Har modul uchun alohida material** kerakmi? *Tavsiya:* ha (pastki va ustki har xil — ko'p uchraydi).
+8. **"Boshla".**
 
 ## 6. Qabul
 - 3D istalgan burchakdan aylanadi, siljiydi, yaqinlashadi (sichqoncha va barmoq); ko'rinish tugmalari ishlaydi; devor to'smaydi.
 - Bazis loyihasi Bazis-Cloud'dagiga yaqin: qirralar, nom bo'yicha rang, kontur o'yiqlari, oyoq va ruchkalar. Bir xil buyurtma yonma-yon skrinshot bilan solishtiriladi.
 - Buyurtma beriladi va admin ko'radi; qoldiq va furnitura sahifalari ishlaydi; 3 tilda; 390/1440 da toshish yo'q.
-- Narx o'zgarmagan; barcha testlar yashil.
+- Ko'rinish menyusi Bazis-Cloud'dagidek ishlaydi: kamera (aylanish, yurish, orto), fon, chizish rejimlari (bo'yalgan, qirralar, sim karkas, effektlar, rentgen). Telefonda ham ishlaydi.
+- Material korpus, fasad, orqa, stoleshnitsa, har modul va Bazis materiali uchun tanlanadi. 3D rangi materialdan; rang palitrasi ERP plitalarini ko'rsatadi.
+- Narx o'zgarmagan (material o'zgarmasa — avvalgidek); barcha testlar yashil.
 
 ## 7. Muddat (taxmin)
 - **A + B:** 2–3 ish kuni.
 - **C:** 2 ish kuni.
+- **D:** 2 ish kuni.
+- **E:** 2–3 ish kuni.
 
 Bu taxmin, aniq hisob emas.
