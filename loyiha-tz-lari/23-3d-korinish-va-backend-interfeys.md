@@ -11,6 +11,7 @@
 - **Kutilmoqda:**
   - "parolsiz email bilan kirish" (#119-3) — usul tanlovi egasidan;
   - yangi oynalar skrinshoti (3.3).
+- **A1 tuzatish (2026-10-17, egasi #132) — TASDIQ KUTILMOQDA.** Batafsil — "A1 tuzatish" bo'limida (oxirida).
 **Asos:** egasi (2026-10-16, SORIZLAR #115). Ikki skrinshot bilan:
 - **1-rasm — Bazis-Cloud Web-Viewer.** "Shodiyor aka ishxona kuxnya": panellar, eshiklar, ruchka, oyoq, stoleshnitsadagi o'yiq ko'rinadi, model erkin aylanadi.
 - **2-rasm — Smart3D muharririda shu loyiha.** Talab: "erkin aylantirish qo'shilsin, bizda ustun jihatlar bo'lsin, backend'dagi funksiyalar to'liq ishlab, frontendda chiroyli interfeys orqali chiqsin".
@@ -229,3 +230,39 @@ Uchala bo'lim tanlovi eslab qolinadi (qurilmada).
 - **E:** 2–3 ish kuni.
 
 Bu taxmin, aniq hisob emas.
+
+---
+
+## A1 tuzatish — sichqoncha va barmoq bilan aylantirganda ekran yangilanmaydi (2026-10-17, egasi #132)
+
+**Holat:** TASDIQ KUTILMOQDA.
+**Egasi (#132, skrinshot bilan):** "hali ham Bazis'dagi kabi tez va yengil aylantirib ko'rish yo'q".
+
+### Sabab (o'lchov bilan, qoida 4.1)
+- Brauzer sinovida (1440 px, oshxona loyihasi, 3D) sichqoncha bilan 40 marta suriladi.
+  - Kamera joyi o'zgardi: (3875, 5896, 2519) → (3140, −2898, 5444).
+  - **Sahna 0 marta chizildi.** Qo'yib yuborilgandan keyin 1 soniya ichida ham 0 marta.
+- Sahna faqat "qayta chiz" buyrug'i kelganda chiziladi (`app/js/scene.js`, `_invalidate`). Kamera boshqaruvi (`OrbitControls`) kamerani suradi, lekin bu buyruqni bermaydi: `app/js/controls.js` da kamera o'zgarishini tinglovchi yo'q.
+  - Natija: aylantirish, g'ildirak bilan yaqinlashtirish va siljitish paytida ekran qotib turadi.
+  - Rasm faqat boshqa narsa (narx yangilanishi, tugma) chizdirganda sakrab o'zgaradi.
+  - Tugmalar (yo'nalishlar, +/−, Markazga) ishlaydi — ular o'zi chizdiradi. Shuning uchun TZ-23 testi (kamera raqamlarini tekshirgan) buni ushlamagan.
+- Xato TZ-09 dan beri bor (eski `scene.js` dan qolgan), TZ-23 da ko'rinmay qolgan.
+- **Sinov:** kamera o'zgarganda "qayta chiz" qo'shilsa — o'sha 40 harakatda sahna 205 marta chizildi. Rasm sichqonchaga ergashadi.
+
+### Bajariladigan ishlar
+1. `app/js/controls.js` — kamera boshqaruvi o'zgarganda (`change`) sahna qayta chiziladi (`sp._invalidate()`). Bitta qator. Sichqoncha, g'ildirak, barmoq (1 barmoq — aylantirish, 2 barmoq — siljitish/yaqinlashtirish) — hammasi shu orqali.
+2. `tests/ui/web_korinish.mjs` — yangi tekshiruv. Sichqoncha bilan sudrash, g'ildirak va barmoq ishorasidan keyin sahna haqiqatan chizilganini sanaydi (kamera raqami emas, chizish soni). Shu xato qaytsa — test qizil bo'ladi.
+3. Barcha testlar (node, server, 3 guruh web).
+
+### Tegilmaydi
+2D rejim, mebel sudrash va burish, hisob, narx, kesim, stanok fayllari, server.
+
+### Xavf, moliya, orqaga qaytarish
+- **Xavf: PAST.** Sahna faqat kamera o'zgarganda chiziladi, harakatsiz turganda — chizilmaydi (protsessor bo'sh turadi).
+- **Moliya:** narx va hisobga tegilmaydi.
+- **Orqaga qaytarish:** `git revert`.
+
+### Qabul
+- Sichqoncha va barmoq bilan aylantirganda rasm uzluksiz ergashadi.
+- G'ildirak bilan yaqinlashtirish va siljitish ham uzluksiz.
+- Yangi test va barcha testlar yashil.

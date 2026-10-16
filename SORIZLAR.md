@@ -363,3 +363,11 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 128. xlsx faylni korib chiqidngmi qara bita bosh joy bolsin bazisdagi kabi u yerda matn yozadigan joy bolsin va bazis faylni ham chizish bolsin  hamda mebel va xonani chiza olish ham bolsin  sunpina kor oshandan zro va soda bolsin
 
 129. (savollarga javob) sayt ochilganda — darhol bo'sh ish joyi; matn joyi — pastda doim ochiq qator; Bazis — faylini ish joyida ochish; xona — devorni bosib chizish
+
+130. /home/ibrohim/Desktop/bittada sunpin/Smart3D   bu faylni yoli Основной склад - Остаток (1).xls  bu esa nomin buni ham korib chiq narxlar boyicha bu zapchastniki
+
+131. hozir konstruksiyan bizga suniy intelekt qilb berish kere qila oladimi tiizm bilan birgalikda
+
+132. bu yerda hali ham bazisdag kabi tez va yengil aylantirb korish yoq erkin aylantirb korish nega qoshilmad men yuqorida aytganlarim
+
+133. modul geometriyas nega pauzada nima kere uni tugaitsh uchun
