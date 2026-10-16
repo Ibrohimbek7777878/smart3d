@@ -1,0 +1,95 @@
+{
+ "_meta": {
+  "tz": "TZ-24 B",
+  "izoh": "Tayyor so'rovlar — AI'siz loyiha. usul: oshxona (avtomatik konstruktor, TZ-22) yoki toplam (katalog modullari devor bo'ylab). Kodlar katalogda bo'lishi shart (tests/verify_promptlar.mjs)."
+ },
+ "promptlar": [
+  {
+   "id": "oshxona-togri", "kat": "oshxona", "usul": "oshxona", "talab": { "shakl": "I", "ustki": true },
+   "nom": { "uz": "To'g'ri oshxona", "ru": "Прямая кухня", "en": "Straight kitchen" },
+   "izoh": { "uz": "Bitta devor: moyka, plita, muzlatgich, ustki shkaflar", "ru": "Одна стена: мойка, плита, холодильник, верхние шкафы", "en": "One wall: sink, hob, fridge, wall cabinets" },
+   "maydon": [ { "k": "eni", "q": 3000, "min": 1800, "max": 6000 }, { "k": "chuqurligi", "q": 2600, "min": 1800, "max": 6000 } ]
+  },
+  {
+   "id": "oshxona-l", "kat": "oshxona", "usul": "oshxona", "talab": { "shakl": "L", "ustki": true },
+   "nom": { "uz": "Burchakli (L) oshxona", "ru": "Угловая (Г) кухня", "en": "L-shaped kitchen" },
+   "izoh": { "uz": "Ikki devor, burchak moduli bilan", "ru": "Две стены, с угловым модулем", "en": "Two walls with a corner unit" },
+   "maydon": [ { "k": "eni", "q": 3600, "min": 2400, "max": 6000 }, { "k": "chuqurligi", "q": 3000, "min": 2200, "max": 6000 } ]
+  },
+  {
+   "id": "oshxona-u", "kat": "oshxona", "usul": "oshxona", "talab": { "shakl": "U", "ustki": true },
+   "nom": { "uz": "P shaklli oshxona", "ru": "П-образная кухня", "en": "U-shaped kitchen" },
+   "izoh": { "uz": "Uch devor — eng ko'p ish yuzasi", "ru": "Три стены — максимум рабочей поверхности", "en": "Three walls — the most worktop" },
+   "maydon": [ { "k": "eni", "q": 3600, "min": 2800, "max": 6000 }, { "k": "chuqurligi", "q": 3200, "min": 2600, "max": 6000 } ]
+  },
+  {
+   "id": "oshxona-ustkisiz", "kat": "oshxona", "usul": "oshxona", "talab": { "shakl": "I", "ustki": false },
+   "nom": { "uz": "Ustki shkafsiz oshxona", "ru": "Кухня без верхних шкафов", "en": "Kitchen without wall cabinets" },
+   "izoh": { "uz": "Derazali devor yoki ochiq uslub uchun", "ru": "Для стены с окном или открытого стиля", "en": "For a window wall or an open look" },
+   "maydon": [ { "k": "eni", "q": 3000, "min": 1800, "max": 6000 }, { "k": "chuqurligi", "q": 2600, "min": 1800, "max": 6000 } ]
+  },
+  {
+   "id": "garderob-kupe", "kat": "garderob", "usul": "toplam",
+   "nom": { "uz": "Shkaf-kupe devor bo'ylab", "ru": "Шкаф-купе вдоль стены", "en": "Sliding wardrobe along a wall" },
+   "izoh": { "uz": "3 eshikli shkaf-kupe, devorga moslab", "ru": "Трёхдверный шкаф-купе по ширине стены", "en": "Three-door sliding wardrobe sized to the wall" },
+   "maydon": [ { "k": "eni", "q": 2700, "min": 2200, "max": 6000 }, { "k": "chuqurligi", "q": 2500, "min": 1500, "max": 6000 } ],
+   "toplam": [ { "kod": "SP-G-011", "devor": "orqa", "joy": "markaz", "w": "toldir" } ]
+  },
+  {
+   "id": "garderob-xona", "kat": "garderob", "usul": "toplam",
+   "nom": { "uz": "Garderob xonasi", "ru": "Гардеробная", "en": "Walk-in wardrobe" },
+   "izoh": { "uz": "Katta garderob, ochiq javon va poyabzal shkafi", "ru": "Большой гардероб, открытый стеллаж и обувница", "en": "Large wardrobe, open shelving and a shoe cabinet" },
+   "maydon": [ { "k": "eni", "q": 2600, "min": 2000, "max": 6000 }, { "k": "chuqurligi", "q": 2200, "min": 1800, "max": 6000 } ],
+   "toplam": [ { "kod": "SP-W-007", "devor": "orqa", "joy": "bosh", "w": "toldir" }, { "kod": "SP-SH-005", "devor": "ong", "joy": "oxir" }, { "kod": "SP-W-008", "devor": "chap", "joy": "oxir" } ]
+  },
+  {
+   "id": "yotoqxona", "kat": "yotoqxona", "usul": "toplam",
+   "nom": { "uz": "Yotoqxona", "ru": "Спальня", "en": "Bedroom" },
+   "izoh": { "uz": "Karavot, 3 qanotli garderob va komod", "ru": "Кровать, трёхстворчатый шкаф и комод", "en": "Bed, three-door wardrobe and a chest of drawers" },
+   "maydon": [ { "k": "eni", "q": 4000, "min": 3400, "max": 7000 }, { "k": "chuqurligi", "q": 3600, "min": 3000, "max": 7000 } ],
+   "toplam": [ { "kod": "MC-KR-04", "devor": "orqa", "joy": "markaz" }, { "kod": "SP-W-006", "devor": "chap", "joy": "oxir" }, { "kod": "SP-BD-005", "devor": "ong", "joy": "markaz" } ]
+  },
+  {
+   "id": "bolalar", "kat": "bolalar", "usul": "toplam",
+   "nom": { "uz": "Bolalar xonasi", "ru": "Детская", "en": "Kids' room" },
+   "izoh": { "uz": "Bir kishilik karavot, parta, kitob javoni, garderob", "ru": "Односпальная кровать, парта, книжный стеллаж, шкаф", "en": "Single bed, desk, bookcase, wardrobe" },
+   "maydon": [ { "k": "eni", "q": 3200, "min": 2600, "max": 6000 }, { "k": "chuqurligi", "q": 3200, "min": 2600, "max": 6000 } ],
+   "toplam": [ { "kod": "MC-KR-02", "devor": "orqa", "joy": "bosh" }, { "kod": "MC-PA-02", "devor": "ong", "joy": "bosh" }, { "kod": "SP-SH-003", "devor": "ong", "joy": "oxir" }, { "kod": "SP-W-005", "devor": "old", "joy": "oxir" } ]
+  },
+  {
+   "id": "mehmonxona-tv", "kat": "mehmonxona", "usul": "toplam",
+   "nom": { "uz": "Mehmonxona — TV zona", "ru": "Гостиная — ТВ-зона", "en": "Living room — TV wall" },
+   "izoh": { "uz": "TV taxta, ikki vitrina, divan qarshida", "ru": "ТВ-тумба, две витрины, диван напротив", "en": "TV unit, two display cabinets, sofa opposite" },
+   "maydon": [ { "k": "eni", "q": 4500, "min": 3400, "max": 8000 }, { "k": "chuqurligi", "q": 4000, "min": 3000, "max": 8000 } ],
+   "toplam": [ { "kod": "SP-SH-002", "devor": "orqa", "joy": "markaz" }, { "kod": "SP-SH-004", "devor": "orqa", "joy": "bosh" }, { "kod": "SP-SH-004", "devor": "orqa", "joy": "oxir" }, { "kod": "SP-S-006", "devor": "old", "joy": "markaz" } ]
+  },
+  {
+   "id": "ofis-ikki", "kat": "ofis", "usul": "toplam",
+   "nom": { "uz": "Ofis — 2 ish o'rni", "ru": "Офис — 2 рабочих места", "en": "Office — 2 workstations" },
+   "izoh": { "uz": "Ikki yozuv stoli tumba bilan, hujjat vitrinasi", "ru": "Два письменных стола с тумбами, витрина для документов", "en": "Two desks with pedestals and a document cabinet" },
+   "maydon": [ { "k": "eni", "q": 4000, "min": 3200, "max": 8000 }, { "k": "chuqurligi", "q": 3000, "min": 2400, "max": 8000 } ],
+   "toplam": [ { "kod": "SP-O-010", "devor": "orqa", "joy": "bosh" }, { "kod": "SP-O-010", "devor": "orqa", "joy": "oxir" }, { "kod": "SP-SH-004", "devor": "chap", "joy": "oxir" } ]
+  },
+  {
+   "id": "ofis-uy", "kat": "ofis", "usul": "toplam",
+   "nom": { "uz": "Uydagi ish joyi", "ru": "Рабочее место дома", "en": "Home office" },
+   "izoh": { "uz": "Ish stoli va kitob javoni", "ru": "Рабочий стол и книжный стеллаж", "en": "Desk and bookcase" },
+   "maydon": [ { "k": "eni", "q": 2400, "min": 1800, "max": 6000 }, { "k": "chuqurligi", "q": 2400, "min": 1600, "max": 6000 } ],
+   "toplam": [ { "kod": "SP-T-007", "devor": "orqa", "joy": "markaz" }, { "kod": "SP-SH-003", "devor": "ong", "joy": "bosh" } ]
+  },
+  {
+   "id": "dahliz", "kat": "dahliz", "usul": "toplam",
+   "nom": { "uz": "Dahliz", "ru": "Прихожая", "en": "Hallway" },
+   "izoh": { "uz": "Kiyim ilgich paneli, poyabzal shkafi, shkaf-kupe", "ru": "Вешалка с полкой, обувница, шкаф-купе", "en": "Coat panel, shoe cabinet, sliding wardrobe" },
+   "maydon": [ { "k": "eni", "q": 2000, "min": 1700, "max": 5000 }, { "k": "chuqurligi", "q": 2400, "min": 1600, "max": 6000 } ],
+   "toplam": [ { "kod": "SP-G-010", "devor": "orqa", "joy": "markaz" }, { "kod": "SP-D-002", "devor": "chap", "joy": "oxir" }, { "kod": "SP-W-008", "devor": "ong", "joy": "oxir" } ]
+  },
+  {
+   "id": "hammom", "kat": "hammom", "usul": "toplam",
+   "nom": { "uz": "Hammom", "ru": "Ванная", "en": "Bathroom" },
+   "izoh": { "uz": "Osma tumba (rakovina uchun), ko'zguli shkaf, hammom garderobi", "ru": "Подвесная тумба под раковину, зеркальный шкаф, пенал", "en": "Wall-hung vanity, mirror cabinet, tall cabinet" },
+   "maydon": [ { "k": "eni", "q": 2000, "min": 1500, "max": 5000 }, { "k": "chuqurligi", "q": 1800, "min": 1500, "max": 5000 } ],
+   "toplam": [ { "kod": "SP-H-010", "devor": "orqa", "joy": "markaz", "z": 350 }, { "kod": "SP-H-011", "devor": "orqa", "joy": "markaz", "z": 1150 }, { "kod": "SP-B-006", "devor": "ong", "joy": "bosh" } ]
+  }
+ ]
+}

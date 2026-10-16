@@ -25,6 +25,10 @@ export const XATOLAR = {
   'S3D-PROJ-001': { http: 404, matn: 'Loyiha topilmadi' },
   'S3D-DATA-001': { http: 404, matn: 'Topilmadi' },
   'S3D-STD-001': { http: 404, matn: 'Standartlar topilmadi' },
+  /* TZ-24 B: shaxsiy shablonlar */
+  'S3D-SHB-001': { http: 404, matn: 'Shablon topilmadi' },
+  'S3D-SHB-002': { http: 409, matn: 'Shablonlar ko\'p — 100 tagacha; keraksizini o\'chiring' },
+  'S3D-SHB-101': { matn: 'Shablon saqlanmadi' },
   'S3D-AI-001': { http: 503, matn: 'AI sozlanmagan — qoidali tahlilchi ishlaydi' },
   'S3D-AI-002': { http: 502, matn: 'AI javob bermadi — qoidali tahlilchi ishlaydi' },
   'S3D-AI-003': { http: 501, matn: 'Server ovoz tanish (STT) hali ulanmagan — brauzer ovozidan foydalaning' },

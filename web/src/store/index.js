@@ -19,7 +19,7 @@ export const store = createStore({
   project: { name: t('umumiy.yangi_loyiha'), client: '', matCode: 'LDSP18', polkaCode: 'LDSP16', fasadCode: 'MDF16', orqaCode: null, stolCode: null, sheet: null, docV: 0, dv: 0 },
   editor: { step: 2, done: { 1: true }, tip: 3, view: '3d', spin: false, sel: null, part: null, raw: {}, warn: {},
     cat: 'all', q: '', rk: 0, miss: false, vrOk: false, sceneOn: false, sceneErr: false, sceneV: 0 },
-  ai: { open: false, text: '', mic: false },
+  ai: { open: false, text: '', mic: false, tab: 'matn', kat: 'oshxona', tanlangan: null, qiymat: {}, shablonlar: null, shNom: '' },
   ins: { id: null, ex: 0, color: 1, auto: false },
   projects: { list: null, q: '' },
   bazis: { yuk: null },                                   // TZ-21: Bazis fayli o'qilmoqda (fayl nomi)

@@ -638,6 +638,48 @@ app.delete('/api/projects/:id', auth, (req, res) => {
   res.json({ ok: true });
 });
 
+/* ═══════════════════ SHAXSIY SHABLONLAR (TZ-24 B) ═══════════════════
+ * Har foydalanuvchining o'z shablonlari: "prompt" (tayyor so'rov raqamlari yoki o'z matni) va "loyiha" (xona va modullar).
+ * Faqat o'zi ko'radi va o'chiradi; ko'pi bilan 100 ta; ma'lumot — loyiha tekshiruvi bilan (himoya.js, 300 KB gacha). */
+db.exec(`
+  CREATE TABLE IF NOT EXISTS user_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    tur TEXT NOT NULL,
+    nom TEXT NOT NULL,
+    data_json TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE INDEX IF NOT EXISTS idx_user_items_user ON user_items(user_id);
+`);
+const SHABLON_TUR = ['prompt', 'loyiha'], SHABLON_MAX = 100;
+app.get('/api/shablonlar', auth, (req, res) => {
+  const rows = db.prepare('SELECT id, tur, nom, data_json, created_at FROM user_items WHERE user_id = ? ORDER BY id DESC LIMIT ?').all(req.user.id, SHABLON_MAX);
+  res.json(rows.map(r => { let data = null; try { data = JSON.parse(r.data_json); } catch (e) { data = null; } return { id: r.id, tur: r.tur, nom: r.nom, data, created_at: r.created_at }; }));
+});
+app.post('/api/shablonlar', auth, (req, res) => {
+  const b = req.body || {};
+  const tur = str(b.tur, 'tur', { max: 10, required: true });
+  if (!SHABLON_TUR.includes(tur)) bad('tur: prompt yoki loyiha');
+  const nom = plainText(b.nom, 'nom', { max: 80, required: true });
+  const data = b.data;
+  if (!data || typeof data !== 'object' || Array.isArray(data)) bad('data kerak');
+  if (tur === 'loyiha' && (!data.doc || !data.doc.room || !Array.isArray(data.doc.placements))) bad('loyiha shabloni: doc (room, placements) kerak');
+  const xe = docXatosi(data);
+  if (xe) bad(xe);
+  const json = JSON.stringify(data);
+  if (json.length > 300000) bad('shablon juda katta (300 KB gacha)');
+  const n = db.prepare('SELECT COUNT(*) AS n FROM user_items WHERE user_id = ?').get(req.user.id).n;
+  if (n >= SHABLON_MAX) return fail(res, 'S3D-SHB-002');
+  const r = db.prepare('INSERT INTO user_items (user_id, tur, nom, data_json) VALUES (?, ?, ?, ?)').run(req.user.id, tur, nom, json);
+  res.json({ ok: true, id: Number(r.lastInsertRowid) });
+});
+app.delete('/api/shablonlar/:id', auth, (req, res) => {
+  const r = db.prepare('DELETE FROM user_items WHERE id = ? AND user_id = ?').run(req.params.id, req.user.id);
+  if (!r.changes) return fail(res, 'S3D-SHB-001');
+  res.json({ ok: true });
+});
+
 /* ═══════════════════ MATERIAL API ═══════════════════ */
 app.get('/api/materials', (req, res) => {
   const q = str(req.query.q, 'q', { max: 100 });
