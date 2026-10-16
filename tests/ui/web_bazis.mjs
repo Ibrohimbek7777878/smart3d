@@ -61,7 +61,18 @@ async function asosiy(page, R) {
   await page.waitForTimeout(600);
   R.turKod = await M(() => [...document.querySelectorAll('[data-kod]')].map(e => e.textContent));
 
-  if (!fayl) { R.skip = 'namuna Bazis fayli yo\'q (data1 / Smart3D_toplam)'; R.errs = errs; R.ok = R.tugma && R.buzuqKod && errs.length === 0; return; }
+  /* 1b) .bpj (Bazis skripti eksporti, JSON) — sun'iy namuna, har doim mavjud */
+  const bpj = { version: '4.2', script: 'BazisUniversalExport', objects: [0, 1].map(i => ({ id: i + 1, name: 'bok', dimensions: { dl: 700, dw: 450, dp: 16 },
+    material: { name: 'ЛДСП Кроношпан 4,575 Белый гладкий 16мм' },
+    contour: { outer: [[0, 0, 700, 0], [700, 0, 700, 450], [700, 450, 0, 450], [0, 450, 0, 0]].map(([x1, y1, x2, y2]) => ({ type: 'line', x1, y1, x2, y2 })) },
+    butts: [{ elemIndex: 2, material: 'Кромка 19/1', thickness: 1 }],
+    transform: { origin: { x: i * 584, y: 0, z: 0 }, axisX: { x: 0, y: 1, z: 0 }, axisY: { x: 0, y: 0, z: 1 }, axisZ: { x: 1, y: 0, z: 0 } } })), furnitures: [] };
+  await inp().setInputFiles({ name: 'namuna.bpj', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(bpj)) });
+  R.bpj = await (async () => { for (let i = 0; i < 60; i++) { if (await M(() => !!document.querySelector('[data-varaq="bazis"]'))) return await M(() => window.__app.doc.bazis && window.__app.doc.bazis.hisobot.detal); await page.waitForTimeout(250); } return null; })();
+  if (await page.locator('[data-varaq="bazis"]').count()) { await page.locator('[data-varaq="bazis"] button', { hasText: 'Yopish' }).last().click(); await page.waitForTimeout(400); }
+  await click(/^Loyihalar$/); await waitText('Loyihalarim');
+
+  if (!fayl) { R.skip = 'namuna Bazis fayli yo\'q (data1 / Smart3D_toplam)'; R.errs = errs; R.ok = R.tugma && R.buzuqKod && R.bpj === 2 && errs.length === 0; return; }
 
   /* 2) haqiqiy fayl → yangi loyiha va hisobot */
   const t0 = Date.now();
@@ -104,6 +115,6 @@ async function asosiy(page, R) {
   await page.screenshot({ path: `${OUT}/bazis-390-hisobot.png` });
 
   R.errs = errs;
-  R.ok = R.tugma && /S3D-BAZIS-10[34]/.test(R.buzuqKod || '') && R.turKod.some(k => k === 'S3D-BAZIS-101') && R.hisobot && R.doc.n === 1 && /^BZ-/.test(R.doc.frg) && R.doc.bazis &&
+  R.ok = R.tugma && /S3D-BAZIS-10[34]/.test(R.buzuqKod || '') && R.turKod.some(k => k === 'S3D-BAZIS-101') && R.bpj === 2 && R.hisobot && R.doc.n === 1 && /^BZ-/.test(R.doc.frg) && R.doc.bazis &&
     R.narx > 0 && R.qaytaTugma && R.excel && R.serverda >= 1 && R.qayta.bazis && Math.abs(R.qayta.narx - R.narx) < 1 && !R.hScroll && errs.length === 0;
 }

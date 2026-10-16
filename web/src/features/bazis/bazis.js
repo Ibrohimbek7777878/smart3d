@@ -6,7 +6,7 @@ import * as L from '../../services/loyiha.js';
 import { raqam } from '../../shared/lib/format.js';
 import { t } from '../../i18n/index.js';
 
-/* TZ-21: Bazis faylini yuklash (.b3d, .fr3d) — brauzerda o'qiladi (xom fayl serverga yuborilmaydi), natija — yangi loyiha:
+/* TZ-21: Bazis faylini yuklash (.b3d, .fr3d, .bpj) — brauzerda o'qiladi (xom fayl serverga yuborilmaydi), natija — yangi loyiha:
  * Bazis'dagi mebel bitta joylashuv (o'lchami qat'iy), kesim ro'yxati, raskroy, smeta va fayllar odatdagidek.
  * Xavfsizlik: kengaytma, hajm (50 MB), alohida oqim va vaqt chegarasi (40 s). */
 export const BAZIS_MAX = 50 * 1024 * 1024;
@@ -44,7 +44,7 @@ export async function bazisYukla(ev) {
   ev.target.value = '';
   if (!f) return;
   const nom = f.name.slice(0, 80);
-  if (!/\.(b3d|fr3d)$/i.test(f.name)) { xato('S3D-BAZIS-101', { modul: 'bazis', xabar: 'fayl: ' + nom }); return; }
+  if (!/\.(b3d|fr3d|bpj)$/i.test(f.name)) { xato('S3D-BAZIS-101', { modul: 'bazis', xabar: 'fayl: ' + nom }); return; }
   if (f.size > BAZIS_MAX) { xato('S3D-BAZIS-106', { modul: 'bazis', xabar: 'fayl: ' + nom + ', ' + Math.round(f.size / 1e6) + ' MB' }); return; }
   set('bazis', { yuk: nom });
   toast(t('bazis.oqilmoqda', { nom }));
@@ -54,7 +54,7 @@ export async function bazisYukla(ev) {
     if (!res.ok) { xato(res.xato || 'S3D-BAZIS-103', { modul: 'bazis', xabar: (res.xabar ? res.xabar + ' · ' : '') + 'fayl: ' + nom }); return; }
     S.resetCurrent();
     project.reset(bazisHujjat(res));
-    set('project', { name: nom.replace(/\.(b3d|fr3d)$/i, ''), client: '' });
+    set('project', { name: nom.replace(/\.(b3d|fr3d|bpj)$/i, ''), client: '' });
     set('nav', EDITOR);
     set('editor', { step: 2, done: { 1: true }, tip: 3, sel: null, part: null, warn: {} });
     project.changed('room', true);

@@ -15,6 +15,7 @@ import * as B from '../app/js/engine/bazis/b3d.js';
 import { daraxt } from '../app/js/engine/bazis/daraxt.js';
 import { bazisLoyiha, materialTuri, slug, materiallarniQosh } from '../app/js/engine/bazis/loyiha.js';
 import { getModulePanels } from '../app/js/engine/assembler.js';
+import { bpjOqi, bpjMatn } from '../app/js/engine/bazis/bpj.js';
 import { cutlist, productionCost } from '../app/js/engine/cutlist.js';
 import { nestProject } from '../app/js/engine/nesting.js';
 
@@ -81,6 +82,26 @@ const toza = J('materials.json');
 const barcha = [...J('fragments.json'), ...J('fragments-mc.json').fragments];
 const ozgardi = barcha.filter(f => JSON.stringify(cutlist(f, f.w, f.d, f.h, toza, {})) !== JSON.stringify(cutlist(f, f.w, f.d, f.h, mats, {})));
 ok(`eski modullar o'zgarmadi: ${barcha.length} ta modul kesimi Bazis materiallari bilan ham aynan`, !ozgardi.length, ozgardi.slice(0, 3).map(f => f.code).join(','));
+
+/* ── 3b) BPJ (JSON) — sun'iy namuna: bitta panel, global joylashuv, kromka, furnitura ── */
+const bpjNamuna = { version: '4.2', script: 'BazisUniversalExport', objects: [{ id: 1, name: 'bok', dimensions: { dl: 700, dw: 450, dp: 16 },
+  material: { name: 'ЛДСП Кроношпан 4,575 Белый гладкий 16мм' },
+  contour: { outer: [{ type: 'line', x1: 0, y1: 0, x2: 700, y2: 0 }, { type: 'line', x1: 700, y1: 0, x2: 700, y2: 450 }, { type: 'line', x1: 700, y1: 450, x2: 0, y2: 450 }, { type: 'line', x1: 0, y1: 450, x2: 0, y2: 0 }] },
+  butts: [{ elemIndex: 2, material: 'Кромка 19/1', thickness: 1 }],
+  transform: { origin: { x: 0, y: 0, z: 0 }, axisX: { x: 0, y: 1, z: 0 }, axisY: { x: 0, y: 0, z: 1 }, axisZ: { x: 1, y: 0, z: 0 } } }],
+  furnitures: [{ name: 'Габаритная рамка', count: 3 }, { name: 'petle oddiy', count: 4 }, { name: 'Евро 51мм Алкан', count: 8 }] };
+const bp = bpjOqi(bpjMatn(new TextEncoder().encode(JSON.stringify(bpjNamuna))));
+const bres = bazisLoyiha(bp.objects, { fayl: 'n.bpj', fittings: bp.fittings, fasteners: bp.fasteners });
+ok('BPJ: panel, o\'lcham, kromka, furnitura (guruh nomi tashlanadi)', bres.fragment.parts.length === 1 && bres.fragment.parts[0].len === '700' && bres.fragment.edge.length === 1
+  && bp.fittings.length === 1 && bp.fasteners.length === 1 && bres.fragment.w === 16 && bres.fragment.d === 450 && bres.fragment.h === 700, JSON.stringify([bres.fragment.w, bres.fragment.d, bres.fragment.h, bp.fittings, bp.fasteners]));
+ok('BPJ: buzilgan JSON — xato kodi', bpjOqi('{bu json emas').xato === 'S3D-BAZIS-103');
+const BPJ1 = join(ROOT, '..', 'mebelcity-platform', '1.bpj');
+if (existsSync(BPJ1)) {
+  const b1 = bpjOqi(bpjMatn(new Uint8Array(readFileSync(BPJ1))));
+  const r1 = bazisLoyiha(b1.objects, { fayl: '1.bpj', fittings: b1.fittings, fasteners: b1.fasteners });
+  const mm = Object.fromEntries(r1.materiallar.panel.map(m => [m.name.slice(0, 12), m.detal]));
+  ok('1.bpj (haqiqiy eksport): 125 panel, materiallar BPJ hisobi bilan bir xil (89 / 25 / 11)', r1.hisobot.detal === 125 && Object.values(mm).sort((a, b) => b - a).join() === '89,25,11', JSON.stringify(mm));
+} else skip('1.bpj (mebelcity-platform yo\'q)');
 
 /* ── 4) mahalliy ma'lumot (bo'lsa) ── */
 const fayllar = (dir) => { const out = []; (function w(d) { for (const f of readdirSync(d)) { const p = join(d, f); statSync(p).isDirectory() ? w(p) : /\.(b3d|fr3d)$/i.test(f) && out.push(p); } })(dir); return out; };

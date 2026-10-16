@@ -254,4 +254,4 @@ function generateSpecification(objects){
   };
 }
 
-export { parseBazisB3D, generateSpecification, looksEncrypted, inflateBiggest, assemble, decodeContour, contourBBox, polyArea, elemLen, PANEL_CODE };
+export { parseBazisB3D, generateSpecification, looksEncrypted, inflateBiggest, assemble, decodeContour, contourBBox, polyArea, elemLen, classifyFitting, PANEL_CODE };

@@ -22,10 +22,10 @@ export default function Loyihalar() {
             <Ikon n="papka" size={17} />{t('loyihalar.fayldan_ochish')}
             <input type="file" accept=".json,application/json" onChange={v.openFile} style={{"display":"none"}} />
           </label>
-          {/* TZ-21 (dizaynda yo'q — egasi skrinshot bilan tasdiqlaydi): Bazis faylini yuklash (.b3d, .fr3d) */}
+          {/* TZ-21 (dizaynda yo'q — egasi skrinshot bilan tasdiqlaydi): Bazis faylini yuklash (.b3d, .fr3d, .bpj) */}
           <label data-bazis-yukla aria-busy={!!v.bazisYuk} style={{"height":"48px","padding":"0 18px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"700","fontSize":"15px","cursor":v.bazisYuk ? "progress" : "pointer","whiteSpace":"nowrap","display":"inline-flex","alignItems":"center","opacity":v.bazisYuk ? .6 : 1}}>
             <Ikon n="bazis" size={17} />{v.bazisYuk ? t('bazis.oqilmoqda_qisqa') : t('bazis.yuklash')}
-            <input type="file" accept=".b3d,.fr3d" disabled={!!v.bazisYuk} onChange={v.bazisYukla} style={{"display":"none"}} />
+            <input type="file" accept=".b3d,.fr3d,.bpj" disabled={!!v.bazisYuk} onChange={v.bazisYukla} style={{"display":"none"}} />
           </label>
         </div>
       </div>

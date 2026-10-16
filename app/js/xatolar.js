@@ -49,7 +49,7 @@ export const XATOLAR = {
   'S3D-KONS-102': { matn: 'Avtomatik konstruksiya: katalogda kerakli modul yo\'q' },
   'S3D-KONS-103': { matn: 'Avtomatik konstruksiya: bu xonaga oshxona sig\'madi' },
   'S3D-KONS-104': { matn: 'Avtomatik konstruksiyada xato' },
-  'S3D-BAZIS-101': { matn: 'Bu Bazis fayli emas — .b3d yoki .fr3d tanlang' },
+  'S3D-BAZIS-101': { matn: 'Bu Bazis fayli emas — .b3d, .fr3d yoki .bpj tanlang' },
   'S3D-BAZIS-102': { matn: 'Bazis fayli shifrlangan — Bazis\'da shifrsiz saqlab qayta yuklang' },
   'S3D-BAZIS-103': { matn: 'Bazis fayli o\'qilmadi' },
   'S3D-BAZIS-104': { matn: 'Bazis faylida detal topilmadi' },
