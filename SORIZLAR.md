@@ -316,3 +316,5 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 112. (muharrir 2D skrinshoti — eshiklar bir-biriga kirib ketgan) Sizdan javob yoki "boshla" kerak: avtomatik konstruktor (TZ-22), Bazis yuklash (TZ-21), atamalar (TZ-18), Telegram (TZ-16), BPJ (TZ-17) — bunga ruxsat beraman buni tugat va hozir fayllarn ham beraman oldin buni tugatasan va gituhbga pus va commit qilaver izoh yozb ket har push va commitda  va sunpinadan modullarn kochirlganm hamd amen bergan fragment bazdan ham modullarin togirlab maxmimal minilakalarin standart asosida togirlab olganmisan yani hozir bizda eng kamdia 150ta ishlaydigan va eng kop ishlatiladagan tayor modular bormi va ularni joylashtirlganda  rasmdagi kabi muomo bolmaslig kere eshikalr bir briga kirb ketgan va yangi chizish qilganda ham yon menuda bizdag tayyor 150talik modulalr royxati va ularni kataloglarga ajaratilgan holda bolish kere bular ham keiyng planigda bormidi hozir loyhadag bor kamchilikalrn ham ayt
 
 113. /home/ibrohim/Desktop/bittada sunpin/Smart3D/Smart3D_toplam_2026-10-16    mana kerlei fayllar korib chiq va hozir nima qilayotganing ham aytb ket
+
+114. davom et unda
