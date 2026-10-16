@@ -32,7 +32,8 @@ const missing = [...used].filter(k => !(k in uz) && !k.startsWith('xato.'));
 ok('koddagi ' + used.size + ' ta kalit uz.json da bor', !missing.length, missing.slice(0, 10).join(', '));
 const empty = Object.entries(uz).filter(([, v]) => v === '' || v == null).map(([k]) => k);
 ok('uz.json da bo\'sh qiymat yo\'q', !empty.length, empty.join(', '));
-const unused = Object.keys(uz).filter(k => !used.has(k) && ![...prefixes].some(p => k.startsWith(p)));
+/* d3.* — dvigatel nomlari, tr() orqali (o'zbekcha qiymat bo'yicha) ishlatiladi */
+const unused = Object.keys(uz).filter(k => !used.has(k) && !k.startsWith('d3.') && ![...prefixes].some(p => k.startsWith(p)));
 ok('uz.json da ishlatilmagan kalit yo\'q', !unused.length, unused.slice(0, 15).join(', '));
 const vars = (s) => [...String(s).matchAll(/\{(\w+)\}/g)].map(m => m[1]).sort().join(',');
 for (const [nom, L] of [['ru', ru], ['en', en]]) {

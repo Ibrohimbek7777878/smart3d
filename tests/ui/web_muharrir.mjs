@@ -14,7 +14,8 @@ async function asosiy(page, R) {
   const OUT = process.env.QA_OUT;
   const errs = [];
   page.on('pageerror', e => errs.push(String(e).slice(0, 240)));
-  page.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') errs.push(m.type() + ': ' + m.text().slice(0, 300)); });
+  /* brauzer/drayver ogohlantirishi (GL Driver Message — GPU unumdorligi, bizning kod emas) hisobga olinmaydi */
+  page.on('console', m => { if ((m.type() === 'error' || m.type() === 'warning') && !/GL Driver Message/.test(m.text())) errs.push(m.type() + ': ' + m.text().slice(0, 300)); });
   const M = (fn, arg) => page.evaluate(fn, arg, false);
   const txt = () => M(() => document.body.innerText);
   const has = async (t) => (await txt()).includes(t);

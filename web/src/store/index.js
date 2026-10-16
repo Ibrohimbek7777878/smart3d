@@ -22,7 +22,7 @@ export const store = createStore({
   ai: { open: false, text: '', mic: false },
   ins: { id: null, ex: 0, color: 1, auto: false },
   projects: { list: null, q: '' },
-  settings: { sets: { markup_pct: null, stanoklar: null, logo: null }, markupIn: null, nestIn: null, stdIn: null, xq: '', xatolar: null }
+  settings: { sets: { markup_pct: null, stanoklar: null, logo: null, til: null }, markupIn: null, nestIn: null, stdIn: null, xq: '', xatolar: null }
 });
 
 export const useSlice = (name) => useStoreSlice(store, name);

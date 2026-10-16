@@ -2,18 +2,25 @@ import { get, set } from '../../store/index.js';
 import { project } from '../../store/project.js';
 import { S } from '../../store/session.js';
 import { confirm, xato, toast } from '../../store/ui.js';
-import { t, serverXato } from '../../i18n/index.js';
+import { t, serverXato, setTil, onTil } from '../../i18n/index.js';
 
 /* TZ-19 (TZ-09 4.1): sozlamalar — kirgan bo'lsa serverda (/api/settings), aks holda shu qurilmada. */
 const LOCAL = 's3d-settings';
-const EMPTY = { markup_pct: null, stanoklar: null, logo: null };
+const EMPTY = { markup_pct: null, stanoklar: null, logo: null, til: null };
 
 export async function loadSettings() {
   let v = null;
   if (S.loggedIn) { try { const r = await S.api('/api/settings'); if (r.ok) v = await r.json(); } catch (_) { /* internet yo'q */ } }
   if (!v) { try { v = JSON.parse(localStorage.getItem(LOCAL) || 'null'); } catch (_) { /* buzilgan */ } }
-  if (v) { set('settings', { sets: { markup_pct: v.markup_pct ?? null, stanoklar: v.stanoklar ?? null, logo: v.logo ?? null } }); project.scheduleRecalc(true); }
+  if (v) {
+    set('settings', { sets: { markup_pct: v.markup_pct ?? null, stanoklar: v.stanoklar ?? null, logo: v.logo ?? null, til: v.til ?? null } });
+    if (v.til) setTil(v.til, true);                   // TZ-18: akkauntdagi til (boshqa qurilmada tanlangan bo'lsa ham)
+    project.scheduleRecalc(true);
+  }
 }
+
+/* TZ-18: til tanlansa — kirgan bo'lsa akkauntga ham yoziladi (jim; xato bo'lsa — qurilmada qoladi) */
+onTil((kod, serverdan) => { if (!serverdan && S.loggedIn && get().settings.sets.til !== kod) saveSettings({ til: kod }); });
 
 /** → true agar saqlansa */
 export async function saveSettings(patch) {

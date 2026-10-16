@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 
 /* TZ-19: sayt — sarlavha va menyu. JSX va stillar tasdiqlangan dizayndan (o'zgarishsiz); qiymatlar Landing.renderVals() dan. */
@@ -21,29 +22,29 @@ export default function Header({ v }) {
         </a>
         <nav data-desk="" style={{"display":"flex","gap":"4px","margin":"0 auto"}}>
           <a href="#kimlar" style={{"padding":"10px 14px","borderRadius":"999px","color":"var(--mut)","fontWeight":"600","fontSize":"14px","whiteSpace":"nowrap"}} className="h0">
-            {"Kimlar uchun"}
+            {t('sayt.kimlar_uchun')}
           </a>
           <a href="#demo" style={{"padding":"10px 14px","borderRadius":"999px","color":"var(--mut)","fontWeight":"600","fontSize":"14px","whiteSpace":"nowrap"}} className="h1">
-            {"3D demo"}
+            {t('sayt.3d_demo')}
           </a>
           <a href="#qanday" style={{"padding":"10px 14px","borderRadius":"999px","color":"var(--mut)","fontWeight":"600","fontSize":"14px","whiteSpace":"nowrap"}} className="h2">
-            {"Qanday ishlaydi"}
+            {t('sayt.qanday_ishlaydi')}
           </a>
           <a href="#imkoniyatlar" style={{"padding":"10px 14px","borderRadius":"999px","color":"var(--mut)","fontWeight":"600","fontSize":"14px","whiteSpace":"nowrap"}} className="h3">
-            {"Fayllar"}
+            {t('qadam.fayllar')}
           </a>
           <a href="#savollar" style={{"padding":"10px 14px","borderRadius":"999px","color":"var(--mut)","fontWeight":"600","fontSize":"14px","whiteSpace":"nowrap"}} className="h4">
-            {"Savollar"}
+            {t('sayt.savollar')}
           </a>
         </nav>
         <div style={{"display":"flex","gap":"8px","alignItems":"center","marginLeft":"auto"}}>
           <a data-desk="" href="app.html#login" onClick={v.goLogin} style={{"height":"44px","padding":"0 18px","borderRadius":"14px","display":"flex","alignItems":"center","whiteSpace":"nowrap","color":"var(--txt)","fontWeight":"700","fontSize":"15px","border":"1px solid var(--line)"}} className="h5">
-            {"Kirish"}
+            {t('kirish.kirish')}
           </a>
           <a href="app.html#reg" onClick={v.goReg} style={{"height":"44px","padding":"0 20px","borderRadius":"14px","display":"flex","alignItems":"center","whiteSpace":"nowrap","color":"var(--ink)","fontWeight":"800","fontSize":"15px","background":"var(--acc)"}} className="h6">
-            {"Ro'yxatdan o'tish"}
+            {t('kirish.royxat')}
           </a>
-          <button data-mob="" onClick={v.toggleMenu} aria-label="Menyu" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"18px","cursor":"pointer"}}>
+          <button data-mob="" onClick={v.toggleMenu} aria-label={t('sayt.menyu')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"18px","cursor":"pointer"}}>
             <Ikon n="menyu" size={20} gap={0} style={{ verticalAlign: "middle" }} />
           </button>
         </div>
@@ -51,19 +52,19 @@ export default function Header({ v }) {
       {v.menu ? (<>
         <div data-mob="" style={{"background":"var(--bg)","borderBottom":"1px solid var(--line)","padding":"8px 16px 16px","display":"flex","flexDirection":"column","gap":"2px"}}>
           <a href="#kimlar" onClick={v.closeMenu} style={{"padding":"12px","color":"var(--txt)","fontWeight":"700"}}>
-            {"Kimlar uchun"}
+            {t('sayt.kimlar_uchun')}
           </a>
           <a href="#demo" onClick={v.closeMenu} style={{"padding":"12px","color":"var(--txt)","fontWeight":"700"}}>
-            {"3D demo"}
+            {t('sayt.3d_demo')}
           </a>
           <a href="#qanday" onClick={v.closeMenu} style={{"padding":"12px","color":"var(--txt)","fontWeight":"700"}}>
-            {"Qanday ishlaydi"}
+            {t('sayt.qanday_ishlaydi')}
           </a>
           <a href="#savollar" onClick={v.closeMenu} style={{"padding":"12px","color":"var(--txt)","fontWeight":"700"}}>
-            {"Savollar"}
+            {t('sayt.savollar')}
           </a>
           <a href="app.html#login" onClick={v.goLogin} style={{"padding":"12px","color":"var(--txt)","fontWeight":"700"}}>
-            {"Kirish"}
+            {t('kirish.kirish')}
           </a>
         </div>
       </>) : null}

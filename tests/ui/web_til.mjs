@@ -42,7 +42,7 @@ async function asosiy(page, R) {
   await page.locator('[role=menuitemradio][lang=ru]').click(); await page.waitForTimeout(600);
   R.ru = { lang: await M(() => document.documentElement.lang), saqlandi: await M(() => localStorage.getItem('s3d-til')),
     menyuYopiq: await M(() => !document.querySelector('[role=menu]')), qaytaYuklanmadi: await M(() => window.__belgi === 1),
-    narx: await M(() => window.__app.res.priceRes.total) };
+    narx: await M(() => window.__app.res.priceRes.total), server: await M(async () => (await (await fetch('/api/settings')).json()).til) };
   await page.screenshot({ path: `${OUT}/til-1440-ru.png` });
 
   /* Esc menyuni yopadi */
@@ -66,8 +66,17 @@ async function asosiy(page, R) {
   await page.locator('[data-set="til"] button', { hasText: 'O\'zbekcha' }).click(); await page.waitForTimeout(400);
   R.uz = await M(() => document.documentElement.lang);
 
+  /* sayt (bosh sahifa): pastdagi til tugmasi → menyu → Русский (sahifa qayta yuklanmaydi) */
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(page.url().split(/[?#]/)[0].replace(/app\.html$/, '') + '?t=' + Date.now()); await page.waitForTimeout(2000);
+  await page.locator('footer button[aria-haspopup=menu]').scrollIntoViewIfNeeded();
+  await page.locator('footer button[aria-haspopup=menu]').click(); await page.waitForTimeout(300);
+  await page.locator('[role=menuitemradio][lang=ru]').click(); await page.waitForTimeout(500);
+  R.sayt = { lang: await M(() => document.documentElement.lang), tugma: await M(() => document.querySelector('footer button[aria-haspopup=menu]').textContent.trim()) };
+  await M(() => localStorage.setItem('s3d-til', 'uz'));
+
   R.errs = errs;
-  R.ok = yuklandi && R.menyu.join('|') === 'O\'zbekcha|Русский|English' && R.ru.lang === 'ru' && R.ru.saqlandi === 'ru' && R.ru.menyuYopiq &&
-    R.ru.qaytaYuklanmadi && R.ru.narx === narxUz && R.escYopdi && R.eslabQoldi === 'ru' && R.sozlamaTil.length === 3 && R.en === 'en' &&
+  R.ok = R.sayt.lang === 'ru' && R.sayt.tugma === 'Русский' && yuklandi && R.menyu.join('|') === 'O\'zbekcha|Русский|English' && R.ru.lang === 'ru' && R.ru.saqlandi === 'ru' && R.ru.menyuYopiq &&
+    R.ru.qaytaYuklanmadi && R.ru.narx === narxUz && R.ru.server === 'ru' && R.escYopdi && R.eslabQoldi === 'ru' && R.sozlamaTil.length === 3 && R.en === 'en' &&
     R.uz === 'uz' && !R.hScroll && errs.length === 0;
 }

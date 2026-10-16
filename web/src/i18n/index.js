@@ -33,6 +33,21 @@ export function t(key, vars) {
   return vars ? s.replace(/\{(\w+)\}/g, (m, n) => (vars[n] != null ? vars[n] : m)) : s;
 }
 
+/** dvigatel bergan o'zbekcha nom (detal, zapchast: "Yon devor", "Ichki javon 2") → tanlangan tilda.
+ *  Lug'atdagi o'zbekcha qiymat bo'yicha topiladi (d3.* kalitlar); oxiridagi raqam ("… 2") saqlanadi; topilmasa — o'zi */
+let teskari = null;
+export function tr(matn) {
+  if (matn == null || til() === 'uz') return matn;
+  if (!teskari) { teskari = new Map(); for (const [k, v] of Object.entries(uz)) if (k.startsWith('d3.') || k.startsWith('sayt.') || k.startsWith('umumiy.')) if (!teskari.has(v)) teskari.set(v, k); }
+  const s = String(matn), k = teskari.get(s);
+  if (k) return t(k);
+  const m = /^(.*\S)\s+(\d+)$/.exec(s);
+  if (m && teskari.has(m[1])) return t(teskari.get(m[1])) + ' ' + m[2];
+  const h = /^(.*) \(HDF\)$/.exec(s);
+  if (h && teskari.has(h[1])) return t(teskari.get(h[1])) + ' (HDF)';
+  return s;
+}
+
 /** foydalanuvchiga xato: "matn · S3D-…" */
 export const xatoMatni = (code) => t('xato.' + code) + ' · ' + code;
 
@@ -45,12 +60,12 @@ export function serverXato(matn, code) {
 
 /** til almashtirish: eslab qolinadi (qurilmada; kirgan bo'lsa — serverda ham, onChange orqali) */
 const listeners = new Set();
-export function setTil(kod) {
+export function setTil(kod, serverdan) {
   if (!LUGAT[kod] || kod === til()) return;
   tilStore.set('til', { kod });
   try { localStorage.setItem(KALIT, kod); } catch (_) { /* kvota */ }
   document.documentElement.lang = kod;
-  listeners.forEach(f => f(kod));
+  listeners.forEach(f => f(kod, !!serverdan));
 }
 export const onTil = (fn) => { listeners.add(fn); return () => listeners.delete(fn); };
 

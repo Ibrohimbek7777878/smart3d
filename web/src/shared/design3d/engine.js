@@ -124,14 +124,18 @@ function s3HwMesh(T,M,kind,r){let g,m;
     case'hinge':g=new T.CylinderGeometry(.02,.02,.013,20);m=M.metal;r=r||'z';break;
     default:g=s3Box(T,.012,.035,.4);m=M.metal;}
   const me=new T.Mesh(g,m);if(r==='x')me.rotation.z=Math.PI/2;if(r==='z')me.rotation.x=Math.PI/2;return me}
-function s3Label(v,title,sub,obj,kind){const el=document.createElement('div');
+/* TZ-18: yorliq matni tarjimasi — sayt/ilova o'rnatadi (s3SetT), til almashsa s3Retitle(v) yorliqlarni joyida yangilaydi */
+let S3_T=x=>x;
+const s3SetT=f=>{S3_T=f};
+function s3Retitle(v){for(const L of v.labels){if(!L.raw)continue;const sp=L.el.children;if(L.kind==='tag')L.el.textContent=S3_T(L.raw[0])+'  →';else if(sp.length){sp[0].textContent=S3_T(L.raw[0]);if(sp[1])sp[1].textContent=S3_T(L.raw[1])}}}
+function s3Label(v,title,sub,obj,kind){const el=document.createElement('div');const raw=[title,sub];title=S3_T(title);sub=S3_T(sub);
   const base='position:absolute;left:0;top:0;opacity:0;white-space:nowrap;font-family:"Plus Jakarta Sans",sans-serif;font-variant-numeric:tabular-nums;will-change:transform,opacity;';
   if(kind==='dim'){el.style.cssText=base+'pointer-events:none;font-size:13px;font-weight:700;color:#5FE1C4;padding:3px 8px;border-radius:8px;background:rgba(15,34,41,.85);border:1px solid rgba(95,225,196,.35)';el.textContent=title}
   else if(kind==='tag'){el.style.cssText=base+'pointer-events:auto;cursor:pointer;font-size:15px;font-weight:700;color:#FFFFFF;background:#5B5BF0;padding:11px 18px;border-radius:999px;box-shadow:0 12px 32px rgba(0,0,0,.3);display:flex;gap:8px;align-items:center';el.textContent=title+'  →'}
   else{el.style.cssText=base+'pointer-events:none;font-size:12px;font-weight:600;color:var(--txt);background:var(--sfc);border:1px solid var(--line);padding:5px 6px 5px 10px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.18);display:flex;gap:6px;align-items:center;'+(kind==='hw'?'z-index:2;':'');
     const a=document.createElement('span');a.textContent=title;el.append(a);
     if(sub){const b=document.createElement('span');b.textContent=sub;b.style.cssText=kind==='hw'?'background:#FF7A45;color:#2A1206;font-weight:800;padding:2px 8px;border-radius:999px':'color:var(--mut);font-weight:500;padding-right:4px';el.append(b)}}
-  v.overlay.appendChild(el);const L={el,obj,op:0,kind};v.labels.push(L);return L}
+  v.overlay.appendChild(el);const L={el,obj,op:0,kind,raw};v.labels.push(L);return L}
 
 function s3Viewer(T,host,overlay){
   let r,svg=false;if(S3_SVG){r=new S3_SVG();svg=true;r.setQuality&&r.setQuality('high');const oc=r.clear.bind(r);r.clear=()=>{oc();r.domElement.style.backgroundColor='transparent'}}
@@ -214,20 +218,12 @@ function s3Apply(v,m,a){const H=m.spec.H/1000,lv=-1+a.color*(H*1.6+2.6);v.pC.con
     const pe=s3cl((a.explode-.5)/.35),dimOp=(1-a.color)*(1-s3cl(a.explode*4));
     for(const L of v.labels)L.op=m.focus?(L.obj===m.focus?1:0):L.kind==='part'?pe:L.kind==='hw'?pe*s3cl((a.hw-.4)/.4):dimOp;
     if(m.dimMat)m.dimMat.opacity=dimOp}
-const S3_STEPS=[
- ['Zamer: o\'lchamli sxema','Avval sxema — eni 600, chuqurligi 450, bo\'yi 708 mm. Har o\'lcham formulaga bog\'langan.'],
- ['Material quyiladi','LDSP 16 mm korpus, yog\'och dekorli eshik, HDF 3 mm orqa devor.'],
- ['10 detal — har biri o\'lchami bilan','Modul detallarga ajraladi: yon devor, tub, planka, polka, eshik.'],
- ['Zapchast ichida','Oyoqcha, ruchka, polka ushlagich, Евро va Евровинт — soni bilan.'],
- ['Hisob tayyor','Detal, zapchast, kromka va plita maydoni — avtomatik sanaladi.'],
- ['Yig\'ildi — stanokka tayyor','Kroy xaritasi, Excel smeta va stanok fayli — bir tugmada.']];
 
 const s3n=n=>Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');
-const S3_TIPS=['Modulni bosing — o\'lchamini o\'zgartiring','Ikki barmoq yoki g\'ildirak — kattalashtirish','Narx doim tepada — bosing, hisob ochiladi'];
 function s3Thumb(w,h,d,col,kind,doors,max){const k=max/Math.max(w,h,d*1.4),fw=w*k,fh=h*k,sw=d*k;
   let bg=col;if(kind==='tortma')bg='linear-gradient(180deg,'+col+' 32%,rgba(0,0,0,.35) 32% 34%,'+col+' 34% 66%,rgba(0,0,0,.35) 66% 68%,'+col+' 68%)';
   else if(doors===2)bg='linear-gradient(90deg,'+col+' 49%,rgba(0,0,0,.4) 49% 51%,'+col+' 51%)';
   if(kind==='glass')bg='linear-gradient(90deg,#9FD3DA 49%,rgba(0,0,0,.4) 49% 51%,#9FD3DA 51%)';
   return {fw:fw+'px',fh:fh+'px',sw:sw+'px',fbg:bg,ft:'translate(-50%,-50%) translateZ('+(sw/2)+'px)',st:'translate(-50%,-50%) translateX('+(fw/2)+'px) rotateY(90deg)',tt:'translate(-50%,-50%) translateY('+(-fh/2)+'px) rotateX(90deg)'}}
 
-export { S3_SVG, s3Load, s3Box, s3cl, s3f1, s3P, s3SpecKP, s3SpecKU, s3SpecSH, s3Spec, s3WoodTex, s3Mats, s3HwMesh, s3Label, s3Viewer, s3Clear, s3Build, s3Apply, S3_STEPS, s3n, S3_TIPS, s3Thumb };
+export { s3SetT, s3Retitle, S3_SVG, s3Load, s3Box, s3cl, s3f1, s3P, s3SpecKP, s3SpecKU, s3SpecSH, s3Spec, s3WoodTex, s3Mats, s3HwMesh, s3Label, s3Viewer, s3Clear, s3Build, s3Apply, s3n, s3Thumb };   // matnlar (hikoya, maslahatlar) — i18n lug'atida

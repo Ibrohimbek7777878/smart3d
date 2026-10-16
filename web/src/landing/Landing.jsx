@@ -9,13 +9,17 @@ import Savollar from './sections/Savollar.jsx';
 import Royxat from './sections/Royxat.jsx';
 import Footer from './sections/Footer.jsx';
 import { report } from '../shared/lib/jurnal.js';
-import { s3Load, s3Box, s3cl, s3f1, s3Spec, s3Mats, s3Label, s3Viewer, s3Clear, s3Build, s3Apply, S3_STEPS } from '../shared/design3d/engine.js';
+import { s3Load, s3Box, s3cl, s3f1, s3Spec, s3Mats, s3Label, s3Viewer, s3Clear, s3Build, s3Apply, s3SetT, s3Retitle } from '../shared/design3d/engine.js';
+import { t, tr, til, tilStore, TILLAR } from '../i18n/index.js';
+import TilMenyu from '../shared/ui/TilMenyu.jsx';
 
 export default class Landing extends React.Component {
-  state={menu:false,mod:'kp',W:600,ui:{explode:0,color:0,count:0,phase:-1},sel:null,faq:-1,seen:{},loaded:false,sv:{step:-1,c:0,p:0}};
+  state={tilMenu:null,menu:false,mod:'kp',W:600,ui:{explode:0,color:0,count:0,phase:-1},sel:null,faq:-1,seen:{},loaded:false,sv:{step:-1,c:0,p:0}};
   miniHost=React.createRef();miniOv=React.createRef();storyHost=React.createRef();storyOv=React.createRef();demoHost=React.createRef();demoOv=React.createRef();storyP=0;
   a={color:0,explode:0,hw:0,count:0};tg={color:0,explode:0,hw:0,count:0};
   componentDidMount(){this.dead=false;
+    /* TZ-18: til almashsa — matn qayta chiziladi, 3D yorliqlar joyida yangilanadi */
+    s3SetT(tr);this.offTil=tilStore.subscribe(()=>{this.forceUpdate();for(const v of [this.story,this.demo,this.mini])if(v)s3Retitle(v)});
     this.reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;document.body.style.background='#0F2229';
     this.setupReveal();
     this.onScroll=()=>{const st=document.getElementById('hero');if(st){const r=st.getBoundingClientRect();this.storyP=s3cl(-r.top/Math.max(1,r.height-window.innerHeight))}};
@@ -25,7 +29,7 @@ export default class Landing extends React.Component {
       try{this.initDemo()}catch(e){report('S3D-SCENE-102',{modul:'landing/demo',err:e});this.demoFallback()}
       this.setState({loaded:true})}).catch(e=>{report('S3D-SCENE-102',{modul:'landing',xabar:'three.js yuklanmadi',err:e});this.setState({loaded:true});this.demoFallback()});
   }
-  componentWillUnmount(){this.dead=true;this.mini&&this.mini.dispose();window.removeEventListener('scroll',this.onScroll);this.story&&this.story.dispose();this.demo&&this.demo.dispose();this.rvIO&&this.rvIO.disconnect();this.dIO&&this.dIO.disconnect()}
+  componentWillUnmount(){this.dead=true;this.offTil&&this.offTil();this.mini&&this.mini.dispose();window.removeEventListener('scroll',this.onScroll);this.story&&this.story.dispose();this.demo&&this.demo.dispose();this.rvIO&&this.rvIO.disconnect();this.dIO&&this.dIO.disconnect()}
   goApp(screen,extra){const q=new URLSearchParams({s:screen,...(extra||{})});const u=new URL('app.html',location.href);u.hash=q.toString();
     try{sessionStorage.setItem('s3d-handoff',q.toString())}catch(_){}location.href=u.href}
   componentDidUpdate(){if(this._lastSel!==this.state.sel){this._lastSel=this.state.sel;this.syncMini()}}
@@ -79,7 +83,7 @@ export default class Landing extends React.Component {
   highlight(gr){if(this.cur)this.cur.focus=gr||null;if(this.selGr){this.selGr.userData.mat.emissive.set(0x000000);this.selGr.userData.em.color.set(0x2B3160)}
     this.selGr=gr;if(!gr){if(this.state.sel)this.setState({sel:null});return}
     gr.userData.mat.emissive.set(0x8a3000);gr.userData.mat.emissiveIntensity=.22;gr.userData.em.color.set(0xFF7A45);
-    const p=gr.userData.p;this.setState({sel:{name:p.name,dim:p.dim?p.dim+' mm':'—',mat:{ldsp:'LDSP 16 mm',wood:"LDSP 16 mm · yog'och dekor",hdf:'HDF 3 mm'}[p.mat],edge:p.edge||'—',n:p.n+' dona'}})}
+    const p=gr.userData.p;this.setState({sel:{name:p.name,dim:p.dim?p.dim+' '+t('umumiy.mm'):'—',mat:{ldsp:'LDSP 16 mm',wood:"LDSP 16 mm · yog'och dekor",hdf:'HDF 3 mm'}[p.mat],edge:p.edge||'—',n:p.n}})}
 
   setColor(c){this.scen=null;this.tg.color=c;if(this.a.explode>.3)this.tg.hw=1;this.tg.count=1;this.setState(s=>({ui:{...s.ui,color:c,phase:6}}))}
   setExplode(e){this.scen=null;const x=e/100;this.tg.explode=x;this.a.explode=x;this.tg.hw=1;this.tg.count=1;this.setState(s=>({ui:{...s.ui,explode:e,phase:6}}))}
@@ -99,21 +103,24 @@ export default class Landing extends React.Component {
       menu:s.menu,toggleMenu:()=>this.setState({menu:!s.menu}),closeMenu:()=>this.setState({menu:false}),
       miniHost:this.miniHost,miniOv:this.miniOv,storyHost:this.storyHost,storyOv:this.storyOv,demoHost:this.demoHost,demoOv:this.demoOv,notLoaded:!s.loaded,
       st:{io:io.toFixed(3),it:'translateY('+(-(1-io)*60).toFixed(1)+'px)',co:(1-io).toFixed(3),ct:'translateY('+(io*30).toFixed(1)+'px)',
-        n:'0'+(si+1),title:S3_STEPS[si][0],text:S3_STEPS[si][1],
+        n:'0'+(si+1),title:t('sayt.hikoya'+(si+1)+'_t'),text:t('sayt.hikoya'+(si+1)+'_m'),
         c:{detal:Math.round(k.detal*sv.c),zap:Math.round(k.zap*sv.c),krom:s3f1(k.krom*sv.c),area:s3f1(k.area*sv.c)},
         bars:[0,1,2,3,4,5].map(i=>({c:i<=sv.step?'var(--acc)':'var(--sfc2)'}))},
       goDemo:()=>this.goDemo(),
       rv:{s1:rv('s1'),s2:rv('s2'),s3:rv('s3'),s4:rv('s4'),s6:rv('s6'),s7:rv('s7')},
       tab:{kpB:tabB('kp'),kpT:tabT('kp'),kuB:tabB('ku'),kuT:tabT('ku'),shB:tabB('sh'),shT:tabT('sh')},
       modKP:()=>this.setMod('kp'),modKU:()=>this.setMod('ku'),modSH:()=>this.setMod('sh'),
-      spec,size:spec.W+'×'+spec.D+'×'+spec.H+' mm',
+      spec:{...spec,name:tr(spec.name),sub:tr(spec.sub),lim:tr(spec.lim),list:spec.list.map(r=>({...r,name:tr(r.name)})),hwList:spec.hwList.map(h=>({...h,name:tr(h.name)}))},
+      size:spec.W+'×'+spec.D+'×'+spec.H+' '+t('umumiy.mm'),
       seg:{cB:u.color?'var(--acc)':'transparent',cT:u.color?'var(--ink)':'var(--mut)',pB:u.color?'transparent':'var(--sfc)',pT:u.color?'var(--mut)':'var(--txt)'},
       setColored:()=>this.setColor(1),setPlain:()=>this.setColor(0),
       explode:u.explode,onExplode:e=>this.setExplode(+e.target.value),
       W:s.W,onW:e=>this.setW(+e.target.value),isKP:s.mod==='kp',notKP:s.mod!=='kp',doorW:(s.W-4)/2,polkaW:s.W-32,
       cnt:{detal:Math.round(st.detal*c),zap:Math.round(st.zap*c),krom:s3f1(st.krom*c),area:s3f1(st.area*c)},
       ph,replay:()=>this.play(),demoNoGL:!!s.demoNoGL,
-      sel:s.sel||{},hasSel:!!s.sel,closeSel:()=>this.highlight(null),fq
+      tilNomi:(TILLAR.find(x=>x[0]===til())||TILLAR[0])[1],
+      tilMenu:e=>{const r=e.currentTarget.getBoundingClientRect();this.setState({tilMenu:{top:Math.max(8,Math.round(r.top-150)),right:Math.round(window.innerWidth-r.right)}})},
+      sel:s.sel?{...s.sel,name:tr(s.sel.name),mat:tr(s.sel.mat),edge:tr(s.sel.edge),n:t('sayt.dona_n',{n:s.sel.n})}:{},hasSel:!!s.sel,closeSel:()=>this.highlight(null),fq
     }}
 
   render() {
@@ -130,6 +137,7 @@ export default class Landing extends React.Component {
         <Savollar v={v} />
         <Royxat v={v} />
         <Footer v={v} />
+        <TilMenyu pos={this.state.tilMenu} onClose={() => this.setState({ tilMenu: null })} />
       </div>
       </>
     );

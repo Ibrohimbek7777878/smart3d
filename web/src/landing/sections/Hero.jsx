@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 
 /* TZ-19: sayt — bosh qism — aylanuvchi 3D hikoya (skroll bilan). JSX va stillar tasdiqlangan dizayndan (o'zgarishsiz); qiymatlar Landing.renderVals() dan. */
 export default function Hero({ v }) {
@@ -10,31 +11,31 @@ export default function Hero({ v }) {
         </div>
         {v.notLoaded ? (<>
           <div style={{"position":"absolute","right":"clamp(16px,8vw,120px)","top":"50%","zIndex":"1","fontFamily":"'JetBrains Mono',monospace","fontSize":"13px","color":"var(--mut)"}}>
-            {"3D yuklanmoqda…"}
+            {t('sayt.3d_yuklanmoqda')}
           </div>
         </>) : null}
         <div style={{"position":"absolute","inset":"64px 0 0","zIndex":"3","pointerEvents":"none","opacity":v.st?.io,"transform":v.st?.it}}>
           <div style={{"maxWidth":"1280px","height":"100%","margin":"0 auto","padding":"clamp(24px,6vh,72px) clamp(16px,4vw,32px)","display":"flex","flexDirection":"column","justifyContent":"center","gap":"24px"}}>
             <div style={{"display":"flex","flexDirection":"column","gap":"22px","maxWidth":"600px"}}>
               <span style={{"alignSelf":"flex-start","padding":"7px 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"rgba(23,50,57,.7)","fontSize":"13px","fontWeight":"700","color":"var(--cyan)"}}>
-                {"Mebel ustalari · dizaynerlar · Bazischilar uchun"}
+                {t('sayt.mebel_ustalari_dizaynerlar')}
               </span>
               <h1 style={{"margin":"0","fontSize":"clamp(38px,5.4vw,72px)","lineHeight":"1","letterSpacing":"-.045em","fontWeight":"800","textWrap":"balance"}}>
-                {"Mebelni 3D'da chizing. "}
+                {t('sayt.mebelni_3dda_chizing')}
                 <span style={{"color":"var(--acc)"}}>
-                  {"Kroy, smeta va stanok fayli"}
+                  {t('sayt.kroy_smeta_va_stanok_fayli')}
                 </span>
-                {" o'zi chiqadi."}
+                {t('sayt.ozi_chiqadi')}
               </h1>
               <p style={{"margin":"0","fontSize":"clamp(16px,1.4vw,19px)","color":"var(--mut)","maxWidth":"520px","textWrap":"pretty"}}>
-                {"Zamerdan stanokkacha — bitta brauzer ilovasida, telefoningizda ham. O'rnatish shart emas."}
+                {t('sayt.zamerdan_stanokkacha_bitta')}
               </p>
               <div style={{"display":"flex","flexWrap":"wrap","gap":"12px","pointerEvents":"auto"}}>
                 <a href="app.html#reg" onClick={v.goReg} style={{"height":"56px","padding":"0 26px","borderRadius":"16px","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","display":"flex","alignItems":"center","transition":"transform .18s ease-out,box-shadow .18s"}} className="h7">
-                  {"Ro'yxatdan o'tish"}
+                  {t('kirish.royxat')}
                 </a>
                 <button onClick={v.goDemo} style={{"height":"56px","padding":"0 24px","borderRadius":"16px","background":"rgba(23,50,57,.75)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"16px","cursor":"pointer"}} className="h8">
-                  {"3D demoni ochish"}
+                  {t('sayt.3d_demoni_ochish')}
                 </button>
               </div>
               <div style={{"display":"flex","flexWrap":"wrap","gap":"8px"}}>
@@ -42,16 +43,16 @@ export default function Hero({ v }) {
                   <span style={{"color":"var(--acct)","fontWeight":"800"}}>
                     {"121"}
                   </span>
-                  {" tayyor modul"}
+                  {t('sayt.tayyor_modul')}
                 </span>
                 <span style={{"padding":"7px 13px","borderRadius":"999px","background":"rgba(23,50,57,.7)","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"600"}}>
                   <span style={{"color":"var(--acct)","fontWeight":"800"}}>
                     {"17"}
                   </span>
-                  {" xil fayl"}
+                  {t('sayt.xil_fayl')}
                 </span>
                 <span style={{"padding":"7px 13px","borderRadius":"999px","background":"rgba(23,50,57,.7)","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"600"}}>
-                  {"O'zbek tilida AI"}
+                  {t('sayt.ozbek_tilida_ai')}
                 </span>
               </div>
             </div>
@@ -59,7 +60,7 @@ export default function Hero({ v }) {
         </div>
         <div style={{"position":"absolute","right":"clamp(16px,4vw,48px)","bottom":"28px","zIndex":"3","opacity":v.st?.io,"display":"flex","flexDirection":"column","alignItems":"center","gap":"8px","fontSize":"13px","color":"var(--mut)","fontWeight":"600","pointerEvents":"none"}}>
           <span>
-            {"Aylantiring — modul ochiladi"}
+            {t('sayt.aylantiring_modul_ochiladi')}
           </span>
           <span style={{"width":"26px","height":"42px","borderRadius":"999px","border":"1.5px solid var(--mut)","display":"flex","justifyContent":"center","paddingTop":"8px"}}>
             <span style={{"width":"4px","height":"9px","borderRadius":"9px","background":"var(--acc)"}}></span>
@@ -71,7 +72,7 @@ export default function Hero({ v }) {
               <span className="sc-interp">{v.st?.n}</span>{" / 06"}
             </span>
             <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"600"}}>
-              {"Pastki shkaf · MC-KP-02"}
+              {t('sayt.pastki_shkaf_mc_kp_02')}
             </span>
           </div>
           <h3 style={{"margin":"0","fontSize":"clamp(22px,2.3vw,30px)","lineHeight":"1.1","letterSpacing":"-.02em","fontWeight":"800","textWrap":"balance"}}>
@@ -86,7 +87,7 @@ export default function Hero({ v }) {
                 <span className="sc-interp">{v.st?.c?.detal}</span>
               </div>
               <div style={{"fontSize":"12px","color":"var(--mut)"}}>
-                {"detal"}
+                {t('ichki.detal')}
               </div>
             </div>
             <div style={{"background":"var(--sfc2)","borderRadius":"14px","padding":"10px"}}>
@@ -94,7 +95,7 @@ export default function Hero({ v }) {
                 <span className="sc-interp">{v.st?.c?.zap}</span>
               </div>
               <div style={{"fontSize":"12px","color":"var(--mut)"}}>
-                {"zapchast"}
+                {t('ichki.zapchast')}
               </div>
             </div>
             <div style={{"background":"var(--sfc2)","borderRadius":"14px","padding":"10px"}}>
@@ -102,7 +103,7 @@ export default function Hero({ v }) {
                 <span className="sc-interp">{v.st?.c?.krom}</span>
               </div>
               <div style={{"fontSize":"12px","color":"var(--mut)"}}>
-                {"m kromka"}
+                {t('sayt.m_kromka')}
               </div>
             </div>
             <div style={{"background":"var(--sfc2)","borderRadius":"14px","padding":"10px"}}>
@@ -110,7 +111,7 @@ export default function Hero({ v }) {
                 <span className="sc-interp">{v.st?.c?.area}</span>
               </div>
               <div style={{"fontSize":"12px","color":"var(--mut)"}}>
-                {"m² plita"}
+                {t('sayt.m_plita')}
               </div>
             </div>
           </div>

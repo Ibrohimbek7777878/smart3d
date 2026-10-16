@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 
 /* TZ-19: sayt — kimlar uchun. JSX va stillar tasdiqlangan dizayndan (o'zgarishsiz); qiymatlar Landing.renderVals() dan. */
@@ -7,10 +8,10 @@ export default function Kimlar({ v }) {
     <section id="kimlar" data-rv-id="s1" data-rv={v.rv?.s1} style={{"maxWidth":"1280px","margin":"0 auto","padding":"clamp(72px,10vw,140px) clamp(16px,4vw,32px) clamp(64px,9vw,120px)","scrollMarginTop":"64px"}}>
       <div style={{"display":"flex","flexWrap":"wrap","justifyContent":"space-between","alignItems":"flex-end","gap":"16px","marginBottom":"28px"}}>
         <h2 style={{"margin":"0","fontSize":"clamp(32px,4.2vw,56px)","lineHeight":"1.02","letterSpacing":"-.04em","fontWeight":"800","maxWidth":"720px","textWrap":"balance"}}>
-          {"Kim uchun qurilgan"}
+          {t('sayt.kim_uchun_qurilgan')}
         </h2>
         <p style={{"margin":"0","color":"var(--mut)","maxWidth":"400px","textWrap":"pretty"}}>
-          {"Sexdagi ustadan tortib, mijoz oldidagi dizaynergacha — bitta loyiha, har kimga kerakli ko'rinish."}
+          {t('sayt.sexdagi_ustadan_tortib_mijoz')}
         </p>
       </div>
       <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fit,minmax(280px,1fr))","gap":"14px"}}>
@@ -25,10 +26,10 @@ export default function Kimlar({ v }) {
           </div>
           <div style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
             <span style={{"fontSize":"28px","fontWeight":"800","letterSpacing":"-.02em"}}>
-              {"Mebel ustasi"}
+              {t('sayt.mebel_ustasi')}
             </span>
             <span style={{"fontSize":"15px","color":"var(--mut)"}}>
-              {"Zamerda, telefon qo'lida"}
+              {t('sayt.zamerda_telefon_qolida')}
             </span>
           </div>
           <div style={{"display":"flex","flexDirection":"column","gap":"10px","paddingTop":"16px","borderTop":"1px solid var(--line)"}}>
@@ -37,7 +38,7 @@ export default function Kimlar({ v }) {
                 <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
-                {"O'lchamni kiriting — modul o'zi moslashadi"}
+                {t('sayt.olchamni_kiriting_modul_ozi')}
               </span>
             </span>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
@@ -45,7 +46,7 @@ export default function Kimlar({ v }) {
                 <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
-                {"Mijozga joyida 3D ko'rsating"}
+                {t('sayt.mijozga_joyida_3d_korsating')}
               </span>
             </span>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
@@ -53,7 +54,7 @@ export default function Kimlar({ v }) {
                 <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
-                {"Smeta zapchasti bilan, bir zumda"}
+                {t('kirish.smeta_zapchasti_bilan_bir')}
               </span>
             </span>
           </div>
@@ -69,10 +70,10 @@ export default function Kimlar({ v }) {
           </div>
           <div style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
             <span style={{"fontSize":"28px","fontWeight":"800","letterSpacing":"-.02em"}}>
-              {"Dizayner"}
+              {t('sayt.dizayner')}
             </span>
             <span style={{"fontSize":"15px","color":"var(--mut)"}}>
-              {"Mijoz oldida, planshetda"}
+              {t('sayt.mijoz_oldida_planshetda')}
             </span>
           </div>
           <div style={{"display":"flex","flexDirection":"column","gap":"10px","paddingTop":"16px","borderTop":"1px solid var(--line)"}}>
@@ -81,7 +82,7 @@ export default function Kimlar({ v }) {
                 <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
-                {"To'liq ekranli 3D ko'rinish"}
+                {t('sayt.toliq_ekranli_3d_korinish')}
               </span>
             </span>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
@@ -89,7 +90,7 @@ export default function Kimlar({ v }) {
                 <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
-                {"Bir tugmada 1080p rasm"}
+                {t('sayt.bir_tugmada_1080p_rasm')}
               </span>
             </span>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
@@ -97,7 +98,7 @@ export default function Kimlar({ v }) {
                 <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
-                {"360° tur havolasini yuboring"}
+                {t('sayt.360_tur_havolasini_yuboring')}
               </span>
             </span>
           </div>
@@ -113,10 +114,10 @@ export default function Kimlar({ v }) {
           </div>
           <div style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
             <span style={{"fontSize":"28px","fontWeight":"800","letterSpacing":"-.02em"}}>
-              {"Bazischi"}
+              {t('sayt.bazischi')}
             </span>
             <span style={{"fontSize":"15px","color":"var(--mut)"}}>
-              {"Tanish mantiq — o'rnatishsiz"}
+              {t('sayt.tanish_mantiq_ornatishsiz')}
             </span>
           </div>
           <div style={{"display":"flex","flexDirection":"column","gap":"10px","paddingTop":"16px","borderTop":"1px solid var(--line)"}}>
@@ -125,7 +126,7 @@ export default function Kimlar({ v }) {
                 <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
-                {"Formulali modullar, detal va raskroy"}
+                {t('sayt.formulali_modullar_detal_va')}
               </span>
             </span>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
@@ -133,7 +134,7 @@ export default function Kimlar({ v }) {
                 <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
-                {"GibLab, DXF, G-code, Biesse, Homag"}
+                {t('sayt.giblab_dxf_g_code_biesse_homag')}
               </span>
             </span>
             <span style={{"display":"flex","gap":"10px","alignItems":"flex-start"}}>
@@ -141,7 +142,7 @@ export default function Kimlar({ v }) {
                 <Ikon n="tayyor" size={14} gap={0} />
               </span>
               <span>
-                {"Brauzerda — kompyuter va telefonda"}
+                {t('sayt.brauzerda_kompyuter_va')}
               </span>
             </span>
           </div>

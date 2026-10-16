@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useSlice, set } from '../../../store/index.js';
 import { report } from '../../../shared/lib/jurnal.js';
-import { xatoMatni } from '../../../i18n/index.js';
+import { xatoMatni, tr } from '../../../i18n/index.js';
 import { project } from '../../../store/project.js';
 import { useViewer } from '../../../shared/design3d/useViewer.js';
 import { s3Viewer, s3Mats, s3Box, s3Label } from '../../../shared/design3d/engine.js';
@@ -97,6 +97,6 @@ export function useDetalKarta() {
   const [miniHost, miniOv] = useViewer(!!P, P ? miniViewer(P) : null, [P && P.id]);
   return {
     hasPart: !!P, closePart: A.closePart, miniHost, miniOv, togglePartOpen: A.togglePartOpen,
-    pt: P ? { name: P.name, dim: P.dim + ' ' + t('umumiy.mm'), mat: P.mat, edge: P.edge, code: P.code, isMov: !!P.key, movLabel: it && P.key && it.isOpen(P.key) ? t('umumiy.yopish') : t('sahna.ochish') } : {}
+    pt: P ? { name: tr(P.name), dim: P.dim + ' ' + t('umumiy.mm'), mat: P.mat, edge: P.edge, code: P.code, isMov: !!P.key, movLabel: it && P.key && it.isOpen(P.key) ? t('umumiy.yopish') : t('sahna.ochish') } : {}
   };
 }

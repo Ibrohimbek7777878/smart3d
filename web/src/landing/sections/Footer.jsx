@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../../i18n/index.js';
 
 /* TZ-19: sayt — pastki qism. JSX va stillar tasdiqlangan dizayndan (o'zgarishsiz); qiymatlar Landing.renderVals() dan. */
 export default function Footer({ v }) {
@@ -13,15 +14,16 @@ export default function Footer({ v }) {
             {"Bittada"}
           </span>
           <span style={{"color":"var(--mut)","fontSize":"14px"}}>
-            {"· Smart3D"}
+            {t('sayt.smart3d')}
           </span>
         </div>
         <span style={{"padding":"4px 10px","border":"1px dashed var(--mut)","borderRadius":"8px","fontFamily":"'JetBrains Mono',monospace","fontSize":"12px","color":"var(--mut)"}}>
-          {"aloqa — egasi beradi"}
+          {t('sayt.aloqa_egasi_beradi')}
         </span>
-        <span style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","display":"flex","alignItems":"center","fontSize":"14px","fontWeight":"600"}}>
-          {"O'zbekcha"}
-        </span>
+        {/* TZ-18: dizayndagi til belgisi — endi til menyusini ochadi (ilova bilan bir xil menyu) */}
+        <button onClick={v.tilMenu} aria-haspopup="menu" aria-label="Til / Язык / Language" style={{"height":"44px","padding":"0 14px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","display":"flex","alignItems":"center","fontSize":"14px","fontWeight":"600","color":"var(--txt)","fontFamily":"inherit","cursor":"pointer"}}>
+          {v.tilNomi}
+        </button>
       </div>
     </footer>
   );

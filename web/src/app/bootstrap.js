@@ -5,6 +5,8 @@ import { readHandoff, initSession } from '../features/auth/actions.js';
 import { loadServerStd } from '../features/settings/actions.js';
 import { installKeyboard } from './klaviatura.js';
 import { eskiKeshniTozala } from '../shared/lib/eskiKesh.js';
+import { s3SetT } from '../shared/design3d/engine.js';
+import { tr } from '../i18n/index.js';
 
 /* TZ-19: ilova ishga tushishi — ma'lumot, saytdan o'tish (#hash), saqlangan kirish. Bir marta chaqiriladi (main.jsx). */
 export function bootstrap() {
@@ -14,6 +16,7 @@ export function bootstrap() {
   initSession();
   window.addEventListener('hashchange', readHandoff);
   installKeyboard();
+  s3SetT(tr);                                       // TZ-18: 3D yorliqlar tanlangan tilda
   eskiKeshniTozala();
   installQA();
 }

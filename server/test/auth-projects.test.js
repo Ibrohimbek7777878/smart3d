@@ -155,7 +155,7 @@ test('TZ-09: sozlamalar — ustama, stanok profili, logo; har usta o\'zinikini; 
   const a = await reg('sozlama.a@test.uz'), b = await reg('sozlama.b@test.uz');
   assert.equal((await api('/api/settings')).status, 401);
   let g = await (await api('/api/settings', { token: a.token })).json();
-  assert.deepEqual(g, { markup_pct: null, stanoklar: null, logo: null });
+  assert.deepEqual(g, { markup_pct: null, stanoklar: null, logo: null, til: null });
   const LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
   const p = await api('/api/settings', { method: 'PUT', token: a.token, body: { markup_pct: 0.4, stanoklar: ['dxf', 'altendorf'], logo: LOGO } });
   assert.equal(p.status, 200);
@@ -166,6 +166,13 @@ test('TZ-09: sozlamalar — ustama, stanok profili, logo; har usta o\'zinikini; 
   for (const bad of [{ markup_pct: 5 }, { stanoklar: ['biesse'] }, { logo: 'data:image/svg+xml;base64,PHN2Zz4=' }, { logo: 'javascript:alert(1)' }]) {
     assert.equal((await api('/api/settings', { method: 'PUT', token: a.token, body: bad })).status, 400, JSON.stringify(bad));
   }
+});
+
+test('TZ-18: til akkauntda saqlanadi (uz/ru/en), boshqasi — 400', async () => {
+  const a = await (await api('/api/register', { method: 'POST', body: { email: 'til.a@test.uz', password: 'parol12345' } })).json();
+  assert.equal((await api('/api/settings', { method: 'PUT', token: a.token, body: { til: 'ru' } })).status, 200);
+  assert.equal((await (await api('/api/settings', { token: a.token })).json()).til, 'ru');
+  assert.equal((await api('/api/settings', { method: 'PUT', token: a.token, body: { til: 'de' } })).status, 400);
 });
 
 test('loyiha: tokensiz 401, buzilgan doc 400', async () => {

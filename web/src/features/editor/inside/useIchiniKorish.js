@@ -3,7 +3,7 @@ import { project } from '../../../store/project.js';
 import { useViewer } from '../../../shared/design3d/useViewer.js';
 import { s3Viewer, s3Mats, s3Build, s3Apply } from '../../../shared/design3d/engine.js';
 import { ichkiSpec } from '../../../services/ichki.js';
-import { t } from '../../../i18n/index.js';
+import { t, tr } from '../../../i18n/index.js';
 
 /* TZ-19: "Ichini ko'rish" (Q6) — dizayn ko'rinishi; panellar — assembler.js, son — kesim ro'yxati. Faqat MebelCity modullari. */
 function specOf(id) {
@@ -40,7 +40,7 @@ export function useIchiniKorish() {
     insOpen: !!spec, insHost, insOv,
     closeInside: () => set('ins', { id: null }),
     ins: spec && p ? { name: p.name || (project.fr(p) || {}).name, code: p.frg, size: p.w + '×' + p.d + '×' + p.h + ' ' + t('umumiy.mm'), hasNote: false, note: '',
-      detal: spec.stats.detal, zap: spec.stats.zap, list: spec.list, hw: spec.hwList, ex: ins.ex,
+      detal: spec.stats.detal, zap: spec.stats.zap, list: spec.list.map(r => ({ ...r, name: tr(r.name) })), hw: spec.hwList, ex: ins.ex,
       cB: ins.color ? 'var(--acc)' : 'transparent', cT: ins.color ? 'var(--ink)' : 'var(--mut)', pB: ins.color ? 'transparent' : 'var(--sfc)', pT: ins.color ? 'var(--mut)' : 'var(--txt)' } : { list: [], hw: [] },
     onInsEx: ev => set('ins', { auto: false, ex: +ev.target.value }),
     insColor: () => set('ins', { color: 1 }), insPlain: () => set('ins', { color: 0 })
