@@ -32,7 +32,7 @@
 | 15 | [Katalogdan ustki shkaf balandligi](15-ustki-shkaf-balandligi.md) | **BAJARILDI** 2026-10-15 | — |
 | 16 | [Telegram bot uchun Mini App](16-telegram-mini-app.md) | TASDIQ KUTILMOQDA (TZ-09 dan keyin) | egasi: bot kaliti serverga, bot linki |
 | 17 | [Bazis BPJ faylini to'liq qilish](17-bpj-toliq.md) | TASDIQ KUTILMOQDA (TZ-09 bilan parallel mumkin) | egasi: Bazis'li kompyuterda real sinov |
-| 18 | [Uch til: o'zbek, rus, ingliz](18-uch-til.md) | TASDIQ KUTILMOQDA (TZ-09 dan keyin) | egasi: atamalar jadvali tasdig'i |
+| 18 | [Uch til: o'zbek, rus, ingliz](18-uch-til.md) | BAJARILMOQDA (2026-10-16) | egasi: [atamalar jadvali](18-atamalar.md) tasdig'i (ruscha/inglizcha tarjima shundan keyin) |
 | 19 | [Production darajasi: modullar, xavfsizlik, xato kodlari, ikonlar](19-senior-production.md) | **BAJARILDI** 2026-10-15 (`dizayn` tarmog'i) | egasi: skrinshotlar (ikonlar, "Xatolar jurnali", 404), main'ga qo'shish ruxsati |
 
 **Navbat sababi:**

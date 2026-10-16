@@ -1,6 +1,6 @@
 # TZ-18 — Uch til: o'zbek, rus, ingliz (har bir matn)
 
-**Sana:** 2026-10-15 · **Navbat:** 18 · **Holat:** TASDIQ KUTILMOQDA
+**Sana:** 2026-10-15 · **Navbat:** 18 · **Holat:** TASDIQLANDI 2026-10-15 ("boshla", commit de95f2a) — BAJARILMOQDA: 1-bosqich — [atamalar jadvali](18-atamalar.md) egasi tasdig'ida, 2-bosqich (tuzilma, til tanlash) — boshlandi
 **Asos:** egasi (2026-10-15): "tilni ham qo'sh, rus, ingliz, o'zbek bo'lsin va har bir harf, har bir text o'zgarishi kerak".
 **Bog'liq:** TZ-09 (yangi frontend — o'zbekcha matnlar shu yerda lug'atga olinadi), TZ-16 (Telegram — til Telegram'dan olinadi), TZ-12 (AI).
 

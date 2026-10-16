@@ -294,3 +294,7 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 102. yaxsh unda bundan buyogiga senior ,sifwater enginer dasturchi sifatda qilasan va loyhan toliq kiber xujumlardan ximoyalanish byoicha ham korib chiqishimiz kere har bir qismga error log kodlarin ham yozb ket istalgan errorlarn ushlash uchun  ikonlardna foydlan stikerlardan emas hamma modul realni ishlaydigan bolsin va productionga tayyor bolsin
 
 103. boshla
+
+## 2026-10-16
+
+104. davom et
