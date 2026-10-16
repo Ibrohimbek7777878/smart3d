@@ -18,9 +18,11 @@
  *
  * Qoidalar (dunyo standarti; texnolog tasdiqlaydi — TZ-24 5-bo'lim):
  *   System 32 — bo'lgich 32 mm qadamga yopishadi (UI); polka eni: LDSP 16 — 800, 18 — 900 mm gacha;
- *   petlya soni eshik bo'yiga qarab (≤900 — 2, ≤1600 — 3, ≤2000 — 4, undan katta — 5); fasad tirqishi 2 mm;
+ *   petlya soni eshik bo'yiga qarab (≤1000 — 2, ≤1600 — 3, ≤2000 — 4, undan katta — 5; sex fayllaridan — d6.js); fasad tirqishi 2 mm;
  *   napravlyayushiy 250–600 mm (50 qadam); polkalar orasi ≥ 100 mm; petlyali eshik eni 150–600 mm.
  */
+import { d6Teshiklar, petlyaSoni } from './d6.js';
+
 export const CHIZMA_TURLARI = ['pastki', 'ustki', 'shkaf', 'tumba', 'erkin'];
 export const QOIDA = {
   tirqish: 2, polkaOld: 20, polkaChet: 1, tortmaYon: 13, tortmaOrqa: 10, tortmaTepa: 40, tortmaMinH: 100,
@@ -28,7 +30,7 @@ export const QOIDA = {
   eshikMin: 150, eshikMax: 600, plankaChuq: 80, sokolOrqaga: 50, ruchka: 128, oyoqKatta: 1000
 };
 const TARTIB = { korpus: 0, polka: 1, fasad: 2, orqa: 3 };
-export const petlyaSoni = (h) => (h <= 900 ? 2 : h <= 1600 ? 3 : h <= 2000 ? 4 : 5);
+export { petlyaSoni };                                       // D6: sex fayllaridagi soni (engine/d6.js)
 
 /** tur bo'yicha boshlang'ich chizma (o'lchami katalogdagi o'xshash modullardek) */
 export function yangiChizma(tur = 'pastki') {
@@ -149,7 +151,8 @@ function joylash(ch, w, d, h, o = {}) {
     z0: chet.B ? fasadB : R.z0 - t / 2 + g / 2, z1: chet.T ? fasadT : R.z1 + t / 2 - g / 2
   });
   let fasadNo = 0;
-  const ruchkaZ = (z0f, z1f) => (ustki ? z0f + 60 : baland ? (z0f + z1f) / 2 : z1f - 60);
+  /* ruchka markazi — D6 teshiklari bilan bir xil: yaqin teshik eshik uchidan 50 mm (pastki — tepada, ustki — pastda, baland — o'rtada) */
+  const ruchkaZ = (z0f, z1f) => (ustki ? z0f + 50 + Q.ruchka / 2 : baland ? (z0f + z1f) / 2 : z1f - 50 - Q.ruchka / 2);
   const FASAD = { F: 'kromka_fasad', B: 'kromka_fasad', L: 'kromka_fasad', R: 'kromka_fasad' };
 
   function eshiklar(n, R, chet) {
@@ -177,7 +180,7 @@ function joylash(ch, w, d, h, o = {}) {
       const tz0 = f.z0 + i * (fh + g), tz1 = tz0 + fh;
       const id = 'tortma_' + (++fasadNo);
       qosh({ code: 'tortma_fasad', nom: 'Tortma fasadi', slot: 'fasad', o: 'Z', x0: f.x0, x1: f.x1, y0: yf, y1: yf + tf, z0: tz0, z1: tz1, edge: FASAD, isDrawer: true, id,
-        handle: { x: (f.x0 + f.x1) / 2, y: yf + tf + 14, z: tz1 - Math.min(60, fh / 2), w: Math.min(Q.ruchka + 32, (f.x1 - f.x0) * 0.4), d: 22, h: 12 } });
+        handle: { x: (f.x0 + f.x1) / 2, y: yf + tf + 14, z: (tz0 + tz1) / 2, w: Math.min(Q.ruchka + 32, (f.x1 - f.x0) * 0.4), d: 22, h: 12 } });   // D6: markazda
       const bz0 = tz0 + 28;
       qosh({ code: 'tortma_yon', nom: 'Tortma yoni', slot: 'korpus', o: 'X', x0: bx0, x1: bx0 + tp, y0: by0, y1: by1, z0: bz0, z1: bz0 + bh, edge: F, drawerOf: id });
       qosh({ code: 'tortma_yon', nom: 'Tortma yoni', slot: 'korpus', o: 'X', x0: bx1 - tp, x1: bx1, y0: by0, y1: by1, z0: bz0, z1: bz0 + bh, edge: F, drawerOf: id });
@@ -321,7 +324,16 @@ function birikmalar(qutilar, w, d, h) {
 export function chizmaFragment(ch, w, d, h, o = {}) {
   const J = joylash(ch, w, d, h, o);
   const BK = birikmalar(J.qutilar, w, d, h);
-  const tim = (arr) => arr.map(x => [x.side, x.torets || '', x.x, x.y, x.dia, x.depth].join(',')).sort().join(';');
+  /* D6 (engine/d6.js): petlya kosasi va vintlari, planka, polka ushlagich, ruchka — Bazis o'qlarida (birikmalar bilan bir xil) */
+  const tur = ch.tur || 'pastki';
+  const D = d6Teshiklar(J.qutilar.map(q => ({
+    o: q.o, lo: { X: w / 2 - q.x1, Y: q.z0 + h / 2, Z: q.y0 + d / 2 }, hi: { X: w / 2 - q.x0, Y: q.z1 + h / 2, Z: q.y1 + d / 2 },
+    rol: q.isDoor ? 'eshik' : q.isDrawer ? 'tortma_fasad' : q.drawerOf ? null : q.code === 'polka' ? 'polka' : (q.code === 'yon' || q.code === 'bolgich') ? 'yon' : null,
+    petlya: q.isDoor ? (q.hingeSide === 'right' ? 'min' : 'max') : null,          // 'left' — lokal −x = Bazis X ning katta tomoni
+    ruchkaJoy: tur === 'ustki' ? 'past' : tur === 'shkaf' || tur === 'erkin' ? 'orta' : 'tepa'
+  })), { ruchka: QOIDA.ruchka });
+  D.forEach((arr, i) => { BK.tesh[i] = BK.tesh[i].concat(arr); });
+  const tim = (arr) => arr.map(x => [x.side, x.torets || '', x.yuza || '', x.x, x.y, x.dia, x.depth].join(',')).sort().join(';');
   const guruh = new Map();
   for (const [qi, q] of J.qutilar.entries()) {
     const S = ol(q);
@@ -336,7 +348,7 @@ export function chizmaFragment(ch, w, d, h, o = {}) {
   const parts = g.map(x => {
     sanoq[x.code] = (sanoq[x.code] || 0) + 1;
     const code = sanoq[x.code] > 1 ? x.code + '_' + sanoq[x.code] : x.code;
-    for (const t of x.tesh) birik.push({ tur: 'evrovint', L: '0', qolda: [{ t: 0 }], teshiklar: [Object.assign({ part: code, x0: String(t.x), sx: 0, y0: String(t.y), sy: 0 }, t)] });
+    for (const t of x.tesh) birik.push({ tur: /^d6_/.test(t.kind) ? 'd6' : 'evrovint', L: '0', qolda: [{ t: 0 }], teshiklar: [Object.assign({ part: code, x0: String(t.x), sx: 0, y0: String(t.y), sy: 0 }, t)] });
     return { code, nom: x.nom, qty: x.p.length, len: String(x.len), width: String(x.wid), slot: x.slot,
       tekstura: x.slot === 'orqa' ? 'erkin' : 'uzunlik', edge: x.edge, joy: { o: x.o, p: x.p } };
   });

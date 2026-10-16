@@ -116,7 +116,7 @@ export function createHisob(data) {
       for (const p of placements) {
         const fr = catalog[p.frg];
         if (!fr) continue;
-        const cl = cutlist(fr, p.w, p.d, p.h, m, { projectSlots: slots, placementSlots: p.slots });
+        const cl = cutlist(fr, p.w, p.d, p.h, m, { projectSlots: slots, placementSlots: p.slots, hinge: p.hinge });   // D6: bitta eshik petlyasi tomoni
         cl.placementId = p.id;
         if (mkHole && p.frg === 'SP-ST-001' && p.runIdx === 0 && p.segIdx === 0) {
           cl.holes.push(Object.assign({}, mkHole));

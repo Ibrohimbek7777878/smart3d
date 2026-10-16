@@ -37,7 +37,7 @@ for (const [kod, ch] of [
 /* 1b) birikma teshiklari (TZ-11) — sex modullari qo'lda chizilsa, konfirmat teshiklari aynan (nomlar: pol → tub, bok → yon) */
 {
   const NOM = { pol: 'tub', bok: 'yon', tepa_poltom: 'tub' };
-  const tim = (cl, nomlar) => { const by = {}; for (const h of cl.holes) (by[nomlar ? (NOM[h.part] || h.part) : h.part] = by[nomlar ? (NOM[h.part] || h.part) : h.part] || []).push([h.side, h.torets || '', h.x, h.y, h.dia, h.depth].join(',')); return Object.fromEntries(Object.entries(by).map(([k, v]) => [k, v.sort().join(' ')])); };
+  const tim = (cl, nomlar) => { const by = {}; for (const h of cl.holes.filter(x => /^evrovint/.test(x.kind))) (by[nomlar ? (NOM[h.part] || h.part) : h.part] = by[nomlar ? (NOM[h.part] || h.part) : h.part] || []).push([h.side, h.torets || '', h.x, h.y, h.dia, h.depth].join(',')); return Object.fromEntries(Object.entries(by).map(([k, v]) => [k, v.sort().join(' ')])); };
   for (const [kod, ch] of [
     ['MC-KP-02', { w: 600, d: 450, h: 708, tag: { tur: 'sokol', h: 100 }, qopqoq: 'planka', ichki: { eshik: 2, polka: 1 } }],
     ['MC-KP-01', { w: 300, d: 450, h: 708, tag: { tur: 'sokol', h: 100 }, qopqoq: 'planka', ichki: { eshik: 1, polka: 1 } }],
@@ -47,6 +47,11 @@ for (const [kod, ch] of [
     const a = tim(cutlist(f, f.w, f.d, f.h, H.materials, { projectSlots: S16 }), true), b = tim(cutlist(C.chizmaKatalog(c, 'CH-T', 't'), c.w, c.d, c.h, H.materials, { projectSlots: S16 }));
     const umumiy = Object.keys(a).filter(k => b[k] != null);
     ok(`${kod}: konfirmat teshiklari (joyi, diametri, chuqurligi) sexdagi modul bilan aynan — ${umumiy.join(', ')}`, umumiy.length >= 2 && umumiy.every(k => a[k] === b[k]), JSON.stringify(umumiy.filter(k => a[k] !== b[k]).map(k => [k, a[k], b[k]])));
+    /* D6: petlya kosasi, vint, planka, polka ushlagich — ikkala yo'lda bir xil (har nusxa; ruchka oralig'i farq qiladi: MC 160, chizma 128) */
+    const d6 = (cl) => { const n = {}; for (const p of cl.parts) n[p.code] = (n[p.code] || 0) + 1;
+      return cl.holes.filter(x => /^d6_/.test(x.kind) && x.kind !== 'd6_ruchka').flatMap(x => Array(x.ref ? 1 : n[x.part] || 1).fill([x.kind, x.yuza, x.x, x.y, x.dia, x.depth].join(','))).sort().join(' '); };
+    const da = d6(cutlist(f, f.w, f.d, f.h, H.materials, { projectSlots: S16 })), db = d6(cutlist(C.chizmaKatalog(c, 'CH-T', 't'), c.w, c.d, c.h, H.materials, { projectSlots: S16 }));
+    ok(`${kod}: D6 teshiklari (petlya, planka, polka ushlagich) sex moduli va qo'lda chizilganda bir xil (${da.split(' ').length} ta)`, da && da === db, '\n    MC ' + da + '\n    CH ' + db);
   }
   const sk = C.yangiChizma('shkaf'), k1 = C.chizmaFragment(sk, 1200, 600, 2200, {});
   const cl = cutlist(C.chizmaKatalog(sk, 'CH-S', 's'), 1200, 600, 2200, H.materials, { projectSlots: S16 });
@@ -114,7 +119,8 @@ ok('eshik juda keng (1 eshik, 900 mm) — ogohlantirish', og(chiz({ w: 900, ichk
 ok('eshik juda tor (2 eshik, 260 mm) — ogohlantirish', og(chiz({ w: 260, ichki: { eshik: 2 } })).includes('eshik_tor'));
 ok('tortma uchun chuqurlik yetmaydi — ogohlantirish', og(chiz({ tur: 'tumba', d: 240 })).includes('tortma_chuqur'));
 ok('polkalar juda zich — ogohlantirish', og(chiz({ tur: 'erkin', ichki: { polka: 20 } })).includes('polka_zich'));
-ok('petlya soni: 900 — 2, 1600 — 3, 2000 — 4, 2100 — 5', [900, 901, 1600, 1601, 2000, 2001].map(C.petlyaSoni).join() === '2,3,3,4,4,5');
+/* D6 (sex fayllaridan, 534 eshik): ≤ 1000 — 2, ≤ 1600 — 3, ≤ 2000 — 4, undan katta — 5 */
+ok('petlya soni: 1000 — 2, 1600 — 3, 2000 — 4, 2001 — 5', [900, 1000, 1001, 1600, 1601, 2000, 2001].map(C.petlyaSoni).join() === '2,2,3,3,4,4,5');
 const nap = (d) => (C.chizmaFragment(chiz({ tur: 'tumba', d }), 400, d, 708, {}).hardware.find(x => /^NAP-/.test(x.code)) || {}).code;
 ok('napravlyayushiy: chuqurlik 450 → 400, 560 → 550, 300 → 250', nap(450) === 'NAP-400' && nap(560) === 'NAP-550' && nap(300) === 'NAP-250', [nap(450), nap(560), nap(300)].join());
 

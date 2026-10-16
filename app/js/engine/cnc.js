@@ -61,6 +61,7 @@ function collectSheetHoles(nest, cutlists) {
           const refPart = ref.includes(':') ? ref.slice(ref.indexOf(':') + 1) : ref;
           const refBase = refPart.split('#')[0];
           if (h.part !== refBase) continue;
+          if (h.ref && h.ref !== refPart) continue;                 // D6: teshik faqat shu nusxada (chap/o'ng yon devor)
           const n = Math.max(1, Math.round(+h.qty || 1));
           for (let k = 0; k < n; k++) {
             holes.push({
@@ -101,6 +102,7 @@ function collectSheetCutouts(nest, cutlists) {
         const refBase = refPart.split('#')[0];
         for (const h of list) {
           if (h.part !== refBase) continue;
+          if (h.ref && h.ref !== refPart) continue;                 // D6: teshik faqat shu nusxada (chap/o'ng yon devor)
           const sizeW = +h.d || +h.w || 0;   // en bo'ylab (x)
           const sizeL = +h.w || sizeW;       // uzunlik bo'ylab (y)
           let cx, cy, lenS, widS;

@@ -13,7 +13,19 @@
 import { evalFormula, roundMm } from './expr.js';
 import { resolveSlots } from './slots.js';
 import { chizmaYech } from './chizish.js';
+import { joyQutilar, d6Teshiklar } from './d6.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
+
+/** D6: modul furniturasidagi ruchka teshiklari oralig'i ("Ручка 160 мм" → 160); ruchka yo'q — 0 (teshik qo'yilmaydi) */
+export function ruchkaOraligi(frag) {
+  for (const hw of frag.hardware || []) {
+    const s = (hw.name || '') + ' ' + (hw.code || '');
+    if (!/ручк|ruchka/i.test(s)) continue;
+    const m = /(\d{2,3})\s*(?:мм|mm|_mm)|ruchka_(\d{2,3})/i.exec(s);
+    return m ? +(m[1] || m[2]) : 160;                        // o'lchami yozilmagan — sexdagi eng ko'p (160)
+  }
+  return 0;
+}
 
 /** Orqaga moslik uchun evalExpr (ichkarida xavfsiz evalFormula ishlaydi). */
 export function evalExpr(expr, vars) {
@@ -60,6 +72,7 @@ export function birikmaTeshiklari(frag, vars) {
       for (const t of ts) {
         const hl = { part: tp.part, side: tp.side, x: x0 + tp.sx * t, y: y0 + tp.sy * t, dia: tp.dia, depth: tp.depth, kind: tp.kind };
         if (tp.torets) hl.torets = tp.torets;
+        if (tp.yuza) hl.yuza = tp.yuza;                          // D6: ko'r teshik qaysi yuzada (1 | 2)
         holes.push(hl);
       }
     }
@@ -330,6 +343,26 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
     }
   }
 
+  /* ── 3c) D6 (engine/d6.js): MC (Bazis) modullarida petlya, planka, polka ushlagich, ruchka — har nusxa o'z joyidan
+   * (chap va o'ng yon devor — ko'zgu: teshik o'sha nusxaga, `ref`). Qo'lda chizilgan modulda — birikmalar ichida (chizish.js). */
+  if (!frag.chizma && !frag.bazis3d && frag.production !== 'none' && (frag.parts || []).some(p => p.joy) && opt.d6 !== false) {
+    try {
+      const qal = {};
+      for (const p of parts) qal[p.code] = p.thickness;
+      const Q = joyQutilar(frag, baseVars, (part) => qal[part.code], { hinge: opt.hinge });
+      const r1 = (v) => Math.round(v * 10) / 10;
+      d6Teshiklar(Q, { ruchka: ruchkaOraligi(frag) }).forEach((arr, i) => {
+        for (const hl of arr) {
+          holes.push(Object.assign({ fragment: frag.code, part: Q[i].code, ref: Q[i].ref }, hl, {
+            x: r1(hl.x - dedOf(Q[i].code, 'F')), y: r1(hl.y - dedOf(Q[i].code, 'L')), qty: 1, nusxa: 1
+          }));
+        }
+      });
+    } catch (err) {
+      errors.push({ code: 'E_BAD_EXPR', message: `${frag.code} D6: ${err.message}` });
+    }
+  }
+
   /* ── 4) Furnitura ────────────────────────────────────────────── */
   const nomBom = (s) => String(s || '').replace(/\r/g, ' ').replace(/\s+/g, ' ').trim();
   const hardware = (frag.hardware || []).map(hw => ({
@@ -447,7 +480,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     return price;
   };
   const holePrice = (kind) => {
-    const m = holeByKind[kind] || holeByKind.drill;
+    const m = holeByKind[kind] || (kind === 'd6_kosa' ? holeByKind.hinge : null) || holeByKind.drill;   // D6: petlya kosasi — 'hinge' stavkasi
     if (m && m.price > 0) return m.price;
     noteMissing('Xizmatlar', 'hole:' + kind, (holeByKind[kind] && holeByKind[kind].name) || ("Teshik burg'ilash (" + kind + ')'));
     return 0;
@@ -615,7 +648,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     }
     for (const e of cl.edges || []) cost += e.meters * (edgeByCode[e.material] || edgeByCode[String(e.material).replace(/\./g, '')] || {}).price_m || 0;
     for (const hw of cl.hardware || []) cost += hw.qty * hwUnitPrice(hw);
-    if (teshikOn) for (const hl of cl.holes || []) cost += (hl.qty || 1) * (hl.nusxa || 1) * (((holeByKind[hl.kind] || holeByKind.drill || {}).price) || 0);
+    if (teshikOn) for (const hl of cl.holes || []) cost += (hl.qty || 1) * (hl.nusxa || 1) * (((holeByKind[hl.kind] || (hl.kind === 'd6_kosa' ? holeByKind.hinge : null) || holeByKind.drill || {}).price) || 0);
     if (totalParts) cost += laborCost * (cl.parts || []).length / totalParts;
     return { cost: Math.round(cost), client: Math.round(cost * (1 + markup)) };
   });

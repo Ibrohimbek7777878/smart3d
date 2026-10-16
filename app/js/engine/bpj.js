@@ -221,10 +221,10 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
           .map(hl => ({
             x: Math.min(dl, Math.max(0, Math.round(hl.y))),
             y: Math.min(dw, Math.max(0, Math.round(hl.x))),
-            z: hl.side === 'B' ? th : 0,
+            z: (hl.yuza ? hl.yuza === 2 : hl.side === 'B') ? th : 0,          // D6: yuza 2 — orqa yuza
             diameter: +hl.dia || 5,
             depth: +hl.depth || 13,
-            face: hl.side === 'F' ? 'front' : hl.side === 'B' ? 'back' : (hl.side || '')
+            face: hl.yuza ? (hl.yuza === 2 ? 'back' : 'front') : hl.side === 'F' ? 'front' : hl.side === 'B' ? 'back' : (hl.side || '')
           }));
 
         /* bom agregatsiyasi (bir xil detal+o'lcham+material → bitta qator; nom — obyekt nomi bilan bir xil,
@@ -484,7 +484,7 @@ function defsFromCutlist(cl, matByCode, fallbackMat, fallbackTh, frag) {
       finW: Math.round(+p.finish_width || +p.width || 1),
       slot: p.slot,
       texture: p.texture,
-      holes: holesByPart[p.code] || [],
+      holes: (holesByPart[p.code] || []).filter(hl => !hl.ref || hl.ref === p.ref),   // D6: teshik shu nusxagagina (chap/o'ng yon devor)
       edges: cl.edges ? (edgesByCode[p.code] || []) : null
     };
   });

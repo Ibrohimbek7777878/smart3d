@@ -6,7 +6,9 @@
  *   (u — L uchidan uzunlik bo'ylab, v — F qirradan; cutlist teshiklari kesim o'lchamida — kromka qalinligi qaytariladi).
  *   Tekstura eni bo'ylab bo'lsa (texture: 'en') — dl = eni, o'qlar almashadi.
  * Teshiklar: sex Bazis birikmalari (MC modullari, TZ-06) va qo'lda chizilgan modullar birikmalari (engine/chizish.js) —
- *   ikkalasi 38 modulda Bazis bilan tekshirilgan. Umumiy SP modullarining teshiklari (shablon — Bazis bilan tekshirilmagan;
+ *   ikkalasi 38 modulda Bazis bilan tekshirilgan. D6 (engine/d6.js): petlya kosasi va vintlari, planka, polka ushlagich,
+ *   ruchka — ko'r teshik o'z yuzasida (yuza 2 → XNC side 2); bir koddagi nusxalarning teshiklari har xil bo'lsa (chap va o'ng
+ *   yon devor — ko'zgu) — alohida detal. Umumiy SP modullarining teshiklari (shablon — Bazis bilan tekshirilmagan;
  *   TZ-05 da faqat detal o'lchamlari sex qoidasiga keltirildi) stanok fayliga kirmaydi — ogohlantirish bilan. Petlya, polka ushlagich, ruchka teshiklari — D6 jadvali (texnolog).
  */
 import { EDGE_DEDUCT_MIN_MM } from '../cutlist.js';
@@ -49,20 +51,31 @@ export function stanokModeli(o) {
     const ded = (code, s) => { const k = (kr[code] || {})[s]; return k && k.t >= EDGE_DEDUCT_MIN_MM ? k.t : 0; };
     const tesh = {};
     for (const h of cl.holes || []) {
-      if (!/^evrovint/.test(h.kind || '')) { spTeshik++; continue; }
+      if (!/^(evrovint|d6_)/.test(h.kind || '')) { spTeshik++; continue; }
       (tesh[h.part] = tesh[h.part] || []).push(h);
     }
-    /* bir kodli detallar (kesim ro'yxatida har nusxa alohida) */
+    /* bir kodli detallar (kesim ro'yxatida har nusxa alohida); nusxalar teshiklari bo'yicha guruhlanadi (h.ref — shu nusxaga) */
     const byCode = {};
     for (const pt of cl.parts || []) (byCode[pt.code] = byCode[pt.code] || []).push(pt);
+    const nusxalar = [];
     for (const [code, pts] of Object.entries(byCode)) {
+      const g = new Map();
+      for (const pt of pts) {
+        const hs = (tesh[code] || []).filter(h => !h.ref || h.ref === pt.ref);
+        const k = JSON.stringify(hs.map(h => [h.side, h.torets || '', h.yuza || 1, h.x, h.y, h.dia, h.depth]).sort());
+        if (!g.has(k)) g.set(k, { code, pts: [], hs });
+        g.get(k).pts.push(pt);
+      }
+      nusxalar.push(...g.values());
+    }
+    for (const { code, pts, hs } of nusxalar) {
       const pt = pts[0], alm = pt.texture === 'en', map = alm ? ALM : STD;
       const fl = +pt.finish_length, fw = +pt.finish_width, t = +pt.thickness || 16;
       const dl = alm ? fw : fl, dw = alm ? fl : fw;
       const k = { t: null, b: null, l: null, r: null };
       for (const [s, v] of Object.entries(kr[code] || {})) k[map[s]] = v.m;
-      const teshiklar = [];
-      for (const h of tesh[code] || []) {
+      const teshiklar = [], ikkinchi = [];
+      for (const h of hs) {
         const v = +h.x + ded(code, 'F'), u = +h.y + ded(code, 'L');           // tayyor detal o'qlari
         const nuqta = alm ? [v, u] : [u, fw - v];
         if (h.side === 'T') {
@@ -73,11 +86,14 @@ export function stanokModeli(o) {
         } else {
           const t0 = { tur: 'f', x: r2(nuqta[0]), y: r2(nuqta[1]), d: +h.dia };
           if (+h.depth >= t - 0.01) t0.otuvchi = true; else t0.dp = +h.depth;
-          teshiklar.push(t0);
+          (h.yuza === 2 && !t0.otuvchi ? ikkinchi : teshiklar).push(t0);   // D6: ko'r teshik 2-yuzada — XNC side 2 (o'qlar bir xil)
         }
       }
-      const xnc = teshiklar.length ? [{ side: 1, dz: t, teshiklar }] : [];
-      const key = [pt.material, dl, dw, JSON.stringify(k), JSON.stringify(teshiklar.map(x => [x.tur, x.x, x.y, x.z, x.d, x.dp, !!x.otuvchi]).sort()), nomi(code)].join('|');
+      const xnc = [];
+      if (teshiklar.length) xnc.push({ side: 1, dz: t, teshiklar });
+      if (ikkinchi.length) xnc.push({ side: 2, dz: t, teshiklar: ikkinchi });
+      const iz = (a) => JSON.stringify(a.map(x => [x.tur, x.x, x.y, x.z, x.d, x.dp, !!x.otuvchi]).sort());
+      const key = [pt.material, dl, dw, JSON.stringify(k), iz(teshiklar), iz(ikkinchi), nomi(code)].join('|');
       if (!guruh.has(key)) guruh.set(key, { nom: nomi(code), dl: r2(dl), dw: r2(dw), soni: 0, varaq: varaq(pt.material), kromka: k, xnc, t });
       guruh.get(key).soni += pts.length * mul;
     }
