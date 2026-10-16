@@ -3,7 +3,7 @@
  * Shakl: S3D-<BO'LIM>-<NNN>. 001–099 — server, 101–199 — brauzer. Kod o'zgarmaydi (qo'llab-quvvatlash va jurnal uchun);
  * eskirsa — o'chirilmaydi, "eski" deb belgilanadi. Matn — foydalanuvchiga ko'rinadigan o'zbekcha izoh.
  *   AUTH kirish, sessiya   PROJ loyihalar   SET sozlamalar   STD sex standartlari   CALC hisob   EXP fayllar
- *   SCENE 3D   AI AI va ovoz   KONS avtomatik konstruktor   DATA ma'lumot   NET tarmoq   VAL kiritish   RATE cheklov   SRV server   UI ekran   LOG jurnal */
+ *   SCENE 3D   AI AI va ovoz   KONS avtomatik konstruktor   BAZIS Bazis fayli   DATA ma'lumot   NET tarmoq   VAL kiritish   RATE cheklov   SRV server   UI ekran   LOG jurnal */
 export const XATOLAR = {
   /* ── server ── */
   'S3D-AUTH-001': { http: 401, matn: 'Email yoki parol noto\'g\'ri' },
@@ -49,6 +49,12 @@ export const XATOLAR = {
   'S3D-KONS-102': { matn: 'Avtomatik konstruksiya: katalogda kerakli modul yo\'q' },
   'S3D-KONS-103': { matn: 'Avtomatik konstruksiya: bu xonaga oshxona sig\'madi' },
   'S3D-KONS-104': { matn: 'Avtomatik konstruksiyada xato' },
+  'S3D-BAZIS-101': { matn: 'Bu Bazis fayli emas — .b3d yoki .fr3d tanlang' },
+  'S3D-BAZIS-102': { matn: 'Bazis fayli shifrlangan — Bazis\'da shifrsiz saqlab qayta yuklang' },
+  'S3D-BAZIS-103': { matn: 'Bazis fayli o\'qilmadi' },
+  'S3D-BAZIS-104': { matn: 'Bazis faylida detal topilmadi' },
+  'S3D-BAZIS-105': { matn: 'Bazis fayli juda uzoq o\'qildi — to\'xtatildi' },
+  'S3D-BAZIS-106': { matn: 'Fayl juda katta (50 MB dan ortiq)' },
   'S3D-PROJ-101': { matn: 'Bu Smart3D loyiha fayli emas' },
   'S3D-SET-101': { matn: 'Sozlama saqlanmadi' },
   'S3D-UI-101': { matn: 'Bu bo\'limda xatolik yuz berdi' },

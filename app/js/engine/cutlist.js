@@ -119,8 +119,10 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
         else slotName = 'korpus';
       }
 
-      const matCode = slotResolver.getMaterialCode(slotName);
-      const th = slotResolver.getThickness(slotName);
+      /* TZ-21: Bazis'dan yuklangan detalda o'z materiali bor (p.material_code) — slotdan emas; bo'lmasa avvalgidek */
+      const ownMat = p.material_code ? (materials.panel_materials || []).find(m => m.code === p.material_code) : null;
+      const matCode = ownMat ? ownMat.code : slotResolver.getMaterialCode(slotName);
+      const th = ownMat && ownMat.thickness != null ? ownMat.thickness : slotResolver.getThickness(slotName);
       const partVars = Object.assign({}, baseVars, { t: th });
 
       // Detal soni: formula yoki raqam ("w > 600 ? 2 : 1")

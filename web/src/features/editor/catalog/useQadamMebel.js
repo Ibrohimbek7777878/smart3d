@@ -24,7 +24,7 @@ export function useQadamMebel() {
   const H = project.H, doc = project.doc;
   const cats = L.DIZAYN_KATEGORIYA, curCat = cats.find(c => c[0] === ed.cat) || cats[0];
   const ql = ed.q.trim().toLowerCase();
-  const allFr = H ? Object.values(H.catalog) : [];
+  const allFr = H ? Object.values(H.catalog).filter(fr => fr.category !== 'bazis') : [];   // TZ-21: yuklangan Bazis loyihasi — modul emas
   const catalog = allFr.filter(fr => curCat[2](fr) && (!ql || (fr.name + ' ' + fr.code).toLowerCase().includes(ql))).map(fr => {
     const est = fr.category === 'appliance' ? null : project.est(fr, { materialCode: pj.matCode, fasadCode: pj.fasadCode, sheet: pj.sheet, xizmatlar: doc.xizmatlar });
     return { name: fr.name, dims: fr.w + '×' + fr.d + '×' + fr.h + ' ' + t('umumiy.mm'), lim: t('mebel.chegara', { a: fr.min_w || '—', b: fr.max_w || '—' }),
@@ -43,6 +43,7 @@ export function useQadamMebel() {
     q: ed.q, onQ: ev => set('editor', { q: ev.target.value }),
     cats: cats.map(c => ({ label: t('mebel.kat_' + c[0]), bg: ed.cat === c[0] ? 'var(--acc)' : 'var(--sfc)', c: ed.cat === c[0] ? 'var(--ink)' : 'var(--txt)', pick: () => set('editor', { cat: c[0] }) })),
     mats: [['mebel.korpus', 'matCode'], ['mebel.fasad', 'fasadCode']].map(([k, key]) => ({ k: t(k), v: matLabel(key), cycle: () => openMaterial(key) })),
-    catalog, catEmpty: !catalog.length
+    catalog, catEmpty: !catalog.length,
+    bazis: !!(doc && doc.bazis)                                  // TZ-21: Bazis hisobotini qayta ochish
   };
 }

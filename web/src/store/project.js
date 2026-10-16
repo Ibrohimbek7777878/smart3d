@@ -3,6 +3,7 @@ import { loadData, createHisob } from '../services/hisob.js';
 import * as L from '../services/loyiha.js';
 import { suggestLayout } from '../../../app/js/ai.js';
 import { konstruksiya } from '../../../app/js/engine/konstruktor/index.js';
+import { materiallarniQosh } from '../../../app/js/engine/bazis/loyiha.js';
 import { report } from '../shared/lib/jurnal.js';
 import { xato } from './ui.js';
 import { t } from '../i18n/index.js';
@@ -69,7 +70,14 @@ export const project = {
   },
 
   /** yangi hujjat: bo'sh yoki namuna bilan */
-  reset(doc) { this.doc = doc || L.newDoc(); },
+  reset(doc) { this.doc = doc || L.newDoc(); this.bazisUla(); },
+  /** TZ-21: Bazis'dan yuklangan loyiha — o'z fragmenti va materiallari hisob bazasiga (katalog ro'yxatida ko'rinmaydi) */
+  bazisUla() {
+    const b = this.doc && this.doc.bazis;
+    if (!b || !b.fragment || !this.H) return;
+    this.H.catalog[b.fragment.code] = b.fragment;
+    materiallarniQosh(this.H.materials, b.materiallar);
+  },
   /** yangi loyiha: xona (onboarding) + oshxona tanlansa — avtomatik konstruktor (TZ-22, AI'siz) eng yaxshi varianti;
    *  konstruktor variant topolmasa — eski namuna (3 pastki + 2 ustki) */
   fromOnboarding(kind, room) {
@@ -100,6 +108,7 @@ export const project = {
     if (!p || !p.doc) return;
     this.doc = p.doc;
     if (!this.doc.kitchen) this.doc.kitchen = L.freshKitchen();
+    this.bazisUla();
     set('project', { client: p.client || (meta && meta.client) || '', name: p.name || t('umumiy.loyiha'), matCode: p.material || 'LDSP18', fasadCode: p.fasad || 'MDF16', sheet: p.sheet || null });
     set('editor', { sel: null, part: null, warn: {} });
     this.changed('room', true);

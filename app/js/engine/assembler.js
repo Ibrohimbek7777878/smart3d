@@ -65,6 +65,11 @@ export function eshikTuzilmasi(frag, w, d, h, t = 16) {
 }
 
 export function getModulePanels(frag, w, d, h, opts = {}) {
+  /* TZ-21: Bazis faylidan yuklangan loyiha — panellar fayldagi joyida (engine/bazis/loyiha.js: [x, y, z, w, d, h, slot]) */
+  if (frag && Array.isArray(frag.bazis3d)) {
+    const SL = ['korpus', 'fasad', 'orqa'];
+    return { panels: frag.bazis3d.map((b, i) => ({ id: 'bz' + i, name: frag.name, slot: SL[b[6]] || 'korpus', code: 'bazis', x: b[0], y: b[1], z: b[2], w: b[3], d: b[4], h: b[5] })), doors: [] };
+  }
   const t = opts.thickness || 16;       // panel qalinligi (standart 16mm yoki 18mm)
   const cat = (frag && frag.category) || 'cabinet';
   const group = (frag && frag.group) || '';

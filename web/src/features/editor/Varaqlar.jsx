@@ -8,6 +8,7 @@ import ShaklVaraq from './room/ShaklVaraq.jsx';
 import OshxonaVaraq from './room/OshxonaVaraq.jsx';
 import MaterialVaraq from './catalog/MaterialVaraq.jsx';
 import KonstruktorVaraq from './konstruktor/KonstruktorVaraq.jsx';
+import BazisVaraq from '../bazis/BazisVaraq.jsx';
 import { materialTitle } from './catalog/material.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 
@@ -17,7 +18,8 @@ const VARAQ = {
   shakl: { title: () => <><Ikon n="tahrir" size={18} />{t('varaq.erkin_shakl')}</>, label: 'xona.erkin_shakl', Body: ShaklVaraq },
   oshxona: { title: () => t('xona.oshxona_elementlari'), Body: OshxonaVaraq },
   material: { title: materialTitle, Body: MaterialVaraq },
-  konstruktor: { title: () => <><Ikon n="konstruktor" size={18} />{t('konstruktor.sarlavha')}</>, label: 'konstruktor.sarlavha', Body: KonstruktorVaraq }
+  konstruktor: { title: () => <><Ikon n="konstruktor" size={18} />{t('konstruktor.sarlavha')}</>, label: 'konstruktor.sarlavha', Body: KonstruktorVaraq },
+  bazis: { title: () => <><Ikon n="bazis" size={18} />{t('bazis.sarlavha')}</>, label: 'bazis.sarlavha', Body: BazisVaraq }
 };
 
 export default function Varaqlar() {
