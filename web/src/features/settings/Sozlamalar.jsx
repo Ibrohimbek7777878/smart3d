@@ -3,6 +3,7 @@ import { t } from '../../i18n/index.js';
 import Toggle from '../../shared/ui/Toggle.jsx';
 import { input } from '../../shared/ui/styles.js';
 import { useSozlamalar } from './useSozlamalar.js';
+import Qoldiqlar from './Qoldiqlar.jsx';
 
 /* TZ-09: dizaynda yo'q sahifa — "Sozlamalar" (dizayndagi tugma faqat xabar chiqarardi: "sex logosi, narx ustamasi,
  * stanok profili"). Faqat dizayn bo'laklaridan yig'ilgan: "Loyihalarim" sahifasi tuzilishi, karta, 52px input,
@@ -142,6 +143,7 @@ export default function Sozlamalar() {
           {S.admin ? <button onClick={S.saveStd} style={btn}>{t('umumiy.saqlash')}</button> : null}
         </section>
 
+        <Qoldiqlar />
         {S.xatolar ? <XatolarJurnali x={S.xatolar} /> : null}
 
       </div>

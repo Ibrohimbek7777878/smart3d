@@ -67,6 +67,8 @@ export const XATOLAR = {
   'S3D-BAZIS-106': { matn: 'Fayl juda katta (50 MB dan ortiq)' },
   'S3D-PROJ-101': { matn: 'Bu Smart3D loyiha fayli emas' },
   'S3D-SET-101': { matn: 'Sozlama saqlanmadi' },
+  'S3D-REM-101': { matn: 'Qoldiqlar ombori o\'qilmadi' },
+  'S3D-REM-102': { matn: 'Qoldiq saqlanmadi' },
   'S3D-UI-101': { matn: 'Bu bo\'limda xatolik yuz berdi' },
   'S3D-JS-101': { matn: 'Kutilmagan xato' },
   'S3D-JS-102': { matn: 'Kutilmagan xato (jarayon)' }

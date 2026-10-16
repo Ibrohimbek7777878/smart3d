@@ -4,6 +4,7 @@ import { S } from '../../../store/session.js';
 import { toast } from '../../../store/ui.js';
 import { raqam } from '../../../shared/lib/format.js';
 import { openSettings } from '../../settings/actions.js';
+import { nestQoldiqlari, qoldiqQosh } from '../../settings/qoldiq.js';
 import { goStep } from '../actions.js';
 import { narxKorinishi } from './narx.js';
 import { t } from '../../../i18n/index.js';
@@ -34,7 +35,7 @@ function flipPrisadka(on) {
 }
 
 export function useQadamNarx() {
-  const ed = useSlice('editor'), pj = useSlice('project');
+  const ed = useSlice('editor'), pj = useSlice('project'), auth = useSlice('auth');
   const R = project.res, pr = R ? R.priceRes : null, prod = R ? R.prod : null, B = prod ? prod.breakdown : {}, NS = R ? R.nest.summary : {};
   const missN = prod ? prod.missing.length : 0;
   const xzt = (prod && prod.xizmat_taklif && prod.xizmat_taklif.teshik) || { tanlangan: false, qty: 0, amount: 0 };
@@ -65,6 +66,11 @@ export function useQadamNarx() {
     rkPrev: () => set('editor', { rk: (rs.rk + rs.n - 1) % Math.max(1, rs.n) }),
     rkNext: () => set('editor', { rk: (rs.rk + 1) % Math.max(1, rs.n) }),
     openParams: () => openSettings('raskroy'),
+    /* TZ-23 C2 (admin): raskroydagi ishga yaraydigan qoldiqlar — omborga */
+    qoldiq: auth.user && auth.user.role === 'admin' && NS.remnant_count ? {
+      label: t('qoldiq.omborga', { n: NS.remnant_count, m: NS.remnant_usable_m2 || 0 }),
+      yoz: () => qoldiqQosh(nestQoldiqlari())
+    } : null,
     detGroups: Object.entries(det).map(([mc, n]) => ({ n: project.H ? project.matName(mc) : mc, c: t('narx.detal_n', { n }) })),
     goStep4: () => goStep(4)
   };

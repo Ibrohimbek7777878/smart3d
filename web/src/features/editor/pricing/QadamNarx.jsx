@@ -168,6 +168,10 @@ export default function QadamNarx() {
             <Ikon n="sozlash" gap={0} />{t('narx.parametrlar')}
           </button>
         </div>
+        {/* TZ-23 C2 (admin): qoldiqlarni omborga yozish */}
+        {v.qoldiq ? <button onClick={v.qoldiq.yoz} data-qoldiq-omborga="" style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)","alignSelf":"flex-start"}}>
+          <Ikon n="qoldiq" gap={0} />{v.qoldiq.label}
+        </button> : null}
       </div>
       <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"4px 16px 8px"}}>
         <div style={{"padding":"12px 0 6px","fontWeight":"800"}}>
