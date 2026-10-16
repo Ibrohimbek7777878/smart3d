@@ -1,6 +1,6 @@
 # TZ-22 — Avtomatik konstruktor (sun'iy intellektsiz, qoidalar bilan)
 
-**Sana:** 2026-10-16 · **Navbat:** 22 · **Holat:** TASDIQ KUTILMOQDA
+**Sana:** 2026-10-16 · **Navbat:** 22 · **Holat:** BAJARILDI 2026-10-16 (`dizayn` tarmog'i; egasi: "bunga ruxsat beraman, buni tugat") — texnolog tasdig'i (qoidalar raqamlari) va yangi UI skrinshot tasdig'i kutilmoqda
 **Asos:** egasi (2026-10-16): "konstruksiya chizib bera oladimi … hammasini ideal qilib berish kerak … ishlab chiqarishga berganda natija aniq bo'lishi kerak … tizim o'zi sun'iy intellektsiz konstruksiya qilishi kerak".
 **Bog'liq:**
 - TZ-05 — umumiy modullar, pauza;
@@ -159,3 +159,32 @@ AI faqat erkin matn yoki ovozni formaga aylantiradi. U bo'lmasa ham forma ishlay
 
 ## Muddat (taxmin)
 - Taxminan **4–5 ish kuni**, texnolog tekshiruvidan oldin. Bu taxmin, aniq hisob emas.
+
+## Natija (2026-10-16, `dizayn` tarmog'i, commitlar `7c56984` … `87c485d`)
+Egasi Q1–Q3 ga alohida javob bermadi ("ruxsat beraman, buni tugat") — tavsiyalar olindi: oshxonadan boshlandi; qoidalar raqamlari "taklif" belgisi bilan, texnolog tasdiqlaydi.
+
+| Bosqich | Natija |
+|---|---|
+| 1. Yadro | `app/js/engine/konstruktor/`: `qoidalar.js` (har raqam manbasi bilan, "taklif"), `devor.js`, `toldirish.js` (50 mm qadam, qoldiq — doborga), `eshik.js`, `index.js`. Shakllar I / L / U; muzlatgich chetda, moyka quvur yonida (bo'lmasa — deraza ostida), plita (yonida ≥ 300 mm modul, moykadan ≥ 400, deraza ostida emas), ustki qator pastki chegaralarga tekislangan, plita ustida vityajka, deraza ustiga ustki shkaf yo'q, xona eshigi oldi bo'sh. Joy yetmasa — muzlatgichsiz → qisqa oraliq → plitasiz (izoh bilan). Faqat MebelCity MC-* modullari |
+| 2. Eshiklar | Rasmdagi muammo tuzatildi: "Eshiklarni ochish" — har eshik devor, mebel, tutqich va qo'shni eshikka tegmaydigan burchakkacha (100° → 90° …). 3D'da eshik soni/eni Bazis detallaridan (masalan MC-KP-02 600 = 2 eshik, oldin 1 edi), ochiq javon eshiksiz, petlya tomoni modulda saqlanadi |
+| 3. Ulash | Yangi loyiha (oshxona) namunasi, AI yordamchisi (AI faqat matnni tushunadi, quradi — konstruktor), xato kodlari S3D-KONS-101…104 |
+| 4. Ekran | Mebel qadamida "Avtomatik konstruksiya" tugmasi → oyna: shakl, muzlatgich / plita / ustki → 3 tagacha variant izohlari bilan → "Qo'llash" (tasdiq bilan) |
+| 5. Tekshiruv | `verify_konstruktor`: 20 xona, **659 tekshiruv** — bo'shliq 0 mm, eshiklar 90° ochiladi, ustki shkaf deraza ustida emas, plita deraza ostida emas, moyka quvur devorida, burchak modulining ko'r qismi burchakda, har safar bir xil natija, kesim va raskroy xatosiz, stoleshnitsa 600. Web 13/13, server 56/56, eski sayt konsoli toza |
+
+**Ishlab chiqarish uchun topilgan va tuzatilgan xatolar:**
+1. **Burchak moduli ko'zgu aksidek edi.** Rejada modul lokal +x — tomoshabinning chapi, Bazis'da +X — o'ngi. "gluxoy chap" endi Bazis'dagidek: ko'r qism burchakda, eshik va petlya to'g'ri tomonda. Oldin eshik burchakka tiqilardi.
+2. **3D'da eshik soni noto'g'ri edi.** Eshik soni modul eniga qarab (> 600 → 2) chiqardi, endi Bazis detallaridan olinadi. Kesim ro'yxati avval ham to'g'ri edi, xato faqat 3D'da edi.
+3. **Stoleshnitsa chuqurligi.** Bazis'da 600 mm ("Эггер Столешница 4,1х0,6х38"), bizda modul chuqurligi (450) edi. Konstruktor qurgan loyihada endi 600. Eski loyihalar o'zgarmaydi.
+4. **Plita va muzlatgich 150 mm oldinga chiqadi** (ular 600 chuqur, modullar 450). Shu sababli yonidagi eshik ochilmasdi — endi texnika yonida dobor qo'yiladi.
+
+**Texnolog uchun savollar (raqamlar "taklif"):**
+- yon dobor eni: devor yonida 40–100, burchakda 50–100, texnika yonida 40–100 mm;
+- plita yonida kamida 300 mm, moyka bilan plita orasida 400 mm, derazadan 300 mm;
+- **stoleshnitsa qalinligi:** Bazis fayllarida panel 26 mm, material nomida "38" — qaysi biri to'g'ri?
+- duxovka moduli: 600 mm duxovka uchun MC-KP-04 sex standartida eni ko'pi bilan 540 (1 eshikli chegara) — alohida chegara kerakmi?
+
+**Qolgan (keyingi TZ'larga):**
+- Shkaf va yotoqxona konstruktori — MC'da shkaflar yaxlit (TZ-13).
+- Idish yuvish mashinasi o'rni va ustki burchak moduli — MC'da yo'q, Bazis fayli kerak (TZ-13/21).
+- Teshiklar: petlya, polka ushlagich, ruchka — D6 (TZ-06). Endi `Smart3D_toplam_2026-10-16/07_teshiklar_prisadka` statistikasi bor.
+
