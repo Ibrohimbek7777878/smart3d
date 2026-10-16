@@ -298,3 +298,7 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 ## 2026-10-16
 
 104. davom et
+
+105. (brauzer konsolidan xatolar ro'yxati) qara baruzerni consoleda shuncha xato chiqd
+
+106. davom et
