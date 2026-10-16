@@ -304,3 +304,5 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 106. davom et
 
 107. hozir bundday fayllarni biz aytgan va katta erpidag stanoklar oqyidgan qilb chiqaarb bera olamzmmi
+
+108. (ilova skrinshoti — muharrir, narx 3 847 207 so'm) bu yerdag narx bizni datalrasosida chiqarb berish kere va sayt baizs fayllarni ham qabul qilsin

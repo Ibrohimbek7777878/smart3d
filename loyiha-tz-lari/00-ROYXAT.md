@@ -1,6 +1,6 @@
 # Loyiha TZ'lari — ro'yxat va navbat
 
-**Yangilandi:** 2026-10-15
+**Yangilandi:** 2026-10-16
 
 ## Qanday ishlaydi
 - Har ish uchun alohida TZ shu papkada. Bajarish **navbat bilan**.
@@ -34,6 +34,8 @@
 | 17 | [Bazis BPJ faylini to'liq qilish](17-bpj-toliq.md) | TASDIQ KUTILMOQDA (TZ-09 bilan parallel mumkin) | egasi: Bazis'li kompyuterda real sinov |
 | 18 | [Uch til: o'zbek, rus, ingliz](18-uch-til.md) | BAJARILMOQDA (2026-10-16) | egasi: [atamalar jadvali](18-atamalar.md) tasdig'i (ruscha/inglizcha tarjima shundan keyin) |
 | 19 | [Production darajasi: modullar, xavfsizlik, xato kodlari, ikonlar](19-senior-production.md) | **BAJARILDI** 2026-10-15 (`dizayn` tarmog'i) | egasi: skrinshotlar (ikonlar, "Xatolar jurnali", 404), main'ga qo'shish ruxsati |
+| 20 | [Narx faqat bizning ma'lumotdan (admin "Narxlar" sahifasi)](20-narx-bizning-malumotdan.md) | TASDIQ KUTILMOQDA (2026-10-16) | egasi: Q1 (`NARXLAR.xlsx` 3-ustuni), Q2 (ish haqi, kromka, ustama), Q3, "boshla" |
+| 21 | [Saytga Bazis faylini yuklash (.b3d, .fr3d, .bpj)](21-bazis-fayl-yuklash.md) | TASDIQ KUTILMOQDA (2026-10-16) | egasi: Q4 (variant), Q5 (kim yuklaydi), Q6 (xom fayl saqlansinmi), "boshla" |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.
