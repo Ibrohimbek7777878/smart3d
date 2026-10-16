@@ -6,8 +6,8 @@
  *   (u — L uchidan uzunlik bo'ylab, v — F qirradan; cutlist teshiklari kesim o'lchamida — kromka qalinligi qaytariladi).
  *   Tekstura eni bo'ylab bo'lsa (texture: 'en') — dl = eni, o'qlar almashadi.
  * Teshiklar: sex Bazis birikmalari (MC modullari, TZ-06) va qo'lda chizilgan modullar birikmalari (engine/chizish.js) —
- *   ikkalasi 38 modulda Bazis bilan tekshirilgan. Umumiy SP modullarining teshiklari (TZ-05 — geometriyasi tekshirilmagan)
- *   stanok fayliga kirmaydi — ogohlantirish bilan. Petlya, polka ushlagich, ruchka teshiklari — D6 jadvali (texnolog).
+ *   ikkalasi 38 modulda Bazis bilan tekshirilgan. Umumiy SP modullarining teshiklari (shablon — Bazis bilan tekshirilmagan;
+ *   TZ-05 da faqat detal o'lchamlari sex qoidasiga keltirildi) stanok fayliga kirmaydi — ogohlantirish bilan. Petlya, polka ushlagich, ruchka teshiklari — D6 jadvali (texnolog).
  */
 import { EDGE_DEDUCT_MIN_MM } from '../cutlist.js';
 import { chizmaYech } from '../chizish.js';

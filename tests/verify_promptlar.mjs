@@ -46,7 +46,8 @@ ok('devorlar: orqa 0°, chap 270°, ong 90°, old 180° — orqasi devorga tegib
 const toliq = toplamJoyla(2000, 2000, 2700, [{ kod: 'SP-SH-003', devor: 'orqa', joy: 'bosh' }, { kod: 'SP-SH-003', devor: 'orqa', joy: 'bosh' }, { kod: 'SP-SH-003', devor: 'orqa', joy: 'bosh' }], H.catalog);
 ok('sig\'magan modul — ro\'yxatda (joylanmaydi, ustma-ust qo\'yilmaydi)', toliq.placements.length === 2 && toliq.sigmadi.length === 1, JSON.stringify(toliq));
 const td = toplamJoyla(3100, 2500, 2700, [{ kod: 'SP-G-011', devor: 'orqa', joy: 'markaz', w: 'toldir' }], H.catalog);
-ok('"toldir": devorga sig\'adigan eng katta eni (chegara ichida)', td.placements[0] && td.placements[0].w === 3000, JSON.stringify(td.placements[0]));
+/* TZ-05: SP-G-011 eng katta eni — qopqoq varaqqa (2800) sig'adigan 2800 mm; devor 3100 — chegara ishlaydi */
+ok('"toldir": devorga sig\'adigan eng katta eni (chegara ichida)', td.placements[0] && td.placements[0].w === H.catalog['SP-G-011'].max_w && H.catalog['SP-G-011'].max_w < 3100, JSON.stringify(td.placements[0]));
 
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);
 process.exit(fail ? 1 : 0);
