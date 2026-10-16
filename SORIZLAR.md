@@ -306,3 +306,5 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 107. hozir bundday fayllarni biz aytgan va katta erpidag stanoklar oqyidgan qilb chiqaarb bera olamzmmi
 
 108. (ilova skrinshoti — muharrir, narx 3 847 207 so'm) bu yerdag narx bizni datalrasosida chiqarb berish kere va sayt baizs fayllarni ham qabul qilsin
+
+109. yaxsh hozir narx qoyib turamiz unda boshqa glavniy konstruksiya chizb bera oladimi va hammasin ieal qilb berish kere  va ishlab chiqarishga berganda ham natijan aniq bolish kere stanoklar oqiydigan qabul qiladigan bolish shart va bazis fayllarin ham qosin hamda ozi tizmni ozi suniy intelektsiz konstruksiya qilish kere

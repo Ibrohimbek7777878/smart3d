@@ -1,6 +1,6 @@
 # TZ-20 — Narx faqat bizning ma'lumotdan (admin "Narxlar" sahifasi)
 
-**Sana:** 2026-10-16 · **Navbat:** 20 · **Holat:** TASDIQ KUTILMOQDA
+**Sana:** 2026-10-16 · **Navbat:** 20 · **Holat:** PAUZA (egasi, 2026-10-16: "hozir narxni qo'yib turamiz")
 **Asos:** egasi (2026-10-16, muharrir skrinshoti bilan): "bu yerdagi narx bizning datalar asosida chiqarib berish kerak".
 **Bog'liq:** TZ-04 (narx jadvali + import vositasi), TZ-14 (admin sahifa namunasi), TZ-21 (Bazis faylidan smeta shu narxlardan oladi).
 
