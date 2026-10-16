@@ -1,6 +1,6 @@
 # TZ-21 — Saytga Bazis faylini yuklash (.b3d, .fr3d, .bpj)
 
-**Sana:** 2026-10-16 · **Navbat:** 21 · **Holat:** TASDIQ KUTILMOQDA
+**Sana:** 2026-10-16 · **Navbat:** 21 · **Holat:** BAJARILDI 2026-10-16 (`dizayn` tarmog'i; egasi: "ruxsat beraman, buni tugat" — tavsiyalar: A, hamma ustalar, xom fayl saqlanmaydi) — yangi UI skrinshot tasdig'i kutilmoqda
 **Asos:** egasi (2026-10-16): "sayt Bazis fayllarni ham qabul qilsin".
 **Bog'liq:** TZ-20 (smeta narxi), TZ-06 (teshiklar Bazis faylidan), TZ-11 (stanok fayllari), TZ-13 (modullar kutubxonasi), TZ-17 (BPJ eksport).
 
@@ -115,3 +115,27 @@
 - **C:** yana taxminan **2 kun**.
 
 Bu taxmin, aniq hisob emas.
+
+## Natija (2026-10-16, `dizayn` tarmog'i, commitlar `8d58221`, `fb92ece`)
+| Ish | Natija |
+|---|---|
+| O'quvchi | `app/js/engine/bazis/b3d.js` — ERP `bazis_bom.js` ko'chirmasi (zlib tashqaridan: brauzerda `pako` 2.1.0, Node'da `zlib`). **94/94 faylda asl bilan aynan** |
+| Daraxt | `daraxt.js` — `scripts/bazis_daraxt.py` ko'chirmasi: asosiy model, global joylashuv, amallar tarixisiz. **38/38 MC modulda Python bilan aynan.** Tuzatish: asosiy ro'yxat — eng ko'p panelli (4250 buyurtmada 12 MB mesh ro'yxati "asosiy" deb olinib, 0 panel chiqardi) |
+| `.bpj` | `bpj.js` — BazisUniversalExport JSON; `1.bpj`: 125 panel, materiallar BPJ hisobi bilan bir xil (89 / 25 / 11) |
+| O'girgich | `loyiha.js`: har dekor alohida material (raskroy alohida listda, list o'lchami nomdan: "5,0325" = 2750×1830 …), kromka tomonlari, furnitura kodi `fr3d_import.py` bilan bir xil (164/164), 3D panellar. Plastik/metall, shisha va materialsiz detallar kesimga kirmaydi — hisobotda ko'rsatiladi |
+| Sayt | Loyihalarim → "Bazis faylini yuklash" (.b3d, .fr3d, .bpj) → fayl **brauzerda, alohida oqimda** (50 MB, 40 s chegarasi; xom fayl serverga yuborilmaydi) → yangi loyiha + "Bazis fayli" hisoboti; Mebel qadamida "Bazis hisoboti"; 3D, narx, raskroy, Excel, GibLab — odatdagidek; loyiha saqlanadi va qayta ochiladi. Xato kodlari S3D-BAZIS-101…106 |
+
+**Aniqlik (30 ta haqiqiy buyurtma, `Smart3D_toplam_2026-10-16`):**
+- Bazis faylidan chiqqan kesim ro'yxatimizda sexdagi GibLab detallarining **97,7%** i bor (3256 dan 3182), ko'pchilik buyurtmada **100%**.
+- Eng pasti — 72% (3276: GibLab ro'yxatida metall/xrom va plastik qismlar bor, Bazis faylida ularning materiali yozilmagan — ular yog'och kesimiga kirmaydi).
+- Eng katta fayl (7,5 MB) — 0,37 s.
+- Oldingi tekis o'qishda detallar 2,4 baravar ko'p chiqardi (amallar tarixi) — daraxt usuli tuzatdi.
+
+**Testlar:** `verify_bazis` — 30 (mijoz fayllari bo'lmasa o'sha qismlar o'tkazib yuboriladi — CI'da faqat sun'iy namunalar), `web_bazis` (buzilgan fayl, noto'g'ri tur, .bpj, haqiqiy .b3d, hisobot, narx, Excel, saqlash va qayta ochish, telefon), run-all yashil, web 14/14, server 56/56.
+
+**TZ'dan farq va qolganlar:**
+- Material va furnitura nomini ERP mahsulotiga avtomatik bog'lash (5-band) — **qilinmadi**: narx TZ-20 da (pauza). Hozir plita narxi turdagi asosiy materialdan olinadi va hisobotda shunday yoziladi.
+- Variant C (admin: `.fr3d` ni katalogga qo'shish) — qilinmadi (TZ-13 ga, 150 modul bilan birga).
+- Teshiklar Bazis faylidan o'qilmaydi (THole — parser cheklovi). Prisadka — TZ-06/TZ-11 da KDT fayllari bilan.
+- Shifrlangan fayllar o'qilmaydi: aniq xabar chiqadi (26 ta fragmentdan 1 tasi shifrlangan).
+

@@ -35,7 +35,7 @@
 | 18 | [Uch til: o'zbek, rus, ingliz](18-uch-til.md) | BAJARILMOQDA — atamalar tasdiqlandi 2026-10-16 | ruscha/inglizcha tarjima navbatda |
 | 19 | [Production darajasi: modullar, xavfsizlik, xato kodlari, ikonlar](19-senior-production.md) | **BAJARILDI** 2026-10-15 (`dizayn` tarmog'i) | egasi: skrinshotlar (ikonlar, "Xatolar jurnali", 404), main'ga qo'shish ruxsati |
 | 20 | [Narx faqat bizning ma'lumotdan (admin "Narxlar" sahifasi)](20-narx-bizning-malumotdan.md) | PAUZA (egasi, 2026-10-16: "narxni qo'yib turamiz") | egasi: Q1 (`NARXLAR.xlsx` 3-ustuni), Q2 (ish haqi, kromka, ustama), Q3, "boshla" |
-| 21 | [Saytga Bazis faylini yuklash (.b3d, .fr3d, .bpj)](21-bazis-fayl-yuklash.md) | TASDIQLANDI 2026-10-16 (keyingi) — tavsiyalar: A, hamma ustalar, xom fayl saqlanmaydi | 30 ta haqiqiy .b3d — `Smart3D_toplam_2026-10-16` |
+| 21 | [Saytga Bazis faylini yuklash (.b3d, .fr3d, .bpj)](21-bazis-fayl-yuklash.md) | **BAJARILDI** 2026-10-16 (`dizayn` tarmog'i) — GibLab bilan 97,7% mos | egasi: yangi tugma va hisobot skrinshoti (3.3) |
 | 22 | [Avtomatik konstruktor (AI'siz, qoidalar bilan)](22-avtomatik-konstruktor.md) | **BAJARILDI** 2026-10-16 (`dizayn` tarmog'i) | texnolog: qoidalar raqamlari va stoleshnitsa qalinligi; egasi: yangi oyna skrinshoti (3.3) |
 
 **Navbat sababi:**
