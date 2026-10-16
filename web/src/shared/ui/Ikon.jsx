@@ -3,7 +3,7 @@ import {
   Camera, Rotate3d, DoorOpen, Crosshair, Sparkles, Mic, WandSparkles, Trash2, Copy, RotateCw, RotateCcw, ChevronLeft, ChevronRight,
   ChevronDown, ChevronUp, X, Check, TriangleAlert, FileSpreadsheet, Printer, FolderOpen, Settings, Cloud, CloudCheck, CloudOff,
   Glasses, Search, Pencil, Globe, Eye, EyeOff, ChefHat, Bed, Plus, Minus, Square, ArrowUpRight, Menu, LayoutTemplate, FileBox,
-  Box, PanelTop, PanelLeft, PanelRight, Maximize, ZoomIn, ZoomOut, Ruler, Layers, Orbit, Footprints, Scan, ScanEye, Sun
+  Box, PanelTop, PanelLeft, PanelRight, Maximize, ZoomIn, ZoomOut, Ruler, Layers, Orbit, Footprints, Scan, ScanEye, Sun, Palette
 } from 'lucide-react';
 
 /* TZ-19 §4 (egasi qarori): emoji o'rniga SVG ikonlar — lucide-react 1.49.0 (ISC), faqat ishlatilganlari build'ga kiradi.
@@ -35,7 +35,8 @@ export const IK = {
   havola: ArrowUpRight, menyu: Menu, ochiladi: Uchburchak, konstruktor: LayoutTemplate, bazis: FileBox,
   /* TZ-23: 3D ko'rinish */
   izo: Box, old: Square, yuqori: PanelTop, chapYon: PanelLeft, ongYon: PanelRight, toliq: Maximize, yaqin: ZoomIn, uzoq: ZoomOut,
-  olchash: Ruler, qatlam: Layers, orbit: Orbit, yurish: Footprints, orto: Scan, rentgen: ScanEye, effekt: Sun
+  olchash: Ruler, qatlam: Layers, orbit: Orbit, yurish: Footprints, orto: Scan, rentgen: ScanEye, effekt: Sun,
+  material: Palette
 };
 
 /** <Ikon n="rasm" /> — matn yonida (o'ngida 6px oraliq); gap={0} — yolg'iz yoki flex ichida */

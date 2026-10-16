@@ -47,7 +47,7 @@ export function makeItemMesh(THREE, frag, w, d, h, opts = {}) {
   /* TZ-09 Q5: yangi sayt (mavzu) — tortmalar ham (faqat 3D; eski sayt va eksportlar — avvalgidek) */
   /* TZ-22: yangi sayt — eshik soni/eni Bazis detallaridan, bitta eshik petlyasi — joylashuvdan (opts.hinge) */
   const asm = getModulePanels(frag, w, d, h, opts.theme ? Object.assign({}, opts, { tortma: true, eshiklar: true }) : opts);
-  if (opts.theme) return themedMesh(THREE, frag, w, d, h, asm, opts.theme, group);
+  if (opts.theme) return themedMesh(THREE, frag, w, d, h, asm, opts.theme, group, opts.rang);
 
   // Ranglar
   const carcassColor = (frag && CATEGORY_COLOR[frag.category]) || 0xd9c9a8;
@@ -151,8 +151,10 @@ export function itemMaterial(THREE, category, selected = false) {
  * group.userData.movers: [{ obj, type:'door', sign }] (items.js ochadi/yopadi); tortma — [{ obj, type:'drawer', dist }]:
  * fasad, tutqich va quti bitta guruhda oldinga suriladi.
  * Har panel mesh'ida userData.part — detal kartasi uchun (nom, o'lcham, slot).
- * theme: { mat(kind) → Material, ustki(frag) → bool, glass(frag) → bool } */
-function themedMesh(THREE, frag, w, d, h, asm, theme, group) {
+ * theme: { mat(kind) → Material, ustki(frag) → bool, glass(frag) → bool, rangMat(r) → Material }
+ * rang (TZ-23 E): { korpus, polka, fasad, orqa, stol } — tanlangan material dekori ({ rang, yogoch }, engine/rang.js);
+ * yo'q qism — dizayndagi standart ko'rinish. */
+function themedMesh(THREE, frag, w, d, h, asm, theme, group, rang) {
   const ustki = theme.ustki ? theme.ustki(frag) : false;
   const glass = theme.glass ? theme.glass(frag) : false;
   const code = frag ? frag.code : '';
@@ -165,13 +167,19 @@ function themedMesh(THREE, frag, w, d, h, asm, theme, group) {
     orqa: theme.mat('hdf'),
     handle: theme.mat('handle')
   };
+  const R = (theme.rangMat && rang) || {}, dekor = (r) => theme.rangMat(r);
+  if (R.korpus && !kind && !(frag && frag.category === 'appliance')) mats.korpus = dekor(R.korpus);
+  if (R.fasad && !kind && !glass) mats.fasad = dekor(R.fasad);
+  if (R.orqa) mats.orqa = dekor(R.orqa);
+  mats.polka = R.polka ? dekor(R.polka) : mats.korpus;
+  mats.stol = R.stol ? dekor(R.stol) : mats.korpus;
   const hitGeo = new THREE.BoxGeometry(w, d, h);
   const hitMesh = new THREE.Mesh(hitGeo, new THREE.MeshBasicMaterial({ visible: false }));
   hitMesh.userData = { kind: 'hitBox' };
   group.add(hitMesh);
   const movers = [], drawers = {};
   for (const p of asm.panels) {
-    const mat = p.slot === 'fasad' ? mats.fasad : p.slot === 'orqa' ? mats.orqa : mats.korpus;
+    const mat = p.slot === 'fasad' ? mats.fasad : p.slot === 'orqa' ? mats.orqa : p.slot === 'polka' ? mats.polka : p.slot === 'stoleshnitsa' ? mats.stol : mats.korpus;
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(p.w, p.d, p.h), mat);
     mesh.castShadow = true; mesh.receiveShadow = true;
     mesh.userData = { panelId: p.id, name: p.name, slot: p.slot, part: { id: p.id, name: p.name, slot: p.slot, size: [p.w, p.d, p.h] } };

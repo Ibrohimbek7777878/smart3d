@@ -1,6 +1,7 @@
 import { get, set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { korinishBoshla } from './korinish.js';
+import { joyRanglari } from '../../../services/erpMaterial.js';
 
 /* TZ-19: muharrir 3D sahnasi — bizning zamer tizimi (services/sahna.js, qoida S6) dizayn ko'rinishida.
  * Bitta nusxa: muharrir ochilganda yaratiladi (mount), yopilganda tozalanadi (unmount). 3D da o'zgargan holat
@@ -17,8 +18,9 @@ export async function mountSahna(host, onTap, alive = () => true) {
   const [{ createSahna }, { VRButton }] = await Promise.all([import('../../../services/sahna.js'), import('three/examples/jsm/webxr/VRButton.js')]);
   if (!alive()) return;
   const H = project.H, ed = get().editor;
+  const joylar = () => joyRanglari(H, H.viewPlacements(project.doc), get().project);   // TZ-23 E: tanlangan material dekori 3D da
   const sahna = createSahna(host, {
-    getPlacements: () => H.viewPlacements(project.doc),
+    getPlacements: () => joylar(),
     getRoom: () => project.doc.room,
     onSelect: (id) => {
       const e = get().editor;
@@ -31,13 +33,13 @@ export async function mountSahna(host, onTap, alive = () => true) {
     onTap
   });
   scene.sahna = sahna;
-  sahna.setDoc(project.doc, H.viewPlacements(project.doc), H.catalog);
+  sahna.setDoc(project.doc, joylar(), H.catalog);
   sahna.setMode(ed.view);
   sahna.center();                                         // dizayndagi boshlang'ich ko'rinish (camHome)
   /* loyiha o'zgarsa: xona — devorlar ham va kamera markazga (dizayn), mebel — faqat mebel */
   offDoc = project.onDocChange((kind) => {
-    if (kind === 'room') { sahna.setDoc(project.doc, H.viewPlacements(project.doc), H.catalog); sahna.center(); }
-    else sahna.setPlacements(H.viewPlacements(project.doc), H.catalog);
+    if (kind === 'room') { sahna.setDoc(project.doc, joylar(), H.catalog); sahna.center(); }
+    else sahna.setPlacements(joylar(), H.catalog);
   });
   /* VR (WebXR): three.js tugmasi o'z yozuvini o'zi boshqaradi ("VR NOT SUPPORTED") — yashirin qobiqda turadi,
      ekranda faqat dizayn tugmamiz (editor.vrOk) ko'rinadi */

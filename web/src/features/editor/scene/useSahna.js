@@ -13,6 +13,7 @@ import { scene, mountSahna, unmountSahna } from './sahna.js';
 import * as A from './actions.js';
 import { t } from '../../../i18n/index.js';
 import * as L from '../../../services/loyiha.js';
+import { openMaterial } from '../catalog/material.js';
 
 /** sahna: yaratish/tozalash va ko'rinish (2D/3D, aylanish, tanlov) — 3D bilan sinxron */
 export function useSahnaView() {
@@ -52,7 +53,8 @@ export function useMaslahat() {
   };
 }
 
-/** tanlangan modul kartasi: o'lcham (chegarasi bilan), surish, burish, nusxa, o'chirish, eshiklar, "Ichini ko'rish" */
+/** tanlangan modul kartasi: o'lcham (chegarasi bilan), surish, burish, nusxa, o'chirish, eshiklar, "Ichini ko'rish";
+ *  TZ-23 E: "Material" — faqat shu modul uchun (o'zida tanlangan bo'lsa — nomi) */
 export function useModulKarta() {
   const ed = useSlice('editor');
   useSlice('project');
@@ -73,7 +75,9 @@ export function useModulKarta() {
       name: L.joyNomi(project.H, sm, smF), code: sm.frg, warn: ed.warn[sm.id] || '', hasWarn: !!ed.warn[sm.id],
       rows: [dimRow('w', t('sahna.eni')), dimRow('d', t('sahna.chuqurligi')), dimRow('h', t('sahna.boyi'))] },
     moveL: () => A.moveBy(-50), moveR: () => A.moveBy(50), rotate: A.rotate, dup: A.duplicate, askDel: A.askDelete,
-    toggleModOpen: () => A.toggleOpen(sm.id), openInside: A.openInside
+    toggleModOpen: () => A.toggleOpen(sm.id), openInside: A.openInside,
+    material: () => openMaterial('korpus', sm.id),
+    matLabel: sm.slots && sm.slots.korpus ? project.matName(sm.slots.korpus) : t('mebel.modul_materiali')
   };
 }
 

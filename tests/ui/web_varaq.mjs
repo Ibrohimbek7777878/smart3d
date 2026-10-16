@@ -70,8 +70,9 @@ async function asosiy(page, R) {
   await V('input[placeholder*="Qidiruv"]').fill('egger'); await page.waitForTimeout(600);
   await page.screenshot({ path: `${OUT}/varaq-1440-material.png` });
   R.plitaSoni = await M(() => document.querySelectorAll('[data-varaq] button').length);
-  await V('button:has-text("so\'m")').first().click(); await page.waitForTimeout(1200);
-  R.tanlangan = await app(() => window.__app.state.sheet && window.__app.state.sheet.name);
+  await V('[data-material-royxat] button:has-text("so\'m")').first().click(); await page.waitForTimeout(1200);
+  /* TZ-23 E: ERP plitasi — alohida material kodi (ERP-…), nomi chipda */
+  R.tanlangan = await app(() => { const s = window.__app.state, m = window.__app.H.materials.panel_materials.find(x => x.code === s.matCode); return /^ERP-/.test(s.matCode) && m ? m.name : null; });
   R.jamiOzgardi = (await app(() => window.__app.res.priceRes.total)) !== jami0;
   await V('button[aria-label="Yopish"]').click(); await page.waitForTimeout(300);
   R.chipda = R.tanlangan ? await has(R.tanlangan) : false;

@@ -99,7 +99,7 @@ export function createHisob(data) {
     },
 
     /** Butun hisob — eski doRecalc() bilan bir xil tartib.
-     *  opt: { materialCode, fasadCode, sheet, nestCfg, markupPct } → { priceRes, val, cutlists, prod, nest, placements } */
+     *  opt: { materialCode, fasadCode, orqaCode, stolCode, sheet, nestCfg, markupPct } → { priceRes, val, cutlists, prod, nest, placements } */
     recalc(doc, opt = {}) {
       const prices = buildPrices(catalog);
       const m = H.effectiveMaterials(opt.sheet || null);
@@ -110,7 +110,7 @@ export function createHisob(data) {
       /* 3) cutlist + ishlab chiqarish xarajati */
       const cutlists = [];
       const allParts = [];
-      const slots = projectSlots(opt.materialCode, opt.fasadCode);
+      const slots = projectSlots(opt.materialCode, opt.fasadCode, opt.orqaCode, opt.stolCode, opt.polkaCode);
       const mkHole = moykaHole(doc);
       const placements = H.viewPlacements(doc);
       for (const p of placements) {
@@ -140,9 +140,11 @@ export function createHisob(data) {
 
 /* ─────────── eski app.js dan so'zma-so'z (global state o'rniga parametr) ─────────── */
 
-/** Loyiha slotlari (TZ §5 3.1): usta tanlagan korpus va fasad hamma modulga qo'llanadi. */
-export function projectSlots(materialCode, fasadCode) {
-  return { korpus: materialCode, polka: materialCode, fasad: fasadCode };
+/** Loyiha slotlari (TZ §5 3.1): usta tanlagan korpus va fasad hamma modulga qo'llanadi.
+ *  TZ-23 E: orqa devor va stoleshnitsa ham (tanlansa; tanlanmasa — modul/standart materiali, avvalgidek);
+ *  polka — alohida (yangi loyihada LDSP 16 — egasi #120; tanlanmagan eski loyihada korpus bilan bir xil). */
+export function projectSlots(materialCode, fasadCode, orqaCode, stolCode, polkaCode) {
+  return Object.assign({ korpus: materialCode, polka: polkaCode || materialCode, fasad: fasadCode }, orqaCode ? { orqa: orqaCode } : {}, stolCode ? { stoleshnitsa: stolCode } : {});
 }
 
 /** ERP varag'i qaysi slotga tegishli: LDSP/LMDF/OSB → korpus, HDF → orqa, MDF (va akril) → fasad. */

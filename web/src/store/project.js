@@ -5,6 +5,7 @@ import { suggestLayout } from '../../../app/js/ai.js';
 import { konstruksiya } from '../../../app/js/engine/konstruktor/index.js';
 import { materiallarniQosh } from '../../../app/js/engine/bazis/loyiha.js';
 import { eskiKodlar } from '../../../app/js/engine/kodlar.js';
+import { erpUla, erpSaqla } from '../services/erpMaterial.js';
 import { report } from '../shared/lib/jurnal.js';
 import { xato } from './ui.js';
 import { t } from '../i18n/index.js';
@@ -64,7 +65,7 @@ export const project = {
     if (!this.H) return;
     const s = get(), p = s.project;
     try {
-      this.res = this.H.recalc(this.doc, { materialCode: p.matCode, fasadCode: p.fasadCode, sheet: p.sheet, nestCfg: this.nestCfg(), markupPct: s.settings.sets.markup_pct });
+      this.res = this.H.recalc(this.doc, { materialCode: p.matCode, fasadCode: p.fasadCode, orqaCode: p.orqaCode, stolCode: p.stolCode, polkaCode: p.polkaCode, sheet: p.sheet, nestCfg: this.nestCfg(), markupPct: s.settings.sets.markup_pct });
     } catch (e) { xato('S3D-CALC-101', { modul: 'hisob', err: e }); }
     set('project', st => ({ dv: st.dv + 1 }));
     recalcListeners.forEach(f => f());
@@ -74,6 +75,7 @@ export const project = {
   reset(doc) { this.doc = doc || L.newDoc(); eskiKodlar(this.doc); this.bazisUla(); },   // eski katalog kodlari — yangisiga
   /** TZ-21: Bazis'dan yuklangan loyiha — o'z fragmenti va materiallari hisob bazasiga (katalog ro'yxatida ko'rinmaydi) */
   bazisUla() {
+    if (this.H && this.doc) erpUla(this.H, this.doc);     // TZ-23 E: loyihada tanlangan ERP plitalari (material kodlari)
     const b = this.doc && this.doc.bazis;
     if (!b || !b.fragment || !this.H) return;
     this.H.catalog[b.fragment.code] = b.fragment;
@@ -101,7 +103,9 @@ export const project = {
   /** saqlanadigan loyiha fayli — eski buildProjectPayload bilan bir xil shakl (eski sayt ham ocha oladi) */
   payload() {
     const p = get().project, sh = p.sheet;
+    erpSaqla(this.H, this.doc, [p.matCode, p.polkaCode, p.fasadCode, p.orqaCode, p.stolCode]);
     return { app: 'smart3d', v: 2, ts: Date.now(), name: p.name, client: p.client, material: p.matCode, fasad: p.fasadCode,
+      ...(p.polkaCode ? { polka: p.polkaCode } : {}), ...(p.orqaCode ? { orqa: p.orqaCode } : {}), ...(p.stolCode ? { stol: p.stolCode } : {}),
       sheet: sh ? { sku: sh.sku, name: sh.name, type: sh.type, th: sh.th, l: sh.l, w: sh.w, uzs: sh.uzs } : null, doc: this.doc };
   },
   /** serverdan yoki fayldan kelgan loyihani ochish */
@@ -110,7 +114,7 @@ export const project = {
     this.doc = p.doc;
     if (!this.doc.kitchen) this.doc.kitchen = L.freshKitchen();
     this.bazisUla();
-    set('project', { client: p.client || (meta && meta.client) || '', name: p.name || t('umumiy.loyiha'), matCode: p.material || 'LDSP18', fasadCode: p.fasad || 'MDF16', sheet: p.sheet || null });
+    set('project', { client: p.client || (meta && meta.client) || '', name: p.name || t('umumiy.loyiha'), matCode: p.material || 'LDSP18', fasadCode: p.fasad || 'MDF16', polkaCode: p.polka || null, orqaCode: p.orqa || null, stolCode: p.stol || null, sheet: p.sheet || null });   // polka yo'q (eski loyiha) — korpus bilan bir xil, narxi o'zgarmaydi
     set('editor', { sel: null, part: null, warn: {} });
     this.changed('room', true);
   }

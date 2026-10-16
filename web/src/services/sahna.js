@@ -66,6 +66,16 @@ export function dizaynMavzu() {
         default: return M.ldsp();
       }
     },
+    /* TZ-23 E: material dekori (nomidan, taxminiy — engine/rang.js). Yog'och — dizayndagi tekstura shu rangga bo'yaladi
+       (tekstura o'rtacha rangi 0xB4834F ga nisbatan; ochroq dekor — tekstura o'zi), qolgani — tekis rang */
+    rangMat(r) {
+      if (r.yogoch) {
+        const m = M.wood(), c = [(r.rang >> 16) & 255, (r.rang >> 8) & 255, r.rang & 255], o = [0xB4, 0x83, 0x4F];
+        m.color.setRGB(...c.map((v, i) => Math.min(1, v / o[i])));
+        return m;
+      }
+      return new THREE.MeshStandardMaterial({ color: r.rang, roughness: 0.5 });
+    },
     ustki: (f) => isUstki(f),
     glass: (f) => /shisha|vitr|glass|oyna/i.test((f && f.name) || '')
   };

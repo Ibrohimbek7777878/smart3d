@@ -7,6 +7,8 @@ import { clamp } from '../../shared/lib/format.js';
 import { runAI } from '../editor/ai/actions.js';
 import { t } from '../../i18n/index.js';
 
+const POLKA = 'LDSP16';   // polka standarti — 16 mm (egasi #120; ERP: LDSP 16 mm — 439 ta, 18 mm — 16 ta; Bazis buyurtmalarida ham 16)
+
 /* TZ-19: loyiha hayoti — ro'yxat, ochish, yangi, fayldan, o'chirish, saytdan kelgan modul. */
 const EDITOR = { screen: 'app' };
 const editorStart = (tip) => set('editor', { step: 2, done: { 1: true }, tip, sel: null, part: null, warn: {} });
@@ -31,7 +33,7 @@ export async function openProject(id) {
 /** "+ Yangi loyiha" → onboarding */
 export function newProject() {
   S.resetCurrent(); project.reset(); project.res = null;
-  set('project', { name: t('umumiy.yangi_loyiha'), client: '' });
+  set('project', s => ({ name: t('umumiy.yangi_loyiha'), client: '', polkaCode: s.polkaCode || POLKA }));
   set('editor', { sel: null, part: null, warn: {} });
   set('nav', { screen: 'onb1' });
 }
@@ -71,7 +73,7 @@ export async function openPending() {
   await project.load();
   if (!project.H) return;
   S.resetCurrent(); project.reset();
-  set('project', { name: t('umumiy.yangi_loyiha') });
+  set('project', s => ({ name: t('umumiy.yangi_loyiha'), polkaCode: s.polkaCode || POLKA }));
   set('nav', EDITOR); set('editor', { step: 2, done: { 1: true }, tip: 3 });
   project.changed('room', true);
   applyPending();

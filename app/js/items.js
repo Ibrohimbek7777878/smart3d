@@ -71,7 +71,7 @@ export function createItems(sp, opts = {}) {
       if (!frag) continue;
       const w = +p.w || +frag.w, d = +p.d || +frag.d, h = +p.h || +frag.h;
       const rot = ((+p.rot || 0) % 360 + 360) % 360;
-      const mesh = makeItemMesh(THREE, frag, w, d, h, TH ? { theme: TH, hinge: p.hinge } : {});
+      const mesh = makeItemMesh(THREE, frag, w, d, h, TH ? { theme: TH, hinge: p.hinge, rang: p._rang } : {});   // TZ-23 E: tanlangan material dekori
 
       // Agar oddiy mesh bo'lsa geometriyani siljitadi (Group allaqachon markazlashgan)
       if (mesh.geometry && mesh.geometry.translate) {
