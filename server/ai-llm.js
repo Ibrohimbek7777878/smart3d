@@ -12,6 +12,7 @@
  *   AI_TIMEOUT_MS standart 30000
  */
 import Anthropic from '@anthropic-ai/sdk';
+import { TIL_IZOH, TURLAR, specTekshir } from '../app/js/engine/konstruksiyaTili.js';
 
 const KINDS = ['pastki', 'ustki', 'burchak', 'shkaf', 'stol', 'divan', 'orol'];
 const FEATURES = ['sink', 'stove', 'fridge', 'corner', 'upper', 'tall', 'wardrobe', 'island'];
@@ -78,14 +79,14 @@ const TIMEOUT = () => Number(process.env.AI_TIMEOUT_MS) || 30000;
 
 /* ── Claude (rasmiy SDK) ── */
 let anthropicClient = null;
-async function viaAnthropic(text, model) {
+async function viaAnthropic(text, model, system = SYSTEM, schema = AI_SCHEMA, effort = 'low') {
   anthropicClient = anthropicClient || new Anthropic({ apiKey: process.env.AI_API_KEY || process.env.ANTHROPIC_API_KEY, timeout: TIMEOUT(), maxRetries: 2 });
   const gen5 = /^claude-(opus|sonnet|haiku|fable)-5/.test(model);
   const withFallback = /^claude-(opus-5|opus-5-5|fable-5|fable-5-1|sonnet-5-5)$/.test(model);   // server-side fallback qo'llaydigan modellar
   const params = {
-    model, max_tokens: 4000, system: SYSTEM,
+    model, max_tokens: 4000, system,
     messages: [{ role: 'user', content: text }],
-    output_config: { format: { type: 'json_schema', schema: AI_SCHEMA }, ...(gen5 ? { effort: 'low' } : {}) }
+    output_config: { format: { type: 'json_schema', schema }, ...(gen5 ? { effort } : {}) }
   };
   const res = withFallback
     ? await anthropicClient.beta.messages.create({ ...params, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' })
@@ -106,13 +107,13 @@ async function postJson(url, body, headers) {
     return await r.json();
   } finally { clearTimeout(t); }
 }
-const schemaHint = '\nJSON sxemasi (aynan shu maydonlar):\n' + JSON.stringify(AI_SCHEMA);
+const schemaHint = (schema) => '\nJSON sxemasi (aynan shu maydonlar):\n' + JSON.stringify(schema);
 
 /* ── Gemini (Google) ── */
-async function viaGemini(text, model) {
+async function viaGemini(text, model, system = SYSTEM, schema = AI_SCHEMA) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
   const j = await postJson(url, {
-    systemInstruction: { parts: [{ text: SYSTEM + schemaHint }] },
+    systemInstruction: { parts: [{ text: system + schemaHint(schema) }] },
     contents: [{ role: 'user', parts: [{ text }] }],
     generationConfig: { responseMimeType: 'application/json' }
   }, { 'x-goog-api-key': process.env.AI_API_KEY });
@@ -122,11 +123,11 @@ async function viaGemini(text, model) {
 }
 
 /* ── OpenAI'ga mos API (OpenAI, DeepSeek, Ollama, OpenRouter…) ── */
-async function viaOpenAI(text, model) {
+async function viaOpenAI(text, model, system = SYSTEM, schema = AI_SCHEMA) {
   const base = (process.env.AI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
   const j = await postJson(base + '/chat/completions', {
     model,
-    messages: [{ role: 'system', content: SYSTEM + schemaHint }, { role: 'user', content: text }],
+    messages: [{ role: 'system', content: system + schemaHint(schema) }, { role: 'user', content: text }],
     response_format: { type: 'json_object' }
   }, process.env.AI_API_KEY ? { authorization: 'Bearer ' + process.env.AI_API_KEY } : {});
   const c = j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
@@ -142,4 +143,31 @@ export async function llmParse(text) {
     : cfg.provider === 'gemini' ? await viaGemini(text, cfg.model)
       : await viaOpenAI(text, cfg.model);
   return { parsed: normalizeParsed(raw), engine: `${cfg.provider}:${cfg.model}` };
+}
+
+/* ═══ TZ-26: AI konstruksiya — usta matni → konstruksiya tili (app/js/engine/konstruksiyaTili.js) ═══
+ * AI faqat matnni tilga o'giradi; o'lcham chegarasi, eshik va polka qoidalari, chizma, narx — tizimda (specTekshir). */
+const int = { type: 'integer' };
+const TARKIB = { eshik: int, petlya: { type: 'string', enum: ['chap', 'ong', 'auto'] }, polka: int, tortma: int, shtanga: { type: 'boolean' } };
+const QATLAM = obj({ boyi: int, ...TARKIB });
+const BOLIM = obj({ eni: int, ...TARKIB, qatlamlar: { type: 'array', items: QATLAM } });
+export const KONS_SCHEMA = obj({
+  tur: { type: 'string', enum: [...TURLAR, 'xona'] }, nom: { type: 'string' }, eni: int, chuqurligi: int, boyi: int,
+  tag: { type: 'string', enum: ['sokol', 'oyoq', 'yoq', 'auto'] }, qopqoq: { type: 'string', enum: ['yaxlit', 'planka', 'auto'] },
+  bolimlar: { type: 'array', items: BOLIM }, tushunilmadi: { type: 'array', items: { type: 'string' } }
+});
+const KONS_SYSTEM = `Siz mebel ustasining (o'zbek, rus, ingliz yoki aralash tilda, og'zaki) BITTA mebel konstruksiyasi haqidagi gapini Smart3D konstruksiya tiliga o'girasiz.
+${TIL_IZOH}
+- tushunilmadi — matnning tushunilmagan bo'laklari (qisqa).
+Faqat JSON qaytaring.`;
+
+/** text → { natija: { spec, tuzatish, tushunilmadi } | { xona: true }, engine }. AI javobi tuzilmasi noto'g'ri bo'lsa — Error */
+export async function llmKonstruksiya(text) {
+  const cfg = aiConfig();
+  if (!cfg.enabled) throw new Error('AI sozlanmagan');
+  const raw = cfg.provider === 'anthropic' ? await viaAnthropic(text, cfg.model, KONS_SYSTEM, KONS_SCHEMA, 'medium')
+    : cfg.provider === 'gemini' ? await viaGemini(text, cfg.model, KONS_SYSTEM, KONS_SCHEMA)
+      : await viaOpenAI(text, cfg.model, KONS_SYSTEM, KONS_SCHEMA);
+  if (!raw || typeof raw !== 'object' || ![...TURLAR, 'xona'].includes(raw.tur)) throw new Error('AI javobi tuzilmasi noto\'g\'ri');
+  return { natija: specTekshir(raw), engine: `${cfg.provider}:${cfg.model}` };
 }

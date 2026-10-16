@@ -30,7 +30,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { parseZamer, aiBuild } from '../app/js/ai.js';
 import { smsConfigured, sendSms, SMS_TEXT } from './sms.js';
-import { aiConfig, llmParse } from './ai-llm.js';
+import { aiConfig, llmParse, llmKonstruksiya } from './ai-llm.js';
 import { XATOLAR, KOD_RE } from '../app/js/xatolar.js';
 import { createJurnal } from './jurnal.js';
 import { securityHeaders, inlineScriptHashes, SESS, msOf, cookieOf, sameOrigin, docXatosi, wsGuard } from './himoya.js';
@@ -941,6 +941,25 @@ app.post('/api/ai/parse', auth, aiLimiter.check, ah(async (req, res) => {
   } catch (e) {
     log.run(req.user.id, text, aiConfig().provider || '', 0, '', String(e.message || e).slice(0, 300));
     jurnal.error({ code: 'S3D-AI-002', rid: req.rid, uid: req.user.id, method: req.method, path: req.path, status: 502, msg: 'AI xatosi: ' + (e.message || e) });
+    res.locals.logged = true;
+    fail(res, 'S3D-AI-002');
+  }
+}));
+
+/* TZ-26: bitta mebel konstruksiyasi — AI matnni konstruksiya tiliga o'giradi, server tekshiradi va to'g'rilaydi
+   (app/js/engine/konstruksiyaTili.js); chizma, narx — saytda. Natija { spec, tuzatish, tushunilmadi } yoki { xona: true } */
+app.post('/api/ai/konstruksiya', auth, aiLimiter.check, ah(async (req, res) => {
+  const text = str((req.body || {}).text, 'text', { max: 2000, required: true });
+  if (!aiConfig().enabled) return fail(res, 'S3D-AI-001');
+  aiLimiter.hit(req);
+  const log = db.prepare('INSERT INTO ai_log (user_id, text, engine, ok, result_json, error) VALUES (?, ?, ?, ?, ?, ?)');
+  try {
+    const r = await llmKonstruksiya(text);
+    log.run(req.user.id, text, r.engine + ' konstruksiya', 1, JSON.stringify(r.natija), '');
+    res.json({ ok: true, engine: r.engine, ...r.natija });
+  } catch (e) {
+    log.run(req.user.id, text, (aiConfig().provider || '') + ' konstruksiya', 0, '', String(e.message || e).slice(0, 300));
+    jurnal.error({ code: 'S3D-AI-002', rid: req.rid, uid: req.user.id, method: req.method, path: req.path, status: 502, msg: 'AI konstruksiya xatosi: ' + (e.message || e) });
     res.locals.logged = true;
     fail(res, 'S3D-AI-002');
   }

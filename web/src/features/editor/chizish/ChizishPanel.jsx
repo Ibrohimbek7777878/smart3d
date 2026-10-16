@@ -78,6 +78,17 @@ export default function ChizishPanel() {
     <div data-chizish="" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       {sarlavha}
       <input value={v.nom} onChange={v.onNom} placeholder={t('chizish.nom')} aria-label={t('chizish.nom')} maxLength={80} style={{ ...input, height: '48px' }} />
+      {v.izoh ? (   /* TZ-26 (dizaynda yo'q — karta uslubida): AI konstruksiyasi — kim tushundi, tizim nimani to'g'riladi */
+        <section data-kons-izoh="" style={{ ...card, display: 'flex', flexDirection: 'column', gap: '6px', borderColor: 'rgba(95,225,196,.35)' }}>
+          <b style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}><Ikon n="ai" size={16} />{v.izoh.kim}</b>
+          <span style={{ fontSize: '13px', fontWeight: '700' }}>{v.izoh.xulosa}</span>
+          {v.izoh.tuzatish.length ? (<>
+            <span style={hint}>{t('kons.izoh_sarlavha')}</span>
+            <ul data-kons-tuzatish="" style={{ margin: '0', paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '13px' }}>
+              {v.izoh.tuzatish.map((x, i) => <li key={i}>{x}</li>)}
+            </ul></>) : null}
+          {v.izoh.tushunilmadi.length ? <span style={{ ...hint, color: 'var(--pch)' }}>{t('kons.tushunilmadi', { s: v.izoh.tushunilmadi.join(', ') })}</span> : null}
+        </section>) : null}
       <div data-chizish-turlar=""><Chiplar list={v.turlar} /></div>
       <div style={{ display: 'flex', gap: '8px' }}>
         {v.olchamlar.map(o => (

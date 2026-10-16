@@ -3,7 +3,7 @@ import { t } from '../../../i18n/index.js';
 import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useSlice } from '../../../store/index.js';
 import Varaq from '../../../shared/ui/Varaq.jsx';
-import { aiView, closeAi, buildFromText } from './actions.js';
+import { aiView, closeAi, matnniQur } from './actions.js';
 import { useTayyor } from './promptlar.js';
 import { Chiplar } from '../../../shared/ui/Chiplar.jsx';
 import { input, listRow, hint, btnGhost, btnPrimary } from '../../../shared/ui/styles.js';
@@ -76,7 +76,7 @@ export default function AiOyna() {
         <button onClick={v.toggleMic} style={{"height":"52px","padding":"0 18px","borderRadius":"14px","border":"1px solid var(--line)","background":v.micBg,"color":v.micT,"fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
           <Ikon n="mikrofon" /><span className="sc-interp">{v.micLabel}</span>
         </button>
-        <button onClick={buildFromText} style={{"flex":"1","height":"52px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer"}}>
+        <button onClick={matnniQur} style={{"flex":"1","height":"52px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer"}}>
           <Ikon n="qurish" size={18} />{t('ai.qurish')}
         </button>
       </div>

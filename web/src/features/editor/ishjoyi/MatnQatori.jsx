@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { get, set, useSlice } from '../../../store/index.js';
+import { set, useSlice } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { toast } from '../../../store/ui.js';
 import { t } from '../../../i18n/index.js';
@@ -7,7 +7,7 @@ import Ikon from '../../../shared/ui/Ikon.jsx';
 import { chip } from '../../../shared/ui/styles.js';
 import * as L from '../../../services/loyiha.js';
 import * as D from '../../../services/devor.js';
-import { setText, toggleMic, buildFromText } from '../ai/actions.js';
+import { setText, toggleMic, matnniQur } from '../ai/actions.js';
 import { bazisYukla } from '../../bazis/bazis.js';
 import { asbobTanla, uzunlikBuyruq, tugat, oxirgisiniOchir, bekor } from './devorAsbob.js';
 import { tezOshxona } from './ishjoyi.js';
@@ -39,8 +39,7 @@ export default function MatnQatori() {
       if (uzunlikBuyruq(buyruq)) setBuyruq(''); else toast(t('devor.raqam_yozing'));
       return;
     }
-    if (!get().ai.text.trim()) { toast(t('ai.avval_matn')); return; }
-    buildFromText();
+    matnniQur();                                              // TZ-26: modul — AI konstruksiya, xona — loyiha
   };
   const chiplar = devor
     ? [[t('devor.yopish'), tugat, 'yopish'], [t('devor.oxirgisi'), oxirgisiniOchir, 'orqaga'], [t('devor.bekor'), bekor, 'bekor'],

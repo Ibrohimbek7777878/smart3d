@@ -6,10 +6,12 @@ import * as L from '../../../services/loyiha.js';
 import { aiBuild, startVoice, voiceSupported } from '../../../../../app/js/ai.js';
 import { roomBBox } from '../../../../../app/js/engine/rules.js';
 import { konstruksiya } from '../../../../../app/js/engine/konstruktor/index.js';
+import { konstruksiyami } from '../../../../../app/js/engine/konstruksiyaTili.js';
+import { aiKonstruksiya } from './konstruksiya.js';
 import { t, til } from '../../../i18n/index.js';
 
 /* TZ-19 (TZ-12): AI — server til modeli (kirgan va serverda yoqilgan bo'lsa) yoki qoidali tahlilchi (ai.js), ovoz — brauzer. */
-export const AI_EX = ['ai.misol1', 'ai.misol2', 'ai.misol3'];   // AI ham uch tilni tushunadi (TZ-18 8-bosqich)
+export const AI_EX = ['ai.misol1', 'ai.misol2', 'ai.misol3', 'ai.misol4'];   // AI ham uch tilni tushunadi (TZ-18 8-bosqich); misol4 — TZ-26 (bitta modul)
 const VOICE_ERR = { 'not-allowed': 'ai.mikrofon_ruxsat', 'service-not-allowed': 'ai.mikrofon_ruxsat', 'audio-capture': 'ai.mikrofon_yoq', network: 'ai.ovoz_internet' };
 
 let aiOn = false;
@@ -50,6 +52,18 @@ export async function runAI(silent) {
     toast(res.assumed ? t('ai.olcham_taxmin')
       : t('ai.qurdi', { n: res.doc.placements.length, w: Math.round(bb.w), h: Math.round(bb.h) }) + (res.unknown.length ? t('ai.tushunilmadi', { s: res.unknown.join(', ') }) : ''));
   } catch (e) { if (!silent) xato('S3D-AI-101', { matn: t('ai.xato', { s: e.message }), modul: 'editor/ai', err: e }); }
+}
+
+/** TZ-26: matn qatori va AI oynasidagi "Qurish" — bitta mebel konstruksiyasi bo'lsa — AI konstruksiya (joriy xonaga modul),
+ *  xona yoki oshxona bo'lsa — avvalgidek loyiha quriladi */
+export function matnniQur() {
+  const text = get().ai.text.trim();
+  if (!text) { toast(t('ai.avval_matn')); return; }
+  if (!konstruksiyami(text)) { buildFromText(); return; }
+  set('ai', { open: false, mic: false });
+  aiKonstruksiya(text, aiOn)
+    .then(r => { if (r === 'xona') buildFromText(); })
+    .catch(e => xato('S3D-AI-101', { matn: t('ai.xato', { s: e.message }), modul: 'editor/ai', err: e }));
 }
 
 /** "Qurish": joriy loyihada mebel bo'lsa — avval tasdiq */

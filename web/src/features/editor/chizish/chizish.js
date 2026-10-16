@@ -33,7 +33,7 @@ function saqla(ch, nom) {
 }
 
 function ochish(kod, pl, ch, nom) {
-  set('chizish', { ochiq: true, kod, pl, ch, nom, yol: [] });
+  set('chizish', { ochiq: true, kod, pl, ch, nom, yol: [], izoh: null });
   set('editor', { sel: pl, part: null });
 }
 
@@ -61,7 +61,7 @@ export function tahrirla(pid) {
   ch.w = p.w; ch.d = p.d; ch.h = p.h;                        // joylashuvda cho'zilgan bo'lsa
   ochish(p.frg, pid, ch, x.nom);
 }
-export const chizishOch = () => set('chizish', { ochiq: true, kod: null, pl: null, ch: null, yol: [] });
+export const chizishOch = () => set('chizish', { ochiq: true, kod: null, pl: null, ch: null, yol: [], izoh: null });
 export const chizishYop = () => set('chizish', { ochiq: false });
 
 const oz = (fn) => { const s = get().chizish; if (!s.ch) return; const c = JSON.parse(JSON.stringify(s.ch)); fn(c); saqla(c); };
@@ -173,6 +173,7 @@ export function useChizish() {
       petlyalar: (tanlangan.eshik | 0) === 1 ? ['chap', 'ong'].map(k => ({ label: t('chizish.petlya_' + k), on: (tanlangan.petlya || 'chap') === k, pick: () => bolimOz(n => { n.petlya = k; }) })) : []
     },
     ogoh: K.ogoh.map(o => t('chizish.og_' + o.kod, { n: o.n, m: o.m })),
+    izoh: s.izoh || null,                                    // TZ-26: AI konstruksiyasi — kim tushundi, nima to'g'rilandi
     narx: narx ? { jami: raqam(narx.jami) + ' ' + t('umumiy.som'), detal: t('chizish.detal_n', { n: narx.detal }), narxsiz: narx.narxsiz ? t('chizish.narxsiz', { n: narx.narxsiz }) : '' } : null,
     baland,
     saqlaModul: auth.user ? modullarimgaSaqla : null,

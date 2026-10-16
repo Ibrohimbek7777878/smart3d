@@ -120,6 +120,20 @@ Sarlavhalarni server o'zi qo'yadi — nginx'da takrorlash shart emas: CSP, HSTS 
 - **Jurnal.** Server stdout'iga JSON qatorlar yozadi (`{"t":…,"lvl":…,"code":"S3D-…","rid":…}`). Ogohlantirish va xatolar `error_log` jadvaliga ham tushadi. Admin ularni ilovadagi Sozlamalar → "Xatolar jurnali"dan ko'radi.
 - **Akkaunt bloklangan bo'lsa** (5 xato parol → 15 daqiqa), admin uchun ham. Darhol ochish: `ADMIN_PASSWORD='…' npm run admin-password`. U parolni almashtiradi, blokni yechadi va eski kirishlarni bekor qiladi.
 
+### AI — Claude'ni ulash (TZ-12, TZ-26) — admin sozlaydi
+Kalit faqat `/etc/smart3d.env` da turadi; chatga, kodga va gitga yozilmaydi. Kalitsiz ham hammasi ishlaydi (AI'siz tahlilchi).
+1. Anthropic konsolida API kalit oling (to'lov egasi hisobidan — har so'rov pullik; so'rov limiti serverda bor).
+2. `/etc/smart3d.env` ga yozing:
+   ```bash
+   AI_PROVIDER=anthropic
+   ANTHROPIC_API_KEY=<kalit>
+   # AI_MODEL=claude-opus-5-5     # standart; arzonroq: claude-sonnet-5-5 yoki claude-haiku-5-5
+   ```
+3. Serverni qayta ishga tushiring (admin), keyin tekshiring: `curl -s https://smart3d.bittada.uz/api/ai/status` → `{"enabled":true,"provider":"anthropic",…}`.
+4. Ishlatish: ish joyidagi matn qatoriga bitta mebel konstruksiyasini yozing (masalan "shkaf 1200x600x2200, chapda shtanga, o'ngda 4 polka, 2 eshik") — Claude uni konstruksiya tiliga o'giradi, tizim tekshirib chizadi; xona yoki oshxona matni — avvalgidek.
+5. Har so'rov `ai_log` jadvaliga yoziladi (matn, natija, xato). Kalitni olib tashlansa — AI'siz tahlilchiga qaytadi.
+- Boshqa provayder: `AI_PROVIDER=gemini` yoki `openai` (+ `AI_MODEL`, `AI_API_KEY`, `AI_BASE_URL`) — ikkala AI yo'li (xona va konstruksiya) bir xil ishlaydi.
+
 ### Telegram bot (TZ-16) — admin sozlaydi
 Bot kaliti faqat `/etc/smart3d.env` da turadi. Chatga, kodga va gitga yozilmaydi.
 1. BotFather: `/newbot` — bot va kalit oling. Kalitni `TELEGRAM_BOT_TOKEN` ga yozing.
