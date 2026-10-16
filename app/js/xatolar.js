@@ -3,7 +3,8 @@
  * Shakl: S3D-<BO'LIM>-<NNN>. 001–099 — server, 101–199 — brauzer. Kod o'zgarmaydi (qo'llab-quvvatlash va jurnal uchun);
  * eskirsa — o'chirilmaydi, "eski" deb belgilanadi. Matn — foydalanuvchiga ko'rinadigan o'zbekcha izoh.
  *   AUTH kirish, sessiya   PROJ loyihalar   SET sozlamalar   STD sex standartlari   CALC hisob   EXP fayllar
- *   SCENE 3D   AI AI va ovoz   KONS avtomatik konstruktor   BAZIS Bazis fayli   DATA ma'lumot   NET tarmoq   VAL kiritish   RATE cheklov   SRV server   UI ekran   LOG jurnal */
+ *   SCENE 3D   AI AI va ovoz   KONS avtomatik konstruktor   BAZIS Bazis fayli   TG Telegram Mini App   DATA ma'lumot   NET tarmoq
+ *   VAL kiritish   RATE cheklov   SRV server   UI ekran   LOG jurnal */
 export const XATOLAR = {
   /* ── server ── */
   'S3D-AUTH-001': { http: 401, matn: 'Email yoki parol noto\'g\'ri' },
@@ -34,9 +35,18 @@ export const XATOLAR = {
   'S3D-SRV-001': { http: 500, matn: 'Server xatosi' },
   'S3D-SRV-002': { http: 404, matn: 'Topilmadi' },
   'S3D-LOG-001': { http: 400, matn: 'Jurnal yozuvi noto\'g\'ri' },
+  /* TZ-16: Telegram Mini App */
+  'S3D-TG-001': { http: 503, matn: 'Telegram ulanmagan — bot kaliti serverda yo\'q' },
+  'S3D-TG-002': { http: 401, matn: 'Telegram ma\'lumoti tasdiqlanmadi — ilovani botdan qayta oching' },
+  'S3D-TG-003': { http: 403, matn: 'Webhook kaliti noto\'g\'ri' },
+  'S3D-TG-004': { http: 403, matn: 'Bu akkaunt Telegram\'ga ulanmagan' },
+  'S3D-TG-005': { http: 502, matn: 'Fayl Telegram\'ga yuborilmadi — keyinroq urinib ko\'ring' },
+  'S3D-TG-006': { http: 409, matn: 'Bu akkaunt boshqa Telegram\'ga ulangan' },
+  'S3D-TG-007': { http: 400, matn: 'Fayl turi yoki hajmi ruxsat etilmagan (10 MB gacha)' },
 
   /* ── brauzer ── */
   'S3D-NET-101': { matn: 'Server bilan aloqa yo\'q — internetni tekshiring' },
+  'S3D-TG-101': { matn: 'Telegram bilan ulanib bo\'lmadi — ilovani botdan qayta oching' },
   'S3D-NET-102': { matn: 'Server javob bermadi (vaqt tugadi) — qayta urinib ko\'ring' },
   'S3D-DATA-101': { matn: 'Ma\'lumot yuklanmadi — internetni tekshiring' },
   'S3D-CALC-101': { matn: 'Hisoblashda xato — narx yangilanmadi' },

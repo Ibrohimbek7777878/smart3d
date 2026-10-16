@@ -21,11 +21,11 @@ export function inlineScriptHashes(htmlFile) {
 }
 
 /** Content-Security-Policy: skript — faqat o'z saytidan; uslub atributi (React/three.js) — ruxsat; ramkaga olish — taqiq.
- *  scriptHashes — inline skript xeshlari; frameAncestors — Telegram Mini App (TZ-16) uchun keyin kengaytiriladi */
-export function csp({ scriptHashes = [], frameAncestors = "'none'", upgrade = false } = {}) {
+ *  scriptHashes — inline skript xeshlari; scriptExtra va frameAncestors — faqat ilova sahifasi uchun Telegram (TZ-16) */
+export function csp({ scriptHashes = [], scriptExtra = [], frameAncestors = "'none'", upgrade = false } = {}) {
   return [
     "default-src 'self'",
-    "script-src 'self'" + (scriptHashes.length ? ' ' + scriptHashes.join(' ') : ''),
+    "script-src 'self'" + [...scriptExtra, ...scriptHashes].map(x => ' ' + x).join(''),
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
@@ -40,13 +40,18 @@ export function csp({ scriptHashes = [], frameAncestors = "'none'", upgrade = fa
   ].join('; ');
 }
 
+/* TZ-16: ilova sahifasi (app.html) Telegram Mini App bo'lib ochiladi — Telegram Web uni web.telegram.org ramkasiga oladi,
+ * ilova Telegram skriptini telegram.org dan yuklaydi (faqat Telegram ichida). Qolgan sahifalar — avvalgidek (ramka taqiq). */
+export const TG_ILOVA = /^\/app(\.html)?$/;
 export function securityHeaders({ prod, scriptHashes }) {
   const policy = csp({ scriptHashes, upgrade: prod });
+  const ilova = csp({ scriptHashes, upgrade: prod, scriptExtra: ['https://telegram.org'], frameAncestors: 'https://web.telegram.org' });
   return (req, res, next) => {
+    const tg = TG_ILOVA.test(req.path);
     res.set({
-      'Content-Security-Policy': policy,
+      'Content-Security-Policy': tg ? ilova : policy,
       'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
+      ...(tg ? {} : { 'X-Frame-Options': 'DENY' }),
       'Referrer-Policy': 'same-origin',
       'Permissions-Policy': 'camera=(), geolocation=(), microphone=(self)',
       'Cross-Origin-Opener-Policy': 'same-origin',

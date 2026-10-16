@@ -55,6 +55,10 @@ ESKIZ_FROM=4546
 # AI_PROVIDER=anthropic   # yoki gemini | openai
 # AI_MODEL=claude-opus-5-5
 # AI_API_KEY=<kalit>
+# Telegram Mini App (TZ-16) — ixtiyoriy (bo'lmasa Telegram kirishi o'chiq, sayt ishlayveradi)
+# TELEGRAM_BOT_TOKEN=<BotFather bergan kalit>
+# TELEGRAM_WEBHOOK_SECRET=<openssl rand -hex 24 natijasi>
+# TELEGRAM_WEBAPP_URL=https://smart3d.bittada.uz/app.html
 ```
 - `JWT_SECRET` 32 belgidan qisqa bo'lsa, production server ishga tushmaydi.
 - Standart `admin123` paroli bilan ham ishga tushmaydi.
@@ -115,6 +119,30 @@ Sarlavhalarni server o'zi qo'yadi — nginx'da takrorlash shart emas: CSP, HSTS 
 - **`X-Forwarded-For`** — `/ws` da ham bo'lsin. Usiz WebSocket'ning IP chegarasi ishlamaydi (xavfsiz, lekin cheklovsiz).
 - **Jurnal.** Server stdout'iga JSON qatorlar yozadi (`{"t":…,"lvl":…,"code":"S3D-…","rid":…}`). Ogohlantirish va xatolar `error_log` jadvaliga ham tushadi. Admin ularni ilovadagi Sozlamalar → "Xatolar jurnali"dan ko'radi.
 - **Akkaunt bloklangan bo'lsa** (5 xato parol → 15 daqiqa), admin uchun ham. Darhol ochish: `ADMIN_PASSWORD='…' npm run admin-password`. U parolni almashtiradi, blokni yechadi va eski kirishlarni bekor qiladi.
+
+### Telegram bot (TZ-16) — admin sozlaydi
+Bot kaliti faqat `/etc/smart3d.env` da turadi. Chatga, kodga va gitga yozilmaydi.
+1. BotFather: `/newbot` — bot va kalit oling. Kalitni `TELEGRAM_BOT_TOKEN` ga yozing.
+2. BotFather: `/setmenubutton` — tugma matni "Smart3D", manzil `https://smart3d.bittada.uz/app.html`.
+3. Webhook — telefon raqami va `/start` javobi uchun. Kalit faqat serverda turadi, shuning uchun buyruqni server konsolida bering:
+   ```bash
+   set -a; . /etc/smart3d.env; set +a
+   curl -s "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
+        -d url=https://smart3d.bittada.uz/api/telegram/webhook \
+        -d secret_token="$TELEGRAM_WEBHOOK_SECRET" -d 'allowed_updates=["message"]'
+   ```
+4. nginx: fayl botga yuboriladi (10 MB gacha), shuning uchun shu yo'lga katta chegara qo'ying:
+   ```nginx
+   location /api/telegram/fayl { client_max_body_size 15m; proxy_pass http://127.0.0.1:3070;
+       proxy_set_header Host $host; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme; }
+   ```
+5. Serverni qayta ishga tushiring, keyin botda `/start` → "Smart3D" tugmasi bilan tekshiring.
+
+Xavfsizlik:
+- Telegram ma'lumoti faqat serverda bot kaliti bilan tekshiriladi. Eskirgani (24 soatdan eski) rad etiladi.
+- Ilova sahifasi (`/app.html`) faqat `web.telegram.org` ramkasiga ochiq, qolgan sahifalar ramkaga olinmaydi.
+- Telefon raqami faqat foydalanuvchining o'zi ulashsa olinadi (o'z raqami).
+- Saytdagi akkauntga avtomatik bog'lash faqat SMS bilan tasdiqlangan raqamga qilinadi. Email bilan ochilgan akkaunt ilovada email va parol bilan kirilgandan keyin ulanadi.
 
 ## 7. Tekshiruv
 ```bash
