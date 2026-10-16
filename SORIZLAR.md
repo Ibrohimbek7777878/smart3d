@@ -355,3 +355,11 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 124. boshla
 
 125. davom et
+
+126. (2026-10-17) qara hozir men yangi konstruksiyan qayerda va qanday chizaman  Основной склад - Остаток (1).xls   va bu faylni ham korib chiq kereli qismlar bolsa ol
+
+127. ubekcha yoz
+
+128. xlsx faylni korib chiqidngmi qara bita bosh joy bolsin bazisdagi kabi u yerda matn yozadigan joy bolsin va bazis faylni ham chizish bolsin  hamda mebel va xonani chiza olish ham bolsin  sunpina kor oshandan zro va soda bolsin
+
+129. (savollarga javob) sayt ochilganda — darhol bo'sh ish joyi; matn joyi — pastda doim ochiq qator; Bazis — faylini ish joyida ochish; xona — devorni bosib chizish
