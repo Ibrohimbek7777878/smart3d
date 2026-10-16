@@ -12,7 +12,7 @@ import { t } from '../i18n/index.js';
  * features/editor/scene/sahna.js da; ular o'zgarganda tegishli hisoblagich (docV, dv, sceneV) oshadi. */
 export const store = createStore({
   nav: { screen: 'reg', from: 'projects', pending: null },
-  auth: { user: null, save: null, f: { name: '', email: '', phone: '', pass: '', shop: '', show: false, err: {}, tried: false } },
+  auth: { user: null, save: null, smsBor: false, f: { name: '', email: '', phone: '', pass: '', shop: '', show: false, err: {}, tried: false, usul: 'email', kod: '', yuborildi: false, qayta: 0 } },
   ui: { toast: '', toastCode: '', cf: null, vq: null, tilMenu: null },
   data: { ready: false, err: '' },
   onb: { kind: 'kitchen', room: { w: 3600, d: 3000, h: 2700 } },

@@ -1,8 +1,9 @@
+import { useEffect, useState } from 'react';
 import { useSlice } from '../../store/index.js';
 import { telGuruh } from '../../shared/lib/format.js';
 import { useViewer } from '../../shared/design3d/useViewer.js';
 import { s3Viewer, s3Mats, s3Build, s3Apply, s3Spec } from '../../shared/design3d/engine.js';
-import { setField, submitAuth, swapAuth } from './actions.js';
+import { setField, submitAuth, swapAuth, loadUsullar, usulAlmash, smsYubor, smsKirish } from './actions.js';
 import { t } from '../../i18n/index.js';
 
 /* ro'yxat oynasidagi aylanuvchi shkaf — dizayn animatsiyasi (marketing namunasi, o'zgarishsiz) */
@@ -25,10 +26,23 @@ export function useKirish() {
   const sc = f.pass.length ? [f.pass.length >= 8, /\d/.test(f.pass), /[A-ZА-Я]/.test(f.pass), /[^\w]/.test(f.pass)].filter(Boolean).length : 0;
   const bd = k => e[k] ? 'var(--danger)' : 'var(--line)';
   const pd = nav.pending;
+  /* TZ-23 C4: telefon + SMS (faqat kirishda va server SMS ishlaganda); qayta yuborish — 60 soniyadan keyin */
+  useEffect(() => { loadUsullar(); }, []);
+  const [hozir, setHozir] = useState(Date.now());
+  const qoldi = Math.max(0, Math.ceil((f.qayta - hozir) / 1000));
+  useEffect(() => { if (!qoldi) return undefined; const id = setTimeout(() => setHozir(Date.now()), 1000); return () => clearTimeout(id); }, [qoldi, hozir]);
+  const smsUsul = !reg && auth.smsBor && f.usul === 'sms';
   return {
+    smsBor: !reg && auth.smsBor, smsUsul, yuborildi: smsUsul && f.yuborildi,
+    usulCta: smsUsul ? t('kirish.email_bilan') : t('kirish.telefon_bilan'),
+    usulAlmash: () => usulAlmash(smsUsul ? 'email' : 'sms'),
+    kod: f.kod, eKod: e.kod || '', bKod: bd('kod'),
+    onKod: ev => setField({ kod: ev.target.value.replace(/\D/g, '').slice(0, 6) }),
+    qayta: f.yuborildi ? (qoldi ? t('kirish.qayta_n', { n: qoldi }) : t('kirish.qayta')) : '', qaytaBor: f.yuborildi && !qoldi, smsYubor,
+    smsCta: f.yuborildi ? t('kirish.kirish') : t('kirish.kod_yuborish'), smsSubmit: f.yuborildi ? smsKirish : smsYubor,
     isReg: reg, regHost, regOv,
     hasPending: !!pd, pendingText: pd ? t('kirish.pending', { mod: pd.mod + (pd.w ? ' · ' + pd.w + ' ' + t('umumiy.mm') : '') }) : '',
-    f: { title: reg ? t('kirish.royxat') : t('kirish.kirish'), sub: reg ? t('kirish.royxat_sub') : t('kirish.kirish_sub'),
+    f: { title: reg ? t('kirish.royxat') : t('kirish.kirish'), sub: reg ? t('kirish.royxat_sub') : smsUsul ? t('kirish.sms_sub') : t('kirish.kirish_sub'),
       cta: reg ? t('kirish.royxat') : t('kirish.kirish'), alt: reg ? t('kirish.akkaunt_bormi') : t('kirish.akkaunt_yoqmi'), altCta: reg ? t('kirish.kirish') : t('kirish.royxat'),
       name: f.name, email: f.email, eEmail: !!e.email, eEmailt: e.email || '', bEmail: bd('email'), passAuto: reg ? 'new-password' : 'current-password',
       phone: telGuruh(f.phone), pass: f.pass, shop: f.shop, passType: f.show ? 'text' : 'password', eye: f.show ? 'yashirish' : 'korish',

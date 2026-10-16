@@ -481,6 +481,10 @@ app.post('/api/auth/sms/verify', smsVerifyLimiter.check, ah(async (req, res) => 
   sendSession(req, res, u, { user: { id: u.id, name: u.name, phone: u.phone, role: u.role }, yangi });
 }));
 
+/* TZ-23 C4: kirish usullari — sayt "Telefon orqali (SMS)" tugmasini faqat SMS ishlaganda ko'rsatadi
+   (production'da — Eskiz sozlangan bo'lsa; dev/test — dev_code bilan, S8) */
+app.get('/api/auth/usullar', (req, res) => res.json({ email: true, sms: smsConfigured() || !PROD }));
+
 /* ═══════════════════ TELEGRAM MINI APP (TZ-16) ═══════════════════
  * Kirish — Telegram imzosi bilan (parol/SMS'siz). Kalit faqat javobda (cookie'siz): ilova uni xotirada saqlaydi va har
  * ochilishda qayta oladi (Telegram Web'da ilova ramka ichida — u yerda cookie ishlamaydi). Telefon — bot chatiga ulashilgan

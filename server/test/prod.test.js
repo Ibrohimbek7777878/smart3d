@@ -45,4 +45,6 @@ test('production: to\'g\'ri sozlamada ishlaydi; Eskiz sozlanmagan — SMS 503, d
   const s = await fetch(r.base + '/api/auth/sms/send', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ phone: '998901234567' }) });
   assert.equal(s.status, 503);
   assert.equal((await s.json()).dev_code, undefined);
+  /* TZ-23 C4: Eskiz yo'q — saytda SMS bilan kirish ko'rinmaydi */
+  assert.deepEqual(await (await fetch(r.base + '/api/auth/usullar')).json(), { email: true, sms: false });
 });

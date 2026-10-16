@@ -48,6 +48,10 @@ async function login(tel, name) {
 }
 const DOC = (n) => ({ app: 'smart3d', v: 2, name: 'Oshxona ' + n, doc: { room: { outline: [[0, 0], [3600, 0], [3600, 3000], [0, 3000]] }, placements: [{ id: 'p1', frg: 'MC-KP-02', x: 0, y: 50, z: 0, w: 600, d: 450, h: 708 }] } });
 
+test('kirish usullari: test serverida SMS bor (dev_code bilan)', async () => {
+  assert.deepEqual(await (await api('/api/auth/usullar')).json(), { email: true, sms: true });
+});
+
 test('telefon formati noto\'g\'ri → 400', async () => {
   for (const tel of ['123', '+7 999 123 45 67', 'abc']) {
     const r = await api('/api/auth/sms/send', { method: 'POST', body: { phone: tel } });
