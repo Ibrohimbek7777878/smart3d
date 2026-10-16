@@ -324,3 +324,5 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 116. (3 ta skrinshot: Bazis-Cloud — kamera rejimi Orbit/Walk/Ortho, fon rangi, Shaded/Shaded with edges/Wireframe/Effects/Mode X-Ray; X-Ray va sim karkas ko'rinishi) bular bazis oblakan ozida bor funksiyalar bular ham bolish kere
 
 117. yozgan tzinga buni ham qosh va biznikda rang tnalash materila tanlsh ham bolsin
+
+118. hamma savolaring bita qilb shu narli qilb ber qyatadan
