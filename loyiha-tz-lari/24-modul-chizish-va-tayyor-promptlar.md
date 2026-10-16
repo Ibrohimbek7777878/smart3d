@@ -1,6 +1,8 @@
 # TZ-24 — O'z modulini chizish (qo'lda konstruktor) va tayyor promptlar kutubxonasi
 
-**Sana:** 2026-10-16 · **Navbat:** 24 · **Holat:** RUXSAT BERILGAN — TZ-23 tugagach boshlanadi (egasi #122: "hozir qaysi TZni qilayapsan va o'shandan keyin boshlab ketaver")
+**Sana:** 2026-10-16 · **Navbat:** 24 · **Holat:** BAJARILDI 2026-10-16 (`dizayn` tarmog'i: B — 5bbe4e9, A — aa0ec99)
+- Ruxsat: egasi #122 — "hozir qaysi TZni qilayapsan va o'shandan keyin boshlab ketaver".
+- **Kutilmoqda:** yangi oynalar skrinshoti (3.3); texnolog — qoidalar raqamlari; 5-bo'limdagi savollar.
 **Asos:** egasi (2026-10-16, SORIZLAR #121): "o'zimiz qo'lda va tayyor promptlar yordamida chizish qismini qo'shmadik, uni ham qo'shib qo'yish kerak".
 Savollarga javob (#122):
 - qo'lda chizish — **o'z modulini chizish**;
@@ -117,6 +119,23 @@ Savollarga javob (#122):
 - Qoidaga zid holat (polka juda keng, eshik juda tor) ogohlantiriladi.
 - Tayyor prompt bosilsa AI'siz loyiha chiziladi. Shaxsiy shablon saqlanadi va keyingi safar ishlaydi.
 - 3 tilda; 390 va 1440 da toshish yo'q; barcha testlar yashil.
+
+## 6a. Natija (2026-10-16)
+- **B — tayyor so'rovlar:**
+  - 13 ta so'rov, 8 kategoriya, uch tilda. Oshxona — avtomatik konstruktor; qolganlari — katalog modullari devor bo'ylab (to'qnashuvsiz, sig'maganlari ro'yxatda).
+  - Har so'rov standart, eng kichik va eng katta o'lchamda tekshirildi.
+  - Shaxsiy shablonlar: so'rov va loyiha (server, 100 tagacha, faqat o'zi).
+- **A — o'z modulini chizish:**
+  - 5 tur; bo'lish, polka, tortma, shtanga, 1–2 eshik; bo'lgichni sudrash 32 mm qadam.
+  - Qoidalar ogohlantirish bilan. 3D, kesim, raskroy, narx, BPJ va "Ichini ko'rish" bitta chizmadan.
+  - Konstruksiya sex Bazis standartida: MC-KP-01, MC-KP-02, MC-KU-07 qo'lda chizilsa — detallari aynan bir xil.
+  - "Mening modullarim"; loyiha saqlanib qayta ochilganda tiklanadi.
+- **Qilinmagan, sababi bilan:**
+  - **Teshiklar.** Polkaderjatel va petlya kosasi teshiklari TZ-11 da qo'shiladi, haqiqiy KDT fayllari bilan solishtirib. Stanok koordinata qoidasi tekshirilmaguncha teshik qo'yish xavfli.
+  - **Katalogdagi modulni "Tahrirlash".** Bazis modullari tuzilmasi chizma shakliga o'tkazilmaydi. O'rnida — o'xshash modulni qo'lda chizish (detallar aynan chiqadi).
+  - **Orolli oshxona so'rovi.** Avtomatik konstruktorda orol yo'q (TZ-22).
+- **Narxda bo'shliq (TZ-20, pauza):** napravlyayushiy, polkaderjatel va shtanga narxi bazada yo'q — "narx yo'q" belgisi bilan.
+- **Testlar:** verify_promptlar 46, verify_chizish 29, server 67/67; brauzer — web_tayyor, web_chizish va barcha 22 to'plam yashil.
 
 ## 7. Muddat (taxmin)
 - **A:** 4–5 ish kuni.
