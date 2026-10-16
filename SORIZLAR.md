@@ -302,3 +302,5 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 105. (brauzer konsolidan xatolar ro'yxati) qara baruzerni consoleda shuncha xato chiqd
 
 106. davom et
+
+107. hozir bundday fayllarni biz aytgan va katta erpidag stanoklar oqyidgan qilb chiqaarb bera olamzmmi
