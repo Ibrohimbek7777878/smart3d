@@ -326,3 +326,20 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 117. yozgan tzinga buni ham qosh va biznikda rang tnalash materila tanlsh ham bolsin
 
 118. hamma savolaring bita qilb shu narli qilb ber qyatadan
+
+119. 1.ha pol ostidan ham korish bolsin
+2.buni korib chiqamiz 
+3.kirishda kelish shart emas boshqa oddiy yol bolsin ismin yozsin va email akaunt bilan kirsin parol kere emas sms tizmin ham toliq yozb qoyaver 
+4.hozirhca yoq narxn keyinro korib chiqamz har doim pauzadag ishlarn eslatb tur
+5.ha
+6.ha
+7.ha va bita umumiy materila bilan qilish ham bolsin
+8.boshla va oldin shuntirb ber nima edi ozi bugun tugaitsh kere
+9.buni bazis fayllar bilan solishtrb korib izlab kor va sunpinadan ham izlab kor ularda qanday 
+10.ikkalasi ham va ortas 17  ozi bundya savol bolganda dunyo standartlarin korib chiq
+11.tokcha bolsa kere
+12.ha kodlarin ozgartitr agarda stollarni korinish har xil bolsa bita farq bolsa ham kodin ozgartir
+13.ha boshla buni
+14.ha qosh va hammasi commit qivor xatoalrsz bolsa bolib bolib commit qil comitlar soni kopayb ketgan
+15.ha tasdiqlayman 
+(nusxa: texnolog savollari 16–20 va "Sizdan kerak" 21–22) bularn tashqari hammasin qilb tur bularn kechka qilamiz hozir yuqoridagilarni hammasi yashil va real ishga tayyor bolsin va hozir bularn ortacha qancha vaqtda tugatasan tahmin bolsa ham vaqtin ayt
