@@ -1,12 +1,16 @@
 # TZ-23 — 3D ko'rinish Bazis-Cloud darajasida (erkin aylantirish, ko'rinish rejimlari), rang va material tanlash, backend funksiyalari interfeysda
 
-**Sana:** 2026-10-16 · **Navbat:** 23 · **Holat:** JARAYONDA (egasi #119-8: "boshla")
+**Sana:** 2026-10-16 · **Navbat:** 23 · **Holat:** BAJARILDI 2026-10-16 (egasi #119-8: "boshla"), C1 dan tashqari
 - **Bajarildi** (`dizayn` tarmog'i):
   - A1–A4, A6 va D — 53e058d;
   - E — c248785;
-  - A5 va B — 5c9a431.
-- **Navbatda:** C2 (qoldiqlar), C3 (furnitura katalogi), C4 (SMS bilan kirish — kirish usuli savoliga bog'liq, #119-3).
+  - A5 va B — 5c9a431;
+  - C2 va C3 — 570cbc3;
+  - C4 — b0685f3.
 - **Pauza:** C1 (buyurtma) — egasi: "ko'rib chiqamiz".
+- **Kutilmoqda:**
+  - "parolsiz email bilan kirish" (#119-3) — usul tanlovi egasidan;
+  - yangi oynalar skrinshoti (3.3).
 **Asos:** egasi (2026-10-16, SORIZLAR #115). Ikki skrinshot bilan:
 - **1-rasm — Bazis-Cloud Web-Viewer.** "Shodiyor aka ishxona kuxnya": panellar, eshiklar, ruchka, oyoq, stoleshnitsadagi o'yiq ko'rinadi, model erkin aylanadi.
 - **2-rasm — Smart3D muharririda shu loyiha.** Talab: "erkin aylantirish qo'shilsin, bizda ustun jihatlar bo'lsin, backend'dagi funksiyalar to'liq ishlab, frontendda chiroyli interfeys orqali chiqsin".
@@ -208,7 +212,15 @@ Uchala bo'lim tanlovi eslab qolinadi (qurilmada).
   - oyoq va ruchkalar joyida: 214 + 246, hammasi panel yonida;
   - Bazis materialini almashtirish (shu qalinlikda);
   - "Eshiklarni ochish" o'rniga "Fasadsiz ko'rish".
-- **Testlar:** node; server 64/64; brauzer — 18 to'plam yashil.
+- **C2 — qoldiqlar ombori** (Sozlamalar): ro'yxat, qidiruv, "omborda / ishlatilgan".
+  - Admin: qo'lda qo'shadi, "ishlatildi" deb belgilaydi.
+  - Narx qadamidan raskroy qoldiqlarini omborga yozadi.
+- **C3 — furnitura varag'i** (Mebel qadamida):
+  - loyihadagi furnitura: soni, narxi, jami;
+  - ERP katalogi (1978 ta): qidiruv, toifalar.
+  - **Topildi:** MC modullari furniturasi (BZ- kodlar) ERP narxiga bog'lanmagan — smetada 0, "narx yo'q" belgisi bilan. Bu TZ-20 ishi (pauza).
+- **C4 — telefon + SMS bilan kirish:** kod, qayta yuborish taymeri, yangi raqamga akkaunt ochiladi. Tugma faqat SMS ishlaganda ko'rinadi (production'da — Eskiz sozlangan bo'lsa).
+- **Testlar:** node; server 65/65; brauzer — 20 to'plam yashil. `ekranlar` testi bir marta beqaror bo'ldi (saytdagi FAQ animatsiyasi), qayta ishga tushirilganda yashil.
 
 ## 7. Muddat (taxmin)
 - **A + B:** 2–3 ish kuni.

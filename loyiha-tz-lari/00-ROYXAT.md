@@ -37,7 +37,7 @@
 | 20 | [Narx faqat bizning ma'lumotdan (admin "Narxlar" sahifasi)](20-narx-bizning-malumotdan.md) | PAUZA (egasi, 2026-10-16: "narxni qo'yib turamiz") | egasi: Q1 (`NARXLAR.xlsx` 3-ustuni), Q2 (ish haqi, kromka, ustama), Q3, "boshla" |
 | 21 | [Saytga Bazis faylini yuklash (.b3d, .fr3d, .bpj)](21-bazis-fayl-yuklash.md) | **BAJARILDI** 2026-10-16 (`dizayn` tarmog'i) — GibLab bilan 97,7% mos | egasi: yangi tugma va hisobot skrinshoti (3.3) |
 | 22 | [Avtomatik konstruktor (AI'siz, qoidalar bilan)](22-avtomatik-konstruktor.md) | **BAJARILDI** 2026-10-16 (`dizayn` tarmog'i) | texnolog: qoidalar raqamlari va stoleshnitsa qalinligi; egasi: yangi oyna skrinshoti (3.3) |
-| 23 | [3D ko'rinish Bazis-Cloud darajasida, rang va material tanlash, backend funksiyalari interfeysda](23-3d-korinish-va-backend-interfeys.md) | **JARAYONDA** — A, B, D, E bajarildi (`dizayn`); C2–C4 navbatda; C1 pauza | egasi: kirish usuli (#119-3), yangi oynalar skrinshoti (3.3) |
+| 23 | [3D ko'rinish Bazis-Cloud darajasida, rang va material tanlash, backend funksiyalari interfeysda](23-3d-korinish-va-backend-interfeys.md) | **BAJARILDI** 2026-10-16 (`dizayn`) — C1 (buyurtma) pauza | egasi: parolsiz email bilan kirish usuli (#119-3), yangi oynalar skrinshoti (3.3) |
 | 24 | [O'z modulini chizish va tayyor promptlar kutubxonasi](24-modul-chizish-va-tayyor-promptlar.md) | RUXSAT BERILGAN — TZ-23 dan keyin (#121–122) | egasi: 4 savol (tavsiyalar bor); texnolog: qoidalar raqamlari |
 
 **Navbat sababi:**
