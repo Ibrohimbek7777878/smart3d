@@ -2,11 +2,13 @@
  *   1) koddagi har t('kalit') — uz.json da bor (yo'q bo'lsa ekranda kalitning o'zi chiqadi);
  *   2) uz.json da bo'sh qiymat va ishlatilmagan kalit yo'q;
  *   3) {o'zgaruvchi} lar uchala tilda bir xil;
- *   4) ru.json / en.json — qamrov foizi; --qatiy bilan: 100% bo'lishi shart (tarjima tugagach run-all shu rejimda).
+ *   4) ru.json / en.json — qamrov foizi; --qatiy bilan: 100% bo'lishi shart (tarjima tugagach run-all shu rejimda);
+ *   5) har xato kodi (app/js/xatolar.js — server va brauzer) ru/en da bor: ekran xatoni tanlangan tilda ko'rsatadi (7-bosqich).
  * Ishlatish: node tests/verify_til.mjs [--qatiy] */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { XATOLAR } from '../app/js/xatolar.js';
 
 const SRC = fileURLToPath(new URL('../web/src/', import.meta.url));
 const QATIY = process.argv.includes('--qatiy');
@@ -45,6 +47,10 @@ for (const [nom, L] of [['ru', ru], ['en', en]]) {
   const pct = Math.round(done / total * 1000) / 10;
   console.log(`  · ${nom}: ${done}/${total} (${pct}%)`);
   if (QATIY) ok(nom + ': to\'liq tarjima', done === total, (total - done) + ' ta yo\'q');
+}
+for (const [nom, L] of [['ru', ru], ['en', en]]) {
+  const yoq = Object.keys(XATOLAR).filter(k => !L['xato.' + k]);
+  ok(nom + ': ' + Object.keys(XATOLAR).length + ' ta xato kodi tarjimada', !yoq.length, yoq.slice(0, 10).join(', '));
 }
 
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);

@@ -5,7 +5,7 @@ import { xato } from '../../store/ui.js';
 import { loadSettings } from '../settings/actions.js';
 import { goProjects, openPending } from '../projects/actions.js';
 import { checkAiStatus } from '../editor/ai/actions.js';
-import { t } from '../../i18n/index.js';
+import { t, serverXato } from '../../i18n/index.js';
 
 /* TZ-19 (TZ-09 Q2): kirish — email + parol (server: /api/register, /api/login). SMS (TZ-07) auth-core.js da tayyor. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -71,10 +71,10 @@ export async function submitAuth() {
   busy = false;
   if (!j.ok) {
     if (j.status === 0) { xato(j.code || 'S3D-NET-101', { modul: 'auth' }); return; }
-    const msg = String(j.error || '');
+    const msg = String(j.error || ''), ko = serverXato(msg, j.code);   // maydon — server matnidan (o'zbekcha), ko'rinadigani — tanlangan tilda (TZ-18)
     if (j.status === 409) { if (j.code === 'S3D-AUTH-003' || /telefon/i.test(msg)) e.phone = t('kirish.raqam_bor'); else e.email = t('kirish.email_bor'); }
     else if (j.status === 401) e.pass = t('kirish.parol_xato');
-    else if (/parol/i.test(msg)) e.pass = msg; else if (/telefon/i.test(msg)) e.phone = msg; else if (/ism/i.test(msg)) e.name = msg; else e.email = msg;
+    else if (/parol/i.test(msg)) e.pass = ko; else if (/telefon/i.test(msg)) e.phone = ko; else if (/ism/i.test(msg)) e.name = ko; else e.email = ko;
     setField({ err: e, tried: true });
     return;
   }

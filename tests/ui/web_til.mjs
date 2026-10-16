@@ -23,6 +23,17 @@ async function asosiy(page, R) {
   const waitText = async (t, ms = 10000) => { for (let i = 0; i < ms / 200; i++) { if (await has(t)) return true; await page.waitForTimeout(200); } return false; };
 
   await page.setViewportSize({ width: 1440, height: 900 });
+  /* TZ-18 7-bosqich: server rad etgan maydon xatosi tanlangan tilda (ism "<b>…" brauzer tekshiruvidan o'tadi, server — 400 S3D-VAL-001) */
+  await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'ru'); });
+  await page.reload(); await page.waitForTimeout(1500);
+  await fill('Жасур', '<b>Usta'); await fill('jasur@', 'tilru' + Date.now() + '@test.uz');
+  { const tl = page.locator('input[inputmode=numeric]').first(); await tl.click(); await tl.type('9' + String(Date.now()).slice(-8)); }
+  await fill('минимум 8', 'parol12345');
+  await page.locator('button', { hasText: /^Регистрация$/ }).last().click();
+  R.ruServer = await (async () => { for (let i = 0; i < 25; i++) { if (await has('Введено неверное значение')) return true; await page.waitForTimeout(200); } return false; })();
+  R.ruServerUz = await has('mumkin emas');
+  await page.screenshot({ path: `${OUT}/til-1440-ru-server-xato.png`, clip: { x: 0, y: 0, width: 1440, height: 700 } });
+
   await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
   await page.reload(); await page.waitForTimeout(1500);
   R.boshlangich = await M(() => document.documentElement.lang);
@@ -94,7 +105,7 @@ async function asosiy(page, R) {
   await M(() => localStorage.setItem('s3d-til', 'uz'));
 
   R.errs = errs;
-  R.ok = R.ruExcel && /^ru\|[1-9]/.test(R.ruPdf || '') && R.ruKatalog.length > 0 && R.ruKatalog.every(n => /[А-Яа-яЁё]/.test(n)) && R.ruQolgan.length === 0 && R.sayt.lang === 'ru' && R.sayt.tugma === 'Русский' && yuklandi && R.menyu.join('|') === 'O\'zbekcha|Русский|English' && R.ru.lang === 'ru' && R.ru.saqlandi === 'ru' && R.ru.menyuYopiq &&
+  R.ok = R.ruServer && !R.ruServerUz && R.ruExcel && /^ru\|[1-9]/.test(R.ruPdf || '') && R.ruKatalog.length > 0 && R.ruKatalog.every(n => /[А-Яа-яЁё]/.test(n)) && R.ruQolgan.length === 0 && R.sayt.lang === 'ru' && R.sayt.tugma === 'Русский' && yuklandi && R.menyu.join('|') === 'O\'zbekcha|Русский|English' && R.ru.lang === 'ru' && R.ru.saqlandi === 'ru' && R.ru.menyuYopiq &&
     R.ru.qaytaYuklanmadi && R.ru.narx === narxUz && R.ru.server === 'ru' && R.escYopdi && R.eslabQoldi === 'ru' && R.sozlamaTil.length === 3 && R.en === 'en' &&
     R.uz === 'uz' && !R.hScroll && errs.length === 0;
 }
