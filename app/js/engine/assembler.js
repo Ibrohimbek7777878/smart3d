@@ -22,6 +22,7 @@
 import { evalFormula } from './expr.js';
 import { hasJoy, joyPanellar } from './joy.js';
 import { dekorRang } from './rang.js';
+import { chizmaPanellar } from './chizish.js';
 
 const TORTMA_RE = /ящик|tortma|fasad_kichik|fasad_katta/i;
 const ESHIK_RE = /двер|eshik/i;
@@ -67,6 +68,8 @@ export function eshikTuzilmasi(frag, w, d, h, t = 16) {
 }
 
 export function getModulePanels(frag, w, d, h, opts = {}) {
+  /* TZ-24 A: qo'lda chizilgan modul — panellar chizmadan (eshik petlyasi, tortmalar, ruchka, oyoq, shtanga) */
+  if (frag && frag.chizma) return chizmaPanellar(frag.chizma, w, d, h, { t: opts.thickness || 16 });
   /* TZ-21: Bazis faylidan yuklangan loyiha — panellar fayldagi joyida (engine/bazis/loyiha.js: [x, y, z, w, d, h, slot, mi]).
      TZ-23 A5: material nomi va dekor rangi (taxminiy), egri panel — o'z konturi (shakl), oyoq va ruchka (furn) */
   if (frag && Array.isArray(frag.bazis3d)) {

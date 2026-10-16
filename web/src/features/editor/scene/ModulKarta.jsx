@@ -66,6 +66,10 @@ export default function ModulKarta() {
       <button onClick={v.toggleModOpen} style={{"height":"48px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
         <Ikon n="eshik" /><span className="sc-interp">{v.sm?.openLabel}</span>
       </button>
+      {/* TZ-24 A: qo'lda chizilgan modul — chizmani tahrirlash */}
+      {v.chizma ? <button onClick={v.chizma} data-chizma-tahrir="" style={{"height":"48px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
+        <Ikon n="tahrir" /><span className="sc-interp">{t('chizish.tahrirlash')}</span>
+      </button> : null}
       {/* TZ-23 E: shu modul materiali (dizayndagi tugma uslubi) */}
       <button onClick={v.material} data-modul-material="" style={{"height":"48px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"800","fontSize":"15px","cursor":"pointer","overflow":"hidden","textOverflow":"ellipsis","whiteSpace":"nowrap","padding":"0 12px"}}>
         <Ikon n="material" /><span className="sc-interp">{v.matLabel}</span>

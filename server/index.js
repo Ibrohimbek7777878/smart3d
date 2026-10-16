@@ -652,7 +652,7 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS idx_user_items_user ON user_items(user_id);
 `);
-const SHABLON_TUR = ['prompt', 'loyiha'], SHABLON_MAX = 100;
+const SHABLON_TUR = ['prompt', 'loyiha', 'modul'], SHABLON_MAX = 100;   // modul — TZ-24 A: qo'lda chizilgan modul (yassi chizma)
 app.get('/api/shablonlar', auth, (req, res) => {
   const rows = db.prepare('SELECT id, tur, nom, data_json, created_at FROM user_items WHERE user_id = ? ORDER BY id DESC LIMIT ?').all(req.user.id, SHABLON_MAX);
   res.json(rows.map(r => { let data = null; try { data = JSON.parse(r.data_json); } catch (e) { data = null; } return { id: r.id, tur: r.tur, nom: r.nom, data, created_at: r.created_at }; }));
@@ -660,11 +660,12 @@ app.get('/api/shablonlar', auth, (req, res) => {
 app.post('/api/shablonlar', auth, (req, res) => {
   const b = req.body || {};
   const tur = str(b.tur, 'tur', { max: 10, required: true });
-  if (!SHABLON_TUR.includes(tur)) bad('tur: prompt yoki loyiha');
+  if (!SHABLON_TUR.includes(tur)) bad('tur: prompt, loyiha yoki modul');
   const nom = plainText(b.nom, 'nom', { max: 80, required: true });
   const data = b.data;
   if (!data || typeof data !== 'object' || Array.isArray(data)) bad('data kerak');
   if (tur === 'loyiha' && (!data.doc || !data.doc.room || !Array.isArray(data.doc.placements))) bad('loyiha shabloni: doc (room, placements) kerak');
+  if (tur === 'modul' && (!data.ch || !Array.isArray(data.ch.tugun) || data.ch.tugun.length > 200)) bad('modul shabloni: chizma (tugun ro\'yxati, 200 gacha) kerak');
   const xe = docXatosi(data);
   if (xe) bad(xe);
   const json = JSON.stringify(data);

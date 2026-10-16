@@ -6,6 +6,7 @@ import { konstruksiya } from '../../../app/js/engine/konstruktor/index.js';
 import { materiallarniQosh } from '../../../app/js/engine/bazis/loyiha.js';
 import { eskiKodlar } from '../../../app/js/engine/kodlar.js';
 import { erpUla, erpSaqla, bazisAlmash } from '../services/erpMaterial.js';
+import { chizmaUla } from '../services/chizma.js';
 import { report } from '../shared/lib/jurnal.js';
 import { xato } from './ui.js';
 import { t } from '../i18n/index.js';
@@ -76,6 +77,7 @@ export const project = {
   /** TZ-21: Bazis'dan yuklangan loyiha — o'z fragmenti va materiallari hisob bazasiga (katalog ro'yxatida ko'rinmaydi) */
   bazisUla() {
     if (this.H && this.doc) erpUla(this.H, this.doc);     // TZ-23 E: loyihada tanlangan ERP plitalari (material kodlari)
+    if (this.H && this.doc) chizmaUla(this.H, this.doc);  // TZ-24 A: qo'lda chizilgan modullar
     const b = this.doc && this.doc.bazis;
     if (!b || !b.fragment || !this.H) return;
     this.H.catalog[b.fragment.code] = bazisAlmash(b.fragment, b.almash);   // TZ-23 E: almashtirilgan materiallar

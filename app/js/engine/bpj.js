@@ -28,6 +28,7 @@ import { evalFormula } from './expr.js';
 import { cutlist } from './cutlist.js';
 import { getModulePanels } from './assembler.js';
 import { hasJoy, joyPanellar } from './joy.js';
+import { chizmaYech } from './chizish.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
 
 const r1 = (x) => Math.round(x * 10) / 10;
@@ -114,9 +115,10 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
   let unpositioned = 0, fromJoy = 0, fromModel = 0;
 
   for (const p of doc.placements || []) {
-    const frag = catalog[p.frg];
+    let frag = catalog[p.frg];
     if (!frag) continue;
     const w = +p.w || +frag.w, d = +p.d || +frag.d, h = +p.h || +frag.h;
+    if (frag.chizma) frag = chizmaYech(frag, w, d, h);   // TZ-24 A: qo'lda chizilgan — detallar va joyi shu o'lchamda
     const qty = Math.max(1, Math.round(+p.qty || 1));
     const rot = ((+p.rot || 0) % 360 + 360) % 360;
     const rad = rot * Math.PI / 180, cs = Math.round(Math.cos(rad) * 1e12) / 1e12, sn = Math.round(Math.sin(rad) * 1e12) / 1e12;
@@ -143,6 +145,11 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
       if (joyli) {
         const thByCode = {};
         for (const x of defs) thByCode[x.code] = x.thickness;
+        /* TZ-24 A: chizma — joylar kesimdagi haqiqiy qalinliklar bilan qayta hisoblanadi (korpus 18 bo'lsa ham aniq) */
+        if (catalog[p.frg].chizma) {
+          const th = (slot) => (defs.find(x => x.slot === slot) || {}).thickness;
+          frag = chizmaYech(catalog[p.frg], w, d, h, { t: tKorpus, tp: th('polka'), tf: th('fasad'), to: th('orqa') });
+        }
         asmBase = joyPanellar(frag, w, d, h, { t: tKorpus, qalinlik: (part) => thByCode[part.code] });
       } else {
         const asm = getModulePanels(frag, w, d, h, { thickness: tKorpus });

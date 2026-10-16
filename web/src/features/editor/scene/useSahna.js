@@ -14,6 +14,7 @@ import * as A from './actions.js';
 import { t } from '../../../i18n/index.js';
 import * as L from '../../../services/loyiha.js';
 import { openMaterial } from '../catalog/material.js';
+import { tahrirla } from '../chizish/chizish.js';
 
 /** sahna: yaratish/tozalash va ko'rinish (2D/3D, aylanish, tanlov) — 3D bilan sinxron */
 export function useSahnaView() {
@@ -80,6 +81,7 @@ export function useModulKarta() {
     moveL: () => A.moveBy(-50), moveR: () => A.moveBy(50), rotate: A.rotate, dup: A.duplicate, askDel: A.askDelete,
     toggleModOpen: () => A.toggleOpen(sm.id), openInside: A.openInside,
     material: () => openMaterial('korpus', sm.id),
+    chizma: project.doc.chizmalar && project.doc.chizmalar[sm.frg] ? () => tahrirla(sm.id) : null,   // TZ-24 A: qo'lda chizilgan
     matLabel: sm.slots && sm.slots.korpus ? project.matName(sm.slots.korpus) : t('mebel.modul_materiali')
   };
 }

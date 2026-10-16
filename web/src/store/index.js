@@ -24,6 +24,8 @@ export const store = createStore({
   projects: { list: null, q: '' },
   bazis: { yuk: null },                                   // TZ-21: Bazis fayli o'qilmoqda (fayl nomi)
   /* TZ-23: 3D ko'rinish (kamera, fon, chizish rejimi, rentgen, xona, fasadsiz, o'lchash) — features/editor/scene/korinish.js */
+  /* TZ-24 A: modul chizish (features/editor/chizish) */
+  chizish: { ochiq: false, kod: null, pl: null, ch: null, yol: [], fasad: true, nom: '', modullarim: null, v: 0, raw: {} },
   korinish: { kamera: 'orbit', fon: null, chizish: 'boyalgan', rentgen: false, xona: true, fasadsiz: false, olchash: false, menyu: false, olcham: null },
   settings: { sets: { markup_pct: null, stanoklar: null, logo: null, til: null }, markupIn: null, nestIn: null, stdIn: null, xq: '', xatolar: null, qoldiqlar: null, qHolat: 'available', qQ: '', qForm: null }
 });

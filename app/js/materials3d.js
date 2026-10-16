@@ -272,7 +272,8 @@ function shaklMesh(THREE, s, mat) {
   return new THREE.Mesh(geo, mat);
 }
 
-/* TZ-23 A5: oyoq (silindr Ø30, o'qZ bo'ylab l mm) va ruchka (o'qX bo'ylab l+24 mm planka, fasaddan 28 mm, 2 ustuncha) — soddalashtirilgan */
+/* TZ-23 A5: oyoq (silindr Ø30, o'qZ bo'ylab l mm) va ruchka (o'qX bo'ylab l+24 mm planka, fasaddan 28 mm, 2 ustuncha) — soddalashtirilgan;
+ * TZ-24 A: shtanga (Ø24, o'qX bo'ylab l mm) */
 function furnMesh(THREE, f, mat) {
   const g = new THREE.Group();
   const X = new THREE.Vector3(...f.ax).normalize(), Z = new THREE.Vector3(...f.az).normalize(), Y = new THREE.Vector3().crossVectors(Z, X).normalize();
@@ -284,6 +285,10 @@ function furnMesh(THREE, f, mat) {
     const c = new THREE.CylinderGeometry(15, 15, f.l, 16);
     c.rotateX(Math.PI / 2);                                   // silindr o'qi — lokal Z
     qism(c, 0, 0, f.l / 2);
+  } else if (f.tur === 'shtanga') {                         // TZ-24 A: kiyim ilgich — o'qX bo'ylab
+    const c = new THREE.CylinderGeometry(12, 12, f.l, 16);
+    c.rotateZ(Math.PI / 2);
+    qism(c, f.l / 2, 0, 0);
   } else {
     qism(new THREE.BoxGeometry(f.l + 24, 12, 10), 0, 0, 28);
     for (const s of [-1, 1]) qism(new THREE.BoxGeometry(10, 10, 24), s * f.l / 2, 0, 12);

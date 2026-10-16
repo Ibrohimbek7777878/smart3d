@@ -2,10 +2,11 @@
  * ma'lumot esa HAQIQIY: panellar — assembler.js (3D geometriya), detal va zapchast soni — kesim ro'yxati (cutlist.js)
  * va modul furniturasi. Dizayn koordinatasi: Y-up, mm, tagi y=0, old tomoni +z; bizniki: Z-up, markazda, old tomoni +y. */
 import { getModulePanels } from '../../../app/js/engine/assembler.js';
+import { chizmaYech } from '../../../app/js/engine/chizish.js';
 import { isUstki } from './loyiha.js';
 
 /** "Ichini ko'rish" faqat MebelCity modullarida — 83 ta umumiy modul geometriyasi TZ-05 gacha tekshirilmagan */
-export const ichiniKorsaBoladi = (frag) => !!frag && /^MC-/.test(frag.code || '');
+export const ichiniKorsaBoladi = (frag) => !!frag && (/^MC-/.test(frag.code || '') || !!frag.chizma);   // TZ-24 A: qo'lda chizilgan ham
 
 const dimText = (a, b) => Math.round(a) + '×' + Math.round(b);
 /** Detal yorlig'i: ikki katta o'lcham (masalan yon devor 692×450) */
@@ -14,6 +15,7 @@ const matKey = (slot, ustki, glass) => (slot === 'fasad' ? (glass ? 'white' : us
 
 /** frag + o'lcham → dizayn spetsifikatsiyasi { W, D, H, parts, hw, list, hwList, stats } */
 export function ichkiSpec(frag, w, d, h, cutlistRes) {
+  if (frag && frag.chizma) frag = chizmaYech(frag, w, d, h);
   const asm = getModulePanels(frag, w, d, h, { tortma: true });   // Q5: tortmalar ham (faqat 3D)
   const ustki = isUstki(frag), glass = /shisha|vitr|glass|oyna/i.test(frag.name || '');
   const seen = {};

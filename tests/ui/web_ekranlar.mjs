@@ -47,6 +47,10 @@ function tekshir() {
     else if (c.display !== 'inline' && c.overflowX === 'visible' && el.scrollWidth > el.clientWidth + 1) tur = 'qutidan toshdi';
     else if (ota) {
       const re = ota.e.getBoundingClientRect();
+      /* to'liq yashirin (yopiq akkordeon javobi — ota bo'yi 0, matn butunlay tashqarida) — ataylab, kesilish emas;
+         kesilish — qisman ko'rinib, qisman yo'qolgan matn (2026-10-16: saytdagi FAQ animatsiyasi testni beqaror qilardi) */
+      const kesishmaydi = r.right <= re.left || r.left >= re.right || r.bottom <= re.top || r.top >= re.bottom;
+      if (kesishmaydi) continue;
       if ((yopiq(ota.ce.overflowX) && (r.right > re.right + 1 || r.left < re.left - 1)) ||
           (yopiq(ota.ce.overflowY) && (r.bottom > re.bottom + 1 || r.top < re.top - 1))) tur = 'ota ichida kesildi';
     }

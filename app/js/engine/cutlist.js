@@ -12,6 +12,7 @@
 
 import { evalFormula, roundMm } from './expr.js';
 import { resolveSlots } from './slots.js';
+import { chizmaYech } from './chizish.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
 
 /** Orqaga moslik uchun evalExpr (ichkarida xavfsiz evalFormula ishlaydi). */
@@ -94,6 +95,8 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   // Korpus materialining haqiqiy qalinligi t (mm)
   const tKorpus = slotResolver.getThickness('korpus');
   const tFasad = slotResolver.getThickness('fasad');
+  /* TZ-24 A: qo'lda chizilgan modul — detallar shu o'lcham va material qalinligida chizmadan (engine/chizish.js) */
+  if (frag.chizma) frag = chizmaYech(frag, w, d, h, { t: tKorpus, tp: slotResolver.getThickness('polka'), tf: tFasad, to: slotResolver.getThickness('orqa') });
 
   const baseVars = {
     w: +w,

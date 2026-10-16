@@ -4,6 +4,7 @@ import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useQadamMebel } from './useQadamMebel.js';
 import { openKonstruktor } from '../konstruktor/konstruktor.js';
 import { openFurnitura } from './furnitura.js';
+import { chizishOch } from '../chizish/chizish.js';
 import { openSheet } from '../../../store/ui.js';
 import { btnGhost } from '../../../shared/ui/styles.js';
 
@@ -28,6 +29,10 @@ export default function QadamMebel() {
       {/* TZ-22 (dizaynda yo'q — egasi skrinshot bilan tasdiqlaydi): avtomatik konstruksiya */}
       <button onClick={openKonstruktor} data-konstruktor style={{ ...btnGhost, height: '48px', flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
         <Ikon n="konstruktor" size={18} gap={0} />{t('konstruktor.tugma')}
+      </button>
+      {/* TZ-24 A: o'z modulini chizish */}
+      <button onClick={chizishOch} data-chizish-yangi="" style={{ ...btnGhost, height: '44px', flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+        <Ikon n="tahrir" size={17} gap={0} />{t('chizish.tugma')}
       </button>
       {/* TZ-23 C3: furnitura — loyihadagisi va ERP katalogi (faqat ko'rish) */}
       <button onClick={openFurnitura} data-furnitura style={{ ...btnGhost, height: '44px', flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
