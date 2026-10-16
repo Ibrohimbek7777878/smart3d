@@ -25,7 +25,7 @@
 | 08 | [Ekrandagi qoida buzilishlari: logo, oyna, burish](08-ui-qoida-tuzatishlari.md) | QISMAN: oyna ✅, burish ✅, logo — kutilmoqda | egasi: Bittada logo fayli |
 | 09 | [Yangi frontend: React versiyani loyihaga ulash (dizayn buzilmaydi)](09-dizayn.md) | **BAJARILDI** 2026-10-15 (`dizayn` tarmog'i) | egasi: yangi UI qismlari skrinshoti (3.3), main'ga qo'shish va deploy ruxsati |
 | 10 | [Deploy va zaxira nusxa](10-deploy-va-zaxira.md) | **REPO QISMI BAJARILDI** 2026-10-15 | admin: `server/DEPLOY.md` bo'yicha o'rnatadi; L1 (yurist) |
-| 11 | [Stanok fayllarini haqiqiy stanokka moslash](11-stanok-postprotsessorlar.md) | 2-TAHRIR — tasdiq kutilmoqda (namunalar o'rganildi 2026-10-16) | egasi: "boshla" (GibLab `.project` Bazis'dek + KDT prisadka), texnolog — D6 |
+| 11 | [Stanok fayllarini haqiqiy stanokka moslash](11-stanok-postprotsessorlar.md) | **JARAYONDA** — `.project` + KDT bajarildi (`dizayn`, sex fayllari bilan 99,2% mos) | texnolog — D6 (taklif TZ ichida), sinov kuni (GibLab'ga import + 1 detal) |
 | 12 | [AI: til modeli va ovoz](12-ai-llm.md) | **BAJARILDI** 2026-10-15 (ovozdan tashqari) | real ishlatish uchun API kalit serverga |
 | 13 | [Modullar kutubxonasi — 600 ta](13-modullar-kutubxonasi.md) | MA'LUMOT KUTILMOQDA | D8 (Bazis fayllari) |
 | 14 | [Sex standartlari sahifasi (admin)](14-sex-standartlari-sahifasi.md) | **BAJARILDI** 2026-10-15 | — |

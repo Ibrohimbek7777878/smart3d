@@ -1,6 +1,11 @@
 # TZ-11 — Stanok fayllarini haqiqiy stanokka moslash
 
-**Sana:** 2026-10-15 (2-tahrir: 2026-10-16) · **Navbat:** 11 · **Holat:** 2-TAHRIR — EGASI TASDIG'I KUTILMOQDA. 1-band (namunalarni o'rganish) bajarildi — pastda "2-tahrir" bo'limi; kod "boshla" dan keyin
+**Sana:** 2026-10-15 (2-tahrir: 2026-10-16) · **Navbat:** 11 · **Holat:** JARAYONDA — egasi "boshla" (#119-13, #124)
+- **2-tahrirning 1–3-bandlari bajarildi:** `dizayn` tarmog'i, cd63495 (pastda "Natija").
+- **Kutilmoqda:**
+  - D6 jadvali — texnolog tasdig'i; ma'lumotdan olingan taklif pastda;
+  - sinov kuni — GibLab'ga import va 1 ta detal;
+  - G-code (Rover) tuzatishlari — 5-band, ustuvorligi past.
 **Bog'liq:** TZ-01, TZ-06.
 
 ## Muammo (tekshirilgan, `app/js/engine/cnc.js`)
@@ -106,3 +111,34 @@ Sexdagi haqiqiy zanjir:
 
 ### Muddat (taxmin)
 - `.project` + KDT + 30 buyurtma bilan solishtirish — taxminan 2–3 ish kuni. Sinov kuni alohida. Bu taxmin.
+
+### Natija (2026-10-16, cd63495)
+- **`.project` (Bazis eksportidek)** — `app/js/engine/post/project.js`:
+  - o'qish va yozish: detallar, kromka, plita, XNC (teshiklar; frezalash va paz o'zgarishsiz saqlanadi);
+  - 30/30 sex faylida o'qish → yozish → o'qish aynan.
+- **KDT** — `app/js/engine/post/kdt.js`. Sex fayllaridan kalibrlangan:
+  - o'qlar, kromka tomonlari, qirra teshigi kvadrantlari;
+  - o'tuvchi chuqurlik — qalinlik + 0,5;
+  - yuza tanlash (_1/_2), ikki tomonlama teshikni birlashtirish.
+  - Natija: 1776 ta detal yuzasida sex KDT bilan **99,2%** mos (aynan yoki 180° burilgan). Qolgan 14 tasi — maxsus detallar.
+- **Smart3D loyihasidan** (`post/smart3d.js`):
+  - sex Bazis birikmalari (MC modullar) va qo'lda chizilgan modullar konfirmatlari;
+  - MC-KP-02 "pol" teshiklari sexdagi `.project` bilan aynan;
+  - MC-KP-01/02, MC-KU-07 qo'lda chizilsa — teshiklar aynan.
+- **Interfeys:** Fayllar qadamida "GibLab (Bazis)" va "KDT prisadka (ZIP)" — faqat admin, SINOV. Eski GibLab fayli qoladi.
+- **Kirmagan, sababi bilan:**
+  - umumiy SP modullar teshiklari (geometriya TZ-05 da, pauza) — ogohlantirish bilan;
+  - egri kontur (frezalash) — 141 ta detal, keyingi bosqich.
+- **Topildi (TZ-21):** sexdagi `.project` da `dl` — tekstura yo'nalishi. Bazis yuklashda biz uzunlikni kontur X dan olamiz, shuning uchun dekor plitada ba'zi detallarning teksturasi noto'g'ri chiqishi mumkin. Bazis faylidagi tekstura maydoni topilmadi: maydon raqamlari har faylda boshqa. Alohida tuzatish kerak.
+
+### D6 — sex ma'lumotidan olingan taklif (texnolog tasdiqlaydi)
+| Teshik | Qiymat (sex fayllarida eng ko'p) |
+|---|---|
+| Petlya kosasi | Ø35, chuqurligi 13 (ba'zan 12); markazi eshik chetidan 21–22 mm; uchidan 105 mm |
+| Kosa vintlari | 2 × Ø3 × 2, kosa markazidan ±24 mm, chetdan 6 mm ichkarida |
+| Petlya plankasi (yon devorda) | Ø3 × 2–3, old qirradan 37 mm (System 32); 2 ta, oralig'i 32 mm |
+| Polka ushlagich | Ø5 × 9; old/orqa qirradan masofa modulga qarab — 40–80 mm (eng ko'p 45, 50, 65, 70) |
+| Konfirmat | Ø7 o'tuvchi + qirrada Ø4,5 × 35 (planka — Ø8 + Ø5) — kodda bor |
+| Ruchka | Ø5 o'tuvchi, oralig'i ruchkaga qarab (128 / 160) |
+
+Petlya soni (eshik bo'yi bo'yicha) — sex fayllaridagi bilan bir xil: ≤ 900 mm — 2 ta.

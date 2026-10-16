@@ -351,3 +351,7 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 122. (savollarga javob) qo'lda chizish — o'z modulini chizish; tayyor promptlar — kutubxona + shaxsiy shablonlar; AI'siz ham — ha; tartib: hozir qaysi tzni qilayabsan va oshandan keyin boshlab ketaver
 
 123. +0
+
+124. boshla
+
+125. davom et
