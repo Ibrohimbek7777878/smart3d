@@ -343,3 +343,11 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 14.ha qosh va hammasi commit qivor xatoalrsz bolsa bolib bolib commit qil comitlar soni kopayb ketgan
 15.ha tasdiqlayman 
 (nusxa: texnolog savollari 16–20 va "Sizdan kerak" 21–22) bularn tashqari hammasin qilb tur bularn kechka qilamiz hozir yuqoridagilarni hammasi yashil va real ishga tayyor bolsin va hozir bularn ortacha qancha vaqtda tugatasan tahmin bolsa ham vaqtin ayt
+
+120. polkani 16mm qilasan ekan
+
+121. qara hozir biz ozimiz qolda va tayor prompttlar yordmaida chizish qismin qoshmaidk uni ham qoshib qoyish kere
+
+122. (savollarga javob) qo'lda chizish — o'z modulini chizish; tayyor promptlar — kutubxona + shaxsiy shablonlar; AI'siz ham — ha; tartib: hozir qaysi tzni qilayabsan va oshandan keyin boshlab ketaver
+
+123. +0

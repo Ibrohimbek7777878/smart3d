@@ -1,6 +1,12 @@
 # TZ-23 — 3D ko'rinish Bazis-Cloud darajasida (erkin aylantirish, ko'rinish rejimlari), rang va material tanlash, backend funksiyalari interfeysda
 
-**Sana:** 2026-10-16 · **Navbat:** 23 · **Holat:** TASDIQ KUTILMOQDA
+**Sana:** 2026-10-16 · **Navbat:** 23 · **Holat:** JARAYONDA (egasi #119-8: "boshla")
+- **Bajarildi** (`dizayn` tarmog'i):
+  - A1–A4, A6 va D — 53e058d;
+  - E — c248785;
+  - A5 va B — 5c9a431.
+- **Navbatda:** C2 (qoldiqlar), C3 (furnitura katalogi), C4 (SMS bilan kirish — kirish usuli savoliga bog'liq, #119-3).
+- **Pauza:** C1 (buyurtma) — egasi: "ko'rib chiqamiz".
 **Asos:** egasi (2026-10-16, SORIZLAR #115). Ikki skrinshot bilan:
 - **1-rasm — Bazis-Cloud Web-Viewer.** "Shodiyor aka ishxona kuxnya": panellar, eshiklar, ruchka, oyoq, stoleshnitsadagi o'yiq ko'rinadi, model erkin aylanadi.
 - **2-rasm — Smart3D muharririda shu loyiha.** Talab: "erkin aylantirish qo'shilsin, bizda ustun jihatlar bo'lsin, backend'dagi funksiyalar to'liq ishlab, frontendda chiroyli interfeys orqali chiqsin".
@@ -181,6 +187,28 @@ Uchala bo'lim tanlovi eslab qolinadi (qurilmada).
 - Ko'rinish menyusi Bazis-Cloud'dagidek ishlaydi: kamera (aylanish, yurish, orto), fon, chizish rejimlari (bo'yalgan, qirralar, sim karkas, effektlar, rentgen). Telefonda ham ishlaydi.
 - Material korpus, fasad, orqa, stoleshnitsa, har modul va Bazis materiali uchun tanlanadi. 3D rangi materialdan; rang palitrasi ERP plitalarini ko'rsatadi.
 - Narx o'zgarmagan (material o'zgarmasa — avvalgidek); barcha testlar yashil.
+
+## 6a. Natija (2026-10-16)
+- **A, D — 3D ko'rinish:**
+  - erkin aylantirish, pol ostidan ham; 0,3–40 m;
+  - siljitish, kursorga yaqinlashish;
+  - yo'nalishlar, to'liq ekran, o'lchash;
+  - kamera rejimlari — aylanish, yurish, orto;
+  - fon; chizish rejimlari — bo'yalgan, qirralar, sim karkas, effektlar, rentgen;
+  - devor-pol, fasadsiz. Tanlov eslab qolinadi.
+- **E — material va rang:**
+  - qismlar — korpus, polka, fasad, orqa, stoleshnitsa;
+  - butun loyiha yoki bitta modul uchun; "bitta umumiy material";
+  - rang palitrasi; ERP'dagi haqiqiy qalinliklar;
+  - polka standarti 16 mm (#120: ERP'da LDSP 16 mm — 439 ta, 18 mm — 16 ta);
+  - ERP plitasi alohida material: narxi ERP'dan, bo'lmasa "taxminiy"; 3D rang nomidan.
+- **A5, B — Bazis loyihasi:**
+  - egri va o'yiqli panellar o'z konturi bilan: 30 buyurtmada 162 ta;
+  - har panel o'z materiali rangida;
+  - oyoq va ruchkalar joyida: 214 + 246, hammasi panel yonida;
+  - Bazis materialini almashtirish (shu qalinlikda);
+  - "Eshiklarni ochish" o'rniga "Fasadsiz ko'rish".
+- **Testlar:** node; server 64/64; brauzer — 18 to'plam yashil.
 
 ## 7. Muddat (taxmin)
 - **A + B:** 2–3 ish kuni.
