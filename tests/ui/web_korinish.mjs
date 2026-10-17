@@ -103,6 +103,31 @@ async function asosiy(page, R) {
     await page.keyboard.press('-'); await page.waitForTimeout(900);
     const dk2 = await D();
     R.zoomKey = { plus: +(((dk0 - dk1) / dk0) * 100).toFixed(1), minus: +(((dk2 - dk1) / dk1) * 100).toFixed(1) };
+    /* bir xil qadam: dpr 0.8 / 1 / 2 × Firefox satr (deltaMode=1, 3) va piksel (100; 4 × 25 hodisa) */
+    {
+      const cdp = await page.context().newCDPSession(page);
+      R.zoomMuhit = {};
+      for (const dpr of [0.8, 1, 2]) {
+        await cdp.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: dpr, mobile: false });
+        await page.waitForTimeout(500);
+        for (const [nom, dm, dy, n, maxH] of [['satr3', 1, 3, 1, 0.08], ['px100', 0, 100, 1, 0.08], ['px4x25', 0, 4, 25, 0.08]]) {
+          await page.mouse.move(mx, my);
+          const a = await D();
+          await M(([dm, dy, n, mx, my]) => {
+            const cv = window.__app.sahna.sp.renderer.domElement;
+            for (let i = 0; i < n; i++) cv.dispatchEvent(new WheelEvent('wheel', { deltaMode: dm, deltaY: -dy, clientX: mx, clientY: my, bubbles: true, cancelable: true }));
+          }, [dm, dy, n, mx, my]);
+          await page.waitForTimeout(1300);
+          const b = await D();
+          R.zoomMuhit[`dpr${dpr}_${nom}`] = +(((a - b) / a) * 100).toFixed(1);
+          await page.mouse.move(mx, my);
+          await M(([dm, dy, n, mx, my]) => { const cv = window.__app.sahna.sp.renderer.domElement; for (let i = 0; i < n; i++) cv.dispatchEvent(new WheelEvent('wheel', { deltaMode: dm, deltaY: dy, clientX: mx, clientY: my, bubbles: true, cancelable: true })); }, [dm, dy, n, mx, my]);
+          await page.waitForTimeout(1300);
+        }
+      }
+      await cdp.send('Emulation.clearDeviceMetricsOverride'); await page.setViewportSize({ width: 1440, height: 900 });
+      await page.waitForTimeout(400);
+    }
     /* chegaralar: 40 qadam uzoqlash, keyin 120 qadam yaqinlash */
     await page.mouse.move(mx, my);
     for (let i = 0; i < 40; i++) { await page.mouse.wheel(0, 100); await page.waitForTimeout(30); }
@@ -234,8 +259,8 @@ async function asosiy(page, R) {
     R.orto && R.perspektiva && Math.abs(R.yurishKoz - 1600) < 2 && R.yurdi > 200 && R.yurishIzoh && R.qaytdi && R.menyuYopildi &&
     R.olcham > 50 && R.olchamYozuv && R.saqlandi.fon === 0xffffff && R.saqlandi.chizish === 'boyalgan' && R.saqlandi.xona === false &&
     R.tel.menyu && R.tel.sigadi && R.tel.panel && !R.tel.ustma && !R.tel.hScroll && R.bazis.chizish === 'qirrali' && R.bazis.xona === false && R.bazis.devor === false &&
-    R.zoomQadam.foiz >= 5 && R.zoomQadam.foiz <= 15 && R.zoomQadam.kursorKos > 0.98 && R.zoomQadam.kadrlar >= 6 && R.zoomQadam.maxBosh <= 150 && R.zoomQadam.mono &&
-    R.zoomTez.jami > 10 && R.zoomTez.jami <= 47 && R.zoomKey.plus > 10 && R.zoomKey.minus > 10 &&
+    R.zoomQadam.foiz >= 3 && R.zoomQadam.foiz <= 7 && R.zoomQadam.kursorKos > 0.98 && R.zoomQadam.kadrlar >= 6 && R.zoomQadam.maxBosh <= 150 && R.zoomQadam.mono &&
+    R.zoomTez.jami > 5 && R.zoomTez.jami <= 27 && R.zoomKey.plus > 7 && R.zoomKey.plus < 13 && R.zoomKey.minus > 7 && R.zoomKey.minus < 14 && Object.values(R.zoomMuhit).length === 9 && Object.values(R.zoomMuhit).every(v => v >= 3 && v <= 7) &&
     R.zoomChegara.uzoq <= R.zoomChegara.maxD + 1 && R.zoomChegara.uzoq >= 6000 && R.zoomChegara.yaqin >= 299 && R.zoomChegara.yaqin < 700 &&
     R.zoomChegara.farNear.far > R.zoomChegara.uzoq && R.zoomChegara.farNear.near > R.zoomChegara.yaqinNear.near && R.zoomChegara.farNear.far / R.zoomChegara.farNear.near < 2000 &&
     R.zoomAniso.aniso > 1 && R.zoomAniso.anisoBilan === R.zoomAniso.tekstura &&

@@ -113,12 +113,12 @@ export function attachControls(sp, opts = {}) {
   /* ── 3D zoom: silliq va boshqariladigan (TZ zoom, egasi 2026-10-17: "juda tez va sifatsiz") ─────────────────────
    *  Oldin: OrbitControls har g'ildirak hodisasida masofani DARHOL 5% (dpr=1) yoki 2.5% (dpr=2) ga o'zgartirardi — tez
    *  aylantirganda sakrash, trackpadda esa tartibsiz. Endi:
-   *   · g'ildirak/pinch hodisasi "kutilayotgan zoom" (logarifm) ga qo'shiladi: 1 qadam (deltaY=100) ≈ 11–12%,
-   *     bir hodisa ≤ 18%, jami to'plangan ≤ 45% (tez aylantirganda kamera "uchib ketmaydi");
+   *   · g'ildirak/pinch hodisasi "kutilayotgan zoom" (logarifm) ga qo'shiladi: 1 qadam (deltaY=100 yoki Firefox satr 3×33) ≈ 4.5%,
+   *     bir hodisa ≤ 8%, jami to'plangan ≤ 22% (tez aylantirganda kamera "uchib ketmaydi");
    *   · har kadrda kutilayotganning bir qismi (eksponensial, τ=75 ms, kadr tezligiga bog'liq emas) OrbitControls'ga
    *     sintetik wheel sifatida beriladi — kursor nuqtasiga yaqinlashish (zoomToCursor) o'z holicha ishlaydi;
    *   · kadrlar OrbitControls 'change' → _invalidate orqali chiziladi, to'xtaguncha (inertsiya so'nguncha). */
-  const ZOOM = { qadam: 0.0012, pinch: 0.010, hodisa: 0.18, jami: 0.6, tau: 75, klaviatura: 0.25 };
+  const ZOOM = { qadam: 0.00045, pinch: 0.004, hodisa: 0.08, jami: 0.25, tau: 75, klaviatura: 0.105 };
   const LN095 = Math.log(1 / 0.95);
   let pend = 0, zx = 0, zy = 0, zt = 0, synth = false;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
