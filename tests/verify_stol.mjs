@@ -3,6 +3,9 @@
 import { readFileSync } from 'fs';
 import { deriveKitchen } from '../app/js/engine/kitchen.js';
 import { footprint } from '../app/js/engine/rules.js';
+import { cutlist, productionCost } from '../app/js/engine/cutlist.js';
+import { nestProject } from '../app/js/engine/nesting.js';
+import { stolBolaklar } from '../app/js/engine/kitchen.js';
 
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('ok    ' + m); } else { fail++; console.log('FAIL  ' + m); } };
@@ -80,12 +83,61 @@ for (const [mx, my] of variants) {
   const st = run(rs);
   const a = analiz(st);
   ok(a.over === 0 && a.total === 3600 + 1200, 'L 3600 gor.: ustma-ust 0, jami ' + a.total + ' = ' + (3600 + 1200));
-  ok(st.filter(p => p.rot === 0).length === 2, 'L 3600: gor. qator 2 dona kesim');
+  ok(st.filter(p => p.rot === 0).length === 1 && st.find(p => p.rot === 0).std === 4200, 'L 3600: gor. qator 1 dona 4200 (egasi #162: SHEET_MAX o\'rniga standart uzunlik)');
 }
 /* alohida (burchaksiz) qatorlar o'zgarmaydi */
 {
   const st = run([...row(0, 0, 2, 600, true), ...row(2500, 2000, 2, 600, true)]);
   ok(st.length === 2 && st.every(p => p.w === 1200 && !p.birlashma), 'bog\'lanmagan qatorlar o\'zgarmaydi');
+}
+
+/* ── Egasi #162: qalinlik 26/38, uzunlik 3050/4200, styajka, narx qatorlari ── */
+const mats = JSON.parse(readFileSync(new URL('../app/data/materials.json', import.meta.url), 'utf8'));
+const links = JSON.parse(readFileSync(new URL('../app/data/furnitura-boglash.json', import.meta.url), 'utf8')).links;
+const furn = Object.fromEntries(JSON.parse(readFileSync(new URL('../app/data/furnitura-catalog.json', import.meta.url), 'utf8')).items.map(f => [f.id, { name: f.name, uzs: f.uzs, no_price: !(f.uzs > 0) }]));
+const gor = (n) => row(0, 0, n, 600, true);   // n ta 600 mm modul, gorizontal qator
+const pcs = (n, kit) => run(gor(n), kit);
+{
+  const a = pcs(4)[0];   // 2400 (2500 ga yaqin: 4 modul)
+  ok(pcs(4).length === 1 && a.std === 3050 && a.w === 2400, '2400 mm → 1 dona 3050 (w ' + a.w + ')');
+  const r25 = run([{ x0: 0, y0: 0, x1: 2500, y1: D, vert: false }]);
+  ok(r25.length === 1 && r25[0].std === 3050 && r25[0].w === 2500 && r25[0].styajka === 0, '2500 mm → 1 dona 3050, styajka 0');
+  const r36 = pcs(6);
+  ok(r36.length === 1 && r36[0].std === 4200 && r36[0].w === 3600 && r36[0].styajka === 0, '3600 mm → 1 dona 4200, styajka 0');
+  const r50 = run([{ x0: 0, y0: 0, x1: 2500, y1: D, vert: false }, { x0: 2500, y0: 0, x1: 5000, y1: D, vert: false }]);
+  ok(r50.length === 2 && r50.reduce((s, p) => s + p.w, 0) === 5000 && r50.every(p => p.w <= 4200), '5000 mm → 2 bo\'lak, har biri ≤ 4200');
+  ok(r50.reduce((s, p) => s + p.styajka, 0) === 1, '5000 mm → 1 ta styajka');
+  ok(r50.every(p => p.std === 3050), '5000 = 2500 + 2500 → ikkalasi 3050 (eng kichik mos standart)');
+  ok(JSON.stringify(stolBolaklar(5000, [600, 1200, 1800, 2400, 3000, 3600, 4200, 4800]).map(x => x.len)) === JSON.stringify([2400, 2600]) || stolBolaklar(5000, [600, 1200, 1800, 2400, 3000, 3600, 4200, 4800]).length === 2, 'modul chegarasida 2 bo\'lak');
+  const r9 = stolBolaklar(9000, []);
+  ok(r9.length === 3 && r9.every(x => x.len <= 4200), '9000 → 3 bo\'lak (2 ta styajka)');
+  /* burchakda styajka yo'q (butt-ulanish) */
+  const Ls = run(Lbase);
+  ok(Ls.reduce((s, p) => s + p.styajka, 0) === 0 && Ls.some(p => p.birlashma > 0), 'L-burchak: styajka 0, birlashma > 0');
+  const Us = run(Ubase);
+  ok(Us.filter(p => p.rot % 180 === 0).length === 2 && Us.filter(p => p.rot % 180 === 0).reduce((s, p) => s + p.styajka, 0) === 1, 'U: gor. 5000 sig\'masdan bo\'lindi → 1 styajka; burchaklar styajkasiz');
+  /* 26 / 38 tanlovi */
+  ok(pcs(4)[0].h === 26 && pcs(4)[0].slots.stoleshnitsa === 'STOL26-3050', 'sukut: 26 mm (STOL26-3050)');
+  const p38 = pcs(6, { stolT: 38 })[0];
+  ok(p38.h === 38 && p38.stolT === 38 && p38.slots.stoleshnitsa === 'STOL38-4200', '38 mm tanlovi saqlanadi (STOL38-4200)');
+  ok(pcs(4, { stolT: 30 })[0].h === 26, 'noto\'g\'ri qalinlik → 26');
+  /* kesim ro'yxati va narx */
+  const frg = catalog['SP-ST-001'];
+  const parts = (pl, m) => { const cl = cutlist(frg, pl.w, pl.d, pl.h, m, { projectSlots: { stoleshnitsa: 'LDSP18' }, placementSlots: pl.slots }); if (pl.styajka > 0) cl.hardware.push({ fragment: frg.code, code: 'STYAJKA-STOL', qty: pl.styajka, _auto: true }); return cl; };
+  const cl38 = parts(p38, mats);
+  ok(cl38.parts[0].thickness === 38 && cl38.parts[0].material === 'STOL38-4200', 'kesim ro\'yxatida qalinlik 38, material STOL38-4200');
+  const cls = r50.map(p => parts(p, mats));
+  const nest = nestProject(cls.flatMap((c, i) => c.parts.map(x => Object.assign({}, x, { id: 'p' + i + ':' + x.ref }))), mats, {});
+  ok(!nest.by_material['STOL26-3050'], 'stoleshnitsa varaqqa kroy qilinmaydi');
+  const pc = productionCost(cls, mats, { nestResult: nest, furnituraById: furn, furnituraBoglash: links });
+  const sl = pc.lines.find(l => l.code === 'STOL26-3050');
+  ok(sl && sl.qty === 2 && sl.unit === 'dona' && sl.no_price === true && sl.unit_price === 0 && sl.amount === 0, 'narx qatori: STOL26-3050 × 2 dona, narxsiz');
+  ok(pc.missing.some(m => m.code === 'STOL26-3050'), '"narx yo\'q" ro\'yxatida stoleshnitsa');
+  const sy = pc.lines.find(l => l.code === 'STYAJKA-STOL');
+  ok(sy && sy.qty === 1 && sy.id === undefined && sy.unit_price === 20000 && sy.amount === 20000 && /Стяжка/.test(sy.name), 'styajka qatori: 1 dona × 20 000 (90002044)');
+  ok(pc.lines.filter(l => l.group === 'Plita (Kroy)').length === 0, 'stoleshnitsa maydon (varaq) qatori emas');
+  ok(Number.isFinite(pc.totalCost) && pc.perModule.length === 2, 'tannarx hisoblanadi, perModule 2');
+  ok(mats.panel_materials.filter(m => m.unit_piece).every(m => m.sheet_price === 0 && m.price_src === 'yoq'), '4 ta stoleshnitsa materiali narxsiz (price_src yoq)');
 }
 console.log(fail ? `=== XATO (${pass} pass, ${fail} fail) ===` : `=== HAMMASI OK (${pass} pass, 0 fail) ===`);
 process.exit(fail ? 1 : 0);

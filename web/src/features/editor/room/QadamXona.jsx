@@ -88,7 +88,19 @@ export default function QadamXona() {
             <Ikon n="sozlash" gap={0} />{t('xona.sozlash')}
           </button>
         </div>
-        {v.toggles.map((t, i) => <Toggle key={i} label={t.label} sub={t.sub} on={t.on} onFlip={t.flip} />)}
+        {v.toggles.map((t, i) => (<React.Fragment key={i}>
+          <Toggle label={t.label} sub={t.sub} on={t.on} onFlip={t.flip} />
+          {i === 0 && v.stolT && (
+            <div role="radiogroup" aria-label={v.stolT.title} data-stol-qalinlik="" style={{"display":"flex","alignItems":"center","gap":"8px","padding":"2px 0 8px"}}>
+              <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"700","flex":"0 0 auto"}}>{v.stolT.title}</span>
+              <div style={{"display":"flex","flex":"1 1 auto","padding":"4px","gap":"4px","borderRadius":"14px","background":"var(--bg)"}}>
+                {v.stolT.items.map((x) => (
+                  <button key={x.id} role="radio" aria-checked={x.on} data-stol-t={x.id} onClick={x.pick} style={{"flex":"1 1 auto","minWidth":"0","height":"36px","padding":"0 8px","borderRadius":"10px","border":"0","fontWeight":"800","fontSize":"14px","cursor":"pointer","background":x.bg,"color":x.c}}>{x.label}</button>
+                ))}
+              </div>
+            </div>
+          )}
+        </React.Fragment>))}
       </div>
       <button onClick={v.goStep2} style={{"height":"52px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer","flex":"0 0 auto"}}>
         {t('xona.keyingi_mebel')}

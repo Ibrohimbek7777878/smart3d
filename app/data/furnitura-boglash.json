@@ -47,7 +47,8 @@
     "TIP-ON, KUPE-SYS-02/03, MAT-UPH, SR-450, Ush-90, PROF-AL": "aniq mos mahsulot topilmadi"
    }
   },
-  "tasdiq_3": "Egasi, 2026-10-17 (#151: \"qo'sh, ruxsat beraman\"): umumiy modul kodlari taklifi (393e654) tasdiqlandi"
+  "tasdiq_3": "Egasi, 2026-10-17 (#151: \"qo'sh, ruxsat beraman\"): umumiy modul kodlari taklifi (393e654) tasdiqlandi",
+  "tasdiq_stol": "Egasi #162 qoidasi (2026-10-17): stoleshnitsa uzunlikka sig'masdan 2 ga bo'linsa — 1 ta «Стяжка столешницы 150мм» (90002044, 20 000). Burchak (L/U) ulanishiga qo'shilmaydi — egasi javobi kutilmoqda."
  },
  "links": {
   "BZ-petle_oddiy": "90002525",
@@ -74,6 +75,7 @@
   "NAPRAV-450": "90002642",
   "FLANETS-OVAL": "90001940",
   "SUSHILKA-800": "90003063",
-  "UGOLOK-MEBEL": "90002004"
+  "UGOLOK-MEBEL": "90002004",
+  "STYAJKA-STOL": "90002044"
  }
 }

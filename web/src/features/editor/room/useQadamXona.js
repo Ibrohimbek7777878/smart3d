@@ -5,6 +5,7 @@ import { openSheet } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
 import { clamp } from '../../../shared/lib/format.js';
 import { roomBBox } from '../../../../../app/js/engine/rules.js';
+import { STOL_QALINLIK, stolQalinlik } from '../../../../../app/js/engine/kitchen.js';
 import { tayyorShakl, teshiklarniMosla } from '../../../services/devor.js';
 import { PRESETS } from '../../onboarding/useOnboarding.js';
 import { goStep } from '../actions.js';
@@ -37,7 +38,7 @@ export function useQadamXona() {
     key: ev => { if (ev.key === 'Enter') ev.target.blur(); }
   });
   const mm = ' ' + t('umumiy.mm');
-  const kt = [['stoleshnitsa', t('xona.stoleshnitsa'), H && H.catalog['SP-ST-001'] ? t('xona.yaxlit', { n: H.catalog['SP-ST-001'].h }) : t('xona.yaxlit0')],
+  const kt = [['stoleshnitsa', t('xona.stoleshnitsa'), t('xona.stol_sub', { n: stolQalinlik(K) })],
     ['sokol', t('xona.sokol'), H && H.catalog['SP-ST-002'] ? H.catalog['SP-ST-002'].d + mm : ''],   // tik planka: balandligi = d (kitchen.js)
     ['dobor', t('xona.dobor'), (K.doborH || 60) + mm], ['karniz', t('xona.karniz'), (K.karnizH || 60) + mm],
     ['moyka', t('xona.moyka'), t('xona.kesim', { n: (K.moyka || {}).size || 500 })]];
@@ -72,6 +73,12 @@ export function useQadamXona() {
         if (r[0] === 'moyka') { k.moyka = k.moyka || { on: false, offset: 600, fromBack: 100, size: 500 }; k.moyka.on = !k.moyka.on; } else k[r[0]] = !k[r[0]];
         project.changed('room', true);
       } })),
+    /* egasi #162: stoleshnitsa qalinligi — 26 yoki 38 mm (doc.kitchen.stolT) */
+    stolT: !K.stoleshnitsa ? null : {
+      title: t('xona.stol_qalinlik'),
+      items: STOL_QALINLIK.map(n => { const on = stolQalinlik(K) === n; return { id: n, label: n + mm, on, bg: on ? 'var(--acc)' : 'transparent', c: on ? 'var(--ink)' : 'var(--txt)',
+        pick: () => { if (on) return; const k = doc.kitchen || (doc.kitchen = L.freshKitchen()); k.stolT = n; project.changed('room', true); } }; })
+    },
     goStep2: () => goStep(2)
   };
 }

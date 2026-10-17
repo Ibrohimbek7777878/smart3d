@@ -188,6 +188,8 @@ function doRecalc() {
     const cl = cutlist(fr, p.w, p.d, p.h, mats, { projectSlots: slots, placementSlots: p.slots });
     cl.placementId = p.id;                   // CNC join uchun
     /* F2: moyka kesimi — stoleshnitsa run'ining birinchi segmentiga */
+    /* egasi #162: stoleshnitsa sig'masdan bo'lingan joyga 1 ta styajka (burchak butt-ulanishiga yo'q) */
+    if (p.frg === 'SP-ST-001' && p.styajka > 0) cl.hardware.push({ fragment: fr.code, code: 'STYAJKA-STOL', qty: p.styajka, _auto: true });
     if (mkHole && p.frg === 'SP-ST-001' && p.runIdx === 0 && p.segIdx === 0) {
       cl.holes.push(Object.assign({}, mkHole));
     }
@@ -439,7 +441,7 @@ function freshRoom() {
 /* F2: oshxona sozlamalari (persist) — yangi loyiha: stoleshnitsa/sokol o'chirilgan */
 function freshKitchen() {
   return {
-    stoleshnitsa: false, sokol: false,
+    stoleshnitsa: false, stolT: 26, sokol: false,
     dobor: false, doborH: 60,
     karniz: false, karnizH: 60,
     moyka: { on: false, offset: 600, fromBack: 100, size: 500 }

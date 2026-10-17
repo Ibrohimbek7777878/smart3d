@@ -37,7 +37,7 @@ export function freshRoom() {
 /* F2: oshxona sozlamalari (persist) — yangi loyiha: stoleshnitsa/sokol o'chirilgan */
 export function freshKitchen() {
   return {
-    stoleshnitsa: false, sokol: false,
+    stoleshnitsa: false, stolT: 26, sokol: false,
     dobor: false, doborH: 60,
     karniz: false, karnizH: 60,
     moyka: { on: false, offset: 600, fromBack: 100, size: 500 }
