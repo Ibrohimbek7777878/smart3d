@@ -363,6 +363,12 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
     }
   }
 
+  /* ── 3d) TZ-20: Bazis importi — furnitura/mahkamlagichdan hisoblangan teshiklar (faqat NARX uchun, joylashuvsiz).
+   * part yo'q → stanok eksportchilari (CNC, KDT, GibLab, BPJ) ularni o'tkazib yuboradi. */
+  for (const t of frag.bazisTeshik || []) {
+    holes.push({ fragment: frag.code, part: '', side: '', x: 0, y: 0, dia: t.dia, depth: t.depth, kind: t.kind, qty: Math.max(1, Math.round(+t.qty || 1)), nusxa: 1, tur: t.tur, narx_uchun: true });
+  }
+
   /* ── 4) Furnitura ────────────────────────────────────────────── */
   const nomBom = (s) => String(s || '').replace(/\r/g, ' ').replace(/\s+/g, ' ').trim();
   const hardware = (frag.hardware || []).map(hw => ({

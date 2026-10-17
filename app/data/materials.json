@@ -294,6 +294,13 @@
    "price": 800
   },
   {
+   "code": "mark",
+   "name": "Belgi (metka, burama nuqtasi)",
+   "price": 0,
+   "price_src": "yoq",
+   "note": "Bazis importida furnituradan hisoblanadi (TZ-20). Narx egasi javobigacha 'narx yo'q'"
+  },
+  {
    "code": "cutout",
    "name": "Moyka kesimi (ichki kontur)",
    "price": 0,

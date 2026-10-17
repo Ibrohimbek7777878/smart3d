@@ -11,6 +11,7 @@
  * Panel qalinligi lokal +Z tomonga (MC modullarida tekshirildi: ustma-ust tushish 0).
  */
 import { PANEL_CODE } from './b3d.js';
+import { bazisTeshiklar } from './teshik.js';
 
 const TUR = [
   ['stoleshnitsa', /столешн|stoleshn/i],
@@ -253,6 +254,7 @@ export function bazisLoyiha(objects, o = {}) {
       hardware.push(h);
     }
   }
+  const teshiklar = bazisTeshiklar(objs);   // TZ-20: prisadka narxi uchun teshiklar soni (joylashuvsiz)
   const nomi = toza(o.nom || o.fayl || 'Bazis loyiha');
   const fragment = {
     code: 'BZ-' + fnv(nomi + '|' + parts.map(p => p.code + p.len + p.width + p.qty).join(',')),
@@ -261,6 +263,7 @@ export function bazisLoyiha(objects, o = {}) {
     price_mode: 'unit', price: 0, production: 'panel', auto_hardware: false,
     slots: { korpus: 'LDSP16', fasad: 'LDSP16', orqa: 'HDF3' },
     parts, edge, holes: [], hardware, bazis3d, bazisMat,
+    ...(teshiklar.length ? { bazisTeshik: teshiklar } : {}),
     ...(bazisShakl.length ? { bazisShakl } : {}), ...(bazisFurn.length ? { bazisFurn } : {}),
     manba: { bazis: true, fayl: toza(o.fayl), format: o.format || '', panellar: panels.length }
   };
@@ -274,7 +277,8 @@ export function bazisLoyiha(objects, o = {}) {
     furnitura: (o.fittings || []).length, mahkamlagich: (o.fasteners || []).length,
     olcham: [W, D, H],
     kesildi3d: panels.length > PANEL3D_MAX,
-    shakl3d: bazisShakl.length, furn3d: bazisFurn.length
+    shakl3d: bazisShakl.length, furn3d: bazisFurn.length,
+    teshik: teshiklar.reduce((a, t) => a + t.qty, 0)
   };
   return { fragment, materiallar: { panel: [...matlar.values()], edge: [...kromkalar.values()] }, hisobot };
 }

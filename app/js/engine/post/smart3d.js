@@ -51,6 +51,7 @@ export function stanokModeli(o) {
     const ded = (code, s) => { const k = (kr[code] || {})[s]; return k && k.t >= EDGE_DEDUCT_MIN_MM ? k.t : 0; };
     const tesh = {};
     for (const h of cl.holes || []) {
+      if (h.narx_uchun) continue;   // TZ-20: Bazis importi — faqat narx uchun, stanok fayliga tushmaydi va ogohlantirishga ham kirmaydi
       if (!/^(evrovint|d6_)/.test(h.kind || '')) { spTeshik++; continue; }
       (tesh[h.part] = tesh[h.part] || []).push(h);
     }
