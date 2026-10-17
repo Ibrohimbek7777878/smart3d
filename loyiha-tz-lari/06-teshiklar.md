@@ -1,6 +1,6 @@
 # TZ-06 — Modullarga teshiklar (prisadka)
 
-**Sana:** 2026-10-15 · **Navbat:** 6 · **Holat:** EVROVINT — BAJARILDI (2026-10-15). Petlya, polka ushlagich, ruchka, eksantrik — D6 KUTILMOQDA.
+**Sana:** 2026-10-15 · **Navbat:** 6 · **Holat:** EVROVINT — BAJARILDI (2026-10-15). Petlya, polka ushlagich, ruchka — BAJARILDI 2026-10-17 (D6, sex fayllaridan; pastda). Eksantrik — kutilmoqda.
 
 ## Muammo (tekshirilgan)
 - **MebelCity'ning 38 modulida teshik yo'q.** Bazis teshiklari parserda ochilmagan (B3D_PARSER_BILIM 11.5). Shu sababli bu modullarda:
@@ -129,3 +129,17 @@
 - **Evrovint diametri:** fayllarda ikki xil — 7 / 4.5 mm va 8 / 5 mm. Har modul o'z faylidagini oladi. Sexda qaysi biri ishlatilishini tasdiqlang.
 - ~~`holes.json` eksporti~~ — bajarildi (2026-10-15): 3D eksportdagi `smart3d-holes.json` da MebelCity teshiklari (torets cheti bilan) bor.
 
+## D6 natija (2026-10-17, egasi #136: "taklif bo'yicha qil") — `dizayn` f7dd5a2
+- **Qiymatlar sex fayllaridan** (30 buyurtma: 61 `.project`, 30 `.b3d`), `app/js/engine/d6.js`:
+  - petlya kosasi Ø35×13 — eshik uchidan 105, qirradan 21,5 (534 eshikning hammasida, 1-yuzada); vintlar Ø3×2 — ±24, 6 mm ichkarida;
+  - planka Ø3×3 — yon devor old qirrasidan 37, oralig'i 32, markazi kosa balandligida (sexdagi yon devorda ham 74/106);
+  - polka ushlagich Ø5×9 — markazi polka ostidan 2,5 mm (1068 tadan 1032), old qirradan 65, orqadan 45 (909 ushlagich);
+  - ruchka Ø5 o'tuvchi — oralig'i 160 (309 tadan 302); eshikda tik, qirradan 40, yaqin teshigi uchidan 50; tortmada — markazda;
+  - petlya soni (sexdan): ≤1000 — 2, ≤1600 — 3, ≤2000 — 4, undan katta — 5. Kupe eshik va konfirmatli polka — teshiksiz.
+- **Qayerda:** MC (38) modullarida — har nusxa o'z joyidan (chap/o'ng yon devor — ko'zgu); qo'lda va AI chizgan modullarda; stanok modeli (2-yuza — XNC side 2, KDT `_2`), BPJ, eski CNC, prisadka narxi (kosa — "hinge" stavkasi).
+- **Tekshiruv:** 38 MC moduli Bazis bilan — polka ushlagich 76/76, ruchka 46/46, petlya 123/132; 32/38 modul aynan. MC va qo'lda chizilgan yo'l bir xil natija beradi. `tests/verify_d6.mjs` (23).
+- **Qolgan:**
+  - burchak (gluxoy) modullarida sexda 4 ta petlya, bizda 2 ta (4 modul) — texnolog;
+  - eksantrik (MC-SH-01), tortma napravlyayushiy teshiklari (sex fayllarida Ø3 bor) — D6 jadvalida yo'q;
+  - **sinov kuni:** birinchi yon devorda planka va ushlagich teshiklari ICHKI yuzada chiqqanini tekshirish (chiqmasa — `YUZA_TESKARI = true`, bitta sozlama);
+  - umumiy SP (85) modullari — teshiklari shablon, stanokka chiqmaydi; Bazis'dan yuklangan loyihada teshik o'qilmaydi (fayldagi furnituradan qo'yish mumkin).

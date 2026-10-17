@@ -3,7 +3,7 @@
 **Sana:** 2026-10-15 (2-tahrir: 2026-10-16) · **Navbat:** 11 · **Holat:** JARAYONDA — egasi "boshla" (#119-13, #124)
 - **2-tahrirning 1–3-bandlari bajarildi:** `dizayn` tarmog'i, cd63495 (pastda "Natija").
 - **Kutilmoqda:**
-  - D6 jadvali — texnolog tasdig'i; ma'lumotdan olingan taklif pastda;
+  - ~~D6 jadvali~~ — 2026-10-17 bajarildi (egasi #136, `dizayn` f7dd5a2; TZ-06 "D6 natija"); sinov kunida yuza tekshiriladi;
   - sinov kuni — GibLab'ga import va 1 ta detal;
   - G-code (Rover) tuzatishlari — 5-band, ustuvorligi past.
 **Bog'liq:** TZ-01, TZ-06.

@@ -377,3 +377,8 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
     bu zor oxirsi tizim va suniy intletk bunga roziman tz yozda uni ham boshlayver undan oldin tz 5 va tz 25 ni tugat va tz26 qilb uni ham boshlab tugatib qoy hozir tz 25 uchun mend anauman yoq ozing tizimga moslab va dizyanga ham moslab togirlab ket
 
 135. teshiklar boyicha nega toliq tugalnamagan
+
+136. (iqtibos: "D6 taklifi tayyor. Sexning 12 169 ta haqiqiy teshigidan olingan, to'liq jadval TZ-11 da:") shuni qil
+    va c1 buyurtma nega tugamanga va yana qyasi tz lar d yokida c lar qolgan umumiy loyha obyicha qolgan qismlarin toliq royxaitn va savollaring bolsa ber toliq bolsin hammasi
+
+137. (4 ta skrinshot: muharrirda eshiklar ochiq — bir-biriga tegib turibdi; "Yurish" rejimi; "Loyihalarim" — bo'sh; "Nima yasaymiz?" 4 bo'lim) eshiklar bir brga tegib yopishb qolayabd va eshiklar toliq emas biroz qiyaroq ochilish kere huddi bazisdagi kabi  va nega hali ham mishka bilan aylantrish ishlmayabdi va ichida yurishn bosganda bita moduldan boshqasin tanlab bolamyabd  3 rasdma esa ishn qolgan joyidan davom etirish yoq har dim yangi ochishga togir kelayabd va nega nazad yoq bita mishkadag tugamn bosb nazad qilsam chiqb ketib qolayabd shu jiahtlarin togirla  4ta bolim bor oshxona 4rasdagm bolimalrda qolgan ishlarn davom etirhs umumiy joyda chiqish kere ihsn davome trish bolim boslin va u yerda neshta ish chala qolgan bolsa oshlaarni hammamsin davom etirb ketish kere va loyhan oddiy mijos hamd austa konstruktor sifatda analiz qilb chiq

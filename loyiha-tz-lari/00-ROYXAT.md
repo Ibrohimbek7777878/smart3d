@@ -20,7 +20,7 @@
 | 03 | [Xizmatlar avtomatik qo'shilmasin (S3)](03-xizmatlar-S3.md) | **BAJARILDI** 2026-10-15 | — (prisadka tanlanadi, ish haqi avtomatik) |
 | 04 | [Narx ma'lumotlari: egasi uchun jadval + import](04-narx-malumotlari.md) | **BAJARILDI** 2026-10-15 (vosita) | egasi: `Smart3D_malumot/narx-toldirish-2026-10-15.xlsx` ni to'ldiradi |
 | 05 | [83 ta umumiy modul geometriyasi](05-modul-geometriyasi.md) | **BAJARILDI** 2026-10-17 (`dizayn`) — 50 modul, [hisobot](05-hisobot.md) | — |
-| 06 | [Modullarga teshiklar](06-teshiklar.md) | **EVROVINT BAJARILDI** 2026-10-15 (724 vint, 1077 teshik, Bazis bilan aynan) | D6 — petlya, polka ushlagich, ruchka, eksantrik; evrovint 7/4.5 yoki 8/5 |
+| 06 | [Modullarga teshiklar](06-teshiklar.md) | **EVROVINT** 2026-10-15; **D6 (petlya, planka, polka ushlagich, ruchka) BAJARILDI** 2026-10-17 (`dizayn`, sex fayllaridan) | sinov kunida yuza tekshiruvi; eksantrik; burchak modullari petlyasi — texnolog |
 | 07 | [Login va loyihani serverga saqlash](07-login-va-serverga-saqlash.md) | **BAJARILDI** 2026-10-15 | haqiqiy SMS uchun Eskiz akkaunti serverga |
 | 08 | [Ekrandagi qoida buzilishlari: logo, oyna, burish](08-ui-qoida-tuzatishlari.md) | QISMAN: oyna ✅, burish ✅, logo — kutilmoqda | egasi: Bittada logo fayli |
 | 09 | [Yangi frontend: React versiyani loyihaga ulash (dizayn buzilmaydi)](09-dizayn.md) | **BAJARILDI** 2026-10-15 (`dizayn` tarmog'i) | egasi: yangi UI qismlari skrinshoti (3.3), main'ga qo'shish va deploy ruxsati |
@@ -41,6 +41,7 @@
 | 24 | [O'z modulini chizish va tayyor promptlar kutubxonasi](24-modul-chizish-va-tayyor-promptlar.md) | **BAJARILDI** 2026-10-16 (`dizayn`) | egasi: yangi oynalar skrinshoti (3.3), 4 savol; texnolog: qoidalar raqamlari |
 | 25 | [Bosh ish joyi — Bazis kabi bitta ekran: matn qatori, Bazis faylini ochish, xona va mebel chizish](25-bosh-ish-joyi.md) | **BAJARILDI** 2026-10-17 (`dizayn`) | egasi: yangi ish joyini ko'rib chiqish (skrinshotlar `tests/ui/out/web/ishjoyi-*.png`) |
 | 26 | [AI konstruksiya: usta matni → Claude → tizim tili → ideal chizma](26-ai-konstruksiya.md) | **BAJARILDI** 2026-10-17 (`dizayn`) — AI'siz tahlilchi ishlaydi | admin: Claude kaliti serverga (`AI_PROVIDER=anthropic`, `ANTHROPIC_API_KEY`) — `server/DEPLOY.md` |
+| 27 | [Muharrir qulayliklari: eshik qiya ochilishi, yurishda tanlash, "orqaga", "Davom ettirish"](27-muharrir-qulayliklari.md) | **BAJARILDI** 2026-10-17 (`dizayn`) | — |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.
