@@ -59,12 +59,20 @@ export function useQadamNarx() {
     price: narxKorinishi(R),
     markupLabel: t('narx.foyda', { n: prod ? Math.round((prod.markupPct || 0) * 100) : 0 }),
     hasMissing: missN > 0, missText: t('narx.zapchast_narxi_yoq', { n: missN }),
+    /* TZ-20: "Narx aniqligi X%" — bosilsa taxminiy qatorlar (qaysi summa tasdiqlanmagan) */
+    aniqlik: prod && prod.aniqlik && prod.aniqlik.pct != null ? {
+      label: t('narx.aniqlik', { n: prod.aniqlik.pct }), ochiq: !!ed.aniq, toliq: prod.aniqlik.pct === 100 && !prod.aniqlik.narxsiz, flip: () => set('editor', { aniq: !ed.aniq }),
+      rows: prod.aniqlik.taxmin.map(x => ({ n: x.group === 'Ustama' ? t('narx.aniq_ustama', { n: Math.round((prod.markupPct || 0) * 1000) / 10 }) : x.name.replace(/ — taxminiy$/, ''), m: x.manba === 'yoq' ? t('narx.aniq_yoq') : t('narx.aniq_taxmin'), p: raqam(x.amount) })),
+      narxsiz: prod.aniqlik.narxsiz ? t('narx.aniq_narxsiz', { n: prod.aniqlik.narxsiz }) : '',
+      bosh: !prod.aniqlik.taxmin.length ? t('narx.aniq_hammasi') : ''
+    } : null,
     toggleMissing: () => set('editor', { miss: !ed.miss }), missOpen: ed.miss,
     missing: prod ? prod.missing.map(m => ({ n: m.name || m.code, c: m.qty ? '×' + m.qty : '' })) : [],
     client: pj.client, onClient: ev => { set('project', { client: ev.target.value }); S.changed(); },
     quote: pr ? pr.lines.map(l => ({ name: l.code + ' · ' + (project.H && project.H.catalog[l.code] ? L.modulNomi(project.H, project.H.catalog[l.code]) : l.name), dim: (l.w || 0) + '×' + (l.d || 0) + '×' + (l.h || 0), n: l.qty, p: raqam(l.amount) })) : [],
     /* TZ-04: tasdiqlanmagan narx — "taxminiy" (eski saytdagidek); prisadka tanlanmagan bo'lsa — belgi (S3) */
     costRows: prod ? [...plitaQatorlari(R, prod, B),
+      ...(prod.raspilCost ? [[t('narx.raspil'), t('narx.raspil_q', { n: dec((prod.lines.find(l => l.code === 'raspil') || {}).qty), s: raqam((prod.lines.find(l => l.code === 'raspil') || {}).unit_price) }), prod.raspilCost]] : []),   // TZ-20
       [t('narx.kromka') + (taxminiy.includes('Kromka') ? t('narx.taxminiy') : ''), t('narx.metr', { n: dec(B.edgeMeters) }), prod.edgeCost],
       [t('narx.zapchast'), t('narx.dona_n', { n: B.hwCount || 0 }), prod.hwCost],
       [t('narx.teshiklar') + (xzt.tanlangan ? (taxminiy.includes('Prisadka') ? t('narx.taxminiy') : '') : t('narx.tanlanmagan')), t('narx.prisadka_q', { n: B.holeCount || 0 }), prod.holeCost],

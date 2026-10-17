@@ -77,6 +77,14 @@ export function createHisob(data) {
       return true;
     },
 
+    /** TZ-20: narx stavkalari (server /api/narxlar — admin "Narxlar" bo'limi). Berilmasa — materials.json ("taxmin"). */
+    narxlar: null,
+    applyNarxlar(n) {
+      if (!n || typeof n !== 'object' || !n.tanlov) return false;
+      H.narxlar = n;
+      return true;
+    },
+
     /** Korpus/fasad kodi materials.json da bormi (eski boot: noma'lum bo'lsa LDSP18 / MDF16). */
     knownMaterial(code) { return (mats.panel_materials || []).some(m => m.code === code); },
 
@@ -131,7 +139,7 @@ export function createHisob(data) {
       const nest = nestProject(allParts, m, opt.nestCfg || nestDefaults);
       /* 5) ishlab chiqarish tannarxi (haqiqiy varaqlar soni bilan) */
       /* TZ-09: usta ustamasi (Sozlamalar) — berilmasa materials.json standarti (eski sayt bilan bir xil) */
-      const prod = productionCost(cutlists, m, Object.assign({ nestResult: nest, furnituraById: furnById, furnituraBoglash, xizmatlar: doc.xizmatlar || {} },
+      const prod = productionCost(cutlists, m, Object.assign({ nestResult: nest, furnituraById: furnById, furnituraBoglash, xizmatlar: doc.xizmatlar || {}, stavka: H.narxlar },
         opt.markupPct != null ? { markupPct: opt.markupPct } : {}));
       /* 6) mijoz kotirovkasi — tannarx × (1 + ustama), modullarga taqsimlangan */
       const priceRes = buildQuote(placements, catalog, cutlists, prod, sizeCheck.warnings);

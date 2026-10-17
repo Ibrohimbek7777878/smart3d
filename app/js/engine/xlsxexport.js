@@ -364,7 +364,7 @@ export function buildXLSX(opts = {}) {
 
   const p4Sum = costSection(
     Y.b4, Y.b4h,
-    prodLines.filter(l => l.group === 'Xizmatlar' || l.group === 'Ish haqi'),
+    prodLines.filter(l => l.group === 'Xizmatlar' || l.group === 'Raspil' || l.group === 'Ish haqi'),   // TZ-20: raspil — xizmat
     Y.b4j,
     (l) => [{ v: l.code || '', s: 4 }, { v: qatorNomi(l) || '', s: 4 }, { v: birlik(l.unit || ''), s: 4 },
             { v: +l.qty || 0, s: 6 }, priceCell(l), { v: +l.amount || 0, s: 5 }]);

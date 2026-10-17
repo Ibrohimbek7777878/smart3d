@@ -25,6 +25,9 @@ export const XATOLAR = {
   'S3D-PROJ-001': { http: 404, matn: 'Loyiha topilmadi' },
   'S3D-DATA-001': { http: 404, matn: 'Topilmadi' },
   'S3D-STD-001': { http: 404, matn: 'Standartlar topilmadi' },
+  /* TZ-20: narx stavkalari (Sozlamalar → Narxlar) */
+  'S3D-NARX-001': { http: 400, matn: 'Narx stavkasi noto\'g\'ri' },
+  'S3D-NARX-002': { http: 500, matn: 'Narx stavkalari bazada buzilgan — boshlang\'ich qiymat ishlatildi' },
   /* TZ-24 B: shaxsiy shablonlar */
   'S3D-SHB-001': { http: 404, matn: 'Shablon topilmadi' },
   'S3D-SHB-002': { http: 409, matn: 'Shablonlar ko\'p — 100 tagacha; keraksizini o\'chiring' },
@@ -76,6 +79,9 @@ export const XATOLAR = {
   'S3D-SET-101': { matn: 'Sozlama saqlanmadi' },
   'S3D-REM-101': { matn: 'Qoldiqlar ombori o\'qilmadi' },
   'S3D-REM-102': { matn: 'Qoldiq saqlanmadi' },
+  'S3D-NARX-101': { matn: 'Narx stavkalari saqlanmadi' },
+  'S3D-NARX-102': { matn: 'Sex xizmat jadvali o\'qilmadi — Xizmat_narxlari.xlsx (ID, Kod, Nomi, Kategoriya, …, Mijoz narxi) tanlang' },
+  'S3D-NARX-103': { matn: 'Narx stavkalari serverdan o\'qilmadi — fayldagi taxminiy qiymatlar ishlatilmoqda' },
   'S3D-UI-101': { matn: 'Bu bo\'limda xatolik yuz berdi' },
   'S3D-JS-101': { matn: 'Kutilmagan xato' },
   'S3D-JS-102': { matn: 'Kutilmagan xato (jarayon)' }

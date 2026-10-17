@@ -42,6 +42,7 @@ function hujjatTili(c) {
       if (l.group === 'Kromka') return materialNomi(c.H, l.code, asl(l.code)) + tx(l);
       if (l.group === 'Xizmatlar') return (l.code === 'hole:tanlanmagan' ? t('hujjat.teshik_tanlanmagan', { n: l.qty }) : t('hujjat.teshik_q', { n: l.qty })) + tx(l);
       if (l.group === 'Ish haqi') return t('hujjat.ish_haqi_q', { n: l.qty }) + tx(l);
+      if (l.group === 'Raspil') return t('narx.raspil') + ' — ' + t('narx.raspil_q', { n: l.qty, s: l.unit_price });   // TZ-20
       return l.name;
     },
     birlik: (u) => (uz || !BIRLIK.includes(u) ? u : t('hujjat.u_' + u)),

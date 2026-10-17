@@ -3,6 +3,7 @@ import { project } from '../store/project.js';
 import { S } from '../store/session.js';
 import { readHandoff, initSession, afterLogin } from '../features/auth/actions.js';
 import { loadServerStd, loadSettings } from '../features/settings/actions.js';
+import { loadNarxlar } from '../features/settings/narxlar.js';
 import { installKeyboard } from './klaviatura.js';
 import { tarixOrnat } from './tarix.js';
 import { eskiKeshniTozala } from '../shared/lib/eskiKesh.js';
@@ -16,7 +17,7 @@ import { yangiIshJoyi } from '../features/editor/ishjoyi/ishjoyi.js';
 /* TZ-19: ilova ishga tushishi — ma'lumot, saytdan o'tish (#hash), saqlangan kirish. Bir marta chaqiriladi (main.jsx). */
 export function bootstrap() {
   document.body.style.background = '#0F2229';
-  project.load().then(() => { if (project.H) loadServerStd(); });
+  project.load().then(() => { if (project.H) { loadServerStd(); loadNarxlar(); } });   // TZ-20: narx stavkalari
   if (TELEGRAM) {                                   // TZ-16: Telegram ichida — kirish formasi o'rniga kutish ekrani
     set('nav', { screen: 'tg' });
     let tanlangan = null;
