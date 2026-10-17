@@ -121,13 +121,24 @@ export function useMaterialVaraq() {
   const jami = korinadi.length, CHEK = 150;
   /* #151: "Ko'p ishlatiladigan" — sex buyurtmalaridagi dekorlar (dekor-mashhur.json) → shu qismga mos narxli plitalar.
    * Bir dekor bir nechta ishlab chiqaruvchida bo'lsa: ko'rsatilgan tur, keyin Ultradekor, keyin arzoni. Qidiruv/filtr/rang tanlansa — to'liq ko'rinish. */
-  const nrm = (v) => String(v || '').toLowerCase().replace(/ё/g, 'е').replace(/\s+/g, ' ').trim();
+  /* dekor kodi qo'shimchasi (UR, CD, PE, HU/HU, ST9 …) taqqoslashda hisobga olinmaydi; "Дуб Гудзон Кашемир" kabi boshqa dekorlar qo'shilmaydi */
+  const nrm = (v) => String(v || '').toLowerCase().replace(/ё/g, 'е').replace(/\s+/g, ' ').trim().replace(/(?:\s+(?:[a-z]{1,3}(?:\/[a-z]{1,3})?|st\d+))+$/, '');
+  const turTartib = (g) => { const i = ERP_TUR[qism].indexOf(g.tur); return i < 0 ? 99 : i; };   // korpus/polka/fasad: LDSP → LMDF; orqa: HDF
+  /* bir qalinlik — bitta chip: shu qalinlikdagi variantlardan tanlangani, aks holda narxlisi va arzoni */
+  const birQalin = (g) => {
+    const m = new Map();
+    for (const v of g.variantlar) {
+      const k = +v.th || 0, o = m.get(k), narx = (x) => (x.uzs > 0 ? x.uzs : Infinity);
+      if (!o || (erpKod(v) === cur && erpKod(o) !== cur) || (erpKod(o) !== cur && narx(v) < narx(o))) m.set(k, v);
+    }
+    return Object.assign({}, g, { variantlar: [...m.values()] });
+  };
   const mashhur = [];
   for (const e of ((H.dekorMashhur && H.dekorMashhur.items) || [])) {
     const arz = (d) => Math.min(...d.g.variantlar.filter(v => v.uzs > 0).map(v => v.uzs), Infinity);
-    const nomzod = dekorlar.filter(d => nrm(d.g.nom) === nrm(e.nom) && narxli(d.g));
-    nomzod.sort((a, b) => ((b.g.tur === e.tur) - (a.g.tur === e.tur)) || ((b.g.brend === 'Ultradekor') - (a.g.brend === 'Ultradekor')) || (arz(a) - arz(b)));
-    if (nomzod[0] && !mashhur.includes(nomzod[0])) { nomzod[0].soni = e.soni; mashhur.push(nomzod[0]); }
+    const nomzod = dekorlar.filter(d => nrm(d.g.nom) === nrm(e.nom) && narxli(d.g) && (qism !== 'orqa' || d.g.tur === 'HDF'));   // orqa devor — faqat HDF
+    nomzod.sort((a, b) => (turTartib(a.g) - turTartib(b.g)) || ((b.g.brend === 'Ultradekor') - (a.g.brend === 'Ultradekor')) || (arz(a) - arz(b)));
+    if (nomzod[0] && !mashhur.some(m => m.g === nomzod[0].g)) mashhur.push({ g: birQalin(nomzod[0].g), r: nomzod[0].r, soni: e.soni });
   }
   mashhur.splice(12);
   const hammasi = !!(q.hammasi || q.q || q.guruh || q.tur || q.th || mashhur.length < 3);

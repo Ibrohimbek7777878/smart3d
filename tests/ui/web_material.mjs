@@ -55,10 +55,17 @@ async function asosiy(page, R) {
   R.mashhur = await M(() => { const m = document.querySelector('[data-material-mashhur]'); const pl = m ? [...m.querySelectorAll('[data-material-plitka]')] : [];
     return { n: pl.length, narxsiz: pl.filter(x => /narx yo'q/i.test(x.innerText)).length, boshqa: !!document.querySelector('[data-material-boshqa]'),
       yashirin: !document.querySelector('[data-material-qidiruv]') && !document.querySelector('[data-material-rang]') && !document.querySelector('[data-material-filtr]') }; });
+  const tiles = () => M(() => [...document.querySelectorAll('[data-material-mashhur] [data-material-plitka]')].map(x => ({ t: x.innerText.replace(/\s+/g, ' ').trim(), ch: [...x.querySelectorAll('[data-material-qalinlik] button')].map(b => b.innerText.trim()) })));
+  R.jadvalKorpus = await tiles();
+  R.kashemir = R.jadvalKorpus.some(x => /^Кашемир /.test(x.t) && /525 000/.test(x.t));   // ERP: ЛДСП Ультрадекор 5,796 Кашемир UR 16мм
+  R.birChip = R.jadvalKorpus.every(x => new Set(x.ch).size === x.ch.length);
   await page.screenshot({ path: `${OUT}/material-sodda-1440.png` });
   await page.setViewportSize({ width: 390, height: 844 }); await page.waitForTimeout(400);
   await page.screenshot({ path: `${OUT}/material-sodda-390.png` });
   await page.setViewportSize({ width: 1440, height: 900 }); await page.waitForTimeout(300);
+  await chip('qism', 'Orqa devor').click(); await page.waitForTimeout(400);
+  R.jadvalOrqa = await tiles();
+  await chip('qism', 'Korpus').click(); await page.waitForTimeout(400);
   /* 1 bosish: mashhur dekor → korpus ERP plitasi */
   await V('[data-material-mashhur] [data-material-plitka] > button').first().click(); await page.waitForTimeout(1000);
   R.mashhurTanla = await st();
@@ -146,6 +153,6 @@ async function asosiy(page, R) {
     !!R.sel && /faqat shu modul/.test(R.modulDoira) && R.modulSlot && erp(R.modulSlot.fasad) && R.boshqalar === 0 &&
     R.loyihaga.fasad === R.modulSlot.fasad && R.loyihaga.qolgan === 0 &&
     R.saqlash.polka && JSON.stringify(R.saqlash.kodlar) === JSON.stringify(R.saqlash.kerak) &&
-    R.mashhur.n >= 8 && R.mashhur.n <= 12 && R.mashhur.narxsiz === 0 && R.mashhur.boshqa && R.mashhur.yashirin && erp(R.mashhurTanla.mat) && R.toliq && R.narxsizYoq &&
+    R.kashemir && R.birChip && R.mashhur.n >= 8 && R.mashhur.n <= 12 && R.mashhur.narxsiz === 0 && R.mashhur.boshqa && R.mashhur.yashirin && erp(R.mashhurTanla.mat) && R.toliq && R.narxsizYoq &&
     R.tel.bor && R.tel.sigadi && !R.tel.hScroll && errs.length === 0;
 }
