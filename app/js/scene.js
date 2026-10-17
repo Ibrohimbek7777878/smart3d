@@ -82,6 +82,8 @@ export function createScene(container, opts = {}) {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));   // B12
   renderer.setClearColor(C.bg, TH ? 0 : 1);
   renderer.domElement.style.display = 'block';
+  renderer.domElement.style.width = '100%';     // canvas CSS o'lchami konteynerga bog'liq (dpr ≠ 1 da ham to'liq)
+  renderer.domElement.style.height = '100%';
   renderer.domElement.style.touchAction = 'none';
   container.appendChild(renderer.domElement);
 
@@ -426,6 +428,8 @@ export function createScene(container, opts = {}) {
   /* ── Hajam ─────────────────────────────────────────────────────────── */
   function resize() {
     const w = Math.max(container.clientWidth, 1), h = Math.max(container.clientHeight, 1);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);          // brauzer masshtabi o'zgarsa yangilanadi
+    if (renderer.getPixelRatio() !== dpr) renderer.setPixelRatio(dpr);
     renderer.setSize(w, h, false);
     cam3d.aspect = w / h;
     cam3d.updateProjectionMatrix();
@@ -436,6 +440,14 @@ export function createScene(container, opts = {}) {
   }
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
   if (ro) ro.observe(container);
+  window.addEventListener('resize', resize);     // brauzer masshtabi (Ctrl +/−) resize hodisasini ham beradi
+  /* masshtab (dpr) o'zgarishi — konteyner o'lchami o'zgarmasligi mumkin, shuning uchun alohida kuzatamiz */
+  (function dprKuzat() {
+    if (typeof matchMedia !== 'function') return;
+    const mq = matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+    const on = () => { resize(); dprKuzat(); };
+    mq.addEventListener ? mq.addEventListener('change', on, { once: true }) : mq.addListener(on);
+  })();
 
   /* ── Render (ixtiyoriy uzluksiz sikl — drag paytida 60 fps) ───────── */
   let needsRender = true;
@@ -450,7 +462,7 @@ export function createScene(container, opts = {}) {
       w.visible = _v.dot(u.out) <= 0;          // kamera devorning tashqarisida — devor ko'rinmaydi
     }
   }
-  function render() { cullWalls(); anisoQo(); renderer.render(scene, active); labelRenderer.render(scene, active); if (listeners.render) emit('render'); }
+  function render() { if (renderer.getPixelRatio() !== Math.min(window.devicePixelRatio || 1, 2)) resize(); cullWalls(); anisoQo(); renderer.render(scene, active); labelRenderer.render(scene, active); if (listeners.render) emit('render'); }
   /* XR (VR) rejimida setAnimationLoop SHART — rAF o'rniga */
   function loop() {
     if (listeners.frame) emit('frame');           // TZ-09: animatsiya (eshik ochilishi) — har kadr
@@ -574,6 +586,7 @@ export function createScene(container, opts = {}) {
     dispose() {
       api._stopLoop();
       if (ro) ro.disconnect();
+      window.removeEventListener('resize', resize);
       scene.traverse(o => {
         if (o.geometry) o.geometry.dispose();
         const mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
