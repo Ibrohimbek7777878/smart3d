@@ -112,7 +112,13 @@ ok('ustama 35% → 20%: mijoz narxi = tannarx × 1,20', pU.markupPct === 0.2 && 
 ok('usta o\'z ustamasi (Sozlamalar) ustun', hisob(Su, { markupPct: 0.5 }).markupPct === 0.5);
 
 console.log('\n[3] Narx aniqligi');
-ok(`hozirgi (stavkasiz): ${p0.aniqlik.pct}% (${p0.aniqlik.taxmin.length} taxmin qator, ${p0.aniqlik.narxsiz} narxsiz)`, p0.aniqlik.pct > 0 && p0.aniqlik.pct < 100 && p0.aniqlik.taxmin.some(t => t.group === 'Ustama'));
+ok(`hozirgi (stavkasiz): ${p0.aniqlik.pct}% (${p0.aniqlik.taxmin.length} taxmin qator, ${p0.aniqlik.narxsiz} narxsiz)`, p0.aniqlik.pct > 0 && p0.aniqlik.pct < 100 && !p0.aniqlik.taxmin.some(t => t.group === 'Ustama'));
+/* TZ-30 (egasi #181, 2026-10-17): ustama 35% — egasi tasdiqladi (materials.json pricing.price_src "egasi, 2026-10-17") */
+ok('sukut ustama — 35%, manba "egasi", sana 2026-10-17 (server boshlang\'ich hujjati va stavkasiz hisob)', s0.ustama.foiz.qiymat === 35 && s0.ustama.foiz.manba === 'egasi'
+  && s0.ustama.foiz.sana === '2026-10-17' && p0.aniqlik.ustama_manba === 'egasi' && pS.aniqlik.ustama_manba === 'egasi' && s0.ish_haqi.detal.manba === 'taxmin');
+const matsT = Object.assign({}, mats, { pricing: { markup_pct: 0.35 } });   // price_src yo'q — avvalgidek "taxmin"
+ok('price_src "egasi…" bo\'lmasa — ustama "taxmin" (avvalgidek)', narxSukut(matsT).ustama.foiz.manba === 'taxmin'
+  && productionCost(cls, matsT, OPT).aniqlik.taxmin.some(t => t.group === 'Ustama') && productionCost(cls, matsT, OPT).clientTotal === p0.clientTotal);
 /* hammasi tasdiqlangan: furnituraning narxi ERP'dan, kromka/raspil — sex jadvali, ish haqi va ustama — egasi */
 const toza = cls.map(cl => Object.assign({}, cl, { hardware: [] }));
 const Sall = qolla(S, { ish_haqi: { detal: 12000, modul: 40000 }, ustama: { foiz: 35 } });
@@ -163,7 +169,7 @@ else {
   const pT = hisob(Stest);
   const qisqa = (p) => `tannarx ${p.totalCost}, mijoz ${p.clientTotal}, aniqlik ${p.aniqlik.pct}% — taxmin: ${p.aniqlik.taxmin.map(t => t.group + ' ' + t.amount).join(', ')}; narxsiz ${p.aniqlik.narxsiz}`;
   console.log('      hozir:            ' + qisqa(p0));
-  console.log('      sex jadvali bilan: ' + qisqa(pT) + ' (raspil Altendorf 1, kromka ПВХ 19/1 прямая; ish haqi va ustama — taxmin)');
+  console.log('      sex jadvali bilan: ' + qisqa(pT) + ' (raspil Altendorf 1, kromka ПВХ 19/1 прямая; ish haqi — taxmin, ustama — egasi)');
   const Sih = qolla(Stest, { ish_haqi: { yoqilgan: false }, ustama: { foiz: 35 } });
   const pT2 = hisob(Sih);
   console.log('      + ish haqi o\'chiq, ustama 35% egasi deb: ' + qisqa(pT2));

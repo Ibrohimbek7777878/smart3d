@@ -44,7 +44,7 @@ async function usta(tel) {
 const admin = async () => (await (await api('/api/login', { method: 'POST', body: { email: 'admin@smart3d.uz', password: ADMIN_PW } })).json()).token;
 const RASPIL = { '780236010807': { nom: 'Услуга Распила Altendorf 1', guruh: 'raspil', qiymat: 18000, birlik: 'list', manba: 'sex jadvali', sana: '2026-07-03' } };
 
-test('boshlang\'ich holat: hamma o\'qiydi, ish haqi va ustama — "taxmin" (materials.json)', async () => {
+test('boshlang\'ich holat: hamma o\'qiydi, ish haqi — "taxmin", ustama 35% — "egasi" (materials.json, TZ-30)', async () => {
   const r = await api('/api/narxlar');
   assert.equal(r.status, 200);
   const g = await r.json();
@@ -53,7 +53,8 @@ test('boshlang\'ich holat: hamma o\'qiydi, ish haqi va ustama — "taxmin" (mate
   assert.equal(g.ish_haqi.detal.manba, 'taxmin');
   assert.equal(g.ish_haqi.detal.qiymat, 12000);
   assert.equal(g.ustama.foiz.qiymat, 35);
-  assert.equal(g.ustama.foiz.manba, 'taxmin');
+  assert.equal(g.ustama.foiz.manba, 'egasi');   // TZ-30: egasi tasdiqladi (#181, pricing.price_src "egasi, 2026-10-17")
+  assert.equal(g.ustama.foiz.sana, '2026-10-17');
 });
 
 test('faqat admin: tokensiz 401, usta 403 (S3D-AUTH-006), tarix ham', async () => {
