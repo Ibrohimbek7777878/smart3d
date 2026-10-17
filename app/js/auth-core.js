@@ -208,6 +208,8 @@ export function createSession(o) {
     get user() { return user; },
     get loggedIn() { return has(); },
     get currentId() { return currentId; },
-    get ready() { return ready; }
+    get ready() { return ready; },
+    /** saqlanmagan o'zgarish bor (navbatda yoki yuborilmoqda) — yangi versiyaga o'tishdan oldin tekshiriladi */
+    get dirty() { return dirty || saving; }
   };
 }
