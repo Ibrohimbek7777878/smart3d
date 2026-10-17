@@ -521,3 +521,9 @@ shuni tawadim lekin bizdag ai chizgan narsa oddiy mana rasmdagin bizn ai chizd n
 ## 2026-10-18
 
 192. loyhan korib chiq toza xavf yo bolsa githubga push qivor
+
+195. loyhan umumiy nechi fozi tayyor rearl productionga va tayor bolmagan qismlarn aytn nega tayor emas
+
+196. email bilan kirish qismiga google orqai kirshn qoshib qoy telegram mini app ham pauza qilb turamiz hozir loyhan umumiy tayorlik qismin 90foziga kotairsh kere  stanok faylarni ham toliq tugat giblab faylar bolsa toliq korib oqib chiq 35foiz ustama yaxsh turaversin  teshik rang va kromkani qaysi qismlar kere vrni qismin ham tugat
+
+197. qara hozir boshqa calude ham ishlayabd u ham agentlar bilan ishlaybdi qoida token sariga etibor ber bu qatiy qoida ishn bolib ber va boshla
