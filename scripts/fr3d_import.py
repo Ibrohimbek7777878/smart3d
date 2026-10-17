@@ -49,7 +49,10 @@ MATIDX = ROOT / "app" / "data" / "materials-index.json"
 sys.path.insert(0, str(PARSER_DIR))
 sys.path.insert(0, str(Path(__file__).resolve().parent))   # -I rejimida ham scripts/ dagi modul topilsin
 sys.dont_write_bytecode = True   # parser boshqa loyihada — u yerga __pycache__ yozilmasin (faqat o'qish, 2.10)
-import b3d_full_parser as P  # noqa: E402
+try:
+    import b3d_full_parser as P  # noqa: E402
+except ImportError:              # parser boshqa loyihada — CI da yo'q; tokens()/norm() ni narx_jadval.py ishlata oladi
+    P = None
 import bazis_daraxt  # noqa: E402  — asosiy model daraxti (amallar tarixisiz, global joylashuv)
 import bazis_teshik  # noqa: E402  — mahkamlagichdan teshiklar (TZ-06)
 
@@ -728,6 +731,8 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
 
 
 def main():
+    if P is None:
+        sys.exit(f"b3d_full_parser topilmadi ({PARSER_DIR}) — .fr3d import faqat sexning to'liq papkasida ishlaydi")
     std = json.loads(STD.read_text(encoding="utf8"))
     old_links = {}
     if LINKS.exists():
