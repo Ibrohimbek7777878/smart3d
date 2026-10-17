@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import path from 'node:path';
 import { csp, inlineScriptHashes } from '../server/himoya.js';
+import { ILOVA_YOL_RE } from './src/app/marshrutlar.js';
 
 const r = (p) => fileURLToPath(new URL(p, import.meta.url));
 const DATA = r('../app/data');   // ma'lumot — bitta manba (eski sayt bilan umumiy)
@@ -51,10 +52,26 @@ function smart3dPrice() {
   };
 }
 
-// sahifalar: / (sayt), /app.html (ilova), /404.html (topilmadi)
+/* TZ-30: ilova ekranlarining manzillari (/kirish, /loyihalar, /loyiha/5 …, src/app/marshrutlar.js) — dev va preview'da app.html
+   beriladi (serverda — server agenti, xuddi shu ro'yxat). Manzil o'zgarmaydi, faqat ichki so'rov app.html ga yo'naltiriladi. */
+function smart3dMarshrut() {
+  const yolla = (req, res, next) => {
+    if (req.method === 'GET' || req.method === 'HEAD') {
+      const u = req.url || '', i = u.indexOf('?');
+      if (ILOVA_YOL_RE.test(i < 0 ? u : u.slice(0, i))) req.url = '/app.html' + (i < 0 ? '' : u.slice(i));
+    }
+    next();
+  };
+  return { name: 'smart3d-marshrut', configureServer(s) { s.middlewares.use(yolla); }, configurePreviewServer(s) { s.middlewares.use(yolla); } };
+}
+/* service worker: navigatsiya so'rovi yo'li + so'rov qatori (/kirish?qaytish=…) — workbox NavigationRoute shuni tekshiradi */
+const SW_ILOVA_YOL = new RegExp(ILOVA_YOL_RE.source.replace(/\$$/, '(?:\\?.*)?$'));
+
+// sahifalar: / (sayt), /app.html (ilova; TZ-30 — ekran manzillari ham), /404.html (topilmadi)
 export default defineConfig({
   plugins: [
     react(),
+    smart3dMarshrut(),
     smart3dPrice(),
     smart3dData(),
     /* internetsiz ishlash: sahifa, kod, shrift va ma'lumot oldindan keshlanadi; /api — doim tarmoqdan */
@@ -64,7 +81,7 @@ export default defineConfig({
       filename: 'sw.js',
       manifest: {
         name: 'Smart3D', short_name: 'Smart3D', lang: 'uz',
-        start_url: 'app.html', scope: './', display: 'standalone',
+        start_url: '/app.html', scope: '/', display: 'standalone',   // TZ-30: absolyut — ilova chuqur manzilda (/loyiha/5) ham shu
         background_color: '#0F2229', theme_color: '#0F2229',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
@@ -75,7 +92,9 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,woff2,json,png,svg,webmanifest}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
-        navigateFallback: null,
+        /* TZ-30: ekran manzillari (/loyihalar, /loyiha/5 …) internetsiz ham ochiladi — keshdagi app.html; "/", /eski/, /api — tegilmaydi */
+        navigateFallback: 'app.html',
+        navigateFallbackAllowlist: [SW_ILOVA_YOL],
         cleanupOutdatedCaches: true,
         clientsClaim: true,   // yangi versiya ochiq sahifani darhol boshqaradi (yangilanish.js qayta yuklaydi)
         skipWaiting: true

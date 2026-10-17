@@ -99,7 +99,7 @@ async function asosiy(page, R) {
 
   /* sayt (bosh sahifa): pastdagi til tugmasi → menyu → Русский (sahifa qayta yuklanmaydi) */
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto(page.url().split(/[?#]/)[0].replace(/app\.html$/, '') + '?t=' + Date.now()); await page.waitForTimeout(2000);
+  await page.goto(new URL(page.url()).origin + '/?t=' + Date.now());   // TZ-30: sayt ildizi (ilova manzili /loyiha/5 … bo'lishi mumkin) await page.waitForTimeout(2000);
   await page.locator('footer button[aria-haspopup=menu]').scrollIntoViewIfNeeded();
   await page.locator('footer button[aria-haspopup=menu]').click(); await page.waitForTimeout(300);
   await page.locator('[role=menuitemradio][lang=ru]').click(); await page.waitForTimeout(500);

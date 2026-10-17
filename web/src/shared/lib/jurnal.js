@@ -21,7 +21,7 @@ export function report(code, o = {}) {
   if ((sent.get(key) || 0) > now - 60000 || count >= 30) return;
   sent.set(key, now); count++;
   const body = JSON.stringify({ code, modul: String(o.modul || '').replace(/[^\w/-]/g, '').slice(0, 40),
-    sahifa: (location.pathname.split('/').pop() || 'index.html').replace(/[^\w./-]/g, '').slice(0, 80), xabar,
+    sahifa: (location.pathname.replace(/^\/+/, '') || 'index.html').replace(/[^\w./-]/g, '').slice(0, 80), xabar,   // TZ-30: app.html, loyiha/5, kirish
     stack: tozala(err && err.stack, 1000) });
   fetch('/api/log', { method: 'POST', keepalive: true, headers: { 'content-type': 'application/json' }, body })   // kirgan bo'lsa — cookie o'zi boradi
     .catch(() => { /* internet yo'q — faqat konsolda */ });

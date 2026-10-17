@@ -4,6 +4,7 @@ export default async function run(page) {
   const base = page.url().replace(/[^/]*$/, '');
   const R = {};
   const M = (fn, arg) => page.evaluate(fn, arg, false);   // MAIN world — serviceWorker faqat shu yerda
+  await M(() => localStorage.setItem('s3d-til', 'uz'));    // matnlar o'zbekcha (TZ-18: aks holda brauzer tili — headless'da ingliz)
   for (let i = 0; i < 60 && !(await M(() => !!(navigator.serviceWorker && navigator.serviceWorker.controller))); i++) await page.waitForTimeout(500);
   if (!(await M(() => !!(navigator.serviceWorker && navigator.serviceWorker.controller)))) {
     await page.reload();
@@ -20,6 +21,10 @@ export default async function run(page) {
     await page.waitForTimeout(1500);
     R[k] = { javob: r, matnBor: await M(t => document.body.innerText.includes(t), matn) };
   }
+  /* TZ-30: ekran manzili internetsiz ham — service worker keshdagi app.html ni beradi (navigateFallback); kirmagan — /kirish?qaytish=… */
+  const rm = await page.goto(base + 'loyiha/5').then(x => x && x.status()).catch(e => 'XATO: ' + e.message.split('\n')[0]);
+  await page.waitForTimeout(1500);
+  R.manzil = { javob: rm, yol: await M(() => location.pathname + location.search), ekran: await M(() => window.__app && window.__app.state.screen) };
   R.malumot = await M(async () => {
     const out = {};
     for (const n of ['fragments.json', 'fragments-mc.json', 'materials.json', 'sheet-catalog.json', 'furnitura-catalog.json']) {
@@ -29,6 +34,7 @@ export default async function run(page) {
     return out;
   });
   await page.context().setOffline(false);
-  R.ok = R.sayt.matnBor && R.ilova.matnBor && Object.values(R.malumot).every(v => v !== 'XATO');
+  R.ok = R.sayt.matnBor && R.ilova.matnBor && R.manzil.yol === '/kirish?qaytish=%2Floyiha%2F5' && R.manzil.ekran === 'login'
+    && Object.values(R.malumot).every(v => v !== 'XATO');
   return R;
 }

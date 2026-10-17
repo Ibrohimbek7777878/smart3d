@@ -33,8 +33,9 @@ export const DATA_FILES = {
 };
 const REQUIRED = new Set(['frags', 'mats']);   // eski boot(): qolganlari .catch(() => null)
 
-/** Ma'lumotni yuklash. read(nom) → Promise<obyekt>; standart — fetch(base + nom). */
-export async function loadData(read = (n) => fetch('data/' + n).then(r => r.json())) {
+/** Ma'lumotni yuklash. read(nom) → Promise<obyekt>; standart — fetch('/data/' + nom): absolyut yo'l — chuqur manzilda
+ *  (/loyiha/5) ham sayt ildizidan (TZ-30) */
+export async function loadData(read = (n) => fetch('/data/' + n).then(r => r.json())) {
   const keys = Object.keys(DATA_FILES);
   const vals = await Promise.all(keys.map(k => {
     const p = read(DATA_FILES[k]);

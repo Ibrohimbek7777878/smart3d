@@ -24,7 +24,7 @@ async function asosiy(page, R) {
   const click = async (re) => { const l = page.getByText(re); const n = await l.count(); if (n) await l.nth(n - 1).click(); return n > 0; };
   const fill = async (ph, v) => { const el = page.locator(`input[placeholder*="${ph}"]`).first(); await el.fill(v); };
   const waitText = async (t, ms = 10000) => { for (let i = 0; i < ms / 200; i++) { if (await has(t)) return true; await page.waitForTimeout(200); } return false; };
-  const base = page.url().split(/[?#]/)[0].replace(/app\.html$/, '');
+  const base = new URL(page.url()).origin + '/';   // TZ-30: ilova manzili /royxat, /loyiha/5 … bo'lishi mumkin
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });

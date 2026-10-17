@@ -44,7 +44,7 @@ async function asosiy(page, R) {
   const has = async (s) => (await M(() => document.body.innerText)).includes(s);
   const waitText = async (s, ms = 12000) => { for (let i = 0; i < ms / 200; i++) { if (await has(s)) return true; await page.waitForTimeout(200); } return false; };
   const until = async (fn, ms = 15000) => { for (let i = 0; i < ms / 250; i++) { const v = await M(fn); if (v) return v; await page.waitForTimeout(250); } return null; };
-  const base = page.url().split(/[?#]/)[0].replace(/app\.html$/, '');
+  const base = new URL(page.url()).origin + '/';   // TZ-30: ilova manzili /royxat, /loyiha/5 … bo'lishi mumkin
   const SRV = `http://127.0.0.1:${process.env.NPORT}`, MOCK = `http://127.0.0.1:${process.env.TG_MOCK}`;
   let skriptSoni = 0, kechiktir = 0;
   await page.route('https://telegram.org/**', async (route) => {

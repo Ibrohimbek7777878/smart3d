@@ -28,12 +28,13 @@ export async function loyihalarniYukla() {
   if (list) set('projects', { list, aloqa: true }); else set('projects', { aloqa: false });
 }
 
+/** → true agar ochilsa (TZ-30: /loyiha/:id topilmasa — marshrut /loyihalar ga qaytaradi) */
 export async function openProject(id) {
   await project.load();
-  if (await S.openProject(id)) {
-    ishJoyiOch();
-    project.changed('room', true);
-  }
+  if (!(await S.openProject(id))) return false;
+  ishJoyiOch();
+  project.changed('room', true);
+  return true;
 }
 
 /** "+ Yangi loyiha" → TZ-25: darhol bo'sh ish joyi (standart xona); "Nima yasaymiz" so'rovnomasi yashirildi (qoida 2.7) */
