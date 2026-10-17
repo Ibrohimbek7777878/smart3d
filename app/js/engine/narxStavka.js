@@ -3,7 +3,8 @@
  *
  * Qoida 4.3: stavka o'ylab topilmaydi — faqat egasi kiritgan yoki sex xizmat jadvalidagi qiymat. Qaysi qator ishlatilishi
  * (raspil stanogi, kromka xizmati, teshik turi → prisadka qatori) — EGASINING tanlovi (tanlov.*). Tanlanmagan joyda hisob
- * materials.json dagi hozirgi qiymatni "taxmin" belgisi bilan ishlatadi.
+ * materials.json dagi hozirgi qiymatni "taxmin" belgisi bilan ishlatadi. Istisno — ustama: materials.json dagi
+ * pricing.price_src "egasi, <sana>" bo'lsa (TZ-30: 35% — egasi tasdiqladi, 2026-10-17), u "egasi" manbasi bilan.
  *
  * Hujjat:
  *   xizmatlar: { <kod>: { nom, guruh: raspil|kromka|prisadka, qiymat, birlik, kategoriya, manba: 'sex jadvali'|'egasi', sana } }
@@ -26,16 +27,25 @@ const SANA_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export const tasdiqMi = (manba) => TASDIQ_MANBA.includes(manba);
 
-/** Boshlang'ich hujjat — materials.json dagi hozirgi (taxminiy) ish haqi va ustama, "taxmin" deb belgilangan. */
+/** materials.json dagi ustama (pricing.markup_pct) manbasi: price_src "egasi…" — 'egasi' (tasdiqlangan), aks holda — 'taxmin'.
+ *  Bitta qoida: boshlang'ich hujjat (narxSukut) va stavkasiz hisob (cutlist.productionCost). */
+export const ustamaManbasi = (materials) => {
+  const p = materials && materials.pricing;
+  return p && p.markup_pct != null && /^egasi/.test(String(p.price_src || '')) ? 'egasi' : 'taxmin';
+};
+
+/** Boshlang'ich hujjat — materials.json dagi hozirgi ish haqi ("taxmin") va ustama (manbasi — ustamaManbasi). */
 export function narxSukut(materials) {
   const lab = (materials && materials.labor) || {};
   const sana = ((materials && materials._meta && materials._meta.updated) || '').slice(0, 10) || null;
   const mk = materials && materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0.35;
   const q = (qiymat) => ({ qiymat, manba: 'taxmin', sana });
+  const um = ustamaManbasi(materials);
+  const uSana = um === 'egasi' ? ((/\d{4}-\d{2}-\d{2}/.exec(materials.pricing.price_src) || [])[0] || sana) : sana;   // "egasi, 2026-10-17" → sana
   return {
     versiya: 1, xizmatlar: {}, tanlov: { raspil: null, kromka: {}, prisadka: {} },
     ish_haqi: { yoqilgan: q(true), detal: q(lab.panel_per_piece || 0), modul: q(lab.per_fragment_min || 0) },
-    ustama: { foiz: q(Math.round(mk * 1000) / 10) }
+    ustama: { foiz: { qiymat: Math.round(mk * 1000) / 10, manba: um, sana: uSana } }
   };
 }
 
