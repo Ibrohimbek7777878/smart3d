@@ -7,6 +7,7 @@ import { raqam } from '../../shared/lib/format.js';
 import { t } from '../../i18n/index.js';
 import { openBazisMaterial } from '../editor/catalog/material.js';
 import { dekorRang } from '../../../../app/js/engine/rang.js';
+import { materialRang } from '../../services/erpMaterial.js';
 import { ishJoyiOch } from '../editor/ishjoyi/ishjoyi.js';
 
 /* TZ-21: Bazis faylini yuklash (.b3d, .fr3d, .bpj) — brauzerda o'qiladi (xom fayl serverga yuborilmaydi), natija — yangi loyiha:
@@ -89,7 +90,7 @@ export function useBazisVaraq() {
     materiallar: h.materiallar.map(m => {
       const x = mat.find(y => y.code === m.code) || {};
       const yk = b.almash && b.almash[m.code], y = yk ? mat.find(z => z.code === yk) : null;
-      const r = dekorRang(y ? y.name : m.name);
+      const r = y ? materialRang(project.H, yk) : dekorRang(m.name);   // #182: almashtirilgan ERP dekori — Asosiy 100 namunasi (3D bilan bir xil)
       return { nom: m.name, d: t('bazis.material_d', { t: m.thickness, n: m.detal, v: (x.sheets && x.sheets[0] ? x.sheets[0].join('×') : '—'), a: m.asos }),
         yangi: y ? t('bazis.almashtirildi', { nom: y.name }) : null, rang: r ? '#' + r.rang.toString(16).padStart(6, '0') : null,
         almashtir: () => openBazisMaterial(m.code) };

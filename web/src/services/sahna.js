@@ -69,13 +69,17 @@ export function dizaynMavzu() {
     },
     /* TZ-23 E: material dekori (nomidan, taxminiy — engine/rang.js). Yog'och — dizayndagi tekstura shu rangga bo'yaladi
        (tekstura o'rtacha rangi 0xB4834F ga nisbatan; ochroq dekor — tekstura o'zi), qolgani — tekis rang */
+    /* #182: yog'och dekor — o'z rangidagi tekstura (asos — dekor rangi, tola chiziqlari to'qroq): plitkadagi namuna bilan bir xil.
+       Avval tekstura 0xB4834F ga nisbatan bo'yalardi — undan ochroq dekor (Сонома, Вотан, Ясень …) standart yog'ochdan farqlanmasdi */
     rangMat(r) {
       if (r.yogoch) {
-        const m = M.wood(), c = [(r.rang >> 16) & 255, (r.rang >> 8) & 255, r.rang & 255], o = [0xB4, 0x83, 0x4F];
-        m.color.setRGB(...c.map((v, i) => Math.min(1, v / o[i])));
+        const m = new THREE.MeshStandardMaterial({ map: yogochTex(r.rang), roughness: 0.62 });
+        m.userData.rang = r.rang;
         return m;
       }
-      return new THREE.MeshStandardMaterial({ color: r.rang, roughness: 0.5 });
+      const m = new THREE.MeshStandardMaterial({ color: r.rang, roughness: r.glyanes ? 0.18 : 0.5 });
+      m.userData.rang = r.rang;
+      return m;
     },
     ustki: (f) => isUstki(f),
     glass: (f) => /shisha|vitr|glass|oyna/i.test((f && f.name) || '')
@@ -84,6 +88,25 @@ export function dizaynMavzu() {
 
 /** Sahna: host — dizayndagi roomHost div. o: { catalog, getPlacements, getRoom (eshik burchaklari, TZ-22), onSelect, onDrag, onDragEnd,
  *  cheklov (surish qoidalari, #151), onRotate, onRotateEnd, onTap, getTeshik (egasi #167: joy id → teshik3d() natijasi | null) } */
+/* #182: yog'och teksturasi — dekor rangi asos, tola chiziqlari shu rangdan to'qroq (engine.js s3WoodTex uslubi); rang bo'yicha kesh */
+const YOGOCH_TEX = new Map();
+function yogochTex(rang) {
+  if (YOGOCH_TEX.has(rang)) return YOGOCH_TEX.get(rang);
+  const c = document.createElement('canvas'); c.width = c.height = 512;
+  const x = c.getContext('2d'), R = (rang >> 16) & 255, G = (rang >> 8) & 255, B = rang & 255;
+  x.fillStyle = '#' + rang.toString(16).padStart(6, '0'); x.fillRect(0, 0, 512, 512);
+  let s = 7; const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);   // barqaror (har ochilishda bir xil)
+  for (let i = 0; i < 160; i++) {
+    const y0 = rnd() * 512, k = 0.55 + rnd() * 0.25;
+    x.strokeStyle = `rgba(${R * k | 0},${G * k | 0},${B * k | 0},${0.12 + rnd() * 0.25})`; x.lineWidth = 0.5 + rnd() * 2.2; x.beginPath();
+    for (let X = 0; X <= 512; X += 16) { const y = y0 + Math.sin(X / 90 + i) * 6 + Math.sin(X / 23 + i * 3) * 1.5; X ? x.lineTo(X, y) : x.moveTo(X, y); }
+    x.stroke();
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.center.set(0.5, 0.5); t.rotation = Math.PI / 2;
+  YOGOCH_TEX.set(rang, t);
+  return t;
+}
+
 export function createSahna(host, o) {
   const theme = dizaynMavzu();
   const sp = createScene(host, { mode: '3d', theme, insetTop: 72 });   // 72 px — dizayndagi toolbar

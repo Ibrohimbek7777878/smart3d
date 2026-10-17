@@ -1261,5 +1261,10 @@
  "kromka.F": "перед",
  "kromka.B": "зад",
  "kromka.L": "левый торец",
- "kromka.R": "правый торец"
+ "kromka.R": "правый торец",
+ "mebel.asosiy": "Основные 100",
+ "mebel.asosiy_izoh": "чаще всего в цеху и на складе",
+ "mebel.rang_taxminiy": "Цвет примерный (в ERP нет фото)",
+ "mebel.dekorsiz": "стандарт, декор не выбран",
+ "mebel.loyihadan": "из проекта"
 }

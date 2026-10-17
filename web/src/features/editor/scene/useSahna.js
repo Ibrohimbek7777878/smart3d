@@ -13,6 +13,7 @@ import * as A from './actions.js';
 import { t } from '../../../i18n/index.js';
 import * as L from '../../../services/loyiha.js';
 import { openMaterial } from '../catalog/material.js';
+import { openSheet } from '../../../store/ui.js';
 import { tahrirla } from '../chizish/chizish.js';
 import { belgiGuruh } from '../../../services/belgi3d.js';
 
@@ -93,7 +94,9 @@ export function useModulKarta() {
       rows: [dimRow('w', t('sahna.eni')), dimRow('d', t('sahna.chuqurligi')), dimRow('h', t('sahna.boyi'))] },
     moveL: () => A.moveBy(-50), moveR: () => A.moveBy(50), rotate: A.rotate, dup: A.duplicate, askDel: A.askDelete,
     toggleModOpen: () => A.toggleOpen(sm.id), openInside: A.openInside,
-    material: () => openMaterial('korpus', sm.id),
+    /* #182: Bazis modulining detallari o'z materialida (BZM-…) — modul slotini hisob ham, 3D ham e'tiborsiz qoldiradi ("Tanlandi" o'zgarib,
+       kesim va 3D o'zgarmasdi). Shuning uchun Bazis moduli — Bazis materiallari ro'yxatiga (har biri "Almashtirish", doc.bazis.almash) */
+    material: () => (project.doc.bazis && project.doc.bazis.fragment && project.doc.bazis.fragment.code === sm.frg ? openSheet('bazis', {}) : openMaterial('korpus', sm.id)),
     chizma: project.doc.chizmalar && project.doc.chizmalar[sm.frg] ? () => tahrirla(sm.id) : null,   // TZ-24 A: qo'lda chizilgan
     matLabel: sm.slots && sm.slots.korpus ? project.matName(sm.slots.korpus) : t('mebel.modul_materiali')
   };
