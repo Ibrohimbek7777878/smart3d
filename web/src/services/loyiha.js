@@ -166,7 +166,7 @@ export function createEstimator(H) {
     if (cache.map[f.code] == null) {
       const mats = cache.mats || (cache.mats = H.effectiveMaterials(sh));
       const cl = cutlist(f, f.w, f.d, f.h, mats, { projectSlots: projectSlots(opt.materialCode, opt.fasadCode) });
-      cache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: H.furnById, xizmatlar: xz }).clientTotal;
+      cache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: H.furnById, furnituraBoglash: H.furnituraBoglash, xizmatlar: xz }).clientTotal;
     }
     return cache.map[f.code];
   };
