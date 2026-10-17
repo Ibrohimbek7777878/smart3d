@@ -9,7 +9,8 @@
    "BZ-sharikovie_napravl_400_pr": "birligi dona, katalogda komplekt narxi — bo'lib narx o'ylab topilmaydi",
    "BZ-sharikovie_napravl_400_lev": "xuddi shu",
    "BZ-napravlyayushie_salazka": "uzunligi yo'q"
-  }
+  },
+  "tasdiq_2": "Egasi, 2026-10-17 (#147): RU-1000 (1000 mm uzun ruchka, AI/chizilgan modul) → 90001991 «0351- 1000 MM QORA» 45 000"
  },
  "links": {
   "BZ-petle_oddiy": "90002525",
@@ -23,6 +24,7 @@
   "BZ-salazka_turkiya_samet_bez_vakum_400_mm": "90002641",
   "BZ-salazka_turkiya_samet_vakum_400_mm": "90002641",
   "BZ-napravlyayushie_shar_poln_vidv_l400_1045": "90002641",
-  "BZ-ekstsentrik_0_0": "90002094"
+  "BZ-ekstsentrik_0_0": "90002094",
+  "RU-1000": "90001991"
  }
 }
