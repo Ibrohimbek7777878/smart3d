@@ -494,7 +494,7 @@ class OrbitControls extends EventDispatcher {
 
 		function getZoomScale( delta ) {
 
-			const normalized_delta = Math.abs( delta ) / ( 100 * ( window.devicePixelRatio | 0 ) );
+			const normalized_delta = Math.abs( delta ) / 100 /* Smart3D: DPR'ga bog'liqlik olib tashlandi (dpr<1 da 0 ga bo'lish va 2x qurilmada boshqacha qadam) */;
 			return Math.pow( 0.95, scope.zoomSpeed * normalized_delta );
 
 		}

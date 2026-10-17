@@ -62,6 +62,22 @@ export function createScene(container, opts = {}) {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = TH.exposure || 1.15;
   }
+  /* zoomda tekstura aniq: anisotropik filtr (kuchsiz qurilmada 4, qolganida 8 — tezlik pasaymasin) */
+  const ANISO = Math.max(1, Math.min(renderer.capabilities.getMaxAnisotropy(), (navigator.hardwareConcurrency || 4) <= 4 ? 4 : 8));
+  THREE.Texture.DEFAULT_ANISOTROPY = ANISO;
+  let anisoSon = -1;
+  function anisoQo() {
+    const n = renderer.info.memory.textures;
+    if (n === anisoSon) return;                  // yangi tekstura qo'shilmagan — aylanib chiqmaymiz
+    anisoSon = n;
+    scene.traverse(o => {
+      const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+      for (const m of ms) for (const k of ['map', 'normalMap', 'roughnessMap', 'bumpMap', 'aoMap']) {
+        const t = m[k];
+        if (t && t.isTexture && t.anisotropy < ANISO) { t.anisotropy = ANISO; t.needsUpdate = true; }
+      }
+    });
+  }
   renderer.xr.enabled = true;          // WebXR / VR (VRButton)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));   // B12
   renderer.setClearColor(C.bg, TH ? 0 : 1);
@@ -434,7 +450,7 @@ export function createScene(container, opts = {}) {
       w.visible = _v.dot(u.out) <= 0;          // kamera devorning tashqarisida — devor ko'rinmaydi
     }
   }
-  function render() { cullWalls(); renderer.render(scene, active); labelRenderer.render(scene, active); if (listeners.render) emit('render'); }
+  function render() { cullWalls(); anisoQo(); renderer.render(scene, active); labelRenderer.render(scene, active); if (listeners.render) emit('render'); }
   /* XR (VR) rejimida setAnimationLoop SHART — rAF o'rniga */
   function loop() {
     if (listeners.frame) emit('frame');           // TZ-09: animatsiya (eshik ochilishi) — har kadr
@@ -549,6 +565,7 @@ export function createScene(container, opts = {}) {
     _resize: resize,
 
     /* QA (F6): GPU'dagi geometry/textures soni — qayta qurishda o'smasligi kerak */
+    _aniso: () => ANISO,
     _info: () => ({
       geometries: renderer.info.memory.geometries,
       textures: renderer.info.memory.textures
