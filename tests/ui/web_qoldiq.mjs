@@ -2,6 +2,10 @@
  * Admin: qoldiq qo'shadi, qidiradi, raskroy qoldiqlarini Narx qadamidan omborga yozadi, "ishlatildi" deb belgilaydi.
  * Furnitura: loyihadagisi (soni, narxi, jami) va ERP katalogi (qidiruv, toifa). Telefon (390) — sig'adi.
  * Ishlatish: bash tests/ui/web.sh qoldiq */
+import { readFileSync } from 'node:fs';
+/* furnitura katalogi soni — fayldan (ERP + do'kon narx ro'yxati, scripts/narx_pdf_import.py) */
+const KATALOG_SONI = JSON.parse(readFileSync(new URL('../../app/data/furnitura-catalog.json', import.meta.url), 'utf8')).items.length;
+
 export default async function run(page) {
   const R = {};
   try { await asosiy(page, R); } catch (e) {
@@ -108,7 +112,7 @@ async function asosiy(page, R) {
 
   R.errs = errs;
   R.ok = R.bosh && R.qoshildi.length === 1 && /900 × 400 × 16/.test(R.qoshildi[0]) && R.qidiruvYoq === 0 && R.qidiruv === 1 && R.xatoOlcham &&
-    R.joylar >= 2 && R.furnLoyiha.n > 1 && /Furnitura jami/.test(R.furnLoyiha.matn) && /Katalog \(19\d\d\)/.test(R.katalogTab) && R.qidiruvPetlya > 0 && R.toifa.n > 0 && R.toifa.n === R.toifa.hammasi &&
+    R.joylar >= 2 && R.furnLoyiha.n > 1 && /Furnitura jami/.test(R.furnLoyiha.matn) && R.katalogTab.includes('Katalog (' + KATALOG_SONI + ')') && R.qidiruvPetlya > 0 && R.toifa.n > 0 && R.toifa.n === R.toifa.hammasi &&
     (R.nestQoldiq === 0 || (R.omborgaTugma === 1 && R.omborgaToast && R.ombor === 1 + R.nestQoldiq)) &&
     R.giblabBazis && /^<\?xml version="1.0" encoding="windows-1251"\?><project importBMV="1.84">/.test(R.giblabBazis.bosh) && R.giblabBazis.mc && R.giblabBazis.xnc > 0 &&
     R.kdt && R.kdt.zip && R.kdt.fayllar > 5 && R.kdt.kdtFormat && R.omborKeyin === R.ombor - 1 && R.ishlatilgan === 1 &&
