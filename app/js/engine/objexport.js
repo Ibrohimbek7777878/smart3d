@@ -92,7 +92,7 @@ export function buildOBJ(doc, catalog, opt = {}) {
   const room = doc.room || {};
   const outline = room.outline || [];
   const wh = +room.wall_height || 2700;
-  if (outline.length >= 3) {
+  if (outline.length >= 3 && opt.only == null) {   // opt.only — faqat bitta modul: xona (pol/devor) chiqmaydi
     out.v.push('o floor');
     out.v.push('usemtl cat_floor');
     out.v.push(`# xona poligoni`);
@@ -179,6 +179,7 @@ export function buildOBJ(doc, catalog, opt = {}) {
 
   /* ── 2) Mebellar: har bir mebel panellar bo'yicha eksport qilinadi ── */
   for (const p of doc.placements || []) {
+    if (opt.only != null && p.id !== opt.only) continue;
     const frag = catalog[p.frg];
     if (!frag) continue;
     const w = +p.w || +frag.w, d = +p.d || +frag.d, h = +p.h || +frag.h;

@@ -42,9 +42,10 @@ export function useQadamXona() {
     ['dobor', t('xona.dobor'), (K.doborH || 60) + mm], ['karniz', t('xona.karniz'), (K.karnizH || 60) + mm],
     ['moyka', t('xona.moyka'), t('xona.kesim', { n: (K.moyka || {}).size || 500 })]];
   return {
-    shapes: [['rect', t('xona.tortburchak'), 'tortburchak'], ['L', t('xona.lshakl'), 'lShakl'], ['P', t('devor.shakl_P'), 'pShakl'], ['free', t('xona.erkin'), 'tahrir']].map(x => {
+    shapes: ((a) => a.map(x => a.reduce((n, y) => n + y[1].length, 0) > 34 ? [x[0], x[1], null] : x))   // yozuvlar uzun (ru) — panelga sig'ishi uchun belgisiz
+      ([['rect', t('xona.tortburchak'), 'tortburchak'], ['L', t('xona.lshakl'), 'lShakl'], ['P', t('devor.shakl_P'), 'pShakl'], ['free', t('xona.erkin'), 'tahrir']]).map(x => {
       const on = x[0] !== 'free' && x[0] === shakl;
-      return { label: x[1], ikon: x[2], bg: on ? 'var(--acc)' : 'transparent', c: on ? 'var(--ink)' : 'var(--txt)',
+      return { id: x[0], label: x[1], ikon: x[2], bg: on ? 'var(--acc)' : 'transparent', c: on ? 'var(--ink)' : 'var(--txt)',
         pick: () => {
           if (x[0] === 'free') { openShakl(); return; }
           L.applyRoom(doc, { outline: x[0] === 'L' ? L.L_OUTLINE.map(p => p.slice()) : x[0] === 'P' ? tayyorShakl('P', room.w, room.d) : L.rectOutline(room.w, room.d) });

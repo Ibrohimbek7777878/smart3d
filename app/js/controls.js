@@ -211,6 +211,30 @@ export function attachControls(sp, opts = {}) {
       }
     }
   }
+  /* Aylantirish va surishda ham kamera mebel qutisiga YAQIN_MIN dan yaqin kirmasin: OrbitControls o'z holatini hisoblagach
+   * ('change', render'dan oldin) kamera qutidan eng yaqin yo'nalishda tashqariga suriladi — mebel sirti bo'ylab silliq sirpanadi. */
+  let qutiT = 0, qutiK = [];
+  function mebeldanTashqari() {
+    if (sp.mode !== '3d' || !sp.cam3d.isPerspectiveCamera) return;
+    const nowMs = performance.now();
+    if (nowMs - qutiT > 120) { qutiT = nowMs; qutiK = modulQutilar().map(b => b.clone()); }
+    const p = sp.cam3d.position;
+    for (let it = 0; it < 3; it++) {
+      let ozgardi = false;
+      for (const b0 of qutiK) {
+        const mn = b0.min, mx = b0.max, m = YAQIN_MIN;
+        if (p.x <= mn.x - m || p.x >= mx.x + m || p.y <= mn.y - m || p.y >= mx.y + m || p.z <= mn.z - m || p.z >= mx.z + m) continue;
+        const d = [p.x - (mn.x - m), (mx.x + m) - p.x, p.y - (mn.y - m), (mx.y + m) - p.y, p.z - (mn.z - m), (mx.z + m) - p.z];
+        let k = 0; for (let i = 1; i < 6; i++) if (d[i] < d[k]) k = i;
+        const ax = k >> 1, sg = k & 1 ? 1 : -1;
+        const val = sg > 0 ? (ax === 0 ? mx.x : ax === 1 ? mx.y : mx.z) + m : (ax === 0 ? mn.x : ax === 1 ? mn.y : mn.z) - m;
+        if (ax === 0) p.x = val; else if (ax === 1) p.y = val; else p.z = val;
+        ozgardi = true;
+      }
+      if (!ozgardi) break;
+    }
+  }
+  orbit.addEventListener('change', () => { if (!synth) mebeldanTashqari(); });
   const _c = new sp.THREE.Vector3();
   sp.on('frame', zoomKadr);
   el.addEventListener('pointerdown', onPointerDown);

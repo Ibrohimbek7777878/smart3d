@@ -303,6 +303,33 @@ async function asosiy(page, R) {
   R.bazis = await M(() => { const s = window.__app.sahna; return { chizish: s.korinish.holat.chizish, xona: s.korinish.holat.xona, devor: s.sp.groups.walls3d.visible }; });
   await page.screenshot({ path: `${OUT}/korinish-1440-bazis.png` });
 
+  /* 2c) aylantirish va surishda kamera mebel qutisiga 400 mm dan yaqin kirmaydi (silliq, sakramaydi) */
+  R.kameraMebel = await M(() => {
+    const s = window.__app.sahna, sp = s.sp, o = s.ctl.orbit, cam = sp.cam3d, T = sp.THREE, qs = [];
+    for (const ch of sp.groups.items.children) { if (!ch.visible || (ch.userData && ch.userData.kind === 'hitBox')) continue; const b = new T.Box3().setFromObject(ch); if (!b.isEmpty()) qs.push(b); }
+    const eng = (p) => Math.min(...qs.map(b => b.distanceToPoint(p)));
+    const b0 = qs[0], c = b0.getCenter(new T.Vector3()), r = { n: qs.length, minAyl: 1e9, sakrash: 0, minPan: 1e9, ichkari: 1e9 };
+    /* a) nishon modul markazida, kamera 900 mm radiusda 360° aylanadi (har 5°) — zaxira buzilmasin, qadam katta emas */
+    o.target.copy(c); let oldin = null;
+    for (let a = 0; a < 360; a += 5) {
+      const q = a * Math.PI / 180;
+      cam.position.set(c.x + 900 * Math.cos(q), c.y + 900 * Math.sin(q), c.z + 300); o.update();
+      r.minAyl = Math.min(r.minAyl, b0.distanceToPoint(cam.position));
+      if (oldin) r.sakrash = Math.max(r.sakrash, cam.position.distanceTo(oldin)); oldin = cam.position.clone();
+    }
+    /* b) kamera to'g'ridan-to'g'ri mebel ichiga qo'yilsa — tashqariga chiqariladi */
+    cam.position.copy(c); o.update(); r.ichkari = eng(cam.position);
+    /* c) surish: kamerani va nishonni birga mebel ustiga siljitish */
+    for (let k = 0; k <= 10; k++) {
+      const p = new T.Vector3().lerpVectors(new T.Vector3(b0.min.x - 3000, c.y, c.z + 600), new T.Vector3(c.x, c.y, c.z + 600), k / 10);
+      cam.position.copy(p); o.target.set(p.x + 800, p.y, c.z); o.update();
+      r.minPan = Math.min(r.minPan, eng(cam.position));
+    }
+    return r;
+  });
+  R.kameraMebelOk = R.kameraMebel.n > 0 && R.kameraMebel.minAyl >= 395 && R.kameraMebel.ichkari >= 395 && R.kameraMebel.minPan >= 395 && R.kameraMebel.sakrash < 1500;
+  await btn('yon-izo').click(); await page.waitForTimeout(700);
+
   R.errs = errs;
   R.ok = R.orbit.min === 0 && Math.abs(R.orbit.max - Math.PI) < 1e-6 && R.orbit.pan && R.orbit.yaqin <= 300 && R.orbit.kursor && R.polOsti && R.panel &&
     R.yuqori.z > 3 * Math.hypot(R.yuqori.x, R.yuqori.y) && R.old.y > 3 * Math.abs(R.old.x) && R.old.y > 3 * Math.abs(R.old.z) && R.yaqinlashdi && R.menyu &&
@@ -316,6 +343,7 @@ async function asosiy(page, R) {
     R.zoomChegara.uzoq <= R.zoomChegara.maxD + 1 && R.zoomChegara.uzoq >= 3000 && R.zoomChegara.yaqin >= 299 &&
     R.zoomChegara.farNear.far > R.zoomChegara.uzoq && R.zoomChegara.farNear.near > R.zoomChegara.yaqinNear.near && R.zoomChegara.farNear.far / R.zoomChegara.farNear.near < 2000 &&
     R.zoomChegara2.uzoq.balandlik >= 0.08 && R.zoomChegara2.minYaqin >= 380 && !R.zoomChegara2.ichidaBor && !R.zoomChegara2.yaqin.ichida &&
+    R.kameraMebelOk &&
     R.zoomAniso.aniso > 1 && R.zoomAniso.anisoBilan === R.zoomAniso.tekstura &&
     errs.length === 0;
 }
