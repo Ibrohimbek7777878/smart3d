@@ -1,5 +1,5 @@
 /* TZ-25: bosh ish joyi (Bazis kabi bitta ekran). Tekshiriladi: ro'yxatdan o'tgach darhol ish joyi (so'rovnomasiz, standart
- * xona 3600 × 3000); asboblar, matn qatori, "tez boshlash" (oshxona); 3D da sichqoncha bilan aylantirganda sahna chiziladi
+ * xona 5000 × 4000 — egasi #152, oldin 3600 × 3000); asboblar, matn qatori, "tez boshlash" (oshxona); 3D da sichqoncha bilan aylantirganda sahna chiziladi
  * (TZ-23 A1); devor chizish — matn qatoridan uzunlik bilan va sichqoncha bilan (45° yopishish, 10 mm, birinchi nuqtaga
  * qaytib yopish); o'lcham yozuvini bosib uzunlik; devorni sudrash; eshikni palitradan devorga sudrash, eni, devor bo'ylab
  * surish; sahifa qayta ochilsa — oxirgi loyiha ish joyida; telefon (390): asboblar qatori, matn qatori, panel — pastki varaq.
@@ -111,7 +111,9 @@ async function asosiy(page, R) {
   await page.locator('[data-teshik-en]').fill('1000'); await page.locator('[data-teshik-en]').press('Enter'); await page.waitForTimeout(400);
   R.eshikEni = (await xona()).t[0];
   await page.locator('[data-asbob="tanlash"]').click(); await page.waitForTimeout(300);
-  const t0 = (await xona()).t[0], e1 = await ekran([500 + t0.of + t0.en / 2, 500]), e2 = await ekran([500 + t0.of + t0.en / 2 + 300, 500]);
+  /* eshik devorning ichki yarmidan (chiziqdan 30 mm) ushlanadi: oldingi xonadagi oshxona modullari orqasi devordan 3 mm (#152) —
+     ular y = 503 gacha yetadi va 500 chizig'ining o'zida bosish mebelga tushadi (7-qadamdagidek mebelsiz joydan) */
+  const t0 = (await xona()).t[0], e1 = await ekran([500 + t0.of + t0.en / 2, 530]), e2 = await ekran([500 + t0.of + t0.en / 2 + 300, 530]);
   await page.mouse.move(e1[0], e1[1]); await page.mouse.down(); await page.mouse.move(e2[0], e2[1], { steps: 6 }); await page.mouse.up(); await page.waitForTimeout(500);
   R.eshikSurildi = [t0.of, (await xona()).t[0].of];
   await page.screenshot({ path: `${OUT}/ishjoyi-1440-eshik.png` });
@@ -149,7 +151,7 @@ async function asosiy(page, R) {
 
   R.xatolar = errs;
   const o = R.qatordan.o, s = R.sichqoncha.o, u = R.uzunlik.o, v = R.surildi.o;
-  R.ok = R.boshlanish.ekran === 'app' && !R.boshlanish.savol && JSON.stringify(R.boshlanish.xona) === '[[0,0],[3600,0],[3600,3000],[0,3000]]' && R.boshlanish.mebel === 0
+  R.ok = R.boshlanish.ekran === 'app' && !R.boshlanish.savol && JSON.stringify(R.boshlanish.xona) === '[[0,0],[5000,0],[5000,4000],[0,4000]]' && R.boshlanish.mebel === 0
     && R.boshlanish.asbob >= 10 && R.boshlanish.qator && R.boshlanish.tez && !R.boshlanish.aiTugma
     && R.oshxona > 2 && R.tezYoq
     && R.aylantirish.chizildi >= 10 && JSON.stringify(R.aylantirish.kamera[0]) !== JSON.stringify(R.aylantirish.kamera[1]) && R.gildirak >= 1

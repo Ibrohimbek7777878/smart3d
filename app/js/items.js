@@ -129,7 +129,8 @@ export function createItems(sp, opts = {}) {
   const ray = new THREE.Raycaster();
   const ptr = new THREE.Vector2();
 
-  function pick(e) {
+  /** → { obj (mebel), point (birinchi tegish nuqtasi) } | null */
+  function pickHit(e) {
     const rect = sp.renderer.domElement.getBoundingClientRect();
     ptr.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     ptr.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -142,39 +143,55 @@ export function createItems(sp, opts = {}) {
     while (obj && obj.parent && obj.parent !== group && !meshes.includes(obj)) {
       obj = obj.parent;
     }
-    return obj;
+    return { obj, point: hits[0].point.clone() };
   }
+  function pick(e) { const h = pickHit(e); return h ? h.obj : null; }
 
-  /* ── Tanlash va 2D sudrash (snap 50 mm) ──────────────────────────
+  /* ── Tanlash va sudrash (snap 50 mm) ──────────────────────────
    * · 2D: mebelni bosish — darhol tanlanadi va sudraladi;
-   * · 3D: tegish (siljimasdan qo'yib yuborish) bilan tanlanadi — aylantirish tanlamaydi;
+   * · 3D (egasi #151): mebel USTIDA bosib tortish — mebel pol bo'ylab suriladi (kamera aylanmaydi), bo'sh joyda — aylantirish;
+   *   sichqoncha — darhol (6 px siljigach), barmoq/qalam — ~300 ms ushlab turgach (oldin siljisa — kamera aylanadi);
+   *   tegish (siljimasdan qo'yib yuborish) — avvalgidek tanlash / detal kartasi;
    * · bo'sh joyga TEGISH tanlovni bekor qiladi (pan/pinch bekor qilmaydi — controls.js);
-   * · ikkinchi barmoq tushsa sudrash to'xtaydi (pinch-zoom controls.js da). */
+   * · ikkinchi barmoq tushsa sudrash to'xtaydi (pinch-zoom controls.js da); Esc — mebel joyiga qaytadi;
+   * · opts.cheklov(id) → (x, y) => {x, y} | null — devorga yopishish, devor/qo'shni mebelga kirmaslik (null — joyida qoladi);
+   *   balandlik (z) o'zgarmaydi — ustki modul ustki qatorda qoladi. */
   let drag = null, tap = null;
-  const SNAP = 50, TAP_PX = 6;
+  const SNAP = 50, TAP_PX = 6, USHLASH_MS = 300;
   const snap = (v) => Math.round(v / SNAP) * SNAP;
+  const _pl = new THREE.Plane(), _v = new THREE.Vector3();
 
   function worldPerPx() {
     const rect = sp.renderer.domElement.getBoundingClientRect();
     return (sp.cam2d.right - sp.cam2d.left) / (rect.width || 1);
   }
-
-  function onDown(e) {
-    if (!e.isPrimary || sp.asbob) { drag = null; tap = null; return; }   // TZ-25: devor yoki teshik chizilmoqda
-    if (e.button !== 0) return;
-    const m = pick(e);
-    tap = { x: e.clientX, y: e.clientY, id: m ? m.userData.id : null };
-    if (!m || sp.mode !== '2d') return;
-    select(m.userData.id, 'scene');
-    drag = { id: m.userData.id, pointerId: e.pointerId, sx: e.clientX, sy: e.clientY,
-             ox: m.userData.x, oy: m.userData.y, lx: m.userData.x, ly: m.userData.y };
-    sp.renderer.domElement.setPointerCapture && sp.renderer.domElement.setPointerCapture(e.pointerId);
+  /** 3D: ekran nuqtasidan gorizontal tekislikka (mebel ushlangan balandlikda) — dunyo nuqtasi */
+  function tekislikda(e, plane) {
+    const rect = sp.renderer.domElement.getBoundingClientRect();
+    ptr.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    ptr.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    ray.setFromCamera(ptr, sp.camera);
+    return ray.ray.intersectPlane(plane, _v) ? _v.clone() : null;
   }
-  function onMove(e) {
-    if (!drag || e.pointerId !== drag.pointerId) return;
-    const k = worldPerPx();
-    const nx = snap(drag.ox + (e.clientX - drag.sx) * k);
-    const ny = snap(drag.oy - (e.clientY - drag.sy) * k);
+  /** 3D surish faqat orbit kamerada (yurish rejimida sudrash — qarash) */
+  const surish3d = () => sp.mode === '3d' && !!sp._controls && opts.surish3d !== false;
+  function orbitTiq(on) {
+    const o = sp._controls;
+    if (!o || !drag) return;
+    if (!on) { if (drag.orbit == null) drag.orbit = o.enabled; o.enabled = false; }
+    else if (drag.orbit != null) { o.enabled = drag.orbit && sp.mode === '3d'; drag.orbit = null; }
+  }
+  /** sudrash boshlandi (tanlash, cheklov) */
+  function faollash() {
+    if (!drag || drag.faol) return;
+    drag.faol = true;
+    drag.ch = opts.cheklov ? opts.cheklov(drag.id) : null;
+    if (!drag.d3 || selectedId !== drag.id) select(drag.id, 'scene');   // 2D — avvalgidek har bosishda
+    if (drag.touch && navigator.vibrate) { try { navigator.vibrate(12); } catch (_) { /* yo'q */ } }
+  }
+  /** yangi joy: setka → cheklov; o'zgarsa mesh siljiydi va opts.onDrag */
+  function joyla(nx, ny) {
+    if (drag.ch) { const r = drag.ch(nx, ny); if (!r) return; nx = r.x; ny = r.y; }
     if (nx === drag.lx && ny === drag.ly) return;
     const m = meshes.find(x => x.userData.id === drag.id);
     if (!m) return;
@@ -184,15 +201,74 @@ export function createItems(sp, opts = {}) {
     sp._invalidate();
     opts.onDrag && opts.onDrag(drag.id, nx, ny);
   }
+  /** sudrashni tugatish: qaytar — Esc (asl joyiga) */
+  function tugat(qaytar) {
+    if (!drag) return;
+    const d = drag;
+    clearTimeout(d.timer);
+    if (qaytar && d.faol && (d.lx !== d.ox || d.ly !== d.oy)) {
+      const m = meshes.find(x => x.userData.id === d.id);
+      if (m) { placeMesh(m, d.ox, d.oy); updateHandle(); sp._invalidate(); }
+      opts.onDrag && opts.onDrag(d.id, d.ox, d.oy);
+    }
+    orbitTiq(true);
+    try { sp.renderer.domElement.releasePointerCapture && sp.renderer.domElement.releasePointerCapture(d.pointerId); } catch (_) {}
+    drag = null;
+    if (d.faol) opts.onDragEnd && opts.onDragEnd(d.id, qaytar ? 'bekor' : (d.lx !== d.ox || d.ly !== d.oy ? 'surildi' : 'joyida'));
+  }
+
+  function onDown(e) {
+    if (!e.isPrimary || sp.asbob) { tugat(false); tap = null; return; }   // TZ-25: devor yoki teshik chizilmoqda
+    if (e.button !== 0) return;
+    if (drag) tugat(false);
+    const h = pickHit(e), m = h && h.obj;
+    tap = { x: e.clientX, y: e.clientY, id: m ? m.userData.id : null };
+    if (!m) return;
+    const u = m.userData;
+    if (sp.mode === '2d') {
+      drag = { id: u.id, pointerId: e.pointerId, sx: e.clientX, sy: e.clientY, ox: u.x, oy: u.y, lx: u.x, ly: u.y, d3: false, faol: false };
+      faollash();
+    } else if (surish3d()) {
+      drag = { id: u.id, pointerId: e.pointerId, sx: e.clientX, sy: e.clientY, ox: u.x, oy: u.y, lx: u.x, ly: u.y, d3: true, faol: false,
+               touch: e.pointerType !== 'mouse', plane: new THREE.Plane(new THREE.Vector3(0, 0, 1), -h.point.z), p0: h.point.clone() };
+      if (!drag.touch) orbitTiq(false);                              // sichqoncha: mebel ustida kamera aylanmaydi
+      else drag.timer = setTimeout(() => { if (drag && !drag.faol) { orbitTiq(false); faollash(); } }, USHLASH_MS);
+    } else return;
+    try { sp.renderer.domElement.setPointerCapture && sp.renderer.domElement.setPointerCapture(e.pointerId); } catch (_) { /* sintetik pointer */ }
+  }
+  function onMove(e) {
+    if (!drag || e.pointerId !== drag.pointerId) return;
+    if (!drag.d3) {
+      const k = worldPerPx();
+      joyla(snap(drag.ox + (e.clientX - drag.sx) * k), snap(drag.oy - (e.clientY - drag.sy) * k));
+      return;
+    }
+    if (!drag.faol) {
+      if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < TAP_PX) return;
+      if (drag.touch) { tugat(false); return; }                      // ushlamasdan siljidi — kamera aylanadi (OrbitControls)
+      faollash();
+    }
+    const q = tekislikda(e, drag.plane);
+    if (!q) return;
+    joyla(snap(drag.ox + q.x - drag.p0.x), snap(drag.oy + q.y - drag.p0.y));
+  }
   function onUp(e) {
     if (tap && e.isPrimary && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) < TAP_PX) {
       if (TH && opts.onTap && sp.mode !== '2d') { const h = pickPart(e); opts.onTap(h ? h.id : null, h ? h.part : null); }
       else if (tap.id === null) { if (selectedId !== null) select(null, 'scene'); }
       else if (sp.mode !== '2d') select(tap.id, 'scene');
     }
-    tap = null; drag = null;
-    try { sp.renderer.domElement.releasePointerCapture && sp.renderer.domElement.releasePointerCapture(e.pointerId); } catch (_) {}
+    tap = null;
+    if (drag && e.pointerId === drag.pointerId) tugat(false);
+    else try { sp.renderer.domElement.releasePointerCapture && sp.renderer.domElement.releasePointerCapture(e.pointerId); } catch (_) {}
   }
+  function onKey(e) {
+    if (e.key !== 'Escape' || !drag || !drag.faol) return;
+    e.preventDefault(); e.stopImmediatePropagation();               // Esc — faqat surishni bekor qiladi (tanlov va panel joyida)
+    tap = null;
+    tugat(true);
+  }
+  window.addEventListener('keydown', onKey, true);
 
   /* ── TZ-08: burish dastagi (qoida 6.2 — ishora asosiy, "⟳ 90°" tugmasi zaxira) ─────────
    * Tanlangan mebel yonida (2D) HTML dastak — CSS2D, har chizishda o'zi joylashadi, ekranda
@@ -374,6 +450,10 @@ export function createItems(sp, opts = {}) {
     setPlacements, select, getSelected, meshes,
     /** Ekran nuqtasida mebel bormi (controls.js: bo'sh joy = pan) */
     hitTest: (e) => !!pick(e),
+    /** ekran nuqtasidagi mebel id (yoki null) — brauzer testlari */
+    pickId: (e) => { const m = pick(e); return m ? m.userData.id : null; },
+    /** surish davom etyaptimi (testlar va boshqa boshqaruvlar uchun) */
+    get surilmoqda() { return !!(drag && drag.faol); },
     refresh: () => setPlacements(opts.getPlacements(), catalog),
     dispose() {
       hEl.removeEventListener('pointerdown', onRotDown);
@@ -386,6 +466,8 @@ export function createItems(sp, opts = {}) {
       el.removeEventListener('pointermove', onMove);
       el.removeEventListener('pointerup', onUp);
       el.removeEventListener('pointercancel', onUp);
+      window.removeEventListener('keydown', onKey, true);
+      if (drag) clearTimeout(drag.timer);
       for (const m of meshes) {
         group.remove(m);
         m.traverse(child => {

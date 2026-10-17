@@ -7,6 +7,7 @@
  * Joylash to'qnashuvsiz va xona ichida; sig'maganlari ro'yxatda qaytadi (o'ylab joylanmaydi).
  */
 import { footprint } from './rules.js';
+import { devorChegara } from './devorOraliq.js';
 
 export const KATEGORIYALAR = ['oshxona', 'garderob', 'yotoqxona', 'bolalar', 'mehmonxona', 'ofis', 'dahliz', 'hammom'];
 const QADAM = 10;
@@ -44,9 +45,16 @@ const ichida = (p, W, D) => { const f = footprint(p); return f.x0 >= -0.5 && f.y
  * Modullarni devor bo'ylab joylash.
  * @param {number} W — xona eni (x), D — chuqurligi (y), H — balandligi
  * @param {Array} items — [{ kod, devor, joy, w?, z? }]
+ * @param {number} [T] — kontur chizig'idan modulgacha (egasi #152: devor qalinligining yarmi + DEVOR_ORALIQ — modul devorga tiralmaydi)
  * @returns {{ placements: Array, sigmadi: string[] }}
  */
-export function toplamJoyla(W, D, H, items, catalog) {
+export function toplamJoyla(W, D, H, items, catalog, T = devorChegara({ wall_thickness: 100 })) {
+  /* ichki to'rtburchakda (har devordan T) joylanadi, keyin T ga suriladi */
+  const r = toplamIchki(W - 2 * T, D - 2 * T, H, items, catalog);
+  for (const p of r.placements) { p.x += T; p.y += T; }
+  return r;
+}
+function toplamIchki(W, D, H, items, catalog) {
   const placements = [], sigmadi = [];
   let id = 1;
   for (const it of items || []) {

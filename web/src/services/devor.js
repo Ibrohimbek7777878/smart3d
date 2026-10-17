@@ -116,7 +116,7 @@ export function teshiklarniMosla(p, openings) {
 }
 
 /** tayyor shakllar (TZ-25 D4): to'g'ri to'rtburchak, L va P (U) */
-export function tayyorShakl(tur, W = 3600, D = 3000) {
+export function tayyorShakl(tur, W = 5000, D = 4000) {                 // egasi #152: standart xona 5 × 4 m
   if (tur === 'L') return [[0, 0], [W, 0], [W, Math.round(D * 0.6)], [Math.round(W * 0.6), Math.round(D * 0.6)], [Math.round(W * 0.6), D], [0, D]];
   if (tur === 'P') {
     const c = Math.round(W * 0.3), e = Math.round(W * 0.7), g = Math.round(D * 0.55);

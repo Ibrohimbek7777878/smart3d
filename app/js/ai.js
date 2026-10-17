@@ -12,6 +12,7 @@
  */
 
 import { footprint } from './engine/rules.js';
+import { devorChegara } from './engine/devorOraliq.js';
 
 /* ── 1. Sonlar va O'zbek tili lug'ati ── */
 
@@ -263,7 +264,8 @@ export function suggestLayout(room, catalog = {}, orders = []) {
   const wardrobeFrag = byCode('SP-W-001') || frgs.find(f => f.group === 'garderob');
 
   let idSeq = 1;
-  const margin = 50; // devor chetidan bo'sh joy
+  /* devor chetidan bo'sh joy: devor qalinligining yarmi (50) + DEVOR_ORALIQ — egasi #152: modul devorga tiralmaydi */
+  const margin = devorChegara({ wall_thickness: room.wall_thickness || 100 });
 
   /* Buyurtmadagi miqdor ("pastki 4 ta, ustki 3 ta") — yuqori chegara (A1). Buyurtmada
      son bo'lmasa — avvalgidek devor to'ldiriladi. Burchak va plita tumbasi ham "pastki". */

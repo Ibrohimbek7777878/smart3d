@@ -10,7 +10,7 @@ import * as D from '../../../services/devor.js';
 import { setText, toggleMic, matnniQur } from '../ai/actions.js';
 import { bazisYukla } from '../../bazis/bazis.js';
 import { asbobTanla, uzunlikBuyruq, tugat, oxirgisiniOchir, bekor } from './devorAsbob.js';
-import { tezOshxona } from './ishjoyi.js';
+import { tezOshxona, STANDART_XONA } from './ishjoyi.js';
 import { openSheet } from '../../../store/ui.js';
 import { loyihalarniYukla } from '../../projects/actions.js';
 import { useDavom } from '../../projects/davom.js';
@@ -23,7 +23,7 @@ const BTN = { width: '44px', height: '44px', flex: '0 0 44px', borderRadius: '12
 
 function shaklQoy(tur) {
   const r = project.doc.room, eski = (r.openings || []).length;
-  L.applyRoom(project.doc, { outline: D.tayyorShakl(tur, 3600, 3000) });
+  L.applyRoom(project.doc, { outline: D.tayyorShakl(tur, STANDART_XONA.w, STANDART_XONA.d) });   // egasi #152: 5 × 4 m
   r.openings = []; r.utilities = [];
   asbobTanla('tanlash');
   project.changed('room', true);

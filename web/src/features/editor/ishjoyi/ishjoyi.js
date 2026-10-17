@@ -15,7 +15,7 @@ import { t } from '../../../i18n/index.js';
  * ("Nima yasaymiz" so'rovnomasi yashirildi — qoida 2.7). O'ng panel faqat kerak bo'lganda: editor.step — 0 (yopiq),
  * 1 Xona, 2 Mebel (katalog), 3 Narx, 4 Fayllar; modul chizish — o'z paneli (chizish.ochiq). */
 const POLKA = 'LDSP16';
-export const STANDART_XONA = { w: 3600, d: 3000, h: 2700 };          // egasi #134: tavsiya (TZ-25 6-bo'lim, 2-savol)
+export const STANDART_XONA = { w: 5000, d: 4000, h: 2700 };          // egasi #152: standart xona 5 m × 4 m (oldin #134: 3.6 × 3 m); balandlik o'zgarmadi
 export const tor = () => typeof matchMedia === 'function' && matchMedia('(max-width:980px)').matches;
 
 /** ish joyini ko'rsatish: telefonda panel yopiq (kanva va matn qatori), kompyuterda — katalog */

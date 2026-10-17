@@ -28,8 +28,8 @@ const r = [[0, 0], [3600, 0], [3600, 3000], [0, 3000]];
 ok('uzunlik 3600 → 4000: xona eni o\'zgaradi, shakl to\'g\'ri burchakli', J(D.uzunlikniOzgartir(r, 0, 4000)) === J([[0, 0], [4000, 0], [4000, 3000], [0, 3000]]));
 ok('uzunlik chegaradan tashqari — null', D.uzunlikniOzgartir(r, 0, 100) === null);
 ok('devorni surish: o\'ng devor +500', J(D.devorniSur(r, 1, -500)) === J([[0, 0], [4100, 0], [4100, 3000], [0, 3000]]));
-const L = D.tayyorShakl('L');
-ok('L shaklda devor uzunligi: keyingi devor parallel ko\'chadi', J(D.uzunlikniOzgartir(L, 0, 4000).slice(0, 3)) === J([[0, 0], [4000, 0], [4000, 1800]]));
+const L = D.tayyorShakl('L');   // standart 5000 × 4000 (egasi #152; oldin 3600 × 3000) — L ning ichki burchagi D·0.6 = 2400
+ok('L shaklda devor uzunligi: keyingi devor parallel ko\'chadi', J(D.uzunlikniOzgartir(L, 0, 4000).slice(0, 3)) === J([[0, 0], [4000, 0], [4000, 2400]]));
 
 /* 5. eng yaqin devor, teshik */
 ok('eng yaqin devor va masofa', J(D.engYaqinDevor(r, [1800, 50])) === J({ i: 0, t: 1800, d: 50, L: 3600 }));

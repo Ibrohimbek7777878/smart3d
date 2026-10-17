@@ -81,7 +81,8 @@ export function dizaynMavzu() {
   };
 }
 
-/** Sahna: host — dizayndagi roomHost div. o: { catalog, getPlacements, getRoom (eshik burchaklari, TZ-22), onSelect, onDrag, onRotate, onRotateEnd, onTap } */
+/** Sahna: host — dizayndagi roomHost div. o: { catalog, getPlacements, getRoom (eshik burchaklari, TZ-22), onSelect, onDrag, onDragEnd,
+ *  cheklov (surish qoidalari, #151), onRotate, onRotateEnd, onTap } */
 export function createSahna(host, o) {
   const theme = dizaynMavzu();
   const sp = createScene(host, { mode: '3d', theme, insetTop: 72 });   // 72 px — dizayndagi toolbar
@@ -90,7 +91,7 @@ export function createSahna(host, o) {
   items = createItems(sp, {
     theme,
     getPlacements: o.getPlacements, getRoom: o.getRoom,
-    onSelect: o.onSelect, onDrag: o.onDrag, onRotate: o.onRotate, onRotateEnd: o.onRotateEnd, onTap: o.onTap
+    onSelect: o.onSelect, onDrag: o.onDrag, onDragEnd: o.onDragEnd, cheklov: o.cheklov, onRotate: o.onRotate, onRotateEnd: o.onRotateEnd, onTap: o.onTap
   });
   const korinish = createKorinish({ sp, ctl }, host);     // TZ-23: kamera, yo'nalish, chizish rejimlari, o'lchash
   const api = {

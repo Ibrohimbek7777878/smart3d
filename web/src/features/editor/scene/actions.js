@@ -52,8 +52,8 @@ export function setDim(key, val) {
   set('editor', s => ({ warn: { ...s.warn, [p.id]: warn }, raw: { ...s.raw, [key]: undefined } }));
   project.changed('items');
 }
-export function moveBy(mm) { const p = selected(); if (p) { L.moveAlong(p, mm); project.changed('items'); } }
-export function rotate() { const p = selected(); if (p) { L.rotate90(p); project.changed('items'); } }
+export function moveBy(mm) { const p = selected(); if (p) { L.moveAlong(p, mm); L.devordan(project.doc, p); project.changed('items'); } }   // #152: devorga kirmaydi
+export function rotate() { const p = selected(); if (p) { L.rotate90(p); L.devordan(project.doc, p); project.changed('items'); } }
 export function duplicate() {
   const p = selected(); if (!p) return;
   const c = L.duplicatePlacement(project.doc, p.id);

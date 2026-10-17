@@ -10,6 +10,9 @@ const ai = await import(pathToFileURL(APP + '/js/ai.js').href);
 const rules = await import(pathToFileURL(APP + '/js/engine/rules.js').href);
 const { parseZamer, suggestLayout, aiBuild } = ai;
 const { validateDoc, footprint, itemsOverlap } = rules;
+/* egasi #152: devor chetidan bo'shliq — devor qalinligining yarmi (50) + DEVOR_ORALIQ (oldin 50: modul devor yuzasiga tiralardi) */
+const { DEVOR_ORALIQ } = await import(pathToFileURL(APP + '/js/engine/devorOraliq.js').href);
+const M = 50 + DEVOR_ORALIQ;
 
 const frags = JSON.parse(fs.readFileSync(APP + '/data/fragments.json', 'utf8'));
 const catalog = Object.fromEntries(frags.map(f => [f.code, f]));
@@ -41,7 +44,7 @@ const eq = (name, got, want) =>
   eq('A1 "U shakl + burchak" → U', r.room.layoutType, 'U');
   {
     const pl = suggestLayout(r.room, catalog, r.orders);
-    const wing = pl.filter(p => p.rot === 90 && Math.abs(footprint(p).x1 - (r.room.w - 50)) < 1);
+    const wing = pl.filter(p => p.rot === 90 && Math.abs(footprint(p).x1 - (r.room.w - M)) < 1);
     ok('A1 U shakl haqiqatan U quradi (o\'ng qanot rot90, devorga yopishqoq)', wing.length >= 1,
        'total=' + pl.length + ' wing=' + wing.length);
   }
@@ -103,12 +106,12 @@ function checkLayout(name, room) {
      JSON.stringify(leftBase.map(p => footprint(p).y0)));
 
   const fridge = pl.find(p => p.frg === 'SP-K-015');
-  ok('A2 L: xolodilnik chap devor tepasida (y1 = D-50)',
-     fridge && Math.abs(footprint(fridge).y1 - 2750) < 1,
+  ok('A2 L: xolodilnik chap devor tepasida (y1 = D-M)',
+     fridge && Math.abs(footprint(fridge).y1 - (2800 - M)) < 1,
      fridge ? JSON.stringify(footprint(fridge)) : 'yo\'q');
 
-  /* rot270 chap devor moduli haqiqatan devorga yopishqoq (x0 = 50) */
-  ok('A2 L: chap devor moduli x0 = 50 mm', leftBase.every(p => Math.abs(footprint(p).x0 - 50) < 1),
+  /* rot270 chap devor moduli haqiqatan devorga yopishqoq (x0 = M) */
+  ok('A2 L: chap devor moduli x0 = M mm', leftBase.every(p => Math.abs(footprint(p).x0 - M) < 1),
      JSON.stringify(leftBase.map(p => footprint(p).x0)));
 }
 
@@ -116,14 +119,14 @@ function checkLayout(name, room) {
   const pl = checkLayout('A2 U', { w: 4200, d: 3000, layoutType: 'U', features: {} });
   eq('A2 U: 11 modul (2 burchak + 3 o\'rta + 3+3 qanot) — hech biri rad etilmagan', pl.length, 11);
 
-  const rightWing = pl.filter(p => p.rot === 90 && Math.abs(footprint(p).x1 - 4150) < 1);
+  const rightWing = pl.filter(p => p.rot === 90 && Math.abs(footprint(p).x1 - (4200 - M)) < 1);
   eq('A2 U: o\'ng qanot 3 ta, devorga yopishqoq', rightWing.length, 3);
 
-  const rightCorner = pl.find(p => p.rot === 0 && Math.abs(footprint(p).x1 - 4150) < 1 && Math.abs(footprint(p).y0 - 50) < 1);
+  const rightCorner = pl.find(p => p.rot === 0 && Math.abs(footprint(p).x1 - (4200 - M)) < 1 && Math.abs(footprint(p).y0 - M) < 1);
   ok('A2 U: o\'ng burchak rot0, burchakda turibdi', !!rightCorner,
      rightCorner ? JSON.stringify(footprint(rightCorner)) : 'yo\'q');
 
-  const leftWing = pl.filter(p => p.rot === 270 && Math.abs(footprint(p).x0 - 50) < 1);
+  const leftWing = pl.filter(p => p.rot === 270 && Math.abs(footprint(p).x0 - M) < 1);
   eq('A2 U: chap qanot 3 ta, devorga yopishqoq', leftWing.length, 3);
 }
 
