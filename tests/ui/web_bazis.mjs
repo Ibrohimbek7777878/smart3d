@@ -114,6 +114,7 @@ async function asosiy(page, R) {
   const almashtir = async () => {
     await page.locator('button[data-bazis-hisobot]').first().click(); await page.waitForTimeout(500);
     await page.locator('[data-bazis-material="0"] button').click(); await page.waitForTimeout(500);
+    if (await page.locator('[data-material-boshqa]').count()) { await page.locator('[data-material-boshqa]').click(); await page.waitForTimeout(400); }   // #151
     await page.locator('[data-varaq="material"] [data-material-royxat] button', { hasText: "so'm" }).first().click(); await page.waitForTimeout(1500);
   };
   await almashtir();

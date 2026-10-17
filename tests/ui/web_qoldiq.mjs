@@ -4,7 +4,7 @@
  * Ishlatish: bash tests/ui/web.sh qoldiq */
 import { readFileSync } from 'node:fs';
 /* furnitura katalogi soni — fayldan (ERP + do'kon narx ro'yxati, scripts/narx_pdf_import.py) */
-const KATALOG_SONI = JSON.parse(readFileSync(new URL('../../app/data/furnitura-catalog.json', import.meta.url), 'utf8')).items.length;
+const KATALOG_SONI = JSON.parse(readFileSync(new URL('../../app/data/furnitura-catalog.json', import.meta.url), 'utf8')).items.filter(i => i.uzs > 0).length;   // #151: narxsizlar katalogda ko'rinmaydi
 
 export default async function run(page) {
   const R = {};

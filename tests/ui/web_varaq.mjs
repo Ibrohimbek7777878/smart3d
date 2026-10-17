@@ -67,6 +67,7 @@ async function asosiy(page, R) {
   const jami0 = await app(() => window.__app.res.priceRes.total);
   await click(/^Mebel$/); await page.waitForTimeout(500);
   await page.locator('[data-panel] button', { hasText: 'Korpus' }).first().click(); await page.waitForTimeout(500);
+  await V('[data-material-boshqa]').click(); await page.waitForTimeout(400);   // #151: sodda ko'rinish — qidiruv "Boshqa ranglar" orqasida
   await V('input[placeholder*="Qidiruv"]').fill('egger'); await page.waitForTimeout(600);
   await page.screenshot({ path: `${OUT}/varaq-1440-material.png` });
   R.plitaSoni = await M(() => document.querySelectorAll('[data-varaq] button').length);
