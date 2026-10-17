@@ -71,7 +71,9 @@ function mergeSegments(items, axis) {
 export function detectRuns(doc, catalog, group) {
   const members = (doc.placements || []).filter(p => {
     const fr = catalog[p.frg];
-    return fr && fr.group === group;
+    if (!fr) return false;
+    /* burchak pastki modul (SP-K-007, z<300) ham pastki qatorga kiradi — aks holda burchakda stoleshnitsa bo'shlig'i qoladi */
+    return fr.group === group || (group === 'kuxnya-pastki' && fr.group === 'kuxnya-burchak' && (+p.z || 0) < 300);
   });
   const horiz = members.filter(p => (Math.round(p.rot || 0) % 180) === 0);
   const vert = members.filter(p => (Math.round(p.rot || 0) % 180) !== 0);
@@ -142,6 +144,53 @@ function stripPlacement(run, side, t, seg, z, h, frg, name, id, extra) {
  * Synthetic placements (auto:true). doc.kitchen bo'sh bo'lsa — [].
  * Har bir placement qo'shimcha: runIdx, segIdx, segCount (moyka qaysi run'da — uchun).
  */
+/** Stoleshnitsa to'rtburchagi (run + devor tomoni + chuqurlik) — burchak ulanishi uchun */
+function stolRect(run, side, depth) {
+  return run.axis === 'v'
+    ? { x0: side === 'x1' ? run.x1 - depth : run.x0, x1: side === 'x1' ? run.x1 : run.x0 + depth, y0: run.y0, y1: run.y1 }
+    : { x0: run.x0, x1: run.x1, y0: side === 'y1' ? run.y1 - depth : run.y0, y1: side === 'y1' ? run.y1 : run.y0 + depth };
+}
+
+/**
+ * L/U burchak: gorizontal va vertikal stoleshnitsa burchakda uchrashsa — BITTA ulanish ("butt joint"):
+ * uzunroq qator burchakka to'liq boradi (devorgacha), qisqasi uning yon qirrasiga taqaladi → ustma-ust 0, bo'shliq 0.
+ * Qoida sex fayllaridan: L oshxonalarda 2 bo'lak, ikkalasi chuqurlik 600; birinchisi uzun (to'liq), ikkinchisi qisqa.
+ * rects[i] (run → to'rtburchak) joyida o'zgartiriladi; qaytadi: har run uchun butt ulanishlar soni.
+ */
+function burchakUlash(runs, sides, rects, depths) {
+  const TOL = 60;
+  const butt = runs.map(() => 0);
+  runs.forEach((A, i) => {
+    if (A.axis !== 'h') return;
+    runs.forEach((B, j) => {
+      if (B.axis !== 'v') return;
+      const ra = rects[i], rb = rects[j], da = depths[i], db = depths[j];
+      const yw = sides[i] === 'y0' ? ra.y0 : ra.y1;               // A devor chizig'i
+      const nearB = sides[i] === 'y0' ? rb.y0 : rb.y1;             // B ning A ga yaqin uchi
+      const yOk = sides[i] === 'y0' ? (nearB >= yw - TOL && nearB <= yw + da + TOL)
+                                    : (nearB <= yw + TOL && nearB >= yw - da - TOL);
+      if (!yOk) return;
+      const xw = sides[j] === 'x0' ? rb.x0 : rb.x1;                // B devor chizig'i
+      const nearA = sides[j] === 'x0' ? ra.x0 : ra.x1;             // A ning B ga yaqin uchi
+      const xOk = sides[j] === 'x0' ? (nearA >= xw - TOL && nearA <= xw + db + TOL)
+                                    : (nearA <= xw + TOL && nearA >= xw - db - TOL);
+      if (!xOk) return;
+      /* A burchak tomoni B ning tomoniga mos bo'lishi shart: A ning qarama-qarshi uchi B dan uzoqda */
+      const aLen = A.x1 - A.x0, bLen = B.y1 - B.y0;
+      if (aLen >= bLen) {            // A to'liq, B taqaladi A ning ichki qirrasiga
+        if (sides[i] === 'y0') rb.y0 = ra.y1; else rb.y1 = ra.y0;
+        if (sides[j] === 'x0') ra.x0 = xw; else ra.x1 = xw;       // to'liq qator devorgacha cho'ziladi (oraliq bo'lsa to'ldiriladi)
+        butt[j]++;
+      } else {                       // B to'liq, A taqaladi
+        if (sides[j] === 'x0') ra.x0 = rb.x1; else ra.x1 = rb.x0;
+        if (sides[i] === 'y0') rb.y0 = yw; else rb.y1 = yw;       // to'liq qator devorgacha cho'ziladi
+        butt[i]++;
+      }
+    });
+  });
+  return butt;
+}
+
 export function deriveKitchen(doc, catalog) {
   const k = doc.kitchen;
   if (!k) return [];
@@ -152,15 +201,24 @@ export function deriveKitchen(doc, catalog) {
   const out = [];
   let n = 0;
 
+  const sidesAll = pastki.map(r => backSide(r, cx, cy));
+  const depthsAll = pastki.map(r => +k.stoleshnitsaD > 0 ? +k.stoleshnitsaD : (r.axis === 'v' ? r.x1 - r.x0 : r.y1 - r.y0));
+  const rects = pastki.map((r, i) => stolRect(r, sidesAll[i], depthsAll[i]));
+  const butts = k.stoleshnitsa !== false ? burchakUlash(pastki, sidesAll, rects, depthsAll) : pastki.map(() => 0);
+
   pastki.forEach((run, runIdx) => {
-    const side = backSide(run, cx, cy);
+    const side = sidesAll[runIdx];
     const segs = splitSegments(run);
     /* yaxlit stoleshnitsa (vertikal run → rot=90: detal uzunligi W bo'lib, varaqqa sig'adi) */
     if (k.stoleshnitsa !== false) {
       const isV = run.axis === 'v';
       /* TZ-22: k.stoleshnitsaD — stoleshnitsa chuqurligi (MC Bazis: 600, devordan); berilmasa — run chuqurligi (avvalgidek) */
-      const depth = +k.stoleshnitsaD > 0 ? +k.stoleshnitsaD : (isV ? run.x1 - run.x0 : run.y1 - run.y0);
-      segs.forEach((seg, segIdx) => {
+      const depth = depthsAll[runIdx];
+      /* stoleshnitsa uzunligi burchak ulanishidan keyin (sokol/dobor/karniz esa run bo'yicha qoladi) */
+      const rc = rects[runIdx];
+      const ctRun = Object.assign({}, run, { x0: rc.x0, x1: rc.x1, y0: rc.y0, y1: rc.y1 });
+      const ctSegs = splitSegments(ctRun);
+      ctSegs.forEach((seg, segIdx) => {
         const mk = (runIdx === 0 && segIdx === 0 && k.moyka && k.moyka.on)
           ? { offset: Math.max(0, +k.moyka.offset || 0), fromBack: Math.max(0, +k.moyka.fromBack || 0),
               size: Math.max(300, +k.moyka.size || 500), backLocal: backLocalOf(side, isV) }
@@ -168,13 +226,14 @@ export function deriveKitchen(doc, catalog) {
         out.push({
           id: '__kst' + (n++), auto: true, frg: 'SP-ST-001',
           name: 'Yaxlit stoleshnitsa',
-          x: Math.round(isV ? (side === 'x1' ? run.x1 : run.x0 + depth) : run.x0 + seg.s0),
-          y: Math.round(isV ? run.y0 + seg.s0 : (side === 'y1' ? run.y1 - depth : run.y0)),
+          x: Math.round(isV ? (side === 'x1' ? rc.x1 : rc.x0 + depth) : rc.x0 + seg.s0),
+          y: Math.round(isV ? rc.y0 + seg.s0 : (side === 'y1' ? rc.y1 - depth : rc.y0)),
           z: Math.round(run.h),
           w: Math.round(seg.len),
           d: Math.round(depth),
           h: 18, rot: isV ? 90 : 0, qty: 1,
-          runIdx, segIdx, segCount: segs.length,
+          runIdx, segIdx, segCount: ctSegs.length,
+          birlashma: segIdx === 0 ? butts[runIdx] : 0,   /* burchakdagi butt ulanish soni (stoleshnitsa styajkasi hisobi uchun) */
           moyka: mk
         });
       });
