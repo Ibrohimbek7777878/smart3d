@@ -18,9 +18,14 @@ const editorStart = (tip) => set('editor', { step: 2, done: { 1: true }, tip, se
 export async function goProjects() {
   set('nav', { screen: 'projects' });
   set('editor', { sel: null, part: null });
-  if (!S.loggedIn) { set('projects', { list: [] }); return; }
+  await loyihalarniYukla();
+}
+
+/** TZ-27: loyihalar ro'yxati (Loyihalarim va "Davom ettirish"); server javob bermasa — aloqa yo'q belgisi */
+export async function loyihalarniYukla() {
+  if (!S.loggedIn) { set('projects', { list: [], aloqa: true }); return; }
   const list = await S.listProjects().catch(() => null);
-  if (list) set('projects', { list });
+  if (list) set('projects', { list, aloqa: true }); else set('projects', { aloqa: false });
 }
 
 export async function openProject(id) {

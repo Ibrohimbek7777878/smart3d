@@ -287,7 +287,8 @@ export function createKorinish(sahna, host) {
   function yurishDown(e) {
     if (sp.mode !== '3d') return;
     if (joyEl && joyEl.contains(e.target)) return;
-    e.stopPropagation(); e.preventDefault();
+    /* TZ-27: hodisa to'xtatilmaydi — siljimasdan bosilsa mebel tanlanadi (items.js), sudrash — qarash */
+    e.preventDefault();
     qarash = { id: e.pointerId, x: e.clientX, y: e.clientY };
   }
   function yurishMove(e) {

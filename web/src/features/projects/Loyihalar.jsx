@@ -29,13 +29,26 @@ export default function Loyihalar() {
           </label>
         </div>
       </div>
+      {/* TZ-27 (dizaynda yo'q — karta uslubida): "Ishni davom ettirish" — chala qolgan oxirgi ishlar */}
+      {v.davom.soni && !v.pq ? (
+        <section data-davom-qator="" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <span style={{ fontSize: '13px', fontWeight: '800', letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--mut)' }}>{t('davom.sarlavha')} · {v.davom.soni}</span>
+          <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '4px' }}>
+            {v.davom.royxat.slice(0, 6).map(p => (
+              <button key={p.id} onClick={p.och} data-davom={p.id} className="h5" style={{ flex: '0 0 240px', textAlign: 'left', borderRadius: '18px', background: 'var(--sfc)', border: '1px solid var(--line)', color: 'var(--txt)', padding: '12px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '4px', transition: 'transform .2s,border-color .2s' }}>
+                <span style={{ fontWeight: '800', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.nom}</span>
+                <span style={{ fontSize: '12px', color: 'var(--mut)' }}>{p.mods} · {p.sana}</span>
+                <span style={{ display: 'flex', alignItems: 'center', color: 'var(--acc)', fontWeight: '800', fontSize: '13px' }}>{t('davom.tugma')}<Ikon n="ong" size={15} gap={0} style={{ marginLeft: '4px' }} /></span>
+              </button>))}
+          </div>
+        </section>) : null}
       {v.projEmpty ? (<>
         <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"48px 24px","display":"flex","flexDirection":"column","alignItems":"center","gap":"14px","textAlign":"center"}}>
           <span style={{"fontSize":"40px"}}>
             <Ikon n="qidiruv" size={40} gap={0} style={{ color: "var(--mut)" }} />
           </span>
-          <span style={{"fontSize":"18px","fontWeight":"800"}}>
-            {t('umumiy.topilmadi_boshqa_soz_bilan')}
+          <span style={{"fontSize":"18px","fontWeight":"800"}} data-loyihalar-bosh="">
+            {v.bosh}
           </span>
         </div>
       </>) : null}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { set, useSlice } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { toast } from '../../../store/ui.js';
@@ -11,6 +11,9 @@ import { setText, toggleMic, matnniQur } from '../ai/actions.js';
 import { bazisYukla } from '../../bazis/bazis.js';
 import { asbobTanla, uzunlikBuyruq, tugat, oxirgisiniOchir, bekor } from './devorAsbob.js';
 import { tezOshxona } from './ishjoyi.js';
+import { openSheet } from '../../../store/ui.js';
+import { loyihalarniYukla } from '../../projects/actions.js';
+import { useDavom } from '../../projects/davom.js';
 
 /* TZ-25 B (dizaynda yo'q — AI oynasi bo'laklari bilan: --sfc fon, 52px maydon, --acc asosiy tugma, chiplar).
  * Pastda doim ochiq matn qatori: "Nima chizamiz?" → Enter → loyiha quriladi (AI'siz tahlilchi va avtomatik konstruktor;
@@ -32,6 +35,8 @@ export default function MatnQatori() {
   useSlice('project');
   const [buyruq, setBuyruq] = useState('');
   const devor = ij.asbob === 'devor', bosh = !project.doc.placements.length && !project.doc.bazis;
+  const davom = useDavom();
+  useEffect(() => { if (bosh) loyihalarniYukla(); }, [bosh]);      // TZ-27: chala ishlar soni (Davom ettirish)
   const yubor = (ev) => {
     ev.preventDefault();
     if (devor) {
@@ -44,8 +49,8 @@ export default function MatnQatori() {
   const chiplar = devor
     ? [[t('devor.yopish'), tugat, 'yopish'], [t('devor.oxirgisi'), oxirgisiniOchir, 'orqaga'], [t('devor.bekor'), bekor, 'bekor'],
       [t('devor.shakl_rect'), () => shaklQoy('rect'), 'rect'], [t('devor.shakl_L'), () => shaklQoy('L'), 'L'], [t('devor.shakl_P'), () => shaklQoy('P'), 'P']]
-    : bosh ? [[t('tez.oshxona'), tezOshxona, 'kitchen'], [t('asbob.devor'), () => asbobTanla('devor'), 'devor'],
-      [t('tayyor.tab_tayyor'), () => set('ai', { open: true, tab: 'tayyor' }), 'tayyor']] : [];
+    : bosh ? (davom.soni ? [[t('davom.chip', { n: davom.soni }), () => openSheet('davom', {}), 'davom']] : []).concat([[t('tez.oshxona'), tezOshxona, 'kitchen'], [t('asbob.devor'), () => asbobTanla('devor'), 'devor'],
+      [t('tayyor.tab_tayyor'), () => set('ai', { open: true, tab: 'tayyor' }), 'tayyor']]) : [];
   return (
     <div data-matn-qatori="" style={{ flex: '0 0 auto', borderTop: '1px solid var(--line)', background: 'rgba(15,34,41,.96)', padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {chiplar.length ? (

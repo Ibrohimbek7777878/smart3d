@@ -302,7 +302,10 @@ export function createItems(sp, opts = {}) {
     u.selBox = g;
   }
 
-  /* ── eshik ochilishi (dizayn: silliq 1-exp(-dt*6), maksimal 1.75 rad) ── */
+  /* ── eshik ochilishi (dizayn: silliq 1-exp(-dt*6), maksimal 1.75 rad) ──
+   * TZ-27 (egasi #137): eshik Bazis'dagidek qiya ochiladi — eng ko'pi 45° (xavfsiz burchak kichik bo'lsa — o'sha):
+   * yonma-yon modullar eshiklari bir-biriga tegmaydi, ichi ko'rinadi. */
+  const OCHIQ_MAX = Math.PI / 4;
   let animating = false, lastT = 0;
   function applyMovers(instant) {
     let busy = false;
@@ -315,7 +318,7 @@ export function createItems(sp, opts = {}) {
         const n = Math.abs(t - c) < 0.001 ? t : c + (t - c) * k;
         openV[key] = n;
         if (n !== t) busy = true;
-        if (mv.type === 'door') mv.obj.rotation.z = mv.sign * n * (doorMax[key] || 1.75);
+        if (mv.type === 'door') mv.obj.rotation.z = mv.sign * n * Math.min(doorMax[key] || 1.75, OCHIQ_MAX);
         else if (mv.type === 'drawer') mv.obj.position.y = n * mv.dist;   // TZ-09 Q5: tortma oldinga suriladi
       }
     }

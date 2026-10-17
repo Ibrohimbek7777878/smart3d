@@ -4,6 +4,7 @@ import { S } from '../store/session.js';
 import { readHandoff, initSession, afterLogin } from '../features/auth/actions.js';
 import { loadServerStd, loadSettings } from '../features/settings/actions.js';
 import { installKeyboard } from './klaviatura.js';
+import { tarixOrnat } from './tarix.js';
 import { eskiKeshniTozala } from '../shared/lib/eskiKesh.js';
 import { s3SetT } from '../shared/design3d/engine.js';
 import { tr, setTil } from '../i18n/index.js';
@@ -30,6 +31,7 @@ export function bootstrap() {
   });
   window.addEventListener('hashchange', readHandoff);
   installKeyboard();
+  tarixOrnat();                                     // TZ-27: "orqaga" tugmasi — ilova ichida
   s3SetT(tr);                                       // TZ-18: 3D yorliqlar tanlangan tilda
   eskiKeshniTozala();
   installQA();
