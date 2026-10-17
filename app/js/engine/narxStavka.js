@@ -18,7 +18,7 @@ export const GURUHLAR = ['raspil', 'kromka', 'prisadka'];
 export const AQL = { raspil: 1e6, kromka: 2e5, prisadka: 1e5, detal: 1e6, modul: 1e7, foiz: 300 };
 /** teshik turi (hisobdagi kalit: Bazis turi yoki fragment teshigi turi) — prisadka qatoriga bog'lanadi */
 export const TESHIK_TURLARI = ['konfirmat_yuza', 'konfirmat_qirra', 'petlya', 'polka', 'ruchka', 'shkant', 'eksentrik', 'belgi',
-  'drill', 'dowel', 'hinge', 'cam', 'mark', 'cutout', 'd6_kosa'];
+  'drill', 'dowel', 'hinge', 'cam', 'mark', 'cutout', 'd6_kosa', 'd6_eksentrik', 'd6_eks_qirra', 'd6_eks_bolt'];
 /** sex jadvalidagi kategoriya → guruh */
 const KATEGORIYA = { 'Услуги Распила': 'raspil', 'Услуга кромирование': 'kromka', 'Услуги сверления': 'prisadka', 'Услуги пазования': 'prisadka' };
 const KOD_RE = /^[\w.\-]{1,40}$/;
@@ -181,10 +181,19 @@ export function kromkaXizmat(S, code) {
   const k = String(code).replace(/\./g, ''), m = S.tanlov.kromka || {};
   return xz(S, m[k]) || xz(S, m[code]) || xz(S, m._sukut);
 }
+/** D6 teshigi (d6.js) → egasi tanlashi mumkin bo'lgan umumiy qatorlar (o'zining qatori bo'lmasa shular).
+ *  d6_kosa — petlya (Bazis 'petlya' yoki modul 'hinge'); d6_eksentrik — eksentrik (Bazis 'eksentrik' yoki modul 'cam').
+ *  d6_eks_qirra va d6_eks_bolt ataylab YO'Q: eksentrik birikmasi 3 teshikdan iborat (korpus d6_eksentrik + qirra + bolt),
+ *  sex "ПРИСАДКА ЭКСЦЕНТРИК" xizmati birikma uchun — uni 3 marta sanamaslik uchun umumiy "cam" stavkasi faqat d6_eksentrik
+ *  (birikma boshiga 1 ta) ga o'tadi; qirra/bolt faqat egasi aniq tanlagan bo'lsa narxlanadi (aks holda eskicha — oddiy teshik). */
+const D6_UMUMIY = { d6_kosa: ['petlya', 'hinge'], d6_eksentrik: ['eksentrik', 'cam'] };
 /** teshik kaliti (Bazis turi yoki turi) → prisadka xizmati */
 export function prisadkaXizmat(S, key, kind) {
   if (!S || !S.tanlov) return null;
   const m = S.tanlov.prisadka || {};
-  return xz(S, m[key]) || (kind && kind !== key ? xz(S, m[kind]) : null);
+  const toqri = xz(S, m[key]) || (kind && kind !== key ? xz(S, m[kind]) : null);
+  if (toqri) return toqri;
+  for (const k of [key, kind]) for (const u of D6_UMUMIY[k] || []) { const x = xz(S, m[u]); if (x) return x; }
+  return null;
 }
 export const raspilXizmat = (S) => (S && S.tanlov ? xz(S, S.tanlov.raspil) : null);
