@@ -66,3 +66,21 @@
   - Xona panelida "Devorli xona | Erkin maydon".
 - Oshxona qatorlari devor bo'ylab qoladi — egasidan tasdiq so'raldi.
 - "Ularni o'chirib tashla" — egasining lokal bazasidagi 2 loyiha («New project», «Yangi loyiha»). Arxivga o'tkazish uchun aniq tasdiq so'raldi.
+
+## 6. Uchinchi bosqich (2026-10-17 14:14–15:01, egasi #158–159) — `dizayn` 3567788, testchi: O'TDI
+
+- **Egasi #159:**
+  - "ha" — oshxona qatorlari devor bo'ylab (3 mm);
+  - yangi modullar devordan 3 m;
+  - ochiq loyiha («New project») qoladi, qolgani arxivga.
+  - Koordinator egasining lokal bazasida «Yangi loyiha» (id 2) ni arxivladi (`archived = 1`, dastur "o'chirish" tugmasi bilan bir xil, qaytarsa bo'ladi).
+- **Frontend · Joylash va xona turi** (Sonnet, 15:15) — BAJARILDI (b9fd661):
+  - `yangiModulJoyi`: orqa devordan 3000 mm, eni bo'yicha o'rta; chuqurlik yetmasa — o'rta; band bo'lsa — eng yaqin bo'sh joy;
+  - surishda magnit yo'q (devordan 3 mm da to'xtaydi);
+  - Xona panelida "Devorli xona | Erkin maydon" (`doc.maydon`).
+- **Test · Yakuniy** (Sonnet, 15:15) — O'TDI:
+  - node 28 skript, server 73/73, web 29 to'plam yashil;
+  - mustaqil skript 19/19 (3000 mm, ustma-ust 0, oshxona 3 mm, eski loyiha "devorli").
+- **Kichik kuzatuvlar:**
+  - Xona panelida "Erkin" yozuvi o'ng chetda biroz kesilgan;
+  - `joylash` testida 390 px tekshiruvi yo'q.

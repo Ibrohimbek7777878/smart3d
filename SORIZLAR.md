@@ -437,3 +437,5 @@ bu men yozgan prompt shu qismlarn togirla va zpachastlar narx aniq chiqish kere 
 158. qara devordan 3metr qochsin devorga yopishb qolmasinda shuni aytganman senga
 erkin ham bolsin devor ham bolsin 
 ularni ochirb tashla
+
+159. ha devordan 3mter qochsin end chiqadigan yangi zakazlar  hozir qaysi bri truibd osha qolsin qolganlarin esa arxiv qivor qoyaver  keyin yana qyasi qismlar qoldi togirlanish kere bolgan
