@@ -55,7 +55,8 @@ function katalogQatorlar(tan) {
   const out = [];
   const q = (matn, manba, diqqat) => out.push({ matn, manba, diqqat: !!diqqat });
   const olchammi = (x) => /^(eni|chuqurligi|boyi)$/.test(x.k);
-  for (const x of tan.mos) q(olchammi(x) ? t('ai.kat_mos_olcham', { o: KN(x.k), v: x.soraldi }) : t('ai.kat_mos_son', { o: KN(x.k), v: x.soraldi }), 'katalog');
+  for (const x of tan.mos) q(olchammi(x) ? (x.asl ? t('ai.kat_mos_olcham_asl', { o: KN(x.k), v: x.soraldi, a: x.asl }) : t('ai.kat_mos_olcham', { o: KN(x.k), v: x.soraldi }))
+    : t('ai.kat_mos_son', { o: KN(x.k), v: x.soraldi }), 'katalog');
   for (const x of tan.mosEmas) {
     q(olchammi(x) ? t('ai.kat_chegara', { o: KN(x.k), v: x.soraldi, a: x.min || '—', b: x.max || '—', m: x.natija })
       : x.k === 'kupe' ? t('ai.kat_kupe') : t('ai.kat_farq', { o: KN(x.k), v: x.soraldi, m: x.modulda }), 'katalog', true);

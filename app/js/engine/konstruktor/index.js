@@ -114,12 +114,16 @@ function pastkiQidir(reja, room, talab, Q, chek) {
   const boshqa = reja.filter(r => r !== moykaR).sort((a, b) => (b.pastki.s1 - b.pastki.s0) - (a.pastki.s1 - a.pastki.s0))[0];
   const plitaR = talab.plita && boshqa && boshqa.pastki.s1 - boshqa.pastki.s0 >= 1500 ? boshqa : moykaR;
 
-  const Wm = Q.moyka.eni, Wp = Q.plita.eni, Wx = Q.xolodilnik.eni;
+  const Wm = Q.moyka.eni, Wp = Q.plita.eni, Wx = Q.xolodilnik.eni, Wpn = Q.penalEni || 600, Wd = Q.posudomoykaEni || 600;
   const xOpts = [null];
   if (talab.xolodilnik) {
     xOpts.length = 0;
     reja.forEach((r, k) => r.erkinUch.forEach(u => xOpts.push({ k, u })));
   }
+  /* egasi #183: penal — qator chetida (muzlatgich shu chetda bo'lsa — uning yonida); idish yuvish mashinasi — moyka yonida */
+  const pnOpts = [null];
+  if (talab.penal) { pnOpts.length = 0; reja.forEach((r, k) => r.erkinUch.forEach(u => pnOpts.push({ k, u }))); }
+  const dOpts = talab.posudomoyka && talab.moyka !== false ? ['ong', 'chap'] : [null];
   /* langar nomzodlari (50 mm qadam + quvurga aniq) */
   const nomzod = (k, w) => {
     const out = new Set();
@@ -135,13 +139,19 @@ function pastkiQidir(reja, room, talab, Q, chek) {
   const pS = talab.plita ? nomzod(kp, Wp) : [null];
   let eng = null;
 
-  for (const xo of xOpts) {
+  for (const xo of xOpts) for (const pn of pnOpts) for (const dd of dOpts) {
     for (const ms of mS) {
       for (const ps of pS) {
         /* langarlar ro'yxati har devor uchun: [s0, s1, tur] */
         const lang = reja.map(() => []);
         if (xo) { const r = reja[xo.k]; const s = xo.u === 'S' ? r.pastki.s0 : r.pastki.s1 - Wx; lang[xo.k].push([s, s + Wx, 'xolodilnik']); }
+        if (pn) {
+          const r = reja[pn.k], yon = xo && xo.k === pn.k && xo.u === pn.u ? Wx : 0;
+          const s = pn.u === 'S' ? r.pastki.s0 + yon : r.pastki.s1 - yon - Wpn;
+          lang[pn.k].push([s, s + Wpn, 'penal']);
+        }
         if (ms != null) lang[km].push([ms, ms + Wm, 'moyka']);
+        if (ms != null && dd) lang[km].push(dd === 'ong' ? [ms + Wm, ms + Wm + Wd, 'posudomoyka'] : [ms - Wd, ms, 'posudomoyka']);
         if (ps != null) lang[kp].push([ps, ps + Wp, 'plita']);
         let ok = true, cost = 0;
         const segs = reja.map(() => []);
@@ -156,7 +166,7 @@ function pastkiQidir(reja, room, talab, Q, chek) {
             let cur = b.s0, curT = b.b0;
             const ichida = L.filter(a => a[0] >= b.s0 - 0.5 && a[1] <= b.s1 + 0.5);
             for (const a of ichida) {
-              const t = a[2] === 'moyka' ? 'modul' : 'texnika';
+              const t = a[2] === 'moyka' || a[2] === 'posudomoyka' ? 'modul' : 'texnika';   // posudomoyka — fasadli (eshikli modul kabi)
               segs[k].push({ s0: cur, s1: a[0], b0: curT, b1: t, yonida: a[2] });
               segs[k].push({ s0: a[0], s1: a[1], langar: a[2] });
               cur = a[1]; curT = t;
@@ -201,7 +211,7 @@ function pastkiQidir(reja, room, talab, Q, chek) {
           if (q) cost += Math.abs(c - q.s) / 50;
           else { const d = derazalar.find(x => x.r === moykaR); if (d) cost += Math.abs(c - (d.a + d.b) / 2) / 100; }
         }
-        if (!eng || cost < eng.cost - 1e-9) eng = { cost, segs: segs.map(x => x.map(s => Object.assign({}, s))), xo, ms, ps, km, kp };
+        if (!eng || cost < eng.cost - 1e-9) eng = { cost, segs: segs.map(x => x.map(s => Object.assign({}, s))), xo, pn, dd, ms, ps, km, kp };
       }
     }
   }
@@ -259,7 +269,7 @@ function ustkiElementlar(reja, past, Q, chek) {
     if (r.oxir) out.push({ s0: r.dv.len - r.Wku, w: 0, tur: 'burchak' });
     const bl = r.ts.ustki.slice();
     for (const e of past[k]) {
-      if (e.tur === 'xolodilnik') bl.push([e.s0, e.s0 + e.w, 'xolodilnik']);
+      if (e.tur === 'xolodilnik' || e.tur === 'penal') bl.push([e.s0, e.s0 + e.w, e.tur]);   // baland modul ustida ustki shkaf yo'q
       if (e.tur === 'plita') {
         const vw = Q.vityajkaEni || 450, s = e.s0 + (e.w - vw) / 2;
         out.push({ s0: s, w: vw, tur: 'vityajka' });
@@ -325,13 +335,14 @@ function joylash(dv, e, qatlam, Q, catalog, id) {
     bir: AM ? AM.bir : P ? M.pastki.bir : M.ustki.bir, ikki: AM ? AM.ikki : P ? M.pastki.ikki : M.ustki.ikki, tortma: M.pastki.tortma,
     moyka: Q.moyka.eni > 540 ? M.pastki.moyka2 : M.pastki.moyka1, burchak: P ? M.pastki.burchak : M.ustki.burchak,
     dobor: P ? M.dobor.pastki : M.dobor.ustki, ochiq: M.ustki.ochiq, vityajka: M.ustki.vityajka,
-    xolodilnik: M.texnika.xolodilnik, plita: M.texnika.plita
+    xolodilnik: M.texnika.xolodilnik, plita: M.texnika.plita,
+    penal: (Q.qoshimcha || {}).penal, posudomoyka: (Q.qoshimcha || {}).posudomoyka
   }[e.tur];
   const f = catalog[frg] || {};
   /* pastki modul — o'z oyog'ida (MC: Bazis'dagidek 100 mm, sokol modulning o'z detali; default_z — fr3d_import) */
   let w = e.w || +f.w, d = P ? Q.pastki.d : Q.ustki.d, h = P ? Q.pastki.h : Q.ustki.h, z = P ? (+f.default_z || 0) : Q.ustki.z;
   if (A) { d = Q.antresol.d; h = Q.antresol.h; z = Q.antresol.z; }               // egasi #166: 3-qavat (antresol)
-  if (e.tur === 'xolodilnik' || e.tur === 'plita') { d = +f.d || d; h = +f.h || h; z = 0; }
+  if (e.tur === 'xolodilnik' || e.tur === 'plita' || e.tur === 'penal' || e.tur === 'posudomoyka') { d = +f.d || d; h = +f.h || h; z = 0; }
   /* vityajka shkafi — ustki qator tepasiga tekis; vityajka (texnika, SP-TX-006) — ustki qator ostiga tekis (fartuk tepasi) */
   if (e.tur === 'vityajka') { d = +f.d || d; h = +f.h || 400; z = f.category === 'appliance' ? Q.ustki.z : Q.ustki.z + Q.ustki.h - h; }
   if (e.tur === 'burchak') w = +f.w;
@@ -366,7 +377,7 @@ function variantQur(sh, room, talab, Q, catalog) {
   /* egasi #166: 3-qavat (antresol) — ustki qator ustida, butun qator bo'ylab (vityajka va muzlatgich uni to'smaydi) */
   const AM = Q.antresol && Q.antresol.modul;
   const chekA = AM ? { bir: chegara(catalog, AM.bir, chekU.bir), ikki: chegara(catalog, AM.ikki, chekU.ikki) } : chekU;
-  const ant = Q.antresol ? ustkiElementlar(reja, past.map(l => l.filter(e => e.tur !== 'plita' && e.tur !== 'xolodilnik')), AM && AM.oila === 'antresol' ? Object.assign({}, Q, { dobor: Object.assign({}, Q.dobor) }) : Q, chekA)
+  const ant = Q.antresol ? ustkiElementlar(reja, past.map(l => l.filter(e => e.tur !== 'plita' && e.tur !== 'xolodilnik' && e.tur !== 'penal')), AM && AM.oila === 'antresol' ? Object.assign({}, Q, { dobor: Object.assign({}, Q.dobor) }) : Q, chekA)
     .map(l => AM && AM.oila === 'antresol' ? l.filter(e => e.tur !== 'ochiq') : l) : reja.map(() => []);
   const pl = [];
   let n = 0;
@@ -503,7 +514,7 @@ function chegaragaKeltir(pl, catalog) {
 
 /** qurilgan oshxona xulosasi: qavatlar (z, bo'yi, chuqurligi, modul soni), tortma, Gola profil uzunligi (taklif) */
 function oshxonaXulosa(pl, Q, catalog) {
-  const mod = (q) => pl.filter(p => p._qatlam === q && (catalog[p.frg] || {}).category !== 'appliance' && p._tur !== 'dobor');
+  const mod = (q) => pl.filter(p => p._qatlam === q && (catalog[p.frg] || {}).category !== 'appliance' && p._tur !== 'dobor' && p._tur !== 'penal');   // penal — baland modul (qavat o'lchamiga kirmaydi)
   /* haqiqiy (chegaraga keltirilgan) o'lcham — qavatning birinchi moduli bo'yicha; modullar ro'yxati: kod, nomi, o'lchami, soni */
   const qavat = (q, z, h, d) => {
     const m = mod(q).filter(p => p._tur !== 'dobor'), r = {};
@@ -535,6 +546,11 @@ export function konstruksiya(room, talab = {}, catalog = {}, opt = {}) {
   if (talab.oshxona) opt = Object.assign({}, opt, { qoidalar: chuqurQosh(opt.qoidalar || {}, oshxonaQoidalar(talab.oshxona, catalog)) });
   const Q = qoidalar(opt.qoidalar);
   const t = Object.assign({ shakl: 'auto', xolodilnik: true, plita: 'erkin', moyka: true, ustki: true }, talab);
+  /* egasi #183: penal / idish yuvish mashinasi — faqat so'ralsa; katalogda yo'q bo'lsa — qo'yilmaydi (chaqiruvchi "bajarilmadi" deydi) */
+  const QS = Q.qoshimcha || {};
+  if (t.penal && !catalog[QS.penal]) t.penal = false;
+  if (t.posudomoyka && !catalog[QS.posudomoyka]) t.posudomoyka = false;
+  const Qx = Object.assign({}, Q, { penalEni: +(catalog[QS.penal] || {}).w || 600, posudomoykaEni: +(catalog[QS.posudomoyka] || {}).w || 600 });
   const W = devorlar(room);
   if (!W.length) return { variantlar: [], xato: 'S3D-KONS-101' };
   const yoq = Object.values(Q.modul).flatMap(g => Object.values(g)).filter(c => !catalog[c]);
@@ -543,13 +559,16 @@ export function konstruksiya(room, talab = {}, catalog = {}, opt = {}) {
   if (t.shakl !== 'auto') nomzod = nomzod.filter(s => s.shakl === t.shakl);
   /* joy yetmasa — bosqichma-bosqich: muzlatgichsiz → muzlatgichsiz va qisqa oraliqlar → plitasiz (har biri izoh bilan) */
   const bosqich = [{ t }];
+  const QISQA = { plita: { yon: 150 }, moyka: { plitadan: 300 } };
   if (t.xolodilnik) bosqich.push({ t: Object.assign({}, t, { xolodilnik: false }), izoh: 'joy_xolodilnik' });
-  if (t.plita) {
-    bosqich.push({ t: Object.assign({}, t, { xolodilnik: false }), q: { plita: { yon: 150 }, moyka: { plitadan: 300 } }, izoh: 'joy_qisqa' });
-    bosqich.push({ t: Object.assign({}, t, { xolodilnik: false, plita: false }), izoh: 'joy_plita' });
-  }
+  if (t.plita) bosqich.push({ t: Object.assign({}, t, { xolodilnik: false }), q: QISQA, izoh: 'joy_qisqa' });
+  /* egasi #183: so'ralgan penal / idish yuvish mashinasi — plitadan oldin olib tashlanadi (har biri izoh bilan; karta "bajarilmadi" deydi) */
+  let tq = Object.assign({}, t, { xolodilnik: false });
+  if (t.posudomoyka) { tq = Object.assign({}, tq, { posudomoyka: false }); bosqich.push({ t: tq, q: t.plita ? QISQA : null, izoh: 'joy_posudomoyka' }); }
+  if (t.penal) { tq = Object.assign({}, tq, { penal: false }); bosqich.push({ t: tq, q: t.plita ? QISQA : null, izoh: 'joy_penal' }); }
+  if (t.plita) bosqich.push({ t: Object.assign({}, tq, { plita: false }), izoh: 'joy_plita' });
   for (const b of bosqich) {
-    const Qb = b.q ? qoidalar(chuqurQosh(opt.qoidalar || {}, b.q)) : Q;
+    const Qb = Object.assign({}, b.q ? qoidalar(chuqurQosh(opt.qoidalar || {}, b.q)) : Q, { penalEni: Qx.penalEni, posudomoykaEni: Qx.posudomoykaEni });
     const eng = {};
     for (const sh of nomzod) {
       const v = variantQur(sh, room, b.t, Qb, catalog);

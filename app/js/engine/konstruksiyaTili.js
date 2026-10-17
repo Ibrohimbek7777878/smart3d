@@ -392,7 +392,8 @@ export function matndanSpec(matn) {
   const tarkibOl = (t) => {
     const x = { polka: sonOl(ICH.polka, t) || (/(polka|пол(?:к|ок)|shel)/.test(t) ? 1 : 0), tortma: sonOl(ICH.tortma, t) || 0, shtanga: ICH.shtanga.test(t), eshik: -1, petlya: 'auto', qatlamlar: [] };
     const e = sonOl(ICH.eshik, t);
-    if (e != null) x.eshik = e; else if (ICH.eshiksiz.test(t)) x.eshik = 0;
+    /* "600 eshikli" — 600 eshik soni emas (o'lcham): 20 dan katta son — eshik soni aytilmagan */
+    if (e != null && e <= 20) x.eshik = e; else if (e == null && ICH.eshiksiz.test(t)) x.eshik = 0;
     if (/(?:tortma|ящик|drawer)[^\s\d:,.;]*\s+(?:pastda|снизу|bottom)|(?:pastda|снизу|bottom)\D{0,12}(?:tortma|ящик|drawer)/.test(t) && x.tortma && (x.polka || x.shtanga)) {
       x.qatlamlar = [{ tortma: x.tortma }, { polka: x.polka, shtanga: x.shtanga }]; x.tortma = 0; x.polka = 0; x.shtanga = false;
     }
@@ -424,8 +425,13 @@ export function matndanSpec(matn) {
     r.bolimlar = Array.from({ length: Math.max(1, Math.min(6, k || 1)) }, () => JSON.parse(JSON.stringify(t)));
   }
   /* umumiy eshik soni ("2 eshik", "ikki eshikli") — bo'limlarga taqsimlanadi */
-  const E = sonOl(ICH.eshik, U);
+  let E = sonOl(ICH.eshik, U);
   const eshiksiz = ICH.eshiksiz.test(U);
+  /* katalog tanlovi uchun (katalogTanlash.js): eshikJami — matndagi umumiy eshik soni (bo'limlarga taqsimlashda 2 tadan
+     cheklanadi — "3 eshik" yo'qolmasin); eshikBor — "eshikli" (soni aytilmagan). "pastki shkaf 600 eshikli" — 600 eni */
+  if (E != null && E > 20) { if (!r.eni && E >= 100) r.eni = mm(E); E = null; r.eshikBor = true; }
+  else if (E == null && !eshiksiz && /eshikli|eshigi bor|с дверц|с двер|with doors?/.test(U)) r.eshikBor = true;
+  if (E != null) r.eshikJami = E;
   if (E != null || eshiksiz) {
     const n = r.bolimlar.length, e = eshiksiz ? 0 : E;
     r.bolimlar.forEach((b, i) => {
