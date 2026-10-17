@@ -54,6 +54,77 @@ async function asosiy(page, R) {
   R.yaqinlashdi = (await kam()).d < d0 - 1;
   await btn('yon-izo').click(); await page.waitForTimeout(700);
 
+  /* 2b) TZ zoom: silliq, kursor tomonga, bir qadam chegarasi, inertsiyada chizish, chegaralar, near/far, anisotropiya */
+  {
+    const r = await M(() => { const c = window.__app.sahna.sp.renderer.domElement.getBoundingClientRect(); return { x: c.left, y: c.top, w: c.width, h: c.height }; });
+    const mx = r.x + r.w * 0.7, my = r.y + r.h * 0.45;
+    await page.mouse.move(mx, my); await page.waitForTimeout(300);
+    /* kadr yozuvchi: har chizilgan kadrda vaqt va masofa */
+    await M(() => {
+      const s = window.__app.sahna, sp = s.sp, o = s.ctl.orbit;
+      window.__zk = []; window.__zon = true;
+      sp.on('render', () => { if (window.__zon) window.__zk.push({ t: performance.now(), d: sp.cam3d.position.distanceTo(o.target) }); });
+    });
+    const D = () => M(() => { const s = window.__app.sahna; return s.sp.cam3d.position.distanceTo(s.ctl.orbit.target); });
+    /* kursor nuri (zoomdan oldin) */
+    const nur = await M(([mx, my]) => {
+      const s = window.__app.sahna, cam = s.sp.cam3d, T = s.sp.THREE, c = s.sp.renderer.domElement.getBoundingClientRect();
+      const v = new T.Vector3(((mx - c.left) / c.width) * 2 - 1, -((my - c.top) / c.height) * 2 + 1, 0.5).unproject(cam).sub(cam.position).normalize();
+      return { dir: v.toArray(), p: cam.position.toArray() };
+    }, [mx, my]);
+    await page.screenshot({ path: `${OUT}/zoom-1-oldin.png` });
+    const dA = await D();
+    await M(() => { window.__zk.length = 0; });
+    await page.mouse.wheel(0, -100);            // bitta qadam
+    await page.waitForTimeout(1500);
+    const dB = await D();
+    const zk1 = await M(() => window.__zk.slice());
+    const p1 = await M(() => window.__app.sahna.sp.cam3d.position.toArray());
+    const dv = p1.map((v, i) => v - nur.p[i]); const dl = Math.hypot(...dv) || 1;
+    const kos = dv.reduce((a, v, i) => a + (v / dl) * nur.dir[i], 0);
+    let maxGap = 0; for (let i = 1; i < zk1.length; i++) maxGap = Math.max(maxGap, zk1[i].t - zk1[i - 1].t);
+    let mono = true; for (let i = 1; i < zk1.length; i++) if (zk1[i].d > zk1[i - 1].d + 0.01) mono = false;
+    /* oxirgi o'zgarish chizilganmi: inertsiya to'xtaganda kamera yana siljimaydi */
+    R.zoomQadam = { oldin: Math.round(dA), keyin: Math.round(dB), foiz: +(((dA - dB) / dA) * 100).toFixed(1), kadrlar: zk1.length, maxBosh: Math.round(maxGap), mono, kursorKos: +kos.toFixed(4) };
+    /* o'rtada skrinshot: tez 4 qadam */
+    await M(() => { window.__zk.length = 0; });
+    for (let i = 0; i < 4; i++) { await page.mouse.wheel(0, -100); await page.waitForTimeout(25); }
+    await page.waitForTimeout(40);
+    await page.screenshot({ path: `${OUT}/zoom-2-orta.png` });
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: `${OUT}/zoom-3-keyin.png` });
+    const dC = await D();
+    R.zoomTez = { d: Math.round(dC), jami: +(((dB - dC) / dB) * 100).toFixed(1) };
+    /* klaviatura + va − */
+    await page.locator('body').click({ position: { x: 3, y: 3 } }).catch(() => {});
+    const dk0 = await D();
+    await page.keyboard.press('+'); await page.waitForTimeout(900);
+    const dk1 = await D();
+    await page.keyboard.press('-'); await page.waitForTimeout(900);
+    const dk2 = await D();
+    R.zoomKey = { plus: +(((dk0 - dk1) / dk0) * 100).toFixed(1), minus: +(((dk2 - dk1) / dk1) * 100).toFixed(1) };
+    /* chegaralar: 40 qadam uzoqlash, keyin 120 qadam yaqinlash */
+    await page.mouse.move(mx, my);
+    for (let i = 0; i < 40; i++) { await page.mouse.wheel(0, 100); await page.waitForTimeout(30); }
+    await page.waitForTimeout(1500);
+    const dFar = await D();
+    const farKam = await M(() => { const c = window.__app.sahna.sp.cam3d; return { near: c.near, far: c.far, maxD: window.__app.sahna.ctl.orbit.maxDistance }; });
+    await page.screenshot({ path: `${OUT}/zoom-4-uzoq.png` });
+    for (let i = 0; i < 120; i++) { await page.mouse.wheel(0, -100); await page.waitForTimeout(25); }
+    await page.waitForTimeout(1500);
+    const dNear = await D();
+    const nearKam = await M(() => { const c = window.__app.sahna.sp.cam3d; return { near: c.near, far: c.far }; });
+    await page.screenshot({ path: `${OUT}/zoom-5-yaqin.png` });
+    R.zoomChegara = { uzoq: Math.round(dFar), maxD: Math.round(farKam.maxD), yaqin: Math.round(dNear), farNear: farKam, yaqinNear: nearKam };
+    R.zoomAniso = await M(() => {
+      const sp = window.__app.sahna.sp; let n = 0, k = 0;
+      sp.scene.traverse(o => { const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; for (const m of ms) if (m.map) { n++; if (m.map.anisotropy > 1) k++; } });
+      return { aniso: sp._aniso(), tekstura: n, anisoBilan: k };
+    });
+    await M(() => { window.__zon = false; });
+    await btn('yon-izo').click(); await page.waitForTimeout(700);
+  }
+
   /* 3) menyu: chizish rejimlari, rentgen, fon, xona, fasadsiz */
   await btn('menyu').click(); await page.waitForTimeout(300);
   R.menyu = await M(() => !!document.querySelector('[data-korinish-menyu]'));
@@ -163,5 +234,10 @@ async function asosiy(page, R) {
     R.orto && R.perspektiva && Math.abs(R.yurishKoz - 1600) < 2 && R.yurdi > 200 && R.yurishIzoh && R.qaytdi && R.menyuYopildi &&
     R.olcham > 50 && R.olchamYozuv && R.saqlandi.fon === 0xffffff && R.saqlandi.chizish === 'boyalgan' && R.saqlandi.xona === false &&
     R.tel.menyu && R.tel.sigadi && R.tel.panel && !R.tel.ustma && !R.tel.hScroll && R.bazis.chizish === 'qirrali' && R.bazis.xona === false && R.bazis.devor === false &&
+    R.zoomQadam.foiz >= 5 && R.zoomQadam.foiz <= 15 && R.zoomQadam.kursorKos > 0.98 && R.zoomQadam.kadrlar >= 6 && R.zoomQadam.maxBosh <= 150 && R.zoomQadam.mono &&
+    R.zoomTez.jami > 10 && R.zoomTez.jami <= 47 && R.zoomKey.plus > 10 && R.zoomKey.minus > 10 &&
+    R.zoomChegara.uzoq <= R.zoomChegara.maxD + 1 && R.zoomChegara.uzoq >= 6000 && R.zoomChegara.yaqin >= 299 && R.zoomChegara.yaqin < 700 &&
+    R.zoomChegara.farNear.far > R.zoomChegara.uzoq && R.zoomChegara.farNear.near > R.zoomChegara.yaqinNear.near && R.zoomChegara.farNear.far / R.zoomChegara.farNear.near < 2000 &&
+    R.zoomAniso.aniso > 1 && R.zoomAniso.anisoBilan === R.zoomAniso.tekstura &&
     errs.length === 0;
 }

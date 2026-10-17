@@ -35,8 +35,11 @@ export function attachControls(sp, opts = {}) {
   orbit.target.set(0, 0, 0);
   orbit.minDistance = 500;
   orbit.maxDistance = 60000;
+  orbit.zoomToCursor = true;                   // kursor turgan nuqtaga yaqinlashadi (r160)
+  orbit.zoomSpeed = 1;                         // qadam o'zimizning wheel boshqaruvida (pastda) — shu yerda emas
   orbit.enabled = false;                       // 2Dda o'chiq
   if (sp.theme && sp.theme.orbit) Object.assign(orbit, sp.theme.orbit);   // TZ-09: mavzu (masofa, burchak chegarasi)
+  const MAX_BAZA = orbit.maxDistance;          // sahna o'lchamiga moslangan chegara shundan oshmaydi
   sp._controls = orbit;
   /* TZ-23 A1 tuzatish (egasi #132): sahna faqat "qayta chiz" buyrug'ida chiziladi — kamera sichqoncha, g'ildirak yoki
      barmoq bilan o'zgarganda ham shu buyruq beriladi (oldin berilmasdi: aylantirganda ekran qotib turardi) */
@@ -106,6 +109,59 @@ export function attachControls(sp, opts = {}) {
   }
 
   el.addEventListener('wheel', onWheel, { passive: false });
+
+  /* ── 3D zoom: silliq va boshqariladigan (TZ zoom, egasi 2026-10-17: "juda tez va sifatsiz") ─────────────────────
+   *  Oldin: OrbitControls har g'ildirak hodisasida masofani DARHOL 5% (dpr=1) yoki 2.5% (dpr=2) ga o'zgartirardi — tez
+   *  aylantirganda sakrash, trackpadda esa tartibsiz. Endi:
+   *   · g'ildirak/pinch hodisasi "kutilayotgan zoom" (logarifm) ga qo'shiladi: 1 qadam (deltaY=100) ≈ 11–12%,
+   *     bir hodisa ≤ 18%, jami to'plangan ≤ 45% (tez aylantirganda kamera "uchib ketmaydi");
+   *   · har kadrda kutilayotganning bir qismi (eksponensial, τ=75 ms, kadr tezligiga bog'liq emas) OrbitControls'ga
+   *     sintetik wheel sifatida beriladi — kursor nuqtasiga yaqinlashish (zoomToCursor) o'z holicha ishlaydi;
+   *   · kadrlar OrbitControls 'change' → _invalidate orqali chiziladi, to'xtaguncha (inertsiya so'nguncha). */
+  const ZOOM = { qadam: 0.0012, pinch: 0.010, hodisa: 0.18, jami: 0.6, tau: 75, klaviatura: 0.25 };
+  const LN095 = Math.log(1 / 0.95);
+  let pend = 0, zx = 0, zy = 0, zt = 0, synth = false;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  function zoomQosh(l, x, y) {
+    pend = clamp(pend + l, -ZOOM.jami, ZOOM.jami); zx = x; zy = y;
+    sp._startLoop(); sp._invalidate();
+  }
+  function onWheel3D(e) {
+    if (synth || sp.mode !== '3d' || !orbit.enabled || !orbit.enableZoom) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    const dy = e.deltaY * (e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? el.clientHeight : 1);
+    zoomQosh(clamp(-dy * (e.ctrlKey ? ZOOM.pinch : ZOOM.qadam), -ZOOM.hodisa, ZOOM.hodisa), e.clientX, e.clientY);
+  }
+  el.addEventListener('wheel', onWheel3D, { passive: false, capture: true });
+  function zoomKadr() {
+    if (sp.mode !== '3d') { pend = 0; return; }
+    /* sahna o'lchamiga mos chegara: xonadan juda uzoqlashib yo'qolmasin (≈ 3 × xona diagonali) */
+    const bb = sp.bbox, diag = Math.hypot(bb.w, bb.h, 2700);
+    orbit.maxDistance = clamp(diag * 3 + 3000, 6000, MAX_BAZA);
+    if (pend) {
+      const now = performance.now(), dt = clamp(zt ? now - zt : 16, 1, 50); zt = now;
+      let part = pend * (1 - Math.exp(-dt / ZOOM.tau));
+      if (Math.abs(pend) < 0.003) part = pend;
+      pend -= part; if (pend === part) pend = 0;
+      const dy = -Math.sign(part) * Math.abs(part) / LN095 * 100;     // getZoomScale(dy) = 0.95^(|dy|/100)
+      synth = true;
+      try { el.dispatchEvent(new WheelEvent('wheel', { deltaY: dy, clientX: zx, clientY: zy, bubbles: true, cancelable: true })); }
+      finally { synth = false; }
+    } else zt = 0;
+    /* near/far masofaga qarab: uzoqda z-fighting bo'lmasin, yaqinda kesilib qolmasin */
+    const cam = sp.cam3d;
+    if (!sp.orto && cam.isPerspectiveCamera) {
+      const R = diag / 2, c = _c.set(bb.cx, bb.cy, 1000), dc = cam.position.distanceTo(c);
+      const near = clamp(dc > R ? (dc - R) * 0.5 : dc * 0.01, 5, 2000);
+      const far = dc + R * 2 + 1000;
+      if (Math.abs(near - cam.near) > cam.near * 0.02 || Math.abs(far - cam.far) > cam.far * 0.02) {
+        cam.near = near; cam.far = far; cam.updateProjectionMatrix();
+        sp._invalidate();
+      }
+    }
+  }
+  const _c = new sp.THREE.Vector3();
+  sp.on('frame', zoomKadr);
   el.addEventListener('pointerdown', onPointerDown);
   el.addEventListener('dblclick', onDblClick);
   window.addEventListener('pointermove', onPointerMove);
@@ -127,6 +183,11 @@ export function attachControls(sp, opts = {}) {
       sp.fit();
     } else if (e.key === 'Escape') {
       opts.onEscape && opts.onEscape();
+    } else if (e.key === '+' || e.key === '=' || e.key === '-' || e.key === '_' || e.code === 'NumpadAdd' || e.code === 'NumpadSubtract') {
+      const ichkari = e.key === '+' || e.key === '=' || e.code === 'NumpadAdd';
+      const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+      if (sp.mode === '3d' && orbit.enabled) { e.preventDefault(); zoomQosh((ichkari ? 1 : -1) * ZOOM.klaviatura, x, y); }
+      else if (sp.mode === '2d') { e.preventDefault(); sp.zoomAt(ichkari ? 1.25 : 0.8, x, y); }
     }
   }
   window.addEventListener('keydown', onKeyDown);
@@ -134,6 +195,7 @@ export function attachControls(sp, opts = {}) {
   /* ── Rejim almashganda OrbitControls'ni yoqish/o'chirish ───────────── */
   sp.on('toggle', () => {
     orbit.enabled = sp.mode === '3d';
+    pend = 0;
     if (sp.mode === '3d') {
       const t = sp.camTarget ? sp.camTarget() : [sp.bbox.cx, sp.bbox.cy, 0];   // TZ-09: mavzu o'z markazini beradi
       orbit.target.set(t[0], t[1], t[2]);
@@ -172,6 +234,7 @@ export function attachControls(sp, opts = {}) {
     fit() { sp.fit(); },
     dispose() {
       el.removeEventListener('wheel', onWheel);
+      el.removeEventListener('wheel', onWheel3D, { capture: true });
       el.removeEventListener('pointerdown', onPointerDown);
       el.removeEventListener('dblclick', onDblClick);
       window.removeEventListener('pointermove', onPointerMove);
