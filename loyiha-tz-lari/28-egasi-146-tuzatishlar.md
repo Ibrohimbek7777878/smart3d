@@ -47,3 +47,22 @@
 - Narx panelidagi yangi plita qatori uchun UI testi va skrinshot yo'q (kodda tekshirilgan).
 - Zoom haqiqiy trackpad va sensorli ekranda qo'lda sinalmagan.
 - 85 umumiy modulda Bazis asli yo'q — 15 tasini usta Bazis'da chizishi tavsiya qilindi.
+
+## 5. Ikkinchi bosqich (2026-10-17 13:20–14:30, egasi #151–158) — `dizayn` 6955507, testchi: O'TDI
+
+| Agent (model, deadline) | Holat | Natija | Commit |
+|---|---|---|---|
+| Koordinator | — | Zapchast taklifi birlashtirildi (egasi #151: "qo'sh, ruxsat beraman"): jami 25 kod → katalog; sayt qayta yig'ildi (eski versiya ko'rinayotgan edi) | 459e4fa |
+| Frontend · Katalog soddaligi (Sonnet, 14:25) | BAJARILDI (1 marta qaytarildi: Кашемир UR bog'lanmagan, takroriy qalinlik chiplari) | Narxsiz furnitura (298) va plita (184) yashirildi, ro'yxatlar `Smart3D_malumot/narxsiz-*-2026-10-17.csv`. Material oynasida "Ko'p ishlatiladigan" (sexning 22 buyurtmasi bo'yicha 11 dekor), qolgani "Boshqa ranglar" | 1981656, b23c736, a4b39f8 |
+| Frontend · Zoom sekinlashtirish (Sonnet, 14:35) | BAJARILDI | Bir qadam 11% → 4,4%, dpr 0,8/1/2 va sichqoncha/trackpad da bir xil | 7f4d539 |
+| Frontend · Zoom chegarasi (Sonnet, 14:40) | BAJARILDI | Uzoqlashish = sahna sig'adigan masofa × 1,3; yaqinlashishda sirtga ≥ 400 mm, mebel ichiga kirmaydi | b0a49f9 |
+| Frontend · Modul surish va xona (Opus, 15:00) | BAJARILDI | 3D da sichqoncha bilan va touch'da ushlab surish, Esc. Devordan oraliq 3 mm (`devorOraliq.js`); topildi: avto modullar devor ichiga 50 mm kirib turgan edi. Standart xona 5000×4000. Devorsiz ko'rinishda pol chegarasi = modullar + 1 m | b96eed4, 6dbd655, 677f760 |
+| Test · Yakuniy (Sonnet, 14:55) | O'TDI | Node, server 73/73, web 28 to'plam (yangi `surish` bilan) yashil; devor oralig'i 12 variantda aynan 3,00 mm | — |
+
+**Egasi #158:** "devordan 3 metr qochsin, devorga yopishib qolmasin; erkin ham bo'lsin, devor ham bo'lsin; ularni o'chirib tashla".
+- **Frontend · Joylash va xona turi** (Sonnet, 15:15) ishlamoqda:
+  - yangi modul orqa devordan 3000 mm nariga;
+  - surishda magnit yopishish yo'q;
+  - Xona panelida "Devorli xona | Erkin maydon".
+- Oshxona qatorlari devor bo'ylab qoladi — egasidan tasdiq so'raldi.
+- "Ularni o'chirib tashla" — egasining lokal bazasidagi 2 loyiha («New project», «Yangi loyiha»). Arxivga o'tkazish uchun aniq tasdiq so'raldi.

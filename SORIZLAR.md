@@ -423,3 +423,17 @@ bu men yozgan prompt shu qismlarn togirla va zpachastlar narx aniq chiqish kere 
 
 150. ha togir tasdiqlayman 
 (iqtibos: "Tasdiqlashingiz kerak: "1 metr" — kiyim joyining balandligi deb oldim. Agar "eni 1000" deb yozilsa, eni deb olinadi. Kiyim joyi o'rtada, ustidagi va ostidagi bo'shliq teng (476 mm dan) — matnda aytilmagan edi. "Bakavina" — ruscha «боковина», ya'ni yon devor. Yon devorlar allaqachon polgacha tushadi, siz aytgandek orqa HDF ham polgacha tushadigan qilindi. 1000 mm ruchka hozircha narxsiz. Katalogdagi nomzod: «0351- 1000 MM QORA», 45 000 so'm. Shuni bog'laymi?")
+
+151. (skrinshot: "Orqa devor materiali" — eski varaq: material turi, rang, qalinlik chiplari, ERP ro'yxati) yo ozgrmagan shuanrsz bolb qolgan shuni sodda qilaylik  yanada  keyin moduln ustiga bosib yokida qol bilan ushlab joyin surish ham bolsin va zapchastlarni hammaisn toliq qayd qildingmi tizimga qoshildimi  qosh ruxsat beraman narxi 0 bolgnalarn olib tashla keyin ularni ham royxaitn berasan materila bazani anrxlarin qayerdna olayabdi  standart xona olchami 4mtergax5metr  bolsin  kromkalarin hali kora olagnam yoq
+
+152. devogra hech qachon tirab bormasin va ha rbir modul joylasyaotganda devordan 3metr  surib qoy
+
+155. (skrinshot: Xona qadami — 4200×3100×2700, katta qorong'i maydon, shkaf chetda kichkina) qara bu yerda erkin qilganmda  chegara yoqday bolib qolgan katta maydon bolsin lekin chegras ham bolish kere faqat chegara va maydon olcham modular soniga qarab ozgarish kere va yana yaqinlashtirsh va uzoqlashtrish qilganmda juda tez uzoqlashib juda tez yaqinlashb qolayabd
+
+156. (2 ta skrinshot: uzoqlashganda — shkaf qorong'i maydonda nuqtadek kichkina; yaqinlashganda — shkaf ichiga kirib ketgan, ekranni to'ldirgan) mana ahvol natija yoq hali ham brinch rasm uzoqlashgandagi 2rasm esa yaqinlashgandagi
+
+157. undan boshqa yuqorida aytgan tasklarim nima bold bajarildimi
+
+158. qara devordan 3metr qochsin devorga yopishb qolmasinda shuni aytganman senga
+erkin ham bolsin devor ham bolsin 
+ularni ochirb tashla
