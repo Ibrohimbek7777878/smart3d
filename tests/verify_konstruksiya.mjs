@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const K = await import('../app/js/engine/konstruksiyaTili.js');
-const { chizmaKatalog, chizmaPanellar } = await import('../app/js/engine/chizish.js');
+const { chizmaKatalog, chizmaPanellar, chizmaFragment, yassi, tikla } = await import('../app/js/engine/chizish.js');
 const { cutlist, productionCost } = await import('../app/js/engine/cutlist.js');
 const DATA = fileURLToPath(new URL('../app/data/', import.meta.url));
 const mats = JSON.parse(readFileSync(DATA + 'materials.json', 'utf8'));
@@ -79,6 +79,73 @@ ok('3D: shkaf — 2 eshik, 1 shtanga; tumba — 3 tortma; ruscha — 3 tortma, 3
 ok('pastki/tumba: bo\'yi oyoq bilan (808 → korpus 708, oyoq 100)', natija[1].h === 708 && natija[1].z === 100, J(natija[1]));
 ok('specXulosa: polka, tortma, shtanga, eshik soni', J(K.specXulosa(qur("shkaf 1200x600x2200, chapda shtanga, o'ngda 4 polka, 2 eshik").spec)) === J({ bolim: 2, polka: 4, tortma: 0, shtanga: 1, eshik: 2 }));
 ok('AI uchun til ta\'rifi (server ko\'rsatmasi)', /bolimlar/.test(K.TIL_IZOH) && /PASTDAN YUQORIGA/.test(K.TIL_IZOH) && /xona/.test(K.TIL_IZOH));
+
+/* 5. egasining prompti (2026-10-17, aynan — imlo xatolari bilan): o'lcham, bo'limlar, kiyim joyi (1000 mm, shtanga, ustida va
+ *    ostida polka), 6 teng polka, material (ERP: Кашемир, Дуб золотой), furnitura (konfirmat, polkaderjatel, 1000 mm ruchka),
+ *    sokol, orqa HDF polgacha, OBJ buyrug'i; yana 3 variant: ruscha, imlo xatosiz, "kengligi 1000" (bo'lim eni) */
+const EGA = 'mebel turi:shkaf balandlig 2100mm , eniga 1200mm,chuqurlig 580mm,korpusi va ichki qism materali:kashemir,16mm , fasad dubzalatoy,16mm, ikki eshikli chap tomondan 1 metr kiyim iladigan vishilkali joy, tepa va pastida polkalar bor bittadan , ong tomonda qolgan qismmi 6ta teng polkadan iborat , korpus brikmasi konfirmat, polkalar polka derjatel, bilan mahkamlanad  ruchka 1mterlik uzun ruchkadan qoyilad korpus bakavinasi yergacha va sokilli boladi,  obj formatda yubor gpirmasdan yubor';
+const RUS = 'шкаф высота 2100 мм, ширина 1200 мм, глубина 580 мм, корпус и внутренняя часть — кашемир 16 мм, фасад — дуб золотой 16 мм, две двери, слева на 1 метр штанга для одежды, сверху и снизу по одной полке, справа 6 равных полок, корпус на конфирматах, полки на полкодержателях, ручка длинная 1000 мм, задняя стенка до пола, цоколь, отправь в формате obj';
+const TOZA = "Mebel turi: shkaf. Balandligi 2100 mm, eni 1200 mm, chuqurligi 580 mm. Korpus va ichki qism materiali: Kashemir, 16 mm; fasad: Dub zolotoy, 16 mm. Ikki eshikli. Chap tomonda 1 metrli kiyim osiladigan joy shtanga bilan, uning tepasida va pastida bittadan polka. O'ng tomonda 6 ta teng polka. Korpus birikmasi — konfirmat, polkalar polkaderjatel bilan mahkamlanadi. Ruchka — 1 metrli uzun ruchka. Korpus bokovinasi yergacha, sokolli. OBJ formatda yuboring, gapirmasdan.";
+const sheets = JSON.parse(readFileSync(DATA + 'sheet-catalog.json', 'utf8')).sheets;
+const qat = (b) => b.qatlamlar.map(q => [q.boyi, q.shtanga, q.polka]);
+const togri = (r, nom) => {
+  const sp = r.spec, [c, o] = sp.bolimlar;
+  ok(nom + ': o\'lcham 1200×580×2100, sokol, orqa HDF polgacha', sp.tur === 'shkaf' && sp.eni === 1200 && sp.chuqurligi === 580 && sp.boyi === 2100 && sp.tag === 'sokol' && sp.orqa === 'yergacha', J(sp));
+  ok(nom + ': 2 bo\'lim (teng), har biriga 1 eshik — chap/o\'ng petlya', sp.bolimlar.length === 2 && c.eni === 0 && o.eni === 0 && c.eshik === 1 && c.petlya === 'chap' && o.eshik === 1 && o.petlya === 'ong', J(sp.bolimlar.map(qisqa)));
+  ok(nom + ': chapda kiyim joyi 1000 mm (shtanga), ustida va ostida polka (polka ushlagichda)', c.ajrat === 'polka' && J(qat(c)) === J([[0, false, 0], [1000, true, 0], [0, false, 0]]), J(c));
+  ok(nom + ': o\'ngda 6 teng polka', o.polka === 6 && !o.qatlamlar.length && !o.shtanga, J(o));
+  ok(nom + ': material — korpus va polka kashemir 16, fasad dub zolotoy 16', /^(kashemir|кашемир)$/.test(sp.material.korpus.nom) && sp.material.korpus.qalinlik === 16
+    && sp.material.polka.nom === sp.material.korpus.nom && sp.material.polka.qalinlik === 16 && /^(dubzalatoy|дуб золотой|dub zolotoy)$/.test(sp.material.fasad.nom) && sp.material.fasad.qalinlik === 16, J(sp.material));
+  ok(nom + ': furnitura — konfirmat, polkaderjatel, ruchka 1000 mm; OBJ buyrug\'i; to\'g\'rilashsiz', J(sp.furnitura) === J({ birikma: 'konfirmat', polka: 'polkaderjatel', ruchka: 1000 }) && sp.eksport === 'obj' && !r.tuzatish.length, J([sp.furnitura, sp.eksport, r.tuzatish]));
+  ok(nom + ': xulosa — 2 bo\'lim · 8 polka · 1 shtanga · 2 eshik', J(K.specXulosa(sp)) === J({ bolim: 2, polka: 8, tortma: 0, shtanga: 1, eshik: 2 }), J(K.specXulosa(sp)));
+  const pk = K.plitaTop(sheets, sp.material.korpus.nom, 16, 'korpus'), pf = K.plitaTop(sheets, sp.material.fasad.nom, 16, 'fasad');
+  ok(nom + ': ERP plitasi — korpus «Кашемир» LDSP 16, fasad «Дуб Золотой» LDSP 16', pk && pk.name === 'ЛДСП Ультрадекор 5,796 Кашемир UR 16мм' && pf && pf.name === 'ЛДСП Ультрадекор 4,575 Дуб Золотой 16мм', J([pk && pk.name, pf && pf.name]));
+};
+const rE = qur(EGA);
+ok('egasi prompti: modul (xona emas)', K.konstruksiyami(EGA) && K.konstruksiyami(RUS) && K.konstruksiyami(TOZA));
+togri(rE, 'egasi');
+togri(qur(RUS), 'ruscha');
+togri(qur(TOZA), 'imlo xatosiz');
+let rk = qur(EGA.replace('chap tomondan 1 metr kiyim', 'chap tomondan kengligi 1000 mm kiyim'));
+const rk0 = K.matndanSpec(EGA.replace('chap tomondan 1 metr kiyim', 'chap tomondan kengligi 1000 mm kiyim'));
+ok('"kengligi 1000" — bo\'lim ENI 1000 (kiyim joyi bo\'yi aytilmagan — teng), o\'ngda 6 polka', rk0.bolimlar[0].eni === 1000 && rk0.bolimlar[0].ajrat === 'polka'
+  && J(rk0.bolimlar[0].qatlamlar) === J([{ boyi: 0 }, { boyi: 0, shtanga: true }, { boyi: 0 }]) && rk0.bolimlar[1].polka === 6 && rk0.bolimlar[1].eni === 0, J(rk0.bolimlar));
+ok('"kengligi 1000": 1000 mm polka egiladi — tizim 2 ga bo\'ladi (izoh), har yarmida kiyim joyi, o\'ngda 6 polka', rk.tuzatish.some(t => t.kod === 'polka_bolgich' && t.n === 1000 && t.k === 2)
+  && rk.spec.bolimlar.length === 3 && rk.spec.bolimlar.slice(0, 2).every(b => b.ajrat === 'polka' && b.qatlamlar[1].shtanga && b.eshik === 1) && rk.spec.bolimlar[2].polka === 6, J(rk.spec.bolimlar.map(qisqa)));
+ok('"mm" — millimetr (metr emas): "eni 1200 mm" → 1200', qur('shkaf eni 1200 mm balandligi 2100mm').spec.eni === 1200 && qur('shkaf eni 1200 mm balandligi 2100mm').spec.boyi === 2100 && qur('shkaf 1200x600x2200 mm').spec.chuqurligi === 600);
+ok('ERP\'da yo\'q dekor — null (o\'ylab topilmaydi); qalinlik mos kelmasa — null', K.plitaTop(sheets, 'qizil olma', 16, 'korpus') === null && K.plitaTop(sheets, 'kashemir', 18, 'korpus') === null && K.plitaTop(sheets, 'bilan', 16, 'korpus') === null);
+
+/* chizma → dvigatel: detallar, furnitura kodlari, sokol, HDF polgacha, kiyim joyi bo'yi, ruchka */
+const chE = K.specdanChizma(rE.spec);
+ok('chizma: orqaYer, ruchka 1000, chap bo\'lim — gorizontal (ajrat polka); saqlash/tiklashda saqlanadi', chE.orqaYer === true && chE.ruchka.l === 1000 && chE.ichki.bo[0].n.yo === 'h' && chE.ichki.bo[0].n.ajrat === 'polka'
+  && (() => { const x = tikla(JSON.parse(J(yassi(chE)))); return x.orqaYer === true && x.ruchka.l === 1000 && x.ichki.bo[0].n.ajrat === 'polka' && x.ichki.bo[0].n.bo[1].o === 1000 && x.ichki.bo[0].n.bo[1].n.shtanga; })(), J(chE));
+const frE = chizmaKatalog(chE, 'CH-EGA', 'shkaf');
+const PE = chizmaPanellar(chE, chE.w, chE.d, chE.h, { t: 16 });
+const pz = PE.panels.filter(p => p.code === 'polka'), zb = -chE.h / 2;
+const chapP = pz.filter(p => p.x < 0).sort((a, b) => a.z - b.z), ongP = pz.filter(p => p.x > 0).sort((a, b) => a.z - b.z);
+const orqaP = PE.panels.find(p => p.code === 'orqa'), yonlar = PE.panels.filter(p => p.code === 'yon');
+ok('3D: 8 polka (chapda 2, o\'ngda 6), bo\'lgich_g yo\'q; chapdagi polkalar orasi 1000 mm, shtanga ular orasida', pz.length === 8 && chapP.length === 2 && ongP.length === 6 && !PE.panels.some(p => p.code === 'bolgich_g')
+  && Math.abs((chapP[1].z - chapP[1].h / 2) - (chapP[0].z + chapP[0].h / 2) - 1000) < 0.6
+  && PE.furn.filter(f => f.tur === 'shtanga').length === 1 && PE.furn.some(f => f.tur === 'shtanga' && f.o[2] > chapP[0].z && f.o[2] < chapP[1].z), J(chapP.map(p => [p.z, p.h])));
+const oraliq = ongP.slice(1).map((p, i) => Math.round((p.z - ongP[i].z) * 10) / 10);
+ok('3D: o\'ngdagi 6 polka teng oraliqda', oraliq.every(v => Math.abs(v - oraliq[0]) < 0.6), J(oraliq));
+ok('3D: sokol (old va orqa), yon devorlar polgacha, orqa HDF polgacha (sokol ortini yopadi), 2 eshik', PE.panels.filter(p => p.code === 'sokol').length === 2 && yonlar.length === 2
+  && yonlar.every(p => Math.abs(p.z - p.h / 2 - zb) < 0.6) && orqaP && Math.abs(orqaP.z - orqaP.h / 2 - zb) < 0.6 && PE.doors.length === 2, J(orqaP));
+ok('3D: ruchka eshik bo\'yida uzun (1000 mm)', PE.doors.every(d => d.handle && d.handle.h === 1000), J(PE.doors.map(d => d.handle)));
+const fE = chizmaFragment(chE, chE.w, chE.d, chE.h, { t: 16, tp: 16, tf: 16 });
+const hw = Object.fromEntries(fE.hardware.map(x => [x.code, x.qty]));
+ok('furnitura: konfirmat (TS-1730) bor, polkaderjatel 8×4 = 32, ruchka RU-1000 × 2 (RU-128 yo\'q), shtanga', hw['TS-1730'] > 0 && hw.POLKADERJ === 32 && hw['RU-1000'] === 2 && !hw['RU-128'] && hw.SHTANGA > 0, J(hw));
+const eshikTesh = fE.birikmalar.filter(b => b.teshiklar[0].kind === 'd6_ruchka');
+ok('uzun ruchka teshigi o\'ylab topilmaydi: d6_ruchka yo\'q, ogohlantirish; polka ushlagich teshiklari bor', !eshikTesh.length && fE.ogoh.some(o => o.kod === 'ruchka_teshik' && o.n === 1000)
+  && fE.birikmalar.some(b => b.teshiklar[0].kind === 'd6_polka'), J(fE.ogoh));
+const clE = cutlist(frE, frE.w, frE.d, frE.h, mats, { projectSlots: { korpus: 'LDSP16', polka: 'LDSP16', fasad: 'LDSP16', orqa: 'HDF3' } });
+const pcE = productionCost([Object.assign(clE, { placementId: 'x' })], mats, {});
+const ruL = pcE.lines.find(l => l.code === 'RU-1000');
+ok('hisob: xatosiz, narx > 0; RU-1000 narxi o\'ylab topilmaydi (narx yo\'q belgisi)', !clE.errors.length && pcE.clientTotal > 0 && ruL && ruL.no_price === true, J([clE.errors, ruL]));
+ok('AI uchun til: material, furnitura, orqa, eksport, ajrat', /material/.test(K.TIL_IZOH) && /furnitura/.test(K.TIL_IZOH) && /yergacha/.test(K.TIL_IZOH) && /eksport/.test(K.TIL_IZOH) && /ajrat/.test(K.TIL_IZOH));
+r = K.specTekshir({ tur: 'shkaf', material: { korpus: { nom: '<b>kashemir</b>', qalinlik: 99 } }, furnitura: { birikma: 'ekssentrik', ruchka: 9000 }, eksport: 'yoq', orqa: 'boshqa' });
+ok('AI javobi: material tozalanadi, qalinlik chegarada, ekssentrik — konfirmat (izoh), ruchka chegarada, eksport/orqa standart', r.spec.material.korpus.nom === 'bkashemir/b' && r.spec.material.korpus.qalinlik === 40
+  && r.spec.material.polka.nom === r.spec.material.korpus.nom && r.tuzatish.some(t => t.kod === 'birikma') && r.spec.furnitura.ruchka === 2500 && r.spec.eksport === '' && r.spec.orqa === 'auto', J(r));
 
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);
 process.exit(fail ? 1 : 0);

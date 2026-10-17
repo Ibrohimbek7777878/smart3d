@@ -7,10 +7,12 @@
  *
  * Chizma:
  *   { v: 1, tur: 'pastki'|'ustki'|'shkaf'|'tumba'|'erkin', w, d, h,
- *     tag: { tur: 'oyoq'|'sokol'|'yoq', h }, qopqoq: 'yaxlit'|'planka', orqa: 'hdf'|'yoq', ichki: Bo'lim }
+ *     tag: { tur: 'oyoq'|'sokol'|'yoq', h }, qopqoq: 'yaxlit'|'planka', orqa: 'hdf'|'yoq', ichki: Bo'lim,
+ *     orqaYer?: true (shkaf/erkin: HDF polgacha — sokol ortini ham yopadi), ruchka?: { l: mm } (uzun ruchka, eshik boshiga 1 ta) }
  *   h — korpus bo'yi; pastki/tumba oyog'i korpus ostida (katalogdagi MC modullaridek: joylashuv z = oyoq bo'yi),
  *   shkaf/erkin sokoli — ichkarida (h ga kiradi).
- *   Bo'lim: bo'linadi — { yo: 'v' (vertikal bo'lgich) | 'h' (gorizontal), bo: [{ o: mm | null (teng), n: Bo'lim }] }
+ *   Bo'lim: bo'linadi — { yo: 'v' (vertikal bo'lgich) | 'h' (gorizontal), bo: [{ o: mm | null (teng), n: Bo'lim }], ajrat?: 'polka' }
+ *           (ajrat 'polka' — gorizontal qismlar orasi bo'lgich emas, polka: ushlagichda, konfirmatsiz)
  *           yoki tarkib — { polka: soni, tortma: soni, shtanga: bool }; istalgan bo'limda eshik: 0|1|2, petlya: 'chap'|'ong'
  *           (eshik bo'lim ichidagi hamma narsani yopadi).
  * O'qlar (assembler bilan bir xil): lokal x — eni (chap = −x), y — chuqurligi (old = +y), z — bo'yi; markazlangan.
@@ -66,13 +68,13 @@ export function bol(ch, yol, yo, k) {
     const tarkib = { polka: n.polka, tortma: n.tortma, shtanga: n.shtanga };
     const bo = [];
     for (let i = 0; i < Math.max(2, Math.min(8, k | 0)); i++) bo.push({ o: null, n: i === 0 ? JSON.parse(JSON.stringify(tarkib)) : {} });
-    for (const k2 of ['polka', 'tortma', 'shtanga', 'yo', 'bo']) delete n[k2];
+    for (const k2 of ['polka', 'tortma', 'shtanga', 'yo', 'bo', 'ajrat']) delete n[k2];
     n.yo = yo; n.bo = bo;
   });
 }
 /** bo'linishni olib tashlash (bo'lim yana yaxlit) */
 export function birlashtir(ch, yol) {
-  return bolimOzgar(ch, yol, (n) => { delete n.yo; delete n.bo; });
+  return bolimOzgar(ch, yol, (n) => { delete n.yo; delete n.bo; delete n.ajrat; });
 }
 
 /* ── joylash: chizma + o'lcham + qalinliklar → qutilar (min/max) ──
@@ -115,7 +117,8 @@ function joylash(ch, w, d, h, o = {}) {
     if (tag.tur === 'oyoq' && tagH > 0) ogoh.push({ kod: 'oyoq_baland' });
     R0 = { x0: xl + t, x1: xr - t, z0: pz + t, z1: zt - t };
     fasadB = pz + 1; fasadT = zt - 1;
-    if (to) qosh({ code: 'orqa', nom: 'Orqa devor (HDF)', slot: 'orqa', o: 'Z', x0: xl + 1, x1: xr - 1, y0: yb - to, y1: yb, z0: pz + 1, z1: zt - 1, edge: {} });
+    /* orqaYer — HDF polgacha (sokol ortini yopadi), aks holda pol sathidan */
+    if (to) qosh({ code: 'orqa', nom: 'Orqa devor (HDF)', slot: 'orqa', o: 'Z', x0: xl + 1, x1: xr - 1, y0: yb - to, y1: yb, z0: ch.orqaYer ? zb : pz + 1, z1: zt - 1, edge: {} });
   } else {
     /* pastki, tumba, ustki: pol to'liq eni */
     qosh({ code: 'tub', nom: 'Pol', slot: 'korpus', o: 'Y', x0: xl, x1: xr, y0: yb, y1: yf, z0: zb, z1: zb + t, edge: F });
@@ -155,6 +158,7 @@ function joylash(ch, w, d, h, o = {}) {
   const ruchkaZ = (z0f, z1f) => (ustki ? z0f + 50 + Q.ruchka / 2 : baland ? (z0f + z1f) / 2 : z1f - 50 - Q.ruchka / 2);
   const FASAD = { F: 'kromka_fasad', B: 'kromka_fasad', L: 'kromka_fasad', R: 'kromka_fasad' };
 
+  const uzunR = ch.ruchka && +ch.ruchka.l > 0 && +ch.ruchka.l !== Q.ruchka ? Math.round(+ch.ruchka.l) : 0;   // uzun ruchka (mm)
   function eshiklar(n, R, chet) {
     const f = fasadRect(R, chet);
     const k = n.eshik === 2 ? 2 : 1, ew = (f.x1 - f.x0 - (k - 1) * g) / k, eh = f.z1 - f.z0;
@@ -163,8 +167,11 @@ function joylash(ch, w, d, h, o = {}) {
       const side = k === 2 ? (i === 0 ? 'left' : 'right') : (n.petlya === 'ong' ? 'right' : 'left');
       const id = 'eshik_' + (++fasadNo);
       qosh({ code: 'eshik', nom: 'Eshik', slot: 'fasad', o: 'Z', x0: ex0, x1: ex1, y0: yf, y1: yf + tf, z0: f.z0, z1: f.z1, edge: FASAD,
-        isDoor: true, id, hingeSide: side, handle: { x: side === 'left' ? ex1 - 40 : ex0 + 40, y: yf + tf + 14, z: ruchkaZ(f.z0, f.z1), w: 12, d: 22, h: Math.min(eh * 0.4, Q.ruchka + 32) } });
-      hwQosh('PET-4', petlyaSoni(eh), 'Petlya'); hwQosh('RU-128', 1, 'Ruchka');
+        isDoor: true, id, hingeSide: side, uzunRuchka: uzunR || undefined,
+        handle: { x: side === 'left' ? ex1 - 40 : ex0 + 40, y: yf + tf + 14, z: uzunR ? (f.z0 + f.z1) / 2 : ruchkaZ(f.z0, f.z1), w: 12, d: 22, h: uzunR ? Math.min(uzunR, eh - 100) : Math.min(eh * 0.4, Q.ruchka + 32) } });
+      hwQosh('PET-4', petlyaSoni(eh), 'Petlya');
+      if (uzunR) hwQosh('RU-' + uzunR, 1, 'Ruchka ' + uzunR + ' mm (uzun)'); else hwQosh('RU-128', 1, 'Ruchka');
+      if (uzunR && uzunR > eh - 100) ogoh.push({ kod: 'ruchka_uzun', n: uzunR, m: Math.round(eh) });
       if (ew < Q.eshikMin || ew > Q.eshikMax) ogoh.push({ kod: ew < Q.eshikMin ? 'eshik_tor' : 'eshik_keng', n: Math.round(ew) });
     }
   }
@@ -199,7 +206,8 @@ function joylash(ch, w, d, h, o = {}) {
     if (n.yo === 'v' || n.yo === 'h') {
       const v = n.yo === 'v', bo = n.bo || [];
       const L0 = v ? R.x0 : R.z0, L1 = v ? R.x1 : R.z1, kk = bo.length;
-      const bor = (L1 - L0) - (kk - 1) * t;
+      const ajP = !v && n.ajrat === 'polka', st = ajP ? tp : t;   // qismlar orasi — polka (ushlagichda) yoki bo'lgich
+      const bor = (L1 - L0) - (kk - 1) * st;
       const aniq = bo.reduce((a, b) => a + (b.o > 0 ? +b.o : 0), 0), teng = bo.filter(b => !(b.o > 0)).length;
       const tengO = teng ? (bor - aniq) / teng : 0;
       if (!teng && Math.abs(aniq - bor) > 0.5) ogoh.push({ kod: 'bolim_yigindi', n: Math.round(aniq), m: Math.round(bor) });
@@ -213,11 +221,16 @@ function joylash(ch, w, d, h, o = {}) {
         yur(b.n, R2, c2, eshikBor, yol.concat(i));
         s += len;
         if (i < kk - 1) {
-          if (o.bolgichlar) o.bolgichlar.push({ yol, i, yo: n.yo, s, x0: v ? s : R.x0, x1: v ? s + t : R.x1, z0: v ? R.z0 : s, z1: v ? R.z1 : s + t, L0, L1 });
-          if (v) qosh({ code: 'bolgich', nom: 'Vertikal bo\'lgich', slot: 'korpus', o: 'X', x0: s, x1: s + t, y0: yb, y1: yf, z0: R.z0, z1: R.z1, edge: F });
-          else qosh({ code: 'bolgich_g', nom: 'Gorizontal bo\'lgich', slot: 'korpus', o: 'Y', x0: R.x0, x1: R.x1, y0: yb, y1: yf, z0: s, z1: s + t, edge: F });
-          joint += 4;
-          s += t;
+          if (o.bolgichlar) o.bolgichlar.push({ yol, i, yo: n.yo, s, x0: v ? s : R.x0, x1: v ? s + st : R.x1, z0: v ? R.z0 : s, z1: v ? R.z1 : s + st, L0, L1 });
+          if (ajP) {
+            qosh({ code: 'polka', nom: 'Polka', slot: 'polka', o: 'Y', x0: R.x0, x1: R.x1, y0: yb, y1: yb + polkaD, z0: s, z1: s + tp, edge: F });
+            hwQosh('POLKADERJ', 4, 'Polkaderjatel (Ø5)');
+          } else {
+            if (v) qosh({ code: 'bolgich', nom: 'Vertikal bo\'lgich', slot: 'korpus', o: 'X', x0: s, x1: s + t, y0: yb, y1: yf, z0: R.z0, z1: R.z1, edge: F });
+            else qosh({ code: 'bolgich_g', nom: 'Gorizontal bo\'lgich', slot: 'korpus', o: 'Y', x0: R.x0, x1: R.x1, y0: yb, y1: yf, z0: s, z1: s + t, edge: F });
+            joint += 4;
+          }
+          s += st;
         }
       });
       return;
@@ -332,7 +345,9 @@ export function chizmaFragment(ch, w, d, h, o = {}) {
     petlya: q.isDoor ? (q.hingeSide === 'right' ? 'min' : 'max') : null,          // 'left' — lokal −x = Bazis X ning katta tomoni
     ruchkaJoy: tur === 'ustki' ? 'past' : tur === 'shkaf' || tur === 'erkin' ? 'orta' : 'tepa'
   })), { ruchka: QOIDA.ruchka });
-  D.forEach((arr, i) => { BK.tesh[i] = BK.tesh[i].concat(arr); });
+  /* uzun ruchka — teshik oralig'i mahsulotga bog'liq (o'ylab topilmaydi): 128 mm teshik qo'yilmaydi, ogohlantirish */
+  D.forEach((arr, i) => { BK.tesh[i] = BK.tesh[i].concat(J.qutilar[i].uzunRuchka ? arr.filter(x => x.kind !== 'd6_ruchka') : arr); });
+  if (J.qutilar.some(q => q.uzunRuchka)) J.ogoh.push({ kod: 'ruchka_teshik', n: J.qutilar.find(q => q.uzunRuchka).uzunRuchka });
   const tim = (arr) => arr.map(x => [x.side, x.torets || '', x.yuza || '', x.x, x.y, x.dia, x.depth].join(',')).sort().join(';');
   const guruh = new Map();
   for (const [qi, q] of J.qutilar.entries()) {
@@ -394,7 +409,7 @@ export function yassi(ch) {
     if (tugun.length >= MAX_TUGUN) return -1;
     const k = tugun.length, x = {};
     tugun.push(x);
-    for (const key of ['polka', 'tortma', 'shtanga', 'eshik', 'petlya']) if (n[key] != null && n[key] !== 0 && n[key] !== false) x[key] = n[key];
+    for (const key of ['polka', 'tortma', 'shtanga', 'eshik', 'petlya', 'ajrat']) if (n[key] != null && n[key] !== 0 && n[key] !== false) x[key] = n[key];
     if (n.yo && n.bo) { x.yo = n.yo; x.bo = n.bo.map(b => [b.o > 0 ? +b.o : 0, yoz(b.n || {})]); }
     return k;
   };
@@ -409,7 +424,7 @@ export function tikla(s) {
   const T = s.tugun;
   const oqi = (k, chuq) => {
     const x = T[k] || {}, n = {};
-    for (const key of ['polka', 'tortma', 'shtanga', 'eshik', 'petlya']) if (x[key] != null) n[key] = x[key];
+    for (const key of ['polka', 'tortma', 'shtanga', 'eshik', 'petlya', 'ajrat']) if (x[key] != null) n[key] = x[key];
     if (x.yo && Array.isArray(x.bo) && chuq < 30) { n.yo = x.yo; n.bo = x.bo.map(([o, b]) => ({ o: o > 0 ? o : null, n: oqi(b, chuq + 1) })); }
     return n;
   };

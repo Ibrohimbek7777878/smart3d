@@ -150,11 +150,17 @@ export async function llmParse(text) {
 const int = { type: 'integer' };
 const TARKIB = { eshik: int, petlya: { type: 'string', enum: ['chap', 'ong', 'auto'] }, polka: int, tortma: int, shtanga: { type: 'boolean' } };
 const QATLAM = obj({ boyi: int, ...TARKIB });
-const BOLIM = obj({ eni: int, ...TARKIB, qatlamlar: { type: 'array', items: QATLAM } });
+const BOLIM = obj({ eni: int, ...TARKIB, ajrat: { type: 'string', enum: ['polka', 'auto'] }, qatlamlar: { type: 'array', items: QATLAM } });
+const MAT = obj({ nom: { type: 'string' }, qalinlik: int });   // dekor nomi matndagidek — ERP ro'yxatidan saytda qidiriladi
 export const KONS_SCHEMA = obj({
   tur: { type: 'string', enum: [...TURLAR, 'xona'] }, nom: { type: 'string' }, eni: int, chuqurligi: int, boyi: int,
   tag: { type: 'string', enum: ['sokol', 'oyoq', 'yoq', 'auto'] }, qopqoq: { type: 'string', enum: ['yaxlit', 'planka', 'auto'] },
-  bolimlar: { type: 'array', items: BOLIM }, tushunilmadi: { type: 'array', items: { type: 'string' } }
+  bolimlar: { type: 'array', items: BOLIM },
+  orqa: { type: 'string', enum: ['hdf', 'yergacha', 'yoq', 'auto'] },
+  material: obj({ korpus: MAT, polka: MAT, fasad: MAT }),
+  furnitura: obj({ birikma: { type: 'string', enum: ['konfirmat', 'ekssentrik', 'auto'] }, polka: { type: 'string', enum: ['polkaderjatel', 'auto'] }, ruchka: int }),
+  eksport: { type: 'string', enum: ['obj', 'yoq'] },
+  tushunilmadi: { type: 'array', items: { type: 'string' } }
 });
 const KONS_SYSTEM = `Siz mebel ustasining (o'zbek, rus, ingliz yoki aralash tilda, og'zaki) BITTA mebel konstruksiyasi haqidagi gapini Smart3D konstruksiya tiliga o'girasiz.
 ${TIL_IZOH}
