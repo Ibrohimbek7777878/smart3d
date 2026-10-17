@@ -1,7 +1,7 @@
 /* Egasi #151, #152: devordan DEVOR_ORALIQ mm (har joylash yo'li) va surish qoidalari (engine/devorOraliq.js).
  * Devor kontur chizig'ining ikki tomoniga qalinlik/2 dan chiziladi (scene.js) — modul va devor YUZASI orasida DEVOR_ORALIQ,
  * devor ichiga kirish 0, burchakda — ikkala devordan. Surish: devorga yopishadi, devor/qo'shni modulga kirmaydi, z o'zgarmaydi. */
-import { DEVOR_ORALIQ, devorChegara, devordanSur, devorOraliqlari, ichkiXona, surishJoyi, surishCheklov } from '../app/js/engine/devorOraliq.js';
+import { DEVOR_ORALIQ, YANGI_MODUL_DEVORDAN, kirgan, devorChegara, devordanSur, devorOraliqlari, ichkiXona, surishJoyi, surishCheklov } from '../app/js/engine/devorOraliq.js';
 import { suggestLayout } from '../app/js/ai.js';
 import { footprint } from '../app/js/engine/rules.js';
 import { registerHooks } from 'node:module';
@@ -41,18 +41,30 @@ ok('DEVOR_ORALIQ = 3 mm, T = qalinlik/2 + oraliq = 53', DEVOR_ORALIQ === 3 && T 
   ok('deraza va quvur offseti yangi devor boshidan (1300 → 1247, 1900 → 1847)', r.openings[0].offset === 1247 && r.openings[0].width === 1200 && r.utilities[0].offset === 1847, J([r.openings, r.utilities]));
 }
 
-/* 3. katalogdan qo'shish (addPlacement) — devordan 3 mm, yonma-yon, sig'masa — o'ng devordan 3 mm */
+/* 3. katalogdan qo'shish (addPlacement) — egasi #156: orqa devordan 3000 mm, eni bo'yicha o'rtada; band bo'lsa — eng yaqin bo'sh joy */
 {
   const doc = L.newDoc(xona(5000, 4000));
   const f = { code: 'A', name: 'A', w: 600, d: 450, h: 720, category: 'kitchen' };
-  const a = L.addPlacement(doc, f), b = L.addPlacement(doc, f);
-  ok("1-modul (53, 53), 2-si yonida (653) — orqasi devordan 3 mm", a.x === 53 && a.y === 53 && b.x === 653 && b.y === 53, J([a, b]));
+  const a = L.addPlacement(doc, f);
+  ok("1-modul: orqa devor yuzasidan 3000 mm (y 3050), eni bo'yicha o'rtada (x 2200)", YANGI_MODUL_DEVORDAN === 3000 && a.x === 2200 && a.y === 50 + YANGI_MODUL_DEVORDAN, J(a));
+  const b = L.addPlacement(doc, f);
+  ok("2-modul 1-sining ustiga tushmaydi — eng yaqin bo'sh joyda", !kirgan(a, b) && Math.hypot(b.x - a.x, b.y - a.y) <= 650, J(b));
   for (let i = 0; i < 10; i++) L.addPlacement(doc, f);
-  const oxir = doc.placements[doc.placements.length - 1];
-  ok("joy tugasa — o'ng devordan 3 mm (devorga kirmaydi)", footprint(oxir).x1 === 5000 - T, J(footprint(oxir)));
-  ok('hammasi devor yuzasidan ≥ 3 mm', doc.placements.every(p => engKam(xona(5000, 4000), p) >= 2.99));
+  const R5 = xona(5000, 4000);
+  ok('12 modul: ustma-ust yo\'q, hammasi devor yuzasidan ≥ 3 mm', doc.placements.every(p => engKam(R5, p) >= 2.99) && doc.placements.every((p, i) => doc.placements.every((q, j) => j <= i || !kirgan(p, q))));
+  const sayoz = L.newDoc(xona(5000, 3000));       // 3000 + 450 > 2900 — o'rtaga
+  const c = L.addPlacement(sayoz, f);
+  ok("xona chuqurligi yetmasa (3000) — xona o'rtasiga (y 1275)", c.x === 2200 && c.y === 1275, J(c));
   const s = { x: 4500, y: 53, w: 600, d: 450, h: 720, rot: 0 }; L.devordan(doc, s);
   ok('◀ ▶ / nusxa / burish devorga kiritmaydi (devordan)', s.x === 5000 - T - 600, J(s));
+  const dub = L.duplicatePlacement(doc, 'p1');
+  ok("nusxa ham ochiq joyga (devordan ≥ 3 mm, ustma-ust yo'q)", !!dub && engKam(R5, dub) >= 2.99 && doc.placements.every(q => q === dub || !kirgan(dub, q)), J(dub));
+  /* Erkin maydon: devor yo'q — maydon (modul yo'q: 5000 × 4000) o'rtasiga, keyingisi yoniga */
+  const e = L.newDoc(xona(5000, 4000)); L.setMaydon(e, 'erkin');
+  const e1 = L.addPlacement(e, f), e2 = L.addPlacement(e, f);
+  ok("Erkin maydon: 1-modul maydon o'rtasida (2200, 1775)", L.maydonRejim(e) === 'erkin' && e1.x === 2200 && e1.y === 1775, J(e1));
+  ok("Erkin maydon: 2-modul yoniga, ustma-ust emas", !kirgan(e1, e2) && Math.hypot(e2.x - e1.x, e2.y - e1.y) <= 650, J(e2));
+  ok("Erkin maydon: cheklov xonasida devor yo'q", L.cheklovXonasi(e).outline.length === 0 && L.cheklovXonasi(doc) === doc.room);
 }
 
 /* 4. AI zaxira joylashi (suggestLayout) — devordan 3 mm */
@@ -66,11 +78,12 @@ ok('DEVOR_ORALIQ = 3 mm, T = qalinlik/2 + oraliq = 53', DEVOR_ORALIQ === 3 && T 
 /* 5. surish: devorga yopishish, devorga/qo'shniga kirmaslik, ustki va pastki, xonadan chiqmaslik */
 {
   const qoshni = [mod({ id: 'q', x: 53, y: 53 })];
-  ok("devorga 37 mm qolganda — yopishadi (y 90 → 53)", J(surishJoyi(R, [], mod({ x: 1000, y: 90 }))) === J({ x: 1000, y: 53 }));
+  ok("devorga 37 mm qolganda — SAKRAMAYDI, magnit yo'q (y 90 → 90)", J(surishJoyi(R, [], mod({ x: 1000, y: 90 }))) === J({ x: 1000, y: 90 }));
+  ok("devorga 20 mm qolganda ham joyida (y 73 → 73)", J(surishJoyi(R, [], mod({ x: 1000, y: 73 }))) === J({ x: 1000, y: 73 }));
   ok('devor ichiga tortilsa — 3 mm da to\'xtaydi (y −200 → 53)', J(surishJoyi(R, [], mod({ x: 1000, y: -200 }))) === J({ x: 1000, y: 53 }));
   ok("qo'shni modulga kirmaydi — yoniga chiqariladi (x 400 → 653)", J(surishJoyi(R, qoshni, mod({ x: 400, y: 53 }))) === J({ x: 653, y: 53 }));
   ok("qo'shniga 40 mm qolganda — yonma-yon yopishadi (x 693 → 653)", J(surishJoyi(R, qoshni, mod({ x: 693, y: 53 }))) === J({ x: 653, y: 53 }));
-  ok('ustki modul pastki ustidan o\'tadi (balandlik kesishmaydi)', J(surishJoyi(R, qoshni, mod({ x: 300, y: 60, z: 1450, d: 300, h: 700 }))) === J({ x: 300, y: 53 }));
+  ok('ustki modul pastki ustidan o\'tadi (balandlik kesishmaydi), devorga yopishmaydi', J(surishJoyi(R, qoshni, mod({ x: 300, y: 60, z: 1450, d: 300, h: 700 }))) === J({ x: 300, y: 60 }));
   ok('xonadan butunlay tashqariga — null (joyida qoladi)', surishJoyi(R, [], mod({ x: -3000, y: 500 })) === null);
   const pl = [mod({ id: 'a', x: 53, y: 53 }), mod({ id: 'b', x: 300, y: 53 }), mod({ id: 'c', x: 2000, y: 53 })];   // a va b eski loyihada ustma-ust
   const ch = surishCheklov(R, pl, 'a');

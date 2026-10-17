@@ -1,6 +1,7 @@
 import { get, set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { scene } from './sahna.js';
+import { maydonRejim } from '../../../services/loyiha.js';
 
 /* TZ-23 (A, D): 3D ko'rinish holati — store ↔ sahna (services/korinish.js). Tanlov qurilmada eslab qolinadi
  * (kamera va o'lchash — har safar aylanishdan boshlanadi). Bazis loyihasida standart — Bazis-Cloud'dagidek:
@@ -17,6 +18,16 @@ function yoz() {
   try { localStorage.setItem(KALIT, JSON.stringify(o)); } catch (_) { /* kvota yoki taqiq */ }
 }
 
+/** #156: Erkin maydon — loyiha sozlamasi; devorlar chizilmaydi (ko'rinish tugmasi "Devor-pol" shunda o'chiq va bosilmaydi) */
+export const erkinMaydon = () => !!(project.doc && maydonRejim(project.doc) === 'erkin');
+/** loyiha maydon rejimi o'zgardi yoki ochildi: sahnadagi devorlar holati (tugma tanlovi — store'da saqlanadi, tegilmaydi) */
+export function korinishMaydon() {
+  const s = scene.sahna;
+  if (!s) return;
+  s.korinish.set({ xona: !erkinMaydon() && !!get().korinish.xona });
+  if (s.korinish.maydonFaol()) s.center();
+}
+
 /** sahna yaratilganda (mountSahna) */
 export function korinishBoshla() {
   const s = scene.sahna;
@@ -26,7 +37,7 @@ export function korinishBoshla() {
     { kamera: 'orbit', fasadsiz: false, olchash: false });
   set('korinish', { ...k, menyu: false, olcham: null });
   s.korinish.onOlcham(mm => set('korinish', { olcham: mm }));
-  s.korinish.set(k);
+  s.korinish.set(erkinMaydon() ? { ...k, xona: false } : k);
 }
 
 /** qisman o'zgarish: { kamera, fon, chizish, rentgen, xona, fasadsiz, olchash } */
@@ -34,7 +45,7 @@ export function korinishOzgar(p) {
   const s = scene.sahna;
   if (p.olchash === false || p.olchash === true) p = { ...p, olcham: null };
   set('korinish', p);
-  if (s) s.korinish.set(p);
+  if (s) s.korinish.set('xona' in p && erkinMaydon() ? { ...p, xona: false } : p);
   yoz();
 }
 export const menyuOchYop = () => set('korinish', k => ({ menyu: !k.menyu }));

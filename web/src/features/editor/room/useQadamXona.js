@@ -52,6 +52,13 @@ export function useQadamXona() {
           project.changed('room', true);
         } };
     }),
+    /* egasi #156: "Erkin ham bo'lsin, devor ham bo'lsin" — loyiha sozlamasi (doc.maydon), ko'rinish tugmasi emas */
+    maydonTitle: t('xona.maydon'),
+    maydonlar: [['devorli', t('xona.maydon_devorli'), 'devor'], ['erkin', t('xona.maydon_erkin'), 'tahrir']].map(x => {
+      const on = L.maydonRejim(doc) === x[0];
+      return { id: x[0], label: x[1], ikon: x[2], on, bg: on ? 'var(--acc)' : 'transparent', c: on ? 'var(--ink)' : 'var(--txt)',
+        pick: () => { if (on) return; L.setMaydon(doc, x[0]); project.changed('room', true); } };
+    }),
     w: sizeIn('w'), d: sizeIn('d'), h: sizeIn('h'),
     roomPresets: PRESETS.map(p => {
       const on = room.w === p[0] && room.d === p[1];

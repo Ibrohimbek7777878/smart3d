@@ -9,10 +9,17 @@
  * (konstruktor/index.js — ichkiXona), AI zaxira joylashi (ai.js suggestLayout), tayyor so'rovlar (promptlar.js),
  * sichqoncha/barmoq bilan surish (surishJoyi — items.js orqali).
  */
-import { footprint, pointInPoly } from './rules.js';
+import { footprint, pointInPoly, roomBBox } from './rules.js';
 
 /** mm — egasi #152 ("devordan … surib qo'y"); egasi "3 metr" deb yozdi, ma'nosi bo'yicha 3 mm — birligi tasdiqlanmoqda */
 export const DEVOR_ORALIQ = 3;
+
+/** mm — egasi #156: "Devordan 3 metr qochsin, devorga yopishib qolmasin". YANGI bitta modul (katalogdan "+", AI natijasi,
+ *  "Modul chizish" → Tayyor, nusxa) orqa devor yuzasidan shuncha nariga, eni bo'yicha xona o'rtasiga qo'yiladi.
+ *  Istisno: avtomatik oshxona va konstruktor/tayyor so'rovlar qatori devor bo'ylab turadi (DEVOR_ORALIQ). */
+export const YANGI_MODUL_DEVORDAN = 3000;
+/** erkin maydonda modul yo'q bo'lsa — standart pol (mm), korinish.js MAYDON_STANDART bilan bir xil */
+export const ERKIN_STANDART = [5000, 4000];
 
 const num = (v) => { const n = +v; return isFinite(n) ? n : 0; };
 /** devor qalinligining yarmi (kontur chizig'idan devor yuzasigacha), mm */
@@ -157,14 +164,15 @@ function kesim(A, B) {
 
 /**
  * Surilayotgan modulning yangi joyi: p — { x, y, w, d, h, z, rot } (taklif qilingan joy), boshqalar — qolgan modullar.
- *  1) devordan T gacha ichkariga, devorga yaqin bo'lsa — yopishadi (magnit o.yopish, standart 60 mm);
- *  2) qo'shni modulga kirib qolsa — eng qisqa yo'nalishda chiqariladi; yaqin bo'lsa — yonma-yon yopishadi;
+ *  1) devordan T gacha ichkariga (devorga magnit YO'Q — egasi #156); devor ichiga kirmaydi, T da to'xtaydi;
+ *  2) qo'shni modulga kirib qolsa — eng qisqa yo'nalishda chiqariladi; yaqin (60 mm) bo'lsa — yonma-yon tekislanadi;
  *  3) natija yaroqsiz bo'lsa (devor ichida, boshqa modulga kirgan yoki xonadan tashqarida) — null (joyida qoladi).
  * Balandlik (z) o'zgarmaydi: ustki modul ustki qatorda qoladi; ustki va pastki bir-biriga xalal bermaydi.
  * @returns {{x:number,y:number}|null}
  */
 export function surishJoyi(room, boshqalar, p, o = {}) {
-  const Y = o.yopish != null ? num(o.yopish) : 60;
+  /* egasi #156: devorga magnit yo'q (o.yopish — faqat sinov uchun); modul–modul tekislash (yonma-yon) qoladi */
+  const Y = num(o.yopish), YM = o.modulYopish != null ? num(o.modulYopish) : 60;
   const q = Object.assign({}, p, { x: num(p.x), y: num(p.y) });
   const yon = (boshqalar || []).filter(b => b && zKesishadi(q, b));
   devordanSur(room, q, { yopish: Y, oraliq: o.oraliq });
@@ -174,8 +182,8 @@ export function surishJoyi(room, boshqalar, p, o = {}) {
   for (const b of yon) {
     const B = footprint(b), { ox, oy } = kesim(A0, B);
     const chap = A0.x0 + A0.x1 < B.x0 + B.x1, past = A0.y0 + A0.y1 < B.y0 + B.y1;
-    if (oy > 0.5 && ox <= 0.5 && -ox < Y && (!mx || -ox < mx.g)) mx = { g: -ox, dx: chap ? -ox : ox };
-    if (ox > 0.5 && oy <= 0.5 && -oy < Y && (!my || -oy < my.g)) my = { g: -oy, dy: past ? -oy : oy };
+    if (oy > 0.5 && ox <= 0.5 && -ox < YM && (!mx || -ox < mx.g)) mx = { g: -ox, dx: chap ? -ox : ox };
+    if (ox > 0.5 && oy <= 0.5 && -oy < YM && (!my || -oy < my.g)) my = { g: -oy, dy: past ? -oy : oy };
   }
   if (mx) q.x += mx.dx;
   if (my) q.y += my.dy;
@@ -224,4 +232,58 @@ export function surishCheklov(room, placements, id, o = {}) {
   const f = footprint(p), pts = room && room.outline;
   const xona = !(pts && pts.length >= 3) || pointInPoly((f.x0 + f.x1) / 2, (f.y0 + f.y1) / 2, pts);
   return (x, y) => surishJoyi(room, boshqalar, Object.assign({}, p, { x, y }), Object.assign({ xona }, o));
+}
+
+/* ── yangi modul joyi (egasi #156): devordan YANGI_MODUL_DEVORDAN, eni bo'yicha o'rtada; sig'masa — xona o'rtasida; band bo'lsa — eng yaqin bo'sh joyda ── */
+
+/**
+ * @param room  xona (outline, wall_thickness)
+ * @param placements  mavjud modullar (avtomatik hosila elementlar e'tiborga olinmaydi)
+ * @param p  { x, y, w, d, h, z, rot } — yangi modul (x, y e'tiborga olinmaydi)
+ * @param o  { erkin: true — Erkin maydon (devor yo'q: maydon o'rtasi, modullar yoniga) }
+ * @returns {{x:number,y:number,joy:'devordan'|'orta'|'yaqin'}}
+ */
+export function yangiModulJoyi(room, placements, p, o = {}) {
+  const erkin = !!o.erkin;
+  const q = Object.assign({}, p, { x: 0, y: 0 });
+  const yon = (placements || []).filter(b => b && b !== p && !b.auto && zKesishadi(q, b));
+  const f0 = footprint(q), dx0 = -f0.x0, dy0 = -f0.y0, ex = f0.ex, ey = f0.ey;     // footprint boshi (burilganda manfiy bo'lishi mumkin)
+  const T = devorChegara(room), yarim = devorYarim(room);
+  const pts = (room && room.outline) || [];
+  const bb = roomBBox(pts);
+  let X0, Y0, X1, Y1;                                              // joylash maydoni (mm)
+  if (erkin) {
+    const hamma = (placements || []).filter(b => b && b !== p && (+b.w > 0));
+    if (hamma.length) {
+      X0 = Y0 = Infinity; X1 = Y1 = -Infinity;
+      for (const b of hamma) { const f = footprint(b); X0 = Math.min(X0, f.x0); Y0 = Math.min(Y0, f.y0); X1 = Math.max(X1, f.x1); Y1 = Math.max(Y1, f.y1); }
+    } else { X0 = bb.minX; Y0 = bb.minY; X1 = X0 + ERKIN_STANDART[0]; Y1 = Y0 + ERKIN_STANDART[1]; }
+  } else { X0 = bb.minX; Y0 = bb.minY; X1 = bb.maxX; Y1 = bb.maxY; }
+  const joyla = (fx0, fy0) => Object.assign({}, q, { x: Math.round(fx0 + dx0), y: Math.round(fy0 + dy0) });
+  const yaroqli = (c) => {
+    const A = footprint(c);
+    if (yon.some(b => { const { ox, oy } = kesim(A, footprint(b)); return ox > 0.5 && oy > 0.5; })) return false;
+    if (erkin) return true;
+    if (devorOraliqlari(room, c, T + 1).some(d => d.oraliq < T - yarim - 0.5)) return false;
+    if (pts.length >= 3) {
+      if (!pointInPoly((A.x0 + A.x1) / 2, (A.y0 + A.y1) / 2, pts)) return false;
+      if (![[A.x0, A.y0], [A.x1, A.y0], [A.x1, A.y1], [A.x0, A.y1]].every(([x, y]) => pointInPoly(x, y, pts))) return false;
+    }
+    return true;
+  };
+  const ortaX = (X0 + X1) / 2 - ex / 2, ortaY = (Y0 + Y1) / 2 - ey / 2;
+  /* 1) orqa devordan YANGI_MODUL_DEVORDAN (chuqurlik yetsa), aks holda xona o'rtasi */
+  const y0 = bb.minY + yarim + YANGI_MODUL_DEVORDAN;
+  const devordan = !erkin && y0 + ey <= bb.maxY - T;
+  const pref = devordan ? joyla(ortaX, y0) : joyla(ortaX, ortaY), joy = devordan ? 'devordan' : 'orta', c = pref;
+  if (yaroqli(c)) return { x: c.x, y: c.y, joy };
+  /* band yoki yaroqsiz — o'rtaga eng yaqin bo'sh joy (spiral, 50 mm qadam) */
+  const R = Math.ceil(Math.max(X1 - X0, Y1 - Y0, ex, ey) / 50) + 60, ofs = [];
+  for (let i = -R; i <= R; i++) for (let j = -R; j <= R; j++) ofs.push([i * 50, j * 50, i * i + j * j]);
+  ofs.sort((a, b) => a[2] - b[2]);
+  for (const [dx, dy] of ofs) {
+    const k = joyla(pref.x - dx0 + dx, pref.y - dy0 + dy);
+    if (yaroqli(k)) return { x: k.x, y: k.y, joy: 'yaqin' };
+  }
+  return { x: c.x, y: c.y, joy: 'orta' };
 }

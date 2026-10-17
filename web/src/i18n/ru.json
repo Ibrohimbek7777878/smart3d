@@ -1052,5 +1052,9 @@
  "mebel.rang_boshqa": "Цвет не определён",
  "mebel.mashhur": "Часто используемые",
  "mebel.boshqa_ranglar": "Другие цвета",
- "mebel.mashhur_soni": "в {n} заказах"
+ "mebel.mashhur_soni": "в {n} заказах",
+ "xona.maydon": "Тип пространства",
+ "xona.maydon_devorli": "Комната со стенами",
+ "xona.maydon_erkin": "Свободная площадка",
+ "korinish.xona_erkin": "На свободной площадке стены не рисуются (меняется на шаге «Комната»)"
 }
