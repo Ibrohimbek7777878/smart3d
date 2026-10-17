@@ -573,6 +573,7 @@ export function createScene(container, opts = {}) {
     _invalidate() { needsRender = true; if (!rafId) render(); },
     _render: render,
     _startLoop() { if (!rafId) { rafId = 1; renderer.setAnimationLoop(loop); } },
+    _loopOn: () => !!rafId,                       // VR: sessiyadan oldingi sikl holati
     _stopLoop() { if (rafId) { renderer.setAnimationLoop(null); rafId = 0; } },
     _resize: resize,
 
