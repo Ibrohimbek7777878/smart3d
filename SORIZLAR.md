@@ -453,3 +453,27 @@ ularni ochirb tashla
 166. sen push va commit qilmayabsan shundaymi
 
 167. unda hozir push va commit qil
+
+160. boshla unda
+
+161. hozir nimalar qilasan  va narxn 95foizdan 100 fozigacha kotarish kere
+
+162. stolichnitsa 2 xil bo'ladi 26mm qalinlikda va 38 mm qalinlikda, va uzunligi 2 xil razmerda bo'ladi 3050 mm va 4200 mm agar konstruksiyada ishlatilgan stolichnitsa razmerga sig'masdan 2 ga bolingan bolsa styashka stolichnitsa degan usluga qo'shiladi
+
+163. (iqtibos: "Telefonda tugmalar qo'shilgani uchun "360°" tugmasi ikkinchi qatorga tushdi. Skrinshotlar: Smart3D-dizayn/tests/ui/out/web/undo-*.png.") tasdiqlayman
+
+164. (skrinshot: Korpus materiali — "Ko'p ishlatiladigan" 11 ta plitka, "Boshqa ranglar · 598" tugmasi) bu yerda 598 ta yoq material yoq
+
+165. (3 ta skrinshot: 3D oynasi — kulrang chizish maydoni konteynerni to'liq egallamaydi, o'ngda va pastda bo'h qorong'i joy; modullar pol chegarasidan yuqorida) qara yon qismalrda bosh va tosib qoyayotgan joylar borku 2 va 3 ramsalrdagi joylarn olib tashla kere emas ekranga mos bolbi tursin
+
+175. (skrinshot: AI "Chizilgan shkaf 400×800×1200" — 1 bo'lim, 3 tortma; matn qatorida oshxona prompti) ai orqali chizish ishlayabdimi toliq hozir bir dunyo kuxniya yozdim lekin chizmadi yaxshi 
+Kuxnya 4500 mm, Haytek bezruchka, gola frofilli birinchi etaj balandligi 870mm fartuk 600 mm 2 etaj 750mm 3 etaj 600mm balandlikda, chuqurliklar 1 etaj 450 mm 2 etaj 350mm, 3 etaj 560mm gaz va vitichka 600mm dan 1 etajda 3 ta tortma bor tandem vacuum,Stolichnitsa 38mmx600mm
+shuni tawadim lekin bizdag ai chizgan narsa oddiy mana rasmdagin bizn ai chizd nega toliq chiza olmadi yo hali ish kopmi lekin eng muhim qismlari ham shu ai chizish + narx+3d korinish+vr bolayabdida narx bir xil bolish kere
+
+176. (skrinshot: rentgen ko'rinish, "Tepa (tom)" detal kartasi — Kromka: —) qara bu yerda prisadkat teshiklar va aniq teshiklar kromka hamda zpachastlar turadigan joylar ham korinish kere shuni ham qoshib ket
+
+177. qara ai ozi emas bizda bor modullari asosida chzisin yoq joydan chizmasin osha bizda bor modullarni olib joylashtirb bersin
+
+178. (skrinshot 17:32: 3D oyna hali ham konteynerni to'liq egallamaydi — o'ngda va pastda bo'h qism; sarlavhada undo tugmalari yo'q, eski versiya) qara yon tarafdagi bosh tortburcahk qismn olib tashlmabasan shunib oldingmi olinadigan joyni
+
+179. https://smart.bittada.uz/app.html#s=reg   qara saytimz real ishlaydb nega / dan keyin app.htlm turbd bu mumkin emas har bir funsiya har bir qims modul uchun url va ap bolish kere saytimiz serverga chiqid va real productiond aishlayabd  https://smart.bittada.uz/app.html#s=reg  lekin nega urlda har doim app.htlm turibd nima har bir shaifa va ish uchun alohida api url hciqarilamganmi korib ber faqat va har bir ish har bri qism alohida modulda bolish va ishlash kere bolad
