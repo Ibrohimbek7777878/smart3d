@@ -23,9 +23,11 @@ async function asosiy(page, R) {
   const waitText = async (s, ms = 10000) => { for (let i = 0; i < ms / 200; i++) { if (await has(s)) return true; await page.waitForTimeout(200); } return false; };
   const V = (sel) => page.locator('[data-varaq="material"] ' + sel);
   const chip = (blok, matn) => V(`[data-material-${blok}] button`).filter({ hasText: matn }).first();
+  const filtr = async () => { if (!(await V('[data-material-filtr-panel]').count())) { await V('[data-material-filtr]').click(); await page.waitForTimeout(250); } };
+  const dot = (nom) => V(`[data-material-rang] button[aria-label^="${nom}"]`).first();
   const st = () => M(() => { const s = window.__app.state; return { mat: s.matCode, polka: s.polkaCode, fasad: s.fasadCode, orqa: s.orqaCode, jami: window.__app.res && window.__app.res.priceRes.total }; });
-  const royxat = () => M(() => [...document.querySelectorAll('[data-varaq="material"] [data-material-royxat] button')].map(b => b.innerText.replace(/\s+/g, ' ')));
-  const tanla = async (re) => { const b = V('[data-material-royxat] button').filter({ hasText: re }).first(); await b.click(); await page.waitForTimeout(1200); };
+  const plitkalar = () => M(() => [...document.querySelectorAll('[data-varaq="material"] [data-material-plitka]')].map(el => ({ nom: el.innerText.replace(/\s+/g, ' '), on: el.dataset.on === '1', chips: [...el.querySelectorAll('[data-material-qalinlik] button')].map(b => b.innerText.trim()), pressed: [...el.querySelectorAll('[data-material-qalinlik] button[aria-pressed=true]')].map(b => b.innerText.trim()) })));
+  const tanla = async (re) => { const b = V('[data-material-plitka] > button').filter({ hasText: re }).first(); await b.click(); await page.waitForTimeout(1200); };
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
@@ -50,19 +52,26 @@ async function asosiy(page, R) {
   R.qismlar = await M(() => [...document.querySelectorAll('[data-material-qism] button')].map(b => b.innerText.trim()));
   await chip('qism', 'Polka').click(); await page.waitForTimeout(300);
   R.polkaJoriy = await M(() => (document.querySelector('[data-material-joriy]') || {}).innerText || '');
-  R.polkaQalinlik = await M(() => [...document.querySelectorAll('[data-material-qalinlik] button')].map(b => b.innerText.trim()));
-  await chip('qalinlik', '18 mm').click(); await page.waitForTimeout(300);
-  R.polka18 = (await royxat()).every(s => / 18(\.0)? mm/.test(s));
-  await chip('qalinlik', '16 mm').click(); await page.waitForTimeout(300);
-  R.polka16 = (await royxat()).every(s => / 16(\.0)? mm/.test(s));
+  await filtr();
+  R.polkaQalinlik = await M(() => [...document.querySelectorAll('[data-material-filtr-panel] button')].map(b => b.innerText.trim()));
+  await V('[data-material-filtr-panel] button').filter({ hasText: /^18 mm$/ }).first().click(); await page.waitForTimeout(400);
+  R.polka18 = await (async () => { const l = await plitkalar(); return l.length > 0 && l.every(x => x.pressed.length === 1 && x.pressed[0] === '18 mm'); })();
+  await V('[data-material-filtr-panel] button').filter({ hasText: /^18 mm$/ }).first().click(); await page.waitForTimeout(300);   // filtrni olib tashlash
+  await V('[data-material-filtr-panel] button').filter({ hasText: /^16 mm$/ }).first().click(); await page.waitForTimeout(400);
+  R.polka16 = await (async () => { const l = await plitkalar(); return l.length > 0 && l.every(x => x.pressed.length === 1 && x.pressed[0] === '16 mm'); })();
+  await V('[data-material-filtr-panel] button').filter({ hasText: /^16 mm$/ }).first().click(); await page.waitForTimeout(300);
+  R.sukut16 = await (async () => { const l = (await plitkalar()).filter(x => x.chips.includes('16 mm')); return l.length > 0 && l.every(x => x.pressed[0] === '16 mm'); })();   // sukut — 16 mm
   R.polkaDetal = await M(() => { const c = window.__app.res.cutlists.flatMap(x => x.parts.filter(p => p.slot === 'polka')); return c.length && c.every(p => p.thickness === 16); });
 
   /* 2) korpus: rang "Oq" → ERP plitasi (narxli) → narx o'zgaradi, 3D rangi oq */
   await chip('qism', 'Korpus').click(); await page.waitForTimeout(300);
-  await chip('rang', 'Oq').click(); await page.waitForTimeout(400);
-  R.oqRoyxat = await M(() => [...document.querySelectorAll('[data-material-royxat] button span[style*="border-radius: 6px"]')].slice(0, 20).map(s => getComputedStyle(s).backgroundColor));
+  await dot('Oq').click(); await page.waitForTimeout(400);
+  R.oqBolim = await M(() => [...document.querySelectorAll('[data-material-bolim]')].map(b => b.dataset.materialBolim));
+  R.oqNamuna = await M(() => [...document.querySelectorAll('[data-material-namuna]')].slice(0, 20).map(s => getComputedStyle(s).backgroundColor));
   await page.screenshot({ path: `${OUT}/material-1440-korpus.png` });
   await tanla(/so'm/);
+  R.tanlandiQator = await M(() => (document.querySelector('[data-material-joriy]') || {}).innerText || '');
+  R.on = (await plitkalar()).filter(x => x.on).length;
   R.korpus = await st();
   R.korpusNomi = await M(() => { const s = window.__app.state, m = window.__app.H.materials.panel_materials.find(x => x.code === s.matCode); return m && m.name; });
   R.narxOzgardi = R.korpus.jami !== R.boshi.jami;
@@ -84,14 +93,18 @@ async function asosiy(page, R) {
   await page.locator('[data-modul-material]').click(); await page.waitForTimeout(500);
   R.modulDoira = await M(() => (document.querySelector('[data-material-joriy]') || {}).innerText || '');
   await chip('qism', 'Fasad').click(); await page.waitForTimeout(300);
-  await chip('rang', "To'q yog'och").click(); await page.waitForTimeout(400);
+  await dot("To'q yog'och").click(); await page.waitForTimeout(400);
   await tanla(/./);
   R.modulSlot = await M((id) => { const p = window.__app.doc.placements.find(x => x.id === id); return p && p.slots; }, R.sel);
   R.boshqalar = await M((id) => window.__app.doc.placements.filter(x => x.id !== id && x.slots && x.slots.fasad).length, R.sel);
   R.modulFasad = await M((id) => window.__app.res.cutlists.flatMap(c => c.parts).filter(p => p.slot === 'fasad').map(p => p.material), R.sel);
   await page.screenshot({ path: `${OUT}/material-1440-modul.png` });
+  await page.setViewportSize({ width: 390, height: 844 }); await page.waitForTimeout(400);
+  await page.screenshot({ path: `${OUT}/material-390-modul.png` });
+  await page.setViewportSize({ width: 1440, height: 900 }); await page.waitForTimeout(300);
   /* butun loyihaga */
-  await V('[data-material-loyihaga]').click(); await page.waitForTimeout(1000);
+  await chip('doira', 'Butun loyiha').click(); await page.waitForTimeout(300);
+  await tanla(/so'm/);
   R.loyihaga = await M(() => ({ fasad: window.__app.state.fasadCode, qolgan: window.__app.doc.placements.filter(x => x.slots && x.slots.fasad).length }));
   await V('button[aria-label="Yopish"]').click(); await page.waitForTimeout(300);
 
@@ -107,8 +120,9 @@ async function asosiy(page, R) {
 
   R.errs = errs;
   const erp = (c) => /^ERP-/.test(c || '');
-  R.ok = R.modullar === 2 && R.boshi.polka === 'LDSP16' && R.qismlar.length === 5 && /16/.test(R.polkaJoriy) &&
-    R.polkaQalinlik.includes('16 mm') && R.polkaQalinlik.includes('18 mm') && R.polka18 && R.polka16 && R.polkaDetal &&
+  R.ok = R.modullar === 2 && R.boshi.polka === 'LDSP16' && R.qismlar.length === 5 && /16 mm/.test(R.polkaJoriy) &&
+    R.polkaQalinlik.includes('16 mm') && R.polkaQalinlik.includes('18 mm') && R.polka18 && R.polka16 && R.sukut16 && R.polkaDetal &&
+    R.oqBolim.length === 1 && R.oqBolim[0] === 'oq' && R.oqNamuna.length > 0 && R.oqNamuna.every(c => c !== 'rgba(0, 0, 0, 0)') && R.on === 1 && /Tanlandi/.test(R.tanlandiQator) &&
     erp(R.korpus.mat) && !!R.korpusNomi && R.narxOzgardi && R.rang3d.includes(0xeeece6) &&
     R.umumiy.mat === R.korpus.mat && R.umumiy.polka === R.korpus.mat && R.umumiy.fasad === R.korpus.mat &&
     !!R.sel && /faqat shu modul/.test(R.modulDoira) && R.modulSlot && erp(R.modulSlot.fasad) && R.boshqalar === 0 &&

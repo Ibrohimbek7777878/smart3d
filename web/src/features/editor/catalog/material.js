@@ -7,6 +7,7 @@ import { erpKod, erpQosh, materialRang } from '../../../services/erpMaterial.js'
 import { dekorRang, RANG_GURUHLARI, GURUH_RANG } from '../../../../../app/js/engine/rang.js';
 import { raqam } from '../../../shared/lib/format.js';
 import { t } from '../../../i18n/index.js';
+import { dekorlarga } from './dekor.js';
 
 /* TZ-19 (TZ-09 8-bosqich) → TZ-23 E: material va rang tanlash.
  *   qism  — korpus, polka, fasad, orqa devor, stoleshnitsa;
@@ -26,12 +27,13 @@ const TURLAR = { korpus: /^(LDSP|LMDF|MDF1|OSB)/, polka: /^(LDSP|LMDF|MDF1)/, fa
 const ERP_TUR = { korpus: ['LDSP', 'LMDF', 'MDF'], polka: ['LDSP', 'LMDF', 'MDF'], fasad: ['MDF', 'AKRIL', 'LMDF', 'LDSP'], orqa: ['HDF', 'MDF', 'LMDF'], stol: ['LDSP', 'MDF', 'LMDF'] };
 /* qismga mos qalinlik oralig'i (mm): orqa devor — yupqa, qolganlari — 15 dan */
 const ORALIQ = { korpus: [15, 26], polka: [15, 26], fasad: [15, 23], orqa: [2, 10], stol: [15, 40] };
+const SUKUT_TH = { korpus: 16, polka: 16, fasad: 16, orqa: 3, stol: 38 };
 const hex = (n) => '#' + Number(n).toString(16).padStart(6, '0');
 const ichida = (qism, th) => th >= ORALIQ[qism][0] && th <= ORALIQ[qism][1];
 
 /** qism: 'korpus' | 'polka' | 'fasad' | 'orqa' | 'stol' (eski: 'matCode' | 'fasadCode'); modul — joylashuv id (faqat shu modul) */
 export function openMaterial(qism, modul) {
-  openSheet('material', { qism: ESKI[qism] || qism || 'korpus', modul: modul || null, q: '', guruh: null, th: null });
+  openSheet('material', { qism: ESKI[qism] || qism || 'korpus', modul: modul || null, modul0: modul || null, q: '', guruh: null, th: null, tur: null, fil: false });
 }
 
 /** TZ-23 E: Bazis loyihasidagi material (BZM-…) — ERP dekori yoki umumiy turga almashtirish (doc.bazis.almash) */
@@ -39,7 +41,7 @@ const BZ_QISM = { hdf: 'orqa', akril: 'fasad', mdf: 'fasad', stoleshnitsa: 'stol
 const bazisMat = (kod) => ((project.doc && project.doc.bazis && project.doc.bazis.materiallar && project.doc.bazis.materiallar.panel) || []).find(x => x.code === kod) || null;
 export function openBazisMaterial(kod) {
   const m = bazisMat(kod);
-  openSheet('material', { bazis: kod, qism: (m && BZ_QISM[m.tur]) || 'korpus', modul: null, q: '', guruh: null, th: null });
+  openSheet('material', { bazis: kod, qism: (m && BZ_QISM[m.tur]) || 'korpus', modul: null, modul0: null, q: '', guruh: null, th: null, tur: null, fil: false });
 }
 function bazisQoy(kod, code) {
   const b = project.doc.bazis;
@@ -93,67 +95,89 @@ export function useMaterialVaraq() {
   const qismNom = bz ? t('mebel.bazis_material') : t('mebel.qism_' + qism);
   const pm = H.materials.panel_materials || [];
   const tanlandi = (nom) => toast(t('mebel.material_tanlandi', { qism: qismNom, nom }) + (p ? ' · ' + t('mebel.faqat_shu_modul') : ''));
-  const ustama = !p && !bz && project.doc.placements.some(x => x.slots && SLOT[qism] in x.slots);
-  const qoyish = (code) => (bz ? bazisQoy(bz, code) : qoy(qism, q.modul, code));
+  /* "Butun loyiha" — aniq: modullardagi shu qismning alohida tanlovlari ham olib tashlanadi, hammasi bitta materialda */
+  const qoyish = (code) => { if (bz) bazisQoy(bz, code); else { if (!q.modul) tozala([qism]); qoy(qism, q.modul, code); } };
 
-  /* ERP plitalari: qidiruv (yoki shu qism turlari), rang guruhi va qalinlik bo'yicha; narxi borlari oldin */
+  /* ERP plitalari: qidiruv (yoki shu qism turlari) → tur/qalinlik filtri → dekorlar (qalinlik variantlari bitta plitkada) → rang oilasi */
   const all = (H.sheetCatalog && H.sheetCatalog.sheets) || [];
-  /* qidiruvda ham: korpusga 3 mm HDF chiqmaydi; Bazis materiali — faqat shu qalinlikda (fayldagi geometriya shu qalinlik uchun) */
   const bzTh = bzM ? +bzM.thickness : 0;
   const mos = (s) => ERP_TUR[qism].includes(s.type) && ichida(qism, +s.th || 0) && (!bzTh || Math.abs((+s.th || 0) - bzTh) < 0.6);
   const turi = (q.q ? L.plitaRoyxati(H, q.q, cur).map(x => x.s) : all).filter(mos);
+  const turlari = [...new Set(turi.map(s => s.type))];
   const qalin = bzTh ? [] : [...new Set(turi.map(s => +s.th || 0).filter(v => ichida(qism, v)))].sort((a, b) => a - b);
+  const curM = pm.find(m => m.code === cur), curR = materialRang(H, cur);
+  /* sukut qalinlik: korpus/polka/fasad — 16 mm (egasi #120); ERP plitasi tanlangan bo'lsa — uning qalinligi */
+  const curTh = (curM && /^ERP-/.test(cur) && curM.thickness) || SUKUT_TH[qism];
   let pool = turi;
-  if (q.guruh) pool = pool.filter(s => { const r = dekorRang(s.name); return r && r.guruh === q.guruh; });
+  if (q.tur) pool = pool.filter(s => s.type === q.tur);
   if (q.th) pool = pool.filter(s => Math.abs((+s.th || 0) - q.th) < 0.3);
-  const jami = pool.length;
-  const curM = pm.find(m => m.code === cur), curR = materialRang(H, cur), curTh = (curM && curM.thickness) || 16;
-  /* narxi borlari oldin, keyin — hozirgi qalinlikka yaqini (16 tanlangan bo'lsa 25 mm oxirida) */
-  pool = pool.slice().sort((a, b) => ((b.uzs > 0) - (a.uzs > 0)) || (Math.abs((+a.th || 0) - curTh) - Math.abs((+b.th || 0) - curTh))).slice(0, 120);
+  const dekorlar = dekorlarga(pool).map(g => ({ g, r: dekorRang(g.variantlar[0].name) }));
+  const sanoq = {};
+  for (const d of dekorlar) { const k = d.r ? d.r.guruh : 'boshqa'; sanoq[k] = (sanoq[k] || 0) + 1; }
+  const korinadi = dekorlar.filter(d => !q.guruh || (d.r && d.r.guruh === q.guruh));
+  const narxli = (g) => g.variantlar.some(v => v.uzs > 0);
+  korinadi.sort((a, b) => (narxli(b.g) - narxli(a.g)) || a.g.nom.localeCompare(b.g.nom, 'ru'));
+  const jami = korinadi.length, CHEK = 150;
+  const GURUHLAR = RANG_GURUHLARI.concat(['boshqa']);
+  const plitka = ({ g, r }) => {
+    /* sukut variant — hozirgi qalinlikka eng yaqini (korpus/polka — 16 mm), narxlisi oldin */
+    const sukut = g.variantlar.slice().sort((a, b) => (Math.abs((+a.th || 0) - curTh) - Math.abs((+b.th || 0) - curTh)) || ((b.uzs > 0) - (a.uzs > 0)))[0];
+    const tanla = (sh) => () => { const c = erpQosh(H, project.doc, sh); qoyish(c); tanlandi(sh.name); };
+    const narx = (sh) => (sh.uzs > 0 ? raqam(sh.uzs) + ' ' + t('umumiy.som') : t('mebel.narx_yoq'));
+    const on = g.variantlar.find(v => erpKod(v) === cur) || null, kor = on || sukut;
+    return {
+      key: g.key, nom: g.nom, sub: [g.brend, g.tur].filter(Boolean).join(' · '), rang: r ? hex(r.rang) : null, yogoch: !!(r && r.yogoch),
+      on: !!on, price: narx(kor), pick: tanla(kor),
+      variantlar: g.variantlar.length > 1 || kor.th ? g.variantlar.map(v => ({ label: (+v.th || 0) + ' ' + t('umumiy.mm'), on: kor === v, pick: tanla(v) })) : []
+    };
+  };
+  let qolgan = CHEK;
+  const bolimlar = GURUHLAR.map(k => {
+    const list = korinadi.filter(d => (d.r ? d.r.guruh : 'boshqa') === k).slice(0, Math.max(0, qolgan));
+    qolgan -= list.length;
+    return { k, label: k === 'boshqa' ? t('mebel.rang_boshqa') : t('mebel.rang_' + k), rang: k === 'boshqa' ? null : hex(GURUH_RANG[k]), plitkalar: list.map(plitka) };
+  }).filter(x => x.plitkalar.length);
+  const filtrSoni = (q.tur ? 1 : 0) + (q.th ? 1 : 0);
 
   return {
     qism,
     doira: bz ? t('mebel.bazis_asl', { nom: bzM ? bzM.name : bz }) : p ? t('mebel.faqat_shu_modul') + ': ' + L.joyNomi(H, p, H.catalog[p.frg]) : t('mebel.butun_loyiha'),
     joriy: curM ? L.materialNomi(H, cur, curM.name) : t('mebel.standart_material'), joriyRang: curR ? hex(curR.rang) : null,
-    qismlar: bz ? [] : QISMLAR.filter(x => !p || x !== 'stol').map(x => ({ label: t('mebel.qism_' + x), on: x === qism, pick: () => patchSheet({ qism: x, guruh: null, th: null }) })),
+    joriyQalin: curM ? (curM.thickness || 0) + ' ' + t('umumiy.mm') : '',
+    joriyNarx: curM && curM.sheet_price > 0 ? raqam(curM.sheet_price) + ' ' + t('umumiy.som') : t('mebel.narx_yoq'),
+    qismlar: bz ? [] : QISMLAR.filter(x => !p || x !== 'stol').map(x => ({ label: t('mebel.qism_' + x), on: x === qism, pick: () => patchSheet({ qism: x, guruh: null, th: null, tur: null }) })),
+    /* doira: faqat shu modul | butun loyiha (modul kartasidan ochilganda) */
+    doiralar: !bz && q.modul0 && project.pl(q.modul0) ? [
+      { label: t('mebel.doira_modul'), on: !!q.modul, pick: () => patchSheet({ modul: q.modul0 }) },
+      { label: t('mebel.doira_loyiha'), on: !q.modul, pick: () => patchSheet({ modul: null }) }] : [],
+    filOchiq: !!q.fil, filSoni: filtrSoni, filTogla: () => patchSheet({ fil: !q.fil }),
+    turlarERP: turlari.length > 1 ? [{ label: t('mebel.rang_hammasi'), on: !q.tur, pick: () => patchSheet({ tur: null }) }]
+      .concat(turlari.map(x => ({ label: x, on: q.tur === x, pick: () => patchSheet({ tur: q.tur === x ? null : x }) }))) : [],
+    qalinlik: qalin.length > 1 ? [{ label: t('mebel.rang_hammasi'), on: !q.th, pick: () => patchSheet({ th: null }) }]
+      .concat(qalin.map(v => ({ label: v + ' ' + t('umumiy.mm'), on: q.th === v, pick: () => patchSheet({ th: q.th === v ? null : v }) }))) : [],
     turlar: pm.filter(m => TURLAR[qism].test(m.code) && (!bzTh || m.thickness === bzTh)).map(m => ({ label: L.materialNomi(H, m.code, m.name), on: cur === m.code,
       pick: () => { qoyish(m.code); tanlandi(m.name); } })),
     /* Bazis: asl materialga qaytish */
     asli: bz && almash[bz] ? () => { bazisQoy(bz, null); toast(t('mebel.bazis_qaytdi', { nom: bzM ? bzM.name : bz })); } : null,
-    ranglar: [{ label: t('mebel.rang_hammasi'), on: !q.guruh, pick: () => patchSheet({ guruh: null }) }]
-      .concat(RANG_GURUHLARI.map(g => ({ label: t('mebel.rang_' + g), rang: hex(GURUH_RANG[g]), on: q.guruh === g, pick: () => patchSheet({ guruh: q.guruh === g ? null : g }) }))),
-    qalinlik: qalin.length > 1 ? [{ label: t('mebel.rang_hammasi'), on: !q.th, pick: () => patchSheet({ th: null }) }]
-      .concat(qalin.map(v => ({ label: v + ' ' + t('umumiy.mm'), on: q.th === v, pick: () => patchSheet({ th: q.th === v ? null : v }) }))) : [],
+    /* rang oilasi: bitta bosish bilan saralash (doiralar) */
+    ranglar: RANG_GURUHLARI.concat(['boshqa']).filter(k => sanoq[k] || q.guruh === k).map(k => ({
+      k, label: (k === 'boshqa' ? t('mebel.rang_boshqa') : t('mebel.rang_' + k)) + ' (' + (sanoq[k] || 0) + ')', rang: k === 'boshqa' ? null : hex(GURUH_RANG[k]),
+      on: q.guruh === k, pick: () => patchSheet({ guruh: q.guruh === k ? null : k }) })),
     q: q.q, onQ: ev => patchSheet({ q: ev.target.value }),
-    /* loyiha: modullardagi alohida tanlovni olib tashlash; "bitta umumiy material" — korpus, polka, fasad bir xil */
-    hammasiga: ustama ? () => { const n = tozala([qism]); yangila(); toast(t('mebel.hammasiga_qollandi', { qism: qismNom, n })); } : null,
+    /* modullardagi alohida tanlovlar bor — "Butun loyiha"da tanlansa hammasi bitta materialga o'tadi */
     umumiy: !p && !bz && cur && UMUMIY.includes(qism) ? () => {
       const n = tozala(UMUMIY);
       set('project', { matCode: cur, polkaCode: cur, fasadCode: cur, sheet: null });
       yangila();
       toast(t('mebel.umumiy_qollandi', { nom: curM ? curM.name : cur, n }));
     } : null,
-    /* modul: shu modul materiali — butun loyihaga */
-    loyihaga: p && p.slots && p.slots[SLOT[qism]] ? () => {
-      const code = p.slots[SLOT[qism]];
-      tozala([qism]); qoy(qism, null, code);
-      toast(t('mebel.hammasiga_qollandi', { qism: qismNom, n: project.doc.placements.length }));
-    } : null,
     /* modul: o'z tanlovini bekor qilish — loyihadagi materialga qaytish */
     loyihadagi: p && p.slots && p.slots[SLOT[qism]] ? () => {
       delete p.slots[SLOT[qism]]; if (!Object.keys(p.slots).length) delete p.slots;
       yangila(); toast(t('mebel.loyihadagiga_qaytdi', { qism: qismNom }));
     } : null,
-    jami: jami > pool.length ? t('mebel.plita_soni', { n: pool.length, jami }) : null,
-    plitalar: pool.map(sh => {
-      const code = erpKod(sh), r = dekorRang(sh.name);
-      return {
-        name: sh.name, rang: r ? hex(r.rang) : null,
-        sub: [sh.sku, sh.th ? sh.th + ' ' + t('umumiy.mm') : '', sh.l && sh.w ? sh.l + '×' + sh.w : ''].filter(Boolean).join(' · '),
-        price: sh.uzs > 0 ? raqam(sh.uzs) + ' ' + t('umumiy.som') : t('mebel.narx_yoq'), on: cur === code,
-        pick: () => { const c = erpQosh(H, project.doc, sh); qoyish(c); tanlandi(sh.name); }
-      };
-    })
+    jami: jami > CHEK ? t('mebel.plita_soni', { n: CHEK, jami }) : null,
+    bolimlar, bor: jami > 0
   };
 }
 
