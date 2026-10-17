@@ -6,6 +6,7 @@ import { loadServerStd, loadSettings } from '../features/settings/actions.js';
 import { loadNarxlar } from '../features/settings/narxlar.js';
 import { installKeyboard } from './klaviatura.js';
 import { tarixOrnat } from './tarix.js';
+import { yangilanishniKuzat } from './yangilanish.js';
 import { eskiKeshniTozala } from '../shared/lib/eskiKesh.js';
 import { s3SetT } from '../shared/design3d/engine.js';
 import { tr, setTil } from '../i18n/index.js';
@@ -35,6 +36,7 @@ export function bootstrap() {
   tarixOrnat();                                     // TZ-27: "orqaga" tugmasi — ilova ichida
   s3SetT(tr);                                       // TZ-18: 3D yorliqlar tanlangan tilda
   eskiKeshniTozala();
+  yangilanishniKuzat();
   installQA();
 }
 

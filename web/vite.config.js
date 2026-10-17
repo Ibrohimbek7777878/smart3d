@@ -76,7 +76,9 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,woff2,json,png,svg,webmanifest}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: null,
-        cleanupOutdatedCaches: true
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,   // yangi versiya ochiq sahifani darhol boshqaradi (yangilanish.js qayta yuklaydi)
+        skipWaiting: true
       }
     })
   ],
