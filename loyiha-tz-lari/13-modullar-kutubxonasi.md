@@ -11,7 +11,7 @@
   - shisha va mato kabi materiallar umumiy modullarda LDSP deb hisoblanadi (M6). MebelCity'da tuzatilgan.
 
 ## Bajariladigan ishlar
-1. **Ommaviy import:** serverdagi Bazis fayllaridan (`/home/user/bazis fayllar oktiyabr/`, ~2 933 ta) bo'limlar bo'yicha tanlanganlari `fr3d_import.py` bilan olinadi.
+1. **Ommaviy import:** serverdagi Bazis fayllaridan (`<mahalliy-yo'l>/bazis fayllar oktiyabr/`, ~2 933 ta) bo'limlar bo'yicha tanlanganlari `fr3d_import.py` bilan olinadi.
    - Har partiyadan keyin Bazis bilan solishtirish testi o'tkaziladi.
    - Dublikatlar birlashtiriladi.
 2. **Fragment ko'rish sahifasi:**

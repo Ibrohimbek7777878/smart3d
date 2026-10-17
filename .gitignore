@@ -11,3 +11,12 @@ Thumbs.db
 tests/ui/out/
 web/node_modules/
 web/dist/
+
+# Maxfiy / mijoz / ichki ma'lumotlar (repo ommaviy) — hech qachon gitga kirmasin
+Smart3D_toplam*/
+Smart3D_malumot/
+data1/
+NARX.pdf
+*.xls
+/*.xlsx
+.bsq_sinov/
