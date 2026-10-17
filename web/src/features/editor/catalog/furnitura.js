@@ -15,7 +15,7 @@ export function openFurnitura() { openSheet('furnitura', { q: '', cat: null, tab
 export function useFurnituraVaraq() {
   const q = useSlice('ui').vq || {};
   useSlice('project');
-  const H = project.H, items = Object.values((H && H.furnById) || {});
+  const H = project.H, items = Object.values((H && H.furnById) || {}).filter(it => it.uzs > 0 && it.price_src !== 'no_price' && it.price_src !== 'yoq');   // #151: narxsizlar katalogda ko'rinmaydi (loyihadagilari "Loyihada" ro'yxatida qoladi)
   const narx = (uzs) => (uzs > 0 ? raqam(uzs) + ' ' + t('umumiy.som') : t('mebel.narx_yoq'));
 
   /* loyihada: hisobdagi "Furnitura" satrlari */

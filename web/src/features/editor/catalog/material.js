@@ -33,7 +33,7 @@ const ichida = (qism, th) => th >= ORALIQ[qism][0] && th <= ORALIQ[qism][1];
 
 /** qism: 'korpus' | 'polka' | 'fasad' | 'orqa' | 'stol' (eski: 'matCode' | 'fasadCode'); modul — joylashuv id (faqat shu modul) */
 export function openMaterial(qism, modul) {
-  openSheet('material', { qism: ESKI[qism] || qism || 'korpus', modul: modul || null, modul0: modul || null, q: '', guruh: null, th: null, tur: null, fil: false });
+  openSheet('material', { qism: ESKI[qism] || qism || 'korpus', modul: modul || null, modul0: modul || null, q: '', guruh: null, th: null, tur: null, fil: false, hammasi: false });
 }
 
 /** TZ-23 E: Bazis loyihasidagi material (BZM-…) — ERP dekori yoki umumiy turga almashtirish (doc.bazis.almash) */
@@ -41,7 +41,7 @@ const BZ_QISM = { hdf: 'orqa', akril: 'fasad', mdf: 'fasad', stoleshnitsa: 'stol
 const bazisMat = (kod) => ((project.doc && project.doc.bazis && project.doc.bazis.materiallar && project.doc.bazis.materiallar.panel) || []).find(x => x.code === kod) || null;
 export function openBazisMaterial(kod) {
   const m = bazisMat(kod);
-  openSheet('material', { bazis: kod, qism: (m && BZ_QISM[m.tur]) || 'korpus', modul: null, modul0: null, q: '', guruh: null, th: null, tur: null, fil: false });
+  openSheet('material', { bazis: kod, qism: (m && BZ_QISM[m.tur]) || 'korpus', modul: null, modul0: null, q: '', guruh: null, th: null, tur: null, fil: false, hammasi: false });
 }
 function bazisQoy(kod, code) {
   const b = project.doc.bazis;
@@ -101,7 +101,8 @@ export function useMaterialVaraq() {
   /* ERP plitalari: qidiruv (yoki shu qism turlari) → tur/qalinlik filtri → dekorlar (qalinlik variantlari bitta plitkada) → rang oilasi */
   const all = (H.sheetCatalog && H.sheetCatalog.sheets) || [];
   const bzTh = bzM ? +bzM.thickness : 0;
-  const mos = (s) => ERP_TUR[qism].includes(s.type) && ichida(qism, +s.th || 0) && (!bzTh || Math.abs((+s.th || 0) - bzTh) < 0.6);
+  /* #151: narxsiz plitalar ro'yxatda ko'rinmaydi; loyihada allaqachon tanlangani (cur) qoladi — "narx yo'q" bilan */
+  const mos = (s) => (s.uzs > 0 || erpKod(s) === cur) && ERP_TUR[qism].includes(s.type) && ichida(qism, +s.th || 0) && (!bzTh || Math.abs((+s.th || 0) - bzTh) < 0.6);
   const turi = (q.q ? L.plitaRoyxati(H, q.q, cur).map(x => x.s) : all).filter(mos);
   const turlari = [...new Set(turi.map(s => s.type))];
   const qalin = bzTh ? [] : [...new Set(turi.map(s => +s.th || 0).filter(v => ichida(qism, v)))].sort((a, b) => a - b);
@@ -118,6 +119,29 @@ export function useMaterialVaraq() {
   const narxli = (g) => g.variantlar.some(v => v.uzs > 0);
   korinadi.sort((a, b) => (narxli(b.g) - narxli(a.g)) || a.g.nom.localeCompare(b.g.nom, 'ru'));
   const jami = korinadi.length, CHEK = 150;
+  /* #151: "Ko'p ishlatiladigan" — sex buyurtmalaridagi dekorlar (dekor-mashhur.json) → shu qismga mos narxli plitalar.
+   * Bir dekor bir nechta ishlab chiqaruvchida bo'lsa: ko'rsatilgan tur, keyin Ultradekor, keyin arzoni. Qidiruv/filtr/rang tanlansa — to'liq ko'rinish. */
+  /* dekor kodi qo'shimchasi (UR, CD, PE, HU/HU, ST9 …) taqqoslashda hisobga olinmaydi; "Дуб Гудзон Кашемир" kabi boshqa dekorlar qo'shilmaydi */
+  const nrm = (v) => String(v || '').toLowerCase().replace(/ё/g, 'е').replace(/\s+/g, ' ').trim().replace(/(?:\s+(?:[a-z]{1,3}(?:\/[a-z]{1,3})?|st\d+))+$/, '');
+  const turTartib = (g) => { const i = ERP_TUR[qism].indexOf(g.tur); return i < 0 ? 99 : i; };   // korpus/polka/fasad: LDSP → LMDF; orqa: HDF
+  /* bir qalinlik — bitta chip: shu qalinlikdagi variantlardan tanlangani, aks holda narxlisi va arzoni */
+  const birQalin = (g) => {
+    const m = new Map();
+    for (const v of g.variantlar) {
+      const k = +v.th || 0, o = m.get(k), narx = (x) => (x.uzs > 0 ? x.uzs : Infinity);
+      if (!o || (erpKod(v) === cur && erpKod(o) !== cur) || (erpKod(o) !== cur && narx(v) < narx(o))) m.set(k, v);
+    }
+    return Object.assign({}, g, { variantlar: [...m.values()] });
+  };
+  const mashhur = [];
+  for (const e of ((H.dekorMashhur && H.dekorMashhur.items) || [])) {
+    const arz = (d) => Math.min(...d.g.variantlar.filter(v => v.uzs > 0).map(v => v.uzs), Infinity);
+    const nomzod = dekorlar.filter(d => nrm(d.g.nom) === nrm(e.nom) && narxli(d.g) && (qism !== 'orqa' || d.g.tur === 'HDF'));   // orqa devor — faqat HDF
+    nomzod.sort((a, b) => (turTartib(a.g) - turTartib(b.g)) || ((b.g.brend === 'Ultradekor') - (a.g.brend === 'Ultradekor')) || (arz(a) - arz(b)));
+    if (nomzod[0] && !mashhur.some(m => m.g === nomzod[0].g)) mashhur.push({ g: birQalin(nomzod[0].g), r: nomzod[0].r, soni: e.soni });
+  }
+  mashhur.splice(12);
+  const hammasi = !!(q.hammasi || q.q || q.guruh || q.tur || q.th || mashhur.length < 3);
   const GURUHLAR = RANG_GURUHLARI.concat(['boshqa']);
   const plitka = ({ g, r }) => {
     /* sukut variant — hozirgi qalinlikka eng yaqini (korpus/polka — 16 mm), narxlisi oldin */
@@ -137,6 +161,7 @@ export function useMaterialVaraq() {
     qolgan -= list.length;
     return { k, label: k === 'boshqa' ? t('mebel.rang_boshqa') : t('mebel.rang_' + k), rang: k === 'boshqa' ? null : hex(GURUH_RANG[k]), plitkalar: list.map(plitka) };
   }).filter(x => x.plitkalar.length);
+  const mashhurPlitkalar = mashhur.map(d => Object.assign(plitka(d), { soni: t('mebel.mashhur_soni', { n: d.soni }) }));
   const filtrSoni = (q.tur ? 1 : 0) + (q.th ? 1 : 0);
 
   return {
@@ -150,6 +175,8 @@ export function useMaterialVaraq() {
     doiralar: !bz && q.modul0 && project.pl(q.modul0) ? [
       { label: t('mebel.doira_modul'), on: !!q.modul, pick: () => patchSheet({ modul: q.modul0 }) },
       { label: t('mebel.doira_loyiha'), on: !q.modul, pick: () => patchSheet({ modul: null }) }] : [],
+    mashhur: hammasi ? [] : mashhurPlitkalar, hammasi, hammasiQaytish: !!q.hammasi && mashhurPlitkalar.length >= 3, hammasiTogla: () => patchSheet({ hammasi: !q.hammasi }),
+    boshqaSoni: dekorlar.length - mashhur.length,
     filOchiq: !!q.fil, filSoni: filtrSoni, filTogla: () => patchSheet({ fil: !q.fil }),
     turlarERP: turlari.length > 1 ? [{ label: t('mebel.rang_hammasi'), on: !q.tur, pick: () => patchSheet({ tur: null }) }]
       .concat(turlari.map(x => ({ label: x, on: q.tur === x, pick: () => patchSheet({ tur: q.tur === x ? null : x }) }))) : [],
