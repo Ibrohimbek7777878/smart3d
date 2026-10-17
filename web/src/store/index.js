@@ -22,6 +22,7 @@ export const store = createStore({
   ai: { open: false, text: '', mic: false, tab: 'matn', kat: 'oshxona', tanlangan: null, qiymat: {}, shablonlar: null, shNom: '' },
   ins: { id: null, ex: 0, color: 1, auto: false },
   projects: { list: null, q: '', aloqa: true },              // aloqa — ro'yxat serverdan olindimi (TZ-27)
+  buyurtma: { list: null, admin: null },                  // TZ-23 C1: "Buyurtmalarim" va admin ro'yxati (features/buyurtma)
   bazis: { yuk: null },                                   // TZ-21: Bazis fayli o'qilmoqda (fayl nomi)
   /* TZ-23: 3D ko'rinish (kamera, fon, chizish rejimi, rentgen, xona, fasadsiz, o'lchash) — features/editor/scene/korinish.js */
   /* TZ-24 A: modul chizish (features/editor/chizish) */

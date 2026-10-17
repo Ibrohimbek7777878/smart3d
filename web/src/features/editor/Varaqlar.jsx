@@ -11,6 +11,7 @@ import KonstruktorVaraq from './konstruktor/KonstruktorVaraq.jsx';
 import BazisVaraq from '../bazis/BazisVaraq.jsx';
 import FurnituraVaraq from './catalog/FurnituraVaraq.jsx';
 import DavomVaraq from '../projects/DavomVaraq.jsx';
+import BuyurtmaVaraq from '../buyurtma/BuyurtmaVaraq.jsx';
 import { materialTitle } from './catalog/material.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 
@@ -23,7 +24,8 @@ const VARAQ = {
   konstruktor: { title: () => <><Ikon n="konstruktor" size={18} />{t('konstruktor.sarlavha')}</>, label: 'konstruktor.sarlavha', Body: KonstruktorVaraq },
   bazis: { title: () => <><Ikon n="bazis" size={18} />{t('bazis.sarlavha')}</>, label: 'bazis.sarlavha', Body: BazisVaraq },
   furnitura: { title: () => <><Ikon n="furnitura" size={18} />{t('furnitura.sarlavha')}</>, label: 'furnitura.sarlavha', Body: FurnituraVaraq },
-  davom: { title: () => <><Ikon n="papka" size={18} />{t('davom.sarlavha')}</>, label: 'davom.sarlavha', Body: DavomVaraq }   // TZ-27
+  davom: { title: () => <><Ikon n="papka" size={18} />{t('davom.sarlavha')}</>, label: 'davom.sarlavha', Body: DavomVaraq },   // TZ-27
+  buyurtma: { title: () => <><Ikon n="buyurtma" size={18} />{t('buyurtma.sarlavha')}</>, label: 'buyurtma.sarlavha', Body: BuyurtmaVaraq }   // TZ-23 C1
 };
 
 export default function Varaqlar() {

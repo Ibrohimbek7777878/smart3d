@@ -2,6 +2,7 @@ import React from 'react';
 import { t } from '../../i18n/index.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 import { useLoyihalar } from './useLoyihalar.js';
+import Buyurtmalar from '../buyurtma/Buyurtmalar.jsx';
 
 /* TZ-19: "Loyihalarim" — JSX va stillar tasdiqlangan dizayndan; qiymatlar useLoyihalar() dan. */
 export default function Loyihalar() {
@@ -42,6 +43,8 @@ export default function Loyihalar() {
               </button>))}
           </div>
         </section>) : null}
+      {/* TZ-23 C1: "Buyurtmalarim" — sexga yuborilganlar, holati bilan */}
+      {!v.pq ? <Buyurtmalar admin={false} /> : null}
       {v.projEmpty ? (<>
         <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"48px 24px","display":"flex","flexDirection":"column","alignItems":"center","gap":"14px","textAlign":"center"}}>
           <span style={{"fontSize":"40px"}}>

@@ -4,6 +4,7 @@ import Toggle from '../../shared/ui/Toggle.jsx';
 import { input } from '../../shared/ui/styles.js';
 import { useSozlamalar } from './useSozlamalar.js';
 import Qoldiqlar from './Qoldiqlar.jsx';
+import Buyurtmalar from '../buyurtma/Buyurtmalar.jsx';
 
 /* TZ-09: dizaynda yo'q sahifa — "Sozlamalar" (dizayndagi tugma faqat xabar chiqarardi: "sex logosi, narx ustamasi,
  * stanok profili"). Faqat dizayn bo'laklaridan yig'ilgan: "Loyihalarim" sahifasi tuzilishi, karta, 52px input,
@@ -59,6 +60,8 @@ export default function Sozlamalar() {
         <h1 style={{ margin: '0', fontSize: 'clamp(28px,3.4vw,40px)', letterSpacing: '-.035em', fontWeight: '800' }}>{t('umumiy.sozlamalar')}</h1>
         <button onClick={S.back} style={ghost}>{S.backLabel}</button>
       </div>
+      {/* TZ-23 C1 (admin): sexga kelgan buyurtmalar — eng tepada, to'liq kenglikda */}
+      {S.admin ? <Buyurtmalar admin /> : null}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(320px,1fr))', gap: '14px', alignItems: 'start' }}>
 
         <section style={card} data-set="akkaunt">

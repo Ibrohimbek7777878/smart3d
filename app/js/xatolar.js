@@ -29,6 +29,9 @@ export const XATOLAR = {
   'S3D-SHB-001': { http: 404, matn: 'Shablon topilmadi' },
   'S3D-SHB-002': { http: 409, matn: 'Shablonlar ko\'p — 100 tagacha; keraksizini o\'chiring' },
   'S3D-SHB-101': { matn: 'Shablon saqlanmadi' },
+  /* TZ-23 C1 (egasi #138): buyurtmalar */
+  'S3D-ORD-001': { http: 400, matn: 'Buyurtma holati noto\'g\'ri' },
+  'S3D-ORD-101': { matn: 'Buyurtma yuborilmadi' },
   'S3D-AI-001': { http: 503, matn: 'AI sozlanmagan — qoidali tahlilchi ishlaydi' },
   'S3D-AI-002': { http: 502, matn: 'AI javob bermadi — qoidali tahlilchi ishlaydi' },
   'S3D-AI-003': { http: 501, matn: 'Server ovoz tanish (STT) hali ulanmagan — brauzer ovozidan foydalaning' },

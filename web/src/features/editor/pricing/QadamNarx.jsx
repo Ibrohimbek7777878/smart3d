@@ -3,6 +3,7 @@ import { t } from '../../../i18n/index.js';
 import Ikon from '../../../shared/ui/Ikon.jsx';
 import Toggle from '../../../shared/ui/Toggle.jsx';
 import { useQadamNarx } from './useQadamNarx.js';
+import { buyurtmaOch } from '../../buyurtma/buyurtma.js';
 
 /* TZ-19: ③ Narx — JSX va stillar tasdiqlangan dizayndan; qiymatlar useQadamNarx() dan. */
 export default function QadamNarx() {
@@ -188,6 +189,10 @@ export default function QadamNarx() {
           </div>
         </React.Fragment>))}
       </div>
+      {/* TZ-23 C1 (dizaynda yo'q — 52px tugma, --acc chegara): sexga buyurtma (egasi #138) */}
+      <button onClick={buyurtmaOch} data-buyurtma-ber="" style={{"height":"52px","borderRadius":"14px","border":"2px solid var(--acc)","background":"transparent","color":"var(--acc)","fontWeight":"800","fontSize":"16px","cursor":"pointer","flex":"0 0 auto","display":"flex","alignItems":"center","justifyContent":"center"}}>
+        <Ikon n="buyurtma" size={19} />{t('buyurtma.ber')}
+      </button>
       <button onClick={v.goStep4} style={{"height":"52px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer","flex":"0 0 auto"}}>
         {t('narx.keyingi_fayllar')}
       </button>

@@ -105,7 +105,8 @@ test('ro\'yxatdan o\'tish: kuchsiz parol va HTML ism rad etiladi; to\'g\'risi is
   assert.equal((await api('/api/remnants/1/use', { method: 'PUT', headers: auth, body: '{}' })).status, 403);
   assert.equal((await api('/api/remnants', { headers: auth })).status, 200, 'o\'qish — mumkin');
   /* buyurtma izohida < > belgilari — oddiy matn, rad etilmaydi */
-  const o = await api('/api/orders', { method: 'POST', headers: auth, body: JSON.stringify({ client_name: 'Ali', notes: "eni > 600 bo'lsa 2 eshik" }) });
+  const o = await api('/api/orders', { method: 'POST', headers: auth, body: JSON.stringify({ client_name: 'Ali', client_phone: '901234567', notes: "eni > 600 bo'lsa 2 eshik",
+    placements: [{ id: 'p1', frg: 'MC-KP-02', x: 0, y: 0, z: 0, w: 600, d: 450, h: 708, rot: 0 }] }) });
   assert.equal(o.status, 200);
 });
 
