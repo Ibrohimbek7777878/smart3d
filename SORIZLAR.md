@@ -527,3 +527,12 @@ shuni tawadim lekin bizdag ai chizgan narsa oddiy mana rasmdagin bizn ai chizd n
 196. email bilan kirish qismiga google orqai kirshn qoshib qoy telegram mini app ham pauza qilb turamiz hozir loyhan umumiy tayorlik qismin 90foziga kotairsh kere  stanok faylarni ham toliq tugat giblab faylar bolsa toliq korib oqib chiq 35foiz ustama yaxsh turaversin  teshik rang va kromkani qaysi qismlar kere vrni qismin ham tugat
 
 197. qara hozir boshqa calude ham ishlayabd u ham agentlar bilan ishlaybdi qoida token sariga etibor ber bu qatiy qoida ishn bolib ber va boshla
+
+199. bosha calude ishn tugati va hozir sketchup bilan b3d ni qilayabdi
+
+201. ha boshlayver sen ham
+
+202. mini ep emas
+(iqtibos — mening ro'yxatim: ERP .xlsx larni GitHub'dan olib tashlash; serverni yangi versiyaga o'tkazish va git orqali yangilanadigan qilish; "Teshik, rang va kromka"; Rover)
+
+203. rover kere emas
