@@ -23,7 +23,7 @@ import cors from 'cors';
 import http from 'http';
 import path from 'path';
 import { createJurnal } from './jurnal.js';
-import { securityHeaders, inlineScriptHashes } from './himoya.js';
+import { securityHeaders, inlineScriptHashes, TG_ILOVA } from './himoya.js';
 import { loadConfig, APP_DIR, WEB_DIST } from './lib/config.js';
 import { openDb } from './lib/db.js';
 import { yadroSxema, mcModullar } from './lib/sxema.js';
@@ -32,7 +32,7 @@ import { rateLimit } from './lib/limit.js';
 import { fail, xatoIshlovchi } from './lib/xato.js';
 import { sorovJurnali } from './lib/sorov-jurnali.js';
 import { narxEfiri } from './lib/narx-efiri.js';
-import { sahifalar } from './routes/sahifalar.js';
+import { sahifalar, ILOVA_YOLI } from './routes/sahifalar.js';
 import authRouter from './routes/auth.js';
 import authSmsRouter from './routes/auth-sms.js';
 import telegramRouter from './routes/telegram.js';
@@ -73,13 +73,14 @@ app.use(sorovJurnali(jurnal));
 if (cfg.TRUST_PROXY) app.set('trust proxy', Number(cfg.TRUST_PROXY) || 1);
 app.use(cors({ origin: cfg.ALLOWED_ORIGINS.length ? cfg.ALLOWED_ORIGINS : false }));
 /* xavfsizlik sarlavhalari (helmet'siz): CSP, HSTS (production), nosniff, ramka taqiqi — himoya.js */
-app.use(securityHeaders({ prod: cfg.PROD, scriptHashes: inlineScriptHashes(path.join(APP_DIR, 'index.html')) }));
+app.use(securityHeaders({ prod: cfg.PROD, scriptHashes: inlineScriptHashes(path.join(APP_DIR, 'index.html')),
+  ilovaMi: (p) => TG_ILOVA.test(p) || ILOVA_YOLI.test(p) }));   // TZ-30: ilova manzillari — /app.html bilan bir xil sarlavha
 app.use('/api', apiLimiter.take);
 app.use('/api/log', express.json({ limit: '4kb' }));                // brauzer xato yozuvi — kichik (TZ-19)
 app.use('/api/telegram/fayl', express.json({ limit: '15mb' }));     // TZ-16: fayl (base64, 10 MB gacha) — bot chatiga
 app.use(express.json({ limit: '2mb' }));
 
-/* ── sahifalar: yangi sayt (web/dist), eski sayt (/eski/) ── */
+/* ── sahifalar: yangi sayt (web/dist), ilova manzillari (TZ-30), eski sayt (/eski/) ── */
 const sahifa = sahifalar({ webDist: WEB_DIST, eski: APP_DIR });
 app.use(sahifa.statik);
 
