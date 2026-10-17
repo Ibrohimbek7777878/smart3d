@@ -133,20 +133,71 @@ export function attachControls(sp, opts = {}) {
     zoomQosh(clamp(-dy * (e.ctrlKey ? ZOOM.pinch : ZOOM.qadam), -ZOOM.hodisa, ZOOM.hodisa), e.clientX, e.clientY);
   }
   el.addEventListener('wheel', onWheel3D, { passive: false, capture: true });
+  /* ── Zoom chegaralari: uzoqda sahna nuqtadek bo'lmasin, yaqinda kamera mebel/devor ichiga kirmasin ───────────── */
+  const YAQIN_MIN = 400;                       // mm: kamera istalgan sirtdan shuncha yaqin kelmaydi
+  const T = sp.THREE, _box = new T.Box3(), _sph = new T.Sphere(), _ray = new T.Raycaster(), _v = new T.Vector3(), _bs = [];
+  let sahnaR = null, sahnaT = 0;
+  const korinadi = (o) => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
+  /** Ko'rinuvchi modullar qutilari (hitBox'siz) */
+  function modulQutilar() {
+    _bs.length = 0;
+    const g = sp.groups && sp.groups.items; if (!g) return _bs;
+    for (const ch of g.children) {
+      if (!ch.visible || (ch.userData && ch.userData.kind === 'hitBox')) continue;
+      const b = new T.Box3().setFromObject(ch); if (!b.isEmpty()) _bs.push(b);
+    }
+    return _bs;
+  }
+  function sahnaOlcha() {
+    const qs = modulQutilar(); _box.makeEmpty();
+    for (const b of qs) _box.union(b);
+    const w = sp.groups && sp.groups.walls3d;
+    if (w && w.children.length) { const wb = new T.Box3().setFromObject(w); if (!wb.isEmpty()) _box.union(wb); }
+    if (_box.isEmpty()) { sahnaR = null; return; }
+    _box.getBoundingSphere(_sph);
+    const cam = sp.cam3d, vf = (cam.fov * Math.PI) / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * (cam.aspect || 1));
+    const dFit = _sph.radius / Math.sin(Math.min(vf, hf) / 2);
+    sahnaR = { maxD: clamp(dFit * 1.3, 3000, MAX_BAZA) };
+  }
+  /** Kamera hozirgi joyida mebel yoki devordan >= YAQIN_MIN uzoqdami (ichida emas) */
+  function bosh() {
+    const cam = sp.cam3d, p = cam.position;
+    for (const b of modulQutilar()) {
+      if (b.clone().expandByScalar(YAQIN_MIN - 20).containsPoint(p)) return false;
+    }
+    const nishon = [];
+    const add = (g) => g && g.traverse(o => { if (o.isMesh && !(o.userData && o.userData.kind === 'hitBox') && korinadi(o)) nishon.push(o); });
+    add(sp.groups.items); add(sp.groups.walls3d);
+    const c = sp.renderer.domElement.getBoundingClientRect();
+    const nurlar = [[0, 0], [((zx - c.left) / c.width) * 2 - 1, -((zy - c.top) / c.height) * 2 + 1]];
+    for (const [nx, ny] of nurlar) {
+      _v.set(nx, ny, 0.5).unproject(cam).sub(p).normalize();
+      _ray.set(p, _v); _ray.near = 0; _ray.far = YAQIN_MIN;
+      if (_ray.intersectObjects(nishon, false).length) return false;
+    }
+    return true;
+  }
   function zoomKadr() {
     if (sp.mode !== '3d') { pend = 0; return; }
-    /* sahna o'lchamiga mos chegara: xonadan juda uzoqlashib yo'qolmasin (≈ 3 × xona diagonali) */
+    /* sahna o'lchamiga mos chegara: sahnani (xona + modullar) ekranga to'liq sig'diradigan masofa × 1.3 (kamida 3 m) */
     const bb = sp.bbox, diag = Math.hypot(bb.w, bb.h, 2700);
-    orbit.maxDistance = clamp(diag * 3 + 3000, 6000, MAX_BAZA);
+    const nowMs = performance.now();
+    if (nowMs - sahnaT > 250 || !sahnaR) { sahnaT = nowMs; sahnaOlcha(); }
+    orbit.maxDistance = sahnaR ? sahnaR.maxD : clamp(diag * 3 + 3000, 6000, MAX_BAZA);
     if (pend) {
       const now = performance.now(), dt = clamp(zt ? now - zt : 16, 1, 50); zt = now;
       let part = pend * (1 - Math.exp(-dt / ZOOM.tau));
       if (Math.abs(pend) < 0.003) part = pend;
       pend -= part; if (pend === part) pend = 0;
       const dy = -Math.sign(part) * Math.abs(part) / LN095 * 100;     // getZoomScale(dy) = 0.95^(|dy|/100)
+      const oldPos = sp.cam3d.position.clone(), oldTgt = orbit.target.clone();
       synth = true;
       try { el.dispatchEvent(new WheelEvent('wheel', { deltaY: dy, clientX: zx, clientY: zy, bubbles: true, cancelable: true })); }
       finally { synth = false; }
+      if (part > 0) {                           // yaqinlashish: sirtga/ichiga kirib ketmasin — chegarada silliq to'xta
+        orbit.update();
+        if (!bosh()) { sp.cam3d.position.copy(oldPos); orbit.target.copy(oldTgt); orbit.update(); pend = 0; }
+      }
     } else zt = 0;
     /* near/far masofaga qarab: uzoqda z-fighting bo'lmasin, yaqinda kesilib qolmasin */
     const cam = sp.cam3d;
