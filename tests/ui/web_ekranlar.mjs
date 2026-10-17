@@ -74,7 +74,7 @@ async function asosiy(page, R) {
       if (el) el.click(); return !!el; }, [sel, matn, aniq]);
     if (!ok) throw new Error('topilmadi: ' + sel + ' "' + matn + '"');
   };
-  const base = page.url().split(/[?#]/)[0].replace(/app\.html$/, '');
+  const base = new URL(page.url()).origin + '/';   // TZ-30: ilova manzili /royxat, /loyiha/5 … bo'lishi mumkin
   const N = {};            // til → [{ ekran, en, hScroll, out }]
 
   /* bitta ekran: uch o'lchamda tekshiriladi (kirish — 1440 da), keyin 1440 ga qaytadi */

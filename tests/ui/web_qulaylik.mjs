@@ -59,7 +59,7 @@ async function asosiy(page, R) {
   await page.goBack(); await page.waitForTimeout(400);
   R.orqagaVaraq = { bor: varaqBor, yopildi: await M(() => !document.querySelector('[data-varaq="ai"]')), ekran: await ekran() };
   for (let i = 0; i < 4 && (await ekran()) === 'app'; i++) { await page.goBack(); await page.waitForTimeout(500); }
-  R.orqagaEkran = { ekran: await ekran(), url: page.url().includes('app.html') };
+  R.orqagaEkran = { ekran: await ekran(), url: new URL(page.url()).pathname === '/loyihalar' };   // TZ-30: ilovada qoldi, manzil — ekranniki
   await page.goBack(); await page.waitForTimeout(800);
   R.orqagaQayta = { ekran: await ekran(), mebel: await M(() => window.__app.doc.placements.length) };
 

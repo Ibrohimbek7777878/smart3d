@@ -33,7 +33,7 @@ async function olch(page, url) {
 
 async function asosiy(page, R) {
   await page.setViewportSize({ width: 390, height: 844 });
-  const base = page.url().split(/[?#]/)[0].replace(/app\.html$/, '');
+  const base = new URL(page.url()).origin + '/';   // TZ-30: ilova manzili /royxat, /loyiha/5 … bo'lishi mumkin
   R.sayt = await olch(page, base + '?t=' + Date.now());
   R.ilova = await olch(page, base + 'app.html?t=' + Date.now() + '#s=reg');
   R.ok = R.sayt.fcp > 0 && R.ilova.fcp > 0 && R.sayt.fcp <= 2500 && R.ilova.fcp <= 2500;

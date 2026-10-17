@@ -5,7 +5,7 @@ import { readHandoff, initSession, afterLogin } from '../features/auth/actions.j
 import { loadServerStd, loadSettings } from '../features/settings/actions.js';
 import { loadNarxlar } from '../features/settings/narxlar.js';
 import { installKeyboard } from './klaviatura.js';
-import { tarixOrnat } from './tarix.js';
+import { tarixOrnat, marshrutOqi } from './tarix.js';
 import { yangilanishniKuzat } from './yangilanish.js';
 import { eskiKeshniTozala } from '../shared/lib/eskiKesh.js';
 import { s3SetT } from '../shared/design3d/engine.js';
@@ -25,6 +25,7 @@ export function bootstrap() {
     try { tanlangan = localStorage.getItem('s3d-til'); } catch (_) { /* yo'q */ }
     if (!tanlangan && ['uz', 'ru', 'en'].includes(TG_TIL)) setTil(TG_TIL);   // Telegram tili (TZ-18 §3), birinchi chizishdan
   }
+  marshrutOqi();                                    // TZ-30: manzildan ekran (/kirish, /loyihalar, /loyiha/5 …); eski #s=… — readHandoff
   readHandoff();
   initSession();
   if (TELEGRAM) telegramIshga(async (j) => {
@@ -33,7 +34,7 @@ export function bootstrap() {
   });
   window.addEventListener('hashchange', readHandoff);
   installKeyboard();
-  tarixOrnat();                                     // TZ-27: "orqaga" tugmasi — ilova ichida
+  tarixOrnat();                                     // TZ-27/TZ-30: har ekranning manzili, "orqaga" va "oldinga" — ilova ichida
   s3SetT(tr);                                       // TZ-18: 3D yorliqlar tanlangan tilda
   eskiKeshniTozala();
   yangilanishniKuzat();

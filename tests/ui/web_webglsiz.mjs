@@ -31,7 +31,7 @@ async function asosiy(page, R) {
   });
   await page.setViewportSize({ width: 1440, height: 900 });
   await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
-  const base = page.url().split(/[?#]/)[0].replace(/app\.html$/, '');
+  const base = new URL(page.url()).origin + '/';   // TZ-30: ilova manzili /royxat, /loyiha/5 … bo'lishi mumkin
   await page.goto(base + 'app.html?t=' + Date.now() + '#s=reg'); await page.waitForTimeout(2000);
   R.webglYoq = await M(() => !document.createElement('canvas').getContext('webgl'));
 
