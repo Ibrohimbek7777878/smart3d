@@ -11,6 +11,7 @@ import zlib from 'node:zlib';
 import { daraxt } from '../app/js/engine/bazis/daraxt.js';
 import { bazisLoyiha, materiallarniQosh } from '../app/js/engine/bazis/loyiha.js';
 import { bazisTeshiklar, TESHIK_TURI, teshikTuri } from '../app/js/engine/bazis/teshik.js';
+import { stanokModeli } from '../app/js/engine/post/smart3d.js';
 import { cutlist, productionCost } from '../app/js/engine/cutlist.js';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -38,6 +39,15 @@ ok('bo\'sh/yaroqsiz kirish — bo\'sh ro\'yxat', bazisTeshiklar([]).length === 0
 
 const fr = bazisLoyiha([], { fayl: 'x.b3d' });
 ok('panelsiz loyiha xato bilan (teshiksiz) qaytadi', fr.xato || !(fr.fragment && fr.fragment.bazisTeshik));
+
+/* stanok eksportchisi narx_uchun yozuvlarini o'tkazib yuboradi (ogohlantirishga ham qo'shmaydi) */
+{
+  const narxH = bazisTeshiklar(sint).map(t => ({ fragment: 'X', part: '', side: '', x: 0, y: 0, dia: t.dia, depth: t.depth, kind: t.kind, qty: t.qty, nusxa: 1, tur: t.tur, narx_uchun: true }));
+  const sp = { fragment: 'X', placementId: 1, parts: [], edges: [], holes: [{ part: 'a', kind: 'drill', dia: 5, depth: 9, qty: 1, x: 1, y: 1 }, ...narxH] };
+  const r0 = stanokModeli({ cutlists: [{ ...sp, holes: sp.holes.slice(0, 1) }], placements: [{ id: 1, qty: 1 }], catalog: {}, materials: mat, nom: 't' });
+  const r1 = stanokModeli({ cutlists: [sp], placements: [{ id: 1, qty: 1 }], catalog: {}, materials: mat, nom: 't' });
+  ok(`stanokModeli: ogoh.spTeshik narx_uchun yozuvlarisiz (${narxH.length} tur qo'shildi, ${r0.ogoh.spTeshik} → ${r1.ogoh.spTeshik})`, narxH.length > 0 && r0.ogoh.spTeshik === 1 && r1.ogoh.spTeshik === 1);
+}
 
 /* ── 2) Haqiqiy fayllar (mahalliy) ── */
 const TOPLAM = join(ROOT, '..', 'Smart3D', 'Smart3D_toplam_2026-10-16');
