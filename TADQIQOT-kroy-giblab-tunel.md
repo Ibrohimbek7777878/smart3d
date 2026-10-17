@@ -1,11 +1,11 @@
-# Tadqiqot: kroy.bittada.uz (GibLab) + tunel.bittada.uz
+# Tadqiqot: <ichki-host-kroy> (GibLab) + <ichki-host-tunel>
 
-> Manba: https://tunel.bittada.uz → https://kroy.bittada.uz (faqat o'qish, hech narsa o'zgartirilmadi)
-> Sana: 2026-10-13 · Hisob: sobir@gmail.com
+> Manba: https://<ichki-host-tunel> → https://<ichki-host-kroy> (faqat o'qish, hech narsa o'zgartirilmadi)
+> Sana: 2026-10-13 · Hisob: <hisob>
 
 ## 1. Bittada Tunel — arxitektura (Smart3D uchun BEPUL DEPLOY MODEL)
 
-`tunel.bittada.uz` — lokal ilovalarni internetga chiqarish xizmati (Cloudflare-tunnel uslubida).
+`<ichki-host-tunel>` — lokal ilovalarni internetga chiqarish xizmati (Cloudflare-tunnel uslubida).
 
 **Model:**
 - Lokal mashinada **agent** ishlaydi → **WebSocket (WSS)** orqali tunel serverga **outbound** ulanadi
@@ -16,10 +16,10 @@
 | Maydon | Misol |
 |---|---|
 | Nomi | GibLab |
-| MANZIL | `https://tunel.bittada.uz/t/giblab/` |
-| DOMEN (shaxsiy) | `https://kroy.bittada.uz/` |
+| MANZIL | `https://<ichki-host-tunel>/t/giblab/` |
+| DOMEN (shaxsiy) | `https://<ichki-host-kroy>/` |
 | TOKEN | UUID (Ko'rsatish/Nusxalash) |
-| AGENT URL | `wss://tunel.bittada.uz/ws/tunnel/<uuid>/` |
+| AGENT URL | `wss://<ichki-host-tunel>/ws/tunnel/<uuid>/` |
 | Statistika | bugungi so'rovlar/xatolar, Loglar, O'chirish |
 
 **Hozirgi holat:** 2 tunnel — GibLab (ONLAYN, 1671 so'rov/bugun), Kroy (OFLAYN → kroy.mebel-city.uz).
