@@ -25,6 +25,7 @@ export const DATA_FILES = {
   sheetCat: 'sheet-catalog.json', matIdx: 'materials-index.json', services: 'services.json',
   appliances: 'appliances.json', mcFrags: 'fragments-mc.json', sexStd: 'sex-standartlari.json',
   furnCat: 'furnitura-catalog.json',
+  dekorMashhur: 'dekor-mashhur.json',                             // #151: sexda eng ko'p ishlatiladigan dekorlar (material varag'ining boshi)
   furnBoglash: 'furnitura-boglash.json',                          // TZ-20: furnitura kodi → ERP ID
   nomlarRu: 'nomlar.ru.json', nomlarEn: 'nomlar.en.json'          // TZ-18: modul va material nomlari (rus, ingliz)
 };
@@ -42,7 +43,7 @@ export async function loadData(read = (n) => fetch('data/' + n).then(r => r.json
 
 /** Katalog va ma'lumotlar — eski boot() dagi yig'ish bilan bir xil. */
 export function createHisob(data) {
-  const { frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat, furnBoglash, nomlarRu, nomlarEn } = data;
+  const { frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat, dekorMashhur, furnBoglash, nomlarRu, nomlarEn } = data;
   const furnById = {};
   for (const it of (furnCat && furnCat.items) || []) if (it.id) furnById[it.id] = it;
   const furnituraBoglash = (furnBoglash && furnBoglash.links) || {};
@@ -65,7 +66,7 @@ export function createHisob(data) {
   delete nestDefaults._meta;
 
   const H = {
-    catalog, materials: mats, sheetCatalog: sheetCat, services, sexStd, furnById, furnituraBoglash, searchIndex, nestDefaults,
+    catalog, materials: mats, sheetCatalog: sheetCat, dekorMashhur, services, sexStd, furnById, furnituraBoglash, searchIndex, nestDefaults,
     nomlar: { ru: nomlarRu || null, en: nomlarEn || null },     // TZ-18: modul/material nomi tanlangan tilda (L.modulNomi)
 
     /** Serverdagi sex standartlari (admin o'zgartiradi, TZ-14) — eski applyStandards bilan bir xil */

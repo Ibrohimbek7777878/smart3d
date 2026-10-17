@@ -1049,5 +1049,8 @@
  "mebel.doira_loyiha": "Whole project",
  "mebel.filtr": "Filter",
  "mebel.tanlandi": "Selected",
- "mebel.rang_boshqa": "Colour unknown"
+ "mebel.rang_boshqa": "Colour unknown",
+ "mebel.mashhur": "Most used",
+ "mebel.boshqa_ranglar": "Other colors",
+ "mebel.mashhur_soni": "in {n} orders"
 }

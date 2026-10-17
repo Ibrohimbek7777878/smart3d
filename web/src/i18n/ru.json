@@ -1049,5 +1049,8 @@
  "mebel.doira_loyiha": "Весь проект",
  "mebel.filtr": "Фильтр",
  "mebel.tanlandi": "Выбрано",
- "mebel.rang_boshqa": "Цвет не определён"
+ "mebel.rang_boshqa": "Цвет не определён",
+ "mebel.mashhur": "Часто используемые",
+ "mebel.boshqa_ranglar": "Другие цвета",
+ "mebel.mashhur_soni": "в {n} заказах"
 }

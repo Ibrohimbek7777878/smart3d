@@ -23,7 +23,7 @@ function Plitka({ p }) {
         </span>
         <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', padding: '8px 10px 4px' }}>
           <span style={{ fontWeight: '800', fontSize: '13px', lineHeight: '1.25', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.nom}</span>
-          <span style={{ fontSize: '11px', color: 'var(--mut)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.sub || ' '}</span>
+          <span style={{ fontSize: '11px', color: 'var(--mut)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.soni || p.sub || ' '}</span>
           <span style={{ fontSize: '13px', fontWeight: '800', fontVariantNumeric: 'tabular-nums' }}>{p.price}</span>
         </span>
       </button>
@@ -38,8 +38,24 @@ export default function MaterialVaraq() {
   const s = useMaterialVaraq();
   const amal = { ...btnGhost, height: '40px', fontSize: '13px' };
   return (<>
-    {s.qismlar.length ? <div data-material-qism=""><Chiplar list={s.qismlar} /></div> : null}
-    {s.doiralar.length ? <div data-material-doira=""><Chiplar list={s.doiralar} /></div> : <span style={hint}>{s.doira}</span>}
+    <div data-material-tepa="" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      {s.qismlar.length ? <div data-material-qism=""><Chiplar list={s.qismlar} /></div> : null}
+      {s.doiralar.length ? <div data-material-doira=""><Chiplar list={s.doiralar} /></div> : <span style={hint}>{s.doira}</span>}
+    </div>
+    {s.mashhur.length ? (
+      <section data-material-mashhur="" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+          <span style={hint}>{t('mebel.mashhur')}</span>
+          <button data-material-boshqa="" onClick={s.hammasiTogla} style={{ ...chip(false), minHeight: '40px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          {t('mebel.boshqa_ranglar')}{s.boshqaSoni > 0 ? ' · ' + s.boshqaSoni : ''}
+          </button>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(132px, 1fr))', gap: '8px' }}>
+          {s.mashhur.map(p => <Plitka key={p.key} p={p} />)}
+        </div>
+      </section>) : null}
+    {s.hammasi ? (<>
+    {!s.mashhur.length && s.hammasiQaytish ? <button data-material-mashhurga="" onClick={s.hammasiTogla} style={{ ...chip(false), minHeight: '40px' }}>{t('mebel.mashhur')}</button> : null}
     <input data-material-qidiruv="" value={s.q} onChange={s.onQ} placeholder={t('mebel.qidiruv_nom_yoki_sku_masalan')} style={input} />
     <div data-material-rang="" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
       {s.ranglar.map(r => (
@@ -67,6 +83,7 @@ export default function MaterialVaraq() {
       {!s.bor ? <span style={{ ...hint, padding: '12px 0' }}>{t('mebel.topilmadi')}</span> : null}
       {s.jami ? <span style={hint}>{s.jami}</span> : null}
     </div>
+    </>) : null}
     {s.loyihadagi || s.umumiy || s.asli ? (
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
         {s.umumiy ? <button data-material-umumiy="" onClick={s.umumiy} style={amal}>{t('mebel.umumiy_material')}</button> : null}
