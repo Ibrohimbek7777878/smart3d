@@ -116,9 +116,9 @@ python3 -m http.server 8811 --directory "Smart3D/app"
 
 | # | Manba | Nima olindi | Holat |
 |---|---|---|---|
-| 1 | **kroy.bittada.uz** (GibLab) | `.project` formati tuzilishi (XML + binar `data` blob, LSTR packing, waste=cap−pos), 7 ta real namuna fayl | ✅ olindi (faqat o'qish, buzilmadi) |
-| 2 | **tunel.bittada.uz** | Deploy modeli: lokal **agent** + WSS outbound → `smart3d.bittada.uz` ga chiqarish | ✅ tadqiq qilindi; **agent ishga tushirish usuli kutilmoqda (Sobir)** |
-| 3 | **code.bittada.uz** (code-server) | Kirilmadi (maxsus so'rov bo'yicha to'xtatildi) | ⏸ kiritilmadi |
+| 1 | **<ichki-host-kroy>** (GibLab) | `.project` formati tuzilishi (XML + binar `data` blob, LSTR packing, waste=cap−pos), 7 ta real namuna fayl | ✅ olindi (faqat o'qish, buzilmadi) |
+| 2 | **<ichki-host-tunel>** | Deploy modeli: lokal **agent** + WSS outbound → `smart3d.bittada.uz` ga chiqarish | ✅ tadqiq qilindi; **agent ishga tushirish usuli kutilmoqda (Sobir)** |
+| 3 | **<ichki-host-kod>** (code-server) | Kirilmadi (maxsus so'rov bo'yicha to'xtatildi) | ⏸ kiritilmadi |
 | 4 | **mebelcity-platform** (lokal kod) | `FMS.zip` → `giblab_raskroy.py` (parser, 57/57 round-trip), `BazisUniversalExport.js` (XML generator), 7 real `.project`, `ishlab_chiqarish.py` (QR production) | ✅ olindi |
 | 5 | **ERP Excel (2 fayl)** | 1281 panel (SKU+narx+olcham+qalinlik) + 1978 furnitura → `sheet-catalog.json`, `furnitura-catalog.json`, `materials.json` yangilandi | ✅ moslashtirildi |
 
@@ -209,13 +209,13 @@ npm start         # http://localhost:3000
 
 | Xizmat | Manba | Login |
 |---|---|---|
-| tunel → kroy | `https://tunel.bittada.uz/login/?next=https://kroy.bittada.uz/` | sobir@gmail.com (parol — suhbatda) |
-| code-server | `https://code.bittada.uz` | faqat parol (kiritilmadi) |
+| tunel → kroy | `https://<ichki-host-tunel>/login/?next=https://<ichki-host-kroy>/` | <hisob> (parol — suhbatda) |
+| code-server | `https://<ichki-host-kod>` | faqat parol (kiritilmadi) |
 | Lokal server | `http://localhost:8811` | — |
 
 **Qoidalar:**
 - **tunel/kroy faqat o'qish** — "kerakli narsani ol, buzib qo'yma".
-- **code.bittada.uz hozircha kiritilmaydi.**
+- **<ichki-host-kod> hozircha kiritilmaydi.**
 
 ---
 

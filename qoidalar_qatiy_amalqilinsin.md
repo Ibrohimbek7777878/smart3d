@@ -121,7 +121,7 @@ Manba: `QOIDALAR-Bittada-2026-10-14.txt` (qavsda eski raqami). Bittada ERP'ga te
   Bazis BPJ — pauzadan chiqarildi (egasi, 2026-10-15: "bpj ni davom ettir"), TZ-17 bo'yicha.
 - **S6** (9.2). "3D xona / modullar" (ModuleCatalog) — haqiqiy zamer tizimi. Zamer/mebel joylash bo'yicha yangi
   dublikat tizim qurilmaydi, shu tizimga qo'shiladi.
-- **S7** (9.8). kroy.bittada.uz / tunel.bittada.uz — faqat o'qish. code.bittada.uz — hozircha kirilmaydi.
+- **S7** (9.8). <ichki-host-kroy> / <ichki-host-tunel> — faqat o'qish. <ichki-host-kod> — hozircha kirilmaydi.
 - **S8** (6.5). Testlar o'z nomli test bazasi bilan ishlaydi.
 
 ---

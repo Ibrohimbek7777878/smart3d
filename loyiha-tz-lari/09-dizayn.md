@@ -198,7 +198,7 @@ Smart3D/
 - `app/js/engine/*` (Q5 dan tashqari), `app/data/*`, `app/js/ai.js`.
 - Mavjud server API'lari (kirish, loyihalar, materiallar, AI, sex standartlari) — xatti-harakati o'zgarmaydi; node testlar.
 - `frontend/` (asl dizayn va asl React nusxa).
-- ERP, kroy.bittada.uz, tunel.bittada.uz.
+- ERP, <ichki-host-kroy>, <ichki-host-tunel>.
 
 ---
 
