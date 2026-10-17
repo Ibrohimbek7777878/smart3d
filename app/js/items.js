@@ -154,12 +154,13 @@ export function createItems(sp, opts = {}) {
    *   tegish (siljimasdan qo'yib yuborish) — avvalgidek tanlash / detal kartasi;
    * · bo'sh joyga TEGISH tanlovni bekor qiladi (pan/pinch bekor qilmaydi — controls.js);
    * · ikkinchi barmoq tushsa sudrash to'xtaydi (pinch-zoom controls.js da); Esc — mebel joyiga qaytadi;
+   * · opts.surish3d — 3D surish yoqilgan (yangi sayt: services/sahna.js);
    * · opts.cheklov(id) → (x, y) => {x, y} | null — devorga yopishish, devor/qo'shni mebelga kirmaslik (null — joyida qoladi);
    *   balandlik (z) o'zgarmaydi — ustki modul ustki qatorda qoladi. */
   let drag = null, tap = null;
   const SNAP = 50, TAP_PX = 6, USHLASH_MS = 300;
   const snap = (v) => Math.round(v / SNAP) * SNAP;
-  const _pl = new THREE.Plane(), _v = new THREE.Vector3();
+  const _v = new THREE.Vector3();
 
   function worldPerPx() {
     const rect = sp.renderer.domElement.getBoundingClientRect();
@@ -173,8 +174,8 @@ export function createItems(sp, opts = {}) {
     ray.setFromCamera(ptr, sp.camera);
     return ray.ray.intersectPlane(plane, _v) ? _v.clone() : null;
   }
-  /** 3D surish faqat orbit kamerada (yurish rejimida sudrash — qarash) */
-  const surish3d = () => sp.mode === '3d' && !!sp._controls && opts.surish3d !== false;
+  /** 3D surish — faqat yangi saytda (opts.surish3d; eski app.js da 3D avvalgidek) va orbit kamerada (yurish rejimida sudrash — qarash) */
+  const surish3d = () => sp.mode === '3d' && !!sp._controls && !!opts.surish3d;
   function orbitTiq(on) {
     const o = sp._controls;
     if (!o || !drag) return;

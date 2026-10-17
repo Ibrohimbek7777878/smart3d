@@ -89,7 +89,7 @@ export function createSahna(host, o) {
   let items = null, korinish = null;
   const ctl = attachControls(sp, { hitTest: (e) => !!(items && items.hitTest(e)) });
   items = createItems(sp, {
-    theme,
+    theme, surish3d: true,                                 // egasi #151: 3D da modul ustida tortish — surish
     getPlacements: o.getPlacements, getRoom: o.getRoom,
     /* #153: surilganda devorsiz ko'rinishdagi maydon chegarasi ham moslashadi */
     onDrag: (id, x, y) => { if (o.onDrag) o.onDrag(id, x, y); if (korinish) korinish.maydon(); },
