@@ -16,6 +16,9 @@ import { chizmaYech } from './chizish.js';
 import { joyQutilar, d6Teshiklar } from './d6.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
 
+/** D6 teshiklari prisadka narxi — mavjud stavka bo'yicha (materials.json hole_kinds); qolganlari — 'drill' */
+const D6_STAVKA = { d6_kosa: 'hinge', d6_eksentrik: 'cam' };
+
 /** D6: modul furniturasidagi ruchka teshiklari oralig'i ("Ручка 160 мм" → 160); ruchka yo'q — 0 (teshik qo'yilmaydi) */
 export function ruchkaOraligi(frag) {
   for (const hw of frag.hardware || []) {
@@ -487,7 +490,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     return price;
   };
   const holePrice = (kind) => {
-    const m = holeByKind[kind] || (kind === 'd6_kosa' ? holeByKind.hinge : null) || holeByKind.drill;   // D6: petlya kosasi — 'hinge' stavkasi
+    const m = holeByKind[kind] || holeByKind[D6_STAVKA[kind]] || holeByKind.drill;   // D6: petlya kosasi — 'hinge', eksentrik — 'cam' stavkasi
     if (m && m.price > 0) return m.price;
     noteMissing('Xizmatlar', 'hole:' + kind, (holeByKind[kind] && holeByKind[kind].name) || ("Teshik burg'ilash (" + kind + ')'));
     return 0;
@@ -601,7 +604,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   let holeCost = 0, totalHoles = 0, holeTaklif = 0;
   if (!teshikOn) {
     for (const kind in holeAgg) {
-      const m = holeByKind[kind] || holeByKind.drill;
+      const m = holeByKind[kind] || holeByKind[D6_STAVKA[kind]] || holeByKind.drill;   // D6 — tanlangandagidek stavka
       totalHoles += holeAgg[kind];
       holeTaklif += holeAgg[kind] * (m && m.price > 0 ? m.price : 0);   // narx yo'q ro'yxatiga yozilmaydi
     }
@@ -619,10 +622,11 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     const amount = qty * price;
     holeCost += amount;
     totalHoles += qty;
-    const tx = price > 0 && !tasdiqlangan(holeByKind[kind] || holeByKind.drill);
+    const hm = holeByKind[kind] || holeByKind[D6_STAVKA[kind]] || holeByKind.drill;
+    const tx = price > 0 && !tasdiqlangan(hm);
     lines.push({
       group: 'Xizmatlar', code: 'hole:' + kind,
-      name: `${((holeByKind[kind] || holeByKind.drill || {}).name) || "Teshik burg'ilash"} (${qty} dona)` + (tx ? markTaxminiy('Prisadka') : ''),
+      name: `${(hm || {}).name || "Teshik burg'ilash"} (${qty} dona)` + (tx ? markTaxminiy('Prisadka') : ''),
       qty, unit: 'dona', unit_price: price, amount, no_price: !(price > 0), taxminiy: tx
     });
   }
@@ -655,7 +659,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     }
     for (const e of cl.edges || []) cost += e.meters * (edgeByCode[e.material] || edgeByCode[String(e.material).replace(/\./g, '')] || {}).price_m || 0;
     for (const hw of cl.hardware || []) cost += hw.qty * hwUnitPrice(hw);
-    if (teshikOn) for (const hl of cl.holes || []) cost += (hl.qty || 1) * (hl.nusxa || 1) * (((holeByKind[hl.kind] || (hl.kind === 'd6_kosa' ? holeByKind.hinge : null) || holeByKind.drill || {}).price) || 0);
+    if (teshikOn) for (const hl of cl.holes || []) cost += (hl.qty || 1) * (hl.nusxa || 1) * (((holeByKind[hl.kind] || holeByKind[D6_STAVKA[hl.kind]] || holeByKind.drill || {}).price) || 0);
     if (totalParts) cost += laborCost * (cl.parts || []).length / totalParts;
     return { cost: Math.round(cost), client: Math.round(cost * (1 + markup)) };
   });

@@ -162,7 +162,6 @@ export function specTekshir(raw) {
   if (!material.polka.nom && material.korpus.nom) material.polka = Object.assign({}, material.korpus);   // ichki qism — korpus dekorida
   const rf = r.furnitura && typeof r.furnitura === 'object' ? r.furnitura : {};
   const furnitura = { birikma: ['konfirmat', 'ekssentrik'].includes(rf.birikma) ? rf.birikma : 'auto', polka: rf.polka === 'polkaderjatel' ? 'polkaderjatel' : 'auto', ruchka: 0 };
-  if (furnitura.birikma === 'ekssentrik') tuzatish.push({ kod: 'birikma' });                       // chizish dvigatelida — konfirmat
   const ru = son(rf.ruchka);
   if (ru > 0) { furnitura.ruchka = ichida(ru, [96, 2500]); if (furnitura.ruchka !== ru) tuzatish.push({ kod: 'ruchka', n: ru, m: furnitura.ruchka }); }
   const orqa = ['hdf', 'yergacha', 'yoq'].includes(r.orqa) ? r.orqa : 'auto';
@@ -190,6 +189,7 @@ export function specdanChizma(spec) {
   if (spec.orqa === 'yoq') ch.orqa = 'yoq';
   if (spec.orqa === 'yergacha' && (spec.tur === 'shkaf' || spec.tur === 'erkin')) ch.orqaYer = true;   // HDF polgacha (sokol ortini yopadi)
   if (spec.furnitura && spec.furnitura.ruchka > 0) ch.ruchka = { l: spec.furnitura.ruchka };
+  if (spec.furnitura && spec.furnitura.birikma === 'ekssentrik') ch.birikma = 'ekssentrik';         // korpus — eksentrikda (d6.js EKS)
   if (spec.tur !== 'ustki') ch.tag = { tur: spec.tag, h: spec.tag === 'yoq' ? 0 : spec.tag === (yangiChizma(spec.tur).tag.tur) ? ch.tag.h : spec.tag === 'sokol' ? 84 : 100 };
   const tugun = (x) => {
     const n = {};

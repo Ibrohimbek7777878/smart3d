@@ -1,5 +1,6 @@
 /* Smart3D engine/d6.js — D6: sex konstruktiv standarti bo'yicha teshiklar (egasi #136: "taklif bo'yicha qil").
- * Petlya kosasi va vintlari, petlya plankasi, polka ushlagich, ruchka. Konfirmat — alohida (birikmalar, TZ-06/TZ-11).
+ * Petlya kosasi va vintlari, petlya plankasi, polka ushlagich, ruchka, tortma yo'naltiruvchisi (NAPR). Konfirmat — alohida
+ * (birikmalar, TZ-06/TZ-11); eksentrik (EKS) — konfirmat o'rniga, qo'lda chizilgan modul birikmalarida (chizish.js).
  *
  * Qiymatlar sexning haqiqiy fayllaridan (Smart3D_toplam_2026-10-16, 30 buyurtma; o'lchov 2026-10-17):
  *   petlya kosasi  — Ø35 × 13, eshik uchidan 105 mm, petlya qirrasidan 21,5 mm (534 eshikning hammasida, 1-yuzada);
@@ -28,6 +29,18 @@ export const D6 = {
   polka: { d: 5, dp: 9, old: 65, orqa: 45, past: 2.5, minChuq: 140 },
   ruchka: { d: 5, chet: 40, uch: 50, oraliq: 160 }
 };
+/* Eksentrik (minifiks) birikmasi — konfirmat o'rniga (chizma.birikma = 'ekssentrik'; sukut — konfirmat). Sex KDT fayllaridan
+ * (13 buyurtma, 198 ta Ø15): korpus Ø15 × 12,5 (131 tasi; 16 mm detal), birikish toretsidan 35 mm (98 tasi; 34 — 84, 32 — 16);
+ * torets teshigi shu joyda Ø7 × 35, detal qalinligi o'rtasida (35 mm li korpuslarning 71 tasi, 6 buyurtma); juft detal yuzasida
+ * Ø10 × 11 ko'r teshik, toretsdan t/2 (8 mm) — 6 buyurtma (yon devorning uchta Ø10 teshigi pol/tomdagi uchta Ø15 bilan bir
+ * joyda: 65 / 300 / 535). Joylari — konfirmat qoidasi bo'yicha (birikish chizig'i bo'ylab). */
+export const EKS = { korpus: { d: 15, dp: 12.5, chet: 35 }, qirra: { d: 7, dp: 35 }, bolt: { d: 10, dp: 11 } };
+/* Tortma yo'naltiruvchisi (sharikli "salazka" — tortma yoni korpus yon devoridan 13 mm ichkarida; Bazis guruhi "Направляющие
+ * Салазка"): yon devor ichki yuzasida Ø3 × 2,5 qator, tortma qutisi tubidan 27 mm balandda (7 buyurtma: 2834, 3276, 3832, 3888,
+ * 3808, 3877, 3936 — .b3d dagi quti joyi ↔ KDT qatori). Qatordagi teshiklar quti (yo'naltiruvchi) old qirrasidan, uzunligiga qarab:
+ * 400 — 37 / 176 / 240 (5 buyurtma), 450 — 52 / 209 / 416 (2), 350 — 36 / 185 (1). Boshqa uzunlikda sex fayli yo'q — teshik
+ * qo'yilmaydi (o'ylab topilmaydi). Tandem (oraliq 5 mm) — Smart3D da yo'q, qo'yilmaydi. */
+export const NAPR = { d: 3, dp: 2.5, tubdan: 27, oraliq: 13, joy: { 350: [36, 185], 400: [37, 176, 240], 450: [52, 209, 416] } };
 export const YUZA_TESKARI = false;
 export const petlyaSoni = (h) => (h <= 1000 ? 2 : h <= 1600 ? 3 : h <= 2000 ? 4 : 5);
 const kupemi = (W, H) => W > 650 && H > 1500;
@@ -121,11 +134,23 @@ export function d6Teshiklar(qutilar, o = {}) {
     }
     for (const [X, Y] of pts) qosh(ei, '-', { ...ich, X, Y }, { dia: R.d, depth: r1(t), kind: 'd6_ruchka' });
   }
+  /* 3) tortma yo'naltiruvchisi: tortma yoni (quti) yonidagi korpus devoriga, qutiga qaragan yuzada */
+  for (const B of qutilar) {
+    if (B.rol !== 'tortma_yon' || B.o !== 'X') continue;
+    const joy = NAPR.joy[Math.round(B.hi.Z - B.lo.Z)];
+    if (!joy) continue;
+    const V = yonlar.find(({ q }) => (Math.abs(B.lo.X - q.hi.X - NAPR.oraliq) < 1 || Math.abs(q.lo.X - B.hi.X - NAPR.oraliq) < 1)
+      && B.lo.Y >= q.lo.Y - 1 && B.hi.Y <= q.hi.Y + 1 && B.lo.Z >= q.lo.Z - 1 && B.hi.Z <= q.hi.Z + 1);
+    if (!V) continue;
+    const ongda = B.lo.X >= V.q.hi.X, X = ongda ? V.q.hi.X : V.q.lo.X, Y = B.lo.Y + NAPR.tubdan;
+    for (const z of joy) qosh(V.i, ongda ? '+' : '-', { X, Y, Z: B.hi.Z - z }, { dia: NAPR.d, depth: NAPR.dp, kind: 'd6_napr' });
+  }
   return tesh;
 }
 
 /* ── MC (Bazis) modullari: joy → qutilar (har nusxa), rol va petlya tomoni ── */
 const ESHIK_RE = /dver|дверь|двер|eshik|fasad|фасад/i, TORTMA_RE = /ящик|yashik|tortma|drawer/i;
+const QUTI_YON_RE = /боковина ящика|bokovina_ya[sš]?[hc]?ika|bokovina jaschika/i;   // faqat tortma qutisining yoni ("tortma bok" — korpus devori)
 /**
  * frag — MC fragment (parts[].joy); vars — { w, d, h, t, t_korpus }; qalinlik(part) → mm; o: { hinge: 'left'|'right' (bitta eshik) }
  * @returns [{ code, ref, ...quti }] — ref: 'kod#n' (cutlist detal nusxasi)
@@ -146,7 +171,7 @@ export function joyQutilar(frag, vars, qalinlik, o = {}) {
     const nom = (part.nom || '') + ' ' + part.code;
     const rol = part.slot === 'polka' || /polka|полк/i.test(nom) ? (qotgan.has(part.code) ? null : 'polka')
       : part.slot === 'fasad' && j.o === 'Z' ? (TORTMA_RE.test(nom) || kargo ? 'tortma_fasad' : ESHIK_RE.test(nom) && !/planka|планк/i.test(nom) ? 'eshik' : null)
-        : j.o === 'X' && part.slot === 'korpus' ? 'yon' : null;
+        : j.o === 'X' && part.slot === 'korpus' ? (QUTI_YON_RE.test(nom) ? 'tortma_yon' : 'yon') : null;   // tortma qutisi yoni — yo'naltiruvchi uchun
     j.p.forEach((p, k) => {
       let lo;
       try { lo = { X: evalFormula(p[0], vars), Y: evalFormula(p[1], vars), Z: evalFormula(p[2], vars) }; } catch (_) { return; }

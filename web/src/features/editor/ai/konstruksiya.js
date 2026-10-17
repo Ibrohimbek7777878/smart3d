@@ -65,6 +65,7 @@ export async function aiKonstruksiya(matn, aiOn) {
   const xulosa = t('kons.xulosa', { b: x.bolim, p: x.polka, t: x.tortma, s: x.shtanga, e: x.eshik });
   const f = sp.furnitura || {}, furn = [];
   if (f.birikma === 'konfirmat') furn.push(t('kons.f_konfirmat'));
+  if (f.birikma === 'ekssentrik') furn.push(t('kons.f_ekssentrik'));
   if (f.polka === 'polkaderjatel') furn.push(t('kons.f_polkaderjatel'));
   if (f.ruchka > 0) furn.push(t('kons.f_ruchka', { n: f.ruchka }));
   if (sp.orqa === 'yergacha') furn.push(t('kons.f_orqa_yer'));
