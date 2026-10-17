@@ -1,8 +1,8 @@
 # TZ-28 — Shkaf prompti, material tanlash, 3D zoom, list ko'rsatkichi, 123 modul va Bazis o'lchovi
 
-**Sana:** 2026-10-17 · **Navbat:** 28 · **Holat:** BAJARILDI 2026-10-17 (jamoa; `dizayn` 5a1908f; egasi #146: "shu qismlarni to'g'irla … o'rtacha 1 soatda", #147: talqinlar tasdiqlandi)
+**Sana:** 2026-10-17 · **Navbat:** 28 · **Holat:** BAJARILDI 2026-10-17 (jamoa; `dizayn` 5a1908f; egasi #149: "shu qismlarni to'g'irla … o'rtacha 1 soatda", #150: talqinlar tasdiqlandi)
 
-**Asos — egasi #146, 3 ta skrinshot bilan:**
+**Asos — egasi #149, 3 ta skrinshot bilan:**
 - standart xona kichkina;
 - modulda rang va material tanlash tushunarsiz;
 - yaqinlashtirish va uzoqlashtirish juda tez va sifatsiz;
@@ -23,7 +23,7 @@
 | Test · 120 modul va Bazis (Sonnet, 13:35) | O'lchov | 123 modul: xato 0; 69 tasi to'liq narxli, 54 tasida narxsiz furnitura bor. 38 MC modul Bazis asli bilan: detallar 99%, maydon 99,8%, **narx 97,7%** (36/38 ≥ 95%), furnitura ro'yxati 85%, teshik 83%, kromka 63%. | — |
 | Test · Yakuniy (Sonnet, 13:45) | O'TDI | Node yashil, server 73/73, web 27 to'plam yashil; AI prompti mustaqil tekshirildi (ustma-ust 0, kiyim joyi aynan 1000 mm). | — |
 
-- **Egasi #147 da tasdiqladi:**
+- **Egasi #150 da tasdiqladi:**
   - "1 metr" — kiyim joyi balandligi;
   - kiyim joyi o'rtada;
   - "bakavina" — yon devor, orqa HDF ham polgacha;
