@@ -63,3 +63,36 @@ test('noma\'lum sahifa — 404 (dizayndagi sahifa), noma\'lum API — JSON 404',
   assert.equal(a.status, 404);
   assert.equal((await a.json()).code, 'S3D-SRV-002');
 });
+
+/* TZ-30: ilova manzillari (frontend bilan bir xil ro'yxat) — app.html, no-cache, /app.html bilan bir xil CSP; ro'yxatdan tashqari — 404 */
+const ILOVA = ['/kirish', '/royxat', '/loyihalar', '/loyiha/yangi', '/loyiha/42', '/sozlamalar', '/sozlamalar/narxlar', '/buyurtmalar', '/tg', '/kirish/'];
+test('TZ-30: ilova manzillari — app.html (200, no-cache, CSP /app.html bilan bir xil)', { skip: !HAS_WEB && 'web/dist yo\'q' }, async () => {
+  const a = await fetch(base + '/app.html');
+  const app = await a.text(), appCsp = a.headers.get('content-security-policy');
+  assert.ok(appCsp);
+  for (const p of ILOVA) {
+    const r = await fetch(base + p);
+    assert.equal(r.status, 200, p);
+    assert.equal(await r.text(), app, p + ': app.html');
+    assert.match(r.headers.get('content-type'), /text\/html/, p);
+    assert.equal(r.headers.get('cache-control'), 'no-cache', p);
+    assert.equal(r.headers.get('content-security-policy'), appCsp, p + ': CSP');
+    assert.equal(r.headers.get('x-content-type-options'), 'nosniff', p);
+  }
+  assert.equal((await fetch(base + '/loyihalar', { method: 'HEAD' })).status, 200);
+});
+
+test('TZ-30: ro\'yxatdan tashqari yo\'l — 404 sahifa; /api/yoq — JSON 404; bosh sahifa — avvalgidek', { skip: !HAS_WEB && 'web/dist yo\'q' }, async () => {
+  for (const p of ['/loyiha/abc', '/loyiha', '/loyiha/', '/loyiha/1/2', '/kirishx', '/Kirish', '/sozlamalar/boshqa', '/buyurtmalar/5', '/tg/x', '/eski/loyihalar']) {
+    const r = await fetch(base + p);
+    assert.equal(r.status, 404, p);
+    assert.match(await r.text(), /Sahifa topilmadi/, p);
+  }
+  const a = await fetch(base + '/api/yoq');
+  assert.equal(a.status, 404);
+  assert.match(a.headers.get('content-type'), /json/);
+  assert.equal((await a.json()).code, 'S3D-SRV-002');
+  const s = await fetch(base + '/');
+  assert.match(s.headers.get('content-security-policy'), /frame-ancestors 'none'/);
+  assert.match(await s.text(), /\/assets\/main-/);
+});

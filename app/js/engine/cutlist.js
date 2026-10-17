@@ -15,7 +15,7 @@ import { resolveSlots } from './slots.js';
 import { chizmaYech } from './chizish.js';
 import { joyQutilar, d6Teshiklar } from './d6.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
-import { kromkaXizmat, prisadkaXizmat, raspilXizmat, tasdiqMi } from './narxStavka.js';
+import { kromkaXizmat, prisadkaXizmat, raspilXizmat, tasdiqMi, ustamaManbasi } from './narxStavka.js';
 
 /** D6 teshiklari prisadka narxi — mavjud stavka bo'yicha (materials.json hole_kinds); qolganlari — 'drill' */
 const D6_STAVKA = { d6_kosa: 'hinge', d6_eksentrik: 'cam' };
@@ -479,7 +479,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   const markup = opt.markupPct != null ? opt.markupPct
     : sUst ? sUst.qiymat / 100
     : (materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0.35);
-  const markupManba = opt.markupPct != null ? 'usta' : sUst ? sUst.manba : 'taxmin';
+  const markupManba = opt.markupPct != null ? 'usta' : sUst ? sUst.manba : ustamaManbasi(materials);   // TZ-30: materials.json — egasi tasdiqlagan bo'lsa 'egasi'
 
   const missing = [];
   /* TZ-04: narx manbasi egasi tasdig'i bo'lmasa (price_src "egasi, <sana>" emas) — qator "taxminiy" */

@@ -388,6 +388,7 @@
  "kerf": 4,
  "pricing": {
   "markup_pct": 0.35,
-  "note": "Mijoz narxi = tannarx × (1 + markup_pct). 0.35 — kodda turgan standart qiymat; egasi tasdiqlashi kerak (TZ-SAYT-BARQARORLIK-RESPONSIVE §8)."
+  "price_src": "egasi, 2026-10-17",
+  "note": "Mijoz narxi = tannarx × (1 + markup_pct). 35% — egasi tasdiqladi (2026-10-17, SORIZLAR #181: \"35 foiz qolsin\"). Usta o'z ustamasini Sozlamalarda, admin — Narxlar bo'limida o'zgartira oladi."
  }
 }

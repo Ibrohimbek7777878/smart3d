@@ -41,13 +41,14 @@ export function csp({ scriptHashes = [], scriptExtra = [], frameAncestors = "'no
 }
 
 /* TZ-16: ilova sahifasi (app.html) Telegram Mini App bo'lib ochiladi — Telegram Web uni web.telegram.org ramkasiga oladi,
- * ilova Telegram skriptini telegram.org dan yuklaydi (faqat Telegram ichida). Qolgan sahifalar — avvalgidek (ramka taqiq). */
+ * ilova Telegram skriptini telegram.org dan yuklaydi (faqat Telegram ichida). Qolgan sahifalar — avvalgidek (ramka taqiq).
+ * ilovaMi — ilova hujjati beriladigan yo'l (sukut: /app, /app.html; TZ-30: ilova manzillari ham — index.js). */
 export const TG_ILOVA = /^\/app(\.html)?$/;
-export function securityHeaders({ prod, scriptHashes }) {
+export function securityHeaders({ prod, scriptHashes, ilovaMi = (p) => TG_ILOVA.test(p) }) {
   const policy = csp({ scriptHashes, upgrade: prod });
   const ilova = csp({ scriptHashes, upgrade: prod, scriptExtra: ['https://telegram.org'], frameAncestors: 'https://web.telegram.org' });
   return (req, res, next) => {
-    const tg = TG_ILOVA.test(req.path);
+    const tg = ilovaMi(req.path);
     res.set({
       'Content-Security-Policy': tg ? ilova : policy,
       'X-Content-Type-Options': 'nosniff',

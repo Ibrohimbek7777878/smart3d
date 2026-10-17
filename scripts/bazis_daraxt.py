@@ -21,7 +21,10 @@ ROOT = Path(__file__).resolve().parent.parent
 PARSER_DIR = ROOT.parent / "mebelcity-platform" / "client_erp" / "DOCS" / "bazis_erp_paket"
 sys.path.insert(0, str(PARSER_DIR))
 sys.dont_write_bytecode = True   # parser boshqa loyihada — u yerga __pycache__ yozilmasin
-import b3d_full_parser as P  # noqa: E402
+try:
+    import b3d_full_parser as P  # noqa: E402
+except ImportError:              # parser boshqa loyihada (maxfiy sex papkasi) — CI da yo'q; faqat .fr3d import uchun kerak
+    P = None
 
 PANEL = 4002
 
