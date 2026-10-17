@@ -3,6 +3,8 @@
  * 3D da modul ustida sichqoncha bilan tortish — placement.x/y o'zgaradi, z va kamera o'zgarmaydi; Esc — joyiga qaytadi;
  * devor tomon tortilsa — devorga 3 mm qolguncha yopishadi, ichiga kirmaydi, qo'shni modulga kirmaydi; bo'sh joyda tortish —
  * kamera aylanadi; planshet (touch): ~300 ms ushlab surish (pointerType 'touch'), ushlamasdan siljitish — kamera.
+ * #153: devorsiz ko'rinishda (xona o'chiq) pol maydoni chegarasi — modul yo'q: 5000 × 4000, bor: modullar qutisi + 1000 mm
+ * har tomondan; ramka va o'lcham yozuvi; modul surilsa — kengayadi; "Markazga" — butun maydon ekranda.
  * Ishlatish: bash tests/ui/web.sh surish   Skrinshotlar: tests/ui/out/web/surish-*.png */
 export default async function run(page) {
   const R = {};
@@ -73,6 +75,19 @@ async function asosiy(page, R) {
     await page.mouse.up(); await page.waitForTimeout(500);
   };
   const oraliqOk = (h) => Object.values(h.oraliq).every(g => g.every(v => v >= ORALIQ - 0.5));
+  /* #153: maydon — yozuv, chegara, modullar qutisi, burchaklar ekranda (kanva ichida) */
+  const maydon = () => M(() => {
+    const s = window.__app.sahna, k = s.korinish, b = k.maydonQuti, el = document.querySelector('[data-maydon]');
+    const g = s.sp.scene.getObjectByName('maydon');
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const m of s.items.meshes) { const u = m.userData; const r = (u.rot || 0) * Math.PI / 180, c = Math.cos(r), sn = Math.sin(r);
+      for (const [a, q] of [[0, 0], [u.w, 0], [u.w, u.d], [0, u.d]]) { const X = u.x + a * c - q * sn, Y = u.y + a * sn + q * c; x0 = Math.min(x0, X); x1 = Math.max(x1, X); y0 = Math.min(y0, Y); y1 = Math.max(y1, Y); } }
+    let korinadi = null;
+    if (b) { korinadi = [[b.x0, b.y0], [b.x1, b.y0], [b.x1, b.y1], [b.x0, b.y1]].every(([x, y]) => { const v = g.children[0].position.clone().set(x, y, 0).project(s.sp.camera); return Math.abs(v.x) <= 1 && Math.abs(v.y) <= 1; }); }
+    return { faol: k.maydonFaol(), yozuv: el ? el.getAttribute('data-maydon') : null, quti: b, chegara: !!(g && g.visible && g.children.some(c => c.isLineLoop)), korinadi,
+      modul: isFinite(x0) ? { x0: Math.round(x0), y0: Math.round(y0), x1: Math.round(x1), y1: Math.round(y1) } : null };
+  });
+  const xonaQoy = async (on) => { await M((on) => window.__app.sahna.korinish.set({ xona: on }), on); await page.waitForTimeout(200); };
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
@@ -86,6 +101,14 @@ async function asosiy(page, R) {
   /* 1) standart xona — 5 × 4 m (egasi #152), balandlik 2700 */
   R.xona = await M(() => ({ o: window.__app.doc.room.outline, h: window.__app.doc.room.wall_height, n: window.__app.doc.placements.length }));
   R.xonaOk = JSON.stringify(R.xona.o) === '[[0,0],[5000,0],[5000,4000],[0,4000]]' && R.xona.h === 2700;
+  /* 1b) #153: modul yo'q, devorsiz ko'rinish — standart maydon 5000 × 4000, chegara va yozuv bilan, "Markazga" — to'liq ko'rinadi */
+  for (let i = 0; i < 40 && !(await M(() => !!(window.__app.sahna && window.__app.sahna.korinish))); i++) await page.waitForTimeout(250);
+  await xonaQoy(false); await M(() => window.__app.sahna.center()); await page.waitForTimeout(800);
+  R.maydonBosh = await maydon();
+  R.maydonBoshOk = R.maydonBosh.faol && R.maydonBosh.yozuv === '5000x4000' && R.maydonBosh.chegara && R.maydonBosh.korinadi === true;
+  await page.screenshot({ path: `${OUT}/surish-0-maydon-bosh.png` });
+  await xonaQoy(true);
+  R.maydonYoqoldi = await M(() => !document.querySelector('[data-maydon]') && !window.__app.sahna.sp.scene.getObjectByName('maydon').visible);
 
   /* 2) tez boshlash — oshxona (avtomatik konstruktor): har modul devordan 3 mm, devorga kirish 0, ustma-ust yo'q */
   await page.locator('[data-tez="kitchen"]').click(); await page.waitForTimeout(800);
@@ -139,6 +162,21 @@ async function asosiy(page, R) {
   R.ustki = u ? { id: u.id, oldin: h4.pl[u.id], keyin: h5.pl[u.id] } : null;
   R.ustkiOk = !!u && (h5.pl[u.id].x !== h4.pl[u.id].x || h5.pl[u.id].y !== h4.pl[u.id].y) && h5.pl[u.id].z === h4.pl[u.id].z && oraliqOk(h5) && !h5.ustma.length;
 
+  /* 7b) #153: devorsiz — maydon = modullar qutisi + 1000 mm; modul surilsa — chegara kengayadi (modul doim ichida, 1 m zaxira) */
+  await xonaQoy(false); await M(() => window.__app.sahna.center()); await page.waitForTimeout(800);
+  const my0 = await maydon();
+  const qutiTeng = (m) => m.quti && m.modul && m.quti.x0 === m.modul.x0 - 1000 && m.quti.y0 === m.modul.y0 - 1000 && m.quti.x1 === m.modul.x1 + 1000 && m.quti.y1 === m.modul.y1 + 1000;
+  await page.screenshot({ path: `${OUT}/surish-4-maydon.png` });
+  const mm = await nuqta({});
+  if (mm) await sichqoncha(mm, 0, 200);
+  await M(() => window.__app.sahna.center()); await page.waitForTimeout(800);
+  const my1 = await maydon();
+  R.maydon = { oldin: my0, keyin: my1 };
+  R.maydonOk = my0.faol && my0.chegara && qutiTeng(my0) && my0.korinadi === true && my0.yozuv === (my0.quti.x1 - my0.quti.x0) + 'x' + (my0.quti.y1 - my0.quti.y0)
+    && !!mm && qutiTeng(my1) && JSON.stringify(my1.quti) !== JSON.stringify(my0.quti) && my1.korinadi === true;
+  await page.screenshot({ path: `${OUT}/surish-5-maydon-surildi.png` });
+  await xonaQoy(true); await M(() => window.__app.sahna.center()); await page.waitForTimeout(700);
+
   /* 8) planshet (touch): ushlab turib surish — pointerType 'touch'; ushlamasdan siljitish — kamera aylanadi */
   const cdp = await page.context().newCDPSession(page);
   await cdp.send('Emulation.setDeviceMetricsOverride', { width: 1180, height: 820, deviceScaleFactor: 2, mobile: true });
@@ -169,5 +207,5 @@ async function asosiy(page, R) {
   await cdp.send('Emulation.clearDeviceMetricsOverride');
 
   R.errs = errs;
-  R.ok = R.xonaOk && R.oshxonaOk && R.rejim === '3d' && R.sichqonchaOk && R.escOk && R.devorOk && R.boshJoyOk && R.ustkiOk && R.touchOk && R.touchKameraOk && !errs.length;
+  R.ok = R.xonaOk && R.maydonBoshOk && R.maydonYoqoldi && R.maydonOk && R.oshxonaOk && R.rejim === '3d' && R.sichqonchaOk && R.escOk && R.devorOk && R.boshJoyOk && R.ustkiOk && R.touchOk && R.touchKameraOk && !errs.length;
 }

@@ -86,14 +86,16 @@ export function dizaynMavzu() {
 export function createSahna(host, o) {
   const theme = dizaynMavzu();
   const sp = createScene(host, { mode: '3d', theme, insetTop: 72 });   // 72 px — dizayndagi toolbar
-  let items = null;
+  let items = null, korinish = null;
   const ctl = attachControls(sp, { hitTest: (e) => !!(items && items.hitTest(e)) });
   items = createItems(sp, {
     theme,
     getPlacements: o.getPlacements, getRoom: o.getRoom,
-    onSelect: o.onSelect, onDrag: o.onDrag, onDragEnd: o.onDragEnd, cheklov: o.cheklov, onRotate: o.onRotate, onRotateEnd: o.onRotateEnd, onTap: o.onTap
+    /* #153: surilganda devorsiz ko'rinishdagi maydon chegarasi ham moslashadi */
+    onDrag: (id, x, y) => { if (o.onDrag) o.onDrag(id, x, y); if (korinish) korinish.maydon(); },
+    onSelect: o.onSelect, onDragEnd: o.onDragEnd, cheklov: o.cheklov, onRotate: o.onRotate, onRotateEnd: o.onRotateEnd, onTap: o.onTap
   });
-  const korinish = createKorinish({ sp, ctl }, host);     // TZ-23: kamera, yo'nalish, chizish rejimlari, o'lchash
+  korinish = createKorinish({ sp, ctl }, host);           // TZ-23: kamera, yo'nalish, chizish rejimlari, o'lchash
   const api = {
     sp, items, ctl, korinish,
     setDoc(doc, placements, catalog, o) { sp.setDoc(doc, o); items.setPlacements(placements, catalog); korinish.qollash(); },
@@ -104,6 +106,7 @@ export function createSahna(host, o) {
     center() {
       sp.fit();
       if (sp.mode === '3d') { const t = sp.camTarget(); ctl.orbit.target.set(t[0], t[1], t[2]); ctl.orbit.update(); }
+      if (korinish.maydonFaol()) korinish.yonalish('izo');  // #153: devorsiz — butun maydon chegarasi bilan ko'rinadi
       sp._invalidate();
     },
     /** 🔄 — avto-aylanish (dizayn: 0.5 rad/s) */

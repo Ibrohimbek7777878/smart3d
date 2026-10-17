@@ -56,6 +56,7 @@ export async function mountSahna(host, onTap, alive = () => true) {
   } catch (_) { /* WebXR yo'q */ }
   if (ed.sel) sahna.select(ed.sel);
   korinishBoshla();                                       // TZ-23: ko'rinish holati (eslab qolingan yoki Bazis standarti)
+  if (sahna.korinish.maydonFaol()) sahna.center();         // #153: devorsiz ko'rinish — boshidan butun maydon ko'rinadi
   set('editor', { sceneOn: true, sceneErr: false });
 }
 
