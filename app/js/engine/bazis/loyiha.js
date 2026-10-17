@@ -47,6 +47,16 @@ export function materialTuri(nom, t) {
   return { tur, ishlab: !!ISHLAB[tur], asos, varaq };
 }
 
+/* TZ-20 (2026-10-17): oddiy (bir rangli) dekor — tekstura yo'nalishi yo'q, raskroyda aylantiriladi.
+ * Dalil — sexning GibLab fayllari (01_arra/*_2.project, detal txt="false"): Белый гладкий / шагрень /
+ * фасадный, Кашемир, Серый графит / шифер, Стальной серый, Антрацит, Бежевый, Цемент, Слоновая кость,
+ * LEGE / Каштан (pearl, soft touch, МОКРЫЙ МАТ, САХАРА), "LDSP ODDIY". Yog'och va tosh naqshi (Дуб, Ясень,
+ * Сосна, Бодега, Бетонный камень) va stoleshnitsa — sexda ham txt="true" (yo'nalish saqlanadi).
+ * Naqsh so'zi bo'lsa yoki rang tanilmasa — yo'nalish saqlanadi (ehtiyot). */
+const NAQSH = /дуб|ясен|сосн|орех|бук|вишн|ольх|кл[её]н|акаци|венге|зебрано|бодег|сонома|вотан|яблон|груш|листвен|кедр|бер[её]з|махагон|палисандр|шпон|древес|камен|бетон|мрамор|гранит|травертин|оникс|wood|oak|walnut|pine|beech|cherry|maple|marble|stone|concrete/i;
+const ODDIY_RANG = /бел(ый|ая|ое)|white|кашемир|графит|шифер|антра[цс]ит|сер(ый|ая|ое)|grey|gray|бежев|крем|cream|pearl|перл|soft touch|слонов|цемент|шагрен|гладк|мокрый|сахара|стальн|oddiy/i;
+export const oddiyDekor = (nom) => !NAQSH.test(String(nom || '')) && ODDIY_RANG.test(String(nom || ''));
+
 /** kromka nomi → qalinlik ("19/1" → 1, "21/0.8" → 0.8) */
 function kromkaQalinlik(b) {
   if (b.thickness > 0 && b.thickness <= 5) return b.thickness;
@@ -238,7 +248,7 @@ export function bazisLoyiha(objects, o = {}) {
   for (const g of [...guruh.values()].sort((a, b) => b.soni - a.soni || (b.dl * b.dw) - (a.dl * a.dw))) {
     const code = 'bz' + (++n);
     parts.push({ code, nom: g.nom, qty: g.soni, len: String(g.dl), width: String(g.dw), slot: g.slot, material_code: g.mkod,
-      tekstura: g.tur === 'hdf' ? 'erkin' : 'uzunlik', bazis_material: g.mnom });
+      tekstura: g.tur === 'hdf' || (g.tur === 'ldsp' && oddiyDekor(g.mnom)) ? 'erkin' : 'uzunlik', bazis_material: g.mnom });
     const boyicha = {};
     for (const [s, k] of Object.entries(g.tomonlar)) (boyicha[k] = boyicha[k] || []).push(s);
     for (const [k, sides] of Object.entries(boyicha)) edge.push({ code, sides: sides.sort(), material: k, thickness: kromkalar.get(k).thickness });
