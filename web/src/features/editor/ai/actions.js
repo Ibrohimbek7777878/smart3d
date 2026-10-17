@@ -1,13 +1,14 @@
 import { get, set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { S } from '../../../store/session.js';
-import { toast, confirm, xato } from '../../../store/ui.js';
+import { toast, confirm, xato, openSheet } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
 import { aiBuild, startVoice, voiceSupported } from '../../../../../app/js/ai.js';
 import { roomBBox } from '../../../../../app/js/engine/rules.js';
 import { konstruksiya } from '../../../../../app/js/engine/konstruktor/index.js';
 import { konstruksiyami } from '../../../../../app/js/engine/konstruksiyaTili.js';
 import { aiKonstruksiya } from './konstruksiya.js';
+import { oshxonaQatorlar } from './oshxona.js';
 import { t, til } from '../../../i18n/index.js';
 
 /* TZ-19 (TZ-12): AI — server til modeli (kirgan va serverda yoqilgan bo'lsa) yoki qoidali tahlilchi (ai.js), ovoz — brauzer. */
@@ -50,6 +51,12 @@ export async function runAI(silent) {
     set('editor', { sel: null, part: null, warn: {} });
     project.changed('room', true);
     const bb = roomBBox(res.doc.room.outline);
+    /* egasi #166: oshxona matni — "nima tushunildi" kartasi (matndan / sukut) */
+    if (res.oshxona) {
+      openSheet('aioshxona', { qatorlar: oshxonaQatorlar(res.oshxona, { w: Math.round(bb.w), d: Math.round(bb.h) }) });
+      toast(res.oshxona.natija ? t('ai.osh_qurdi', { n: res.doc.placements.length, l: res.oshxona.spec.uzunlik || Math.round(bb.w) }) : t('ai.osh_qurilmadi'));
+      return;
+    }
     toast(res.assumed ? t('ai.olcham_taxmin')
       : t('ai.qurdi', { n: res.doc.placements.length, w: Math.round(bb.w), h: Math.round(bb.h) }) + (res.unknown.length ? t('ai.tushunilmadi', { s: res.unknown.join(', ') }) : ''));
   } catch (e) { if (!silent) xato('S3D-AI-101', { matn: t('ai.xato', { s: e.message }), modul: 'editor/ai', err: e }); }
@@ -63,7 +70,7 @@ export function matnniQur() {
   if (!konstruksiyami(text)) { buildFromText(); return; }
   set('ai', { open: false, mic: false });
   aiKonstruksiya(text, aiOn)
-    .then(r => { if (r === 'xona') buildFromText(); })
+    .then(r => { if (r === 'xona') buildFromText(); })   // egasi #168: 'katalog' — tayyor modul qo'yildi, 'yoq' — xabar va "Baribir chizish"
     .catch(e => xato('S3D-AI-101', { matn: t('ai.xato', { s: e.message }), modul: 'editor/ai', err: e }));
 }
 

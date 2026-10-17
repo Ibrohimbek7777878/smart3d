@@ -148,5 +148,35 @@ ok('AI javobi: material tozalanadi, qalinlik chegarada, ekssentrik — o\'zi (iz
   && r.spec.material.polka.nom === r.spec.material.korpus.nom && !r.tuzatish.some(t => t.kod === 'birikma') && r.spec.furnitura.birikma === 'ekssentrik'
   && K.specdanChizma(r.spec).birikma === 'ekssentrik' && !K.specdanChizma(rE.spec).birikma && r.spec.furnitura.ruchka === 2500 && r.spec.eksport === '' && r.spec.orqa === 'auto', J(r));
 
+/* egasi #168: avval katalogdagi tayyor modul (yangi CH- modul faqat "Baribir chizish" bosilsa) — app/js/engine/katalogTanlash.js */
+{
+  const { katalogdanTop, modulBelgilari } = await import('../app/js/engine/katalogTanlash.js');
+  const { applySexStandart } = await import('../app/js/engine/standart.js');
+  const std = JSON.parse(readFileSync(DATA + 'sex-standartlari.json', 'utf8')), cat = {};
+  for (const f of JSON.parse(readFileSync(DATA + 'fragments.json', 'utf8'))) cat[f.code] = f;
+  for (const f of JSON.parse(readFileSync(DATA + 'fragments-mc.json', 'utf8')).fragments) cat[f.code] = f;
+  for (const f of Object.values(cat)) applySexStandart(f, std);
+  const tan = (m) => { const raw = K.matndanSpec(m); return katalogdanTop(K.specTekshir(raw).spec, raw, cat, m); };
+  const kk = (r, k) => r.mos.concat(r.mosEmas).find(x => x.k === k);
+  ok('belgilar: MC-SH-01 — 2 eshik, shtanga; SP-K-022 — 3 tortma; SP-G-010 — kupe', J(modulBelgilari(cat['MC-SH-01'])) === J({ eshik: 2, tortma: 0, polka: 1, shtanga: true, kupe: false })
+    && modulBelgilari(cat['SP-K-022']).tortma === 3 && modulBelgilari(cat['SP-G-010']).kupe, J([modulBelgilari(cat['MC-SH-01']), modulBelgilari(cat['SP-K-022'])]));
+  for (const [nom, m] of [['egasi', EGA], ['ruscha', RUS], ['imlo xatosiz', TOZA]]) {
+    const r = tan(m);
+    ok(nom + ': katalogdan MC-SH-01 (garderob, 2 eshik, shtanga) — 1200×580×2100, yangi modul chizilmaydi', r.topildi && r.frg === 'MC-SH-01' && J(r.olcham) === J({ w: 1200, d: 580, h: 2100 }), J([r.frg, r.olcham]));
+    ok(nom + ': mos — eni, chuqurligi (350–600), bo\'yi (1780–2590), 2 eshik, shtanga; mos emas — polka soni (modulda 1)',
+      ['eni', 'chuqurligi', 'boyi', 'eshik', 'shtanga'].every(k => r.mos.some(x => x.k === k)) && kk(r, 'polka') && r.mosEmas.some(x => x.k === 'polka' && x.modulda === 1), J([r.mos.map(x => x.k), r.mosEmas]));
+  }
+  const t1 = tan('тумба 600, 4 ящика'), t2 = tan('pastki shkaf 800 3 tortma'), t3 = tan('javon 800x300x1800');
+  ok('tumba 600, 4 ящика → SP-K-022 (3 tortma, eni 600 — mos; tortma 4/3 — mos emas)', t1.topildi && t1.frg === 'SP-K-022' && t1.olcham.w === 600 && t1.mosEmas.some(x => x.k === 'tortma' && x.soraldi === 4 && x.modulda === 3), J(t1));
+  ok('pastki 800, 3 tortma → SP-K-022 eni 800 (400–900 chegarasida)', t2.topildi && t2.frg === 'SP-K-022' && t2.olcham.w === 800 && !t2.mosEmas.length, J(t2));
+  ok('javon 800x300x1800 → SP-SH-001 (hammasi mos)', t3.topildi && t3.frg === 'SP-SH-001' && !t3.mosEmas.length, J(t3));
+  const y = tan('komod 6 tortma');
+  ok('komod 6 tortma — katalogda mos modul yo\'q (eng yaqinida 3 tortma) — chizilmaydi', !y.topildi && y.yetishmaydi.some(x => x.k === 'tortma' && x.soraldi === 6 && x.modulda === 3), J(y));
+  const ch = tan('pastki shkaf 1000 3 tortma');
+  ok('chegara: eni 1000 so\'raldi — SP-K-022 chegarasi 400–900 → 900 (mos emas qatorida)', ch.topildi && ch.frg === 'SP-K-022' && ch.olcham.w === 900
+    && ch.mosEmas.some(x => x.k === 'eni' && x.soraldi === 1000 && x.min === 400 && x.max === 900 && x.natija === 900), J(ch));
+  ok('natija har safar bir xil', J(tan(EGA)) === J(tan(EGA)));
+}
+
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);
 process.exit(fail ? 1 : 0);
