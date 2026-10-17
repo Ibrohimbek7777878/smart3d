@@ -24,6 +24,7 @@ export const store = createStore({
   projects: { list: null, q: '', aloqa: true },              // aloqa — ro'yxat serverdan olindimi (TZ-27)
   buyurtma: { list: null, admin: null },                  // TZ-23 C1: "Buyurtmalarim" va admin ro'yxati (features/buyurtma)
   bazis: { yuk: null },                                   // TZ-21: Bazis fayli o'qilmoqda (fayl nomi)
+  tarix: { bekor: 0, qayta: 0 },                          // bekor qilish / qaytarish: qadamlar soni (store/bekor.js)
   /* TZ-23: 3D ko'rinish (kamera, fon, chizish rejimi, rentgen, xona, fasadsiz, o'lchash) — features/editor/scene/korinish.js */
   /* TZ-24 A: modul chizish (features/editor/chizish) */
   chizish: { ochiq: false, kod: null, pl: null, ch: null, yol: [], fasad: true, nom: '', modullarim: null, v: 0, raw: {} },

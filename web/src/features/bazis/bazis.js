@@ -59,7 +59,7 @@ export async function bazisFayl(f) {
     const res = await ishchida(buf, nom);
     if (!res.ok) { xato(res.xato || 'S3D-BAZIS-103', { modul: 'bazis', xabar: (res.xabar ? res.xabar + ' · ' : '') + 'fayl: ' + nom }); return; }
     S.resetCurrent();
-    project.reset(bazisHujjat(res));
+    project.reset(bazisHujjat(res), true);           // yangi loyiha — bekor qilish tarixi bo'sh
     set('project', { name: nom.replace(/\.(b3d|fr3d|bpj)$/i, ''), client: '' });
     ishJoyiOch();                                    // TZ-25: ish joyi (kompyuterda — katalog paneli, unda Bazis hisoboti tugmasi)
     project.changed('room', true);

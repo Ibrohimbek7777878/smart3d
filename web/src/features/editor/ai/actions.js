@@ -44,6 +44,7 @@ export async function runAI(silent) {
     res.doc.placements = res.doc.placements.filter(p => H.catalog[p.frg]);
     res.doc.room.utilities = quvur;
     res.doc.kitchen = res.kitchen ? Object.assign(L.freshKitchen(), res.kitchen) : (project.doc.kitchen || L.freshKitchen());
+    project.tarix.belgi('ai');                          // bekor qilish: AI qurish — bitta qadam
     project.reset(res.doc);
     set('ai', { open: false, mic: false });
     set('editor', { sel: null, part: null, warn: {} });

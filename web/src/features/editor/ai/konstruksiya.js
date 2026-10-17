@@ -58,6 +58,7 @@ export async function aiKonstruksiya(matn, aiOn) {
   const tuzatish = (ai ? ai.tuzatish : []).concat(n.tuzatish), tushunilmadi = ai ? ai.tushunilmadi : n.tushunilmadi;
   const sp = n.spec, ch = specdanChizma(sp);
   const nom = sp.nom || t('chizish.nom_' + sp.tur) + ' ' + sp.eni + '×' + sp.chuqurligi + '×' + sp.boyi;
+  project.tarix.belgi('ai');                                       // bekor qilish: AI modul — bitta qadam
   const p = yangiModul(null, ch, nom);
   const M = materialQoy(project.H, p, sp.material);
   if (M.bor.length) project.changed('items', true);                // modul materiali — qayta hisob (narx, raskroy)
