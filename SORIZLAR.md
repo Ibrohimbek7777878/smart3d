@@ -386,3 +386,27 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 138. (iqtibos: "👎 Narx yonida "* to'liq emas" turadi — ishonchni pasaytiradi (narxning 53% i aniq). 👎 Oxirida "Buyurtma berish" tugmasi yo'q (C1), mijoz nima qilishini bilmaydi.") buyurtma berish tugmasin qosh va narxn eng kamida 95foiz aniq bolish kere end savolaring bilan  qaytadna aniq qisqa shunarli qilb ber
 
 142. NARX.pdf   bu fayld narxlar  bor shularn ol /home/ibrohim/Desktop/bittada sunpin/Smart3Dbu esa fyaln yoli korib chiq
+
+143. tasdqilayman 
+qara hozir ishlayotgan claude nega tohtovsiz ishlayabd va natija kam ishlar agentlarga bolib berish kere  va bita loyhan butun boshli jamoa qilish kere backend chi frontendni esa frontendchi va tugatgach bita tester toliq test qilib olish kere va vazifa murakb yokida onsonligiga qarba token sarf ham shunga qarb ishlasin hamda har birga bita deadline qoyilish kere va osha deadlingacha tugatish kere agarda tugata olmasa nega tugatilmagan va undna boshqa qaysi qismlar qilind va qaysilar nima sababdan qoldi aniq sabab bilan shuntirb berish kere ishlarn hammasin esa sen nazoart qilasan va menga har birn bolgandna eyn hisobot topshirishng kere hozir nima shunding va qanday ishlashkerelign shunib olding keyin
+Sen — koordinator. Vazifani bo'laman, har bir agentga ism, model va deadline beraman. Ularning kodini ko'rib chiqaman, birlashtiraman, commit/push qilaman va sizga hisobot beraman.
+Jamoa (ism vazifaga qarab: "Backend · Buyurtma API", "Frontend · Buyurtma oynasi", "Test · Buyurtma"):
+Backendchi — server va hisob dvigateli;
+Frontendchi — sayt (tasdiqlangan dizaynga tegmaydi);
+Testchi — ikkalasi tugagach hamma testni va TZ qabul shartlarini tekshiradi. Kod yozmaydi, "o'tdi/o'tmadi" ni dalil bilan aytadi.
+Har agent alohida git nusxada ishlaydi — bir-birining va boshqa Claude'ning fayllariga tegmaydi.
+Token murakkablikka qarab sarflanadi:
+oson (matn, tarjima, kichik tuzatish) → Haiku, ~30 daqiqa;
+o'rta (yangi oyna, API) → Sonnet, 1–2 soat;
+murakkab (hisob, konstruktor, stanok fayllari) → Opus, 2–3 soat.
+Deadline agentning topshirig'ida yoziladi. Agent soatni tekshirib boradi, vaqt tugasa to'xtab hisobot yozadi. Men ham o'sha vaqtda tekshiraman.
+Har vazifadan keyin sizga hisobot: BAJARILDI / QISMAN / BAJARILMADI; nima qilindi; nima qoldi va aniq sababi; test natijasi; deadline va haqiqiy vaqt; commit.
+Testdan o'tmasa — agentga bir marta qaytaraman. Yana o'tmasa — sababi bilan sizga aytaman.
+Ochig'ini aytsam, jamoa umumiy token sarfini kamaytirmaydi. Foydasi — tezlik va alohida, mustaqil testchi.
+end shunib oldingmi ish tartibin hozir sen kod yozganda tohtovsiz 1yo 2 soat ishlayabsan va naitja u qadar zor bolayabd token esa behuda ketaybadi
+
+144. pixel agentsin ozing ishga tushirb ber
+
+145. agetnlarin qandya qoshaman
+
+146. server run qilb brauzerda och firefoxda

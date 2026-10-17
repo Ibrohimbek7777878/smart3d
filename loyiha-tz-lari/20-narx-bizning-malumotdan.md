@@ -1,6 +1,6 @@
 # TZ-20 — Narx faqat bizning ma'lumotdan (admin "Narxlar" sahifasi)
 
-**Sana:** 2026-10-16 · **Navbat:** 20 · **Holat:** QAYTA YOZILDI 2026-10-17 (egasi #138: "narx eng kamida 95% aniq bo'lishi kerak") — savollar javobi va "boshla" kutilmoqda
+**Sana:** 2026-10-16 · **Navbat:** 20 · **Holat:** 1-BOSQICH BAJARILDI 2026-10-17 (egasi #143: "tasdiqlayman"; jamoa — `dizayn` ebbefdb). Narx stavkalari egasi javobini kutmoqda
 **Asos:** egasi (2026-10-16, muharrir skrinshoti bilan): "bu yerdagi narx bizning datalar asosida chiqarib berish kerak".
 **Bog'liq:** TZ-04 (narx jadvali + import vositasi), TZ-14 (admin sahifa namunasi), TZ-21 (Bazis faylidan smeta shu narxlardan oladi).
 
@@ -91,6 +91,25 @@ Bazis fayli → bizning kesim va raskroy ↔ sex GibLab'da kesgani. Sex kesgan m
   | Ручка 160 мм (46) | 0351 -160- MATOVIY 16 000 (arzoni: 5006 -160- 9 000) |
   | salazka / napravl. 400 (50) | SAMET SREDNIY 40 SM 36 000 (yoki ROLIK 40 LIK VAKUM 42 000) |
   | Эксцентрик (4) | MSFIX Эксцентрик-дюбель 1 800 |
+
+### 1-bosqich natijasi (2026-10-17, jamoa ishi — egasi #143)
+Koordinator vazifani 3 backend agentga bo'ldi, keyin mustaqil testchi tekshirdi. Hammasi `dizayn` da (ebbefdb, push qilindi).
+
+| Agent (model, deadline) | Holat | Natija | Commit |
+|---|---|---|---|
+| Backend · Furnitura bog'lash (Sonnet, 12:20) | BAJARILDI (1 marta qaytarildi: web ilovaga ulanmagan edi) | `app/data/furnitura-boglash.json` — 12 kod → 7 mahsulot; MC modullari, Bazis importi va web hisob shu jadvaldan; 74 qator narxli bo'ldi | 9279d12, ba62c58 |
+| Backend · Bazis teshiklari (Sonnet, 13:20) | QISMAN (1 marta qaytarildi: narx teshiklari stanok ogohlantirishiga tushardi) | `app/js/engine/bazis/teshik.js` — tur bo'yicha soni, 7 buyurtmada KDT bilan: 8 turdan 6 tasi ±10%; shkant −29%, eksentrik +50% (bitta buyurtmaga bog'liq) | 7dfda91, acf6587 |
+| Backend · Raskroy (Opus, 13:50) | QISMAN | kerf faqat detallar orasida; oddiy dekor aylanadi (dalil — sex GibLab `txt="false"`); 108 sozlamali joylashtirish. 8 buyurtma LDSP: 34 → 27 (sex 23,5); sex list formatida (2750×1830) 24 — maqsad (≤ 24,7) shu formatda bajarildi | d1d74b6 |
+| Test · Narx (Sonnet, 12:50) | O'TDI | node yashil, server 73/73, web 27 to'plam yashil; raskroy geometriyasi 6 buyurtmada xatosiz (ustma-ust 0, kerf buzilishi 0); 3832 — 113–232 ms | — |
+
+- **Sinov oshxonasi** (`scripts/smeta_hisob.mjs`, ebbefdb): tannarx 3 271 549, mijoz narxi 4 416 591, narxsiz qator 5.
+  - Furnitura qo'shildi: +furnitura narxi.
+  - Raskroy yaxshilandi: −list narxi.
+- **Qolgani:**
+  - list formati (Bazis yoki sexdagi) — egasi qarori;
+  - teshik, raspil, kromka stavkalari — egasi javobi;
+  - samorez/konfirmat birligi;
+  - "Narx aniqligi X%" (frontend) — stavkalardan keyin.
 
 ### Savollar (2026-10-17)
 1. **Raspil:** Altendorf / Holzma 1, 2, 3 nimani bildiradi (material turi, qalinlik yoki detal soni)? Usta loyihasiga qaysi biri qo'yiladi?
