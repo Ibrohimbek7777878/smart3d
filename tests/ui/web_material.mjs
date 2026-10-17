@@ -70,7 +70,19 @@ async function asosiy(page, R) {
   await V('[data-material-mashhur] [data-material-plitka] > button').first().click(); await page.waitForTimeout(1000);
   R.mashhurTanla = await st();
   /* "Boshqa ranglar" → to'liq ko'rinish; narxsiz plitalar ro'yxatda yo'q */
+  R.boshqaSoni = await M(() => { const b = document.querySelector('[data-material-boshqa]'); const m = b && b.innerText.match(/·\s*(\d+)/); return m ? +m[1] : -1; });
   await boshqa();
+  /* "Yana ko'rsatish" — plitkalar soni jami dekorlarga yetguncha (150 tadan) */
+  const royxatSoni = () => M(() => document.querySelectorAll('[data-material-royxat] [data-material-plitka]').length);
+  R.yanaBoshi = await royxatSoni();
+  for (let i = 0; i < 20 && await V('[data-material-yana]').count(); i++) { await V('[data-material-yana]').click(); await page.waitForTimeout(300); }
+  R.yanaSoni = await royxatSoni();
+  R.yanaTugmaYoq = !(await V('[data-material-yana]').count());
+  R.yanaJami = R.boshqaSoni > 150 && R.yanaBoshi === 150 && R.yanaSoni === R.boshqaSoni && R.yanaTugmaYoq;
+  R.yanaBoshi150 = R.boshqaSoni > 150 ? R.yanaBoshi : R.yanaBoshi === R.boshqaSoni;
+  /* qism almashsa chek 150 ga qaytadi */
+  await chip('qism', 'Polka').click(); await page.waitForTimeout(300);
+  R.chekQaytdi = (await royxatSoni()) <= 150;   // yangi qism — chek yana 150 (oldingi 300+ emas)
   R.toliq = await M(() => !!document.querySelector('[data-material-qidiruv]') && !!document.querySelector('[data-material-rang]') && !document.querySelector('[data-material-mashhur]'));
   R.narxsizYoq = await M(() => ![...document.querySelectorAll('[data-material-royxat] [data-material-plitka]')].some(x => /narx yo'q/i.test(x.innerText)));
   await page.screenshot({ path: `${OUT}/material-sodda-boshqa-1440.png` });
@@ -153,6 +165,6 @@ async function asosiy(page, R) {
     !!R.sel && /faqat shu modul/.test(R.modulDoira) && R.modulSlot && erp(R.modulSlot.fasad) && R.boshqalar === 0 &&
     R.loyihaga.fasad === R.modulSlot.fasad && R.loyihaga.qolgan === 0 &&
     R.saqlash.polka && JSON.stringify(R.saqlash.kodlar) === JSON.stringify(R.saqlash.kerak) &&
-    R.kashemir && R.birChip && R.mashhur.n >= 8 && R.mashhur.n <= 12 && R.mashhur.narxsiz === 0 && R.mashhur.boshqa && R.mashhur.yashirin && erp(R.mashhurTanla.mat) && R.toliq && R.narxsizYoq &&
+    R.kashemir && R.birChip && R.mashhur.n >= 8 && R.mashhur.n <= 12 && R.mashhur.narxsiz === 0 && R.mashhur.boshqa && R.mashhur.yashirin && erp(R.mashhurTanla.mat) && R.toliq && R.narxsizYoq && R.yanaJami && R.yanaBoshi150 && R.chekQaytdi &&
     R.tel.bor && R.tel.sigadi && !R.tel.hScroll && errs.length === 0;
 }

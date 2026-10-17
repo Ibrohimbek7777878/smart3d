@@ -82,6 +82,7 @@ export default function MaterialVaraq() {
         </section>))}
       {!s.bor ? <span style={{ ...hint, padding: '12px 0' }}>{t('mebel.topilmadi')}</span> : null}
       {s.jami ? <span style={hint}>{s.jami}</span> : null}
+      {s.yana ? <button data-material-yana="" onClick={s.yana.pick} style={{ ...chip(false), minHeight: '40px', alignSelf: 'center' }}>{t('mebel.yana_korsatish', { n: s.yana.n })}</button> : null}
     </div>
     </>) : null}
     {s.loyihadagi || s.umumiy || s.asli ? (
