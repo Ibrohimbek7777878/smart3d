@@ -42,6 +42,7 @@
 | 25 | [Bosh ish joyi — Bazis kabi bitta ekran: matn qatori, Bazis faylini ochish, xona va mebel chizish](25-bosh-ish-joyi.md) | **BAJARILDI** 2026-10-17 (`dizayn`) | egasi: yangi ish joyini ko'rib chiqish (skrinshotlar `tests/ui/out/web/ishjoyi-*.png`) |
 | 26 | [AI konstruksiya: usta matni → Claude → tizim tili → ideal chizma](26-ai-konstruksiya.md) | **BAJARILDI** 2026-10-17 (`dizayn`) — AI'siz tahlilchi ishlaydi | admin: Claude kaliti serverga (`AI_PROVIDER=anthropic`, `ANTHROPIC_API_KEY`) — `server/DEPLOY.md` |
 | 27 | [Muharrir qulayliklari: eshik qiya ochilishi, yurishda tanlash, "orqaga", "Davom ettirish"](27-muharrir-qulayliklari.md) | **BAJARILDI** 2026-10-17 (`dizayn`) | — |
+| 28 | [Shkaf prompti, material tanlash, 3D zoom, list ko'rsatkichi, 123 modul va Bazis o'lchovi](28-egasi-146-tuzatishlar.md) | **BAJARILDI** 2026-10-17 (jamoa, `dizayn` 5a1908f) — narx Bazis bilan 97,7% (38 MC modul) | egasi: material oynasi ko'rinishi, zapchast takliflari, sukut materiallar, xona o'lchami, kromka qoidasi |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.
