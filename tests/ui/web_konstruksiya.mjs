@@ -2,7 +2,8 @@
  * Tekshiriladi: "shkaf 1200x600x2200, chapda shtanga, o'ngda 4 polka, 2 eshik" → xonaga modul (CH-…), "Modul chizish" paneli,
  * chizma: 2 bo'lim, chapda shtanga, o'ngda 4 polka, 2 eshik; izoh kartasi (kim tushundi, xulosa); narx; ruscha
  * "тумба 600, 4 ящика" → tumba 4 tortma; AI oynasidagi "Qurish" ham shu yo'l; xona matni ("oshxona 3x4 m") — oshxona yo'li
- * (almashtirish tasdig'i); keng polka — tizim to'g'rilaydi (izohda); telefon (390). Ishlatish: bash tests/ui/web.sh konstruksiya */
+ * (almashtirish tasdig'i); keng polka — tizim to'g'rilaydi (izohda); telefon (390); egasining prompti (2026-10-17) — o'lcham,
+ * bo'limlar, ERP materiallar, furnitura, OBJ darhol yuklanadi. Ishlatish: bash tests/ui/web.sh konstruksiya */
 export default async function run(page) {
   const R = {};
   try { await asosiy(page, R); } catch (e) {
@@ -50,9 +51,27 @@ async function asosiy(page, R) {
   R.sahnada = await M((k) => { let n = 0; window.__app.sahna.sp.groups.items.traverse(o => { if (o.userData && o.userData.frg === k) n++; }); return n; }, R.shkaf.kod);
   await page.screenshot({ path: `${OUT}/konstruksiya-1440-shkaf.png` });
 
+  /* 1b) egasining prompti (2026-10-17, aynan): o'lcham, bo'limlar (chapda 1000 mm kiyim joyi, ustida va ostida polka; o'ngda 6 polka),
+   *     ERP materiallar modul qismlarida (Кашемир, Дуб Золотой), uzun ruchka, HDF polgacha; "obj formatda yubor" — OBJ darhol yuklanadi */
+  const EGA = 'mebel turi:shkaf balandlig 2100mm , eniga 1200mm,chuqurlig 580mm,korpusi va ichki qism materali:kashemir,16mm , fasad dubzalatoy,16mm, ikki eshikli chap tomondan 1 metr kiyim iladigan vishilkali joy, tepa va pastida polkalar bor bittadan , ong tomonda qolgan qismmi 6ta teng polkadan iborat , korpus brikmasi konfirmat, polkalar polka derjatel, bilan mahkamlanad  ruchka 1mterlik uzun ruchkadan qoyilad korpus bakavinasi yergacha va sokilli boladi,  obj formatda yubor gpirmasdan yubor';
+  const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 20000 }).catch(() => null), yoz(EGA)]);
+  await kut((n) => Object.keys(window.__app.doc.chizmalar || {}).length > n, R.shkaf.n);
+  await page.waitForTimeout(800);
+  R.ega = await M(() => {
+    const a = window.__app, k = Object.keys(a.doc.chizmalar || {}), kod = k[k.length - 1], fr = a.H.catalog[kod];
+    const p = a.doc.placements.find(x => x.frg === kod), ch = fr && fr.chizma;
+    const mat = (c) => (a.doc.erpMat && a.doc.erpMat[c] && a.doc.erpMat[c].name) || c || null;
+    return { n: k.length, tur: ch && ch.tur, wdh: p && [p.w, p.d, p.h], chap: ch && ch.ichki.bo[0].n, ong: ch && ch.ichki.bo[1].n, orqaYer: ch && ch.orqaYer, ruchka: ch && ch.ruchka,
+      slots: p && p.slots ? { korpus: mat(p.slots.korpus), polka: mat(p.slots.polka), fasad: mat(p.slots.fasad) } : null, narx: a.res && a.res.priceRes.total };
+  });
+  R.egaIzoh = await M(() => (document.querySelector('[data-kons-izoh]') || {}).innerText || '');
+  R.egaObj = dl ? dl.suggestedFilename() : null;
+  R.egaDialog = await M(() => !!document.querySelector('[role=dialog], [data-tasdiq]'));
+  await page.screenshot({ path: `${OUT}/konstruksiya-1440-egasi.png` });
+
   /* 2) ruscha tumba */
   await yoz('тумба 600, 4 ящика');
-  await kut((n) => Object.keys(window.__app.doc.chizmalar || {}).length > n, R.shkaf.n);
+  await kut((n) => Object.keys(window.__app.doc.chizmalar || {}).length > n, R.ega.n);
   await page.waitForTimeout(600);
   R.tumba = await oxirgi();
 
@@ -94,6 +113,10 @@ async function asosiy(page, R) {
   R.ok = R.shkaf.n === 1 && /^CH-/.test(R.shkaf.kod) && R.shkaf.tur === 'shkaf' && JSON.stringify(R.shkaf.wdh) === '[1200,600,2200]'
     && s.yo === 'v' && s.bo.length === 2 && s.bo[0].shtanga && s.bo[0].eshik === 1 && s.bo[1].polka === 4 && s.bo[1].eshik === 1 && R.shkaf.narx > 0
     && /AI'siz/.test(R.izoh) && /2 bo'lim/.test(R.izoh) && R.panel && R.sahnada > 0
+    && R.ega.tur === 'shkaf' && JSON.stringify(R.ega.wdh) === '[1200,580,2100]' && R.ega.chap.yo === 'h' && R.ega.chap.ajrat === 'polka' && R.ega.chap.bo.length === 3
+    && R.ega.chap.bo[1].o === 1000 && R.ega.chap.bo[1].n.shtanga && R.ega.chap.eshik === 1 && R.ega.ong.polka === 6 && R.ega.ong.eshik === 1 && R.ega.orqaYer && R.ega.ruchka.l === 1000
+    && R.ega.slots && /Кашемир UR 16мм/.test(R.ega.slots.korpus) && /Кашемир UR 16мм/.test(R.ega.slots.polka) && /Дуб Золотой 16мм/.test(R.ega.slots.fasad) && R.ega.narx > 0
+    && /8 polka/.test(R.egaIzoh) && /Кашемир/.test(R.egaIzoh) && /konfirmat/.test(R.egaIzoh) && /1000 mm/.test(R.egaIzoh) && R.egaObj === 'smart3d-model.obj' && !R.egaDialog
     && R.tumba.tur === 'tumba' && R.tumba.ichki.tortma === 4 && R.tumba.wdh[0] === 600
     && R.javon.ichki.yo === 'v' && R.javon.ichki.bo.length === 2 && R.javon.ichki.bo.every(b => b.polka === 5) && /bo'lgich/.test(R.javonIzoh)
     && R.ustki.tur === 'ustki' && R.ustki.ichki.eshik === 2 && R.ustki.ichki.polka === 2 && R.aiYopildi

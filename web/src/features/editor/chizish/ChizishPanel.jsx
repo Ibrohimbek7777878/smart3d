@@ -82,6 +82,8 @@ export default function ChizishPanel() {
         <section data-kons-izoh="" style={{ ...card, display: 'flex', flexDirection: 'column', gap: '6px', borderColor: 'rgba(95,225,196,.35)' }}>
           <b style={{ display: 'flex', alignItems: 'center', color: 'var(--cyan)' }}><Ikon n="ai" size={16} />{v.izoh.kim}</b>
           <span style={{ fontSize: '13px', fontWeight: '700' }}>{v.izoh.xulosa}</span>
+          {(v.izoh.qoshimcha || []).map((x, i) => <span key={'q' + i} data-kons-qoshimcha="" style={hint}>{x}</span>)}
+          {(v.izoh.yoq || []).map((x, i) => <span key={'y' + i} data-kons-yoq="" style={{ ...hint, color: 'var(--pch)' }}>{x}</span>)}
           {v.izoh.tuzatish.length ? (<>
             <span style={hint}>{t('kons.izoh_sarlavha')}</span>
             <ul data-kons-tuzatish="" style={{ margin: '0', paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '13px' }}>

@@ -23,6 +23,8 @@ const AI_JAVOB = {
   tur: 'shkaf', nom: 'Garderob', eni: 5000, chuqurligi: 600, boyi: 2200, tag: 'sokol', qopqoq: 'auto',
   bolimlar: [{ eni: 0, eshik: 1, petlya: 'chap', polka: 1, tortma: 0, shtanga: true, qatlamlar: [] },
     { eni: 0, eshik: 1, petlya: 'ong', polka: 4, tortma: 0, shtanga: false, qatlamlar: [] }],
+  orqa: 'yergacha', material: { korpus: { nom: 'кашемир', qalinlik: 16 }, polka: { nom: '', qalinlik: 0 }, fasad: { nom: 'дуб золотой', qalinlik: 16 } },
+  furnitura: { birikma: 'konfirmat', polka: 'polkaderjatel', ruchka: 1000 }, eksport: 'obj',
   tushunilmadi: ['oyna rangi']
 };
 const kontent = () => (javob === 'ok' ? JSON.stringify(AI_JAVOB) : javob === 'xona' ? JSON.stringify({ ...AI_JAVOB, tur: 'xona' })
@@ -84,6 +86,11 @@ test('sxema: tur ro\'yxati xona bilan, bo\'limlar va qatlamlar, hamma maydon maj
   assert.equal(KONS_SCHEMA.additionalProperties, false);
   const b = KONS_SCHEMA.properties.bolimlar.items;
   assert.ok(b.required.includes('qatlamlar') && b.properties.qatlamlar.items.required.includes('boyi'));
+  /* 2026-10-17: material (ERP dekori nomi), furnitura, orqa devor, eksport, qatlamlar orasi (ajrat) — LLM yo'lida ham */
+  for (const k of ['orqa', 'material', 'furnitura', 'eksport']) assert.ok(KONS_SCHEMA.required.includes(k), k);
+  assert.deepEqual(KONS_SCHEMA.properties.material.required, ['korpus', 'polka', 'fasad']);
+  assert.deepEqual(KONS_SCHEMA.properties.furnitura.required, ['birikma', 'polka', 'ruchka']);
+  assert.ok(b.required.includes('ajrat'));
 });
 
 test('OpenAI\'ga mos: ko\'rsatma va sxema yuboriladi; javob tekshiriladi va to\'g\'rilanadi; jurnalga yoziladi', async () => {
@@ -98,6 +105,11 @@ test('OpenAI\'ga mos: ko\'rsatma va sxema yuboriladi; javob tekshiriladi va to\'
   assert.ok(j.tuzatish.some(t => t.kod === 'olcham' && t.n === 5000 && t.m === 2750));
   assert.ok(j.spec.bolimlar.length >= 4);                          // keng bo'limlar — bo'lindi (polka 800, eshik 600)
   assert.deepEqual(j.tushunilmadi, ['oyna rangi']);
+  assert.equal(j.spec.orqa, 'yergacha');
+  assert.deepEqual(j.spec.material.fasad, { nom: 'дуб золотой', qalinlik: 16 });
+  assert.deepEqual(j.spec.material.polka, { nom: 'кашемир', qalinlik: 16 });   // aytilmagan — korpus dekorida
+  assert.deepEqual(j.spec.furnitura, { birikma: 'konfirmat', polka: 'polkaderjatel', ruchka: 1000 });
+  assert.equal(j.spec.eksport, 'obj');
   const q = seen[seen.length - 1];
   assert.match(q.body.messages[0].content, /konstruksiya tiliga/);
   assert.match(q.body.messages[0].content, /PASTDAN YUQORIGA/);

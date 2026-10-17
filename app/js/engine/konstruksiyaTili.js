@@ -4,7 +4,11 @@
  *   { tur: 'shkaf'|'pastki'|'ustki'|'tumba'|'erkin', nom, eni, chuqurligi, boyi (mm; 0 — aytilmagan),
  *     tag: 'sokol'|'oyoq'|'yoq'|'auto', qopqoq: 'yaxlit'|'planka'|'auto',
  *     bolimlar: [ chapdan o'ngga: { eni (0 — teng), eshik (-1 — eniga qarab, 0, 1, 2), petlya: 'chap'|'ong'|'auto',
- *                 polka, tortma, shtanga, qatlamlar: [ pastdan yuqoriga: { boyi (0 — teng), eshik, petlya, polka, tortma, shtanga } ] } ] }
+ *                 polka, tortma, shtanga, ajrat: 'polka'|'auto' (qatlamlar orasi: polka — polka ushlagichda, auto — bo'lgich),
+ *                 qatlamlar: [ pastdan yuqoriga: { boyi (0 — teng), eshik, petlya, polka, tortma, shtanga } ] } ],
+ *     orqa: 'hdf'|'yergacha'|'yoq'|'auto', material: { korpus|polka|fasad: { nom (ERP dekor nomi, '' — aytilmagan), qalinlik } },
+ *     furnitura: { birikma: 'konfirmat'|'ekssentrik'|'auto', polka: 'polkaderjatel'|'auto', ruchka (uzun ruchka mm, 0 — standart) },
+ *     eksport: 'obj'|'' (qurilgach fayl darhol yuklanadi) }
  *   Pastki modul va tumbaning "bo'yi" — oyog'i bilan (stoleshnitsasiz), korpus bo'yi = bo'yi − oyoq.
  *
  * Tizim to'g'rilaydi ("ideal"): o'lcham — tur chegarasiga; bir eshik 600 mm dan keng bo'lsa — 2 eshik; eshikli bo'lim
@@ -34,6 +38,11 @@ export const TIL_IZOH = `Konstruksiya tili (JSON):
 - qopqoq: "yaxlit", "planka" yoki "auto".
 - bolimlar: vertikal bo'limlar CHAPDAN O'NGGA. Har bo'lim: eni (mm, 0 — teng), eshik (0, 1, 2 yoki -1 — aytilmagan, tizim eniga qarab qo'yadi), petlya ("chap", "ong", "auto"), polka (soni), tortma (soni), shtanga (kiyim ilgich, true/false), qatlamlar.
 - qatlamlar: bo'lim ichida gorizontal bo'lingan qismlar PASTDAN YUQORIGA (masalan pastda 3 tortma, tepada 2 polka). Har qatlam: boyi (mm, 0 — teng), eshik, petlya, polka, tortma, shtanga. Qatlam yo'q bo'lsa — bo'sh ro'yxat.
+- ajrat: qatlamlar orasidagi gorizontal detal — "polka" (polka ushlagichda turadigan polka, masalan "kiyim joyi, tepa va pastida polka") yoki "auto" (bo'lgich).
+- orqa: orqa devor — "hdf", "yergacha" (orqa HDF polgacha, sokolni ham yopadi; "bakavina yergacha"), "yoq" yoki "auto".
+- material: korpus, polka (ichki qism), fasad — har biri { nom: dekor nomi matndagidek ("kashemir", "дуб золотой"), qalinlik: mm }. Aytilmagan — nom "", qalinlik 0. "Korpus va ichki qism" — korpus va polka bir xil.
+- furnitura: birikma ("konfirmat", "ekssentrik", "auto"), polka ("polkaderjatel" yoki "auto"), ruchka — uzun ruchka uzunligi mm ("1 metrlik ruchka" = 1000), aytilmagan — 0.
+- eksport: "obj" — usta OBJ faylni so'rasa ("obj formatda yubor"), aks holda "yoq".
 - Faqat matnda AYTILGANNI yozing, raqam o'ylab topmang. "Eshiklar" soni umumiy aytilsa — bo'limlarga taqsimlang (har bo'limga 1 yoki 2). Eshik aytilmagan bo'lsa -1.
 - Matn bitta mebel konstruksiyasi emas (xona, oshxona rejasi, bir nechta modul buyurtmasi) bo'lsa — tur "xona".`;
 
@@ -71,7 +80,7 @@ export function specTekshir(raw) {
   const eni = ol('eni', asos.w), chuqurligi = ol('chuqurligi', asos.d);
   const boyi = ol('boyi', asos.h + oyoq);
   let bolimlar = (Array.isArray(r.bolimlar) ? r.bolimlar : []).slice(0, 8).map(b => Object.assign(tarkib(b), {
-    eni: Math.max(0, son(b && b.eni)),
+    eni: Math.max(0, son(b && b.eni)), ajrat: b && b.ajrat === 'polka' ? 'polka' : 'auto',
     qatlamlar: (Array.isArray(b && b.qatlamlar) ? b.qatlamlar : []).slice(0, 6).map(q => Object.assign(tarkib(q), { boyi: Math.max(0, son(q && q.boyi)) }))
   }));
   if (!bolimlar.length) bolimlar = ichkidanBolimlar(asos.ichki);       // hech narsa aytilmagan — turning standart ichi
@@ -90,7 +99,7 @@ export function specTekshir(raw) {
   /* 1) polka 800 mm dan keng — bo'limni teng bo'laklarga (vertikal bo'lgich) */
   let w = enlar();
   bolimlar = bolimlar.flatMap((b, i) => {
-    const kerak = (b.polka > 0 || b.qatlamlar.some(q => q.polka > 0)) ? Math.ceil(w[i] / POLKA_MAX) : 1;
+    const kerak = (b.polka > 0 || b.qatlamlar.some(q => q.polka > 0) || (b.ajrat === 'polka' && b.qatlamlar.length > 1)) ? Math.ceil(w[i] / POLKA_MAX) : 1;
     if (kerak <= 1) return [b];
     tuzatish.push({ kod: 'polka_bolgich', n: Math.round(w[i]), k: kerak });
     return Array.from({ length: kerak }, () => Object.assign(JSON.parse(JSON.stringify(b)), { eni: 0, eshik: b.eshik > 0 ? -1 : b.eshik }));
@@ -146,8 +155,20 @@ export function specTekshir(raw) {
 
   const nom = typeof r.nom === 'string' && r.nom.trim() ? r.nom.trim().slice(0, 60) : '';
   const tag = (tur === 'pastki' || tur === 'tumba') && tagTur === 'sokol' ? 'sokol' : tagTur;
+  /* material (ERP dekori nomi — saytda ro'yxatdan qidiriladi), furnitura, orqa devor, eksport */
+  const rm = r.material && typeof r.material === 'object' ? r.material : {};
+  const matOl = (x) => ({ nom: x && typeof x.nom === 'string' ? x.nom.replace(/[<>]/g, '').trim().slice(0, 60) : '', qalinlik: ichida(son(x && x.qalinlik), [0, 40]) });
+  const material = { korpus: matOl(rm.korpus), polka: matOl(rm.polka), fasad: matOl(rm.fasad) };
+  if (!material.polka.nom && material.korpus.nom) material.polka = Object.assign({}, material.korpus);   // ichki qism — korpus dekorida
+  const rf = r.furnitura && typeof r.furnitura === 'object' ? r.furnitura : {};
+  const furnitura = { birikma: ['konfirmat', 'ekssentrik'].includes(rf.birikma) ? rf.birikma : 'auto', polka: rf.polka === 'polkaderjatel' ? 'polkaderjatel' : 'auto', ruchka: 0 };
+  if (furnitura.birikma === 'ekssentrik') tuzatish.push({ kod: 'birikma' });                       // chizish dvigatelida — konfirmat
+  const ru = son(rf.ruchka);
+  if (ru > 0) { furnitura.ruchka = ichida(ru, [96, 2500]); if (furnitura.ruchka !== ru) tuzatish.push({ kod: 'ruchka', n: ru, m: furnitura.ruchka }); }
+  const orqa = ['hdf', 'yergacha', 'yoq'].includes(r.orqa) ? r.orqa : 'auto';
   return {
-    spec: { tur, nom, eni, chuqurligi, boyi, tag, qopqoq: ['yaxlit', 'planka'].includes(r.qopqoq) ? r.qopqoq : asos.qopqoq, bolimlar },
+    spec: { tur, nom, eni, chuqurligi, boyi, tag, qopqoq: ['yaxlit', 'planka'].includes(r.qopqoq) ? r.qopqoq : asos.qopqoq, bolimlar,
+      orqa, material, furnitura, eksport: r.eksport === 'obj' ? 'obj' : '' },
     tuzatish, tushunilmadi: (Array.isArray(r.tushunilmadi) ? r.tushunilmadi : []).slice(0, 10).map(s => String(s).slice(0, 80))
   };
 }
@@ -166,11 +187,18 @@ export function specdanChizma(spec) {
   const oyoq = (spec.tur === 'pastki' || spec.tur === 'tumba') && spec.tag !== 'yoq' ? (ch.tag.h || 100) : 0;
   ch.w = spec.eni; ch.d = spec.chuqurligi; ch.h = spec.boyi - oyoq;
   ch.qopqoq = spec.qopqoq;
+  if (spec.orqa === 'yoq') ch.orqa = 'yoq';
+  if (spec.orqa === 'yergacha' && (spec.tur === 'shkaf' || spec.tur === 'erkin')) ch.orqaYer = true;   // HDF polgacha (sokol ortini yopadi)
+  if (spec.furnitura && spec.furnitura.ruchka > 0) ch.ruchka = { l: spec.furnitura.ruchka };
   if (spec.tur !== 'ustki') ch.tag = { tur: spec.tag, h: spec.tag === 'yoq' ? 0 : spec.tag === (yangiChizma(spec.tur).tag.tur) ? ch.tag.h : spec.tag === 'sokol' ? 84 : 100 };
   const tugun = (x) => {
     const n = {};
     if (x.eshik > 0) { n.eshik = x.eshik; if (x.eshik === 1) n.petlya = x.petlya === 'ong' ? 'ong' : 'chap'; }
-    if (x.qatlamlar && x.qatlamlar.length > 1) { n.yo = 'h'; n.bo = x.qatlamlar.map(q => ({ o: q.boyi > 0 ? q.boyi : null, n: tugun(q) })); return n; }
+    if (x.qatlamlar && x.qatlamlar.length > 1) {
+      n.yo = 'h'; n.bo = x.qatlamlar.map(q => ({ o: q.boyi > 0 ? q.boyi : null, n: tugun(q) }));
+      if (x.ajrat === 'polka') n.ajrat = 'polka';                // qatlamlar orasi — polka (ushlagichda), bo'lgich emas
+      return n;
+    }
     if (x.tortma > 0) n.tortma = x.tortma;
     else { if (x.polka > 0) n.polka = x.polka; if (x.shtanga) n.shtanga = true; }
     return n;
@@ -183,12 +211,17 @@ export function specdanChizma(spec) {
 /** qisqa tavsif (xabar uchun): "2 bo'lim · 4 polka · 3 tortma · shtanga · 4 eshik" — raqamlar */
 export function specXulosa(spec) {
   const s = { bolim: spec.bolimlar.length, polka: 0, tortma: 0, shtanga: 0, eshik: 0 };
-  const yig = (x) => { s.polka += x.polka; s.tortma += x.tortma; s.shtanga += x.shtanga ? 1 : 0; s.eshik += Math.max(0, x.eshik); (x.qatlamlar || []).forEach(yig); };
+  const yig = (x) => {
+    s.polka += x.polka + (x.ajrat === 'polka' && x.qatlamlar && x.qatlamlar.length > 1 ? x.qatlamlar.length - 1 : 0);
+    s.tortma += x.tortma; s.shtanga += x.shtanga ? 1 : 0; s.eshik += Math.max(0, x.eshik); (x.qatlamlar || []).forEach(yig);
+  };
   spec.bolimlar.forEach(yig);
   return s;
 }
 
-/* ── AI'siz tahlilchi (uz, ru, en; oddiy jumlalar) ── */
+
+/* ── AI'siz tahlilchi (uz, ru, en; oddiy jumlalar; o'zbekcha og'zaki imlo xatolariga chidamli:
+ *    "balandlig", "chuqurlig", "eniga", "materali", "brikmasi", "vishilka", "derjatel", "sokilli", "bakavina", "1mterlik") ── */
 const KW = {
   shkaf: /shkaf|garderob|kiyim|penal|шкаф|шифонь|гардероб|пенал|wardrobe|closet|tall cabinet/,
   pastki: /pastki|ostki|stol ?osti|нижн|напольн|base cabinet|lower cabinet|base unit/,
@@ -197,10 +230,10 @@ const KW = {
   erkin: /javon|stellaj|стеллаж|bookcase|shelving|shelf unit|ochiq polka/
 };
 const ICH = {
-  polka: /(\d+)\s*(?:ta\s*)?(?:polka|пол(?:к|ок)|shel)|(?:polka|пол(?:к|ок)[^\s\d:,.;]*|shel[^\s\d:,.;]*)\s*(\d+)/,
+  polka: /(\d+)\s*(?:ta(?:dan)?\s*)?(?:teng\s+|равн[а-яё]*\s+|одинаков[а-яё]*\s+|equal\s+)?(?:polka|пол(?:к|ок)|shel)|(?:polka|пол(?:к|ок)[^\s\d:,.;]*|shel[^\s\d:,.;]*)\s*(\d+)/,
   tortma: /(\d+)\s*(?:ta\s*)?(?:tortma|yashik|ящик|выдвиж|drawer)|(?:tortma[^\s\d:,.;]*|ящик[^\s\d:,.;]*|drawer[^\s\d:,.;]*)\s*(\d+)/,
   eshik: /(\d+)\s*(?:ta\s*)?(?:eshik|дверц|двер|створ|door)|(?:eshik[^\s\d:,.;]*|двер[^\s\d:,.;]*|door[^\s\d:,.;]*)\s*(\d+)/,
-  shtanga: /shtanga|ilgich|veshal|штанг|вешал|плечик|rod\b|hanging|rail/,
+  shtanga: /shtang|vishil|veshil|ilgich|iladigan|iluvchi|osiladigan|veshal|штанг|вешал|плечик|(?<![a-z])rod(?![a-z])|hanging|rail/,
   eshiksiz: /eshiksiz|ochiq\b|без двер|открыт|no doors?|open\b/
 };
 const XONA = /\bxona|комнат|\broom\b|reja|планировк|\bl ?shakl|burchakli oshxona|г-образ|п-образ|u-shape|l-shape|orol|остров|island|xolodilnik|холодильник|fridge|plita|плит|stove|moyka|мойк|sink|\d+\s*ta\s*(?:pastki|ustki|shkaf|modul)|\d+\s*(?:нижн|верхн|шкаф)[^\s\d:,.;]*\s+и\s+\d+/;
@@ -214,56 +247,146 @@ export function konstruksiyami(matn) {
   return Object.values(KW).some(re => re.test(s)) || /polka|tortma|shtanga|bo'lim|полк|ящик|штанг|секци|shel|drawer|section/.test(s);
 }
 
+/* o'lcham birligi: mm oldin ("1200mm" — metr emas), metr — og'zaki xatolar bilan ("metr", "mtr", "1mterlik") */
+const BIRLIK = "(mm|мм|sm|см|cm|m[a-z']*|м[а-яё]*)";
 /** matndagi o'lcham: "1.2 m", "120 sm", "1200 mm", "1200" → mm */
 function mm(v, birlik) {
   const x = +String(v).replace(',', '.');
   if (!isFinite(x)) return 0;
-  if (/^(m|м|metr|метр)/.test(birlik || '')) return Math.round(x * 1000);
-  if (/^(sm|см|cm)/.test(birlik || '')) return Math.round(x * 10);
+  const b = birlik || '';
+  if (/^(mm|мм)/.test(b)) return Math.round(x);
+  if (/^(sm|см|cm)/.test(b)) return Math.round(x * 10);
+  if (/^(m|м)/.test(b)) return Math.round(x * 1000);
   return x < 10 ? Math.round(x * 1000) : Math.round(x);
 }
 const sonOl = (re, s) => { const m = re.exec(s); return m ? +(m[1] || m[2]) : null; };
 
+/* so'z bilan aytilgan son → raqam ("ikki eshikli", "bittadan", "две двери", "six shelves") */
+const SONLAR = [
+  [1, "bir|bitta|bittadan|один|одна|одно|одну|одной|одним|one"], [2, "ikki|ikkita|ikkitadan|два|две|двух|two|double"], [3, "uch|uchta|три|трёх|трех|three"],
+  [4, "to'rt|tort|to'rtta|tortta|четыре|four"], [5, "besh|beshta|пять|five"], [6, "olti|oltita|шесть|six"], [7, "yetti|yettita|семь|seven"],
+  [8, "sakkiz|sakkizta|восемь|eight"], [9, "to'qqiz|toqqiz|девять|nine"], [10, "o'n|o'nta|десять|ten"]
+].map(([n, s]) => [new RegExp("(?<![a-zа-яё'])(?:" + s + ")(?![a-zа-яё'])", 'g'), String(n)]);
+function tayyorla(matn) {
+  let s = String(matn || '').toLowerCase().replace(/[ʻʼ’‘`´]/g, "'").replace(/(\d),(\d)/g, '$1.$2');
+  for (const [re, n] of SONLAR) s = s.replace(re, n + ' ');
+  /* o'lcham ko'paytmasi: "1200х600" (kirill х ham) — faqat sonlar orasida */
+  s = s.replace(/(\d)\s*(mm|мм|sm|см|cm|m|м)?\s*[×хx*]\s*(?=\d)/g, '$1$2x');
+  return s.replace(/[ \t]+/g, ' ');
+}
+
+/* material: "korpusi va ichki qism materiali: kashemir, 16mm", "fasad dub zolotoy 16mm", "материал корпуса — кашемир 16 мм" */
+const MAT_SOZ = "(materi?al[a-z']*|матери?ал[а-яё]*)";
+const NOM = "([^\\d,;:.\\n]+)", QAL = "(?:\\s*[,;]?\\s*(\\d{1,2}(?:\\.\\d)?)\\s*(?:mm|мм))?";
+const MAT_RE = {
+  korpus: new RegExp("(?:korpus[a-z']*|корпус[а-яё]*|carcass|body)((?:\\s+(?:va|hamda|и|and)\\s+(?:ichki(?:\\s+qism[a-z']*)?|polka[a-z']*|внутрен[а-яё]*(?:\\s+част[а-яё]*)?|полк[а-яё]*|interior|inside|shel[a-z]*))?)\\s*" + MAT_SOZ + "?\\s*[:=—–-]?\\s*" + NOM + QAL, 'g'),
+  korpus2: new RegExp(MAT_SOZ + "\\s+(?:korpus[a-z']*|корпус[а-яё]*|carcass|body)\\s*[:=—–-]?\\s*" + NOM + QAL, 'g'),
+  polka: new RegExp("(?:polka[a-z']*|полок|полк[а-яё]*|shel[a-z]*)\\s*" + MAT_SOZ + "\\s*[:=—–-]?\\s*" + NOM + QAL, 'g'),
+  fasad: new RegExp("(?:fasad[a-z']*|фасад[а-яё]*|front[a-z]*)\\s*" + MAT_SOZ + "?\\s*[:=—–-]?\\s*" + NOM + QAL, 'g'),
+  umumiy: new RegExp("(?<![a-zа-яё])" + MAT_SOZ + "\\s*[:=—–-]?\\s*" + NOM + QAL, 'g')
+};
+const NOM_EMAS = /korpus|корпус|fasad|фасад|polka|полк|eshik|двер|ruchk|ручк|brikma|birikma|bakavin|боковин|konfirmat|конфирмат|sokol|цокол/;
+function nomTozala(x) {
+  const n = String(x || '').replace(/^\s*(?:из|from|of|dan)\s+/, '').replace(/\s+(?:bo'?ladi|bo'?lsin|bo'?lad|qilinadi|будет|is)\s*$/, '').trim();
+  return n.replace(/[^a-zа-яё' -]/g, '').trim().length >= 3 && !NOM_EMAS.test(n) ? n.slice(0, 60) : '';
+}
+function materialOl(s) {
+  const bosh = () => ({ nom: '', qalinlik: 0 });
+  const M = { korpus: bosh(), polka: bosh(), fasad: bosh() };
+  const top = (re, fn) => { re.lastIndex = 0; let m; while ((m = re.exec(s))) if (fn(m)) return; };
+  top(MAT_RE.korpus, (m) => {
+    const nom = nomTozala(m[3]); if (!nom || !(m[2] || m[4])) return false;
+    M.korpus = { nom, qalinlik: m[4] ? Math.round(+m[4]) : 0 };
+    if (m[1] && m[1].trim()) M.polka = Object.assign({}, M.korpus);      // "korpus va ichki qism" — polka ham
+    return true;
+  });
+  if (!M.korpus.nom) top(MAT_RE.korpus2, (m) => { const nom = nomTozala(m[2]); if (!nom) return false; M.korpus = { nom, qalinlik: m[3] ? Math.round(+m[3]) : 0 }; return true; });
+  top(MAT_RE.polka, (m) => { const nom = nomTozala(m[2]); if (!nom) return false; M.polka = { nom, qalinlik: m[3] ? Math.round(+m[3]) : 0 }; return true; });
+  top(MAT_RE.fasad, (m) => { const nom = nomTozala(m[2]); if (!nom || !(m[1] || m[3])) return false; M.fasad = { nom, qalinlik: m[3] ? Math.round(+m[3]) : 0 }; return true; });
+  if (!M.korpus.nom) top(MAT_RE.umumiy, (m) => {
+    if (/(korpus|корпус|fasad|фасад|polka|полк|shel|front)[^,;]{0,25}$/.test(s.slice(Math.max(0, m.index - 30), m.index))) return false;
+    const nom = nomTozala(m[2]); if (!nom) return false; M.korpus = { nom, qalinlik: m[3] ? Math.round(+m[3]) : 0 }; return true;
+  });
+  return M;
+}
+
+/* furnitura, orqa devor, eksport */
+function furnituraOl(s) {
+  const f = { birikma: 'auto', polka: 'auto', ruchka: 0 };
+  if (/konfirmat|конфирмат|confirmat|evrovint|евровинт|styajk|стяжк/.test(s)) f.birikma = 'konfirmat';
+  else if (/ek?ss?entrik|эксцентрик|minifiks|минификс|eccentric|cam ?lock/.test(s)) f.birikma = 'ekssentrik';
+  if (/derjat|держат|polkoderj|полкодерж|shelf ?(?:support|pin)|ushlagich/.test(s)) f.polka = 'polkaderjatel';
+  const R = "(?:ruchk[a-z']*|ручк[а-яё]*|handle[a-z]*|tutqich[a-z']*)";
+  const a = new RegExp("(\\d+(?:\\.\\d+)?)\\s*" + BIRLIK + "?[a-zа-яё']*\\s+(?:uzun[a-z']*\\s+|long\\s+|длинн[а-яё]*\\s+)?" + R).exec(s)
+    || new RegExp(R + "\\s*(?:uzunligi|uzun|длин[а-яё]*|length|long)?\\s*[:=—–-]?\\s*(\\d+(?:\\.\\d+)?)\\s*" + BIRLIK).exec(s);
+  if (a) { const v = mm(a[1], a[2]); if (v >= 96) f.ruchka = v; }
+  return f;
+}
+
+/* bo'lim bo'laklari: "chapda …, o'rtada …, o'ngda …" (apostrofsiz "ong" ham) */
+const JOY = [
+  ['chap', /(?<![a-z'])chap(?:da|ida|ga|dan|idan|dagi|i)?(?![a-z'])|слева|(?<![а-яё])лев(?:ая|ой|ую|ом|ее)(?![а-яё])|(?<![a-z])left(?![a-z])/],
+  ['orta', /(?<![a-z'])o'?rta(?:da|sida|dagi|si)?(?![a-z'])|посередин[^\s\d:,.;]*|в центре|(?<![a-z])(?:middle|center)(?![a-z])/],
+  ['ong', /(?<![a-z'])o'?ng(?:da|ida|ga|dan|idan|dagi|i)?(?![a-z'])|справа|(?<![а-яё])прав(?:ая|ой|ую|ом|ее)(?![а-яё])|(?<![a-z])right(?![a-z])/]
+];
+/* bo'lim bo'lagining davomi (vergul ortidan ham shu bo'limga: "…joy, tepa va pastida polka") va umumiy gap belgilari */
+const DAVOM = /polk|полк|shel|tortma|yashik|ящик|drawer|shtang|vishil|veshil|ilgich|iladi|штанг|вешал|rail|(?<![a-z])rod|hanging|tepa|ust|yuqori|past|ost|сверх|снизу|наверх|внизу|над|под|above|below|top|bottom/;
+const UMUMIY_GAP = /korpus|корпус|fasad|фасад|ruchk|ручк|handle|eshik|двер|створ|door|sokol|sokil|цокол|plinth|materi?al|матер|obj|обж|konfirmat|конфирмат|ek?ss?entrik|эксцентрик|derjat|держат|birikma|brikma|bakavin|bokovin|боковин|orqa|задн|(?<![a-z'])eni(?:ga|si)?(?![a-z])|balandl|chuqur|ширин|высот|глубин|width|height|depth/;
+const UST = /(?<![a-z'])(?:tepa|ust|yuqori)[a-z']*|сверху|наверху|(?<![а-яё])над(?![а-яё])|above|(?<![a-z])top(?![a-z])/;
+const OST = /(?<![a-z'])(?:past|ost)[a-z']*|снизу|внизу|(?<![а-яё])под(?![а-яё])|below|bottom/;
+const BOLIM_ENI = new RegExp("(?<![a-z'])(?:eni(?:ga|si)?|kengli[gk]i?|ширин[а-яё]*|width|wide)\\s*[:=—–-]?\\s*(\\d+(?:\\.\\d+)?)\\s*" + BIRLIK + "?");
+
 /** AI'siz tahlilchi: matn → xom konstruksiya tili (keyin specTekshir) */
 export function matndanSpec(matn) {
-  const s = String(matn || '').toLowerCase().replace(/[×х*]/g, 'x').replace(/(\d),(\d)/g, '$1.$2');
-  const r = { tur: 'shkaf', nom: '', eni: 0, chuqurligi: 0, boyi: 0, tag: 'auto', qopqoq: 'auto', bolimlar: [], tushunilmadi: [] };
+  const s = tayyorla(matn);
+  const r = { tur: 'shkaf', nom: '', eni: 0, chuqurligi: 0, boyi: 0, tag: 'auto', qopqoq: 'auto', bolimlar: [], tushunilmadi: [],
+    orqa: 'auto', material: materialOl(s), furnitura: furnituraOl(s), eksport: '' };
   for (const t of ['tumba', 'ustki', 'pastki', 'erkin', 'shkaf']) if (KW[t].test(s)) { r.tur = t; break; }
-  /* o'lcham: "1200x600x2200" (eni x chuqurligi x bo'yi) yoki "1200x2200" (eni x bo'yi) */
-  const u = /(\d+(?:\.\d+)?)\s*(m|м|sm|см|cm|mm|мм)?\s*x\s*(\d+(?:\.\d+)?)\s*(m|м|sm|см|cm|mm|мм)?(?:\s*x\s*(\d+(?:\.\d+)?)\s*(m|м|sm|см|cm|mm|мм)?)?/.exec(s);
-  if (u) {
-    if (u[5]) { r.eni = mm(u[1], u[2] || u[6]); r.chuqurligi = mm(u[3], u[4] || u[6]); r.boyi = mm(u[5], u[6]); }
-    else { r.eni = mm(u[1], u[2] || u[4]); r.boyi = mm(u[3], u[4]); }
-  }
-  const KAL = [['eni', /(?:eni|kengligi|ширин[^\s\d:,.;]*|width|wide)\s*:?\s*(\d+(?:\.\d+)?)\s*(m|м|sm|см|cm|mm|мм)?/],
-    ['chuqurligi', /(?:chuqurligi|chuqur|глубин[^\s\d:,.;]*|depth|deep)\s*:?\s*(\d+(?:\.\d+)?)\s*(m|м|sm|см|cm|mm|мм)?/],
-    ['boyi', /(?:bo'yi|boyi|balandligi|баланд|высот[^\s\d:,.;]*|height|tall|high)\s*:?\s*(\d+(?:\.\d+)?)\s*(m|м|sm|см|cm|mm|мм)?/]];
-  for (const [k, re] of KAL) { const m = re.exec(s); if (m) r[k] = mm(m[1], m[2]); }
-  /* inglizcha tartib: "1500 wide", "2200 high", "600 deep" */
-  for (const [k, re] of [['eni', /(\d+(?:\.\d+)?)\s*(m|mm|cm)?\s*(?:wide|width)/], ['boyi', /(\d+(?:\.\d+)?)\s*(m|mm|cm)?\s*(?:high|tall|height)/], ['chuqurligi', /(\d+(?:\.\d+)?)\s*(m|mm|cm)?\s*(?:deep|depth)/]]) {
-    const m = re.exec(s); if (m) r[k] = mm(m[1], m[2]);
-  }
-  if (!r.eni) {                                             // "shkaf 1200" — turdan keyingi yolg'iz son — eni
-    const m = /(?:shkaf|garderob|tumba|komod|javon|stellaj|modul|шкаф|тумб[^\s\d:,.;]*|комод|стеллаж|wardrobe|cabinet|bookcase)[^\s\d:,.;]*\s+(\d+(?:\.\d+)?)\s*(m|м|sm|см|cm|mm|мм)?(?!\d|\s*(?:ta\b|x|polka|tortma|eshik|bo'lim|bolim|qism|пол|ящик|двер|секци|shel|drawer|door|section))/.exec(s);
-    if (m && (m[2] || +m[1] >= 100)) r.eni = mm(m[1], m[2]);   // birliksiz kichik son (2, 3) — o'lcham emas
-  }
-  if (/sokol|цокол|plinth/.test(s)) r.tag = 'sokol';
-  else if (/oyoq|ножк|legs/.test(s)) r.tag = 'oyoq';
 
   /* bo'limlar: "chapda …, o'rtada …, o'ngda …" yoki "N bo'lim" */
-  const JOY = [['chap', /(?:chap(?:da|ida|ga)?|слева|левой|left)/], ['orta', /(?:o'rta(?:da|sida)?|orta(?:da)?|посередин[^\s\d:,.;]*|в центре|middle|center)/], ['ong', /(?:o'ng(?:da|ida|ga)?|справа|правой|right)/]];
-  const qism = [];
-  const re = new RegExp(JOY.map(j => j[1].source).join('|'), 'g');
+  const qism = [], umumiy = [];
+  const re = new RegExp(JOY.map(j => '(?:' + j[1].source + ')').join('|'), 'g');
   let m, oldingi = null, bosh = 0;
-  const umumiy = [];
-  /* joy bo'lagi birinchi vergul (nuqta-vergul, nuqta) gacha; qolgani — butun modulga ("…, o'ngda 4 polka, 2 eshik") */
-  const bolak = (joy, t) => { const i = t.search(/[,;.](?!\d)/); if (i < 0) qism.push({ joy, s: t }); else { qism.push({ joy, s: t.slice(0, i) }); umumiy.push(t.slice(i)); } };
+  /* joy bo'lagi — birinchi vergulgacha va keyingi bo'laklar, toki ular shu bo'lim tarkibi (polka, shtanga, tepa/past …) ekan;
+     umumiy gap (korpus, fasad, eshik, ruchka, o'lcham …) — butun modulga ("…, o'ngda 4 polka, 2 eshik") */
+  const bolak = (joy, t) => {
+    const f = t.split(/[,;](?!\d)|\.(?!\d)/);
+    let i = 1;
+    while (i < f.length && (!f[i].trim() || (DAVOM.test(f[i]) && !UMUMIY_GAP.test(f[i])))) i++;
+    qism.push({ joy, s: f.slice(0, i).join(', ') });
+    if (i < f.length) umumiy.push(f.slice(i).join(', '));
+  };
   while ((m = re.exec(s))) {
-    const j = JOY.find(x => new RegExp('^' + x[1].source).test(m[0]))[0];
+    const j = JOY.find(x => new RegExp('^(?:' + x[1].source + ')').test(m[0]))[0];
     if (oldingi) bolak(oldingi, s.slice(bosh, m.index)); else umumiy.push(s.slice(0, m.index));
     oldingi = j; bosh = m.index + m[0].length;
   }
   if (oldingi) bolak(oldingi, s.slice(bosh)); else umumiy.push(s);
+  const U = umumiy.join(' , ');
+
+  /* o'lcham (umumiy gapdan — bo'limning "kengligi 1000" i modul eni emas): "1200x600x2200" (eni x chuqurligi x bo'yi) yoki "1200x2200" */
+  const u = new RegExp("(\\d+(?:\\.\\d+)?)\\s*" + BIRLIK + "?\\s*x\\s*(\\d+(?:\\.\\d+)?)\\s*" + BIRLIK + "?(?:\\s*x\\s*(\\d+(?:\\.\\d+)?)\\s*" + BIRLIK + "?)?").exec(U);
+  if (u) {
+    if (u[5]) { r.eni = mm(u[1], u[2] || u[6]); r.chuqurligi = mm(u[3], u[4] || u[6]); r.boyi = mm(u[5], u[6]); }
+    else { r.eni = mm(u[1], u[2] || u[4]); r.boyi = mm(u[3], u[4]); }
+  }
+  const KAL = [['eni', "(?:eni(?:ga|si|ni)?|kengli[gk]i?|ширин[^\\s\\d:,.;]*|width|wide)"],
+    ['chuqurligi', "(?:chuqur[^\\s\\d:,.;]*|глубин[^\\s\\d:,.;]*|depth|deep)"],
+    ['boyi', "(?:bo'?y[iu]?|buyi|baland[^\\s\\d:,.;]*|баланд|высот[^\\s\\d:,.;]*|height|tall|high)"]];
+  for (const [k, w] of KAL) { const x = new RegExp("(?<![a-z'])" + w + "\\s*[:=—–-]?\\s*(\\d+(?:\\.\\d+)?)\\s*" + BIRLIK + "?").exec(U); if (x) r[k] = mm(x[1], x[2]); }
+  /* inglizcha tartib: "1500 wide", "2200 high", "600 deep" */
+  for (const [k, re2] of [['eni', /(\d+(?:\.\d+)?)\s*(mm|cm|m)?\s*(?:wide|width)/], ['boyi', /(\d+(?:\.\d+)?)\s*(mm|cm|m)?\s*(?:high|tall|height)/], ['chuqurligi', /(\d+(?:\.\d+)?)\s*(mm|cm|m)?\s*(?:deep|depth)/]]) {
+    const x = re2.exec(U); if (x) r[k] = mm(x[1], x[2]);
+  }
+  if (!r.eni) {                                             // "shkaf 1200" — turdan keyingi yolg'iz son — eni
+    const x = new RegExp("(?:shkaf|garderob|tumba|komod|javon|stellaj|modul|шкаф|тумб[^\\s\\d:,.;]*|комод|стеллаж|wardrobe|cabinet|bookcase)[^\\s\\d:,.;]*\\s+(\\d+(?:\\.\\d+)?)\\s*" + BIRLIK + "?(?!\\d|\\s*(?:ta\\b|x|polka|tortma|eshik|bo'lim|bolim|qism|пол|ящик|двер|секци|shel|drawer|door|section))").exec(U);
+    if (x && (x[2] || +x[1] >= 100)) r.eni = mm(x[1], x[2]);   // birliksiz kichik son (2, 3) — o'lcham emas
+  }
+  if (/sokol|sokil|sokl|цокол|plinth/.test(s)) r.tag = 'sokol';
+  else if (/oyoq|ножк|legs/.test(s)) r.tag = 'oyoq';
+  if (/(?:bakavin|bokovin|боковин|orqa|задн|back|hdf|хдф)[^,;.]{0,40}?(?:yergacha|ergacha|polgacha|pol ?gacha|до пола|до земли|to the floor|floor)/.test(s)) r.orqa = 'yergacha';
+  if (/(?<![a-z])obj(?![a-z])|обж/.test(s)) r.eksport = 'obj';
+
   const tarkibOl = (t) => {
     const x = { polka: sonOl(ICH.polka, t) || (/(polka|пол(?:к|ок)|shel)/.test(t) ? 1 : 0), tortma: sonOl(ICH.tortma, t) || 0, shtanga: ICH.shtanga.test(t), eshik: -1, petlya: 'auto', qatlamlar: [] };
     const e = sonOl(ICH.eshik, t);
@@ -273,18 +396,34 @@ export function matndanSpec(matn) {
     }
     return x;
   };
+  /* bo'lim: eni ("kengligi 1000") va kiyim joyi ("1 metr kiyim iladigan joy, tepa va pastida polka" — joy bo'yi 1000,
+     ustida va ostida polka; "1 metr" eni deb aytilmasa — kiyim joyining bo'yi) */
+  const bolimOl = (t) => {
+    const x = tarkibOl(t);
+    const e = BOLIM_ENI.exec(t);
+    if (e) x.eni = mm(e[1], e[2]);
+    if (x.shtanga && !x.tortma && !x.qatlamlar.length && /polk|полк|shel/.test(t)) {
+      const ust = UST.test(t), ost = OST.test(t);
+      if (ust || ost) {
+        const h = new RegExp("(\\d+(?:\\.\\d+)?)\\s*" + BIRLIK).exec(e ? t.replace(e[0], ' ') : t);
+        x.qatlamlar = [ost ? { boyi: 0 } : null, { boyi: h ? mm(h[1], h[2]) : 0, shtanga: true }, ust ? { boyi: 0 } : null].filter(Boolean);
+        x.ajrat = 'polka'; x.polka = 0; x.shtanga = false;
+      }
+    }
+    return x;
+  };
   const tartib = { chap: 0, orta: 1, ong: 2 };
   if (qism.length) {
     qism.sort((a, b) => tartib[a.joy] - tartib[b.joy]);
-    r.bolimlar = qism.map(q => Object.assign({ eni: 0 }, tarkibOl(q.s)));
+    r.bolimlar = qism.map(q => Object.assign({ eni: 0 }, bolimOl(q.s)));
   } else {
     const k = sonOl(/(\d+)\s*(?:ta\s*)?(?:bo'lim|bolim|qism|секци|отдел|section|compartment)/, s);
-    const t = tarkibOl(umumiy.join(' '));
+    const t = tarkibOl(U);
     r.bolimlar = Array.from({ length: Math.max(1, Math.min(6, k || 1)) }, () => JSON.parse(JSON.stringify(t)));
   }
-  /* umumiy eshik soni ("2 eshik") — bo'limlarga taqsimlanadi */
-  const E = sonOl(ICH.eshik, umumiy.join(' '));
-  const eshiksiz = ICH.eshiksiz.test(umumiy.join(' '));
+  /* umumiy eshik soni ("2 eshik", "ikki eshikli") — bo'limlarga taqsimlanadi */
+  const E = sonOl(ICH.eshik, U);
+  const eshiksiz = ICH.eshiksiz.test(U);
   if (E != null || eshiksiz) {
     const n = r.bolimlar.length, e = eshiksiz ? 0 : E;
     r.bolimlar.forEach((b, i) => {
@@ -292,9 +431,53 @@ export function matndanSpec(matn) {
       b.eshik = e === 0 ? 0 : e >= 2 * n ? 2 : e >= n ? (i < e - n ? 2 : 1) : (i < e ? 1 : 0);
     });
   }
-  /* bo'lim qismida aytilmagan, lekin umumiy matnda aytilgan tarkib (bitta bo'lim) — allaqachon umumiy */
   if (!r.bolimlar.length) r.bolimlar = [tarkibOl(s)];
   /* hech narsa tushunilmasa — standart tarkib (specTekshir) */
   if (r.bolimlar.length === 1 && !r.bolimlar[0].polka && !r.bolimlar[0].tortma && !r.bolimlar[0].shtanga && r.bolimlar[0].eshik === -1 && !qism.length) r.bolimlar = [];
   return r;
+}
+
+/* ── ERP plitasi nomi bo'yicha (AI va tahlilchi dekor nomini matndagidek beradi: "kashemir", "dubzalatoy", "дуб золотой") ──
+ * Lotin/kirill va og'zaki imlo ("zalatoy" — "золотой", qo'shib yozilgan "dubzalatoy") — tovush skeleti bo'yicha; topilmasa — null
+ * (o'ylab topilmaydi, chaqiruvchi "ro'yxatda yo'q" deydi). Tartib: qalinlik → ortiqcha dekor so'zi kam → tur (LDSP oldin) → narxi bor. */
+const LAT = { а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'j', з: 'z', и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'x', ц: 's', ч: 'ch', ш: 'sh', щ: 'sh', ъ: '', ы: 'i', ь: '', э: 'e', ю: 'yu', я: 'ya' };
+const skelet = (w) => String(w).toLowerCase().replace(/[а-яё]/g, c => LAT[c] ?? c).replace(/([og])'/g, '$1').replace(/[^a-z]/g, '')
+  .replace(/kh|(?<![scz])h/g, 'x').replace(/c(?!h)/g, 'k').replace(/q/g, 'k').replace(/w/g, 'v').replace(/o/g, 'a').replace(/[ey]/g, 'i').replace(/(.)\1+/g, '$1');
+function lev(a, b) {
+  const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) { let prev = row[0]; row[0] = i; for (let j = 1; j <= b.length; j++) { const t = row[j]; row[j] = Math.min(row[j] + 1, row[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = t; } }
+  return row[b.length];
+}
+function mos(q, w) {
+  if (!q || !w) return false;
+  if (q === w) return true;
+  const n = Math.min(q.length, w.length);
+  let p = 0; while (p < n && q[p] === w[p]) p++;
+  if (Math.abs(q.length - w.length) <= 3 && ((n >= 3 && p === n) || (n >= 6 && p >= n - 2))) return true;   // qo'shimcha: "кашемира", "золотого"
+  const L = Math.max(q.length, w.length);
+  return L >= 6 && lev(q, w) <= Math.floor(L / 6);
+}
+const PLITA_TUR = { korpus: ['LDSP', 'LMDF', 'MDF'], polka: ['LDSP', 'LMDF', 'MDF'], fasad: ['LDSP', 'LMDF', 'MDF', 'AKRIL'] };
+/** sheets — sheet-catalog.json sheets; nom — dekor nomi; qalinlik — mm (0 — aytilmagan, 16 afzal); qism — korpus|polka|fasad */
+export function plitaTop(sheets, nom, qalinlik, qism = 'korpus') {
+  const qs = String(nom || '').split(/[^a-zа-яё'0-9]+/i).map(skelet).filter(w => w.length >= 2);
+  if (!qs.length || !Array.isArray(sheets)) return null;
+  const qj = qs.join(''), turlar = PLITA_TUR[qism] || PLITA_TUR.korpus, th0 = +qalinlik || 0;
+  let eng = null;
+  sheets.forEach((sh, idx) => {
+    const tr = turlar.indexOf(sh.type), th = +sh.th || 0;
+    if (tr < 0 || th < 15 || th > 26 || (th0 && Math.abs(th - th0) > 0.6)) return;
+    const ws = String(sh.name || '').split(/[^a-zа-яё']+/i).filter(Boolean).map(skelet).filter(Boolean);
+    let topdi = 0;
+    for (let i = 0; i < ws.length && !topdi; i++) {
+      if (qs.every((q, k) => mos(q, ws[i + k]))) topdi = qs.length;                  // so'zma-so'z
+      for (let j = i + 1; j <= Math.min(ws.length, i + 4) && !topdi; j++) if (mos(qj, ws.slice(i, j).join(''))) topdi = j - i;   // qo'shib yozilgan
+    }
+    if (!topdi) return;
+    const ortiqcha = ws.filter(w => w.length >= 3).length - topdi;
+    const k = [Math.abs(th - (th0 || 16)), ortiqcha, tr, sh.uzs > 0 ? 0 : 1, idx];
+    const i0 = eng ? k.findIndex((v, i) => v !== eng.k[i]) : -1;
+    if (!eng || (i0 >= 0 && k[i0] < eng.k[i0])) eng = { sh, k };                        // leksikografik: birinchi farq kichigi
+  });
+  return eng ? eng.sh : null;
 }

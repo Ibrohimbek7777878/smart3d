@@ -51,6 +51,7 @@ export function yangiModul(tur, ch0, nom0) {
   ochish(kod, p.id, ch, nom);
   project.changed('items');
   toast(t('chizish.yaratildi', { nom }));
+  return p;                                                  // TZ-26: AI konstruksiyasi modul materialini qo'yadi
 }
 
 /** joylashuvdagi qo'lda chizilgan modulni tahrirlash */
@@ -102,8 +103,9 @@ export function useChizish() {
     const H = project.H;
     if (!ch || !H || !s.kod || !H.catalog[s.kod]) return null;
     try {
+      const pl = s.pl && project.pl(s.pl);                      // modul materiali (masalan AI konstruksiyasi qo'ygan ERP dekori)
       const doc = { v: 1, room: { outline: [[0, 0], [5000, 0], [5000, 5000], [0, 5000]], wall_height: 3000, wall_thickness: 100, openings: [] },
-        placements: [{ id: 'p1', frg: s.kod, x: 0, y: 0, z: 0, w: ch.w, d: ch.d, h: ch.h, rot: 0, qty: 1 }] };
+        placements: [{ id: 'p1', frg: s.kod, x: 0, y: 0, z: 0, w: ch.w, d: ch.d, h: ch.h, rot: 0, qty: 1, ...(pl && pl.slots ? { slots: pl.slots } : {}) }] };
       const pj = get().project;
       const r = H.recalc(doc, { materialCode: pj.matCode, fasadCode: pj.fasadCode, polkaCode: pj.polkaCode, orqaCode: pj.orqaCode });
       return { jami: r.priceRes.total, detal: r.cutlists[0] ? r.cutlists[0].parts.length : 0, narxsiz: r.prod.lines.filter(l => l.group === 'Furnitura' && l.no_price).length };
