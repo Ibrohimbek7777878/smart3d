@@ -411,21 +411,15 @@ end shunib oldingmi ish tartibin hozir sen kod yozganda tohtovsiz 1yo 2 soat ish
 
 146. server run qilb brauzerda och firefoxda
 
-144. pixel agentsin ozing ishga tushirb ber
+147. qara narxlar nechi fozi togir chiqad bizda chizilgan modul bilan bazisda chizilgan moduln narx va natijalari bilan solishtrib korish kere va sloshtriganda eng kamdia 95 foiz bir xil bolish kere bazis bilan
 
-145. agetnlarin qandya qoshaman
+148. kod yozb ketma savol jaavob qilamzi faqat hoz
 
-146. server run qilb brauzerda och firefoxda
-
-144. qara narxlar nechi fozi togir chiqad bizda chizilgan modul bilan bazisda chizilgan moduln narx va natijalari bilan solishtrib korish kere va sloshtriganda eng kamdia 95 foiz bir xil bolish kere bazis bilan
-
-145. kod yozb ketma savol jaavob qilamzi faqat hoz
-
-146. (3 ta skrinshot: "Carcass material" varag'i — tur/rang/qalinlik/ERP ro'yxati; "Unit designer" — Custom wardrobe 1200×600×2200, 1 bo'lim, 0 polka, 2 eshik, orqa panel HDF 2114×1198; shkaf xonada, orqasida dog'li material; matn qatorida prompt) qara bazisda standart joy qancha bolad yani   hozri bizdagi xona kichkina bita standart xona bolish kere va modul da rang materila ranglarin ozgartish juda shuanrsz bolb qolgan shu qismlarn ham togirlahs kere  va yaqinlahstirsh uzoqlashtrsih ham juda tez va sifatsz  bu qismalrin ham bazisdan yaxsh sifatli qil 
+149. (3 ta skrinshot: "Carcass material" varag'i — tur/rang/qalinlik/ERP ro'yxati; "Unit designer" — Custom wardrobe 1200×600×2200, 1 bo'lim, 0 polka, 2 eshik, orqa panel HDF 2114×1198; shkaf xonada, orqasida dog'li material; matn qatorida prompt) qara bazisda standart joy qancha bolad yani   hozri bizdagi xona kichkina bita standart xona bolish kere va modul da rang materila ranglarin ozgartish juda shuanrsz bolb qolgan shu qismlarn ham togirlahs kere  va yaqinlahstirsh uzoqlashtrsih ham juda tez va sifatsz  bu qismalrin ham bazisdan yaxsh sifatli qil 
 3 rasmda moduln orqasida turgan qaysi materila va ranglarn men bergan royxatdan olayasbanmi va hozir lsit degan qism biroz xaot yani kop hisoblvorayabd 4ta list ketad va 9 kvadrat ketadi deyabd lekin men yozgan prompdagi natiaj yoq 
 
 mebel turi:shkaf balandlig 2100mm , eniga 1200mm,chuqurlig 580mm,korpusi va ichki qism materali:kashemir,16mm , fasad dubzalatoy,16mm, ikki eshikli chap tomondan 1 metr kiyim iladigan vishilkali joy, tepa va pastida polkalar bor bittadan , ong tomonda qolgan qismmi 6ta teng polkadan iborat , korpus brikmasi konfirmat, polkalar polka derjatel, bilan mahkamlanad  ruchka 1mterlik uzun ruchkadan qoyilad korpus bakavinasi yergacha va sokilli boladi,  obj formatda yubor gpirmasdan yubor
 bu men yozgan prompt shu qismlarn togirla va zpachastlar narx aniq chiqish kere ortacha 1saotdan togirlab bol va bizga 120ta modul yetad shu moduarl toliq ishlasin va narxlari ham aniq bazis bilan birga bir xil chiqish kere
 
-147. ha togir tasdiqlayman 
+150. ha togir tasdiqlayman 
 (iqtibos: "Tasdiqlashingiz kerak: "1 metr" — kiyim joyining balandligi deb oldim. Agar "eni 1000" deb yozilsa, eni deb olinadi. Kiyim joyi o'rtada, ustidagi va ostidagi bo'shliq teng (476 mm dan) — matnda aytilmagan edi. "Bakavina" — ruscha «боковина», ya'ni yon devor. Yon devorlar allaqachon polgacha tushadi, siz aytgandek orqa HDF ham polgacha tushadigan qilindi. 1000 mm ruchka hozircha narxsiz. Katalogdagi nomzod: «0351- 1000 MM QORA», 45 000 so'm. Shuni bog'laymi?")
