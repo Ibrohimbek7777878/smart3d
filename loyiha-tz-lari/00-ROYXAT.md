@@ -46,6 +46,8 @@
 | 29 | [Jamoa 2-to'lqin: undo, oddiy rejim, teshiklar, stoleshnitsa, narxlar sahifasi, AI oshxona, teshik 3D](29-jamoa-2-tolqin.md) | **BAJARILDI** 2026-10-17 (jamoa, `dizayn` b409784) — 3 test raundi, oxirgisi O'TDI | egasi: ish haqi, ustama, stoleshnitsa narxlari, AI oshxona talqinlari, yangi oynalar skrinshoti |
 | 30 | [Sahifa manzillari, server modullari, ustama 35%, Asosiy 100 material, AI katalogdan](30-manzillar-server-ai-katalog.md) | **BAJARILDI** 2026-10-17 (jamoa, `dizayn` ae9c5f1) — testchi O'TDI, AI 14/14 so'rov | egasi: stoleshnitsa narxlari, `server/src` o'chirish, git tarixi, production joylash |
 | 31 | [Google bilan kirish va VR (shlemda)](31-google-kirish-va-vr.md) | **BAJARILDI** 2026-10-18 (jamoa smart3d-51, `dizayn` 139209b) — testchi O'TDI | admin: `GOOGLE_CLIENT_ID` (Google Cloud OAuth); egasi: haqiqiy shlemda sinov |
+| 32 | [Narx aniqligi 95%, stoleshnitsa narxi, 85 umumiy modul](32-narx-95-va-85-modul.md) | TAKLIF (egasi #194) — tahlil: foiz oshirib ko'rsatilgan (sukut plita narxi faylda yo'q), 85 moduldan 4 tasi toza | egasi: ish haqi, sukut plita, sex xizmati tanlovi, TS-1730, stoleshnitsa 4 narx, 12 quti-modul, korpus 16 mm; "boshla" |
+| 33 | [SketchUp (.skp) va Bazis eksport](33-sketchup-va-b3d-eksport.md) | TAKLIF (egasi #198, #200) — .skp Free va Pro uchun (`openskp`), .dae zaxira, BPJ → Bazis | egasi: "boshla"; o'zimizning .b3d yozuvchi — hozirmi yoki BPJ sinovidan keyin |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.

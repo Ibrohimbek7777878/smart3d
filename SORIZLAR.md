@@ -522,13 +522,22 @@ shuni tawadim lekin bizdag ai chizgan narsa oddiy mana rasmdagin bizn ai chizd n
 
 192. loyhan korib chiq toza xavf yo bolsa githubga push qivor
 
+193. qaysi qismlar qolgan yana toliq qilnmagan va hoizir ai bizda bor modulardan konsrtuskiya qilb erad
+
+194. narx aniqlign 95 foziga kotar stoleshnitsani narxin kor ment ashgan faylarda yoqmi 
+buni togirla va vr qismin ham togirlab chiq 85ta modulin togirlab chiq va narx aniq bolish kere
+
 195. loyhan umumiy nechi fozi tayyor rearl productionga va tayor bolmagan qismlarn aytn nega tayor emas
 
 196. email bilan kirish qismiga google orqai kirshn qoshib qoy telegram mini app ham pauza qilb turamiz hozir loyhan umumiy tayorlik qismin 90foziga kotairsh kere  stanok faylarni ham toliq tugat giblab faylar bolsa toliq korib oqib chiq 35foiz ustama yaxsh turaversin  teshik rang va kromkani qaysi qismlar kere vrni qismin ham tugat
 
 197. qara hozir boshqa calude ham ishlayabd u ham agentlar bilan ishlaybdi qoida token sariga etibor ber bu qatiy qoida ishn bolib ber va boshla
 
+198. sketchup va b3d eskportni tugat
+
 199. bosha calude ishn tugati va hozir sketchup bilan b3d ni qilayabdi
+
+200. free da ham pro da ham ishlash kere baziga yana bia yol qoshamizmi eksport xona emas  furnitura  va plita kirsin
 
 201. ha boshlayver sen ham
 
