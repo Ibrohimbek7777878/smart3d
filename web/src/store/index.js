@@ -29,6 +29,8 @@ export const store = createStore({
   chizish: { ochiq: false, kod: null, pl: null, ch: null, yol: [], fasad: true, nom: '', modullarim: null, v: 0, raw: {} },
   /* TZ-25: bosh ish joyi — faol asbob (tanlash | devor | teshik), chizilayotgan devor nuqtalari, palitrada tanlangan teshik,
      o'lcham tahriri ({ i, val }), tanlangan eshik/deraza ({ idx, en, joy }) — features/editor/ishjoyi */
+  /* Oddiy rejim (mijoz): tanlov — 'oddiy' | 'usta' | null (sukut qoida), panel — ochiq qadam 0..4 (features/editor/oddiy) */
+  rejim: { tanlov: (() => { try { const v = localStorage.getItem('s3d-rejim'); return v === 'oddiy' || v === 'usta' ? v : null; } catch (_) { return null; } })(), panel: undefined },
   ishjoyi: { asbob: 'tanlash', nuqtalar: [], teshikTur: null, tahrir: null, tanlov: null, menyu: false },
   korinish: { kamera: 'orbit', fon: null, chizish: 'boyalgan', rentgen: false, xona: true, fasadsiz: false, olchash: false, menyu: false, olcham: null },
   settings: { sets: { markup_pct: null, stanoklar: null, logo: null, til: null }, markupIn: null, nestIn: null, stdIn: null, xq: '', xatolar: null, qoldiqlar: null, qHolat: 'available', qQ: '', qForm: null }

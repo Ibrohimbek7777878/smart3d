@@ -13,6 +13,8 @@ import ChizishPanel from './chizish/ChizishPanel.jsx';
 import Asboblar from './ishjoyi/Asboblar.jsx';
 import MatnQatori from './ishjoyi/MatnQatori.jsx';
 import { panelYop, faylTashlandi, faylUstida } from './ishjoyi/ishjoyi.js';
+import OddiyPanel from './oddiy/OddiyPanel.jsx';
+import { useRejim, oddiyQadam } from './oddiy/rejim.js';
 
 /* TZ-25 A: bosh ish joyi — bitta ekran (Bazis kabi): chapda asboblar, o'rtada kanva, pastda matn qatori, o'ngda panel
  * faqat kerak bo'lganda (Xona, Mebel, Narx, Fayllar, modul chizish). Telefonda: kanva, asboblar qatori, matn qatori;
@@ -21,8 +23,9 @@ const STEP = { 1: [QadamXona, 'editor/room'], 2: [QadamMebel, 'editor/catalog'],
 
 export default function EditorPage() {
   const { step } = useSlice('editor'), chz = useSlice('chizish');
-  const [Qadam, qm] = STEP[step] || [];
-  const ochiq = chz.ochiq || !!Qadam;
+  const rj = useRejim();
+  const [Qadam, qm] = rj.oddiy ? [] : (STEP[step] || []);
+  const ochiq = rj.oddiy ? rj.panel > 0 : (chz.ochiq || !!Qadam);
   return (
     <div data-ed="" data-ishjoyi="" onDragOver={faylUstida} onDrop={faylTashlandi}
       style={{ flex: '1 1 auto', height: 'calc(100vh - 64px)', display: 'grid', gridTemplateColumns: ochiq ? '84px minmax(0,1fr) 400px' : '84px minmax(0,1fr)' }}>
@@ -36,11 +39,12 @@ export default function EditorPage() {
       {ochiq ? (
         <aside data-panel="" style={{ position: 'relative', height: '100%', overflow: 'auto', borderLeft: '1px solid var(--line)', background: 'var(--bg)', padding: '12px 20px 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 -8px -14px 0' }}>
-            <button onClick={panelYop} data-panel-yop="" aria-label={t('umumiy.yopish')} title={t('umumiy.yopish')} style={{ ...iconBtn, width: '36px', height: '36px', borderRadius: '12px' }}>
+            <button onClick={rj.oddiy ? () => oddiyQadam(0) : panelYop} data-panel-yop="" aria-label={t('umumiy.yopish')} title={t('umumiy.yopish')} style={{ ...iconBtn, width: '36px', height: '36px', borderRadius: '12px' }}>
               <Ikon n="yopish" size={17} gap={0} />
             </button>
           </div>
-          {chz.ochiq ? <XatoChegarasi modul="editor/chizish"><ChizishPanel /></XatoChegarasi>   /* TZ-24 A: modul chizish */
+          {rj.oddiy ? <XatoChegarasi key={'oddiy' + rj.panel} modul="editor/oddiy"><OddiyPanel n={rj.panel} /></XatoChegarasi>
+            : chz.ochiq ? <XatoChegarasi modul="editor/chizish"><ChizishPanel /></XatoChegarasi>   /* TZ-24 A: modul chizish */
             : <XatoChegarasi key={qm} modul={qm}><Qadam /></XatoChegarasi>}
         </aside>) : null}
     </div>
