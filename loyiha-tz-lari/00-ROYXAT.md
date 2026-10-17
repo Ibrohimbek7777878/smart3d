@@ -44,7 +44,7 @@
 | 27 | [Muharrir qulayliklari: eshik qiya ochilishi, yurishda tanlash, "orqaga", "Davom ettirish"](27-muharrir-qulayliklari.md) | **BAJARILDI** 2026-10-17 (`dizayn`) | — |
 | 28 | [Shkaf prompti, material tanlash, 3D zoom, list ko'rsatkichi, 123 modul va Bazis o'lchovi](28-egasi-146-tuzatishlar.md) | **BAJARILDI** 2026-10-17 (jamoa, `dizayn` 5a1908f) — narx Bazis bilan 97,7% (38 MC modul) | egasi: material oynasi ko'rinishi, zapchast takliflari, sukut materiallar, xona o'lchami, kromka qoidasi |
 | 29 | [Jamoa 2-to'lqin: undo, oddiy rejim, teshiklar, stoleshnitsa, narxlar sahifasi, AI oshxona, teshik 3D](29-jamoa-2-tolqin.md) | **BAJARILDI** 2026-10-17 (jamoa, `dizayn` b409784) — 3 test raundi, oxirgisi O'TDI | egasi: ish haqi, ustama, stoleshnitsa narxlari, AI oshxona talqinlari, yangi oynalar skrinshoti |
-| 30 | Sahifa manzillari (`/loyihalar`, `/loyiha/:id` …) va server modullari (`server/routes/*`) — TZ-29 §3 da taklif | TAKLIF (egasi #179) | egasi: production branch, "boshla" |
+| 30 | [Sahifa manzillari, server modullari, ustama 35%, Asosiy 100 material, AI katalogdan](30-manzillar-server-ai-katalog.md) | **BAJARILDI** 2026-10-17 (jamoa, `dizayn` ae9c5f1) — testchi O'TDI, AI 14/14 so'rov | egasi: stoleshnitsa narxlari, `server/src` o'chirish, git tarixi, production joylash |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.

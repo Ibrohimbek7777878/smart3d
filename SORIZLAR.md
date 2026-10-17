@@ -477,3 +477,19 @@ shuni tawadim lekin bizdag ai chizgan narsa oddiy mana rasmdagin bizn ai chizd n
 178. (skrinshot 17:32: 3D oyna hali ham konteynerni to'liq egallamaydi — o'ngda va pastda bo'h qism; sarlavhada undo tugmalari yo'q, eski versiya) qara yon tarafdagi bosh tortburcahk qismn olib tashlmabasan shunib oldingmi olinadigan joyni
 
 179. https://smart.bittada.uz/app.html#s=reg   qara saytimz real ishlaydb nega / dan keyin app.htlm turbd bu mumkin emas har bir funsiya har bir qims modul uchun url va ap bolish kere saytimiz serverga chiqid va real productiond aishlayabd  https://smart.bittada.uz/app.html#s=reg  lekin nega urlda har doim app.htlm turibd nima har bir shaifa va ish uchun alohida api url hciqarilamganmi korib ber faqat va har bir ish har bri qism alohida modulda bolish va ishlash kere bolad
+
+180. qara reponga push qilishdna oldin xatolikalrn togrlab chiq va repon hozir public qildim tekshir endi togi ketaybadimi hammasi va api,urlni togirlandingmi
+
+181. 1.reponi tekshir hozir public repo qildim 
+2 ha boshla 
+3.35 fozi qolsin 
+4.stoleshtnisa narxlarni senga bergan bazamdan olaver shu bazadagi togri hammasi 
+5.qara xavfsizlka tasir qilmaydimi
+
+182. (skrinshot, smart.bittada.uz: Korpus materiali — "Ko'p ishlatiladigan" 11 plitka, pastda "Tanlandi: LDSP 18mm 580 650") qara bu yerda materilar ham toliq ozgarmayabd bizga eng glavniy 100ta materila va rang bilan chiqb berisa qolganlari ham chiqaversin eng glavniy 100tas ideal ishlab bersa yetadi
+
+183. qara bizda bor modulardan foydalanib ai bizga konstruksiya qilb bera oladimi shuni qilb ber bold qolgan keyin qilamiz
+
+185. stop tohta vaqtinchalik
+
+186. davom et
