@@ -19,6 +19,11 @@ const KOZ = 1600;                                   // yurish: ko'z balandligi, 
 const QADAM = 1400;                                 // yurish tezligi, mm/s
 
 const formatMm = (v) => String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' mm';
+/* egasi #153: devorsiz ko'rinishda (xona o'chiq) pol maydoni — modullar umumiy qutisi + har tomondan shuncha zaxira (mm);
+   modul yo'q bo'lsa — standart xona (ishjoyi STANDART_XONA bilan bir xil) */
+export const MAYDON_ZAXIRA = 1000;
+const MAYDON_STANDART = [5000, 4000];
+const son3 = (v) => String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
 export function createKorinish(sahna, host) {
   const { sp, ctl } = sahna;
@@ -31,6 +36,12 @@ export function createKorinish(sahna, host) {
   const nuqtaMat = new THREE.MeshBasicMaterial({ color: 0xff7a45, depthTest: false });
   const gOlch = new THREE.Group(); gOlch.name = 'olchash'; gOlch.renderOrder = 10;
   sp.scene.add(gOlch);
+  /* #153: maydon — pol (dizayn rangi 0x14292F), ingichka ramka (dizayndagi o'lcham rangi #5FE1C4) va o'lcham yozuvi */
+  const gMaydon = new THREE.Group(); gMaydon.name = 'maydon'; gMaydon.visible = false;
+  sp.scene.add(gMaydon);
+  const maydonPolMat = new THREE.MeshStandardMaterial({ color: 0x14292F, roughness: 0.9 });
+  const maydonRamkaMat = new THREE.LineBasicMaterial({ color: 0x5FE1C4 });
+  let maydonB = null, maydonKalit = '';
   const v1 = new THREE.Vector3(), v2 = new THREE.Vector3();
 
   /* ── mebel meshlari (yashirin urilish qutisisiz) ── */
@@ -94,9 +105,62 @@ export function createKorinish(sahna, host) {
     sp.groups.floor.traverse(o => { if (o.isMesh) o.receiveShadow = on; });
     meshlar(o => { const ms = Array.isArray(o.material) ? o.material : [o.material]; ms.forEach(m => { m.needsUpdate = true; }); });
   }
+  /* ── #153: devorsiz ko'rinishda pol maydoni chegarasi (modullarga qarab moslashadi) ── */
+  const maydonFaol = () => sp.mode === '3d' && !holat.xona;
+  function maydonQuti() {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const m of sp.groups.items.children) {
+      const u = m.userData;
+      if (!u || u.id == null || !(u.w > 0)) continue;
+      const r = (u.rot || 0) * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
+      for (const [a, b] of [[0, 0], [u.w, 0], [u.w, u.d], [0, u.d]]) {
+        const X = u.x + a * c - b * s, Y = u.y + a * s + b * c;
+        if (X < x0) x0 = X; if (X > x1) x1 = X; if (Y < y0) y0 = Y; if (Y > y1) y1 = Y;
+      }
+    }
+    if (!isFinite(x0)) { const bb = sp.bbox; return { x0: bb.minX, y0: bb.minY, x1: bb.minX + MAYDON_STANDART[0], y1: bb.minY + MAYDON_STANDART[1] }; }
+    const Z = MAYDON_ZAXIRA;
+    return { x0: Math.floor(x0 - Z), y0: Math.floor(y0 - Z), x1: Math.ceil(x1 + Z), y1: Math.ceil(y1 + Z) };
+  }
+  function maydonTozala() {
+    for (const c of gMaydon.children.slice()) {
+      gMaydon.remove(c);
+      if (c.geometry) c.geometry.dispose();
+      if (c.isCSS2DObject && c.element && c.element.parentNode) c.element.parentNode.removeChild(c.element);
+    }
+  }
+  /** maydonni qayta quradi (faqat o'lchami o'zgarganda) — modul qo'shilganda, surilganda, xona o'chganda */
+  function maydon() {
+    const on = maydonFaol();
+    gMaydon.visible = on;
+    if (!on) { if (maydonKalit) { maydonTozala(); maydonKalit = ''; maydonB = null; } return; }
+    const b = maydonQuti(), k = [b.x0, b.y0, b.x1, b.y1].join(',');
+    maydonB = b;
+    if (k === maydonKalit) return;
+    maydonKalit = k;
+    maydonTozala();
+    const w = b.x1 - b.x0, d = b.y1 - b.y0, cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2;
+    const pol = new THREE.Mesh(new THREE.PlaneGeometry(w, d), maydonPolMat);
+    pol.position.set(cx, cy, -2); pol.userData = { kind: 'maydon' };
+    gMaydon.add(pol);
+    const ramka = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(b.x0, b.y0, 1), new THREE.Vector3(b.x1, b.y0, 1), new THREE.Vector3(b.x1, b.y1, 1), new THREE.Vector3(b.x0, b.y1, 1)]), maydonRamkaMat);
+    gMaydon.add(ramka);
+    const div = document.createElement('div');
+    div.textContent = son3(w) + ' × ' + son3(d) + ' mm';
+    div.setAttribute('data-maydon', w + 'x' + d);
+    div.style.cssText = 'pointer-events:none;font-size:13px;font-weight:700;color:#5FE1C4;padding:3px 8px;border-radius:8px;' +
+      'background:rgba(15,34,41,.85);border:1px solid rgba(95,225,196,.35);font-variant-numeric:tabular-nums;white-space:nowrap';
+    const yozuv = new CSS2DObject(div);
+    yozuv.position.set(cx, b.y1 + 120, 0);                 // old chekka (kamera tomoni) o'rtasida
+    gMaydon.add(yozuv);
+    sp._invalidate();
+  }
+
   function xonaFasad() {
     sp.groups.walls3d.visible = holat.xona && sp.mode === '3d';
     sp.groups.floor.visible = holat.xona || sp.mode === '2d';
+    maydon();
     sp.groups.items.traverse(o => { if (fasadMi(o) && (o.isMesh || o.isGroup)) o.visible = !holat.fasadsiz; });
   }
   function fon() {
@@ -114,6 +178,8 @@ export function createKorinish(sahna, host) {
 
   /* ── model qutisi (bo'sh bo'lsa — xona) ── */
   function modelQuti() {
+    /* #153: devorsiz ko'rinishda — butun maydon (chegarasi bilan) ko'rinadi */
+    if (maydonFaol()) { maydon(); const m = maydonB; return new THREE.Box3(new THREE.Vector3(m.x0, m.y0, 0), new THREE.Vector3(m.x1, m.y1, 2700)); }
     const b = new THREE.Box3();
     meshlar(o => { if (o.visible) b.expandByObject(o); });
     if (b.isEmpty()) {
@@ -393,6 +459,8 @@ export function createKorinish(sahna, host) {
       qollash();
     },
     qollash, yonalish, zoom, toliqEkran,
+    /** #153: devorsiz ko'rinishda maydon faolmi; maydon() — modul surilganda chegarani moslash; maydonQuti — joriy chegara */
+    maydonFaol, maydon, get maydonQuti() { return maydonB; },
     onOlcham(fn) { opts.onOlcham = fn; },
     get oxirgiOlcham() { return oxirgiOlcham; },
     dispose() {
@@ -405,6 +473,7 @@ export function createKorinish(sahna, host) {
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('keyup', onKey);
       sp.scene.remove(gOlch);
+      maydonTozala(); sp.scene.remove(gMaydon); maydonPolMat.dispose(); maydonRamkaMat.dispose();
       qirraMat.dispose(); olchashMat.dispose(); nuqtaMat.dispose();
     }
   };

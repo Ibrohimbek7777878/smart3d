@@ -9,6 +9,7 @@ globalThis.SpPrice = require('../app/js/engine/price.js');
 const { loadData, createHisob } = await import('../web/src/services/hisob.js');
 const { promptLoyiha, qiymatlar, toplamJoyla, KATEGORIYALAR } = await import('../app/js/engine/promptlar.js');
 const { konstruksiya } = await import('../app/js/engine/konstruktor/index.js');
+const { devorOraliqlari, DEVOR_ORALIQ } = await import('../app/js/engine/devorOraliq.js');
 
 const DATA = fileURLToPath(new URL('../app/data/', import.meta.url));
 let pass = 0, fail = 0;
@@ -42,7 +43,13 @@ for (const p of P) {
 
 /* joylash qoidasi: devorlar va burilish (orqa 0°, chap 270°, ong 90°, old 180°) — orqasi devorda */
 const t = toplamJoyla(3000, 2500, 2700, [{ kod: 'SP-SH-003', devor: 'orqa', joy: 'bosh' }, { kod: 'SP-SH-003', devor: 'chap', joy: 'oxir' }, { kod: 'SP-SH-003', devor: 'ong', joy: 'bosh' }, { kod: 'SP-SH-003', devor: 'old', joy: 'markaz' }], H.catalog);
-ok('devorlar: orqa 0°, chap 270°, ong 90°, old 180° — orqasi devorga tegib turadi', t.placements.map(p => p.rot).join() === '0,270,90,180' && !t.sigmadi.length, JSON.stringify(t.placements.map(p => [p.x, p.y, p.rot])));
+/* egasi #152: orqasi devorga TIRALMAYDI — devor yuzasidan DEVOR_ORALIQ mm (devor ichiga kirish 0) */
+{
+  const room = { outline: [[0, 0], [3000, 0], [3000, 2500], [0, 2500]], wall_thickness: 100 };
+  const g = t.placements.map(p => Math.min(...devorOraliqlari(room, p, 60).map(d => d.oraliq)));
+  ok('devor oralig\'i ' + DEVOR_ORALIQ + ' mm (orqa, chap, ong, old) — devorga kirish yo\'q', g.length === 4 && g.every(v => Math.abs(v - DEVOR_ORALIQ) < 0.5), JSON.stringify(g));
+}
+ok('devorlar: orqa 0°, chap 270°, ong 90°, old 180° — orqasi devor tomonda', t.placements.map(p => p.rot).join() === '0,270,90,180' && !t.sigmadi.length, JSON.stringify(t.placements.map(p => [p.x, p.y, p.rot])));
 const toliq = toplamJoyla(2000, 2000, 2700, [{ kod: 'SP-SH-003', devor: 'orqa', joy: 'bosh' }, { kod: 'SP-SH-003', devor: 'orqa', joy: 'bosh' }, { kod: 'SP-SH-003', devor: 'orqa', joy: 'bosh' }], H.catalog);
 ok('sig\'magan modul — ro\'yxatda (joylanmaydi, ustma-ust qo\'yilmaydi)', toliq.placements.length === 2 && toliq.sigmadi.length === 1, JSON.stringify(toliq));
 const td = toplamJoyla(3100, 2500, 2700, [{ kod: 'SP-G-011', devor: 'orqa', joy: 'markaz', w: 'toldir' }], H.catalog);

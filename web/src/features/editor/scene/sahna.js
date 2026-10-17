@@ -2,6 +2,7 @@ import { get, set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { korinishBoshla } from './korinish.js';
 import { joyRanglari } from '../../../services/erpMaterial.js';
+import { surishCheklov } from '../../../../../app/js/engine/devorOraliq.js';
 
 /* TZ-19: muharrir 3D sahnasi — bizning zamer tizimi (services/sahna.js, qoida S6) dizayn ko'rinishida.
  * Bitta nusxa: muharrir ochilganda yaratiladi (mount), yopilganda tozalanadi (unmount). 3D da o'zgargan holat
@@ -28,6 +29,10 @@ export async function mountSahna(host, onTap, alive = () => true) {
       if (id && e.tip === 0) set('editor', { tip: 1 });
     },
     onDrag: (id, x, y) => { const p = project.pl(id); if (p) { p.x = x; p.y = y; project.scheduleRecalc(); } },
+    /* egasi #151: surish (2D va 3D) — devorga yopishadi, devor ichiga va qo'shni modulga kirmaydi (#152: devordan DEVOR_ORALIQ mm) */
+    cheklov: (id) => surishCheklov(project.doc.room, project.doc.placements, id),
+    /* qo'yib yuborildi yoki Esc — stoleshnitsa, sokol kabi hosila elementlar yangi joyga moslashadi, avtomatik saqlash */
+    onDragEnd: (id, holat) => { if (holat !== 'joyida') project.changed('items'); },
     onRotate: (id, rot, x, y) => { const p = project.pl(id); if (p) { p.rot = rot; p.x = x; p.y = y; project.scheduleRecalc(); } },
     onRotateEnd: () => project.changed('items'),
     onTap
@@ -51,6 +56,7 @@ export async function mountSahna(host, onTap, alive = () => true) {
   } catch (_) { /* WebXR yo'q */ }
   if (ed.sel) sahna.select(ed.sel);
   korinishBoshla();                                       // TZ-23: ko'rinish holati (eslab qolingan yoki Bazis standarti)
+  if (sahna.korinish.maydonFaol()) sahna.center();         // #153: devorsiz ko'rinish — boshidan butun maydon ko'rinadi
   set('editor', { sceneOn: true, sceneErr: false });
 }
 

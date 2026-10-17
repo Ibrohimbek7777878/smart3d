@@ -36,7 +36,7 @@ export function bazisHujjat(res) {
   room.outline = L.rectOutline(W, D);
   room.wall_height = Math.max(2700, f.h + 100);
   const doc = L.newDoc(room);
-  doc.placements = [{ id: 'bz1', frg: f.code, name: f.name, x: Math.round((W - f.w) / 2), y: 0, z: 0, w: f.w, d: f.d, h: f.h, rot: 0, qty: 1 }];
+  doc.placements = [L.devordan(doc, { id: 'bz1', frg: f.code, name: f.name, x: Math.round((W - f.w) / 2), y: 0, z: 0, w: f.w, d: f.d, h: f.h, rot: 0, qty: 1 })];   // #152: devorga tiralmaydi
   doc.bazis = { fragment: f, materiallar: res.materiallar, hisobot: res.hisobot };
   return doc;
 }

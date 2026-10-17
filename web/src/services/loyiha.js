@@ -7,6 +7,7 @@
 import { footprint, roomBBox } from '../../../app/js/engine/rules.js';
 import { cutlist, productionCost } from '../../../app/js/engine/cutlist.js';
 import { USTKI_Z } from '../../../app/js/ai.js';
+import { devordanSur, devorChegara } from '../../../app/js/engine/devorOraliq.js';
 import { projectSlots } from './hisob.js';
 import { searchMaterial } from '../../../app/js/engine/search.js';
 import { til } from '../i18n/index.js';
@@ -67,19 +68,30 @@ export function addPlacement(doc, frag) {
   const zKesishadi = (p) => { const pz = +p.z || 0; return pz < z0 + (+frag.h || 0) && z0 < pz + (+p.h || 0); };
   const row = doc.placements.filter(p => footprint(p).y0 < 300 + bb.minY && zKesishadi(p))
     .sort((a, b) => footprint(a).x0 - footprint(b).x0);
-  let x = bb.minX;
+  /* egasi #152: devorga tiralmaydi — devor yuzasidan DEVOR_ORALIQ mm (kontur chizig'idan T = qalinlik/2 + oraliq), burchakda ikkalasidan */
+  const T = devorChegara(doc.room);
+  let x = bb.minX + T;
   for (const p of row) {
     const f = footprint(p);
     if (f.x0 - x >= frag.w) break;
-    x = f.x1;
+    x = Math.max(x, f.x1);
   }
-  if (x + frag.w > bb.maxX) x = Math.max(bb.minX, bb.maxX - frag.w);
+  if (x + frag.w > bb.maxX - T) x = Math.max(bb.minX + T, bb.maxX - T - frag.w);
   const p = {
     id, frg: frag.code, name: frag.name,
-    x: Math.round(x / 50) * 50, y: 50, z: z0,
+    x: Math.round(x), y: bb.minY + T, z: z0,
     w: frag.w, d: frag.d, h: frag.h, rot: 0, qty: 1
   };
+  devordanSur(doc.room, p);
+  p.x = Math.round(p.x); p.y = Math.round(p.y);
   doc.placements.push(p);
+  return p;
+}
+
+/** egasi #152: modul devorga tiralmaydi — devor yuzasidan DEVOR_ORALIQ mm (devor ichiga kirgan bo'lsa — chiqariladi). → p */
+export function devordan(doc, p) {
+  devordanSur(doc.room, p);
+  p.x = Math.round(p.x); p.y = Math.round(p.y);
   return p;
 }
 
@@ -117,6 +129,7 @@ export function duplicatePlacement(doc, id) {
   const c = JSON.parse(JSON.stringify(src));
   c.id = nextId(doc);
   moveAlong(c, src.w);
+  devordan(doc, c);                                        // #152: devorga kirmaydi
   const i = doc.placements.indexOf(src);
   doc.placements.splice(i + 1, 0, c);
   return c;

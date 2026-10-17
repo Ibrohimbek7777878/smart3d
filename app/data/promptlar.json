@@ -32,7 +32,7 @@
    "id": "garderob-kupe", "kat": "garderob", "usul": "toplam",
    "nom": { "uz": "Shkaf-kupe devor bo'ylab", "ru": "Шкаф-купе вдоль стены", "en": "Sliding wardrobe along a wall" },
    "izoh": { "uz": "3 eshikli shkaf-kupe, devorga moslab", "ru": "Трёхдверный шкаф-купе по ширине стены", "en": "Three-door sliding wardrobe sized to the wall" },
-   "maydon": [ { "k": "eni", "q": 2700, "min": 2200, "max": 6000 }, { "k": "chuqurligi", "q": 2500, "min": 1500, "max": 6000 } ],
+   "maydon": [ { "k": "eni", "q": 2700, "min": 2210, "max": 6000 }, { "k": "chuqurligi", "q": 2500, "min": 1500, "max": 6000 } ],
    "toplam": [ { "kod": "SP-G-011", "devor": "orqa", "joy": "markaz", "w": "toldir" } ]
   },
   {
@@ -81,7 +81,7 @@
    "id": "dahliz", "kat": "dahliz", "usul": "toplam",
    "nom": { "uz": "Dahliz", "ru": "Прихожая", "en": "Hallway" },
    "izoh": { "uz": "Kiyim ilgich paneli, poyabzal shkafi, shkaf-kupe", "ru": "Вешалка с полкой, обувница, шкаф-купе", "en": "Coat panel, shoe cabinet, sliding wardrobe" },
-   "maydon": [ { "k": "eni", "q": 2000, "min": 1700, "max": 5000 }, { "k": "chuqurligi", "q": 2400, "min": 1600, "max": 6000 } ],
+   "maydon": [ { "k": "eni", "q": 2000, "min": 1710, "max": 5000 }, { "k": "chuqurligi", "q": 2400, "min": 1600, "max": 6000 } ],
    "toplam": [ { "kod": "SP-G-010", "devor": "orqa", "joy": "markaz" }, { "kod": "SP-D-002", "devor": "chap", "joy": "oxir" }, { "kod": "SP-W-008", "devor": "ong", "joy": "oxir" } ]
   },
   {

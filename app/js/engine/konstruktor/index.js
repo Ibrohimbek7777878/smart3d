@@ -16,6 +16,7 @@ import { qoidalar } from './qoidalar.js';
 import { devorlar, burchak, tosiqlar, boshOraliqlar } from './devor.js';
 import { toldir } from './toldirish.js';
 import { eshikToqnashuvlari, petlyaTanla } from './eshik.js';
+import { ichkiXona, devorChegara, DEVOR_ORALIQ } from '../devorOraliq.js';
 
 const SHAKL_NOMI = { I: "To'g'ri", L: 'Burchakli (L)', U: 'P shakl (U)' };
 
@@ -380,6 +381,9 @@ function variantQur(sh, room, talab, Q, catalog) {
  * Asosiy funksiya. Variantlar bahosi bo'yicha (kichik — yaxshi), har shakldan eng yaxshisi, ko'pi bilan 3 ta.
  */
 export function konstruksiya(room, talab = {}, catalog = {}, opt = {}) {
+  /* egasi #152: modul devorga tiralmaydi — konstruktor devor yuzasidan DEVOR_ORALIQ mm ichkaridagi "ichki xona"da ishlaydi
+     (kontur T = qalinlik/2 + oraliq ga ichkariga; modullar shu chiziqqa taqaladi, burchakda — ikkala devordan). opt.devorOraliq — boshqa qiymat */
+  if (room && Array.isArray(room.outline)) room = ichkiXona(room, devorChegara(room, opt.devorOraliq != null ? opt.devorOraliq : DEVOR_ORALIQ));
   const Q = qoidalar(opt.qoidalar);
   const t = Object.assign({ shakl: 'auto', xolodilnik: true, plita: 'erkin', moyka: true, ustki: true }, talab);
   const W = devorlar(room);

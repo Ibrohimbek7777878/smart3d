@@ -15,6 +15,7 @@ import { footprint } from '../app/js/engine/rules.js';
 import { cutlist } from '../app/js/engine/cutlist.js';
 import { nestProject } from '../app/js/engine/nesting.js';
 import { deriveKitchen } from '../app/js/engine/kitchen.js';
+import { ichkiXona, devorOraliqlari, DEVOR_ORALIQ } from '../app/js/engine/devorOraliq.js';
 
 const DATA = fileURLToPath(new URL('../app/data/', import.meta.url));
 const J = (p) => JSON.parse(readFileSync(DATA + p, 'utf8'));
@@ -63,7 +64,9 @@ for (const X of XONALAR) {
   ok(X.n + ': kamida 1 variant', res.variantlar.length >= 1, res.xato);
   const res2 = konstruksiya(room, X.t || {}, cat);
   ok(X.n + ': har safar bir xil natija', JSON.stringify(res) === JSON.stringify(res2));
-  const W = devorlar(room);
+  /* egasi #152: konstruktor devor yuzasidan DEVOR_ORALIQ mm ichkaridagi "ichki xona"da ishlaydi — "bo'shliq 0" va deraza
+     tekshiruvlari shu ichki chiziq bo'yicha (oldin kontur chizig'ida edi: modul 3D da devor ichiga 50 mm kirardi) */
+  const ichki = ichkiXona(room), W = devorlar(ichki);
   for (const v of res.variantlar) {
     variantlar++;
     const tag = X.n + ' [' + v.shakl + ']';
@@ -71,13 +74,17 @@ for (const X of XONALAR) {
     ok(tag + ': joy yetmasa — izoh bilan (aks holda izohsiz)', X.diqqat ? dq[0] === X.diqqat : dq.length === 0, dq.join(','));
     ok(tag + ': ogohlantirish yo\'q (to\'qnashuv, xona, chegara, eshik)', v.ogohlantirishlar.length === 0, JSON.stringify(v.ogohlantirishlar).slice(0, 300));
     ok(tag + ': eshiklar 90° ochiladi', eshikToqnashuvlari(v.placements, cat, room).length === 0);
+    /* egasi #152: har modul devor yuzasidan kamida DEVOR_ORALIQ mm (devor ichiga kirish 0), devor yonidagilari — aynan shuncha */
+    const gaps = v.placements.flatMap(p => devorOraliqlari(room, p, 60).map(g => g.oraliq));
+    ok(tag + ': devor oralig\'i ' + DEVOR_ORALIQ + ' mm, devorga kirish yo\'q', gaps.length > 0 && gaps.every(g => g >= DEVOR_ORALIQ - 0.5) && gaps.some(g => Math.abs(g - DEVOR_ORALIQ) < 0.5),
+      JSON.stringify([...new Set(gaps.map(Math.round))]));
     /* bo'shliq 0: har devorda pastki qator — oraliqlar faqat xona eshigi / past deraza / burchak zonasida */
     for (const wi of v.devorlar) {
       const dv = W.find(d => d.i === wi);
       const pas = v.placements.filter(p => (+p.z || 0) < 1000 && p.rot === dv.rot   /* pastki qator — oyoqda (z 0…100) */ && Math.abs((dv.n[0] ? p.x : p.y) - (dv.n[0] ? dv.S[0] : dv.S[1])) < 1)
         .map(p => { const f = footprint(p); const a = dv.u[0] ? [f.x0, f.x1] : [f.y0, f.y1]; const s0 = dv.u[0] + dv.u[1] > 0 ? a[0] - (dv.u[0] ? dv.S[0] : dv.S[1]) : (dv.u[0] ? dv.S[0] : dv.S[1]) - a[1]; return [Math.round(s0), Math.round(s0 + (a[1] - a[0]))]; })
         .sort((a, b) => a[0] - b[0]);
-      const blok = (room.openings || []).filter(o => +o.wall === wi && (o.type === 'door' || (+o.sill || 0) < QOIDALAR.pastki.h + 40)).map(o => dv.oraliq(+o.offset, +o.width));
+      const blok = (ichki.openings || []).filter(o => +o.wall === wi && (o.type === 'door' || (+o.sill || 0) < QOIDALAR.pastki.h + 40)).map(o => dv.oraliq(+o.offset, +o.width));
       const k = v.devorlar.indexOf(wi), boshda = k > 0;
       const run1 = dv.len;
       let cur = boshda ? Dp : 0, bosh = true;
@@ -90,7 +97,7 @@ for (const X of XONALAR) {
       ok(tag + ': devor ' + (wi + 1) + ' — bo\'shliq 0 mm', !bosh && bo.length === 0, JSON.stringify(bo));
     }
     /* ustki shkaf deraza ustida emas; plita deraza ostida emas */
-    for (const o of (room.openings || []).filter(o => o.type === 'window')) {
+    for (const o of (ichki.openings || []).filter(o => o.type === 'window')) {
       const dv = W.find(d => d.i === +o.wall);
       const [w0, w1] = dv.oraliq(+o.offset, +o.width);
       const onWall = (p) => p.rot === dv.rot && Math.abs((dv.n[0] ? p.x : p.y) - (dv.n[0] ? dv.S[0] : dv.S[1])) < 1;

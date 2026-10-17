@@ -47,7 +47,7 @@ export async function openEditor() {
   const o = get().onb, ai = get().ai;
   if (o.kind === 'ai' && ai.text.trim()) { project.reset(); await runAI(true); }
   else {
-    const room = { w: clamp(+o.room.w || 3600, 1500, 9000), d: clamp(+o.room.d || 3000, 1500, 9000), h: clamp(+o.room.h || 2700, 2200, 4000) };
+    const room = { w: clamp(+o.room.w || 5000, 1500, 9000), d: clamp(+o.room.d || 4000, 1500, 9000), h: clamp(+o.room.h || 2700, 2200, 4000) };   // standart 5 × 4 m (#152)
     set('onb', { room });
     project.fromOnboarding(o.kind, room);
   }
