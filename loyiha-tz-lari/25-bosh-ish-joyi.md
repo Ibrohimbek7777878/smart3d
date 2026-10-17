@@ -45,7 +45,7 @@ Savollarga javob (#129):
   - tayyor shakllar (to'rtburchak, L, erkin) — o'lcham raqam bilan;
   - eshik va deraza — varaqda raqam bilan;
   - 2D da devorni sichqoncha bilan chizib bo'lmaydi.
-- **SunPin** (Bittada Usta, `usta.bittada.uz/#/sunpin`, faqat o'qildi):
+- **SunPin** (Bittada Usta, `<ichki-host-usta>/#/sunpin`, faqat o'qildi):
   - 2D kanva: devor, eshik, deraza, o'lcham zanjiri;
   - fragment qo'yish, narx, 3D;
   - ko'p bosqichli: chizmalar ro'yxati → kanva → hisob.

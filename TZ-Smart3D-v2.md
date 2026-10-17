@@ -106,7 +106,7 @@ Smart3D → format tanlash → post-prosessor → stanok fayli
 - Hozir: DXF, NC, G-code, PTP tayyor
 - Qolganlar: namuna fayl kutilmoqda
 
-### 3.3 GibLab integratsiya (kroy.bittada.uz)
+### 3.3 GibLab integratsiya (<ichki-host-kroy>)
 - `.project` fayl yaratish ✅ tayyor
 - **Neshta list ketishi** hisobi ✅ (raskroy)
 - **Qancha ostatka qolishi** hisobi ✅ (delovoy qoldiq)
@@ -242,7 +242,7 @@ Smart3D → format tanlash → post-prosessor → stanok fayli
 | Furnitura katalogi | ERP | ✅ 1978 ta |
 | Narxlar (ombor) | ERP (2026-10-13) | ✅ |
 | CNC namuna fayllar | Sexdan | ⏳ |
-| Kroy/GibLab kodlari | kroy.bittada.uz | ✅ tadqiq qilindi |
+| Kroy/GibLab kodlari | <ichki-host-kroy> | ✅ tadqiq qilindi |
 
 ### 8.2 Texnologiya
 | Komponent | Tanlov | Sabab |

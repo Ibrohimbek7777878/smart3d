@@ -136,7 +136,7 @@ app/
    Quest/telefon braslda paydo bo'ladi)
 4. ~~CNC export~~ ✅ **tayyor** — `engine/cnc.js`: DXF (ezdxf valid), Excellon NC, PTP CSV
 5. ~~GibLab `.project`~~ ✅ **tayyor** — `engine/giblab.js`: LSTR raskroy kartasi + XML
-   (CS/EL operatsiyalar, waste, trims); kroy.bittada.uz'ga import uchun tayyor fayl.
+   (CS/EL operatsiyalar, waste, trims); <ichki-host-kroy>'ga import uchun tayyor fayl.
    Format manbasi: mebelcity `giblab_raskroy.py` (reverse-engineered) + haqiqiy sex fayllari.
 6. Lazer qurilma protokoli (USB/serial bridge)
 7. Native app (PWA → Capacitor)

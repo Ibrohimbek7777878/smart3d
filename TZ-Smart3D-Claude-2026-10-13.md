@@ -101,7 +101,7 @@ Bazis ham, GibLab ham kerak bo'lmaydi.
 
 ### 3.3 600 ta fragmentni yig'ish
 
-- **Manba:** serverdagi real Bazis fayllari — 2 933 ta `.b3d` (`/home/user/bazis fayllar oktiyabr/`)
+- **Manba:** serverdagi real Bazis fayllari — 2 933 ta `.b3d` (`<mahalliy-yo'l>/bazis fayllar oktiyabr/`)
   va 994 ta `.b3d` (`/var/www/bazis_b3d/`). Ikki papkadagi fayllar qisman takrorlanadi.
 - **Usul — yarim avtomatik.** Tizim eng ko'p takrorlanadigan modullarni nomzod sifatida beradi,
   bazischi ularni tekshirib, formulaga aylantiradi. To'liq avtomatik ajratish (3D-masofa bo'yicha
@@ -254,9 +254,9 @@ aylanadi. Noto'g'ri o'lcham hech qachon jim o'tib ketmaydi.
 
 ### 9.1 Muhim fakt
 
-kroy.bittada.uz — GibLab'ning o'zi emas, faqat **tunnel**. Haqiqiy GibLab lokal kompyuterda
+<ichki-host-kroy> — GibLab'ning o'zi emas, faqat **tunnel**. Haqiqiy GibLab lokal kompyuterda
 o'rnatilgan yopiq, sotib olinadigan dastur. Uning kodi hech qayerda yo'q, uni ko'chirib bo'lmaydi
-(`/home/user/bittada/TZ-KROY-GIBLAB-TUNNEL-UZILISHI.md`).
+(`<mahalliy-yo'l>/bittada/TZ-KROY-GIBLAB-TUNNEL-UZILISHI.md`).
 
 Demak kroy — **o'zimizning dvigatelimiz**. U demo'da allaqachon bor: lenta usuli 87,4%,
 gilyotina 78,3%. GibLab faqat solishtirish o'lchovi bo'lib xizmat qiladi.
@@ -490,7 +490,7 @@ Hammasi Bittada serverida, `mebelcity_platform` loyihasida:
 
 ## 20. Tegilmaydi
 
-- kroy.bittada.uz va tunel.bittada.uz — faqat o'qiladi. code.bittada.uz ga kirilmaydi.
+- <ichki-host-kroy> va <ichki-host-tunel> — faqat o'qiladi. <ichki-host-kod> ga kirilmaydi.
 - Bittada ERP (`mebelcity_platform`) — bu TZ bo'yicha unda hech narsa o'zgartirilmaydi, faqat
   o'qiladi. Moliya (`finance/`) qismiga umuman tegilmaydi.
 - Infratuzilmaga (nginx, systemd) tegilmaydi.
