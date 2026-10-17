@@ -4,13 +4,14 @@ import { korinishBoshla, korinishMaydon } from './korinish.js';
 import { cheklovXonasi } from '../../../services/loyiha.js';
 import { joyRanglari } from '../../../services/erpMaterial.js';
 import { surishCheklov } from '../../../../../app/js/engine/devorOraliq.js';
+import { teshikJoy } from '../../../services/ichki.js';
 
 /* TZ-19: muharrir 3D sahnasi — bizning zamer tizimi (services/sahna.js, qoida S6) dizayn ko'rinishida.
  * Bitta nusxa: muharrir ochilganda yaratiladi (mount), yopilganda tozalanadi (unmount). 3D da o'zgargan holat
  * (eshik ochildi va h.k.) — editor.sceneV hisoblagichi orqali ekranga yetadi.
  * TZ-19 §5: three.js (667 KB) va sahna kodi — alohida bo'lak, muharrir ochilganda yuklanadi (birinchi ekran tezroq). */
 export const scene = { sahna: null, vrBtn: null, vrBox: null };
-let offDoc = null;
+let offDoc = null, offRecalc = null;
 
 /** 3D holati o'zgardi — unga bog'liq yozuvlar (masalan "Eshiklarni ochish") yangilanadi */
 export const bumpScene = () => set('editor', s => ({ sceneV: s.sceneV + 1 }));
@@ -36,7 +37,8 @@ export async function mountSahna(host, onTap, alive = () => true) {
     onDragEnd: (id, holat) => { if (holat !== 'joyida') project.changed('items'); },
     onRotate: (id, rot, x, y) => { const p = project.pl(id); if (p) { p.rot = rot; p.x = x; p.y = y; project.scheduleRecalc(); } },
     onRotateEnd: () => project.changed('items'),
-    onTap
+    onTap,
+    getTeshik: (id) => teshikJoy(project.H, project.res, id, project.pl(id))   // egasi #167: rentgen belgilari — kesim ro'yxatidan
   });
   scene.sahna = sahna;
   sahna.setDoc(project.doc, joylar(), H.catalog);
@@ -48,6 +50,7 @@ export async function mountSahna(host, onTap, alive = () => true) {
     else if (kind === 'devor') sahna.setDoc(project.doc, joylar(), H.catalog, { kamera: false });   // TZ-25: devor tahriri — kamera joyida
     else sahna.setPlacements(joylar(), H.catalog);
   });
+  offRecalc = project.onRecalc(() => { if (scene.sahna) scene.sahna.belgiYangila(); });   // egasi #167: kesim yangilandi — belgilar ham
   /* VR (WebXR): three.js tugmasi o'z yozuvini o'zi boshqaradi ("VR NOT SUPPORTED") — yashirin qobiqda turadi,
      ekranda faqat dizayn tugmamiz (editor.vrOk) ko'rinadi */
   try {
@@ -63,6 +66,7 @@ export async function mountSahna(host, onTap, alive = () => true) {
 
 export function unmountSahna() {
   if (offDoc) { offDoc(); offDoc = null; }
+  if (offRecalc) { offRecalc(); offRecalc = null; }
   if (scene.sahna) { scene.sahna.dispose(); scene.sahna = null; }
   if (scene.vrBox) { scene.vrBox.remove(); scene.vrBox = null; scene.vrBtn = null; }
   set('editor', { sceneOn: false });

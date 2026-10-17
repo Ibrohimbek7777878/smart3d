@@ -2,7 +2,8 @@ import React from 'react';
 import { useSlice } from '../../../store/index.js';
 import { t } from '../../../i18n/index.js';
 import Ikon from '../../../shared/ui/Ikon.jsx';
-import { FONLAR, korinishOzgar, menyuOchYop, menyuYop, yonalish, zoom, toliqEkran, erkinMaydon } from './korinish.js';
+import { FONLAR, korinishOzgar, menyuOchYop, menyuYop, yonalish, zoom, toliqEkran, erkinMaydon, belgiOzgar } from './korinish.js';
+import { RANG } from '../../../../../app/js/engine/teshik3d.js';
 
 /* TZ-23 (dizaynda yo'q — namuna: egasi bergan Bazis-Cloud skrinshotlari; dizayn uslubida: --sfc, --line, 14px burchak).
  * O'ngda vertikal panel: yo'nalishlar (izometriya, old, yuqori, chap, o'ng), to'liq ekran, +/−, o'lchash, ko'rinish menyusi.
@@ -15,6 +16,10 @@ const QATOR = (on) => ({ display: 'flex', alignItems: 'center', gap: '10px', wid
 const SARLAVHA = { fontSize: '11px', fontWeight: '800', letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--mut)', padding: '10px 12px 4px' };
 const YON = [['izo', 'izo'], ['old', 'old'], ['yuqori', 'yuqori'], ['chap', 'chapYon'], ['ong', 'ongYon']];
 const FON_RANG = (n) => '#' + n.toString(16).padStart(6, '0');
+/* egasi #167: rentgen ichida — teshik / kromka / zapchast belgilari (ixcham chiplar; nuqta — sahnadagi rangi) */
+const BELGI = [['teshik', [RANG.konfirmat, RANG.petlya, RANG.polka, RANG.ruchka]], ['kromka', [RANG.kromka]], ['zapchast', [RANG.zapchast]]];
+const CHIP = (on) => ({ display: 'flex', alignItems: 'center', gap: '6px', height: '32px', padding: '0 10px', borderRadius: '999px', border: on ? '1px solid var(--acc)' : '1px solid var(--line)',
+  background: on ? 'rgba(255,122,69,.16)' : 'transparent', color: on ? 'var(--txt)' : 'var(--mut)', fontWeight: '700', fontSize: '12px', cursor: 'pointer' });
 
 function Tugma({ ik, label, onClick, on, data }) {
   return (
@@ -92,6 +97,19 @@ export default function KorinishPanel({ tel }) {
             <button role="menuitemcheckbox" aria-checked={k.rentgen} data-rentgen="" onClick={tanla({ rentgen: !k.rentgen })} style={QATOR(k.rentgen)}>
               <Ikon n="rentgen" size={17} gap={0} /><span style={{ flex: '1' }}>{t('korinish.rentgen')}</span>{k.rentgen ? <Ikon n="tayyor" size={16} gap={0} /> : null}
             </button>
+            {k.rentgen ? (
+              <div role="group" aria-label={t('korinish.belgilar')} data-belgilar="" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '4px 12px 8px' }}>
+                {BELGI.map(([nom, ranglar]) => {
+                  const on = !k.belgilar || k.belgilar[nom] !== false;
+                  return (
+                    <button key={nom} role="menuitemcheckbox" aria-checked={on} data-belgi={nom} onClick={() => belgiOzgar(nom)} style={CHIP(on)}>
+                      <span style={{ display: 'flex', gap: '2px' }}>{ranglar.map(r => <span key={r} style={{ width: '8px', height: '8px', borderRadius: '50%', background: FON_RANG(r), opacity: on ? 1 : 0.4 }}></span>)}</span>
+                      {t('korinish.' + nom)}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
             <div style={SARLAVHA}>{t('korinish.sahna')}</div>
             <button role="menuitemcheckbox" aria-checked={k.xona && !erkin} aria-disabled={erkin} disabled={erkin} title={erkin ? t('korinish.xona_erkin') : undefined} data-xona="" onClick={tanla({ xona: !k.xona })} style={{ ...QATOR(k.xona && !erkin), ...(erkin ? { opacity: 0.5, cursor: 'not-allowed' } : {}) }}>
               <span style={{ flex: '1' }}>{t('korinish.xona')}</span>{k.xona && !erkin ? <Ikon n="tayyor" size={16} gap={0} /> : null}
