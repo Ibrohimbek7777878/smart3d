@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSlice } from '../../store/index.js';
 import { telGuruh } from '../../shared/lib/format.js';
 import { useViewer } from '../../shared/design3d/useViewer.js';
 import { s3Viewer, s3Mats, s3Build, s3Apply, s3Spec } from '../../shared/design3d/engine.js';
-import { setField, submitAuth, swapAuth, loadUsullar, usulAlmash, smsYubor, smsKirish } from './actions.js';
+import { setField, submitAuth, swapAuth, loadUsullar, usulAlmash, smsYubor, smsKirish, googleTugma } from './actions.js';
 import { t } from '../../i18n/index.js';
 
 /* ro'yxat oynasidagi aylanuvchi shkaf — dizayn animatsiyasi (marketing namunasi, o'zgarishsiz) */
@@ -32,7 +32,10 @@ export function useKirish() {
   const qoldi = Math.max(0, Math.ceil((f.qayta - hozir) / 1000));
   useEffect(() => { if (!qoldi) return undefined; const id = setTimeout(() => setHozir(Date.now()), 1000); return () => clearTimeout(id); }, [qoldi, hozir]);
   const smsUsul = !reg && auth.smsBor && f.usul === 'sms';
+  const gId = auth.googleId, googleBor = !!gId && !smsUsul;
+  const gRef = useCallback(el => { if (el && gId) googleTugma(el, gId); }, [gId, reg]);
   return {
+    googleBor, gRef, googleNomi: t('kirish.google_nomi'), yoki: t('kirish.yoki'),
     smsBor: !reg && auth.smsBor, smsUsul, yuborildi: smsUsul && f.yuborildi,
     usulCta: smsUsul ? t('kirish.email_bilan') : t('kirish.telefon_bilan'),
     usulAlmash: () => usulAlmash(smsUsul ? 'email' : 'sms'),

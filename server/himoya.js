@@ -25,11 +25,12 @@ export function inlineScriptHashes(htmlFile) {
 export function csp({ scriptHashes = [], scriptExtra = [], frameAncestors = "'none'", upgrade = false } = {}) {
   return [
     "default-src 'self'",
-    "script-src 'self'" + [...scriptExtra, ...scriptHashes].map(x => ' ' + x).join(''),
-    "style-src 'self' 'unsafe-inline'",
+    "script-src 'self'" + [...scriptExtra, ...scriptHashes, 'https://accounts.google.com/gsi/client'].map(x => ' ' + x).join(''),
+    "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
-    "connect-src 'self'",
+    "connect-src 'self' https://accounts.google.com/gsi/",
+    "frame-src https://accounts.google.com/gsi/",
     "worker-src 'self'",
     "manifest-src 'self'",
     "object-src 'none'",
@@ -55,7 +56,7 @@ export function securityHeaders({ prod, scriptHashes, ilovaMi = (p) => TG_ILOVA.
       ...(tg ? {} : { 'X-Frame-Options': 'DENY' }),
       'Referrer-Policy': 'same-origin',
       'Permissions-Policy': 'camera=(), geolocation=(), microphone=(self)',
-      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
       'Cross-Origin-Resource-Policy': 'same-origin'
     });
     if (prod) res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');   // X8: faqat HTTPS

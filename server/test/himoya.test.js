@@ -52,7 +52,7 @@ test('X1: CSP va xavfsizlik sarlavhalari — sahifa va API; importmap faqat xesh
     assert.match(c, /frame-ancestors 'none'/);
     assert.ok(!/script-src[^;]*unsafe-inline/.test(c), 'skriptga unsafe-inline yo\'q');
     assert.equal(r.headers.get('x-frame-options'), 'DENY');
-    assert.equal(r.headers.get('cross-origin-opener-policy'), 'same-origin');
+    assert.equal(r.headers.get('cross-origin-opener-policy'), 'same-origin-allow-popups');
     assert.equal(r.headers.get('strict-transport-security'), null, 'HSTS faqat production\'da');
   }
   assert.equal((await api('/index.html')).headers.get('cache-control'), 'no-cache');

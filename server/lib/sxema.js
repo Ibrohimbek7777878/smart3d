@@ -71,6 +71,8 @@ export function yadroSxema(db) {
   addColumn(db, 'users', 'failed_logins', 'INTEGER DEFAULT 0');  // ketma-ket xato parol
   addColumn(db, 'users', 'locked_until', 'INTEGER DEFAULT 0');   // shu vaqtgacha kirish yopiq (ms)
   addColumn(db, 'users', 'telegram_id', 'INTEGER');              // TZ-16: Telegram Mini App (bitta Telegram — bitta akkaunt)
+  addColumn(db, 'users', 'google_sub', 'TEXT');                  // TZ-31: Google bilan kirish (bitta Google — bitta akkaunt)
+  db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google ON users(google_sub) WHERE google_sub IS NOT NULL');
   db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_users_tg ON users(telegram_id) WHERE telegram_id IS NOT NULL');
   db.exec('CREATE TABLE IF NOT EXISTS revoked_tokens (jti TEXT PRIMARY KEY, exp INTEGER NOT NULL)');   // "Chiqish" qilingan kalitlar
   setInterval(() => db.prepare('DELETE FROM revoked_tokens WHERE exp < ?').run(Math.floor(Date.now() / 1000)), 3600 * 1000).unref();

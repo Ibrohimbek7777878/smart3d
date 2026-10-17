@@ -9,6 +9,7 @@ import { BCRYPT_COST } from '../lib/auth.js';
 import { rateLimit } from '../lib/limit.js';
 import { ah, fail } from '../lib/xato.js';
 import { str, plainText, phone } from '../lib/tekshir.js';
+import { googleClientId } from './auth-google.js';
 
 const CODE_TTL = 5 * 60 * 1000, RESEND_MS = 60 * 1000, MAX_ATTEMPTS = 5;
 
@@ -77,7 +78,7 @@ export default function authSmsRouter({ db, jurnal, cfg, sendSession }) {
 
   /* TZ-23 C4: kirish usullari — sayt "Telefon orqali (SMS)" tugmasini faqat SMS ishlaganda ko'rsatadi
      (production'da — Eskiz sozlangan bo'lsa; dev/test — dev_code bilan, S8) */
-  r.get('/api/auth/usullar', (req, res) => res.json({ email: true, sms: smsConfigured() || !PROD }));
+  r.get('/api/auth/usullar', (req, res) => res.json({ email: true, sms: smsConfigured() || !PROD, google: !!googleClientId(), googleClientId: googleClientId() }));
 
   return r;
 }

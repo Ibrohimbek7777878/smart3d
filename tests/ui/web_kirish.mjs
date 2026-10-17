@@ -89,7 +89,12 @@ async function asosiy(page, R) {
   await click(/^Ro'yxatdan o'tish$/); await page.waitForTimeout(1200);
   R.takrorTelefon = await has('Bu raqam bilan akkaunt bor — kirish');
 
+  /* TZ-31: Google sozlanmagan serverda "Google bilan kirish" tugmasi yo'q */
+  await M(() => { localStorage.removeItem('smart3d.token'); localStorage.removeItem('smart3d.user'); });
+  await yangiSahifa('login'); await page.waitForTimeout(1500);
+  R.googleYoq = (await page.locator('[data-google]').count()) === 0;
+
   R.errs = errs;
   R.ok = R.boshForma.every(Boolean) && R.onboarding && R.serverTogri && R.kalitJSdaYoq && R.chiqdi === 401 && R.qaytaOchildi && R.emailEsda === 'usta.web@test.uz' &&
-    R.notogriParol && R.kirdi && R.takrorEmail && R.takrorTelefon && errs.length === 0;
+    R.notogriParol && R.kirdi && R.takrorEmail && R.takrorTelefon && R.googleYoq && errs.length === 0;
 }

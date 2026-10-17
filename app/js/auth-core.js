@@ -148,6 +148,12 @@ export function createSession(o) {
     if (j.ok) { setAuth(j); if (o.onUser) o.onUser(user, 'login'); }
     return j;
   }
+  /** TZ-31: Google bilan kirish (credential — Google Identity Services bergan ID token, server tekshiradi) */
+  async function google(credential) {
+    const j = await post('/api/auth/google', { credential });
+    if (j.ok) { setAuth(j); if (o.onUser) o.onUser(user, 'login'); }
+    return j;
+  }
   /** TZ-16: Telegram imzosi bilan kirish (initData — Telegram bergan satr, server tekshiradi) */
   async function telegram(initData) {
     const j = await post('/api/auth/telegram', { initData });
@@ -201,7 +207,7 @@ export function createSession(o) {
 
   return {
     api, errText, errInfo, changed, flush, openProject, listProjects, removeProject,
-    login, register, smsSend, smsVerify, telegram, telegramUlash, afterLogin, logout, restore, setCurrent,
+    login, register, smsSend, smsVerify, google, telegram, telegramUlash, afterLogin, logout, restore, setCurrent,
     /** "Yangi" yoki kompyuterdan yuklash — keyingi saqlash serverda yangi loyiha ochadi */
     resetCurrent() { if (has()) setCurrent(null); },
     get token() { return token; },

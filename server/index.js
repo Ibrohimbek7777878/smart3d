@@ -35,6 +35,7 @@ import { narxEfiri } from './lib/narx-efiri.js';
 import { sahifalar, ILOVA_YOLI } from './routes/sahifalar.js';
 import authRouter from './routes/auth.js';
 import authSmsRouter from './routes/auth-sms.js';
+import authGoogleRouter from './routes/auth-google.js';
 import telegramRouter from './routes/telegram.js';
 import projectsRouter from './routes/projects.js';
 import shablonlarRouter from './routes/shablonlar.js';
@@ -85,7 +86,7 @@ const sahifa = sahifalar({ webDist: WEB_DIST, eski: APP_DIR });
 app.use(sahifa.statik);
 
 /* ── API (har modul — o'z routerida, manzillar to'liq: /api/...) ── */
-for (const router of [authRouter, authSmsRouter, telegramRouter, projectsRouter, shablonlarRouter, materialsRouter, fragmentsRouter,
+for (const router of [authRouter, authSmsRouter, authGoogleRouter, telegramRouter, projectsRouter, shablonlarRouter, materialsRouter, fragmentsRouter,
   ordersRouter, servicesRouter, settingsRouter, sexStandartlariRouter, narxlarRouter, furnituraRouter, remnantsRouter, aiRouter,
   logRouter, healthRouter]) app.use(router(ctx));
 

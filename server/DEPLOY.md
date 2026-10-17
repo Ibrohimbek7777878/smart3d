@@ -187,6 +187,14 @@ Har kuni 03:00 (cron, namuna):
 
 Tiklashni oyda bir marta test serverda sinab ko'ring.
 
+## 8a. Google bilan kirish (ixtiyoriy)
+1. Admin Google Cloud Console → APIs & Services → Credentials → **OAuth client ID** → turi **Web application** yaratadi.
+2. **Authorized JavaScript origins** = `https://smart.bittada.uz` (Redirect URI kerak emas).
+3. Client ID ni muhit fayliga yozing: `GOOGLE_CLIENT_ID=<...>.apps.googleusercontent.com` va servisni qayta ishga tushiring.
+4. Tekshiruv: `GET /api/auth/usullar` → `"google": true`. Sozlanmagan bo'lsa tugma ko'rinmaydi, `POST /api/auth/google` → 503 `S3D-AUTH-016`.
+
+Tashqi so'rov: server Google kalitlarini `https://www.googleapis.com/oauth2/v3/certs` dan oladi (keshlanadi).
+
 ## 9. Yangilash
 1. Zaxira: `node backup.js`.
 2. Yangi kodni alohida papkaga oching: `/srv/smart3d-<sana>`:

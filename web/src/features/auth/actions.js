@@ -6,7 +6,7 @@ import { loadSettings } from '../settings/actions.js';
 import { openPending } from '../projects/actions.js';
 import { ishJoyiOch, yangiIshJoyi } from '../editor/ishjoyi/ishjoyi.js';
 import { checkAiStatus } from '../editor/ai/actions.js';
-import { t, serverXato } from '../../i18n/index.js';
+import { t, til, serverXato } from '../../i18n/index.js';
 import { TELEGRAM } from '../../app/bridge/telegram.js';
 import { telegramUlash } from '../telegram/telegram.js';
 import { marshrutgaQayt } from '../../app/tarix.js';
@@ -103,7 +103,7 @@ export async function submitAuth() {
 export async function loadUsullar() {
   try {
     const r = await S.api('/api/auth/usullar');
-    if (r.ok) set('auth', { smsBor: !!(await r.json()).sms });
+    if (r.ok) { const j = await r.json(); set('auth', { smsBor: !!j.sms, googleId: j.google && j.googleClientId ? j.googleClientId : '' }); }
   } catch (_) { /* internet yo'q — SMS tugmasi ko'rinmaydi */ }
 }
 export const usulAlmash = (usul) => setField({ usul, err: {}, kod: '', yuborildi: false });
@@ -142,6 +142,48 @@ export async function smsKirish() {
   set('auth', { user: j.user });
   if (TELEGRAM) await telegramUlash();
   if (j.yangi) {                                     // birinchi kirish — ro'yxatdagidek: bo'sh ish joyi (TZ-25)
+    await S.afterLogin(true).catch(() => {});
+    if (await marshrutgaQayt()) return;
+    if (get().nav.pending) { openPending(); return; }
+    yangiIshJoyi();
+  } else afterLogin();
+}
+
+/* ── TZ-31: Google bilan kirish (Google Identity Services) ── */
+let gisYuk = null, gisId = '';
+const gisYukla = () => gisYuk || (gisYuk = new Promise((ok, no) => {
+  if (window.google && window.google.accounts) { ok(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://accounts.google.com/gsi/client'; s.async = true;
+  s.onload = () => ok(); s.onerror = () => { gisYuk = null; no(new Error('gsi')); };
+  document.head.appendChild(s);
+}));
+/** Google tugmasini `el` ichiga chizadi (faqat server Google'ni sozlagan bo'lsa chaqiriladi) */
+export async function googleTugma(el, clientId) {
+  try {
+    await gisYukla();
+    const gid = window.google.accounts.id;
+    if (gisId !== clientId) { gid.initialize({ client_id: clientId, callback: (r) => googleKirish(r && r.credential), ux_mode: 'popup' }); gisId = clientId; }
+    el.textContent = '';
+    gid.renderButton(el, { type: 'standard', theme: 'filled_black', size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'left', width: Math.min(360, el.clientWidth || 360), locale: til() });
+  } catch (_) { xato('S3D-NET-101', { modul: 'auth/google' }); }
+}
+
+/** Google bergan credential bilan kirish — keyingi oqim email kirishdagidek */
+export async function googleKirish(credential) {
+  if (!credential || busy) return;
+  busy = true;
+  const j = await S.google(credential);
+  busy = false;
+  if (!j.ok) {
+    if (j.status === 0) { xato(j.code || 'S3D-NET-101', { modul: 'auth/google' }); return; }
+    setField({ err: { email: serverXato(j.error, j.code) }, tried: true });
+    return;
+  }
+  setField({ err: {}, pass: '' });
+  set('auth', { user: j.user });
+  if (TELEGRAM) await telegramUlash();
+  if (j.yangi) {
     await S.afterLogin(true).catch(() => {});
     if (await marshrutgaQayt()) return;
     if (get().nav.pending) { openPending(); return; }

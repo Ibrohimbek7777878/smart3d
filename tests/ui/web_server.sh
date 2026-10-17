@@ -10,7 +10,7 @@ TMPD="$(mktemp -d)"
 DB_PATH="$TMPD/t.db" ADMIN_PASSWORD='web-test-admin-1' ADMIN_EMAIL='admin@smart3d.uz' node server/init-db.js >/dev/null 2>&1
 node tests/ui/tg_soxta.mjs "$TG_MOCK" >"$TMPD/tg.log" 2>&1 &
 TGSRV=$!
-env -u ESKIZ_EMAIL -u ESKIZ_PASSWORD -u AI_PROVIDER -u AI_API_KEY -u ANTHROPIC_API_KEY DB_PATH="$TMPD/t.db" PORT="$NPORT" NODE_ENV=test TEST_REGISTER_LIMIT=100 \
+env -u GOOGLE_CLIENT_ID -u ESKIZ_EMAIL -u ESKIZ_PASSWORD -u AI_PROVIDER -u AI_API_KEY -u ANTHROPIC_API_KEY DB_PATH="$TMPD/t.db" PORT="$NPORT" NODE_ENV=test TEST_REGISTER_LIMIT=100 \
   TELEGRAM_BOT_TOKEN="$TG_TEST_TOKEN" TELEGRAM_WEBHOOK_SECRET="$TG_SECRET" TELEGRAM_API_URL="http://127.0.0.1:$TG_MOCK" \
   JWT_SECRET="web-test-secret-0123456789abcdefghijklmnopqrstuvwxyz" node server/index.js >"$TMPD/server.log" 2>&1 &
 NSRV=$!; WSRV=""
