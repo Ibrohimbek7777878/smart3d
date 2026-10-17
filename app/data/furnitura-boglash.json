@@ -10,7 +10,44 @@
    "BZ-sharikovie_napravl_400_lev": "xuddi shu",
    "BZ-napravlyayushie_salazka": "uzunligi yo'q"
   },
-  "tasdiq_2": "Egasi, 2026-10-17 (#147): RU-1000 (1000 mm uzun ruchka, AI/chizilgan modul) → 90001991 «0351- 1000 MM QORA» 45 000"
+  "tasdiq_2": "Egasi, 2026-10-17 (#147): RU-1000 (1000 mm uzun ruchka, AI/chizilgan modul) → 90001991 «0351- 1000 MM QORA» 45 000",
+  "taklif_2026-10-17": {
+   "holat": "TAKLIF, egasi tasdig'i kutilmoqda — pastdagi umumiy-modul kodlari (links ichida) hali tasdiqlanmagan",
+   "taklif_kodlar": [
+    "FLANETS-OVAL",
+    "NAPRAV-400",
+    "NAPRAV-450",
+    "NOG-100",
+    "PET-4",
+    "PETLYA-BURCHAK-135",
+    "PETLYA-DOV",
+    "PETLYA-NAK",
+    "RU-128",
+    "RUCHKA-128",
+    "SUSHILKA-800",
+    "UGOLOK-MEBEL"
+   ],
+   "asos": "faqat furnitura-catalog.json; oddiy, o'rta narxli, o'lchami kodga aniq mos (dokon narxi ustun)",
+   "savol_bogLanmadi": {
+    "NOG-90": "nojka 90 mm; katalogda 9 sm yo'q — 90002491 (NOSHKA 10 LIK, 100 mm, 3 500) mos kelsinmi? (53 modul)",
+    "TS-1730": "styajka; 90002643 (SamFix ekstsentrik, 795) yoki 90002094 (MSFIX ekstsentrik-dyubel komplekt, 1 800) — dona/komplekt noaniq",
+    "CONFIRMAT, GD-04, M8-60": "vint/konfirmat — katalogda dona narxi va quti birligi noaniq (7*50 stjazhka: 1 ком=100шт, narxi yo'q)",
+    "SH-01": "shkant 8x30; katalogda 90001945 (8x35, 100) — o'lcham mos emas",
+    "TANDEM-500, TANDEM-400-NAM": "90002728 TANDEM BAYFU 50 LIK 95 000 / 90002362 DTC TANDEM 40 120 000 — juft yoki dona, qaysi narx sinfi noaniq",
+    "TRUBA-OVAL": "90001931 Труба овальная хром (3 metr) 31 500 — modulda dona, katalogda 3 m; kesib ishlatish narxi noaniq",
+    "GILDIRAK-ROLIK": "90000054 Hettich Мебельные колеса 64 000 (do'kon varianti yo'q) — qimmat, o'rta emas",
+    "ZAMOK-MARKAZIY": "90001887 Замок врезной Камел 5 000 / 90001888 Протекс 138 15 000 — markaziy qulf turi noaniq",
+    "KRYUCHOK-3TALIK": "90002966 Мебельный крючок 62 500 — 3 talik ekani noma'lum",
+    "LIFT-HF": "90003046/47 Multi Mech A1 (794 000+) — Aventos HF bilan aynan emas",
+    "KARGO-200": "90002413 KARGO 1411 SOFT 502 000 / 90002414 STARAX 364 000 — 200 mm eni nomda yo'q",
+    "NAVES-REG, NAVES-OGIR, NAVES-CAMAR": "katalogda shkaf osish navesi yo'q",
+    "GAS-UP": "kreslo gaz-lifti katalogda yo'q (90003041+ — shkaf gaz-lifti)",
+    "PETLYA-MUZ, SLIDER-MUZ": "muzlatgich petlyasi: 90000364/90000356 Hettich (76 800 / 576 000) — tur noaniq",
+    "PETLYA-NAM": "'NAM' ma'nosi noaniq (namga chidamli?) — 90002525 bilan bir xilmi?",
+    "TIP-ON, KUPE-SYS-02/03, MAT-UPH, SR-450, Ush-90, PROF-AL": "aniq mos mahsulot topilmadi"
+   }
+  },
+  "tasdiq_3": "Egasi, 2026-10-17 (#151: \"qo'sh, ruxsat beraman\"): umumiy modul kodlari taklifi (393e654) tasdiqlandi"
  },
  "links": {
   "BZ-petle_oddiy": "90002525",
@@ -25,6 +62,18 @@
   "BZ-salazka_turkiya_samet_vakum_400_mm": "90002641",
   "BZ-napravlyayushie_shar_poln_vidv_l400_1045": "90002641",
   "BZ-ekstsentrik_0_0": "90002094",
-  "RU-1000": "90001991"
+  "RU-1000": "90001991",
+  "PET-4": "90002525",
+  "PETLYA-NAK": "90002525",
+  "PETLYA-DOV": "90001824",
+  "PETLYA-BURCHAK-135": "90002509",
+  "RU-128": "90001979",
+  "RUCHKA-128": "90001979",
+  "NOG-100": "90002491",
+  "NAPRAV-400": "90002641",
+  "NAPRAV-450": "90002642",
+  "FLANETS-OVAL": "90001940",
+  "SUSHILKA-800": "90003063",
+  "UGOLOK-MEBEL": "90002004"
  }
 }
