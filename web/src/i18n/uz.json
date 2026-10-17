@@ -100,7 +100,7 @@
  "ai.osh_tortma": "Tortma: {n} ta ({m} ta tortmali modul, gaz yonida)",
  "ai.osh_tortma_kam": "Tortma {s} ta so'raldi, {n} tasi sig'di",
  "ai.osh_tuzatish": "{k}: {n} → {m} mm (chegara ichiga keltirildi)",
- "ai.osh_uzunlik": "Oshxona uzunligi: {v} mm, bitta devor bo'ylab (to'g'ri oshxona)",
+ "ai.osh_uzunlik": "Oshxona uzunligi: {v} mm",
  "ai.osh_uzunlik_yoq": "Uzunlik aytilmagan — devor uzunligi bo'yicha",
  "ai.osh_xona": "Xona o'lchami aytilmagan — {w} × {d} mm",
  "ai.osh_xona_baland": "3 qavat shiftga sig'masdi: xona balandligi {a} → {b} mm",

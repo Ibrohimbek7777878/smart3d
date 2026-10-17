@@ -100,7 +100,7 @@
  "ai.osh_tortma": "Drawers: {n} ({m} drawer units, next to the hob)",
  "ai.osh_tortma_kam": "{s} drawers requested, {n} fitted",
  "ai.osh_tuzatish": "{k}: {n} → {m} mm (brought within limits)",
- "ai.osh_uzunlik": "Kitchen length: {v} mm along one wall (straight kitchen)",
+ "ai.osh_uzunlik": "Kitchen length: {v} mm",
  "ai.osh_uzunlik_yoq": "Length not given — wall length used",
  "ai.osh_xona": "Room size not given — {w} × {d} mm",
  "ai.osh_xona_baland": "3 tiers did not fit under the ceiling: room height {a} → {b} mm",
