@@ -10,6 +10,7 @@ import { createItems } from '../../../app/js/items.js';
 import { s3Mats } from '../shared/design3d/engine.js';
 import { isUstki } from './loyiha.js';
 import { createKorinish } from './korinish.js';
+import { createVR } from './vr.js';
 import { belgiGuruh, belgiQism, belgiTozala } from './belgi3d.js';
 
 export const DIZAYN_RANG = {
@@ -120,6 +121,8 @@ export function createSahna(host, o) {
     onSelect: o.onSelect, onDragEnd: o.onDragEnd, cheklov: o.cheklov, onRotate: o.onRotate, onRotateEnd: o.onRotateEnd, onTap: o.onTap
   });
   korinish = createKorinish({ sp, ctl }, host);           // TZ-23: kamera, yo'nalish, chizish rejimlari, o'lchash
+  /* TZ-31 B: VR — sessiya vaqtida ildiz mm→m, Z→Y; pult bilan tanlash/eshik/teleport (services/vr.js) */
+  const vr = createVR(sp, { onTap: o.onTap, getItems: () => items, ctl, setLabels: (on) => { sp.labelRenderer.domElement.style.display = on ? '' : 'none'; } });
   /* egasi #167: rentgenda teshik, kromka va zapchast belgilari — har modul guruhining bolasi (surilsa, burilsa — birga);
      oddiy ko'rinishda yashirin. Modul qayta qurilsa (items.setPlacements) belgi ham u bilan tozalanadi va kerak bo'lsa qayta quriladi */
   function belgilar(holat) {
@@ -140,7 +143,7 @@ export function createSahna(host, o) {
   }
   korinish.onQatlam(belgilar);
   const api = {
-    sp, items, ctl, korinish,
+    sp, items, ctl, korinish, vr,
     setDoc(doc, placements, catalog, o) { sp.setDoc(doc, o); items.setPlacements(placements, catalog); korinish.qollash(); },
     setPlacements(placements, catalog) { items.setPlacements(placements, catalog); korinish.qollash(); },
     /** egasi #167: kesim ro'yxati yangilandi — belgilar yangi ma'lumotdan qayta quriladi */
@@ -164,7 +167,7 @@ export function createSahna(host, o) {
     },
     /** 🔄 — avto-aylanish (dizayn: 0.5 rad/s) */
     spin(on) { ctl.orbit.autoRotate = !!on; ctl.orbit.autoRotateSpeed = 0.5 * 60 / (2 * Math.PI); if (on) sp._startLoop(); },
-    dispose() { korinish.dispose(); items.dispose(); ctl.dispose(); sp.dispose(); }
+    dispose() { vr.dispose(); korinish.dispose(); items.dispose(); ctl.dispose(); sp.dispose(); }
   };
   return api;
 }

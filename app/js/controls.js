@@ -178,7 +178,7 @@ export function attachControls(sp, opts = {}) {
     return true;
   }
   function zoomKadr() {
-    if (sp.mode !== '3d') { pend = 0; return; }
+    if (sp.mode !== '3d' || sp.renderer.xr.isPresenting) { pend = 0; return; }   // VR: kamera shlemniki, near/far metrda (services/vr.js)
     /* sahna o'lchamiga mos chegara: sahnani (xona + modullar) ekranga to'liq sig'diradigan masofa × 1.3 (kamida 3 m) */
     const bb = sp.bbox, diag = Math.hypot(bb.w, bb.h, 2700);
     const nowMs = performance.now();

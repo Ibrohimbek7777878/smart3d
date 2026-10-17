@@ -417,7 +417,11 @@ export function createItems(sp, opts = {}) {
     ptr.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     ptr.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
     ray.setFromCamera(ptr, sp.camera);
-    const hits = ray.intersectObjects(meshes.filter(m => !(m.userData && m.userData.auto)), true)
+    return partFromRay(ray);
+  }
+  /** nur (VR pulti ham) bo'yicha detal: { id, part } | null — sichqoncha bilan bir xil qoida */
+  function partFromRay(rc) {
+    const hits = rc.intersectObjects(meshes.filter(m => !(m.userData && m.userData.auto)), true)
       .filter(h => h.object.visible && !(h.object.userData && h.object.userData.kind === 'hitBox'));
     let hit = hits[0];
     if (focus) { const vis = hits.find(h => !(h.object.material && h.object.material.transparent && h.object.material.opacity < 0.5)); if (vis) hit = vis; }
@@ -451,6 +455,7 @@ export function createItems(sp, opts = {}) {
     setPlacements, select, getSelected, meshes,
     /** Ekran nuqtasida mebel bormi (controls.js: bo'sh joy = pan) */
     hitTest: (e) => !!pick(e),
+    pickPartRay: (rc) => partFromRay(rc),
     /** ekran nuqtasidagi mebel id (yoki null) — brauzer testlari */
     pickId: (e) => { const m = pick(e); return m ? m.userData.id : null; },
     /** surish davom etyaptimi (testlar va boshqa boshqaruvlar uchun) */

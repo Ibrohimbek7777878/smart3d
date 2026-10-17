@@ -75,6 +75,6 @@ export function openInside() {
 export const center = () => scene.sahna && scene.sahna.center();
 export const setView = (view) => set('editor', view === '2d' ? { view, spin: false } : { view });
 export const toggleSpin = () => set('editor', s => ({ spin: !s.spin, view: '3d' }));
-export function vr() { if (scene.vrBtn) { set('editor', { view: '3d' }); scene.vrBtn.click(); } }
+export function vr() { if (scene.vrBtn) { set('editor', { view: '3d' }); scene.vrBtn.click(); } else toast(t('sahna.vr_yoq')); }
 export const tipNext = () => set('editor', s => ({ tip: s.tip + 1 }));
 export const tipSkip = () => set('editor', { tip: 3 });
