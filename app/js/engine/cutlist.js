@@ -469,11 +469,12 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   /* ERP furnitura (8 xonali ID) — app.js yuklaydi; ID bor bo'lsa narx FAQAT shu yerdan */
   const furnById = opt.furnituraById || {};
   const hwUnitPrice = (hw) => {
-    if (hw.id) { const f = furnById[hw.id]; return f && f.uzs > 0 && !f.no_price ? f.uzs : 0; }
+    const hid = hw.id || (opt.furnituraBoglash || {})[hw.code];   // TZ-20: kod → ID jadvali (id yozilmagan bo'lsa)
+    if (hid) { const f = furnById[hid]; return f && f.uzs > 0 && !f.no_price ? f.uzs : 0; }
     const m = hwByCode[hw.code];
     return m && m.price > 0 ? m.price : 0;
   };
-  const hwName = (hw) => (hw.id && furnById[hw.id] && furnById[hw.id].name) || (hwByCode[hw.code] || {}).name || hw.name || hw.code;
+  const hwName = (hw) => (furnById[hw.id || (opt.furnituraBoglash || {})[hw.code]] || {}).name || (hwByCode[hw.code] || {}).name || hw.name || hw.code;
   const hwPrice = (hw) => {
     const price = hwUnitPrice(hw);
     if (!(price > 0)) noteMissing('Furnitura', hw.code, hwName(hw));

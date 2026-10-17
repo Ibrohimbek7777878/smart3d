@@ -40,6 +40,8 @@ if not SRC.exists():                                         # dizayn worktree: 
 PARSER_DIR = ROOT.parent / "mebelcity-platform" / "client_erp" / "DOCS" / "bazis_erp_paket"
 OUT = ROOT / "app" / "data" / "fragments-mc.json"
 LINKS = ROOT / "app" / "data" / "id-links.json"
+_BOGLASH = ROOT / "app" / "data" / "furnitura-boglash.json"
+BOGLASH = json.loads(_BOGLASH.read_text(encoding="utf8"))["links"] if _BOGLASH.exists() else {}
 STD = ROOT / "app" / "data" / "sex-standartlari.json"
 FURN = ROOT / "app" / "data" / "furnitura-catalog.json"
 MATIDX = ROOT / "app" / "data" / "materials-index.json"
@@ -587,6 +589,8 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
                          name=nm, qty=int(x.get("count") or 1), unit=x.get("unit") or "dona")
         if rec.get("holat") in ("aniq", "tasdiqlangan"):
             hw["id"] = rec["id"]
+        elif hw["code"] in BOGLASH:      # TZ-20: egasi tasdiqlagan kod → ID jadvali (furnitura-boglash.json)
+            hw["id"] = BOGLASH[hw["code"]]
         hardware.append(hw)
     for m in bom.get("materials", []):
         nm = m["name"]

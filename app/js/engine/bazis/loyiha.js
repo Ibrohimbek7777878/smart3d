@@ -245,7 +245,13 @@ export function bazisLoyiha(objects, o = {}) {
   }
   const hardware = [];
   for (const [list, tur] of [[o.fittings || [], 'furnitura'], [o.fasteners || [], 'mahkamlagich']]) {
-    for (const x of list) hardware.push({ code: 'BZ-' + slug(x.name).slice(0, 40), name: toza(x.name), qty: Math.max(1, Math.round(+x.count || 1)), unit: x.unit || 'dona', tur });
+    for (const x of list) {
+      const code = 'BZ-' + slug(x.name).slice(0, 40);
+      const h = { code, name: toza(x.name), qty: Math.max(1, Math.round(+x.count || 1)), unit: x.unit || 'dona', tur };
+      /* TZ-20: egasi tasdiqlagan kod → ERP ID jadvali (data/furnitura-boglash.json) — MC modullari bilan bitta jadval */
+      if (o.furnituraBoglash && o.furnituraBoglash[code]) h.id = o.furnituraBoglash[code];
+      hardware.push(h);
+    }
   }
   const nomi = toza(o.nom || o.fayl || 'Bazis loyiha');
   const fragment = {

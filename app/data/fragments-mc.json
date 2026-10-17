@@ -207,19 +207,22 @@
      "code": "BZ-polkoderjatel_nikel",
      "name": "polkoderjatel nikel",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002019"
     },
     {
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002491"
     },
     {
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 1,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -733,19 +736,22 @@
      "code": "BZ-polkoderjatel_nikel",
      "name": "polkoderjatel nikel",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002019"
     },
     {
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002491"
     },
     {
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 2,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -1388,19 +1394,22 @@
      "code": "BZ-polkoderjatel_nikel",
      "name": "polkoderjatel nikel",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002019"
     },
     {
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002491"
     },
     {
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 2,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-napravlyayushie_salazka",
@@ -1412,7 +1421,8 @@
      "code": "BZ-salazka_turkiya_samet_bez_vakum_400_mm",
      "name": "salazka Turkiya Samet (bez vakum) 400 mm",
      "qty": 1,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-sharikovie_napravl_400_pr",
@@ -2182,7 +2192,8 @@
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002491"
     },
     {
      "code": "BZ-napravlyayushie_salazka",
@@ -2194,19 +2205,22 @@
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 1,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-napravlyayushie_shar_poln_vidv_l400_1045",
      "name": "Направляющие шар. полн.выдв. L400 1045-16Z оцинков. 3155",
      "qty": 1,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-salazka_turkiya_samet_bez_vakum_400_mm",
      "name": "salazka Turkiya Samet (bez vakum) 400 mm",
      "qty": 1,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-sharikovie_napravl_400_pr",
@@ -3006,13 +3020,15 @@
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002491"
     },
     {
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 1,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -3024,7 +3040,8 @@
      "code": "BZ-petlya_90_s_dovodchikom_chashka_45_mm_ev",
      "name": "Петля 90º с доводчиком, чашка 45 мм, евровинт, Samet 101004613",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001824"
     },
     {
      "code": "BZ-chashka_petli_45_mm_evrovint",
@@ -3780,7 +3797,8 @@
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002491"
     },
     {
      "code": "BZ-kr08_napravlyayushaya_levaya",
@@ -4253,13 +4271,15 @@
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002491"
     },
     {
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 1,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -4475,13 +4495,15 @@
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002491"
     },
     {
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 2,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -4854,7 +4876,8 @@
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002491"
     },
     {
      "code": "BZ-napravlyayushie_salazka",
@@ -4866,19 +4889,22 @@
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 2,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-napravlyayushie_shar_poln_vidv_l400_1045",
      "name": "Направляющие шар. полн.выдв. L400 1045-16Z оцинков. 3155",
      "qty": 2,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-salazka_turkiya_samet_bez_vakum_400_mm",
      "name": "salazka Turkiya Samet (bez vakum) 400 mm",
      "qty": 2,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-sharikovie_napravl_400_pr",
@@ -5760,7 +5786,8 @@
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002491"
     },
     {
      "code": "BZ-napravlyayushie_salazka",
@@ -5772,7 +5799,8 @@
      "code": "BZ-salazka_turkiya_samet_vakum_400_mm",
      "name": "salazka Turkiya Samet (vakum) 400 mm",
      "qty": 3,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-sharikovie_napravl_400_lev",
@@ -5790,13 +5818,15 @@
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 3,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-napravlyayushie_shar_poln_vidv_l400_1045",
      "name": "Направляющие шар. полн.выдв. L400 1045-16Z оцинков. 3155",
      "qty": 2,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-samorez_16_mm",
@@ -6738,7 +6768,8 @@
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002491"
     },
     {
      "code": "BZ-napravlyayushie_salazka",
@@ -6750,19 +6781,22 @@
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 3,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-napravlyayushie_shar_poln_vidv_l400_1045",
      "name": "Направляющие шар. полн.выдв. L400 1045-16Z оцинков. 3155",
      "qty": 3,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-salazka_turkiya_samet_bez_vakum_400_mm",
      "name": "salazka Turkiya Samet (bez vakum) 400 mm",
      "qty": 3,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-sharikovie_napravl_400_pr",
@@ -7545,7 +7579,8 @@
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 1,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -7557,7 +7592,8 @@
      "code": "BZ-petlya_90_s_dovodchikom_chashka_45_mm_ev",
      "name": "Петля 90º с доводчиком, чашка 45 мм, евровинт, Samet 101004613",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001824"
     },
     {
      "code": "BZ-montajnaya_planka_master_s_regulirovkoy_",
@@ -8214,7 +8250,8 @@
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 1,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -8226,7 +8263,8 @@
      "code": "BZ-petlya_90_s_dovodchikom_chashka_45_mm_ev",
      "name": "Петля 90º с доводчиком, чашка 45 мм, евровинт, Samet 101004613",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001824"
     },
     {
      "code": "BZ-montajnaya_planka_master_s_regulirovkoy_",
@@ -8950,13 +8988,15 @@
      "code": "BZ-polkoderjatel_nikel",
      "name": "polkoderjatel nikel",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002019"
     },
     {
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 1,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -9338,13 +9378,15 @@
      "code": "BZ-polkoderjatel_nikel",
      "name": "polkoderjatel nikel",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002019"
     },
     {
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 2,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -9703,7 +9745,8 @@
      "code": "BZ-polkoderjatel_nikel",
      "name": "polkoderjatel nikel",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002019"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -10085,13 +10128,15 @@
      "code": "BZ-polkoderjatel_nikel",
      "name": "polkoderjatel nikel",
      "qty": 8,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002019"
     },
     {
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 1,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -10478,13 +10523,15 @@
      "code": "BZ-polkoderjatel_nikel",
      "name": "polkoderjatel nikel",
      "qty": 8,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002019"
     },
     {
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 2,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -10848,7 +10895,8 @@
      "code": "BZ-polkoderjatel_nikel",
      "name": "polkoderjatel nikel",
      "qty": 8,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002019"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -11202,7 +11250,8 @@
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 1,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -11582,7 +11631,8 @@
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 2,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -11975,7 +12025,8 @@
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 1,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -12376,7 +12427,8 @@
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 2,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -12795,7 +12847,8 @@
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 1,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -12807,7 +12860,8 @@
      "code": "BZ-petlya_90_s_dovodchikom_chashka_45_mm_ev",
      "name": "Петля 90º с доводчиком, чашка 45 мм, евровинт, Samet 101004613",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001824"
     },
     {
      "code": "BZ-montajnaya_planka_master_s_regulirovkoy_",
@@ -13424,19 +13478,22 @@
      "code": "BZ-polkoderjatel_nikel",
      "name": "polkoderjatel nikel",
      "qty": 16,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002019"
     },
     {
      "code": "BZ-nojka_nikel_100_mm",
      "name": "nojka nikel 100 mm",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002491"
     },
     {
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 2,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -13980,7 +14037,8 @@
      "code": "BZ-petlya_pryamaya",
      "name": "Петля прямая",
      "qty": 8,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002525"
     },
     {
      "code": "BZ-kreplenie_shtangi_pryamougolnoy_bez_zagl",
@@ -14016,7 +14074,8 @@
      "code": "BZ-ekstsentrik_0_0",
      "name": "Эксцентрик 0.0",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002094"
     },
     {
      "code": "BZ-shkant_8x30_404",
@@ -14972,19 +15031,22 @@
      "code": "BZ-petle_oddiy",
      "name": "petle oddiy",
      "qty": 12,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002525"
     },
     {
      "code": "BZ-ruchka_160_lik_oddiy",
      "name": "RUCHKA 160 LIK ODDIY",
      "qty": 7,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-napravlyayushie_shar_poln_vidv_l400_1045",
      "name": "Направляющие шар. полн.выдв. L400 1045-16Z оцинков. 3155",
      "qty": 4,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-samorez_s_potaynoy_golovkoy_pod_krestus3",
@@ -16378,19 +16440,22 @@
      "code": "BZ-petle_oddiy",
      "name": "petle oddiy",
      "qty": 8,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002525"
     },
     {
      "code": "BZ-polkoderjatel_d5_nikel_16",
      "name": "Полкодержатель D5 никель 16",
      "qty": 8,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002019"
     },
     {
      "code": "BZ-napravlyayushie_shar_poln_vidv_l400_1045",
      "name": "Направляющие шар. полн.выдв. L400 1045-16Z оцинков. 3155",
      "qty": 2,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-evro_51_alkan",
@@ -19059,13 +19124,15 @@
      "code": "BZ-petle_oddiy",
      "name": "petle oddiy",
      "qty": 35,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002525"
     },
     {
      "code": "BZ-napravlyayushie_shar_poln_vidv_l400_1045",
      "name": "Направляющие шар. полн.выдв. L400 1045-16Z оцинков. 3155",
      "qty": 5,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-evro_51_alkan",
@@ -21901,7 +21968,8 @@
      "code": "BZ-petle_oddiy",
      "name": "petle oddiy",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002525"
     },
     {
      "code": "BZ-shtanogoderjatel_25_d_xrom",
@@ -24133,7 +24201,8 @@
      "code": "BZ-petle_oddiy",
      "name": "petle oddiy",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002525"
     },
     {
      "code": "BZ-napravlyayushaya_verxnyaya_bronza_matovi",
@@ -26093,7 +26162,8 @@
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 2,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-napravlyayushie_shar_poln_vidv_l450_1045",
@@ -30402,7 +30472,8 @@
      "code": "BZ-napravlyayushie_shar_poln_vidv_l400_1045",
      "name": "Направляющие шар. полн.выдв. L400 1045-16Z оцинков. 3155",
      "qty": 2,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -30886,7 +30957,8 @@
      "code": "BZ-napravlyayushie_shar_poln_vidv_l400_1045",
      "name": "Направляющие шар. полн.выдв. L400 1045-16Z оцинков. 3155",
      "qty": 2,
-     "unit": "komplekt"
+     "unit": "komplekt",
+     "id": "90002641"
     },
     {
      "code": "BZ-evro_51mm_alkan",
@@ -32539,13 +32611,15 @@
      "code": "BZ-polkoderjatel_d5_nikel_16",
      "name": "Полкодержатель D5 никель 16",
      "qty": 4,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90002019"
     },
     {
      "code": "BZ-ruchka_160_mm",
      "name": "Ручка 160 мм",
      "qty": 2,
-     "unit": "dona"
+     "unit": "dona",
+     "id": "90001982"
     },
     {
      "code": "BZ-sharikovie_napravl_400_pr",

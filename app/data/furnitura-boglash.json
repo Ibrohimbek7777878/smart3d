@@ -1,0 +1,28 @@
+{
+ "_meta": {
+  "nima": "Modul/Bazis furnitura kodi → ERP furnitura ID (8 xonali). Bitta jadval: MC modullari (scripts/furnitura_boglash.py) va Bazis importi (bazisLoyiha o.furnituraBoglash) ishlatadi.",
+  "tasdiq": "Egasi, 2026-10-17 ('tasdiqlayman'). Faqat shu jadvaldagilar bog'lanadi; narx furnitura-catalog.json dan olinadi.",
+  "savol": {
+   "BZ-evro_51mm_alkan": "katalog narxi (30 000/35 000) quti narxi bo'lishi mumkin",
+   "BZ-evro_51_alkan": "xuddi shu",
+   "BZ-samorez_16_mm": "xuddi shu",
+   "BZ-sharikovie_napravl_400_pr": "birligi dona, katalogda komplekt narxi — bo'lib narx o'ylab topilmaydi",
+   "BZ-sharikovie_napravl_400_lev": "xuddi shu",
+   "BZ-napravlyayushie_salazka": "uzunligi yo'q"
+  }
+ },
+ "links": {
+  "BZ-petle_oddiy": "90002525",
+  "BZ-petlya_pryamaya": "90002525",
+  "BZ-petlya_90_s_dovodchikom_chashka_45_mm_ev": "90001824",
+  "BZ-polkoderjatel_nikel": "90002019",
+  "BZ-polkoderjatel_d5_nikel_16": "90002019",
+  "BZ-nojka_nikel_100_mm": "90002491",
+  "BZ-ruchka_160_mm": "90001982",
+  "BZ-ruchka_160_lik_oddiy": "90001982",
+  "BZ-salazka_turkiya_samet_bez_vakum_400_mm": "90002641",
+  "BZ-salazka_turkiya_samet_vakum_400_mm": "90002641",
+  "BZ-napravlyayushie_shar_poln_vidv_l400_1045": "90002641",
+  "BZ-ekstsentrik_0_0": "90002094"
+ }
+}

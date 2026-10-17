@@ -199,7 +199,7 @@ function doRecalc() {
   const nest = nestProject(allParts, mats, state.nestCfg || {});
 
   /* 5) ishlab chiqarish tannarxi (haqiqiy varaqlar soni bilan) */
-  const prod = productionCost(cutlists, mats, { nestResult: nest, furnituraById: state.furnById, xizmatlar: state.doc.xizmatlar || {} });
+  const prod = productionCost(cutlists, mats, { nestResult: nest, furnituraById: state.furnById, furnituraBoglash: state.furnBoglash, xizmatlar: state.doc.xizmatlar || {} });
 
   /* 6) mijoz kotirovkasi — tannarx × (1 + ustama), modullarga taqsimlangan */
   const priceRes = buildQuote(doc, cutlists, prod, sizeCheck.warnings);
@@ -576,7 +576,7 @@ function estimateFragment(f) {
   if (estCache.map[f.code] == null) {
     const mats = estCache.mats || (estCache.mats = effectiveMaterials());   // nusxa — faqat kesh bo'sh bo'lsa
     const cl = cutlist(f, f.w, f.d, f.h, mats, { projectSlots: projectSlots() });
-    estCache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: state.furnById, xizmatlar: xz }).clientTotal;
+    estCache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: state.furnById, furnituraBoglash: state.furnBoglash, xizmatlar: xz }).clientTotal;
   }
   return estCache.map[f.code];
 }
@@ -1380,7 +1380,7 @@ async function newProject() {
 
 /* ═══════════════════ INIT ═══════════════════ */
 async function boot() {
-  const [frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat] = await Promise.all([
+  const [frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat, furnBoglash] = await Promise.all([
     fetch('data/fragments.json').then(r => r.json()),
     fetch('data/materials.json').then(r => r.json()),
     fetch('data/nesting-defaults.json').then(r => r.json()).catch(() => ({})),
@@ -1390,11 +1390,13 @@ async function boot() {
     fetch('data/appliances.json').then(r => r.json()).catch(() => null),
     fetch('data/fragments-mc.json').then(r => r.json()).catch(() => null),        // MebelCity haqiqiy modullari (TZ-HAQIQIY-MODULLAR A2)
     fetch('data/sex-standartlari.json').then(r => r.json()).catch(() => null),    // sex min/max (A1)
-    fetch('data/furnitura-catalog.json').then(r => r.json()).catch(() => null)    // ERP furnitura, ID → narx (A4)
+    fetch('data/furnitura-catalog.json').then(r => r.json()).catch(() => null),   // ERP furnitura, ID → narx (A4)
+    fetch('data/furnitura-boglash.json').then(r => r.json()).catch(() => null)    // TZ-20: furnitura kodi → ERP ID
   ]);
   /* ERP furnitura ID → {name, uzs, no_price}: tannarx zapchast narxini ID bo'yicha oladi */
   state.furnById = {};
   for (const it of (furnCat && furnCat.items) || []) if (it.id) state.furnById[it.id] = it;
+  state.furnBoglash = (furnBoglash && furnBoglash.links) || {};
   state.catalog = {};
   for (const f of frags) state.catalog[f.code] = f;
   for (const f of (mcFrags && mcFrags.fragments) || []) state.catalog[f.code] = f;
