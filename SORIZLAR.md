@@ -385,6 +385,12 @@ qolganlarin qisqa qilb shuntirb ber ayanan qanday javob kere sendan
 
 138. (iqtibos: "👎 Narx yonida "* to'liq emas" turadi — ishonchni pasaytiradi (narxning 53% i aniq). 👎 Oxirida "Buyurtma berish" tugmasi yo'q (C1), mijoz nima qilishini bilmaydi.") buyurtma berish tugmasin qosh va narxn eng kamida 95foiz aniq bolish kere end savolaring bilan  qaytadna aniq qisqa shunarli qilb ber
 
+139. qara loyha bilan toliq tanishib chiq ehtiyot bol boshqa calude ishlayabdi korib orgnab chiq faqat
+
+140. qara hozir ishlayotgan claude nega tohtovsiz ishlayabd va natija kam ishlar agentlarga bolib berish kere  va bita loyhan butun boshli jamoa qilish kere backend chi frontendni esa frontendchi va tugatgach bita tester toliq test qilib olish kere va vazifa murakb yokida onsonligiga qarba token sarf ham shunga qarb ishlasin hamda har birga bita deadline qoyilish kere va osha deadlingacha tugatish kere agarda tugata olmasa nega tugatilmagan va undna boshqa qaysi qismlar qilind va qaysilar nima sababdan qoldi aniq sabab bilan shuntirb berish kere ishlarn hammasin esa sen nazoart qilasan va menga har birn bolgandna eyn hisobot topshirishng kere hozir nima shunding va qanday ishlashkerelign shunib olding keyin
+
+141. https://github.com/khondamirai-spec/mini-agents shuni o'rnat   buni ornatasan va bunda men korib turishm kere qaysi agent nima ish qilayotgannini va agentlarga ism beramiz qilayotgan vazifasiga qarab
+
 142. NARX.pdf   bu fayld narxlar  bor shularn ol /home/ibrohim/Desktop/bittada sunpin/Smart3Dbu esa fyaln yoli korib chiq
 
 143. tasdqilayman 
@@ -428,6 +434,10 @@ bu men yozgan prompt shu qismlarn togirla va zpachastlar narx aniq chiqish kere 
 
 152. devogra hech qachon tirab bormasin va ha rbir modul joylasyaotganda devordan 3metr  surib qoy
 
+153. qara vr qilish byoicha ham korib chiq toliq
+
+154. qara vr shlem da ham ishlash kere va modul tayor bolgandan song uni vr tugasm bosiglanda vr qilib berish kere  bolad va qilingan vrni fayl qilb sketchup va enscape da oqish kere  bolad qisqa londa qilb yoz muomo va qanday yechim qilsak bolad va bizda nimalar bolgan
+
 155. (skrinshot: Xona qadami — 4200×3100×2700, katta qorong'i maydon, shkaf chetda kichkina) qara bu yerda erkin qilganmda  chegara yoqday bolib qolgan katta maydon bolsin lekin chegras ham bolish kere faqat chegara va maydon olcham modular soniga qarab ozgarish kere va yana yaqinlashtirsh va uzoqlashtrish qilganmda juda tez uzoqlashib juda tez yaqinlashb qolayabd
 
 156. (2 ta skrinshot: uzoqlashganda — shkaf qorong'i maydonda nuqtadek kichkina; yaqinlashganda — shkaf ichiga kirib ketgan, ekranni to'ldirgan) mana ahvol natija yoq hali ham brinch rasm uzoqlashgandagi 2rasm esa yaqinlashgandagi
@@ -439,3 +449,7 @@ erkin ham bolsin devor ham bolsin
 ularni ochirb tashla
 
 159. ha devordan 3mter qochsin end chiqadigan yangi zakazlar  hozir qaysi bri truibd osha qolsin qolganlarin esa arxiv qivor qoyaver  keyin yana qyasi qismlar qoldi togirlanish kere bolgan
+
+166. sen push va commit qilmayabsan shundaymi
+
+167. unda hozir push va commit qil
