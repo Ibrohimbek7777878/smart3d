@@ -253,7 +253,7 @@ export function buildOBJ(doc, catalog, opt = {}) {
           rotated: rot
         });
       }
-      const bHoles = frag.birikmalar && clById[p.id] ? clById[p.id].holes.filter(hl => /^evrovint/.test(hl.kind)) : [];
+      const bHoles = frag.birikmalar && clById[p.id] ? clById[p.id].holes.filter(hl => /^(evrovint|d6_eks)/.test(hl.kind)) : [];   // birikma: konfirmat yoki eksentrik (d6.js EKS)
       for (const hl of bHoles) {
         holes.push({
           placement: p.id, fragment: p.frg, part: hl.part, side: hl.side, torets: hl.torets,

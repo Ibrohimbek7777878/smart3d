@@ -118,5 +118,67 @@ ok(`Bazis bilan: polka ushlagich ${jami.polka.join('/')} va ruchka ${jami.ruchka
   ok('BPJ: ikkala yon devorda ushlagich teshiklari — biri orqa, biri old yuzada', ob.length === 2 && J(yuza.sort()) === J(['back', 'front']), J(yuza));
 }
 
+/* 7) eksentrik (minifiks) — chizma.birikma = 'ekssentrik' (konstruksiya tili); sukut — konfirmat o'zgarmaydi */
+{
+  const { EKS } = await import('../app/js/engine/d6.js');
+  const { buildBPJ } = await import('../app/js/engine/bpj.js');
+  ok('eksentrik qiymatlari (sex KDT): korpus Ø15×12,5, toretsdan 35; torets Ø7×35; juft detalda Ø10×11', J(EKS) === J({ korpus: { d: 15, dp: 12.5, chet: 35 }, qirra: { d: 7, dp: 35 }, bolt: { d: 10, dp: 11 } }));
+  const qur = (eks) => { const ch = C.yangiChizma('pastki'); if (eks) ch.birikma = 'ekssentrik'; const fr = C.chizmaKatalog(ch, eks ? 'CH-EKS' : 'CH-KON', 'Pastki'); return { fr, cl: cutlist(fr, fr.w, fr.d, fr.h, M, { projectSlots: S }) }; };
+  const K0 = qur(false), K1 = qur(true), soni = (cl, k) => cl.holes.filter(h => h.kind === k).reduce((a, h) => a + (h.nusxa || 1), 0);   // har nusxa
+  const kon = soni(K0.cl, 'evrovint_torets');
+  ok('sukut — konfirmat (o\'zgarmagan): eksentrik teshigi yo\'q, TS-1730 = birikma soni', kon === 8 && !K0.cl.holes.some(h => /eks/.test(h.kind)) && K0.cl.hardware.some(x => x.code === 'TS-1730' && x.qty === kon), kon);
+  ok('eksentrik: konfirmat o\'rniga — har birikmada Ø15 + Ø7 torets + Ø10 juft (soni konfirmatdek), konfirmat teshigi yo\'q',
+    soni(K1.cl, 'd6_eksentrik') === kon && soni(K1.cl, 'd6_eks_qirra') === kon && soni(K1.cl, 'd6_eks_bolt') === kon && !K1.cl.holes.some(h => /^evrovint/.test(h.kind)));
+  const yon = K1.cl.holes.filter(h => h.part === 'yon' && h.kind === 'd6_eksentrik'), yon2 = K1.cl.holes.filter(h => h.part === 'yon_2' && h.kind === 'd6_eksentrik');
+  ok('korpus: yon devorda toretsdan (pastdan) 35 mm, Ø15×12,5; chap va o\'ng yon — ichki yuza (ko\'zgu)', yon.length === 2 && yon.every(h => h.y === 35 && h.dia === 15 && h.depth === 12.5)
+    && J([...new Set(yon.map(h => h.yuza))]) !== J([...new Set(yon2.map(h => h.yuza))]), J(yon));
+  const bolt = K1.cl.holes.filter(h => h.part === 'tub' && h.kind === 'd6_eks_bolt');
+  ok('juft detal (tub): Ø10×11 ko\'r, konfirmat joyida (qirradan 8 = t/2)', bolt.length === 4 && bolt.every(h => h.dia === 10 && h.depth === 11 && h.side === 'F' && (h.y === 8 || h.y === 592)), J(bolt));
+  ok('torets: Ø7×35 (side T)', K1.cl.holes.filter(h => h.kind === 'd6_eks_qirra').every(h => h.side === 'T' && h.dia === 7 && h.depth === 35));
+  ok('furnitura: eksentrik komplekt (BZ-ekstsentrik_0_0 → ERP ID) birikma sonicha, konfirmat yo\'q', K1.cl.hardware.some(x => x.code === 'BZ-ekstsentrik_0_0' && x.qty === kon) && !K1.cl.hardware.some(x => x.code === 'TS-1730'));
+  const pc = productionCost([Object.assign(K1.cl, { placementId: 'e' })], M, { xizmatlar: { teshik: true } });
+  const cam = M.hole_kinds.find(h => h.code === 'cam').price, ln = pc.lines.find(l => l.code === 'hole:d6_eksentrik');
+  ok('prisadka narxi: Ø15 — mavjud "cam" stavkasi (nomi ham)', ln && ln.unit_price === cam && ln.qty === kon && ln.name.startsWith(M.hole_kinds.find(h => h.code === 'cam').name), J(ln));
+  const pl = [{ id: 'e', frg: 'CH-EKS', x: 0, y: 0, z: 0, w: K1.fr.w, d: K1.fr.d, h: K1.fr.h, rot: 0, qty: 1 }];
+  const { model } = stanokModeli({ cutlists: [Object.assign(K1.cl, { placementId: 'e' })], placements: pl, catalog: { 'CH-EKS': K1.fr }, materials: M, nom: 'EKS' });
+  const yonD = model.detallar.filter(d => /yon/i.test(d.nom)), tf = (d) => d.xnc.flatMap(x => x.teshiklar);
+  ok('stanok modeli (GibLab .project / KDT): yon devorda Ø15×12,5 yuza va Ø7×35 qirra teshigi', yonD.length === 2 && yonD.every(d => tf(d).filter(h => h.tur === 'f' && h.d === 15 && h.dp === 12.5).length === 2 && tf(d).filter(h => h.tur !== 'f' && h.d === 7 && h.dp === 35).length === 2), J(yonD.map(tf)));
+  const kd = yonD[0], kf = kdtFayllar({ ...kd, kromka: { t: 0, b: 0, l: 0, r: 0 } }, kd.xnc).map(f => kdtOqi(f.matn));
+  ok('KDT: Ø15 (TypeNo 1) va Ø7 qirra teshigi faylda', kf.some(k => k.teshiklar.some(h => h.d === 15)) && kf.some(k => k.teshiklar.some(h => h.d === 7 && h.dp === 35)), J(kf.map(k => k.teshiklar)));
+  const P = projectOqi(projectYoz(model));
+  ok('.project: yozib o\'qilganda Ø15 saqlanadi', P.detallar.some(d => d.xnc.some(x => x.teshiklar.some(h => h.d === 15))));
+  const Bp = buildBPJ({ room: { outline: [[0, 0], [3600, 0], [3600, 3000], [0, 3000]] }, placements: pl }, { 'CH-EKS': K1.fr }, M, { modelName: 'EKS', cutlists: [Object.assign(K1.cl, { placementId: 'e' })] });
+  ok('BPJ: Ø15 va Ø10 teshiklari obyektlarda', (Bp.objects || []).some(o => (o.holes || []).some(h => h.diameter === 15)) && (Bp.objects || []).some(o => (o.holes || []).some(h => h.diameter === 10)));
+}
+
+/* 8) tortma yo'naltiruvchisi (sharikli salazka) — yon devorda Ø3×2,5, quti tubidan 27, old qirradan uzunlikka qarab */
+{
+  const { NAPR } = await import('../app/js/engine/d6.js');
+  ok('yo\'naltiruvchi qiymatlari (sex KDT + .b3d): Ø3×2,5, tubdan 27; 400 — 37/176/240, 450 — 52/209/416, 350 — 36/185', J(NAPR) === J({ d: 3, dp: 2.5, tubdan: 27, oraliq: 13, joy: { 350: [36, 185], 400: [37, 176, 240], 450: [52, 209, 416] } }));
+  const f = H.catalog['MC-KP-10'], cl = cutlist(f, 400, 450, 708, M, { projectSlots: S });
+  const n = cl.holes.filter(h => h.kind === 'd6_napr'), by = (ref) => n.filter(h => h.ref === ref).map(h => [h.yuza, h.x, h.y].join(',')).sort();
+  ok('MC-KP-10 (3 tortma): har yon devorda 3 qator × 3 teshik, quti tubidan 27 mm (29 − 16 + 27 = 40), old qirradan 37/176/240',
+    n.length === 18 && J(by('bok#2')) === J(['2,176,302', '2,176,40', '2,176,564', '2,240,302', '2,240,40', '2,240,564', '2,37,302', '2,37,40', '2,37,564']), J(by('bok#2')));
+  ok('chap va o\'ng yon devor — qutiga qaragan yuza (ko\'zgu)', J([...new Set(n.filter(h => h.ref === 'bok#1').map(h => h.yuza))]) === J([1]) && J([...new Set(n.filter(h => h.ref === 'bok#2').map(h => h.yuza))]) === J([2]));
+  ok('tortmali MC modullari: KP-03 — 6, KP-04 — 6, KP-09 — 12, KP-11 — 18; kargo (KP-06) — 0', ['MC-KP-03', 'MC-KP-04', 'MC-KP-09', 'MC-KP-11', 'MC-KP-06'].map(c => { const g = H.catalog[c]; return cutlist(g, g.w, g.d, g.h, M, { projectSlots: S }).holes.filter(h => h.kind === 'd6_napr').length; }).join() === '6,6,12,18,0');
+  const tumba = (d) => { const ch = C.yangiChizma('tumba'); ch.d = d; const fr = C.chizmaKatalog(ch, 'CH-T', 'T'); return cutlist(fr, fr.w, fr.d, fr.h, M, { projectSlots: S }).holes.filter(h => h.kind === 'd6_napr'); };
+  const t450 = tumba(450), t500 = tumba(500), t600 = tumba(600);
+  ok('qo\'lda chizilgan tumba: 450 (NAP-400) — 3 tortma × 3 × 2 = 18, 500 (NAP-450) — 52/209/416; 600 (NAP-550, sex fayli yo\'q) — teshik qo\'yilmaydi',
+    t450.length === 18 && t500.length === 18 && J([...new Set(t500.map(h => h.x))].sort((a, b) => a - b)) === J([52, 209, 416]) && t600.length === 0, [t450.length, t500.length, t600.length].join());
+  const doc = { v: 1, room: { outline: [[0, 0], [4000, 0], [4000, 3000], [0, 3000]], wall_height: 2700, wall_thickness: 100, openings: [] },
+    placements: [{ id: 'p1', frg: 'MC-KP-10', x: 0, y: 0, z: 100, w: 400, d: 450, h: 708, rot: 0, qty: 1 }] };
+  const r = H.recalc(doc, { materialCode: 'LDSP16', fasadCode: 'LDSP16', polkaCode: 'LDSP16' });
+  const { model } = stanokModeli({ cutlists: r.cutlists, placements: doc.placements, catalog: H.catalog, materials: H.materials, nom: 'NAPR' });
+  const bok = model.detallar.filter(d => d.nom === 'bok');
+  ok('stanok modeli: yon devorlarda 9 tadan Ø3×2,5 (biri 1-yuza, biri 2-yuza)', bok.length === 2 && bok.every(d => d.xnc.flatMap(x => x.teshiklar).filter(h => h.d === 3 && h.dp === 2.5).length === 9), J(bok.map(d => d.xnc)));
+}
+
+/* 9) burchak (gluxoy) modul eshigi — sexdagidek oddiy kosa (Ø35, 21,5, ±24/6), petlya gluxoyga qarama-qarshi yon devorda */
+{
+  const f = H.catalog['MC-KP-05'], o = f.manba.joy_olcham, cl = cutlist(f, o[0], o[1], o[2], M, { projectSlots: S });
+  const kosa = cl.holes.filter(h => h.kind === 'd6_kosa'), pl = cl.holes.filter(h => h.kind === 'd6_planka');
+  ok('MC-KP-05 (gluxoy chap): eshikda 2 kosa (bo\'yi 547 ≤ 1000), planka o\'ng yon devorda (gluxoydan uzoq)', kosa.length === 2 && kosa.every(h => h.ref === 'dver#1') && pl.length === 4 && pl.every(h => h.ref === 'bok#2'), J([kosa.map(h => h.ref), pl.map(h => h.ref)]));
+}
+
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);
 process.exit(fail ? 1 : 0);

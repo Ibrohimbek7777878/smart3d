@@ -144,8 +144,9 @@ const ruL = pcE.lines.find(l => l.code === 'RU-1000');
 ok('hisob: xatosiz, narx > 0; RU-1000 narxi o\'ylab topilmaydi (narx yo\'q belgisi)', !clE.errors.length && pcE.clientTotal > 0 && ruL && ruL.no_price === true, J([clE.errors, ruL]));
 ok('AI uchun til: material, furnitura, orqa, eksport, ajrat', /material/.test(K.TIL_IZOH) && /furnitura/.test(K.TIL_IZOH) && /yergacha/.test(K.TIL_IZOH) && /eksport/.test(K.TIL_IZOH) && /ajrat/.test(K.TIL_IZOH));
 r = K.specTekshir({ tur: 'shkaf', material: { korpus: { nom: '<b>kashemir</b>', qalinlik: 99 } }, furnitura: { birikma: 'ekssentrik', ruchka: 9000 }, eksport: 'yoq', orqa: 'boshqa' });
-ok('AI javobi: material tozalanadi, qalinlik chegarada, ekssentrik — konfirmat (izoh), ruchka chegarada, eksport/orqa standart', r.spec.material.korpus.nom === 'bkashemir/b' && r.spec.material.korpus.qalinlik === 40
-  && r.spec.material.polka.nom === r.spec.material.korpus.nom && r.tuzatish.some(t => t.kod === 'birikma') && r.spec.furnitura.ruchka === 2500 && r.spec.eksport === '' && r.spec.orqa === 'auto', J(r));
+ok('AI javobi: material tozalanadi, qalinlik chegarada, ekssentrik — o\'zi (izohsiz, chizmada birikma), ruchka chegarada, eksport/orqa standart', r.spec.material.korpus.nom === 'bkashemir/b' && r.spec.material.korpus.qalinlik === 40
+  && r.spec.material.polka.nom === r.spec.material.korpus.nom && !r.tuzatish.some(t => t.kod === 'birikma') && r.spec.furnitura.birikma === 'ekssentrik'
+  && K.specdanChizma(r.spec).birikma === 'ekssentrik' && !K.specdanChizma(rE.spec).birikma && r.spec.furnitura.ruchka === 2500 && r.spec.eksport === '' && r.spec.orqa === 'auto', J(r));
 
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);
 process.exit(fail ? 1 : 0);

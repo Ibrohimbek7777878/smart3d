@@ -23,7 +23,7 @@
  *   petlya soni eshik bo'yiga qarab (≤1000 — 2, ≤1600 — 3, ≤2000 — 4, undan katta — 5; sex fayllaridan — d6.js); fasad tirqishi 2 mm;
  *   napravlyayushiy 250–600 mm (50 qadam); polkalar orasi ≥ 100 mm; petlyali eshik eni 150–600 mm.
  */
-import { d6Teshiklar, petlyaSoni } from './d6.js';
+import { d6Teshiklar, petlyaSoni, EKS, yuzaRaqami } from './d6.js';
 
 export const CHIZMA_TURLARI = ['pastki', 'ustki', 'shkaf', 'tumba', 'erkin'];
 export const QOIDA = {
@@ -295,13 +295,15 @@ function bqoida(L) {                                             // cutlist.js b
   const step = Math.floor((L - 2 * BQ.S) / ((n - 1) * BQ.P) + 1e-6) * BQ.P, f = (L - step * (n - 1)) / 2;
   return Array.from({ length: n }, (_, k) => f + k * step);
 }
-function birikmalar(qutilar, w, d, h) {
+function birikmalar(qutilar, w, d, h, eks) {
   /* Bazis o'qlari: X = w/2 − x, Y = z + h/2, Z = y + d/2 */
   const B = qutilar.map((q, i) => ({ i, q, ok: BIRIKADI.has(q.code) && !q.drawerOf && q.slot === 'korpus',
     lo: { X: w / 2 - q.x1, Y: q.z0 + h / 2, Z: q.y0 + d / 2 }, hi: { X: w / 2 - q.x0, Y: q.z1 + h / 2, Z: q.y1 + d / 2 } }));
   const tesh = qutilar.map(() => []);
   const mahalliy = (b, P) => { const [la, wa] = LW[b.q.o]; return { y: r1(P[la] - b.lo[la]), x: r1(b.hi[wa] - P[wa]) }; };
-  let soni = 0;
+  const qq = (b) => ({ o: b.q.o, lo: b.lo, hi: b.hi, rol: null });          // d6.yuzaRaqami uchun (korpus detali: F — old qirra)
+  const markaz = { X: w / 2, Y: h / 2, Z: d / 2 };
+  let soni = 0, eksSoni = 0;
   for (const A of B) for (const F of B) {
     if (A === F || !A.ok || !F.ok) continue;
     const a = F.q.o;                                             // tegish o'qi — yuza detal normali
@@ -316,17 +318,28 @@ function birikmalar(qutilar, w, d, h) {
     const [la, wa] = LW[A.q.o];
     const torets = a === la ? (yuqori ? 'R' : 'L') : (yuqori ? 'B' : 'F');
     const planka = A.q.code === 'planka', dF = planka ? 8 : 7, dA = planka ? 5 : 4.5;
+    /* eksentrik (d6.js EKS): korpus Ø15 A detal yuzasida toretsdan 35 mm ichkarida (modul ichiga qaragan yuzada) — sig'masa konfirmat */
+    const eksBor = eks && A.hi[a] - A.lo[a] >= EKS.korpus.chet + EKS.korpus.d / 2;
+    const yuzaA = c < markaz[A.q.o] ? '+' : c > markaz[A.q.o] ? '-' : '+';
     for (const s of bqoida(r1_ - r0)) {
       const P = { [a]: yuqori ? A.hi[a] : A.lo[a], [r]: r0 + s, [A.q.o]: c };
-      tesh[F.i].push(Object.assign({ side: 'B', dia: dF, depth: r1(tF), kind: 'evrovint' }, mahalliy(F, P)));
+      if (eksBor) tesh[F.i].push(Object.assign({ side: 'F', yuza: yuzaRaqami(qq(F), yuqori ? '-' : '+'), dia: EKS.bolt.d, depth: EKS.bolt.dp, kind: 'd6_eks_bolt' }, mahalliy(F, P)));
+      else tesh[F.i].push(Object.assign({ side: 'B', dia: dF, depth: r1(tF), kind: 'evrovint' }, mahalliy(F, P)));
       const m = mahalliy(A, P);
       if (torets === 'L') m.y = 0; else if (torets === 'R') m.y = r1(A.hi[la] - A.lo[la]); else if (torets === 'F') m.x = 0; else m.x = r1(A.hi[wa] - A.lo[wa]);
-      tesh[A.i].push(Object.assign({ side: 'T', torets, dia: dA, depth: 35, kind: 'evrovint_torets' }, m));
-      soni++;
+      if (eksBor) {
+        tesh[A.i].push(Object.assign({ side: 'T', torets, dia: EKS.qirra.d, depth: EKS.qirra.dp, kind: 'd6_eks_qirra' }, m));
+        const Pk = Object.assign({}, P, { [a]: yuqori ? A.hi[a] - EKS.korpus.chet : A.lo[a] + EKS.korpus.chet });
+        tesh[A.i].push(Object.assign({ side: 'F', yuza: yuzaRaqami(qq(A), yuzaA), dia: EKS.korpus.d, depth: EKS.korpus.dp, kind: 'd6_eksentrik' }, mahalliy(A, Pk)));
+        eksSoni++;
+      } else {
+        tesh[A.i].push(Object.assign({ side: 'T', torets, dia: dA, depth: 35, kind: 'evrovint_torets' }, m));
+        soni++;
+      }
     }
     void tA;
   }
-  return { tesh, soni };
+  return { tesh, soni, eksSoni };
 }
 
 /**
@@ -336,12 +349,12 @@ function birikmalar(qutilar, w, d, h) {
  */
 export function chizmaFragment(ch, w, d, h, o = {}) {
   const J = joylash(ch, w, d, h, o);
-  const BK = birikmalar(J.qutilar, w, d, h);
+  const BK = birikmalar(J.qutilar, w, d, h, ch.birikma === 'ekssentrik');   // sukut — konfirmat
   /* D6 (engine/d6.js): petlya kosasi va vintlari, planka, polka ushlagich, ruchka — Bazis o'qlarida (birikmalar bilan bir xil) */
   const tur = ch.tur || 'pastki';
   const D = d6Teshiklar(J.qutilar.map(q => ({
     o: q.o, lo: { X: w / 2 - q.x1, Y: q.z0 + h / 2, Z: q.y0 + d / 2 }, hi: { X: w / 2 - q.x0, Y: q.z1 + h / 2, Z: q.y1 + d / 2 },
-    rol: q.isDoor ? 'eshik' : q.isDrawer ? 'tortma_fasad' : q.drawerOf ? null : q.code === 'polka' ? 'polka' : (q.code === 'yon' || q.code === 'bolgich') ? 'yon' : null,
+    rol: q.isDoor ? 'eshik' : q.isDrawer ? 'tortma_fasad' : q.drawerOf ? (q.code === 'tortma_yon' ? 'tortma_yon' : null) : q.code === 'polka' ? 'polka' : (q.code === 'yon' || q.code === 'bolgich') ? 'yon' : null,
     petlya: q.isDoor ? (q.hingeSide === 'right' ? 'min' : 'max') : null,          // 'left' — lokal −x = Bazis X ning katta tomoni
     ruchkaJoy: tur === 'ustki' ? 'past' : tur === 'shkaf' || tur === 'erkin' ? 'orta' : 'tepa'
   })), { ruchka: QOIDA.ruchka });
@@ -369,6 +382,8 @@ export function chizmaFragment(ch, w, d, h, o = {}) {
   });
   /* konfirmat soni — haqiqiy birikmalardan (har teshik juftligi — bitta vint) */
   const hardware = J.hardware.map(x => (x.code === 'TS-1730' ? Object.assign({}, x, { qty: BK.soni }) : x)).filter(x => x.qty > 0);
+  /* eksentrik — har birikma nuqtasi bitta komplekt (furnitura-boglash.json: BZ-ekstsentrik_0_0 → ERP ID, narx shu yerdan) */
+  if (BK.eksSoni) hardware.push({ code: 'BZ-ekstsentrik_0_0', qty: BK.eksSoni, name: 'Eksentrik (minifiks) komplekt', unit: 'dona' });
   return { parts, hardware, ogoh: J.ogoh, furn: J.furn, birikmalar: birik };
 }
 
