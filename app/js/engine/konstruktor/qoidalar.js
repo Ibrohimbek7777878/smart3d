@@ -12,6 +12,9 @@ export const QOIDALAR = {
     dobor: { pastki: 'SP-ST-005', ustki: 'SP-ST-006' },
     texnika: { xolodilnik: 'SP-TX-004', plita: 'SP-TX-008' }
   },
+  /* egasi #183: matnda so'ralsa — penal (duxovka / mikroto'lqinli pech, fragments.json SP-K-020 600×600×2100) qator chetida,
+     o'rnatma idish yuvish mashinasi (appliances.json SP-TX-002 600×600×820) moyka yonida. So'ralmasa — qo'yilmaydi */
+  qoshimcha: { penal: 'SP-K-020', posudomoyka: 'SP-TX-002' },
   /* o'lchamlar: MC modullari (Bazis) va sex standarti (egasi tasdiqlagan 2026-10-15) */
   pastki: { h: 708, d: 450, manba: 'MC-KP-* (Bazis): h 708, d 450 — sex standarti std[0]' },
   ustki: { h: 721, d: 300, z: 1450, manba: 'MC-KU-07 (Bazis) h 721, d 300; z — TZ-15 (USTKI_Z)' },

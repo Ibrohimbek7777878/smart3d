@@ -8,7 +8,10 @@ import { roomBBox } from '../../../../../app/js/engine/rules.js';
 import { konstruksiya } from '../../../../../app/js/engine/konstruktor/index.js';
 import { konstruksiyami } from '../../../../../app/js/engine/konstruksiyaTili.js';
 import { aiKonstruksiya } from './konstruksiya.js';
-import { oshxonaQatorlar } from './oshxona.js';
+import { oshxonaQatorlar, kartaQatorlar, shablonQatorlar, nomalumQatorlar } from './oshxona.js';
+import { aiTur, shablonReja, XONA_SHABLON } from '../../../../../app/js/engine/aiTur.js';
+import { promptLoyiha } from '../../../../../app/js/engine/promptlar.js';
+import KUTUBXONA from '../../../../../app/data/promptlar.json';
 import { t, til } from '../../../i18n/index.js';
 
 /* TZ-19 (TZ-12): AI — server til modeli (kirgan va serverda yoqilgan bo'lsa) yoki qoidali tahlilchi (ai.js), ovoz — brauzer. */
@@ -32,11 +35,46 @@ async function aiParse(text) {
   } catch (_) { return null; }
 }
 
+/** egasi #183: tanilmagan so'rov — hech narsa qurilmaydi, karta: "Tushunmadim" + tayyor variantlar */
+function tushunmadim(text) {
+  set('ai', { open: false, mic: false });
+  openSheet('aioshxona', { sarlavha: 'ai.tur_yoq_sarlavha', qatorlar: nomalumQatorlar(text, KUTUBXONA.promptlar) });
+  toast(t('ai.tur_yoq_toast'));
+}
+
+/** egasi #183: xona turi (yotoqxona, mehmonxona, dahliz, garderob …) — tayyor shablon matndagi raqamlar bilan, faqat katalog modullari */
+function shablondanQur(text, yo) {
+  const H = project.H;
+  const p = yo.shablon === 'xona' ? XONA_SHABLON : KUTUBXONA.promptlar.find(x => x.id === yo.shablon);
+  if (!H || !p) { tushunmadim(text); return; }
+  const rj = shablonReja(text, p, H.catalog);
+  const r = promptLoyiha(rj.prompt, rj.kirish, H.catalog);
+  if (r.xato) { xato(r.xato, { modul: 'editor/ai' }); return; }
+  const room = L.freshRoom();
+  room.outline = r.xona.outline; room.wall_height = r.xona.H;
+  room.utilities = (project.doc.room && project.doc.room.utilities) || [];
+  const doc = L.newDoc(room);
+  doc.placements = r.placements.filter(x => H.catalog[x.frg]);
+  doc.kitchen = L.freshKitchen();
+  project.tarix.belgi('ai');                          // bekor qilish: AI qurish — bitta qadam
+  project.reset(doc);
+  set('ai', { open: false, mic: false });
+  set('editor', { sel: null, part: null, warn: {} });
+  project.changed('room', true);
+  const nom = (p.nom && (p.nom[til()] || p.nom.uz)) || p.id;
+  openSheet('aioshxona', { sarlavha: 'ai.sh_sarlavha', qatorlar: shablonQatorlar(nom, rj, r, H.catalog) });
+  toast(t('ai.sh_qurdi', { nom, n: doc.placements.length, w: r.xona.W, d: r.xona.D }) + (r.sigmadi.length ? ' · ' + t('tayyor.sigmadi', { n: r.sigmadi.length }) : ''));
+}
+
 /** matndan loyiha quriladi (joriy loyiha almashadi; teshiklar va oshxona sozlamasi saqlanadi) */
 export async function runAI(silent) {
   const text = get().ai.text.trim();
   if (!text) { toast(t('ai.avval_matn')); return; }
   const H = project.H;
+  /* egasi #183: xona turi — tayyor shablon; tanilmagan — qurilmaydi (avval har qanday matnga oshxona qurilardi) */
+  const yo = aiTur(text);
+  if (yo.tur === 'shablon') { try { shablondanQur(text, yo); } catch (e) { if (!silent) xato('S3D-AI-101', { matn: t('ai.xato', { s: e.message }), modul: 'editor/ai', err: e }); } return; }
+  if (yo.tur === 'nomalum') { tushunmadim(text); return; }
   try {
     const quvur = (project.doc.room && project.doc.room.utilities) || [];
     /* TZ-22: oshxona — avtomatik konstruktor (qoidalar, AI'siz); AI faqat matnni tushunadi */
@@ -53,9 +91,13 @@ export async function runAI(silent) {
     const bb = roomBBox(res.doc.room.outline);
     /* egasi #166: oshxona matni — "nima tushunildi" kartasi (matndan / sukut) */
     if (res.oshxona) {
-      openSheet('aioshxona', { qatorlar: oshxonaQatorlar(res.oshxona, { w: Math.round(bb.w), d: Math.round(bb.h) }) });
+      openSheet('aioshxona', { qatorlar: kartaQatorlar(res, H.catalog, 'bosh').concat(oshxonaQatorlar(res.oshxona, { w: Math.round(bb.w), d: Math.round(bb.h) }), kartaQatorlar(res, H.catalog, 'talab')) });
       toast(res.oshxona.natija ? t('ai.osh_qurdi', { n: res.doc.placements.length, l: res.oshxona.spec.uzunlik || Math.round(bb.w) }) : t('ai.osh_qurilmadi'));
       return;
+    }
+    /* egasi #183: karta har qurishda (shakl, o'lchamlar qayerga ishlatildi, talablar, qavat modullari) */
+    if (res.karta) {
+      openSheet('aioshxona', { qatorlar: kartaQatorlar(res, H.catalog, 'hammasi', { w: Math.round(bb.w), d: Math.round(bb.h), h: res.doc.room.wall_height, taxmin: res.assumed }) });
     }
     toast(res.assumed ? t('ai.olcham_taxmin')
       : t('ai.qurdi', { n: res.doc.placements.length, w: Math.round(bb.w), h: Math.round(bb.h) }) + (res.unknown.length ? t('ai.tushunilmadi', { s: res.unknown.join(', ') }) : ''));
@@ -67,7 +109,10 @@ export async function runAI(silent) {
 export function matnniQur() {
   const text = get().ai.text.trim();
   if (!text) { toast(t('ai.avval_matn')); return; }
-  if (!konstruksiyami(text)) { buildFromText(); return; }
+  /* egasi #183: avval turi — xona (shablon), oshxona, bitta modul yoki tanilmagan (qurilmaydi) */
+  const yo = aiTur(text);
+  if (yo.tur === 'nomalum') { tushunmadim(text); return; }
+  if (yo.tur !== 'modul' || !konstruksiyami(text)) { buildFromText(); return; }
   set('ai', { open: false, mic: false });
   aiKonstruksiya(text, aiOn)
     .then(r => { if (r === 'xona') buildFromText(); })   // egasi #168: 'katalog' — tayyor modul qo'yildi, 'yoq' — xabar va "Baribir chizish"

@@ -13,7 +13,7 @@
 
 import { footprint } from './engine/rules.js';
 import { devorChegara } from './engine/devorOraliq.js';
-import { oshxonami, oshxonaSpec, oshxonaTekshir, oshxonaBirlashtir } from './engine/oshxonaTili.js';
+import { oshxonami, oshxonaSpec, oshxonaTekshir, oshxonaBirlashtir, oshxonaTalablar } from './engine/oshxonaTili.js';
 import { oshxonaQoidalar } from './engine/konstruktor/index.js';
 
 /* ── 1. Sonlar va O'zbek tili lug'ati ── */
@@ -92,7 +92,17 @@ export function parseZamer(text) {
   };
   const SON = '(\\d+(?:[.,]\\d+)?)';
   let m = t.match(new RegExp(`${SON}\\s*(?:${BIRLIK})?\\s*[x×*хХ]\\s*${SON}\\s*(?:${BIRLIK})?`));
-  if (m) olcham(m, m[1], m[2], m[3], m[4]);
+  if (m) {
+    olcham(m, m[1], m[2], m[3], m[4]);
+    /* egasi #183: "3600x2800x2400" — uchinchi son xona balandligi (1800…4500 mm); kartada aytiladi */
+    const h3 = new RegExp(`^\\s*[x×*хХ]\\s*${SON}\\s*(?:${BIRLIK})?`).exec(t.slice(m.index + m[0].length));
+    if (h3) {
+      let h = parseNum(h3[1]);
+      const u = h3[2] || m[4] || m[2];
+      h = u ? birlikMm(h, u) : h < 100 ? h * 1000 : h;
+      if (h >= 1800 && h <= 4500) { room.h = Math.round(h); room.olcham3 = { w: room.w, d: room.d, h: room.h }; dimSpan[1] += h3[0].length; }
+    }
+  }
   else {
     // "3.5 ga 2.8", "3 ga 4 metr", "3.5 metrga 3 metr", "3 на 4 метра", "3.6 by 3 m" — separator so'z bilan (A1)
     m = t.match(new RegExp(`${SON}\\s*(?:${BIRLIK})?\\s*(?:га|ga|на|by)(?![a-zа-яё])\\s*(?:${BIRLIK_M}\\s*)?${SON}\\s*(?:${BIRLIK})?`));
@@ -525,13 +535,20 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
      variant topilmasa yoki oshxona bo'lmasa — avvalgi suggestLayout */
   let placements = null, kitchen = null, izohlar = null;
   const oshxona = /^(L|U|linear)$/.test(room.layoutType || 'linear') && !(parsed.orders || []).some(o => o.kind === 'shkaf');
+  /* egasi #183: talablar (ustkisiz, penal — duxovka/mikroto'lqinli, idish yuvish mashinasi, muzlatgich) — har ikki yo'lda; karta — har qurishda */
+  const tl = oshxonaTalablar(text);
+  let karta = null;
   if (typeof opts.konstruktor === 'function' && (oshxona || osh)) {
     const f = room.features || {};
     const shakl = room.layoutType === 'L' ? 'L' : room.layoutType === 'U' ? 'U' : osh ? 'I' : 'auto';
-    const talab = osh ? { shakl, oshxona: osh.spec, uzunlik: osh.spec.uzunlik, xolodilnik: !!osh.spec.xolodilnik, plita: osh.spec.gaz.bor ? 'erkin' : false, moyka: osh.spec.moyka !== false, ustki: true }
-      : { shakl, xolodilnik: f.fridge !== false, plita: f.stove === false ? false : 'erkin', ustki: true };
+    const qosh = { ustki: tl.ustki, penal: tl.penal, posudomoyka: tl.posudomoyka };
+    const talab = osh ? Object.assign({ shakl, oshxona: osh.spec, uzunlik: osh.spec.uzunlik, xolodilnik: !!osh.spec.xolodilnik, plita: osh.spec.gaz.bor ? 'erkin' : false, moyka: osh.spec.moyka !== false }, qosh)
+      : Object.assign({ shakl, xolodilnik: f.fridge !== false, plita: f.stove === false ? false : 'erkin' }, qosh);
     const v = opts.konstruktor({ outline: room.outline, wall_height: room.h || 2700, openings: room.openings || [] }, talab);
     if (v) { placements = v.placements; kitchen = v.kitchen; izohlar = v.izohlar; if (osh) { osh.natija = v.oshxona || null; osh.ogoh = v.ogohlantirishlar || []; } }
+    const O = room.outline, uz = (i) => Math.round(Math.hypot(O[(i + 1) % O.length][0] - O[i][0], O[(i + 1) % O.length][1] - O[i][1]));
+    karta = { soraldi: shakl, shakl: v ? v.shakl : null, devorlar: v ? v.devorlar.map(uz) : [], talab: Object.assign({}, tl, { xolodilnik: talab.xolodilnik }),
+      olcham3: room.olcham3 || null, izohlar: v ? v.izohlar : [] };
   }
   if (!placements) placements = suggestLayout(room, catalog, parsed.orders);
 
@@ -556,7 +573,7 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
     placements
   };
 
-  return { doc, orders: parsed.orders, unknown: parsed.unknown, notes, source, assumed, kitchen, izohlar, oshxona: osh };
+  return { doc, orders: parsed.orders, unknown: parsed.unknown, notes, source, assumed, kitchen, izohlar, oshxona: osh, karta };
 }
 
 /* ── 4. Ovoz Tizimi (Web Speech API) ── */

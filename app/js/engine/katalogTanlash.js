@@ -18,6 +18,21 @@ const TUR_GURUH = {
   erkin: (f) => f.category === 'shelf'
 };
 
+/* maxsus modullar — faqat matnda so'ralsa (egasi #183: "pastki shkaf 600 eshikli" — moyka moduli emas). re — modul nomi, soz — matn */
+const MAXSUS = [
+  { re: /moyka|мойк|sink/i, soz: /moyk|rakovin|chanoq|мойк|раковин|sink/ },
+  { re: /gluxoy|burchak|углов|corner/i, soz: /burchak|gluxoy|углов|угол|corner/ },
+  { re: /duxov/i, soz: /duxov|духов|oven/ },
+  { re: /vityach|vityajk|vytyajk|вытяж/i, soz: /vit[iy]?ch|vit[iy]?yaj|vytyaj|вытяж|hood/ },
+  { re: /kargo|cargo/i, soz: /kargo|карго|cargo|butilk|бутыл/ },
+  { re: /sushilk|quritgich/i, soz: /sushilk|сушилк|quritgich|idish/ },
+  { re: /aventos|ko'tarilma/i, soz: /aventos|ko'taril|подъ[её]мн|lift/ },
+  { re: /poyabzal/i, soz: /poyabzal|oyoq kiyim|обув|shoe/ },
+  { re: /tandir/i, soz: /tandir/ },
+  { re: /^tall|pufog/i, soz: /tall|baland|пенал|penal|kolonna|pufog/ }
+];
+export const maxsusmi = (f, matn) => MAXSUS.some(m => m.re.test(String(f.name || '')) && !m.soz.test(String(matn || '').toLowerCase()));
+
 const son = (q) => (typeof q === 'number' ? q : /^\s*\d+\s*$/.test(String(q)) ? +q : 1);
 const yig = (parts, re) => (parts || []).filter(p => re.test(p.code || '')).reduce((a, p) => a + son(p.qty), 0);
 
@@ -33,15 +48,18 @@ export function modulBelgilari(f) {
   };
 }
 
-/** spec'dagi so'ralgan ichki tarkib (aytilmagan eshik: -1 → null) */
-function soralganTarkib(spec) {
+/** spec'dagi so'ralgan ichki tarkib (aytilmagan eshik: -1 → null). xom — matndanSpec: eshikJami (umumiy son — bo'limlarga
+ *  taqsimlashda 2 tadan cheklanadi, "3 eshik" yo'qolmasin), eshikBor ("eshikli", soni aytilmagan) */
+function soralganTarkib(spec, xom = {}) {
   let eshik = 0, eshikAytildi = false, tortma = 0, polka = 0, shtanga = false;
   const qosh = (x) => {
     if (x.eshik > 0) { eshik += x.eshik; eshikAytildi = true; } else if (x.eshik === 0) eshikAytildi = true;
     tortma += x.tortma || 0; polka += x.polka || 0; shtanga = shtanga || !!x.shtanga;
   };
   for (const b of spec.bolimlar || []) { qosh(b); for (const q of b.qatlamlar || []) qosh(q); }
-  return { eshik: eshikAytildi ? eshik : null, tortma, polka, shtanga };
+  if (xom.eshikJami > 0 && xom.eshikJami <= 20) { eshik = xom.eshikJami; eshikAytildi = true; }   // umumiy gapdagi son (bo'lim ichidagisi emas)
+  else if (xom.eshikBor) eshikAytildi = false;                                                     // "eshikli" — soni modulniki
+  return { eshik: eshikAytildi ? eshik : null, eshikBor: !!xom.eshikBor, tortma, polka, shtanga };
 }
 
 const OLCH = [['w', 'eni'], ['d', 'chuqurligi'], ['h', 'boyi']];
@@ -54,26 +72,30 @@ const OLCH = [['w', 'eni'], ['d', 'chuqurligi'], ['h', 'boyi']];
  */
 export function katalogdanTop(spec, soralgan, catalog, matn = '') {
   const guruh = TUR_GURUH[spec.tur];
-  const nomzod = Object.values(catalog || {}).filter(f => f && guruh && guruh(f) && !f.chizma && !Array.isArray(f.bazis3d) && f.production !== 'none' && !/^CH-/.test(f.code));
+  const nomzod = Object.values(catalog || {}).filter(f => f && guruh && guruh(f) && !f.chizma && !Array.isArray(f.bazis3d) && f.production !== 'none' && !/^CH-/.test(f.code)
+    && !maxsusmi(f, matn));
   if (!nomzod.length) return { topildi: false, yetishmaydi: [{ k: 'tur', tur: spec.tur }], nomzodlar: 0 };
   const sor = soralgan || {};
-  const ich = soralganTarkib(spec);
+  const ich = soralganTarkib(spec, sor);
   const kupeSoralgan = /kupe|купе|sliding|surma/i.test(String(matn));
   let eng = null;
   for (const f of nomzod) {
     const b = modulBelgilari(f), mos = [], mosEmas = [], yetishmaydi = [], olcham = {};
     let ball = 0;
+    if (MAXSUS.some(m => m.re.test(String(f.name || '')) && m.soz.test(String(matn).toLowerCase()))) ball -= 25;   // so'ralgan maxsus modul (moyka …) afzal
     for (const [o, k] of OLCH) {
       const v = +sor[k] || 0, min = +f['min_' + o] || 0, max = +f['max_' + o] || 0;
       if (!v) { olcham[o] = +f[o]; continue; }
       const w = Math.max(min || v, Math.min(max || v, v));
       olcham[o] = w;
       const qator = { k, soraldi: v, min: min || null, max: max || null, natija: w };
+      /* chegarasi yozilmagan o'lcham — erkin, lekin asl o'lchamidan uzoqlashgani jarima (chegarasi bor mos modul afzal) va kartada asl o'lcham */
+      if (!min && !max && Math.abs(v - +f[o]) > 0.5) { qator.asl = +f[o]; ball += Math.abs(v - +f[o]) / 25; }
       if (w === v) mos.push(qator); else { mosEmas.push(qator); ball += Math.abs(w - v) / 10; if (Math.abs(w - v) > 0.2 * v) yetishmaydi.push(qator); }
     }
     for (const k of ['eshik', 'tortma', 'polka']) {
       const v = ich[k];
-      if (v == null || (k !== 'eshik' && !v && !b[k])) continue;
+      if (v == null || (k !== 'eshik' && !v && (k === 'polka' || !b[k]))) continue;   // polka aytilmagan (0) — tanlovga ta'sir qilmaydi
       const qator = { k, soraldi: v, modulda: b[k] };
       if (v === b[k]) mos.push(qator);
       else {
@@ -82,6 +104,7 @@ export function katalogdanTop(spec, soralgan, catalog, matn = '') {
         if ((k === 'tortma' && v > 0 && (!b.tortma || Math.abs(v - b.tortma) > 1)) || (k === 'eshik' && v > 0 && !b.eshik)) yetishmaydi.push(qator);
       }
     }
+    if (ich.eshikBor && ich.eshik == null) { const qator = { k: 'eshik', soraldi: '≥1', modulda: b.eshik }; if (b.eshik > 0) mos.push(Object.assign(qator, { soraldi: b.eshik })); else { mosEmas.push(qator); yetishmaydi.push(qator); ball += 200; } }
     if (ich.shtanga) { const qator = { k: 'shtanga', soraldi: 1, modulda: b.shtanga ? 1 : 0 }; if (b.shtanga) mos.push(qator); else { mosEmas.push(qator); yetishmaydi.push(qator); ball += 200; } }
     if (b.kupe !== kupeSoralgan) { mosEmas.push({ k: 'kupe', soraldi: kupeSoralgan ? 1 : 0, modulda: b.kupe ? 1 : 0 }); ball += 20; }
     const natija = { topildi: !yetishmaydi.length, frg: f.code, nom: f.name, olcham, mos, mosEmas, yetishmaydi, ball, nomzodlar: nomzod.length };

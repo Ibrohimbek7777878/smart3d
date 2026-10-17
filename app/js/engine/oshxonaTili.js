@@ -156,6 +156,22 @@ function sonlarga(s) {
   return s;
 }
 
+/**
+ * egasi #183: oshxona talablari — jim tashlab ketilmaydi (har biri kartada: bajarildi yoki "bajarilmadi: sabab").
+ *   ustki: false — "ustkisiz", "ustki shkaflarsiz", "без верхних", "without wall cabinets"
+ *   duxovka / mikro — penal (katalog SP-K-020 "Penal Duxovka va Mikroto'lqinli pech uchun"), posudomoyka — SP-TX-002 moyka yonida,
+ *   xolodilnik — SP-TX-004. Aytilmagani — false (sukut: qo'yilmaydi; muzlatgich — avvalgi qoida bo'yicha)
+ */
+export function oshxonaTalablar(matn) {
+  const s = tayyorla(matn);
+  const ustkisiz = /ustki[a-z']*\s*(?:shkaf[a-z']*\s*)?siz|ustki\s+(?:shkaf[a-z']*\s+)?(?:yo'q|kerakmas|kerak emas)|osma[a-z']*\s*(?:shkaf[a-z']*\s*)?siz|tepa(?:dagi)?\s+shkaf[a-z']*siz|без\s+(?:верхн|навесн)[а-яё]*|(?:without|no)\s+(?:upper|wall)[\s-]*(?:cabinets?|units?)?/.test(s);
+  const duxovka = /duxovk[a-z']*|духовк[а-яё]*|духов(?:ой|ого)\s*шкаф|(?<![a-z])oven/.test(s);
+  const mikro = /mikro\s*to'?lqin|mikrovoln[a-z]*|микроволн[а-яё]*|свч|microwave/.test(s);
+  const posudomoyka = /posudomo[yi]k[a-z']*|posudamo[yi]k[a-z']*|посудомо[ей]к[а-яё]*|посудомоечн[а-яё]*|idish\s*yuv[a-z']*|dish\s*washer|dishwasher|(?<![a-zа-яё])(?:pmm|пмм)(?![a-zа-яё])/.test(s);
+  const xolodilnik = /xolodilnik|muzlatgich|холодильн|fridge|refrigerator/.test(s);
+  return { ustki: !ustkisiz, duxovka, mikro, penal: duxovka || mikro, posudomoyka, xolodilnik };
+}
+
 /** matn → oshxona spec'i (AI'siz) */
 export function oshxonaSpec(matn) {
   const s = tayyorla(matn), manba = {};
@@ -197,10 +213,11 @@ export function oshxonaSpec(matn) {
   }
   manba.stol_qalinlik = stoleshnitsa.qalinlik ? 'matn' : 'sukut';
   manba.stol_chuqurligi = stoleshnitsa.chuqurligi ? 'matn' : 'sukut';
-  const xolodilnik = /xolodilnik|muzlatgich|холодильн|fridge|refrigerator/.test(s);
+  const tl = oshxonaTalablar(matn), xolodilnik = tl.xolodilnik;
   const moyka = /moyka|rakovina|chanoq|мойк|раковин|(?<![a-z])sink/.test(s);
   manba.moyka = moyka ? 'matn' : 'sukut';
-  return { uzunlik, qavatlar, fartuk, uslub, ruchkasiz, gola, tortma: { soni: tortmaSoni, yonaltiruvchi }, gaz, vytyajka, stoleshnitsa, xolodilnik, moyka: true, manba };
+  return { uzunlik, qavatlar, fartuk, uslub, ruchkasiz, gola, tortma: { soni: tortmaSoni, yonaltiruvchi }, gaz, vytyajka, stoleshnitsa, xolodilnik, moyka: true,
+    ustki: tl.ustki, duxovka: tl.duxovka, mikro: tl.mikro, penal: tl.penal, posudomoyka: tl.posudomoyka, manba };
 }
 
 /* chegaralar (aytilgan qiymat shu oraliqqa keltiriladi, har to'g'rilash — izoh bilan) */
@@ -247,6 +264,8 @@ export function oshxonaTekshir(raw, o = {}) {
     vytyajka: { bor: !raw.vytyajka || raw.vytyajka.bor !== false, eni: ichida('vytyajka', raw.vytyajka && raw.vytyajka.eni) },
     stoleshnitsa: { qalinlik: qal, chuqurligi: ichida('stol_chuqurligi', st.chuqurligi) },
     xolodilnik: raw.xolodilnik === true, moyka: raw.moyka !== false,
+    ustki: raw.ustki !== false, duxovka: raw.duxovka === true, mikro: raw.mikro === true, penal: raw.penal === true || raw.duxovka === true || raw.mikro === true,
+    posudomoyka: raw.posudomoyka === true,
     manba: Object.assign({}, raw.manba || {})
   };
   if (spec.gola) spec.ruchkasiz = true;                    // Gola — ruchkasiz tizim
