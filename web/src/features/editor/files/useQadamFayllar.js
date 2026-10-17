@@ -10,6 +10,7 @@ import { t } from '../../../i18n/index.js';
 export function useQadamFayllar() {
   const auth = useSlice('auth'), st = useSlice('settings');
   useSlice('project');
+  const edSel = useSlice('editor').sel;
   const R = project.res, NS = R ? R.nest.summary : {}, pr = R ? R.priceRes : null, prod = R ? R.prod : null;
   const missN = prod ? prod.missing.length : 0;
   let detTotal = 0;
@@ -19,7 +20,7 @@ export function useQadamFayllar() {
   const groups = [
     { title: t('fayllar.mijozga'), col: 'var(--cyan)', sub: t('fayllar.logo_bilan'), mainLabel: t('fayllar.hisobot'), mainIkon: 'chop', main: 'hisobot', more: [[t('fayllar.rasm'), 'rasm', 'rasm'], ['360°', 'panorama', 'aylanish'], ['GLB (3D/AR)', 'glb']] },
     { title: t('fayllar.sexga'), col: 'var(--lav)', sub: t('fayllar.sexga_sub', { d: NS.panel_count || 0, v: NS.total_sheets || 0 }), mainLabel: t('fayllar.excel'), mainIkon: 'excel', main: 'excel',
-      more: [[t('fayllar.detallar_csv'), 'cutlist'], [t('fayllar.loyiha_fayli'), 'loyiha'], [t('fayllar.smeta_csv'), 'smetaCsv'], ['OBJ', 'obj'], [t('fayllar.teshiklar_json'), 'teshiklar']] },
+      more: [[t('fayllar.detallar_csv'), 'cutlist'], [t('fayllar.loyiha_fayli'), 'loyiha'], [t('fayllar.smeta_csv'), 'smetaCsv'], [edSel != null && project.doc && project.pl(edSel) ? t('fayllar.obj_modul') : t('fayllar.obj_loyiha'), 'obj'], [t('fayllar.teshiklar_json'), 'teshiklar']] },
     { title: t('fayllar.stanokka'), col: 'var(--acct)', sub: t('fayllar.dastursiz'), mainLabel: 'GibLab', main: 'giblab',
       more: [['DXF', 'dxf'], ['G-code', 'gcode'], [t('fayllar.tez_orada', { nom: 'Biesse' }), null], [t('fayllar.tez_orada', { nom: 'Homag' }), null], ['PTP', 'ptp'], ['NC', 'nc'], ['XNC', 'xnc'], ['Altendorf', 'altendorf'],
         admin ? [t('fayllar.sinov', { nom: 'Bazis (BPJ)' }), 'bpj'] : [t('fayllar.tez_orada', { nom: 'Bazis (BPJ)' }), null],

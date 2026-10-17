@@ -19,14 +19,14 @@ export default function QadamXona() {
       </div>
       <div style={{"display":"flex","padding":"4px","gap":"4px","borderRadius":"14px","background":"var(--sfc)"}}>
         {(v.shapes || []).map((x, $index) => (<React.Fragment key={$index}>
-          <button onClick={x?.pick} style={{"flex":"1","height":"40px","borderRadius":"10px","border":"0","background":x?.bg,"color":x?.c,"fontWeight":"800","fontSize":"14px","cursor":"pointer","whiteSpace":"nowrap"}}>
-            <Ikon n={x?.ikon} size={15} /><span className="sc-interp">{x?.label}</span>
+          <button onClick={x?.pick} data-shakl-tab={x?.id} style={{"flex":"1 1 auto","minWidth":"0","height":"40px","padding":"0 8px","display":"inline-flex","alignItems":"center","justifyContent":"center","gap":"5px","borderRadius":"10px","border":"0","background":x?.bg,"color":x?.c,"fontWeight":"800","fontSize":"13px","cursor":"pointer","whiteSpace":"nowrap"}}>
+            {x?.ikon && <Ikon n={x.ikon} size={15} />}<span className="sc-interp">{x?.label}</span>
           </button>
         </React.Fragment>))}
       </div>
       <div role="radiogroup" aria-label={v.maydonTitle} data-maydon-tanlov="" style={{"display":"flex","padding":"4px","gap":"4px","borderRadius":"14px","background":"var(--sfc)"}}>
         {(v.maydonlar || []).map((x) => (
-          <button key={x.id} role="radio" aria-checked={x.on} data-maydon-rejim={x.id} onClick={x.pick} style={{"flex":"1","height":"40px","borderRadius":"10px","border":"0","background":x.bg,"color":x.c,"fontWeight":"800","fontSize":"14px","cursor":"pointer","whiteSpace":"nowrap"}}>
+          <button key={x.id} role="radio" aria-checked={x.on} data-maydon-rejim={x.id} onClick={x.pick} style={{"flex":"1 1 auto","minWidth":"0","height":"40px","padding":"0 8px","display":"inline-flex","alignItems":"center","justifyContent":"center","gap":"5px","borderRadius":"10px","border":"0","background":x.bg,"color":x.c,"fontWeight":"800","fontSize":"13px","cursor":"pointer","whiteSpace":"nowrap"}}>
             <Ikon n={x.ikon} size={15} /><span className="sc-interp">{x.label}</span>
           </button>
         ))}

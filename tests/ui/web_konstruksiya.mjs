@@ -116,7 +116,7 @@ async function asosiy(page, R) {
     && R.ega.tur === 'shkaf' && JSON.stringify(R.ega.wdh) === '[1200,580,2100]' && R.ega.chap.yo === 'h' && R.ega.chap.ajrat === 'polka' && R.ega.chap.bo.length === 3
     && R.ega.chap.bo[1].o === 1000 && R.ega.chap.bo[1].n.shtanga && R.ega.chap.eshik === 1 && R.ega.ong.polka === 6 && R.ega.ong.eshik === 1 && R.ega.orqaYer && R.ega.ruchka.l === 1000
     && R.ega.slots && /Кашемир UR 16мм/.test(R.ega.slots.korpus) && /Кашемир UR 16мм/.test(R.ega.slots.polka) && /Дуб Золотой 16мм/.test(R.ega.slots.fasad) && R.ega.narx > 0
-    && /8 polka/.test(R.egaIzoh) && /Кашемир/.test(R.egaIzoh) && /konfirmat/.test(R.egaIzoh) && /1000 mm/.test(R.egaIzoh) && R.egaObj === 'smart3d-model.obj' && !R.egaDialog
+    && /8 polka/.test(R.egaIzoh) && /Кашемир/.test(R.egaIzoh) && /konfirmat/.test(R.egaIzoh) && /1000 mm/.test(R.egaIzoh) && /Chizilgan_shkaf_1200_580_2100\.obj$/.test(R.egaObj) && !R.egaDialog
     && R.tumba.tur === 'tumba' && R.tumba.ichki.tortma === 4 && R.tumba.wdh[0] === 600
     && R.javon.ichki.yo === 'v' && R.javon.ichki.bo.length === 2 && R.javon.ichki.bo.every(b => b.polka === 5) && /bo'lgich/.test(R.javonIzoh)
     && R.ustki.tur === 'ustki' && R.ustki.ichki.eshik === 2 && R.ustki.ichki.polka === 2 && R.aiYopildi

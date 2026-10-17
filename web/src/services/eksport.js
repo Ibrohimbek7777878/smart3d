@@ -189,9 +189,14 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
   },
   obj(c) {
     if (!ok(c, false)) return;
-    const r = buildOBJ(view(c), c.H.catalog);
-    download('smart3d-model.obj', r.obj, 'text/plain');
-    setTimeout(() => download('smart3d-model.mtl', r.mtl, 'text/plain'), 350);
+    /* faqat tanlangan modul (c.opt.id — AI yangi qurgan modul, yoki editor.sel); tanlanmagan — butun loyiha */
+    const id = c.opt && c.opt.id != null ? c.opt.id : c.sel;
+    const pl = id != null ? c.doc.placements.find(p => p.id === id) : null;
+    const nom = pl ? '-' + String((c.doc.chizmalar && c.doc.chizmalar[pl.frg] && c.doc.chizmalar[pl.frg].nom) || (c.H.catalog[pl.frg] && c.H.catalog[pl.frg].name) || pl.frg).trim().replace(/[^\p{L}\p{N}]+/gu, '_').replace(/^_|_$/g, '') : '';
+    const r = buildOBJ(view(c), c.H.catalog, pl ? { only: pl.id } : {});
+    const fn = pl ? fname(c) + nom : 'smart3d-model';
+    download(fn + '.obj', r.obj.replace('mtllib smart3d.mtl', 'mtllib ' + fn + '.mtl'), 'text/plain');
+    setTimeout(() => download(fn + '.mtl', r.mtl, 'text/plain'), 350);
     c.toast(t('hujjat.t_obj', { n: r.placements.length }));
   },
   teshiklar(c) {

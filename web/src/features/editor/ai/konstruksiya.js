@@ -73,6 +73,6 @@ export async function aiKonstruksiya(matn, aiOn) {
   toast(t('kons.qurildi', { kim: ai ? t('kons.kim_ai') : t('kons.kim_aisiz'), nom }) + (tuzatish.length ? ' · ' + t('kons.tuzatildi', { n: tuzatish.length }) : '')
     + (M.yoq.length ? ' · ' + M.yoq.join(' · ') : ''));
   /* "obj formatda yubor" — qurilgach OBJ darhol yuklanadi (savolsiz) */
-  if (sp.eksport === 'obj') faylYukla('obj');
+  if (sp.eksport === 'obj') faylYukla('obj', { id: p.id });
   return 'modul';
 }
