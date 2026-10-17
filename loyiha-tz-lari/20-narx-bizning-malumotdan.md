@@ -66,6 +66,32 @@ Bazis fayli → bizning kesim va raskroy ↔ sex GibLab'da kesgani. Sex kesgan m
 - Sinov oshxonasida "eski → yangi" ko'rsatiladi, siz tasdiqlaysiz.
 - Narx o'ylab topilmaydi (4.3). ERP'ga yozilmaydi. Pul harakati yo'q.
 
+### NARX.pdf (egasi #142, 2026-10-17) — furnitura narxlari
+- **Nima bor:** do'kon narx ro'yxati, 1399 pozitsiya (1288 tasida narx): ruchka, petlya, nojka, rolik (yo'naltiruvchi), samorez, aksessuarlar, asboblar.
+  - Ustunlar: artikul, nom, qoldiq (ombordagi soni), narx.
+  - Birlik yozilmagan.
+- **Nima yo'q:** raspil, kromka, prisadka, plita (faqat 1 ta LDSP qatori). Bular paketning xizmat jadvalida bor (yuqorida).
+- **Katalogga qo'shildi** (`dizayn` bacccab, `scripts/narx_pdf_import.py`):
+  - 288 tasi ERP katalogida bor — narxi aynan bir xil (farq 0);
+  - 1111 tasi yangi, 111 tasi narxsiz ("narx yo'q" — o'ylab topilmaydi);
+  - jami katalog 3089 ta;
+  - qoldiq soni yozilmaydi (ombor ma'lumoti).
+- **Modullarga hali bog'lanmagan** — loyiha narxi o'zgarmadi. Modullardagi furnitura nomlari ro'yxatdagi nomlarga to'g'ridan-to'g'ri mos emas, tanlov kerak.
+
+  Taklif (eng ko'p ishlatiladiganlar, so'm):
+
+  | Moduldagi nomi (dona, 38 MC modulda) | Taklif |
+  |---|---|
+  | Евро 51 Алкан — konfirmat (748) | SAMAREZ YEVRO (ALKAN) 30 000 — ⚠ quti narxi bo'lishi mumkin |
+  | samorez 16 mm (220) | SAMOREZ 16 LIK (MEXMASH) 35 000 — ⚠ quti |
+  | petle oddiy, Петля прямая (71) | PETLE NS PRIMOY 3 000 (yoki PETLE POL GOR (ODDIY) 2 500) |
+  | Петля Samet 90° доводчик (16) | Петля Master накладная, доводчик 11 796 |
+  | polkoderjatel nikel (76) | Полкодержатель штифтовой 430 (yoki XITOY OQ 300) |
+  | nojka nikel 100 mm (48) | NOSHKA 10 LIK 3 500 (yoki Кухонная ножка 10–15 см 6 200) |
+  | Ручка 160 мм (46) | 0351 -160- MATOVIY 16 000 (arzoni: 5006 -160- 9 000) |
+  | salazka / napravl. 400 (50) | SAMET SREDNIY 40 SM 36 000 (yoki ROLIK 40 LIK VAKUM 42 000) |
+  | Эксцентрик (4) | MSFIX Эксцентрик-дюбель 1 800 |
+
 ### Savollar (2026-10-17)
 1. **Raspil:** Altendorf / Holzma 1, 2, 3 nimani bildiradi (material turi, qalinlik yoki detal soni)? Usta loyihasiga qaysi biri qo'yiladi?
 2. **Kromka (sukut bo'yicha):**
@@ -77,7 +103,10 @@ Bazis fayli → bizning kesim va raskroy ↔ sex GibLab'da kesgani. Sex kesgan m
    - qoldiq narxga ta'sir qiladimi?
 4. **Yig'ish (ish haqi):** narxga kiradimi? Kirsa — stavka (detal yoki modul boshiga)?
 5. **Ustama:** 35% qoladimi?
-6. **"Boshla"** — shu tartibda.
+6. **Furnitura bog'lash** (NARX.pdf, yuqoridagi jadval):
+   - takliflar to'g'rimi?
+   - samorez va konfirmat narxi necha donaga (quti)?
+7. **"Boshla"** — shu tartibda.
 
 ---
 
