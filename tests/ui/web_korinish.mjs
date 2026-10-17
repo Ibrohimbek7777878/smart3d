@@ -141,6 +141,58 @@ async function asosiy(page, R) {
     const nearKam = await M(() => { const c = window.__app.sahna.sp.cam3d; return { near: c.near, far: c.far }; });
     await page.screenshot({ path: `${OUT}/zoom-5-yaqin.png` });
     R.zoomChegara = { uzoq: Math.round(dFar), maxD: Math.round(farKam.maxD), yaqin: Math.round(dNear), farNear: farKam, yaqinNear: nearKam };
+    /* TZ zoom chegarasi: bitta modul qoldiriladi; maks. uzoqlashganda modul ekranda >= 8% balandlik; maks. yaqinlashganda
+       kamera eng yaqin sirtdan >= 380 mm va mebel qutisi ichida emas */
+    await M(() => {
+      const g = window.__app.sahna.sp.groups.items; let k = 0;
+      for (const ch of g.children) { if (ch.userData && ch.userData.kind === 'hitBox') continue; if (k++ > 0) ch.visible = false; }
+      window.__app.sahna.sp._invalidate();
+    });
+    await page.waitForTimeout(500);
+    const olch = () => M(() => {
+      const s = window.__app.sahna, sp = s.sp, T = sp.THREE, cam = sp.cam3d, p = cam.position;
+      const g = sp.groups.items; let bx = null; let minB = Infinity, ichida = false;
+      for (const ch of g.children) {
+        if (!ch.visible || (ch.userData && ch.userData.kind === 'hitBox')) continue;
+        const b = new T.Box3().setFromObject(ch); if (b.isEmpty()) continue;
+        bx = bx || b.clone(); bx.union(b);
+        if (b.containsPoint(p)) ichida = true;
+        minB = Math.min(minB, b.distanceToPoint(p));
+      }
+      const ms = []; const kor = (o) => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
+      for (const gr of [sp.groups.items, sp.groups.walls3d]) gr.traverse(o => { if (o.isMesh && !(o.userData && o.userData.kind === 'hitBox') && kor(o)) ms.push(o); });
+      const rc = new T.Raycaster(); let minR = Infinity;
+      const dirs = [[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+      const cd = new T.Vector3(); cam.getWorldDirection(cd); dirs.push(cd.toArray());
+      for (const d of dirs) { rc.set(p, new T.Vector3(...d).normalize()); rc.near = 0; rc.far = 2000; const h = rc.intersectObjects(ms, false); if (h.length) minR = Math.min(minR, h[0].distance); }
+      /* modul ekrandagi balandligi: qutining 8 burchagi proyeksiyasi */
+      let balandlik = 0;
+      if (bx) {
+        let y0 = 9, y1 = -9;
+        for (const x of [bx.min.x, bx.max.x]) for (const y of [bx.min.y, bx.max.y]) for (const z of [bx.min.z, bx.max.z]) { const v = new T.Vector3(x, y, z).project(cam); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); }
+        balandlik = (y1 - y0) / 2;
+      }
+      return { balandlik: +balandlik.toFixed(3), minQutiga: Math.round(minB), minNur: Math.round(minR), ichida, maxD: Math.round(s.ctl.orbit.maxDistance) };
+    });
+    await page.mouse.move(mx, my);
+    for (let i = 0; i < 80; i++) { await page.mouse.wheel(0, 100); await page.waitForTimeout(30); }
+    await page.waitForTimeout(1500);
+    const uzoqO = await olch();
+    await page.screenshot({ path: `${OUT}/zoom-chegara-uzoq.png` });
+    /* yaqinlashish: kursor modul ustida va chetda, ikki holat; kamera hech qachon ichiga kirmasin */
+    let minYaqin = Infinity, ichidaBor = false;
+    for (const [fx, fy] of [[0.5, 0.5], [0.7, 0.45], [0.35, 0.6]]) {
+      await page.mouse.move(r.x + r.w * fx, r.y + r.h * fy);
+      for (let i = 0; i < 100; i++) {
+        await page.mouse.wheel(0, -100); await page.waitForTimeout(20);
+        if (i % 10 === 9) { const o = await olch(); minYaqin = Math.min(minYaqin, o.minQutiga, o.minNur); if (o.ichida) ichidaBor = true; }
+      }
+      await page.waitForTimeout(1200);
+      const o = await olch(); minYaqin = Math.min(minYaqin, o.minQutiga, o.minNur); if (o.ichida) ichidaBor = true;
+    }
+    const yaqinO = await olch();
+    await page.screenshot({ path: `${OUT}/zoom-chegara-yaqin.png` });
+    R.zoomChegara2 = { uzoq: uzoqO, yaqin: yaqinO, minYaqin, ichidaBor };
     R.zoomAniso = await M(() => {
       const sp = window.__app.sahna.sp; let n = 0, k = 0;
       sp.scene.traverse(o => { const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; for (const m of ms) if (m.map) { n++; if (m.map.anisotropy > 1) k++; } });
@@ -261,8 +313,9 @@ async function asosiy(page, R) {
     R.tel.menyu && R.tel.sigadi && R.tel.panel && !R.tel.ustma && !R.tel.hScroll && R.bazis.chizish === 'qirrali' && R.bazis.xona === false && R.bazis.devor === false &&
     R.zoomQadam.foiz >= 3 && R.zoomQadam.foiz <= 7 && R.zoomQadam.kursorKos > 0.98 && R.zoomQadam.kadrlar >= 6 && R.zoomQadam.maxBosh <= 150 && R.zoomQadam.mono &&
     R.zoomTez.jami > 5 && R.zoomTez.jami <= 27 && R.zoomKey.plus > 7 && R.zoomKey.plus < 13 && R.zoomKey.minus > 7 && R.zoomKey.minus < 14 && Object.values(R.zoomMuhit).length === 9 && Object.values(R.zoomMuhit).every(v => v >= 3 && v <= 7) &&
-    R.zoomChegara.uzoq <= R.zoomChegara.maxD + 1 && R.zoomChegara.uzoq >= 6000 && R.zoomChegara.yaqin >= 299 && R.zoomChegara.yaqin < 700 &&
+    R.zoomChegara.uzoq <= R.zoomChegara.maxD + 1 && R.zoomChegara.uzoq >= 3000 && R.zoomChegara.yaqin >= 299 &&
     R.zoomChegara.farNear.far > R.zoomChegara.uzoq && R.zoomChegara.farNear.near > R.zoomChegara.yaqinNear.near && R.zoomChegara.farNear.far / R.zoomChegara.farNear.near < 2000 &&
+    R.zoomChegara2.uzoq.balandlik >= 0.08 && R.zoomChegara2.minYaqin >= 380 && !R.zoomChegara2.ichidaBor && !R.zoomChegara2.yaqin.ichida &&
     R.zoomAniso.aniso > 1 && R.zoomAniso.anisoBilan === R.zoomAniso.tekstura &&
     errs.length === 0;
 }
