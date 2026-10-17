@@ -53,9 +53,9 @@ export default function Header() {
           <button onClick={v.goProjects} data-sarlavha="loyihalar" data-hide-m="" title={t('qadam.loyihalar')} aria-label={t('qadam.loyihalar')} style={{"height":"44px","padding":"0 12px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","display":"flex","alignItems":"center","whiteSpace":"nowrap","flex":"0 0 auto"}}>
             <Ikon n="papka" size={18} gap={0} /><span data-hide-m="" style={{"marginLeft":"6px"}}>{t('qadam.loyihalar')}</span>
           </button>
-          <button onClick={v.fayllar} data-sarlavha="fayllar" data-hide-m="" aria-pressed={v.fayllarOn} title={t('qadam.fayllar')} aria-label={t('qadam.fayllar')} style={{"height":"44px","padding":"0 12px","borderRadius":"14px","background":v.fayllarOn ? "var(--sfc2)" : "var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","display":"flex","alignItems":"center","whiteSpace":"nowrap","flex":"0 0 auto"}}>
+          {v.oddiy ? null : <button onClick={v.fayllar} data-sarlavha="fayllar" data-hide-m="" aria-pressed={v.fayllarOn} title={t('qadam.fayllar')} aria-label={t('qadam.fayllar')} style={{"height":"44px","padding":"0 12px","borderRadius":"14px","background":v.fayllarOn ? "var(--sfc2)" : "var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontWeight":"700","fontSize":"14px","cursor":"pointer","display":"flex","alignItems":"center","whiteSpace":"nowrap","flex":"0 0 auto"}}>
             <Ikon n="excel" size={18} gap={0} /><span data-hide-m="" style={{"marginLeft":"6px"}}>{t('qadam.fayllar')}</span>
-          </button>
+          </button>}
         </>) : null}
         <button onClick={v.tilMenu} aria-label={t('sarlavha.til')} data-til-menyu data-hide-m="" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto"}}>
           <Ikon n="til" size={19} gap={0} />

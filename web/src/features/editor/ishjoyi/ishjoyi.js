@@ -10,6 +10,7 @@ import { chizishOch } from '../chizish/chizish.js';
 import { bazisFayl } from '../../bazis/bazis.js';
 import { asbobTanla } from './devorAsbob.js';
 import { t } from '../../../i18n/index.js';
+import { oddiyMi, oddiyQadam, oddiyPanel, useRejim } from '../oddiy/rejim.js';
 
 /* TZ-25 A: bosh ish joyi — bitta ekran (Bazis kabi). Kirishi bilan oxirgi loyiha yoki bo'sh standart xona ochiladi
  * ("Nima yasaymiz" so'rovnomasi yashirildi — qoida 2.7). O'ng panel faqat kerak bo'lganda: editor.step — 0 (yopiq),
@@ -39,6 +40,7 @@ export async function yangiIshJoyi() {
 
 /** o'ng panel: shu bo'lim ochiladi (yopish — panelning × tugmasi) */
 export function panel(n) {
+  if (oddiyMi()) { if (n === 3) oddiyQadam(4); else if (n === 1) oddiyQadam(1); else if (n === 2) oddiyQadam(2); return; }   // Oddiy rejim: Narx — 4-qadam, Fayllar yo'q
   if (get().chizish.ochiq) set('chizish', { ochiq: false });
   set('editor', s => ({ step: n, done: { ...s.done, ...(n > 1 ? { [n - 1]: true } : null) } }));
 }
@@ -62,6 +64,7 @@ export function tezOshxona() {
 /** ish joyiga fayl tashlandi: Bazis (.b3d, .fr3d, .bpj); boshqasi — xato */
 export function faylTashlandi(ev) {
   ev.preventDefault();
+  if (oddiyMi()) return;                                        // Oddiy rejimda Bazis fayli yo'q
   const f = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
   if (!f) return;
   if (!/\.(b3d|fr3d|bpj)$/i.test(f.name)) { xato('S3D-BAZIS-101', { modul: 'ishjoyi', xabar: 'fayl: ' + f.name.slice(0, 60) }); return; }
@@ -83,6 +86,11 @@ export function useAsboblar() {
   const ed = useSlice('editor'), ij = useSlice('ishjoyi'), chz = useSlice('chizish'), k = useSlice('korinish'), bz = useSlice('bazis');
   const pn = chz.ochiq ? 'chizish' : ed.step;
   const B = (id, ik, label, on, bos) => ({ id, ik, label, on: !!on, bos });
+  const rj = useRejim();
+  if (rj.oddiy) {                                                // Oddiy rejim: faqat 4 qadam
+    const q = (id, ik, n, label) => B('o-' + id, ik, label, rj.panel === n, () => oddiyQadam(rj.panel === n ? 0 : n));
+    return { bazisYuk: null, oddiy: true, asboblar: [q('xona', 'xona', 1, t('oddiy.xona')), q('tayyor', 'mebel', 2, t('oddiy.tayyor')), q('rang', 'material', 3, t('oddiy.rang')), q('narx', 'narx', 4, t('oddiy.narx'))] };
+  }
   return {
     bazisYuk: bz.yuk,
     asboblar: [

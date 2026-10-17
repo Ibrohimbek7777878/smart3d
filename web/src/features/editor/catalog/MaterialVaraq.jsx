@@ -14,7 +14,7 @@ import { useMaterialVaraq } from './material.js';
 const YOGOCH = 'repeating-linear-gradient(95deg, rgba(0,0,0,.10) 0 1px, transparent 1px 7px)';
 const NUQTA = (rang) => ({ display: 'inline-block', width: '22px', height: '22px', flex: '0 0 22px', borderRadius: '50%', background: rang || 'transparent', border: rang ? '1px solid rgba(0,0,0,.25)' : '1px dashed var(--mut)' });
 
-function Plitka({ p }) {
+export function Plitka({ p }) {
   return (
     <div data-material-plitka="" data-on={p.on ? '1' : '0'} style={{ background: 'var(--sfc2)', borderRadius: '16px', border: p.on ? '2px solid var(--acc)' : '1px solid var(--line)', padding: p.on ? '0' : '1px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <button onClick={p.pick} aria-pressed={p.on} aria-label={p.nom} style={{ border: '0', background: 'none', color: 'var(--txt)', cursor: 'pointer', textAlign: 'left', padding: '0', display: 'flex', flexDirection: 'column', flex: '1' }}>

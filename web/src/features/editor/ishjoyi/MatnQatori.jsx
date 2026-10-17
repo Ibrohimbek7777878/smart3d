@@ -14,6 +14,7 @@ import { tezOshxona, STANDART_XONA } from './ishjoyi.js';
 import { openSheet } from '../../../store/ui.js';
 import { loyihalarniYukla } from '../../projects/actions.js';
 import { useDavom } from '../../projects/davom.js';
+import { useRejim } from '../oddiy/rejim.js';
 
 /* TZ-25 B (dizaynda yo'q — AI oynasi bo'laklari bilan: --sfc fon, 52px maydon, --acc asosiy tugma, chiplar).
  * Pastda doim ochiq matn qatori: "Nima chizamiz?" → Enter → loyiha quriladi (AI'siz tahlilchi va avtomatik konstruktor;
@@ -35,7 +36,7 @@ export default function MatnQatori() {
   useSlice('project');
   const [buyruq, setBuyruq] = useState('');
   const devor = ij.asbob === 'devor', bosh = !project.doc.placements.length && !project.doc.bazis;
-  const davom = useDavom();
+  const davom = useDavom(), oddiy = useRejim().oddiy;
   useEffect(() => { if (bosh) loyihalarniYukla(); }, [bosh]);      // TZ-27: chala ishlar soni (Davom ettirish)
   const yubor = (ev) => {
     ev.preventDefault();
@@ -49,14 +50,14 @@ export default function MatnQatori() {
   const chiplar = devor
     ? [[t('devor.yopish'), tugat, 'yopish'], [t('devor.oxirgisi'), oxirgisiniOchir, 'orqaga'], [t('devor.bekor'), bekor, 'bekor'],
       [t('devor.shakl_rect'), () => shaklQoy('rect'), 'rect'], [t('devor.shakl_L'), () => shaklQoy('L'), 'L'], [t('devor.shakl_P'), () => shaklQoy('P'), 'P']]
-    : bosh ? (davom.soni ? [[t('davom.chip', { n: davom.soni }), () => openSheet('davom', {}), 'davom']] : []).concat([[t('tez.oshxona'), tezOshxona, 'kitchen'], [t('asbob.devor'), () => asbobTanla('devor'), 'devor'],
-      [t('tayyor.tab_tayyor'), () => set('ai', { open: true, tab: 'tayyor' }), 'tayyor']]) : [];
+    : bosh ? (davom.soni ? [[t('davom.chip', { n: davom.soni }), () => openSheet('davom', {}), 'davom']] : []).concat([[t('tez.oshxona'), tezOshxona, 'kitchen']].concat(oddiy ? [] : [[t('asbob.devor'), () => asbobTanla('devor'), 'devor']]).concat([
+      [t('tayyor.tab_tayyor'), () => set('ai', { open: true, tab: 'tayyor' }), 'tayyor']])) : [];
   return (
     <div data-matn-qatori="" style={{ flex: '0 0 auto', borderTop: '1px solid var(--line)', background: 'rgba(15,34,41,.96)', padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {chiplar.length ? (
         <div data-tez="" style={{ display: 'flex', gap: '6px', overflowX: 'auto', scrollbarWidth: 'none' }}>
           {chiplar.map(([label, bos, id]) => <button key={id} onClick={bos} data-tez={id} style={{ ...chip(false), flex: '0 0 auto', whiteSpace: 'nowrap' }}>{label}</button>)}
-          {!devor && bosh ? (
+          {!devor && bosh && !oddiy ? (
             <label data-tez="bazis" style={{ ...chip(false), flex: '0 0 auto', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center' }}>
               {t('asbob.bazis')}<input type="file" accept=".b3d,.fr3d,.bpj" onChange={bazisYukla} style={{ display: 'none' }} />
             </label>) : null}

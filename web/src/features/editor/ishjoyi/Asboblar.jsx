@@ -4,6 +4,7 @@ import Ikon from '../../../shared/ui/Ikon.jsx';
 import { bazisYukla } from '../../bazis/bazis.js';
 import { useAsboblar } from './ishjoyi.js';
 import { goProjects } from '../../projects/actions.js';
+import { rejimTanla } from '../oddiy/rejim.js';
 
 /* TZ-25 A (dizaynda yo'q — muharrir qadamlari paneli uslubida: #0C1D23 fon, --sfc2 faol, --mut nofaol, --acc urg'u).
  * Chapda vertikal asboblar (Bazis kabi); telefonda — matn qatori ustida gorizontal qator. Har tugma: ikon va qisqa nom. */
@@ -15,17 +16,23 @@ export default function Asboblar() {
   const v = useAsboblar();
   return (
     <nav data-asboblar="" aria-label={t('asbob.sarlavha')} style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '10px 6px', borderRight: '1px solid var(--line)', background: '#0C1D23', overflowY: 'auto' }}>
+      {/* Usta | Oddiy almashtirgich (rejim foydalanuvchida saqlanadi) */}
+      <div role="group" aria-label={t('oddiy.rejim')} data-rejim="" style={{ display: 'flex', flexDirection: 'column', gap: '2px', padding: '3px', borderRadius: '14px', background: 'var(--sfc)', flex: '0 0 auto' }}>
+        {[[false, t('oddiy.usta')], [true, t('oddiy.oddiy')]].map(([od, label]) => (
+          <button key={label} onClick={() => rejimTanla(od)} data-rejim-tugma={od ? 'oddiy' : 'usta'} aria-pressed={!!v.oddiy === od} className="h3"
+            style={{ flex: '1 1 0', minHeight: '26px', borderRadius: '11px', border: '0', cursor: 'pointer', fontSize: '11px', fontWeight: '800', background: !!v.oddiy === od ? 'var(--acc)' : 'transparent', color: !!v.oddiy === od ? 'var(--ink)' : 'var(--mut)' }}>{label}</button>))}
+      </div>
       {v.asboblar.map(a => (
         <button key={a.id} onClick={a.bos} data-asbob={a.id} aria-pressed={a.on} title={a.label} className="h3" style={TUGMA(a.on)}>
           <span style={{ color: a.on ? 'var(--acc)' : 'inherit', display: 'flex' }}><Ikon n={a.ik} size={20} gap={0} /></span>
           <span data-asbob-nom="">{a.label}</span>
         </button>
       ))}
-      <label data-asbob="bazis" title={t('bazis.yuklash')} aria-busy={!!v.bazisYuk} className="h3" style={{ ...TUGMA(false), cursor: v.bazisYuk ? 'progress' : 'pointer', opacity: v.bazisYuk ? 0.6 : 1 }}>
+      {v.oddiy ? null : <label data-asbob="bazis" title={t('bazis.yuklash')} aria-busy={!!v.bazisYuk} className="h3" style={{ ...TUGMA(false), cursor: v.bazisYuk ? 'progress' : 'pointer', opacity: v.bazisYuk ? 0.6 : 1 }}>
         <Ikon n="bazis" size={20} gap={0} />
         <span data-asbob-nom="">{t('asbob.bazis')}</span>
         <input type="file" accept=".b3d,.fr3d,.bpj" disabled={!!v.bazisYuk} onChange={bazisYukla} style={{ display: 'none' }} />
-      </label>
+      </label>}
       {/* telefonda — sarlavhadagi "Loyihalar" o'rnida (sarlavha tor) */}
       <button onClick={goProjects} data-asbob="loyihalar" data-faqat-tel="" title={t('qadam.loyihalar')} className="h3" style={TUGMA(false)}>
         <Ikon n="papka" size={20} gap={0} />
