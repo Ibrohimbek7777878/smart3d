@@ -49,6 +49,8 @@ function installQA() {
     },
     /** TZ-23: 3D sahna (kamera, ko'rinish) — brauzer testlari uchun */
     get sahna() { return scene.sahna; },
+    /** bekor qilish / qaytarish: qadamlar soni { bekor, qayta } (store/bekor.js) */
+    get tarix() { return project.tarix.holat(); },
     nestCfg: () => project.nestCfg(),
     projectPayload: () => project.payload()
   };

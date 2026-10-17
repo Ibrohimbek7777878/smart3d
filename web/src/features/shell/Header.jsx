@@ -2,6 +2,7 @@ import React from 'react';
 import { t } from '../../i18n/index.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 import { useHeader } from './useHeader.js';
+import BekorTugmalar from '../editor/BekorTugmalar.jsx';
 
 /* TZ-19: sarlavha — JSX va stillar tasdiqlangan dizayndan; qiymatlar useHeader() dan. */
 export default function Header() {
@@ -37,6 +38,8 @@ export default function Header() {
             <Ikon n={v.save?.ikon} size={20} gap={0} />
           </span>
         </>) : null}
+        {/* bekor qilish / qaytarish (dizaynda yo'q) — kompyuterda shu yerda, telefonda 3D ustidagi qatorda (BekorTugmalar.jsx) */}
+        <BekorTugmalar joy="sarlavha" />
       </>) : null}
       <div style={{"marginLeft":"auto","display":"flex","alignItems":"center","gap":"8px"}}>
         {v.isEditor ? (<>

@@ -4,7 +4,8 @@ import {
   ChevronDown, ChevronUp, X, Check, TriangleAlert, FileSpreadsheet, Printer, FolderOpen, Settings, Cloud, CloudCheck, CloudOff,
   Glasses, Search, Pencil, Globe, Eye, EyeOff, ChefHat, Bed, Plus, Minus, Square, ArrowUpRight, Menu, LayoutTemplate, FileBox,
   Box, PanelTop, PanelLeft, PanelRight, Maximize, ZoomIn, ZoomOut, Ruler, Layers, Orbit, Footprints, Scan, ScanEye, Sun, Palette, Wrench, Archive,
-  MousePointer2, BrickWall, AppWindow, SquareDashed, Armchair, PencilRuler, Calculator, Library, CornerDownLeft, PackageCheck
+  MousePointer2, BrickWall, AppWindow, SquareDashed, Armchair, PencilRuler, Calculator, Library, CornerDownLeft, PackageCheck,
+  Undo2, Redo2
 } from 'lucide-react';
 
 /* TZ-19 §4 (egasi qarori): emoji o'rniga SVG ikonlar — lucide-react 1.49.0 (ISC), faqat ishlatilganlari build'ga kiradi.
@@ -49,7 +50,9 @@ export const IK = {
   material: Palette, furnitura: Wrench, qoldiq: Archive,
   /* TZ-25: ish joyi asboblari */
   tanlash: MousePointer2, devor: BrickWall, deraza: AppWindow, xona: SquareDashed, mebel: Armchair, modulChizish: PencilRuler,
-  narx: Calculator, kutubxona: Library, yuborish: CornerDownLeft, pShakl: PShakl, buyurtma: PackageCheck
+  narx: Calculator, kutubxona: Library, yuborish: CornerDownLeft, pShakl: PShakl, buyurtma: PackageCheck,
+  /* bekor qilish / qaytarish (sarlavha) */
+  bekorQil: Undo2, qaytarish: Redo2
 };
 
 /** <Ikon n="rasm" /> — matn yonida (o'ngida 6px oraliq); gap={0} — yolg'iz yoki flex ichida */

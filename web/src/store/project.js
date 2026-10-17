@@ -10,6 +10,7 @@ import { chizmaUla } from '../services/chizma.js';
 import { report } from '../shared/lib/jurnal.js';
 import { xato } from './ui.js';
 import { t } from '../i18n/index.js';
+import { createTarix } from './bekor.js';
 
 /* TZ-19: loyiha modeli — ochiq loyiha hujjati (doc), hisob dvigateli (H) va oxirgi hisob natijasi (res).
  * doc — dvigatel o'zi o'zgartiradigan obyekt (eski sayt bilan bir xil shakl), shuning uchun holatda emas, shu yerda turadi.
@@ -18,6 +19,16 @@ import { t } from '../i18n/index.js';
 const docListeners = new Set();
 const recalcListeners = new Set();
 let recalcTimer = 0;
+const J = (v) => JSON.stringify(v === undefined ? null : v);
+const MAT = ['matCode', 'fasadCode', 'polkaCode', 'orqaCode', 'stolCode', 'sheet'];   // loyiha materiallari — tarix suratida
+
+/* Bekor qilish / qaytarish (store/bekor.js): surat — hujjat va loyiha materiallari; modul chizish ochiq — bitta qadam */
+const tarix = createTarix({
+  surat: () => { const p = get().project; return { doc: project.doc, m: MAT.map(k => p[k] == null ? null : p[k]) }; },
+  qoy: (o) => project.suratQoy(o),
+  guruh: () => { const c = get().chizish; return c && c.ochiq ? 'chizish:' + c.kod : null; },
+  onChange: (h) => set('tarix', h)
+});
 
 export const project = {
   doc: L.newDoc(),
@@ -56,7 +67,19 @@ export const project = {
   changed(kind, now) {
     if (this.H) docListeners.forEach(f => f(kind));
     set('project', s => ({ docV: s.docV + 1 }));
+    tarix.yoz();                                   // bekor qilish tarixi: farq bo'lsa — bitta qadam
     this.scheduleRecalc(now);
+  },
+  tarix,
+  /** bekor qilish / qaytarish: suratdagi hujjat va materiallar; xona o'zgargan bo'lsa — devorlar ham qayta chiziladi */
+  suratQoy(o) {
+    const d = o.doc, eski = this.doc;
+    const xona = J(d.room && d.room.outline) !== J(eski.room && eski.room.outline) || (d.maydon || 'devorli') !== (eski.maydon || 'devorli');
+    const devor = !xona && J(d.room) !== J(eski.room);
+    this.doc = d;
+    set('project', Object.fromEntries(MAT.map((k, i) => [k, o.m[i] == null ? null : o.m[i]])));
+    this.bazisUla();
+    this.changed(xona ? 'room' : devor ? 'devor' : 'items', true);
   },
   scheduleRecalc(now) {
     clearTimeout(recalcTimer);
@@ -73,7 +96,7 @@ export const project = {
   },
 
   /** yangi hujjat: bo'sh yoki namuna bilan */
-  reset(doc) { this.doc = doc || L.newDoc(); eskiKodlar(this.doc); this.bazisUla(); },   // eski katalog kodlari — yangisiga
+  reset(doc, yangi) { this.doc = doc || L.newDoc(); eskiKodlar(this.doc); this.bazisUla(); if (!doc || yangi) tarix.tozala(); },   // eski katalog kodlari — yangisiga; yangi loyiha — tarix bo'sh (AI qurish, shablon — bitta qadam)
   /** TZ-21: Bazis'dan yuklangan loyiha — o'z fragmenti va materiallari hisob bazasiga (katalog ro'yxatida ko'rinmaydi) */
   bazisUla() {
     if (this.H && this.doc) erpUla(this.H, this.doc);     // TZ-23 E: loyihada tanlangan ERP plitalari (material kodlari)
@@ -100,6 +123,7 @@ export const project = {
       }
     }
     this.doc = doc;
+    tarix.tozala();                                // yangi loyiha — bekor qilish tarixi bo'sh
   },
 
   /** saqlanadigan loyiha fayli — eski buildProjectPayload bilan bir xil shakl (eski sayt ham ocha oladi) */
@@ -114,6 +138,7 @@ export const project = {
   apply(p, meta) {
     if (!p || !p.doc) return;
     this.doc = p.doc;
+    tarix.tozala();                                // boshqa loyiha ochildi — bekor qilish tarixi bo'sh
     if (!this.doc.kitchen) this.doc.kitchen = L.freshKitchen();
     this.bazisUla();
     set('project', { client: p.client || (meta && meta.client) || '', name: p.name || t('umumiy.loyiha'), matCode: p.material || 'LDSP18', fasadCode: p.fasad || 'MDF16', polkaCode: p.polka || null, orqaCode: p.orqa || null, stolCode: p.stol || null, sheet: p.sheet || null });   // polka yo'q (eski loyiha) — korpus bilan bir xil, narxi o'zgarmaydi

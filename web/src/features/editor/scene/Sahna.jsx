@@ -9,6 +9,7 @@ import KorinishPanel from './KorinishPanel.jsx';
 import { useTor } from '../../../shared/lib/useTor.js';
 import ChizmaQatlam from '../ishjoyi/ChizmaQatlam.jsx';
 import TeshikPalitra from '../ishjoyi/TeshikPalitra.jsx';
+import BekorTugmalar from '../BekorTugmalar.jsx';
 
 /* TZ-19: muharrir sahnasi — 3D/2D, asboblar paneli, maslahat, modul va detal kartalari.
  * JSX va stillar tasdiqlangan dizayndan; qiymatlar useSahnaView() dan.
@@ -28,6 +29,7 @@ export default function Sahna() {
         </div>
       </>) : null}
       <div style={{"position":"absolute","left":"12px","right":"12px","top":"12px","zIndex":"3","display":"flex","flexWrap":"wrap","gap":"8px","pointerEvents":"none"}}>
+        <BekorTugmalar joy="sahna" />{/* telefonda: bekor qilish / qaytarish (kompyuterda — sarlavhada) */}
         <div style={{"display":"flex","padding":"4px","gap":"4px","borderRadius":"14px","background":"rgba(23,50,57,.9)","border":"1px solid var(--line)","pointerEvents":"auto"}}>
           <button onClick={v.set2D} style={{"height":"36px","padding":"0 14px","borderRadius":"10px","border":"0","background":v.vw?.b2,"color":v.vw?.t2,"fontWeight":"800","fontSize":"14px","cursor":"pointer"}}>
             {"2D"}
