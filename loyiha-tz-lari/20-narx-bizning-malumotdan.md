@@ -1,8 +1,83 @@
 # TZ-20 — Narx faqat bizning ma'lumotdan (admin "Narxlar" sahifasi)
 
-**Sana:** 2026-10-16 · **Navbat:** 20 · **Holat:** PAUZA (egasi, 2026-10-16: "hozir narxni qo'yib turamiz")
+**Sana:** 2026-10-16 · **Navbat:** 20 · **Holat:** QAYTA YOZILDI 2026-10-17 (egasi #138: "narx eng kamida 95% aniq bo'lishi kerak") — savollar javobi va "boshla" kutilmoqda
 **Asos:** egasi (2026-10-16, muharrir skrinshoti bilan): "bu yerdagi narx bizning datalar asosida chiqarib berish kerak".
 **Bog'liq:** TZ-04 (narx jadvali + import vositasi), TZ-14 (admin sahifa namunasi), TZ-21 (Bazis faylidan smeta shu narxlardan oladi).
+
+## 2026-10-17 — qayta ko'rib chiqish (#138: narx kamida 95% aniq)
+
+### O'lchov: 22 ta haqiqiy buyurtma (sexning GibLab natijasi bor)
+Bazis fayli → bizning kesim va raskroy ↔ sex GibLab'da kesgani. Sex kesgan materiallar: korpus LDSP va HDF. Fasad (MDF, akril) va stoleshnitsa sexda kesilmaydi, ular GibLab'da yo'q.
+
+| Nima | Biz | Sex | Xulosa |
+|---|---|---|---|
+| Kromka, metr | Bazis va GibLab bir versiya bo'lgan 8 buyurtmadan 6 tasida ±1% | — | ✅ aniq |
+| LDSP listlari — o'sha 8 buyurtma (detal maydoni ±6% bir xil) | 34 list | 23,5 list | ❌ biz +44% |
+| Teshiklar (prisadka) — Bazis faylidan ochilgan loyiha | 0 | 22 buyurtmada 10 674 ta | ❌ narxga kirmaydi |
+| Furnitura | 67 tur ERP'ga bog'lanmagan | — | ❌ narxga kirmaydi |
+| Raspil, kromka urish, prisadka stavkasi | kodda taxmin | sexning xizmat narxlari bor (paket `04_xizmat_narxlari`) | ❌ almashtiriladi |
+
+**Eng katta xato — listlar soni.** Bitta list LDSP — bir necha yuz ming so'm, shuning uchun bitta ortiqcha list narxni sezilarli buzadi. Sabablari (tekshirilgan):
+1. **Arra qalinligi (4 mm) har detaldan keyin qo'shiladi.** Faqat detallar orasida bo'lishi kerak.
+   - Misol, 3646: eni 600 mm li 9 ta detal. 1830 li listning eniga 3 tasi sig'adi (600×3 + 4×2 = 1808 ≤ 1810), lekin bizda faqat 2 tasi sig'yapti.
+   - Natija: bizda 5 list, sexda 2 ta. Shu xatoning o'zi tuzatilsa — 3 list.
+2. **Tekstura cheklovi oddiy dekorga ham qo'yilgan.** "Белый гладкий"da yo'nalish yo'q, sex detallarni aylantiradi.
+3. **List formati.** Sex 2750×1830 (5,0325) ishlatgan, Bazis'da 2500×1830 (4,575) yozilgan. Bizda Bazis'dagisi olinadi.
+4. **Sex qoldiqdan ham kesadi.** Masalan 4034 da 10 ta qoldiq bo'lagi ishlatilgan.
+5. **Joylashtirish algoritmi GibLab'dan kuchsizroq.** Sexda listning to'lishi o'rtacha 85–93%.
+
+### Narx manbalari (paket 2026-10-16 — endi bor)
+- **Raspil, list boshiga:** Altendorf 1/2/3 = 18 000 / 33 000 / 38 000; Holzma 1/2/3 = 25 000 / 43 000 / 48 000. Stoleshnitsa — 10 000.
+- **Kromka urish, metr boshiga (lenta bilan):** ПВХ 19/1 прямая 4 000, 19/2 прямая 4 900, 21/04 прямая 3 300, 21/1 глянцевая прямая 4 800 va boshqalar (150 qator).
+  - "Ташкаридан" — arzonroq, "овальная" — qimmatroq.
+- **Prisadka, dona boshiga:** ЕВРО 1 600, ЕВРО 2 1 200, ПЕТЛЕ 900, ПОЛКАДЕРЖАТЕЛ 800, РУЧКА 800, ШКАНТ 800, ЭКСЦЕНТРИК 1 400, МЕТКА 300, Паз 4 000.
+- **Plita** — ERP katalogi. **Furnitura** — `Materiallar_va_narxlar.xlsx`: 3 140 qator, 1 019 tasida narx bor.
+- **Paketda yo'q:**
+  - yig'ish (ish haqi) — sex xizmatlarida yo'q;
+  - ustama foizi.
+
+### Bajariladigan ishlar (yangi tartib)
+1. **Raskroy:**
+   - arra qalinligi faqat detallar orasida;
+   - oddiy dekor aylantiriladi, yo'nalish faqat tekstura bo'lsa saqlanadi;
+   - shu dekorning ERP'dagi eng mos list formati tanlanadi;
+   - bir necha tartibda joylab, eng kam list olinadi.
+   - **Maqsad:** 8 ta bir xil versiyali buyurtmada list soni sexdagidan ko'pi bilan +5%.
+2. **Xizmat narxlari** — sexning xizmat jadvalidan, qatorida manba va sana: raspil (list boshiga), kromka (lenta turi bo'yicha metr), prisadka (teshik turi bo'yicha dona).
+3. **Bazis faylidan ochilgan loyihada teshiklar** Bazis mahkamlagichlaridan hisoblanadi:
+   - konfirmat → ЕВРО, petlya → ПЕТЛЕ, polka → ПОЛКАДЕРЖАТЕЛ, shkant, eksentrik;
+   - soni sex KDT fayllari bilan solishtiriladi.
+4. **Furnitura** — Bazis nomi → ERP mahsuloti. Har biriga 3 ta taklif, admin tasdiqlaydi.
+5. **"* to'liq emas" o'rniga "Narx aniqligi X%"** — jami summaning qancha qismi tasdiqlangan manbadan.
+6. **Admin "Narxlar" bo'limi** — avvalgi rejadagidek (1-band, pastda).
+7. **O'lchov testi** `tests/verify_narx_aniqlik.mjs` (paket bo'lmasa — o'tkazib yuboriladi): har buyurtmada bir xil narx jadvali bilan ikki summa solishtiriladi:
+   - bizning miqdorlar;
+   - sexning GibLab miqdorlari (list, kromka, teshik).
+
+### Qabul (yangi)
+- **22 buyurtmada narx aniqligi:** o'rtacha ≥ 95%, har biri ≥ 90%.
+  - Aniqlik = 1 − |biz − sex| / sex.
+  - Fasad va stoleshnitsa hisobga olinmaydi — sexda kesilmaydi.
+- Narx panelida "Narx aniqligi X%" chiqadi.
+- Hamma testlar yashil.
+
+### Xavf va moliya
+- **Xavf: O'RTA** — barcha narxlar o'zgaradi.
+- Sinov oshxonasida "eski → yangi" ko'rsatiladi, siz tasdiqlaysiz.
+- Narx o'ylab topilmaydi (4.3). ERP'ga yozilmaydi. Pul harakati yo'q.
+
+### Savollar (2026-10-17)
+1. **Raspil:** Altendorf / Holzma 1, 2, 3 nimani bildiradi (material turi, qalinlik yoki detal soni)? Usta loyihasiga qaysi biri qo'yiladi?
+2. **Kromka (sukut bo'yicha):**
+   - korpus — ПВХ 19/1 прямая (4 000/m)?
+   - fasad — 21/1 (yoki 22/0,8)?
+   - "Ташкаридан" — mijozning o'z lentasi, shundaymi?
+3. **List:**
+   - material butun list bo'yicha sotiladimi yoki ishlatilgan maydon bo'yicha?
+   - qoldiq narxga ta'sir qiladimi?
+4. **Yig'ish (ish haqi):** narxga kiradimi? Kirsa — stavka (detal yoki modul boshiga)?
+5. **Ustama:** 35% qoladimi?
+6. **"Boshla"** — shu tartibda.
 
 ---
 

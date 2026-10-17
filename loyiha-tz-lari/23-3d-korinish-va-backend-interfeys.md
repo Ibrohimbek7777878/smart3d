@@ -1,13 +1,13 @@
 # TZ-23 — 3D ko'rinish Bazis-Cloud darajasida (erkin aylantirish, ko'rinish rejimlari), rang va material tanlash, backend funksiyalari interfeysda
 
-**Sana:** 2026-10-16 · **Navbat:** 23 · **Holat:** BAJARILDI 2026-10-16 (egasi #119-8: "boshla"), C1 dan tashqari
+**Sana:** 2026-10-16 · **Navbat:** 23 · **Holat:** BAJARILDI 2026-10-16 (egasi #119-8: "boshla"); C1 — 2026-10-17 (egasi #138)
 - **Bajarildi** (`dizayn` tarmog'i):
   - A1–A4, A6 va D — 53e058d;
   - E — c248785;
   - A5 va B — 5c9a431;
   - C2 va C3 — 570cbc3;
-  - C4 — b0685f3.
-- **Pauza:** C1 (buyurtma) — egasi: "ko'rib chiqamiz".
+  - C4 — b0685f3;
+  - C1 (buyurtma) — 00777fc (egasi #138: "buyurtma berish tugmasini qo'sh"). Natija — oxirida, "C1 natija" bo'limida.
 - **Kutilmoqda:**
   - "parolsiz email bilan kirish" (#119-3) — usul tanlovi egasidan;
   - yangi oynalar skrinshoti (3.3).
@@ -266,3 +266,25 @@ Bu taxmin, aniq hisob emas.
 - Sichqoncha va barmoq bilan aylantirganda rasm uzluksiz ergashadi.
 - G'ildirak bilan yaqinlashtirish va siljitish ham uzluksiz.
 - Yangi test va barcha testlar yashil.
+
+## C1 natija (2026-10-17, egasi #138) — BAJARILDI (`dizayn` 00777fc)
+- **Narx panelida "Buyurtma berish"** (52px, `--acc` chegara, ikon) → "Sexga buyurtma" varag'i:
+  - loyiha nomi, modul soni va summa;
+  - mijoz ismi, telefon (+998, 9 raqam — S1), izoh (ixtiyoriy).
+  - Ism yoki telefon bo'lmasa — yuborilmaydi, sababi yoziladi.
+- **Server** (`server/index.js`, "BUYURTMALAR"):
+  - `POST /api/orders` — to'liq loyiha bilan (sex shu bilan ishlaydi): loyiha saqlashdagi tekshiruv, faqat o'z loyihasi, telefon 998XXXXXXXXX;
+  - `GET /api/orders`, `GET /api/orders/:id` — usta o'z buyurtmalari;
+  - `GET /api/admin/orders`, `PUT /api/admin/orders/:id` — admin: hammasi (usta bilan), holat yangi → qabul → ishlab → tayyor | bekor;
+  - jurnal: S3D-ORD-100 (yangi), S3D-ORD-102 (holat); xato: S3D-ORD-001 (holat noto'g'ri), S3D-ORD-101 (yuborilmadi);
+  - admin Telegram'i ulangan bo'lsa (TZ-16) — "Yangi buyurtma №…" xabari.
+  - Pul harakati yo'q (5.1): summa — ma'lumot.
+- **"Loyihalarim" → "Buyurtmalarim"** — №, loyiha, mijoz, modul, sana, summa, holat belgisi.
+- **Admin — Sozlamalar tepasida "Buyurtmalar"** — holatni ro'yxatdan tanlaydi; 10 tadan ko'rsatiladi ("Yana ko'rsatish").
+- **3 tilda** (uz, ru, en).
+- **Testlar:**
+  - server `buyurtma.test.js` (2);
+  - web `web_buyurtma` — yuborish, server ma'lumoti, usta ro'yxati, admin holati, telefon 390;
+  - jami: node yashil, server 73/73, web 27 to'plam yashil.
+- **Skrinshotlar** (3.3, ko'rib chiqish uchun): `tests/ui/out/web/buyurtma-1440-varaq.png`, `buyurtma-390-varaq.png`, `buyurtma-1440-loyihalar.png`, `buyurtma-1440-admin.png`.
+
