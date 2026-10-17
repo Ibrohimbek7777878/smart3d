@@ -99,7 +99,11 @@ async function asosiy(page, R) {
   /* 5) fayl — bot chatiga */
   await page.locator('main button.h2').first().click(); await page.waitForTimeout(1500);
   await until(() => window.__app.res && window.__app.res.priceRes, 15000);
-  await page.locator('[data-asbob="fayllar"]').click().catch(() => {});
+  /* Telegram mini-app'da sukut Oddiy rejim (mijoz): 4 qadam, "Fayllar" yo'q (oddiy/rejim.js, ishjoyi.js) — fayl usta ishi,
+   * shuning uchun foydalanuvchi "Usta" tugmasini bosadi (haqiqiy yo'l), so'ng Fayllar ochiladi */
+  R.oddiySukut = await M(() => !!document.querySelector('[data-rejim-tugma="oddiy"][aria-pressed="true"]') && !document.querySelector('[data-asbob="fayllar"]'));
+  await page.locator('[data-rejim-tugma="usta"]').click(); await page.waitForTimeout(500);
+  await page.locator('[data-asbob="fayllar"]').click();
   await page.waitForTimeout(800);
   await page.locator('[data-panel] button', { hasText: 'Excel smeta' }).first().click();
   R.toast = await until(() => { const t = document.body.innerText; return /Telegram chatga yuborildi/.test(t) ? 'ok' : (/S3D-TG-\d+/.exec(t) || [])[0]; }, 15000);
@@ -110,6 +114,6 @@ async function asosiy(page, R) {
   R.errs = errs;
   R.ok = R.oddiy.skript === 0 && R.oddiy.forma && R.kutish && R.formaYoq && R.kirdi && R.tg.ready && R.tg.expand && R.tg.header === '#0F2229' &&
     R.tg.bg === '#0F2229' && R.tg.swipes === false && R.kalitYoq && R.user && R.user.telegram && R.user.name === 'Telegram Usta' &&
-    R.raqamSoraldi && R.webhook === 200 && R.raqam === tel && R.saqlandi && R.orqaKorindi && R.loyihalar && R.orqaYashirindi &&
+    R.raqamSoraldi && R.webhook === 200 && R.raqam === tel && R.oddiySukut && R.saqlandi && R.orqaKorindi && R.loyihalar && R.orqaYashirindi &&
     R.toast === 'ok' && R.hujjat.length === 1 && R.hujjat[0].chat && /-smeta\.xlsx$/.test(R.hujjat[0].nom) && errs.length === 0;
 }

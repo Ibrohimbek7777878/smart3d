@@ -85,6 +85,22 @@ ok('prisadka: konfirmat 10 × 1600, polka 8 × 800 (tur bo\'yicha)', hl('konfirm
 ok('bog\'lanmagan tur (hinge) — materials.json, taxmin', hl('hinge').amount === 4 * 1500 && !hl('hinge').tasdiq && pp.taxminiy.includes('Prisadka'));
 const pOff = productionCost([bz], mats, { stavka: Sp });
 ok('prisadka tanlanmagan (S3) — taklif summasi stavkadan', pOff.xizmat_taklif.teshik.amount === 16000 + 6400 + 6000 && pOff.holeCost === 0);
+/* D6 teshiklari (d6.js): egasining petlya/hinge va eksentrik/cam tanlovi d6_kosa va d6_eksentrik ga ham o'tadi */
+const d6 = { parts: [{ length: 500, width: 300, material: 'LDSP16', qty: 1 }], edges: [], hardware: [],
+  holes: [{ kind: 'd6_kosa', qty: 2, nusxa: 1 }, { kind: 'd6_eksentrik', qty: 4, nusxa: 1 }, { kind: 'd6_eks_qirra', qty: 4, nusxa: 1 }, { kind: 'd6_eks_bolt', qty: 4, nusxa: 1 }] };
+const hd = (St) => { const r = productionCost([d6], mats, { stavka: St, xizmatlar: { teshik: true } }); return (k) => r.lines.find(l => l.code === 'hole:' + k) || {}; };
+const d0 = hd(Sp);
+ok('D6: stavkasiz — avvalgidek (kosa 1500 hinge, eksentrik 800 cam)', d0('d6_kosa').unit_price === 1500 && d0('d6_eksentrik').unit_price === 800 && !d0('d6_kosa').tasdiq);
+const dh = hd(qolla(Sp, { xizmatlar: { H9: { ...TEST_X.P1, nom: 'Petlya (test)', qiymat: 900 } }, tanlov: { prisadka: { hinge: 'H9' } } }));
+ok('D6: hinge stavkasi → d6_kosa narxi (2 × 900), tasdiqlangan', dh('d6_kosa').amount === 1800 && dh('d6_kosa').tasdiq && dh('d6_eksentrik').unit_price === 800);
+const dp = hd(qolla(Sp, { xizmatlar: { H9: { ...TEST_X.P1, nom: 'Petlya (test)', qiymat: 900 } }, tanlov: { prisadka: { petlya: 'H9' } } }));
+ok('D6: petlya (Bazis) stavkasi ham d6_kosa ga o\'tadi', dp('d6_kosa').unit_price === 900);
+const dc = hd(qolla(Sp, { xizmatlar: { C9: { ...TEST_X.P1, nom: 'Eksentrik (test)', qiymat: 1400 } }, tanlov: { prisadka: { cam: 'C9' } } }));
+ok('D6: cam stavkasi → d6_eksentrik narxi (4 × 1400); qirra/bolt ikki marta sanalmaydi (eskicha)', dc('d6_eksentrik').amount === 5600 && dc('d6_eks_qirra').unit_price !== 1400 && dc('d6_eks_bolt').unit_price !== 1400);
+const dx = hd(qolla(Sp, { xizmatlar: { C9: { ...TEST_X.P1, nom: 'Eksentrik (test)', qiymat: 1400 }, K9: { ...TEST_X.P1, nom: 'Kosa (test)', qiymat: 1000 } }, tanlov: { prisadka: { cam: 'C9', eksentrik: 'C9', d6_kosa: 'K9', hinge: 'C9' } } }));
+ok('D6: o\'z qatori (d6_kosa) umumiy hinge dan ustun', dx('d6_kosa').unit_price === 1000);
+const dq = hd(qolla(Sp, { xizmatlar: { Q9: { ...TEST_X.P1, nom: 'Qirra (test)', qiymat: 700 } }, tanlov: { prisadka: { d6_eks_qirra: 'Q9' } } }));
+ok('D6: d6_eks_qirra alohida tanlansa — tanlov narxi', dq('d6_eks_qirra').unit_price === 700);
 /* ish haqi va ustama */
 const Si = qolla(S, { ish_haqi: { yoqilgan: false } });
 ok('ish haqi o\'chirilsa — 0, qator yo\'q', hisob(Si).laborCost === 0 && !hisob(Si).lines.some(l => l.group === 'Ish haqi'));
@@ -102,6 +118,9 @@ const toza = cls.map(cl => Object.assign({}, cl, { hardware: [] }));
 const Sall = qolla(S, { ish_haqi: { detal: 12000, modul: 40000 }, ustama: { foiz: 35 } });
 const pA = productionCost(toza, mats, Object.assign({}, OPT, { stavka: Sall }));
 ok(`hammasi tasdiqlangan → 100% (${pA.aniqlik.pct}%)`, pA.aniqlik.pct === 100 && pA.aniqlik.taxmin.length === 0 && pA.aniqlik.tasdiqlangan === pA.clientTotal, JSON.stringify(pA.aniqlik.taxmin.slice(0, 3)));
+const narxsizQator = toza.map(cl => Object.assign({}, cl, { hardware: [{ code: 'YOQ-FURNITURA-X', qty: 1, name: 'Narxsiz furnitura' }] }));
+const pN = productionCost(narxsizQator, mats, Object.assign({}, OPT, { stavka: Sall }));
+ok(`narxsiz qator bor → aniqlik 100% emas (${pN.aniqlik.pct}%), soni ko'rsatiladi (${pN.aniqlik.narxsiz})`, pN.aniqlik.narxsiz > 0 && pN.aniqlik.pct === 99 && pA.aniqlik.pct === 100);
 const pB = productionCost(toza, mats, Object.assign({}, OPT, { stavka: qolla(Sall, { ish_haqi: { detal: 12000 } }) }));
 const Sm = JSON.parse(JSON.stringify(Sall)); Sm.ish_haqi.modul.manba = 'taxmin';
 const pM = productionCost(toza, mats, Object.assign({}, OPT, { stavka: Sm }));
@@ -150,6 +169,20 @@ else {
   console.log('      + ish haqi o\'chiq, ustama 35% egasi deb: ' + qisqa(pT2));
   ok('sex jadvali stavkalari bilan aniqlik oshdi', pT.aniqlik.pct > p0.aniqlik.pct && pT2.aniqlik.pct >= pT.aniqlik.pct);
 }
+
+/* scripts/smeta_hisob.mjs web hisobi (createHisob().recalc) bilan bir xil yo'ldan yursin: stoleshnitsa LDSP listidan emas, tanlangan standartdan */
+console.log('\n[7] scripts/smeta_hisob.mjs — web hisob bilan bir xil');
+const { natija } = await import('../scripts/smeta_hisob.mjs');
+const { createHisob, loadData } = await import('../web/src/services/hisob.js');
+const Hh = createHisob(await loadData((nom) => Promise.resolve(J(nom))));
+const docT = { room: { outline: [[0, 0], [3000, 0], [3000, 2500], [0, 2500]], wall_height: 2700, openings: [] }, placements: [], kitchen: { stoleshnitsa: true, sokol: true, dobor: false, karniz: false, moyka: { on: false } } };
+let xx = 50; const cat = Hh.catalog;
+for (const [c, w] of [['MC-KP-08', 600], ['MC-KP-11', 400], ['MC-KP-02', 600], ['MC-KP-04', 450]]) { docT.placements.push({ id: 'p' + docT.placements.length, frg: c, x: xx, y: 50, z: 0, w, d: cat[c].d, h: cat[c].h, rot: 0 }); xx += w; }
+xx = 50;
+for (const [c, w] of [['MC-KU-04', 600], ['MC-KU-07', 600], ['MC-KU-03', 300]]) { docT.placements.push({ id: 'u' + docT.placements.length, frg: c, x: xx, y: 50, z: 1450, w, d: cat[c].d, h: cat[c].h, rot: 0 }); xx += w; }
+const rw = Hh.recalc(docT, { materialCode: 'LDSP16', fasadCode: 'LDSP16' });
+ok(`skript = web hisob: mijoz ${natija.mijoz}, narxsiz ${natija.narxsiz}`, natija.mijoz === rw.prod.clientTotal && natija.tannarx === rw.prod.totalCost && natija.narxsiz === rw.prod.missing.length);
+ok('stoleshnitsa (STOL26-3050) narxsiz — LDSP listidan narxlanmaydi', natija.narxsizlar.includes('STOL26-3050') && natija.aniqlik <= 99);
 
 console.log(`\n=== ${fails ? 'XATO' : 'HAMMASI OK'} (${n - fails} pass, ${fails} fail) ===`);
 process.exit(fails ? 1 : 0);

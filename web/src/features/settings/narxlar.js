@@ -125,7 +125,7 @@ export function useNarxlar() {
   });
   /* prisadka — teshik turi bo'yicha */
   const hk = Object.fromEntries((mats.hole_kinds || []).map(h => [h.code, h]));
-  const BAZIS_KIND = { konfirmat_yuza: 'drill', konfirmat_qirra: 'drill', petlya: 'hinge', polka: 'drill', ruchka: 'drill', shkant: 'dowel', eksentrik: 'cam', belgi: 'mark', d6_kosa: 'hinge' };
+  const BAZIS_KIND = { konfirmat_yuza: 'drill', konfirmat_qirra: 'drill', petlya: 'hinge', polka: 'drill', ruchka: 'drill', shkant: 'dowel', eksentrik: 'cam', belgi: 'mark', d6_kosa: 'hinge', d6_eksentrik: 'cam' };
   const prisadka = TESHIK_TURLARI.map(k => {
     const kod = (N.tanlov.prisadka || {})[k] || '';
     const m = hk[k] || hk[BAZIS_KIND[k]] || null;

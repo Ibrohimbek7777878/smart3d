@@ -716,7 +716,10 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   const tasdiqSum = ustTasdiq ? Math.round(tasdiqCost * (1 + markup)) : tasdiqCost;
   const aniqTaxmin = lines.filter(l => !l.tasdiq && !l.info && l.amount > 0).map(l => ({ group: l.group, code: l.code, name: l.name, amount: l.amount, manba: l.manba || 'taxmin' }));
   if (!ustTasdiq && clientTotal > totalCost) aniqTaxmin.push({ group: 'Ustama', code: 'ustama', name: 'Ustama ' + Math.round(markup * 1000) / 10 + '%', amount: clientTotal - totalCost, manba: markupManba });
-  const aniqlik = { pct: clientTotal > 0 ? Math.min(100, Math.floor(tasdiqSum / clientTotal * 100 + 1e-9)) : null,
+  /* Narxsiz qator summaga kirmaydi, lekin uning haqiqiy narxi noma'lum — shuning uchun jami "to'liq" emas: narxsiz qator bor
+     ekan aniqlik 100% bo'lmaydi (99% da to'xtaydi) va narxsiz qatorlar soni alohida ko'rsatiladi. */
+  const pctMax = missing.length > 0 ? 99 : 100;
+  const aniqlik = { pct: clientTotal > 0 ? Math.min(pctMax, Math.floor(tasdiqSum / clientTotal * 100 + 1e-9)) : null,
     tasdiqlangan: tasdiqSum, jami: clientTotal, taxmin: aniqTaxmin, narxsiz: missing.length, ustama_manba: markupManba };
 
   /* Modullar bo'yicha taqsimot (kotirovka satrlari): plita — modul detallari maydoni
