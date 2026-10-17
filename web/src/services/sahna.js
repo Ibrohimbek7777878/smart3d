@@ -10,6 +10,7 @@ import { createItems } from '../../../app/js/items.js';
 import { s3Mats } from '../shared/design3d/engine.js';
 import { isUstki } from './loyiha.js';
 import { createKorinish } from './korinish.js';
+import { belgiGuruh, belgiQism, belgiTozala } from './belgi3d.js';
 
 export const DIZAYN_RANG = {
   bg: 0x0C1C22, wall3D: 0x22424A, wallSide: 0x1C3940, floor: 0x14292F,
@@ -82,7 +83,7 @@ export function dizaynMavzu() {
 }
 
 /** Sahna: host — dizayndagi roomHost div. o: { catalog, getPlacements, getRoom (eshik burchaklari, TZ-22), onSelect, onDrag, onDragEnd,
- *  cheklov (surish qoidalari, #151), onRotate, onRotateEnd, onTap } */
+ *  cheklov (surish qoidalari, #151), onRotate, onRotateEnd, onTap, getTeshik (egasi #167: joy id → teshik3d() natijasi | null) } */
 export function createSahna(host, o) {
   const theme = dizaynMavzu();
   const sp = createScene(host, { mode: '3d', theme, insetTop: 72 });   // 72 px — dizayndagi toolbar
@@ -96,10 +97,39 @@ export function createSahna(host, o) {
     onSelect: o.onSelect, onDragEnd: o.onDragEnd, cheklov: o.cheklov, onRotate: o.onRotate, onRotateEnd: o.onRotateEnd, onTap: o.onTap
   });
   korinish = createKorinish({ sp, ctl }, host);           // TZ-23: kamera, yo'nalish, chizish rejimlari, o'lchash
+  /* egasi #167: rentgenda teshik, kromka va zapchast belgilari — har modul guruhining bolasi (surilsa, burilsa — birga);
+     oddiy ko'rinishda yashirin. Modul qayta qurilsa (items.setPlacements) belgi ham u bilan tozalanadi va kerak bo'lsa qayta quriladi */
+  function belgilar(holat) {
+    const on = !!holat.rentgen;
+    for (const m of items.meshes) {
+      let g = m.userData.belgi3d;
+      if (!on) { if (g) g.visible = false; continue; }
+      if (!g) {
+        let dat = null;
+        try { dat = o.getTeshik ? o.getTeshik(m.userData.id) : null; } catch (_) { dat = null; }
+        if (!dat) continue;
+        g = belgiGuruh(THREE, dat);
+        m.add(g); m.userData.belgi3d = g;
+      }
+      g.visible = true;
+      belgiQism(g, holat.belgilar);
+    }
+  }
+  korinish.onQatlam(belgilar);
   const api = {
     sp, items, ctl, korinish,
     setDoc(doc, placements, catalog, o) { sp.setDoc(doc, o); items.setPlacements(placements, catalog); korinish.qollash(); },
     setPlacements(placements, catalog) { items.setPlacements(placements, catalog); korinish.qollash(); },
+    /** egasi #167: kesim ro'yxati yangilandi — belgilar yangi ma'lumotdan qayta quriladi */
+    belgiYangila() {
+      for (const m of items.meshes) if (m.userData.belgi3d) { belgiTozala(m.userData.belgi3d); m.userData.belgi3d = null; }
+      belgilar(korinish.holat); sp._invalidate();
+    },
+    /** belgilar soni (sahnadagi instansiyalar): { teshik, kromka, zapchast } — joy id bo'yicha (testlar) */
+    belgiSoni(id) {
+      const m = items.meshes.find(x => x.userData.id === id), g = m && m.userData.belgi3d;
+      return g ? Object.assign({ korinadi: g.visible }, g.userData.son) : null;
+    },
     select(id) { if (items.getSelected() !== id) items.select(id); },
     setMode(m) { if (sp.mode !== m) { sp.setMode(m); ctl.updateButtons(); } },
     /** ⌖ Markazga — dizayndagi boshlang'ich ko'rinish */

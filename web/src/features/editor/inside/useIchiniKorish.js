@@ -2,7 +2,8 @@ import { useSlice, get, set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { useViewer } from '../../../shared/design3d/useViewer.js';
 import { s3Viewer, s3Mats, s3Build, s3Apply } from '../../../shared/design3d/engine.js';
-import { ichkiSpec } from '../../../services/ichki.js';
+import { ichkiSpec, teshikJoy } from '../../../services/ichki.js';
+import { belgiGuruh } from '../../../services/belgi3d.js';
 import { t, tr } from '../../../i18n/index.js';
 import * as L from '../../../services/loyiha.js';
 
@@ -11,7 +12,9 @@ function specOf(id) {
   const p = project.pl(id), frag = p && project.H && project.H.catalog[p.frg];
   if (!frag) return null;
   const cl = project.res && project.res.cutlists.find(c => c.placementId === id);
-  return ichkiSpec(frag, p.w, p.d, p.h, cl);
+  const spec = ichkiSpec(frag, p.w, p.d, p.h, cl, teshikJoy(project.H, project.res, id, p));   // egasi #167: teshik, kromka, zapchast
+  for (const h of spec.hw) { const n = t('teshik.' + h.name); h.name = n.charAt(0).toUpperCase() + n.slice(1); }
+  return spec;
 }
 
 /* ochilganda: avval yig'ilgan, 0.6 s dan keyin o'zi sochiladi (dizayn); keyin — "Sochish" surgichi bilan */
@@ -20,6 +23,13 @@ function insViewer(spec) {
     const v = s3Viewer(T, h, o); v.columns = true; v.colTop = 80; v.colBot = 90;
     v.pC = new T.Plane(new T.Vector3(0, -1, 0), 0); v.pP = new T.Plane(new T.Vector3(0, 1, 0), 0); v.M = s3Mats(T, [v.pC], [v.pP]);
     const b = s3Build(T, v, spec, false); v.dist *= 1.3;
+    /* egasi #167: har detal guruhida uning teshiklari va kromkasi (sochilganda detal bilan birga yuradi; dizayn o'qlari, metr);
+       WebGL'siz (SVG) — yo'q (InstancedMesh SVG da chizilmaydi), zapchast belgilari (dizayn hw) — bor */
+    spec.parts.forEach((p, i) => {
+      if (v.svg || !p.tk || !b.groups[i] || (!p.tk.tesh.length && !p.tk.krom.length)) return;
+      b.groups[i].add(belgiGuruh(T, { teshiklar: p.tk.tesh, kromkalar: p.tk.krom, zapchast: [] },
+        { xf: (a) => [a[0] / 1000, a[2] / 1000, a[1] / 1000], xd: (a) => [a[0], a[2], a[1]], k: 0.001, minD: 6, minKromka: 2, chiqish: 2.5 }));
+    });
     const a = { color: 1, explode: 0, hw: 0, count: 1 }, t0 = performance.now();
     v.onTick = (dt) => {
       const st = get().ins, age = (performance.now() - t0) / 1000;

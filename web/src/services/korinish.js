@@ -30,7 +30,8 @@ export function createKorinish(sahna, host) {
   const orbit = ctl.orbit;
   const opts = {};
   const el = sp.renderer.domElement;
-  const holat = { kamera: 'orbit', fon: null, chizish: 'boyalgan', rentgen: false, xona: true, fasadsiz: false, olchash: false };
+  const holat = { kamera: 'orbit', fon: null, chizish: 'boyalgan', rentgen: false, xona: true, fasadsiz: false, olchash: false,
+    belgilar: { teshik: true, kromka: true, zapchast: true } };   // egasi #167: rentgenda teshik / kromka / zapchast belgilari
   const qirraMat = new THREE.LineBasicMaterial({ color: 0x15191e, transparent: true, opacity: 0.9 });
   const olchashMat = new THREE.LineBasicMaterial({ color: 0xff7a45, depthTest: false, transparent: true });
   const nuqtaMat = new THREE.MeshBasicMaterial({ color: 0xff7a45, depthTest: false });
@@ -173,6 +174,7 @@ export function createKorinish(sahna, host) {
     effekt(holat.chizish === 'effekt');
     xonaFasad();
     fon();
+    if (opts.qatlam) opts.qatlam(holat);                 // egasi #167: teshik, kromka, zapchast belgilari (services/sahna.js)
     sp._invalidate();
   }
 
@@ -456,12 +458,15 @@ export function createKorinish(sahna, host) {
       if ('xona' in p) holat.xona = !!p.xona;
       if ('fasadsiz' in p) holat.fasadsiz = !!p.fasadsiz;
       if ('olchash' in p) { holat.olchash = !!p.olchash; if (!holat.olchash) olchashTozala(); }
+      if (p.belgilar) holat.belgilar = Object.assign({}, holat.belgilar, p.belgilar);
       qollash();
     },
     qollash, yonalish, zoom, toliqEkran,
     /** #153: devorsiz ko'rinishda maydon faolmi; maydon() — modul surilganda chegarani moslash; maydonQuti — joriy chegara */
     maydonFaol, maydon, get maydonQuti() { return maydonB; },
     onOlcham(fn) { opts.onOlcham = fn; },
+    /** egasi #167: qollash() oxirida chaqiriladi — fn(holat) */
+    onQatlam(fn) { opts.qatlam = fn; },
     get oxirgiOlcham() { return oxirgiOlcham; },
     dispose() {
       yurishChiqish(); olchashTozala();

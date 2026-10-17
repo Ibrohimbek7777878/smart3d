@@ -44,8 +44,15 @@ export default function DetalKarta() {
         <span style={{"color":"var(--mut)"}}>
           {t('sahna.kromka')}
         </span>
-        <span style={{"fontWeight":"700"}}>
+        <span style={{"fontWeight":"700"}} data-detal-kromka="">
           <span className="sc-interp">{v.pt?.edge}</span>
+        </span>
+        {/* egasi #167: teshiklar (soni, tur bo'yicha) — kesim ro'yxatidan; qator uslubi — dizayndagi Kromka qatori */}
+        <span style={{"color":"var(--mut)"}}>
+          {t('sahna.teshiklar')}
+        </span>
+        <span style={{"fontWeight":"700"}} data-detal-teshik="">
+          <span className="sc-interp">{v.pt?.teshik}</span>
         </span>
       </div>
       {v.pt?.isMov ? (<>

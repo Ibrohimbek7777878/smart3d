@@ -9,7 +9,7 @@ import { maydonRejim } from '../../../services/loyiha.js';
 const KALIT = 's3d-korinish';
 /** fon ranglari (Bazis-Cloud'dagidek: oq … qora) — three'siz (muharrirning asosiy bo'lagida) */
 export const FONLAR = { oq: 0xffffff, och: 0xe5e7eb, kulrang: 0x9aa3ae, toq: 0x2b313a, qora: 0x111317 };
-const SAQLANADI = ['fon', 'chizish', 'rentgen', 'xona'];
+const SAQLANADI = ['fon', 'chizish', 'rentgen', 'xona', 'belgilar'];   // egasi #167: belgilar — rentgendagi teshik / kromka / zapchast
 
 function oqi() { try { return JSON.parse(localStorage.getItem(KALIT) || 'null'); } catch (_) { return null; } }
 function yoz() {
@@ -33,14 +33,14 @@ export function korinishBoshla() {
   const s = scene.sahna;
   if (!s) return;
   const bazis = !!(project.doc && project.doc.bazis);
-  const k = Object.assign({ fon: null, chizish: bazis ? 'qirrali' : 'boyalgan', rentgen: false, xona: !bazis }, oqi() || {},
+  const k = Object.assign({ fon: null, chizish: bazis ? 'qirrali' : 'boyalgan', rentgen: false, xona: !bazis, belgilar: { teshik: true, kromka: true, zapchast: true } }, oqi() || {},
     { kamera: 'orbit', fasadsiz: false, olchash: false });
   set('korinish', { ...k, menyu: false, olcham: null });
   s.korinish.onOlcham(mm => set('korinish', { olcham: mm }));
   s.korinish.set(erkinMaydon() ? { ...k, xona: false } : k);
 }
 
-/** qisman o'zgarish: { kamera, fon, chizish, rentgen, xona, fasadsiz, olchash } */
+/** qisman o'zgarish: { kamera, fon, chizish, rentgen, xona, fasadsiz, olchash, belgilar } */
 export function korinishOzgar(p) {
   const s = scene.sahna;
   if (p.olchash === false || p.olchash === true) p = { ...p, olcham: null };
@@ -48,6 +48,8 @@ export function korinishOzgar(p) {
   if (s) s.korinish.set('xona' in p && erkinMaydon() ? { ...p, xona: false } : p);
   yoz();
 }
+/** egasi #167: rentgendagi belgi (teshik | kromka | zapchast) — ko'rsatish / yashirish */
+export const belgiOzgar = (nom) => { const b = get().korinish.belgilar || {}; korinishOzgar({ belgilar: { ...b, [nom]: b[nom] === false } }); };
 export const menyuOchYop = () => set('korinish', k => ({ menyu: !k.menyu }));
 export const menyuYop = () => set('korinish', { menyu: false });
 export const yonalish = (nom) => { const s = scene.sahna; if (s) s.korinish.yonalish(nom); };

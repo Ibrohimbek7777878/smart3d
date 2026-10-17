@@ -2,7 +2,7 @@ import { get, set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { toast, confirm } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
-import { detalKarta, ichiniKorsaBoladi } from '../../../services/ichki.js';
+import { detalKarta, ichiniKorsaBoladi, teshikJoy } from '../../../services/ichki.js';
 import { select } from '../actions.js';
 import { scene, bumpScene } from './sahna.js';
 import { t } from '../../../i18n/index.js';
@@ -21,7 +21,8 @@ export function roomTap(id, part) {
   if (part.key && !it.isOpen(part.key) && !s.part) { it.setOpen([part.key], true); bumpScene(); return; }
   const frag = project.fr(project.pl(id)) || {}, p = get().project;
   const names = { korpus: project.matName(p.matCode), polka: project.matName(p.matCode), fasad: project.matName(p.fasadCode), orqa: project.matName('HDF3') };
-  set('editor', { part: detalKarta(part, frag, names) });
+  const pl = project.pl(id), cl = project.res && project.res.cutlists && project.res.cutlists.find(c => c.placementId === id);
+  set('editor', { part: detalKarta(part, frag, names, { pl, cl, dat: teshikJoy(project.H, project.res, id, pl) }) });   // egasi #167
   it.setFocus(id, part.id);
 }
 
