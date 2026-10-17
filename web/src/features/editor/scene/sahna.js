@@ -1,6 +1,7 @@
 import { get, set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
-import { korinishBoshla } from './korinish.js';
+import { korinishBoshla, korinishMaydon } from './korinish.js';
+import { cheklovXonasi } from '../../../services/loyiha.js';
 import { joyRanglari } from '../../../services/erpMaterial.js';
 import { surishCheklov } from '../../../../../app/js/engine/devorOraliq.js';
 
@@ -30,7 +31,7 @@ export async function mountSahna(host, onTap, alive = () => true) {
     },
     onDrag: (id, x, y) => { const p = project.pl(id); if (p) { p.x = x; p.y = y; project.scheduleRecalc(); } },
     /* egasi #151: surish (2D va 3D) — devorga yopishadi, devor ichiga va qo'shni modulga kirmaydi (#152: devordan DEVOR_ORALIQ mm) */
-    cheklov: (id) => surishCheklov(project.doc.room, project.doc.placements, id),
+    cheklov: (id) => surishCheklov(cheklovXonasi(project.doc), project.doc.placements, id),   // #156: magnit yo'q; Erkin maydonda devor yo'q
     /* qo'yib yuborildi yoki Esc — stoleshnitsa, sokol kabi hosila elementlar yangi joyga moslashadi, avtomatik saqlash */
     onDragEnd: (id, holat) => { if (holat !== 'joyida') project.changed('items'); },
     onRotate: (id, rot, x, y) => { const p = project.pl(id); if (p) { p.rot = rot; p.x = x; p.y = y; project.scheduleRecalc(); } },
@@ -43,7 +44,7 @@ export async function mountSahna(host, onTap, alive = () => true) {
   sahna.center();                                         // dizayndagi boshlang'ich ko'rinish (camHome)
   /* loyiha o'zgarsa: xona — devorlar ham va kamera markazga (dizayn), mebel — faqat mebel */
   offDoc = project.onDocChange((kind) => {
-    if (kind === 'room') { sahna.setDoc(project.doc, joylar(), H.catalog); sahna.center(); }
+    if (kind === 'room') { sahna.setDoc(project.doc, joylar(), H.catalog); korinishMaydon(); sahna.center(); }
     else if (kind === 'devor') sahna.setDoc(project.doc, joylar(), H.catalog, { kamera: false });   // TZ-25: devor tahriri — kamera joyida
     else sahna.setPlacements(joylar(), H.catalog);
   });

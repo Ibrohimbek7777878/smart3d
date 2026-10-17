@@ -7,7 +7,7 @@
 import { footprint, roomBBox } from '../../../app/js/engine/rules.js';
 import { cutlist, productionCost } from '../../../app/js/engine/cutlist.js';
 import { USTKI_Z } from '../../../app/js/ai.js';
-import { devordanSur, devorChegara } from '../../../app/js/engine/devorOraliq.js';
+import { devordanSur, devorChegara, yangiModulJoyi } from '../../../app/js/engine/devorOraliq.js';
 import { projectSlots } from './hisob.js';
 import { searchMaterial } from '../../../app/js/engine/search.js';
 import { til } from '../i18n/index.js';
@@ -59,8 +59,26 @@ export function nextId(doc) {
   return 'p' + n;
 }
 
-/** Yangi modul — devor bo'ylab eng chap bo'sh joyga (eski addPlacement, TZ-15 ustki balandligi bilan). → placement */
-export function addPlacement(doc, frag) {
+/** Maydon rejimi (loyiha sozlamasi, doc.maydon): 'devorli' (standart) | 'erkin' — egasi #156 */
+export const MAYDONLAR = ['devorli', 'erkin'];
+export const maydonRejim = (doc) => (doc && doc.maydon === 'erkin' ? 'erkin' : 'devorli');
+export function setMaydon(doc, rej) { doc.maydon = rej === 'erkin' ? 'erkin' : 'devorli'; return doc.maydon; }
+/** xona devorlari bilan cheklash uchun: Erkin maydonda devor yo'q → bo'sh kontur */
+export const cheklovXonasi = (doc) => (maydonRejim(doc) === 'erkin' ? { outline: [], wall_thickness: doc.room.wall_thickness } : doc.room);
+
+/** Yangi BITTA modul — ochiq joyga (egasi #156): orqa devordan YANGI_MODUL_DEVORDAN mm, eni bo'yicha o'rtada; sig'masa — xona
+ *  o'rtasida; band bo'lsa — eng yaqin bo'sh joyda. Erkin maydonda — maydon o'rtasi / modullar yonida. o.qator — devor bo'ylab
+ *  eng chap bo'sh joy (eski xulq; avtomatik qatorlar uchun). → placement */
+export function addPlacement(doc, frag, o = {}) {
+  if (!o.qator) {
+    const ustki0 = isUstki(frag);
+    const z = frag.default_z != null ? +frag.default_z : (ustki0 ? USTKI_Z : 0);
+    const p = { id: nextId(doc), frg: frag.code, name: frag.name, x: 0, y: 0, z, w: frag.w, d: frag.d, h: frag.h, rot: 0, qty: 1 };
+    const j = yangiModulJoyi(doc.room, doc.placements, p, { erkin: maydonRejim(doc) === 'erkin' });
+    p.x = j.x; p.y = j.y;
+    doc.placements.push(p);
+    return p;
+  }
   const bb = roomBBox(doc.room.outline);
   const id = nextId(doc);
   const ustki = isUstki(frag);
@@ -90,7 +108,7 @@ export function addPlacement(doc, frag) {
 
 /** egasi #152: modul devorga tiralmaydi — devor yuzasidan DEVOR_ORALIQ mm (devor ichiga kirgan bo'lsa — chiqariladi). → p */
 export function devordan(doc, p) {
-  devordanSur(doc.room, p);
+  devordanSur(cheklovXonasi(doc), p);
   p.x = Math.round(p.x); p.y = Math.round(p.y);
   return p;
 }
@@ -128,8 +146,8 @@ export function duplicatePlacement(doc, id) {
   if (!src) return null;
   const c = JSON.parse(JSON.stringify(src));
   c.id = nextId(doc);
-  moveAlong(c, src.w);
-  devordan(doc, c);                                        // #152: devorga kirmaydi
+  const j = yangiModulJoyi(doc.room, doc.placements, c, { erkin: maydonRejim(doc) === 'erkin' });   // #156: ochiq joyga
+  c.x = j.x; c.y = j.y;
   const i = doc.placements.indexOf(src);
   doc.placements.splice(i + 1, 0, c);
   return c;

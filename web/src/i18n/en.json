@@ -1052,5 +1052,9 @@
  "mebel.rang_boshqa": "Colour unknown",
  "mebel.mashhur": "Most used",
  "mebel.boshqa_ranglar": "Other colors",
- "mebel.mashhur_soni": "in {n} orders"
+ "mebel.mashhur_soni": "in {n} orders",
+ "xona.maydon": "Space type",
+ "xona.maydon_devorli": "Walled room",
+ "xona.maydon_erkin": "Free area",
+ "korinish.xona_erkin": "Walls are not drawn on a free area (change it in the Room step)"
 }

@@ -24,6 +24,13 @@ export default function QadamXona() {
           </button>
         </React.Fragment>))}
       </div>
+      <div role="radiogroup" aria-label={v.maydonTitle} data-maydon-tanlov="" style={{"display":"flex","padding":"4px","gap":"4px","borderRadius":"14px","background":"var(--sfc)"}}>
+        {(v.maydonlar || []).map((x) => (
+          <button key={x.id} role="radio" aria-checked={x.on} data-maydon-rejim={x.id} onClick={x.pick} style={{"flex":"1","height":"40px","borderRadius":"10px","border":"0","background":x.bg,"color":x.c,"fontWeight":"800","fontSize":"14px","cursor":"pointer","whiteSpace":"nowrap"}}>
+            <Ikon n={x.ikon} size={15} /><span className="sc-interp">{x.label}</span>
+          </button>
+        ))}
+      </div>
       <div style={{"display":"grid","gridTemplateColumns":"repeat(3,minmax(0,1fr))","gap":"8px"}}>
         <label style={{"display":"flex","flexDirection":"column","gap":"4px"}}>
           <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"700"}}>

@@ -139,7 +139,7 @@ async function asosiy(page, R) {
   R.esc = { oldin: p1, keyin: h2.pl[a.id] };
   R.escOk = !!b && h2.pl[a.id].x === p1.x && h2.pl[a.id].y === p1.y;
 
-  /* 5) devor tomon (ekranda yuqoriga, uzoq) — devorga yopishadi: oraliq aynan 3 mm, devor ichiga va qo'shni modulga kirmaydi */
+  /* 5) devor tomon (ekranda yuqoriga, uzoq) — devorga 3 mm da to'xtaydi (magnit yo'q, egasi #156): oraliq aynan 3 mm, devor ichiga va qo'shni modulga kirmaydi */
   const c = await nuqta({ id: a.id });
   if (c) await sichqoncha(c, 0, -420);
   const h3 = await holat();

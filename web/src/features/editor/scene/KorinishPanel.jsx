@@ -2,7 +2,7 @@ import React from 'react';
 import { useSlice } from '../../../store/index.js';
 import { t } from '../../../i18n/index.js';
 import Ikon from '../../../shared/ui/Ikon.jsx';
-import { FONLAR, korinishOzgar, menyuOchYop, menyuYop, yonalish, zoom, toliqEkran } from './korinish.js';
+import { FONLAR, korinishOzgar, menyuOchYop, menyuYop, yonalish, zoom, toliqEkran, erkinMaydon } from './korinish.js';
 
 /* TZ-23 (dizaynda yo'q — namuna: egasi bergan Bazis-Cloud skrinshotlari; dizayn uslubida: --sfc, --line, 14px burchak).
  * O'ngda vertikal panel: yo'nalishlar (izometriya, old, yuqori, chap, o'ng), to'liq ekran, +/−, o'lchash, ko'rinish menyusi.
@@ -27,6 +27,8 @@ function Tugma({ ik, label, onClick, on, data }) {
 
 export default function KorinishPanel({ tel }) {
   const k = useSlice('korinish'), ed = useSlice('editor');
+  useSlice('project');                                      // docV: maydon rejimi o'zgarsa qayta chiziladi
+  const erkin = erkinMaydon();
   if (ed.view !== '3d' || !ed.sceneOn) return null;
   const tanla = (p) => () => korinishOzgar(p);
   return (
@@ -91,8 +93,8 @@ export default function KorinishPanel({ tel }) {
               <Ikon n="rentgen" size={17} gap={0} /><span style={{ flex: '1' }}>{t('korinish.rentgen')}</span>{k.rentgen ? <Ikon n="tayyor" size={16} gap={0} /> : null}
             </button>
             <div style={SARLAVHA}>{t('korinish.sahna')}</div>
-            <button role="menuitemcheckbox" aria-checked={k.xona} data-xona="" onClick={tanla({ xona: !k.xona })} style={QATOR(k.xona)}>
-              <span style={{ flex: '1' }}>{t('korinish.xona')}</span>{k.xona ? <Ikon n="tayyor" size={16} gap={0} /> : null}
+            <button role="menuitemcheckbox" aria-checked={k.xona && !erkin} aria-disabled={erkin} disabled={erkin} title={erkin ? t('korinish.xona_erkin') : undefined} data-xona="" onClick={tanla({ xona: !k.xona })} style={{ ...QATOR(k.xona && !erkin), ...(erkin ? { opacity: 0.5, cursor: 'not-allowed' } : {}) }}>
+              <span style={{ flex: '1' }}>{t('korinish.xona')}</span>{k.xona && !erkin ? <Ikon n="tayyor" size={16} gap={0} /> : null}
             </button>
             <button role="menuitemcheckbox" aria-checked={k.fasadsiz} data-fasadsiz="" onClick={tanla({ fasadsiz: !k.fasadsiz })} style={QATOR(k.fasadsiz)}>
               <span style={{ flex: '1' }}>{t('korinish.fasadsiz')}</span>{k.fasadsiz ? <Ikon n="tayyor" size={16} gap={0} /> : null}
