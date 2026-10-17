@@ -13,6 +13,8 @@
 
 import { footprint } from './engine/rules.js';
 import { devorChegara } from './engine/devorOraliq.js';
+import { oshxonami, oshxonaSpec, oshxonaTekshir, oshxonaBirlashtir } from './engine/oshxonaTili.js';
+import { oshxonaQoidalar } from './engine/konstruktor/index.js';
 
 /* ── 1. Sonlar va O'zbek tili lug'ati ── */
 
@@ -485,6 +487,31 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
 
   const room = parsed.room;
   let assumed = false;
+  /* egasi #166: "kuxnya 4500 mm, 1 etaj 870 …" — oshxona spec'i (AI'siz tahlilchi asosiy; til modeli faqat bo'sh maydonlarni to'ldiradi) */
+  let osh = null;
+  if (oshxonami(text)) {
+    const a = oshxonaTekshir(oshxonaSpec(text));
+    const b = parsed.oshxona ? oshxonaTekshir(parsed.oshxona).spec : null;
+    osh = { spec: oshxonaBirlashtir(a.spec, b), tuzatish: a.tuzatish, xona: {} };
+    /* "столешница 38х600" — xona o'lchami emas (xona tomoni kamida 1000 mm, server tekshiruvi bilan bir xil) */
+    if (room.outline && Math.min(room.w, room.d) < 1000) { room.outline = null; room.w = room.d = 0; }
+    const T = devorChegara({ wall_thickness: 100 });
+    const kerak = osh.spec.uzunlik ? osh.spec.uzunlik + 2 * T : 0;   // qator ikki yon devor orasida (devor oralig'i bilan)
+    if (!room.outline && kerak) {
+      room.w = kerak; room.d = room.d || 2800; osh.xona.sukut = true;
+      room.outline = [[0, 0], [room.w, 0], [room.w, room.d], [0, room.d]];
+      assumed = true;
+    } else if (room.outline && kerak && room.outline.length === 4 && Math.max(room.w, room.d) < kerak) {
+      osh.xona.kengaydi = { oldin: Math.max(room.w, room.d), keyin: kerak };
+      const qisqa = Math.min(room.w, room.d) || 2800;
+      room.w = kerak; room.d = qisqa;
+      room.outline = [[0, 0], [room.w, 0], [room.w, room.d], [0, room.d]];
+    }
+    /* qavatlar shiftga sig'masa — xona balandligi oshiriladi (izoh bilan) */
+    const Qo = oshxonaQoidalar(osh.spec, catalog);
+    const tepa = Qo.antresol ? Qo.antresol.z + Qo.antresol.h : Qo.ustki.z + Qo.ustki.h;
+    if (tepa > (room.h || 2700)) { osh.xona.balandlik = { oldin: room.h || 2700, keyin: tepa }; room.h = tepa; }
+  }
   if (!room.outline) {
     /* O'lcham topilmadi — default bilan davom etamiz, lekin "✅ 3600×2800"
        deb da'vo qilmaymiz (A1: "Tushunmasa ham ✅ ko'rsatmasin") */
@@ -498,12 +525,13 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
      variant topilmasa yoki oshxona bo'lmasa — avvalgi suggestLayout */
   let placements = null, kitchen = null, izohlar = null;
   const oshxona = /^(L|U|linear)$/.test(room.layoutType || 'linear') && !(parsed.orders || []).some(o => o.kind === 'shkaf');
-  if (typeof opts.konstruktor === 'function' && oshxona) {
+  if (typeof opts.konstruktor === 'function' && (oshxona || osh)) {
     const f = room.features || {};
-    const shakl = room.layoutType === 'L' ? 'L' : room.layoutType === 'U' ? 'U' : 'auto';
-    const v = opts.konstruktor({ outline: room.outline, wall_height: room.h || 2700, openings: room.openings || [] },
-      { shakl, xolodilnik: f.fridge !== false, plita: f.stove === false ? false : 'erkin', ustki: true });
-    if (v) { placements = v.placements; kitchen = v.kitchen; izohlar = v.izohlar; }
+    const shakl = room.layoutType === 'L' ? 'L' : room.layoutType === 'U' ? 'U' : osh ? 'I' : 'auto';
+    const talab = osh ? { shakl, oshxona: osh.spec, uzunlik: osh.spec.uzunlik, xolodilnik: !!osh.spec.xolodilnik, plita: osh.spec.gaz.bor ? 'erkin' : false, moyka: osh.spec.moyka !== false, ustki: true }
+      : { shakl, xolodilnik: f.fridge !== false, plita: f.stove === false ? false : 'erkin', ustki: true };
+    const v = opts.konstruktor({ outline: room.outline, wall_height: room.h || 2700, openings: room.openings || [] }, talab);
+    if (v) { placements = v.placements; kitchen = v.kitchen; izohlar = v.izohlar; if (osh) { osh.natija = v.oshxona || null; osh.ogoh = v.ogohlantirishlar || []; } }
   }
   if (!placements) placements = suggestLayout(room, catalog, parsed.orders);
 
@@ -528,7 +556,7 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
     placements
   };
 
-  return { doc, orders: parsed.orders, unknown: parsed.unknown, notes, source, assumed, kitchen, izohlar };
+  return { doc, orders: parsed.orders, unknown: parsed.unknown, notes, source, assumed, kitchen, izohlar, oshxona: osh };
 }
 
 /* ── 4. Ovoz Tizimi (Web Speech API) ── */

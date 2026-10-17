@@ -13,6 +13,7 @@
  */
 import Anthropic from '@anthropic-ai/sdk';
 import { TIL_IZOH, TURLAR, specTekshir } from '../app/js/engine/konstruksiyaTili.js';
+import { oshxonaSxemadan } from '../app/js/engine/oshxonaTili.js';
 
 const KINDS = ['pastki', 'ustki', 'burchak', 'shkaf', 'stol', 'divan', 'orol'];
 const FEATURES = ['sink', 'stove', 'fridge', 'corner', 'upper', 'tall', 'wardrobe', 'island'];
@@ -27,6 +28,11 @@ export const AI_SCHEMA = obj({
   }),
   features: obj(Object.fromEntries(FEATURES.map(f => [f, { type: 'boolean' }]))),
   orders: { type: 'array', items: obj({ kind: { type: 'string', enum: KINDS }, qty: { type: 'integer' } }) },
+  /* egasi #166: oshxona parametrlari (mm; 0 — aytilmagan). Sayt AI'siz tahlilchi natijasini asos qiladi, bu — faqat bo'sh joylarga */
+  oshxona: obj(Object.fromEntries([
+    'uzunlik_mm', 'q1_boyi_mm', 'q1_chuqurligi_mm', 'q2_boyi_mm', 'q2_chuqurligi_mm', 'q3_boyi_mm', 'q3_chuqurligi_mm', 'fartuk_mm',
+    'tortma_soni', 'gaz_mm', 'vytyajka_mm', 'stol_qalinlik_mm', 'stol_chuqurligi_mm'].map(k => [k, { type: 'integer' }])
+    .concat(['ruchkasiz', 'gola', 'haytek', 'tandem_vakuum'].map(k => [k, { type: 'boolean' }])))),
   unknown: { type: 'array', items: { type: 'string' } }
 });
 
@@ -38,6 +44,7 @@ Faqat matnda AYTILGAN narsani yozing, hech narsani o'ylab topmang:
 - room.openings — deraza (window) va eshik (door), kengligi mm ("eshik 90 sm" → 900).
 - features — aytilgan jihozlar: moyka (sink), plita/duxovka (stove), xolodilnik (fridge), burchak (corner), ustki shkaflar (upper), penal (tall), garderob (wardrobe), orol (island).
 - orders — miqdori aytilgan mebel: pastki, ustki (osma), burchak, shkaf (garderob, penal), stol, divan, orol. Faqat aniq son aytilganlar.
+- oshxona — oshxona parametrlari, aytilmagani 0 yoki false: uzunlik_mm (oshxona qatori uzunligi, "kuxnya 4500 mm"), q1/q2/q3 — 1-qavat (pastki, bo'yi poldan stoleshnitsa ustigacha), 2-qavat (ustki), 3-qavat (antresol): boyi_mm va chuqurligi_mm; fartuk_mm; tortma_soni; gaz_mm va vytyajka_mm (eni); stol_qalinlik_mm, stol_chuqurligi_mm (stoleshnitsa); ruchkasiz ("bezruchka", "без ручек"), gola (Gola profil), haytek, tandem_vakuum (Tandem vakuum yo'naltiruvchi).
 - unknown — tushunilmagan bo'laklar (qisqa).
 Faqat JSON qaytaring.`;
 
@@ -63,7 +70,9 @@ export function normalizeParsed(j) {
     .filter(o => o && KINDS.includes(o.kind) && num(o.qty) >= 1)
     .map(o => ({ kind: o.kind, qty: Math.min(50, num(o.qty)) }));
   const unknown = (Array.isArray(j.unknown) ? j.unknown : []).slice(0, 10).map(s => String(s).slice(0, 100));
-  return { room, orders, unknown };
+  /* oshxona — xom (sayt oshxonaTekshir bilan chegaraga keltiradi); aytilmagan bo'lsa maydon yo'q */
+  const oshxona = oshxonaSxemadan(j.oshxona);
+  return oshxona ? { room, orders, unknown, oshxona } : { room, orders, unknown };
 }
 
 export function aiConfig() {

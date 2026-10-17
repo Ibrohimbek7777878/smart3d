@@ -127,10 +127,16 @@ export function createHisob(data) {
       for (const p of placements) {
         const fr = catalog[p.frg];
         if (!fr) continue;
-        const cl = cutlist(fr, p.w, p.d, p.h, m, { projectSlots: slots, placementSlots: p.slots, hinge: p.hinge });   // D6: bitta eshik petlyasi tomoni
+        const cl = cutlist(fr, p.w, p.d, p.h, m, { projectSlots: slots, placementSlots: p.slots, hinge: p.hinge, ruchkasiz: p.ruchkasiz, yonaltiruvchi: p.yonaltiruvchi });   // D6: petlya tomoni; egasi #166: Gola, Tandem
         cl.placementId = p.id;
         /* egasi #162: stoleshnitsa sig'masdan bo'lingan joyga 1 ta styajka (burchak butt-ulanishiga yo'q) */
         if (p.frg === 'SP-ST-001' && p.styajka > 0) cl.hardware.push({ fragment: fr.code, code: 'STYAJKA-STOL', qty: p.styajka, _auto: true });
+        /* egasi #166: Gola profil (ruchkasiz oshxona) — konstruktor hisoblagan uzunlik, metr (butun, S2); narx bog'lanmagan — taklif */
+        const gola = doc.kitchen && doc.kitchen.gola;
+        if (gola && p.frg === 'SP-ST-001' && p.runIdx === 0 && p.segIdx === 0) {
+          const mm = (+gola.gorizontal || 0) + (+gola.vertikal || 0);
+          if (mm > 0) cl.hardware.push({ fragment: fr.code, code: 'GOLA-PROFIL', name: 'Gola profil (gorizontal ' + gola.gorizontal + ' mm, vertikal ' + (gola.vertikal || 0) + ' mm)', qty: Math.ceil(mm / 1000), unit: 'm', _auto: true });
+        }
         if (mkHole && p.frg === 'SP-ST-001' && p.runIdx === 0 && p.segIdx === 0) {
           cl.holes.push(Object.assign({}, mkHole));
         }

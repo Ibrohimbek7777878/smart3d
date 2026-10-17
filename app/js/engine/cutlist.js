@@ -355,7 +355,7 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
       for (const p of parts) qal[p.code] = p.thickness;
       const Q = joyQutilar(frag, baseVars, (part) => qal[part.code], { hinge: opt.hinge });
       const r1 = (v) => Math.round(v * 10) / 10;
-      d6Teshiklar(Q, { ruchka: ruchkaOraligi(frag) }).forEach((arr, i) => {
+      d6Teshiklar(Q, { ruchka: opt.ruchkasiz ? 0 : ruchkaOraligi(frag) }).forEach((arr, i) => {   // egasi #166: ruchkasiz — teshik yo'q
         for (const hl of arr) {
           holes.push(Object.assign({ fragment: frag.code, part: Q[i].code, ref: Q[i].ref }, hl, {
             x: r1(hl.x - dedOf(Q[i].code, 'F')), y: r1(hl.y - dedOf(Q[i].code, 'L')), qty: 1, nusxa: 1
@@ -401,8 +401,20 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
     const hingeQty = doors.reduce((s, p) => s + hingesForDoor(Math.max(p.finish_length, p.finish_width)), 0);
     hardware.push({ fragment: frag.code, code: 'PET-4', qty: hingeQty, _auto: true });
   }
-  if (autoHw && fronts.length && !sliding && !hardware.some(hw => /RU-|ruchka|handle/i.test(hw.code))) {
+  if (autoHw && fronts.length && !sliding && !opt.ruchkasiz && !hardware.some(hw => /RU-|ruchka|handle/i.test(hw.code))) {
     hardware.push({ fragment: frag.code, code: 'RU-128', qty: fronts.length, _auto: true });
+  }
+  /* egasi #166 (opt — joylashuvdan): ruchkasiz (Gola) — ruchka qatori yo'q; Tandem vakuum — modulning yo'naltiruvchi/salazka qatorlari
+     o'rniga har tortmaga 1 komplekt (ERP ID bog'lanmagan — narxi "yo'q" deb chiqadi, o'ylab topilmaydi) */
+  if (opt.ruchkasiz) {
+    for (let i = hardware.length - 1; i >= 0; i--) if (/ручк|ruchk|handle|^RU-/i.test((hardware[i].code || '') + ' ' + (hardware[i].name || ''))) hardware.splice(i, 1);
+  }
+  if (opt.yonaltiruvchi === 'tandem_vakuum') {
+    const tortma = parts.filter(p => /fasad_yashika|tortma.*fasad|drawer.*front/i.test(p.code)).length;
+    if (tortma) {
+      for (let i = hardware.length - 1; i >= 0; i--) if (/napravl|salazk|направл|салазк|slide/i.test((hardware[i].code || '') + ' ' + (hardware[i].name || ''))) hardware.splice(i, 1);
+      hardware.push({ fragment: frag.code, code: 'TANDEM-VAKUUM', name: "Tandem vakuum yo'naltiruvchi (komplekt)", qty: tortma, unit: 'komplekt', _auto: true });
+    }
   }
 
   /* ── 5) Statistika ───────────────────────────────────────────── */

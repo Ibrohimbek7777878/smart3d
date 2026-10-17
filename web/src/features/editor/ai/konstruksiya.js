@@ -1,7 +1,9 @@
 import { set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { S } from '../../../store/session.js';
-import { toast } from '../../../store/ui.js';
+import { toast, openSheet } from '../../../store/ui.js';
+import * as L from '../../../services/loyiha.js';
+import { katalogdanTop } from '../../../../../app/js/engine/katalogTanlash.js';
 import { report } from '../../../shared/lib/jurnal.js';
 import { matndanSpec, specTekshir, specdanChizma, specXulosa, plitaTop } from '../../../../../app/js/engine/konstruksiyaTili.js';
 import { yangiModul } from '../chizish/chizish.js';
@@ -47,14 +49,72 @@ function materialQoy(H, p, material) {
   return { bor, yoq: [...new Set(yoq)] };
 }
 
-/** matn → modul. Qaytaradi: 'modul' | 'xona' (bu konstruksiya emas — chaqiruvchi oshxona yo'liga o'tadi) */
-export async function aiKonstruksiya(matn, aiOn) {
+/* egasi #168: katalog moduli tanlovi — kartadagi qatorlar */
+const KN = (k) => (/^(eni|chuqurligi|boyi)$/.test(k) ? t('kons.k_' + k) : t('ai.kat_k_' + k));
+function katalogQatorlar(tan) {
+  const out = [];
+  const q = (matn, manba, diqqat) => out.push({ matn, manba, diqqat: !!diqqat });
+  const olchammi = (x) => /^(eni|chuqurligi|boyi)$/.test(x.k);
+  for (const x of tan.mos) q(olchammi(x) ? t('ai.kat_mos_olcham', { o: KN(x.k), v: x.soraldi }) : t('ai.kat_mos_son', { o: KN(x.k), v: x.soraldi }), 'katalog');
+  for (const x of tan.mosEmas) {
+    q(olchammi(x) ? t('ai.kat_chegara', { o: KN(x.k), v: x.soraldi, a: x.min || '—', b: x.max || '—', m: x.natija })
+      : x.k === 'kupe' ? t('ai.kat_kupe') : t('ai.kat_farq', { o: KN(x.k), v: x.soraldi, m: x.modulda }), 'katalog', true);
+  }
+  return out;
+}
+
+/** "Baribir chizish (Modul chizish)" — foydalanuvchi o'zi bosadi: avvalgi chizish yo'li (yangi CH- modul).
+ *  olib — katalogdan qo'yilgan modul (topilgan holat): chizilgan modul uning O'RNIGA keladi */
+export function baribirChiz(matn, aiOn, olib) {
+  if (olib) {
+    const i = project.doc.placements.findIndex(x => x.id === olib);
+    if (i >= 0) { project.doc.placements.splice(i, 1); project.changed('items', true); }
+  }
+  return aiKonstruksiya(matn, aiOn, { chiz: true });
+}
+
+/** matn → modul. Qaytaradi: 'modul' | 'katalog' | 'yoq' | 'xona' (bu konstruksiya emas — chaqiruvchi oshxona yo'liga o'tadi).
+ *  egasi #168: avval katalogdagi eng mos tayyor modul (katalogTanlash.js); topilmasa — chizilmaydi, xabar va "Baribir chizish" tugmasi.
+ *  o.chiz — foydalanuvchi "Baribir chizish" ni bosdi: avvalgidek yangi modul chiziladi */
+export async function aiKonstruksiya(matn, aiOn, o = {}) {
   if (!project.H) return 'xona';
   const ai = await serverdan(matn, aiOn);
   if (ai && ai.xona) return 'xona';
   /* AI javobi serverda tekshirilgan — saytda yana bir bor (bir xil qoida); AI'siz — tahlilchi */
-  const n = ai ? specTekshir(ai.spec) : specTekshir(matndanSpec(matn));
+  const xom = ai ? ai.spec : matndanSpec(matn);
+  const n = specTekshir(xom);
   if (n.xona) return 'xona';
+  if (!o.chiz) {
+    const tan = katalogdanTop(n.spec, xom, project.H.catalog, matn);
+    const kim = ai ? t('kons.kim_ai') : t('kons.kim_aisiz');
+    if (tan && tan.topildi) {
+      const fr = project.H.catalog[tan.frg];
+      project.tarix.belgi('ai');                                   // bekor qilish: AI modul — bitta qadam
+      const p = L.addPlacement(project.doc, Object.assign({}, fr, tan.olcham));
+      const M = materialQoy(project.H, p, n.spec.material);
+      project.changed('items', true);
+      const f = n.spec.furnitura || {}, qolmadi = [];
+      if (f.birikma === 'konfirmat') qolmadi.push(t('kons.f_konfirmat'));
+      if (f.birikma === 'ekssentrik') qolmadi.push(t('kons.f_ekssentrik'));
+      if (f.polka === 'polkaderjatel') qolmadi.push(t('kons.f_polkaderjatel'));
+      if (f.ruchka > 0) qolmadi.push(t('kons.f_ruchka', { n: f.ruchka }));
+      if (n.spec.orqa === 'yergacha') qolmadi.push(t('kons.f_orqa_yer'));
+      const qatorlar = [{ matn: t('ai.kat_tanlandi', { frg: tan.frg, nom: tan.nom, w: p.w, d: p.d, h: p.h }), manba: 'katalog' }]
+        .concat(katalogQatorlar(tan), M.bor.map(s => ({ matn: s, manba: 'matn' })), M.yoq.map(s => ({ matn: s, manba: 'matn', diqqat: true })),
+          qolmadi.length ? [{ matn: t('ai.kat_qolmadi', { s: qolmadi.join(', ') }), manba: 'matn', diqqat: true }] : []);
+      openSheet('aioshxona', { sarlavha: 'ai.kat_sarlavha', qatorlar, chizMatn: matn, aiOn, tugma: 1, olib: p.id });
+      toast(t('ai.kat_qoyildi', { kim, frg: tan.frg, nom: tan.nom }));
+      if (n.spec.eksport === 'obj') faylYukla('obj', { id: p.id });
+      return 'katalog';
+    }
+    const yet = tan ? tan.yetishmaydi.map(x => x.k === 'tur' ? t('ai.kat_tur_yoq') : /^(eni|chuqurligi|boyi)$/.test(x.k)
+      ? t('ai.kat_chegara', { o: KN(x.k), v: x.soraldi, a: x.min || '—', b: x.max || '—', m: x.natija }) : t('ai.kat_farq', { o: KN(x.k), v: x.soraldi, m: x.modulda })) : [];
+    const qatorlar = [{ matn: t('ai.kat_yoq', { s: yet.join('; ') }), manba: 'katalog', diqqat: true }]
+      .concat(tan && tan.frg ? [{ matn: t('ai.kat_eng_yaqin', { frg: tan.frg, nom: tan.nom }), manba: 'katalog' }] : []);
+    openSheet('aioshxona', { sarlavha: 'ai.kat_yoq_sarlavha', qatorlar, chizMatn: matn, aiOn, tugma: 'ai.kat_baribir' });
+    toast(t('ai.kat_yoq', { s: yet.join('; ') }));
+    return 'yoq';
+  }
   const tuzatish = (ai ? ai.tuzatish : []).concat(n.tuzatish), tushunilmadi = ai ? ai.tushunilmadi : n.tushunilmadi;
   const sp = n.spec, ch = specdanChizma(sp);
   const nom = sp.nom || t('chizish.nom_' + sp.tur) + ' ' + sp.eni + '×' + sp.chuqurligi + '×' + sp.boyi;

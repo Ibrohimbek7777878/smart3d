@@ -17,7 +17,9 @@ import { devorlar, burchak, tosiqlar, boshOraliqlar } from './devor.js';
 import { toldir } from './toldirish.js';
 import { eshikToqnashuvlari, petlyaTanla } from './eshik.js';
 import { ichkiXona, devorChegara, DEVOR_ORALIQ } from '../devorOraliq.js';
+import { STOL_QALINLIK, STOL_SUKUT_QALINLIK } from '../kitchen.js';
 
+const chuqurQosh = (a, b) => { const o = Object.assign({}, a); for (const [k, v] of Object.entries(b)) o[k] = v && typeof v === 'object' && !Array.isArray(v) && a[k] && typeof a[k] === 'object' ? chuqurQosh(a[k], v) : v; return o; };
 const SHAKL_NOMI = { I: "To'g'ri", L: 'Burchakli (L)', U: 'P shakl (U)' };
 
 /** Katalogdan eni chegarasi (sex standarti qo'llangan) */
@@ -30,7 +32,9 @@ function chegara(catalog, code, fallback) {
 function shakllar(W, talab, Q) {
   const tek = W.filter(d => d.tekis && d.len >= 1200);
   const out = [];
-  const I = tek.slice().sort((a, b) => b.len - a.len);
+  /* egasi #166: oshxona uzunligi aytilgan — to'g'ri oshxona shu uzunlik sig'adigan devorda (bo'lmasa — eng uzunida) */
+  const sigadi = talab.uzunlik > 0 ? tek.filter(d => d.len >= talab.uzunlik - 1) : [];
+  const I = (sigadi.length ? sigadi : talab.uzunlik > 0 ? tek.slice().sort((a, b) => b.len - a.len).slice(0, 1) : tek).slice().sort((a, b) => b.len - a.len);
   if (talab.devor != null) { const d = tek.find(x => x.i === +talab.devor); if (d) I.unshift(d); }
   for (const d of I) out.push({ shakl: 'I', walls: [d] });
   for (const a of tek) for (const b of tek) {
@@ -46,7 +50,7 @@ function shakllar(W, talab, Q) {
 }
 
 /** Shakl bo'yicha har devorning pastki/ustki oralig'i va burchak modullari */
-function shaklRejasi(sh, room, Q, catalog) {
+function shaklRejasi(sh, room, Q, catalog, talab = {}) {
   const Dp = Q.pastki.d, Du = Q.ustki.d;
   const Wkp = (catalog[Q.modul.pastki.burchak] || {}).w || 780, Wku = (catalog[Q.modul.ustki.burchak] || {}).w || 600;
   const n = sh.walls.length;
@@ -56,12 +60,14 @@ function shaklRejasi(sh, room, Q, catalog) {
        burchak moduli burchak devorning OXIRIDA (E, s = len) turadi, keyingi qanot esa boshida (S) burchak zonasidan boshlanadi. */
     const bosh = k > 0, oxir = k < n - 1;              // k>0: boshida oldingi qanot burchagi; k<n-1: oxirida burchak moduli
     const ts = tosiqlar(room, dv, Q);
-    const p0 = bosh ? Dp : 0, p1 = oxir ? dv.len - Wkp : dv.len;
-    const u0 = bosh ? Du : 0, u1 = oxir ? dv.len - Wku : dv.len;
+    const p0 = bosh ? Dp : 0, u0 = bosh ? Du : 0;
+    let p1 = oxir ? dv.len - Wkp : dv.len, u1 = oxir ? dv.len - Wku : dv.len, b1 = oxir ? 'modul' : 'devor';
+    /* egasi #166: oshxona uzunligi aytilgan (to'g'ri oshxona) va devor uzunroq — qator shu uzunlikda, oxiri erkin (dobor yo'q) */
+    if (n === 1 && talab.uzunlik > 0 && talab.uzunlik < dv.len - 1) { p1 = u1 = talab.uzunlik; b1 = 'erkin'; }
     return {
       dv, ts, bosh, oxir, Wkp, Wku,
-      pastki: { s0: p0, s1: p1, b0: bosh ? 'burchak' : 'devor', b1: oxir ? 'modul' : 'devor' },
-      ustki: { s0: u0, s1: u1, b0: bosh ? 'burchak' : 'devor', b1: oxir ? 'modul' : 'devor' },
+      pastki: { s0: p0, s1: p1, b0: bosh ? 'burchak' : 'devor', b1 },
+      ustki: { s0: u0, s1: u1, b0: bosh ? 'burchak' : 'devor', b1 },
       erkinUch: [!bosh ? 'S' : null, !oxir ? 'E' : null].filter(Boolean)
     };
   });
@@ -203,7 +209,7 @@ function pastkiQidir(reja, room, talab, Q, chek) {
 }
 
 /** Pastki qatlam bo'laklari → elementlar [{s0, w, tur}] */
-function pastkiElementlar(eng, reja, Q) {
+function pastkiElementlar(eng, reja, Q, chek) {
   return reja.map((r, k) => {
     const out = [];
     if (r.oxir) out.push({ s0: r.dv.len - r.Wkp, w: 0, tur: 'burchak' });
@@ -212,14 +218,35 @@ function pastkiElementlar(eng, reja, Q) {
       let x = s.s0;
       for (const it of (s.f && s.f.items) || []) { out.push({ s0: x, w: it.w, tur: it.tur }); x += it.w; }
     }
-    /* plita yonidagi bir eshikli modul — tortmali (qoshiq, idish uchun): avval moykadan uzoq tomon, dobor o'tkazib yuboriladi */
+    /* plita yonidagi bir eshikli modul — tortmali (qoshiq, idish uchun): avval moykadan uzoq tomon, dobor o'tkazib yuboriladi.
+       egasi #166: Q.tortmaModul > 1 — plitaga yaqinidan boshlab navbat bilan (ikki tomonda) shuncha bir eshikli modul */
+    const kerak = Q.tortmaModul != null ? Q.tortmaModul : 1;
     out.forEach((e, i) => {
-      if (e.tur !== 'plita') return;
-      const qoshni = (dir) => { for (let j = i + dir; j >= 0 && j < out.length; j += dir) { if (out[j].tur !== 'dobor') return out[j]; } return null; };
+      if (e.tur !== 'plita' || kerak < 1) return;
+      const tomon = (dir) => { const r = []; for (let j = i + dir; j >= 0 && j < out.length; j += dir) { if (out[j].tur !== 'dobor') r.push(out[j]); } return r; };
       const moykaChapda = out.findIndex(x => x.tur === 'moyka') < i;
-      const tartib = moykaChapda ? [qoshni(1), qoshni(-1)] : [qoshni(-1), qoshni(1)];
-      const t = tartib.find(x => x && x.tur === 'bir');
-      if (t) t.tur = 'tortma';
+      const [A, B] = moykaChapda ? [tomon(1), tomon(-1)] : [tomon(-1), tomon(1)];
+      let tartib = [A[0], B[0]];
+      if (kerak > 1) { tartib = []; for (let k = 0; k < Math.max(A.length, B.length); k++) tartib.push(A[k], B[k]); }
+      const bor = tartib.filter(x => x && x.tur === 'bir').slice(0, kerak);
+      bor.forEach(t => { t.tur = 'tortma'; });
+      /* egasi #166: matnda tortma aytilgan, plita yonida bir eshikli modul yetmadi — yaqin ikki eshikli modul ikkiga bo'linadi:
+         plita tomonda tortmali (bir eshikli eni chegarasida, afzal enlar), qolgani — bir yoki ikki eshikli (eni chegarasi ichida) */
+      if (!Q.oshxona || !chek || bor.length >= kerak) return;
+      let qoldi = kerak - bor.length;
+      const navbat = []; for (let k = 0; k < Math.max(A.length, B.length); k++) navbat.push(A[k], B[k]);
+      for (const x of navbat) {
+        if (!qoldi) break;
+        if (!x || x.tur !== 'ikki') continue;
+        const turi = (w) => w >= chek.bir[0] && w <= chek.bir[1] ? 'bir' : w >= chek.ikki[0] && w <= chek.ikki[1] ? 'ikki' : null;
+        const tw = Q.afzal.bir.find(w => w >= chek.bir[0] && w <= chek.bir[1] && turi(x.w - w));
+        if (!tw) continue;
+        const r = x.w - tw, chapda = x.s0 < e.s0, j = out.indexOf(x);
+        const qism = chapda ? [{ s0: x.s0, w: r, tur: turi(r) }, { s0: x.s0 + r, w: tw, tur: 'tortma' }]
+          : [{ s0: x.s0, w: tw, tur: 'tortma' }, { s0: x.s0 + tw, w: r, tur: turi(r) }];
+        out.splice(j, 1, ...qism);
+        qoldi--;
+      }
     });
     return out;
   });
@@ -292,9 +319,10 @@ function ustkiElementlar(reja, past, Q, chek) {
 /** element → placement */
 function joylash(dv, e, qatlam, Q, catalog, id) {
   const M = Q.modul;
-  const P = qatlam === 'p';
+  const P = qatlam === 'p', A = qatlam === 'a';
+  const AM = A && Q.antresol.modul ? Q.antresol.modul : null;               // egasi #168: antresol oilasi (MC-KA yoki MC-KU)
   const frg = {
-    bir: P ? M.pastki.bir : M.ustki.bir, ikki: P ? M.pastki.ikki : M.ustki.ikki, tortma: M.pastki.tortma,
+    bir: AM ? AM.bir : P ? M.pastki.bir : M.ustki.bir, ikki: AM ? AM.ikki : P ? M.pastki.ikki : M.ustki.ikki, tortma: M.pastki.tortma,
     moyka: Q.moyka.eni > 540 ? M.pastki.moyka2 : M.pastki.moyka1, burchak: P ? M.pastki.burchak : M.ustki.burchak,
     dobor: P ? M.dobor.pastki : M.dobor.ustki, ochiq: M.ustki.ochiq, vityajka: M.ustki.vityajka,
     xolodilnik: M.texnika.xolodilnik, plita: M.texnika.plita
@@ -302,8 +330,10 @@ function joylash(dv, e, qatlam, Q, catalog, id) {
   const f = catalog[frg] || {};
   /* pastki modul — o'z oyog'ida (MC: Bazis'dagidek 100 mm, sokol modulning o'z detali; default_z — fr3d_import) */
   let w = e.w || +f.w, d = P ? Q.pastki.d : Q.ustki.d, h = P ? Q.pastki.h : Q.ustki.h, z = P ? (+f.default_z || 0) : Q.ustki.z;
+  if (A) { d = Q.antresol.d; h = Q.antresol.h; z = Q.antresol.z; }               // egasi #166: 3-qavat (antresol)
   if (e.tur === 'xolodilnik' || e.tur === 'plita') { d = +f.d || d; h = +f.h || h; z = 0; }
-  if (e.tur === 'vityajka') { d = +f.d || d; h = +f.h || 400; z = Q.ustki.z + Q.ustki.h - h; }
+  /* vityajka shkafi — ustki qator tepasiga tekis; vityajka (texnika, SP-TX-006) — ustki qator ostiga tekis (fartuk tepasi) */
+  if (e.tur === 'vityajka') { d = +f.d || d; h = +f.h || 400; z = f.category === 'appliance' ? Q.ustki.z : Q.ustki.z + Q.ustki.h - h; }
   if (e.tur === 'burchak') w = +f.w;
   const [x, y] = dv.nuqta(e.s0);
   return { id, frg, name: f.name || frg, x: Math.round(x), y: Math.round(y), z: Math.round(z), w: Math.round(w), d: Math.round(d), h: Math.round(h), rot: dv.rot, qty: 1, _tur: e.tur, _qatlam: qatlam, _devor: dv.i, _s0: e.s0 };
@@ -327,18 +357,34 @@ function boshlangichPetlya(pl) {
 function variantQur(sh, room, talab, Q, catalog) {
   const chekP = { bir: chegara(catalog, Q.modul.pastki.bir, [300, 540]), ikki: chegara(catalog, Q.modul.pastki.ikki, [600, 1070]) };
   const chekU = { bir: chegara(catalog, Q.modul.ustki.bir, [300, 540]), ikki: chegara(catalog, Q.modul.ustki.ikki, [600, 1070]) };
-  Q = Object.assign({}, Q, { vityajkaEni: (catalog[Q.modul.ustki.vityajka] || {}).w || 450 });
-  const reja = shaklRejasi(sh, room, Q, catalog);
+  Q = Object.assign({}, Q, { vityajkaEni: Q.vityajkaEni || (catalog[Q.modul.ustki.vityajka] || {}).w || 450 });
+  const reja = shaklRejasi(sh, room, Q, catalog, talab);
   const eng = pastkiQidir(reja, room, talab, Q, chekP);
   if (!eng) return null;
-  const past = pastkiElementlar(eng, reja, Q);
+  const past = pastkiElementlar(eng, reja, Q, chekP);
   const ust = talab.ustki === false ? reja.map(() => []) : ustkiElementlar(reja, past, Q, chekU);
+  /* egasi #166: 3-qavat (antresol) — ustki qator ustida, butun qator bo'ylab (vityajka va muzlatgich uni to'smaydi) */
+  const AM = Q.antresol && Q.antresol.modul;
+  const chekA = AM ? { bir: chegara(catalog, AM.bir, chekU.bir), ikki: chegara(catalog, AM.ikki, chekU.ikki) } : chekU;
+  const ant = Q.antresol ? ustkiElementlar(reja, past.map(l => l.filter(e => e.tur !== 'plita' && e.tur !== 'xolodilnik')), AM && AM.oila === 'antresol' ? Object.assign({}, Q, { dobor: Object.assign({}, Q.dobor) }) : Q, chekA)
+    .map(l => AM && AM.oila === 'antresol' ? l.filter(e => e.tur !== 'ochiq') : l) : reja.map(() => []);
   const pl = [];
   let n = 0;
   reja.forEach((r, k) => {
     for (const e of past[k]) pl.push(joylash(r.dv, e, 'p', Q, catalog, 'k' + (++n)));
     for (const e of ust[k]) pl.push(joylash(r.dv, e, 'u', Q, catalog, 'k' + (++n)));
+    for (const e of ant[k]) pl.push(joylash(r.dv, e, 'a', Q, catalog, 'k' + (++n)));
   });
+  if (Q.ruchkasiz || Q.yonaltiruvchi) {
+    for (const p of pl) {
+      const f = catalog[p.frg] || {};
+      if (f.category === 'appliance') continue;
+      if (Q.ruchkasiz) p.ruchkasiz = true;                       // ruchka va ruchka teshigi yo'q (cutlist, 3D; dobor ham — avtomatik RU-128 yo'q)
+      if (Q.yonaltiruvchi && p._tur === 'tortma') p.yonaltiruvchi = Q.yonaltiruvchi;
+    }
+  }
+  /* egasi #168: oshxona matnidan — hamma o'lcham katalog modulining chegarasida (chegaradan tashqarisi izohda) */
+  const chegaraIzoh = Q.oshxona ? chegaragaKeltir(pl, catalog) : [];
   boshlangichPetlya(pl);
   petlyaTanla(pl, catalog, room, { burchak: Q.eshik.burchak });
 
@@ -361,6 +407,9 @@ function variantQur(sh, room, talab, Q, catalog) {
 
   const placements = pl.map(p => { const o = Object.assign({}, p); for (const k of Object.keys(o)) if (k[0] === '_') delete o[k]; return o; });
   const kitchen = { stoleshnitsa: true, stoleshnitsaD: Q.stoleshnitsa.d, sokol: true, dobor: false, karniz: false, moyka: { on: false, offset: 600, fromBack: 100, size: 500 } };
+  if (Q.stoleshnitsa.qalinlik) kitchen.stolT = Q.stoleshnitsa.qalinlik;
+  const osh = Q.oshxona ? Object.assign(oshxonaXulosa(pl, Q, catalog), { chegara: chegaraIzoh, antresolOila: AM ? AM.oila : null }) : null;
+  if (osh && osh.gola) kitchen.gola = osh.gola;
   /* tekshiruv */
   const doc = { room, placements, kitchen };
   const v = validateDoc(doc, { catalog });
@@ -373,8 +422,106 @@ function variantQur(sh, room, talab, Q, catalog) {
     + (talab.devor != null && !sh.walls.some(d => d.i === +talab.devor) ? 15 : 0);
   return {
     shakl: sh.shakl, nom: SHAKL_NOMI[sh.shakl], devorlar: sh.walls.map(d => d.i), placements, kitchen, izohlar, ogohlantirishlar: ogoh, baho,
-    modullar: placements.length, uzunlik: Math.round(reja.reduce((a, r) => a + r.dv.len, 0))
+    modullar: placements.length, uzunlik: Math.round(reja.reduce((a, r) => a + r.dv.len, 0)),
+    ...(osh ? { oshxona: osh } : {})
   };
+}
+
+/**
+ * egasi #166: oshxona spec'i (engine/oshxonaTili.js) → qoidalar ustiga yoziladigan qiymatlar. Aytilmagani — QOIDALAR/katalog standarti.
+ *   1-qavat bo'yi — poldan stoleshnitsa ustigacha: korpus = bo'yi − oyoq (MC default_z) − stoleshnitsa qalinligi.
+ *   2-qavat — fartuk tepasidan (z = 1-qavat + fartuk), 3-qavat (antresol) — 2-qavat ustida.
+ */
+export function oshxonaQoidalar(spec, catalog, Q0 = qoidalar()) {
+  const oyoq = +(catalog[Q0.modul.pastki.bir] || {}).default_z || 0;
+  const stolT = STOL_QALINLIK.includes(+(spec.stoleshnitsa || {}).qalinlik) ? +spec.stoleshnitsa.qalinlik : STOL_SUKUT_QALINLIK;
+  const [q1 = {}, q2 = {}, q3] = spec.qavatlar || [];
+  const pastkiH = q1.boyi ? q1.boyi - oyoq - stolT : Q0.pastki.h;
+  const jami1 = oyoq + pastkiH + stolT;
+  const ustZ = spec.fartuk ? jami1 + spec.fartuk : Q0.ustki.z;
+  const ustH = q2.boyi || Q0.ustki.h, ustD = q2.chuqurligi || Q0.ustki.d;
+  const antSukut = catalog['MC-KA-01'] || {};                                 // MC antresol (Bazis) — bo'yi aytilmasa
+  const out = {
+    oshxona: true,
+    pastki: { h: pastkiH, d: q1.chuqurligi || Q0.pastki.d },
+    ustki: { h: ustH, d: ustD, z: ustZ },
+    stoleshnitsa: { d: (spec.stoleshnitsa || {}).chuqurligi || Q0.stoleshnitsa.d, qalinlik: stolT },
+    plita: { eni: (spec.gaz || {}).eni || Q0.plita.eni },
+    tortmaModul: (spec.tortma || {}).soni ? Math.ceil(spec.tortma.soni / 3) : 1,   // MC-KP-10 — 3 tortmali modul
+    tortmaSoni: (spec.tortma || {}).soni || 3,
+    ruchkasiz: !!spec.ruchkasiz, gola: !!spec.gola, yonaltiruvchi: (spec.tortma || {}).yonaltiruvchi || '',
+    oyoq, jami1
+  };
+  if (q3) {
+    const h = q3.boyi || +antSukut.h || 350, d = q3.chuqurligi || ustD;
+    out.antresol = { h, d, z: ustZ + ustH, modul: antresolOila(h, d, catalog, Q0) };
+  }
+  /* vityajka: aytilgan eni MC vityajka shkafiga (eni qat'iy) teng bo'lmasa — shu enli vityajka texnikasi (SP-TX-006) */
+  const ve = (spec.vytyajka || {}).eni, vk = catalog[Q0.modul.ustki.vityajka] || {}, tx = catalog['SP-TX-006'];
+  if (ve && ve !== +vk.w && tx) { out.modul = { ustki: { vityajka: 'SP-TX-006' } }; out.vityajkaEni = ve; }
+  else if (ve) out.vityajkaEni = +vk.w || ve;
+  return out;
+}
+
+/* egasi #168: antresol — faqat katalogdagi modullar. Oilalar: MC antresol (MC-KA-01 1 fasad, MC-KA-02 2 fasad — o'lchami qat'iy)
+   va MC ustki (MC-KU-06/07, eni/bo'yi/chuqurligi sex standarti chegarasida). So'ralgan bo'yi va chuqurligiga eng yaqini
+   (chegaraga keltirilgandagi farq eng kichigi) tanlanadi — o'lcham o'ylab topilmaydi, chegaradan tashqarisi izohda */
+const ANTRESOL_OILA = [{ nom: 'antresol', bir: 'MC-KA-01', ikki: 'MC-KA-02' }, { nom: 'ustki', bir: null, ikki: null }];
+const chegarada = (v, a, b) => Math.max(a, Math.min(b, v));
+function oraliq(f, o) { const v = +f[o]; return [+f['min_' + o] || v, +f['max_' + o] || v]; }
+function antresolOila(h, d, catalog, Q0) {
+  let eng = null;
+  for (const o of ANTRESOL_OILA) {
+    const bir = o.bir || Q0.modul.ustki.bir, ikki = o.ikki || Q0.modul.ustki.ikki;
+    const fb = catalog[bir], fi = catalog[ikki];
+    if (!fb || !fi) continue;
+    const H = [Math.min(oraliq(fb, 'h')[0], oraliq(fi, 'h')[0]), Math.max(oraliq(fb, 'h')[1], oraliq(fi, 'h')[1])];
+    const D = [Math.min(oraliq(fb, 'd')[0], oraliq(fi, 'd')[0]), Math.max(oraliq(fb, 'd')[1], oraliq(fi, 'd')[1])];
+    const farq = Math.abs(h - chegarada(h, H[0], H[1])) + Math.abs(d - chegarada(d, D[0], D[1]));
+    if (!eng || farq < eng.farq) eng = { oila: o.nom, bir, ikki, farq };
+  }
+  return eng;
+}
+
+/** egasi #168: joylashuv o'lchami — katalog modulining min/max chegarasiga; chegaradan tashqarisi → eng yaqin qiymat + izoh */
+function chegaragaKeltir(pl, catalog) {
+  const out = [];
+  for (const p of pl) {
+    const f = catalog[p.frg];
+    if (!f || f.category === 'appliance') continue;
+    for (const o of ['w', 'd', 'h']) {
+      const [a, b] = oraliq(f, o);
+      if (!(a > 0 && b > 0)) continue;
+      const v = +p[o], w = chegarada(v, a, b);
+      if (Math.abs(w - v) < 0.5) continue;
+      out.push({ frg: p.frg, o, soraldi: Math.round(v), min: a, max: b, natija: w });
+      p[o] = w;
+    }
+  }
+  return out;
+}
+
+/** qurilgan oshxona xulosasi: qavatlar (z, bo'yi, chuqurligi, modul soni), tortma, Gola profil uzunligi (taklif) */
+function oshxonaXulosa(pl, Q, catalog) {
+  const mod = (q) => pl.filter(p => p._qatlam === q && (catalog[p.frg] || {}).category !== 'appliance' && p._tur !== 'dobor');
+  /* haqiqiy (chegaraga keltirilgan) o'lcham — qavatning birinchi moduli bo'yicha; modullar ro'yxati: kod, nomi, o'lchami, soni */
+  const qavat = (q, z, h, d) => {
+    const m = mod(q).filter(p => p._tur !== 'dobor'), r = {};
+    for (const p of mod(q)) { const k = p.frg + '|' + p.w + '|' + p.d + '|' + p.h; (r[k] = r[k] || { frg: p.frg, nom: (catalog[p.frg] || {}).name || p.frg, w: p.w, d: p.d, h: p.h, n: 0 }).n++; }
+    return { z, h: m.length ? m[0].h : h, d: m.length ? m[0].d : d, n: m.length, modullar: Object.values(r) };
+  };
+  const qavatlar = [qavat('p', Q.oyoq, Q.pastki.h, Q.pastki.d), qavat('u', Q.ustki.z, Q.ustki.h, Q.ustki.d)];
+  if (Q.antresol) qavatlar.push(qavat('a', Q.antresol.z, Q.antresol.h, Q.antresol.d));
+  const tortmaM = pl.filter(p => p._tur === 'tortma');
+  let gola = null;
+  if (Q.gola) {
+    /* gorizontal: pastki fasadli modullar ustida (stoleshnitsa ostida) bitta chiziq + har tortmali modulda tortmalar orasida
+       (3 tortma — 2 oraliq); vertikal — baland modul (penal) yo'q, 0. Sex amaliyoti tasdiqlanmagan — taklif */
+    const ust = mod('p').reduce((a, p) => a + p.w, 0);
+    const ora = tortmaM.reduce((a, p) => a + p.w * Math.max(0, Math.round(Q.tortmaSoni / Math.max(1, tortmaM.length)) - 1), 0);
+    gola = { gorizontal: Math.round(ust + ora), vertikal: 0 };
+  }
+  return { qavatlar, tortma: { modul: tortmaM.length, soni: tortmaM.length * 3, yonaltiruvchi: Q.yonaltiruvchi }, gola, ruchkasiz: !!Q.ruchkasiz, jami1: Q.jami1 };
 }
 
 /**
@@ -384,6 +531,8 @@ export function konstruksiya(room, talab = {}, catalog = {}, opt = {}) {
   /* egasi #152: modul devorga tiralmaydi — konstruktor devor yuzasidan DEVOR_ORALIQ mm ichkaridagi "ichki xona"da ishlaydi
      (kontur T = qalinlik/2 + oraliq ga ichkariga; modullar shu chiziqqa taqaladi, burchakda — ikkala devordan). opt.devorOraliq — boshqa qiymat */
   if (room && Array.isArray(room.outline)) room = ichkiXona(room, devorChegara(room, opt.devorOraliq != null ? opt.devorOraliq : DEVOR_ORALIQ));
+  /* egasi #166: talab.oshxona — matndan oshxona spec'i (qavatlar, fartuk, ruchkasiz, Gola, tortma, gaz, vityajka, stoleshnitsa) */
+  if (talab.oshxona) opt = Object.assign({}, opt, { qoidalar: chuqurQosh(opt.qoidalar || {}, oshxonaQoidalar(talab.oshxona, catalog)) });
   const Q = qoidalar(opt.qoidalar);
   const t = Object.assign({ shakl: 'auto', xolodilnik: true, plita: 'erkin', moyka: true, ustki: true }, talab);
   const W = devorlar(room);
@@ -400,7 +549,7 @@ export function konstruksiya(room, talab = {}, catalog = {}, opt = {}) {
     bosqich.push({ t: Object.assign({}, t, { xolodilnik: false, plita: false }), izoh: 'joy_plita' });
   }
   for (const b of bosqich) {
-    const Qb = b.q ? qoidalar(Object.assign({}, opt.qoidalar || {}, b.q)) : Q;
+    const Qb = b.q ? qoidalar(chuqurQosh(opt.qoidalar || {}, b.q)) : Q;
     const eng = {};
     for (const sh of nomzod) {
       const v = variantQur(sh, room, b.t, Qb, catalog);

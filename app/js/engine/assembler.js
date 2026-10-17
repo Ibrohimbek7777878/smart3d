@@ -68,6 +68,13 @@ export function eshikTuzilmasi(frag, w, d, h, t = 16) {
 }
 
 export function getModulePanels(frag, w, d, h, opts = {}) {
+  /* egasi #166: ruchkasiz (Gola) oshxona — eshik va tortmalarda ruchka chizilmaydi (joylashuv bayrog'i p.ruchkasiz) */
+  if (opts.ruchkasiz) {
+    const r = getModulePanels(frag, w, d, h, Object.assign({}, opts, { ruchkasiz: false }));
+    if (r && Array.isArray(r.panels)) for (const q of r.panels) delete q.handle;
+    if (r && Array.isArray(r.furn)) r.furn = r.furn.filter(f => f.tur !== 'ruchka');
+    return r;
+  }
   /* TZ-24 A: qo'lda chizilgan modul — panellar chizmadan (eshik petlyasi, tortmalar, ruchka, oyoq, shtanga) */
   if (frag && frag.chizma) return chizmaPanellar(frag.chizma, w, d, h, { t: opts.thickness || 16 });
   /* TZ-21: Bazis faylidan yuklangan loyiha — panellar fayldagi joyida (engine/bazis/loyiha.js: [x, y, z, w, d, h, slot, mi]).

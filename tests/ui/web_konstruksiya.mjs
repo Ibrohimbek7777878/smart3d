@@ -3,7 +3,8 @@
  * chizma: 2 bo'lim, chapda shtanga, o'ngda 4 polka, 2 eshik; izoh kartasi (kim tushundi, xulosa); narx; ruscha
  * "тумба 600, 4 ящика" → tumba 4 tortma; AI oynasidagi "Qurish" ham shu yo'l; xona matni ("oshxona 3x4 m") — oshxona yo'li
  * (almashtirish tasdig'i); keng polka — tizim to'g'rilaydi (izohda); telefon (390); egasining prompti (2026-10-17) — o'lcham,
- * bo'limlar, ERP materiallar, furnitura, OBJ darhol yuklanadi. Ishlatish: bash tests/ui/web.sh konstruksiya */
+ * bo'limlar, ERP materiallar, furnitura, OBJ darhol yuklanadi. Egasi #168: har matn avval katalog moduli kartasini ochadi (shkaf —
+ * MC-SH-01, CH- yaratilmaydi); chizish — faqat "Baribir chizish" bosilganda (katalog moduli o'rniga). Ishlatish: bash tests/ui/web.sh konstruksiya */
 export default async function run(page) {
   const R = {};
   try { await asosiy(page, R); } catch (e) {
@@ -23,6 +24,15 @@ async function asosiy(page, R) {
   const fill = async (ph, v) => { const el = page.locator(`input[placeholder*="${ph}"]`).first(); await el.fill(v); };
   const qator = page.locator('[data-matn]');
   const yoz = async (s) => { await qator.fill(s); await qator.press('Enter'); };
+  /* egasi #168: matn → avval katalog moduli (yoki "katalogda yo'q") kartasi; "Baribir chizish" bosilgandagina CH- modul chiziladi */
+  const katalog = [];
+  const karta = async () => {
+    const el = await kut(() => { const e = document.querySelector('[data-ai-oshxona]'); return e ? e.innerText : null; }, null, 8000);
+    katalog.push({ matn: el || '', chizmalar: await M(() => Object.keys(window.__app.doc.chizmalar || {}).length), pl: await M(() => window.__app.doc.placements.length) });
+    return el;
+  };
+  const baribir = async () => { await page.locator('[data-baribir-chiz]').click(); };
+  const yozChiz = async (s) => { await yoz(s); await karta(); await baribir(); };
   const kut = async (fn, arg, ms = 8000) => { for (let i = 0; i < ms / 200; i++) { const v = await M(fn, arg); if (v) return v; await page.waitForTimeout(200); } return null; };
   /* oxirgi qo'lda chizilgan modul: chizma (katalogda), joylashuv, narx */
   const oxirgi = () => M(() => {
@@ -43,6 +53,10 @@ async function asosiy(page, R) {
 
   /* 1) o'zbekcha shkaf */
   await yoz("shkaf 1200x600x2200, chapda shtanga, o'ngda 4 polka, 2 eshik");
+  R.katalog1 = await karta();
+  R.katalogModul = await M(() => window.__app.doc.placements.map(p => p.frg));
+  await page.screenshot({ path: `${OUT}/konstruksiya-1440-katalog.png` });
+  await baribir();
   await kut(() => !!document.querySelector('[data-kons-izoh]'));
   await page.waitForTimeout(800);
   R.shkaf = await oxirgi();
@@ -54,7 +68,9 @@ async function asosiy(page, R) {
   /* 1b) egasining prompti (2026-10-17, aynan): o'lcham, bo'limlar (chapda 1000 mm kiyim joyi, ustida va ostida polka; o'ngda 6 polka),
    *     ERP materiallar modul qismlarida (Кашемир, Дуб Золотой), uzun ruchka, HDF polgacha; "obj formatda yubor" — OBJ darhol yuklanadi */
   const EGA = 'mebel turi:shkaf balandlig 2100mm , eniga 1200mm,chuqurlig 580mm,korpusi va ichki qism materali:kashemir,16mm , fasad dubzalatoy,16mm, ikki eshikli chap tomondan 1 metr kiyim iladigan vishilkali joy, tepa va pastida polkalar bor bittadan , ong tomonda qolgan qismmi 6ta teng polkadan iborat , korpus brikmasi konfirmat, polkalar polka derjatel, bilan mahkamlanad  ruchka 1mterlik uzun ruchkadan qoyilad korpus bakavinasi yergacha va sokilli boladi,  obj formatda yubor gpirmasdan yubor';
-  const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 20000 }).catch(() => null), yoz(EGA)]);
+  await yoz(EGA);
+  R.katalogEga = await karta();
+  const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 20000 }).catch(() => null), baribir()]);
   await kut((n) => Object.keys(window.__app.doc.chizmalar || {}).length > n, R.shkaf.n);
   await page.waitForTimeout(800);
   R.ega = await M(() => {
@@ -70,13 +86,13 @@ async function asosiy(page, R) {
   await page.screenshot({ path: `${OUT}/konstruksiya-1440-egasi.png` });
 
   /* 2) ruscha tumba */
-  await yoz('тумба 600, 4 ящика');
+  await yozChiz('тумба 600, 4 ящика');
   await kut((n) => Object.keys(window.__app.doc.chizmalar || {}).length > n, R.ega.n);
   await page.waitForTimeout(600);
   R.tumba = await oxirgi();
 
   /* 3) keng polka — tizim bo'lgich qo'yadi (izohda) */
-  await yoz('javon 1600x300x1800 5 polka');
+  await yozChiz('javon 1600x300x1800 5 polka');
   await kut((n) => Object.keys(window.__app.doc.chizmalar || {}).length > n, R.tumba.n);
   await page.waitForTimeout(600);
   R.javon = await oxirgi();
@@ -87,6 +103,7 @@ async function asosiy(page, R) {
   await page.locator('[data-ai-tab] button', { hasText: 'Matn' }).click(); await page.waitForTimeout(200);
   await page.locator('[data-varaq="ai"] textarea').fill('ustki shkaf 800 2 eshik 2 polka');
   await page.locator('[data-varaq="ai"] button', { hasText: 'Qurish' }).click();
+  await karta(); await baribir();
   await kut((n) => Object.keys(window.__app.doc.chizmalar || {}).length > n, R.javon.n);
   await page.waitForTimeout(600);
   R.ustki = await oxirgi();
@@ -101,7 +118,7 @@ async function asosiy(page, R) {
 
   /* 6) telefon (390) — panel va matn qatori, toshish yo'q */
   await page.setViewportSize({ width: 390, height: 844 }); await page.waitForTimeout(700);
-  await yoz('tumba 400 3 tortma');
+  await yozChiz('tumba 400 3 tortma');
   await kut((n) => Object.keys(window.__app.doc.chizmalar || {}).length > n, R.ustki.n);
   await page.waitForTimeout(600);
   R.tel = await M(() => ({ toshish: document.documentElement.scrollWidth - innerWidth, izoh: !!document.querySelector('[data-kons-izoh]'), qator: document.querySelector('[data-matn-qatori]').getBoundingClientRect().bottom <= innerHeight + 1 }));
@@ -109,8 +126,11 @@ async function asosiy(page, R) {
   await page.setViewportSize({ width: 1440, height: 900 });
 
   R.xatolar = errs;
+  R.katalog = katalog.map(k => ({ chizmalar: k.chizmalar, pl: k.pl, bosh: k.matn.split('\n')[0] }));
   const s = R.shkaf.ichki;
-  R.ok = R.shkaf.n === 1 && /^CH-/.test(R.shkaf.kod) && R.shkaf.tur === 'shkaf' && JSON.stringify(R.shkaf.wdh) === '[1200,600,2200]'
+  R.ok = /MC-SH-01/.test(R.katalog1 || '') && katalog[0].chizmalar === 0 && JSON.stringify(R.katalogModul) === '["MC-SH-01"]'
+    && /MC-SH-01/.test(R.katalogEga || '') && /polka/.test(R.katalogEga || '')
+    && R.shkaf.n === 1 && /^CH-/.test(R.shkaf.kod) && R.shkaf.tur === 'shkaf' && JSON.stringify(R.shkaf.wdh) === '[1200,600,2200]'
     && s.yo === 'v' && s.bo.length === 2 && s.bo[0].shtanga && s.bo[0].eshik === 1 && s.bo[1].polka === 4 && s.bo[1].eshik === 1 && R.shkaf.narx > 0
     && /AI'siz/.test(R.izoh) && /2 bo'lim/.test(R.izoh) && R.panel && R.sahnada > 0
     && R.ega.tur === 'shkaf' && JSON.stringify(R.ega.wdh) === '[1200,580,2100]' && R.ega.chap.yo === 'h' && R.ega.chap.ajrat === 'polka' && R.ega.chap.bo.length === 3

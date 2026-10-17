@@ -17,6 +17,7 @@
  * tortma va polka bir bo'limda bo'lsa — pastda tortmalar, tepada polka. Har to'g'rilash — izoh bilan (tuzatish).
  * AI raqam o'ylab topmaydi: aytilmagan o'lcham — turning standarti (yangiChizma); narx — tizim hisobidan. */
 import { yangiChizma, QOIDA } from './chizish.js';
+import { oshxonami } from './oshxonaTili.js';
 
 export const TURLAR = ['shkaf', 'pastki', 'ustki', 'tumba', 'erkin'];
 export const CHEGARA = {
@@ -243,6 +244,7 @@ export function konstruksiyami(matn) {
   const s = String(matn || '').toLowerCase();
   if (!s.trim()) return false;
   if (XONA.test(s)) return false;
+  if (oshxonami(s)) return false;                           // egasi #166: "kuxnya 4500 mm, 1 etaj …" — oshxona (oshxonaTili.js)
   if (/(oshxona|кухн|kitchen)/.test(s) && /\d(?:[.,]\d)?\s*[x×х*]\s*\d(?:[.,]\d)?\s*(?:m|м)\b/.test(s)) return false;
   return Object.values(KW).some(re => re.test(s)) || /polka|tortma|shtanga|bo'lim|полк|ящик|штанг|секци|shel|drawer|section/.test(s);
 }
