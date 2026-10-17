@@ -53,6 +53,20 @@ export default function QadamNarx() {
           </span>
         </div>
       </div>
+      {/* TZ-20 (dizaynda yo'q — chip uslubida): "Narx aniqligi X%" — "* to'liq emas" o'rnida, jami narx ostida; bosilsa taxminiy qatorlar */}
+      {v.aniqlik ? <button onClick={v.aniqlik.flip} data-aniqlik="" aria-expanded={v.aniqlik.ochiq} style={{"alignSelf":"flex-start","minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":v.aniqlik.toliq ? "var(--cyan)" : "var(--acct)","fontSize":"14px","fontWeight":"800","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","whiteSpace":"nowrap"}}>
+        {v.aniqlik.label}<Ikon n={v.aniqlik.ochiq ? "tepa" : "past"} size={16} gap={0} />
+      </button> : null}
+      {v.aniqlik && v.aniqlik.ochiq ? (
+        <div data-aniqlik-royxat="" style={{"borderRadius":"16px","background":"var(--sfc)","border":"1px solid var(--line)","padding":"10px 14px","display":"flex","flexDirection":"column","gap":"4px","fontSize":"13px"}}>
+          {v.aniqlik.bosh ? <span style={{"color":"var(--cyan)","fontWeight":"700"}}>{v.aniqlik.bosh}</span> : null}
+          {v.aniqlik.rows.map((r, i) => (
+            <span key={i} style={{"display":"flex","justifyContent":"space-between","gap":"8px"}}>
+              <span style={{"minWidth":"0"}}>{r.n} <span style={{"color":"var(--mut)"}}>· {r.m}</span></span>
+              <span style={{"fontWeight":"800","fontVariantNumeric":"tabular-nums","whiteSpace":"nowrap"}}>{r.p}</span>
+            </span>))}
+          {v.aniqlik.narxsiz ? <span style={{"color":"var(--danger)","fontWeight":"700"}}>{v.aniqlik.narxsiz}</span> : null}
+        </div>) : null}
       {v.hasMissing ? (<>
       <div style={{"borderRadius":"16px","background":"rgba(255,123,123,.10)","border":"1px solid rgba(255,123,123,.38)"}}>
         <button onClick={v.toggleMissing} style={{"width":"100%","minHeight":"48px","display":"flex","justifyContent":"space-between","alignItems":"center","gap":"8px","padding":"10px 14px","background":"none","border":"0","color":"var(--danger)","fontWeight":"800","fontSize":"14px","cursor":"pointer","textAlign":"left"}}>

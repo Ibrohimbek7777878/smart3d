@@ -4,6 +4,7 @@ import Toggle from '../../shared/ui/Toggle.jsx';
 import { input } from '../../shared/ui/styles.js';
 import { useSozlamalar } from './useSozlamalar.js';
 import Qoldiqlar from './Qoldiqlar.jsx';
+import Narxlar from './Narxlar.jsx';
 import Buyurtmalar from '../buyurtma/Buyurtmalar.jsx';
 
 /* TZ-09: dizaynda yo'q sahifa — "Sozlamalar" (dizayndagi tugma faqat xabar chiqarardi: "sex logosi, narx ustamasi,
@@ -147,6 +148,8 @@ export default function Sozlamalar() {
         </section>
 
         <Qoldiqlar />
+        {/* TZ-20: narx stavkalari — to'liq kenglikda */}
+        <Narxlar />
         {S.xatolar ? <XatolarJurnali x={S.xatolar} /> : null}
 
       </div>

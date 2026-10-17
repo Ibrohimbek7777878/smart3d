@@ -193,11 +193,11 @@ export function createEstimator(H) {
     const sh = opt.sheet;
     const xz = opt.xizmatlar || {};
     const key = opt.materialCode + '|' + opt.fasadCode + '|' + (sh ? sh.sku + sh.name + '@' + sh.uzs : '') + '|xz' + (xz.teshik ? 1 : 0);
-    if (cache.key !== key) { cache.key = key; cache.map = {}; cache.mats = null; }
+    if (cache.key !== key || cache.stavka !== H.narxlar) { cache.key = key; cache.map = {}; cache.mats = null; cache.stavka = H.narxlar; }   // TZ-20: stavka o'zgarsa ham
     if (cache.map[f.code] == null) {
       const mats = cache.mats || (cache.mats = H.effectiveMaterials(sh));
       const cl = cutlist(f, f.w, f.d, f.h, mats, { projectSlots: projectSlots(opt.materialCode, opt.fasadCode) });
-      cache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: H.furnById, furnituraBoglash: H.furnituraBoglash, xizmatlar: xz }).clientTotal;
+      cache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: H.furnById, furnituraBoglash: H.furnituraBoglash, xizmatlar: xz, stavka: H.narxlar }).clientTotal;
     }
     return cache.map[f.code];
   };
