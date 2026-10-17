@@ -72,7 +72,7 @@ export function useQoldiqlar() {
       ishlatildi: admin && holat === 'available' ? () => qoldiqIshlatildi(r.remnant_id || r.id) : null
     }));
   const f = st.qForm || { mat: '', len: '', width: '' };
-  const pm = ((H && H.materials.panel_materials) || []).filter(m => m.thickness > 0 && m.code !== 'OYNA');
+  const pm = ((H && H.materials.panel_materials) || []).filter(m => m.thickness > 0 && m.code !== 'OYNA' && !m.unit_piece);
   const setF = (p) => set('settings', { qForm: { ...f, ...p } });
   return {
     yuklandi: st.qoldiqlar != null,

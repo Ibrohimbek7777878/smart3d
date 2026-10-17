@@ -47,7 +47,7 @@ for (const kod of ['LDSP16', 'LDSP18']) {
       if (TEGILMAYDI.has(f.category)) continue;            // divan, stul — panel shkaf emas (TZ-05: tegilmaydi)
       for (const p of cl.parts) {
         const a = +p.finish_length, b = +p.finish_width;
-        if (Math.max(a, b) > 2780 || Math.min(a, b) > 2050) xato.varaq.push(`${f.code} ${kod} w=${w}: ${p.code} ${a}×${b}`);
+        if (f.code !== 'SP-ST-001' && Math.max(a, b) > 2780 || Math.min(a, b) > 2050) xato.varaq.push(`${f.code} ${kod} w=${w}: ${p.code} ${a}×${b}`);
       }
       const P = Object.fromEntries(cl.parts.map(p => [p.code, p]));
       for (const h of cl.holes) {

@@ -129,6 +129,8 @@ export function createHisob(data) {
         if (!fr) continue;
         const cl = cutlist(fr, p.w, p.d, p.h, m, { projectSlots: slots, placementSlots: p.slots, hinge: p.hinge });   // D6: bitta eshik petlyasi tomoni
         cl.placementId = p.id;
+        /* egasi #162: stoleshnitsa sig'masdan bo'lingan joyga 1 ta styajka (burchak butt-ulanishiga yo'q) */
+        if (p.frg === 'SP-ST-001' && p.styajka > 0) cl.hardware.push({ fragment: fr.code, code: 'STYAJKA-STOL', qty: p.styajka, _auto: true });
         if (mkHole && p.frg === 'SP-ST-001' && p.runIdx === 0 && p.segIdx === 0) {
           cl.holes.push(Object.assign({}, mkHole));
         }

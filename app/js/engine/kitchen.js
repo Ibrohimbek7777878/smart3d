@@ -18,7 +18,52 @@
  */
 import { footprint, roomBBox } from './rules.js';
 
-export const SHEET_MAX = 2700;   // varaq 2800 dan xavfsiz kichik segment
+export const SHEET_MAX = 2700;   // varaq 2800 dan xavfsiz kichik segment (sokol/dobor/karniz plankalari)
+
+/* Egasi #162: stoleshnitsa 2 qalinlikda (26, 38 mm) va 2 standart uzunlikda (3050, 4200 mm) bo'ladi.
+   Sig'masdan 2 ga bo'lingan har joyga 1 ta "styajka stoleshnitsa". Sex 30 buyurtmasi: 26 mm — 12 buyurtma, 38 mm — 2 (sukut 26). */
+export const STOL_QALINLIK = [26, 38];
+export const STOL_SUKUT_QALINLIK = 26;
+export const STOL_UZUNLIK = [3050, 4200];
+export const STYAJKA_KOD = 'STYAJKA-STOL';
+export const stolQalinlik = (k) => (k && STOL_QALINLIK.includes(+k.stolT)) ? +k.stolT : STOL_SUKUT_QALINLIK;
+export const stolKod = (t, std) => 'STOL' + t + '-' + std;
+/** Kesim uzunligi uchun eng kichik mos standart (3050 | 4200); sig'masa — null */
+export const stdUzunlik = (len) => STOL_UZUNLIK.find(u => len <= u) || null;
+
+/**
+ * Stoleshnitsa qatori (len mm) → bo'laklar [{s0, len, std}].
+ * len ≤ 4200 — bitta bo'lak (≤3050 → 3050, aks holda 4200). Katta bo'lsa modul chegarasida (cuts — qator boshidan
+ * masofalar) har bo'lak ≤ 4200 bo'lib bo'linadi: avval standart varaqlar jami soni (3050 < 4200) eng oz variant,
+ * teng bo'lsa bo'laklar farqi eng kichigi. Chegara bo'lmasa/yetmasa — teng bo'laklar.
+ */
+export function stolBolaklar(len, cuts) {
+  const MAXL = STOL_UZUNLIK[STOL_UZUNLIK.length - 1];
+  if (len <= MAXL) return [{ s0: 0, len, std: stdUzunlik(len) }];
+  const pts = [0, ...(cuts || []).map(c => Math.round(c)).filter(c => c > 50 && c < len - 50).sort((a, b) => a - b).filter((c, i, a) => i === 0 || c !== a[i - 1]), len];
+  const n = pts.length;
+  const cost = (a, b) => { const u = stdUzunlik(b - a); return u == null ? Infinity : u; };
+  /* dp[i] = {c: umumiy standart uzunlik, k: bo'lak soni, mx: eng uzun bo'lak, prev} */
+  const dp = new Array(n).fill(null);
+  dp[0] = { c: 0, k: 0, mx: 0, prev: -1 };
+  const better = (x, y) => !y || x.k < y.k || (x.k === y.k && (x.c < y.c || (x.c === y.c && x.mx < y.mx)));
+  for (let i = 1; i < n; i++) for (let j = 0; j < i; j++) {
+    if (!dp[j]) continue;
+    const c = cost(pts[j], pts[i]);
+    if (c === Infinity) continue;
+    const cand = { c: dp[j].c + c, k: dp[j].k + 1, mx: Math.max(dp[j].mx, pts[i] - pts[j]), prev: j };
+    if (better(cand, dp[i])) dp[i] = cand;
+  }
+  if (dp[n - 1]) {
+    const out = [];
+    for (let i = n - 1; i > 0; i = dp[i].prev) out.unshift({ s0: pts[dp[i].prev], len: pts[i] - pts[dp[i].prev] });
+    return out.map(o => Object.assign(o, { std: stdUzunlik(o.len) }));
+  }
+  /* modul chegarasi yo'q: teng bo'laklar */
+  const m = Math.ceil(len / MAXL), each = Math.ceil(len / m / 10) * 10, out = [];
+  for (let i = 0, s0 = 0; i < m; i++) { const L = i === m - 1 ? len - s0 : each; out.push({ s0, len: L, std: stdUzunlik(L) }); s0 += L; }
+  return out;
+}
 
 function clusterRuns(members, axis) {
   // axis 'h': cluster by bbox y0; 'v': by bbox x0 (tol 20 mm)
@@ -217,7 +262,11 @@ export function deriveKitchen(doc, catalog) {
       /* stoleshnitsa uzunligi burchak ulanishidan keyin (sokol/dobor/karniz esa run bo'yicha qoladi) */
       const rc = rects[runIdx];
       const ctRun = Object.assign({}, run, { x0: rc.x0, x1: rc.x1, y0: rc.y0, y1: rc.y1 });
-      const ctSegs = splitSegments(ctRun);
+      /* standart uzunlikka bo'lish: modul chegaralari (qator boshidan masofa, jahon koordinatasi bo'yicha) */
+      const isVr = run.axis === 'v', c0 = isVr ? rc.y0 : rc.x0;
+      const cuts = (run.members || []).map(m => { const f = footprint(m); return (isVr ? f.y1 : f.x1) - c0; });
+      const stolT = stolQalinlik(k);
+      const ctSegs = stolBolaklar(isVr ? rc.y1 - rc.y0 : rc.x1 - rc.x0, cuts);
       ctSegs.forEach((seg, segIdx) => {
         const mk = (runIdx === 0 && segIdx === 0 && k.moyka && k.moyka.on)
           ? { offset: Math.max(0, +k.moyka.offset || 0), fromBack: Math.max(0, +k.moyka.fromBack || 0),
@@ -231,7 +280,9 @@ export function deriveKitchen(doc, catalog) {
           z: Math.round(run.h),
           w: Math.round(seg.len),
           d: Math.round(depth),
-          h: 18, rot: isV ? 90 : 0, qty: 1,
+          h: stolT, rot: isV ? 90 : 0, qty: 1,
+          std: seg.std, stolT, slots: { stoleshnitsa: stolKod(stolT, seg.std) },
+          styajka: segIdx === 0 ? ctSegs.length - 1 : 0,   /* sig'masdan bo'lingan joylar soni (burchak butt-ulanishi hisobga kirmaydi) */
           runIdx, segIdx, segCount: ctSegs.length,
           birlashma: segIdx === 0 ? butts[runIdx] : 0,   /* burchakdagi butt ulanish soni (stoleshnitsa styajkasi hisobi uchun) */
           moyka: mk
@@ -254,7 +305,7 @@ export function deriveKitchen(doc, catalog) {
     /* dobor (backsplash — stoleshnitsa ustida, devor chekkasida) */
     if (k.dobor) {
       segs.forEach((seg, segIdx) => {
-        out.push(stripPlacement(run, side, 18, seg, run.h + 18, Math.max(30, k.doborH || 60),
+        out.push(stripPlacement(run, side, 18, seg, run.h + stolQalinlik(k), Math.max(30, k.doborH || 60),
           'SP-ST-003', 'Dobor', '__kdb' + (n++), { runIdx, segIdx, segCount: segs.length }));
       });
     }

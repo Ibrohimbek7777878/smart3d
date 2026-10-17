@@ -433,7 +433,9 @@ export function nestProject(parts, materials, cfg = {}) {
     sheetPrice[m.code] = m.sheet_price || 0;
   });
   const groups = {};
-  for (const p of parts) (groups[p.material || 'DEFAULT'] = groups[p.material || 'DEFAULT'] || []).push(p);
+  /* standart bo'lak materiallari (stoleshnitsa 3050/4200) — varaqqa kroy qilinmaydi, productionCost dona bilan hisoblaydi */
+  const donaMat = new Set((materials.panel_materials || []).filter(m => m.unit_piece).map(m => m.code));
+  for (const p of parts) if (!donaMat.has(p.material)) (groups[p.material || 'DEFAULT'] = groups[p.material || 'DEFAULT'] || []).push(p);
 
   const kerf = cfg.kerf != null ? +cfg.kerf : (materials.kerf || 4);
   const trimL = cfg.trimL != null ? +cfg.trimL : (materials.trimL != null ? +materials.trimL : (materials.trim || TRIM_DEFAULT));

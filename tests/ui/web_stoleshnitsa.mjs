@@ -65,9 +65,20 @@ async function asosiy(page, R) {
   for (let i = 0; i < f.length; i++) for (let j = i + 1; j < f.length; j++)
     over += Math.max(0, Math.min(f[i][1], f[j][1]) - Math.max(f[i][0], f[j][0])) * Math.max(0, Math.min(f[i][3], f[j][3]) - Math.max(f[i][2], f[j][2]));
   R.ustmaUst = over;
-  R.xatolar = errs;
   await M(() => { const s = window.__app.sahna; if (s.sp.setView) try { s.sp.setView('iso'); } catch (e) {} });
   await page.waitForTimeout(600);
   await page.screenshot({ path: `${OUT}/stoleshnitsa-L.png` });
-  R.ok = f.length >= 2 && over === 0 && errs.length === 0;
+
+  /* egasi #162: Oshxona elementlari → Stoleshnitsa qalinligi 38 mm tanlovi (sukut 26) */
+  const stolHolat = () => M(() => { const d = window.__app.doc, ms = window.__app.sahna.sp.groups.items.children.map(m => m.userData).filter(u => u && u.frg === 'SP-ST-001'); return { t: d.kitchen.stolT, h: ms.map(u => u.h) }; });
+  R.t26 = await stolHolat();
+  await click(/^Xona$/); await page.waitForTimeout(700);
+  R.chipSoni = await page.locator('[data-stol-t]').count();
+  await page.locator('[data-stol-t="38"]').click(); await page.waitForTimeout(1200);
+  R.t38 = await stolHolat();
+  R.t38aria = await page.locator('[data-stol-t="38"]').getAttribute('aria-checked');
+  await page.screenshot({ path: `${OUT}/stoleshnitsa-tanlov.png` });
+  R.xatolar = errs;
+  R.ok = f.length >= 2 && over === 0 && errs.length === 0 && R.chipSoni === 2 && R.t26.t === 26 && R.t26.h.every(h => h === 26)
+    && R.t38.t === 38 && R.t38.h.length >= 2 && R.t38.h.every(h => h === 38) && R.t38aria === 'true';
 }

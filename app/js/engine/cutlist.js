@@ -565,7 +565,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   let sheetCost = 0, totalSheetsCount = 0, totalPanelArea = 0;
   const sheetCostByMat = {};
   const mats = opt.nestResult && opt.nestResult.by_material && !opt.areaEstimate
-    ? Object.keys(opt.nestResult.by_material) : Object.keys(groups);
+    ? Object.keys(opt.nestResult.by_material) : Object.keys(groups).filter(c => !(matByCode[c] && matByCode[c].unit_piece));
   for (const mat of mats) {
     const meta = matByCode[mat] || { name: mat };
     const nm = opt.nestResult && opt.nestResult.by_material && opt.nestResult.by_material[mat];
@@ -605,6 +605,20 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     raspilCost = Math.round(nList * rx.qiymat);
     lines.push({ group: 'Raspil', code: 'raspil', name: `Raspil — ${nList} list × ${rx.qiymat}`, qty: nList, unit: 'list',
       unit_price: rx.qiymat, amount: raspilCost, tasdiq: tasdiqMi(rx.manba), manba: rx.manba, xizmat: rx.nom });
+  }
+
+  /* 1b) Standart stoleshnitsa bo'laklari (egasi #162): har bo'lak = 1 dona 3050/4200 li stoleshnitsa, maydon emas.
+     Narxi ro'yxatlarda yo'q — materials.json da narxsiz (price_src 'yoq'); egasi bergach to'ldiriladi. */
+  const stolPieceCost = {};
+  for (const mat of Object.keys(groups).filter(c => matByCode[c] && matByCode[c].unit_piece)) {
+    const meta = matByCode[mat];
+    const qty = groups[mat].length;
+    const unitPrice = meta.sheet_price || 0;
+    if (!(unitPrice > 0)) noteMissing('Stoleshnitsa', mat, meta.name);
+    const amount = qty * unitPrice;
+    sheetCost += amount;
+    stolPieceCost[mat] = unitPrice;
+    lines.push({ group: 'Stoleshnitsa', code: mat, name: meta.name, qty, unit: 'dona', unit_price: unitPrice, amount, no_price: !(unitPrice > 0) });
   }
 
   /* 2) Kromka */
@@ -712,7 +726,8 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     let cost = 0;
     for (const p of cl.parts || []) {
       const mat = p.material || 'LDSP18';
-      if (areaByMat[mat] > 0) cost += (p.length * p.width) / areaByMat[mat] * (sheetCostByMat[mat] || 0);
+      if (stolPieceCost[mat] != null) cost += stolPieceCost[mat];
+      else if (areaByMat[mat] > 0) cost += (p.length * p.width) / areaByMat[mat] * (sheetCostByMat[mat] || 0);
     }
     if (raspilCost && areaTotal > 0) for (const p of cl.parts || []) cost += (p.length * p.width) / areaTotal * raspilCost;   // raspil — maydon ulushi bo'yicha
     for (const e of cl.edges || []) cost += e.meters * edgeRate(e.material).price;
