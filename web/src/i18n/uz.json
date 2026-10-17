@@ -577,6 +577,7 @@
  "narx.parametrlar": "Parametrlar",
  "narx.plita": "Plita",
  "narx.plita_q": "{n} varaq · {m} m²",
+ "narx.plita_mat": "{n} list · {m} m² ishlatildi · to'lish {p}%",
  "narx.prisadka_eslatma": "Prisadka smetaga qo'shilmagan — kerak bo'lsa belgilang",
  "narx.prisadka_olindi": "Prisadka smetadan olindi",
  "narx.prisadka_q": "присадка · {n}",

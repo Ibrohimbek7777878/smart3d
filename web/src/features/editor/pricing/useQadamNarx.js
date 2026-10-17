@@ -28,6 +28,18 @@ function raskroy(R, idx) {
   return { n: sheets.length, rk, cur, rects };
 }
 
+/** Plita qatorlari — material bo'yicha: "N list · M m² ishlatildi · to'lish P%" (M — detallar maydoni, list maydoni emas).
+ *  Raskroy natijasi bo'lmasa (taxminiy hisob) — avvalgi jami qator. */
+function plitaQatorlari(R, prod, B) {
+  const bm = (R && R.nest && R.nest.by_material) || {};
+  const lines = (prod.lines || []).filter(l => /^Plita/.test(l.group));
+  const rows = lines.filter(l => bm[l.code] && bm[l.code].stats).map(l => {
+    const nm = bm[l.code], st = nm.stats;
+    return [(project.H ? project.matName(l.code) : l.code), t('narx.plita_mat', { n: nm.sheet_count || 0, m: dec(Math.round((st.used_area_m2 || 0) * 100) / 100), p: dec(st.utilization_pct || 0) }), l.amount];
+  });
+  return rows.length ? rows : [[t('narx.plita'), t('narx.plita_q', { n: B.sheetsCount || 0, m: dec(B.panelAreaM2) }), prod.sheetCost]];
+}
+
 function flipPrisadka(on) {
   project.doc.xizmatlar = Object.assign({}, project.doc.xizmatlar, { teshik: on });
   project.scheduleRecalc(true);
@@ -52,7 +64,7 @@ export function useQadamNarx() {
     client: pj.client, onClient: ev => { set('project', { client: ev.target.value }); S.changed(); },
     quote: pr ? pr.lines.map(l => ({ name: l.code + ' · ' + (project.H && project.H.catalog[l.code] ? L.modulNomi(project.H, project.H.catalog[l.code]) : l.name), dim: (l.w || 0) + '×' + (l.d || 0) + '×' + (l.h || 0), n: l.qty, p: raqam(l.amount) })) : [],
     /* TZ-04: tasdiqlanmagan narx — "taxminiy" (eski saytdagidek); prisadka tanlanmagan bo'lsa — belgi (S3) */
-    costRows: prod ? [[t('narx.plita'), t('narx.plita_q', { n: B.sheetsCount || 0, m: dec(B.panelAreaM2) }), prod.sheetCost],
+    costRows: prod ? [...plitaQatorlari(R, prod, B),
       [t('narx.kromka') + (taxminiy.includes('Kromka') ? t('narx.taxminiy') : ''), t('narx.metr', { n: dec(B.edgeMeters) }), prod.edgeCost],
       [t('narx.zapchast'), t('narx.dona_n', { n: B.hwCount || 0 }), prod.hwCost],
       [t('narx.teshiklar') + (xzt.tanlangan ? (taxminiy.includes('Prisadka') ? t('narx.taxminiy') : '') : t('narx.tanlanmagan')), t('narx.prisadka_q', { n: B.holeCount || 0 }), prod.holeCost],

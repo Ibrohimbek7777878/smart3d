@@ -577,6 +577,7 @@
  "narx.parametrlar": "Параметры",
  "narx.plita": "Плита",
  "narx.plita_q": "{n} лист. · {m} м²",
+ "narx.plita_mat": "{n} лист. · {m} м² использовано · заполнение {p}%",
  "narx.prisadka_eslatma": "Присадка не включена в смету — отметьте, если нужна",
  "narx.prisadka_olindi": "Присадка убрана из сметы",
  "narx.prisadka_q": "присадка · {n}",

@@ -140,5 +140,24 @@ ok('napravlyayushiy: chuqurlik 450 → 400, 560 → 550, 300 → 250', nap(450) 
   delete H.catalog[fr.code];
 }
 
+/* 7) "list" hisobi: egasining shkafi (1200x600x2200, 1 bo'lim, 0 polka, 2 eshik, sokol, HDF orqa) — material bo'yicha list va maydon.
+ *    "m²" — detallar (ishlatilgan) maydoni, list maydoni emas; ERP LDSP18 2440x1220 tanlansa LDSP18 ikki list (4.232 m² > 2.977 m²). */
+{
+  const c = Object.assign(C.yangiChizma('shkaf'), { ichki: { eshik: 2, polka: 0 } }), fr = C.chizmaKatalog(c, 'CH-LIST', 'Custom wardrobe');
+  H.catalog[fr.code] = fr;
+  const doc = { v: 1, room: { outline: [[0, 0], [3000, 0], [3000, 2500], [0, 2500]], wall_height: 2700, wall_thickness: 100, openings: [] },
+    placements: [{ id: 'p1', frg: fr.code, x: 0, y: 0, z: 0, w: 1200, d: 600, h: 2200, rot: 0, qty: 1 }] };
+  const base = { materialCode: 'LDSP18', fasadCode: 'MDF16', polkaCode: 'LDSP16', orqaCode: 'HDF3' };
+  const kor = (r) => Object.fromEntries(Object.entries(r.nest.by_material).map(([m, x]) => [m, x.sheet_count + '@' + x.stats.used_area_m2]));
+  const a = H.recalc(doc, base), b = H.recalc(doc, Object.assign({ sheet: { type: 'LDSP', th: 18, l: 2440, w: 1220, uzs: 580650 } }, base));
+  ok('shkaf (0 polka): LDSP16 ochilmaydi; LDSP18 1 + MDF16 1 + HDF3 1 = 3 list, 9.272 m² (detallar maydoni)',
+    !a.nest.by_material.LDSP16 && a.prod.breakdown.sheetsCount === 3 && a.prod.breakdown.panelAreaM2 === 9.272 && JSON.stringify(kor(a)) === JSON.stringify({ LDSP18: '1@4.232', MDF16: '1@2.507', HDF3: '1@2.533' }), JSON.stringify(kor(a)));
+  ok('shkaf: ERP LDSP18 2440x1220 — LDSP18 2 list (4.232 m² > 2.977 m²), jami 4 list, maydon baribir 9.272 m² (ikki marta sanalmaydi)',
+    b.prod.breakdown.sheetsCount === 4 && b.prod.breakdown.panelAreaM2 === 9.272 && b.nest.by_material.LDSP18.sheet_count === 2, JSON.stringify(kor(b)));
+  const det = a.cutlists[0].parts.reduce((s, p) => s + p.finish_length * p.finish_width * (p.qty || 1) / 1e6, 0);
+  ok('detallar maydoni yig\'indisi ~ nest ishlatilgan maydon (±1%)', Math.abs(det - 9.272) / 9.272 < 0.01, det);
+  delete H.catalog[fr.code];
+}
+
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);
 process.exit(fail ? 1 : 0);

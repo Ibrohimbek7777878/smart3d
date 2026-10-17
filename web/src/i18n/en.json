@@ -577,6 +577,7 @@
  "narx.parametrlar": "Parameters",
  "narx.plita": "Board",
  "narx.plita_q": "{n} sheets · {m} m²",
+ "narx.plita_mat": "{n} sheets · {m} m² used · fill {p}%",
  "narx.prisadka_eslatma": "Drilling is not in the estimate — tick it if needed",
  "narx.prisadka_olindi": "Drilling removed from the estimate",
  "narx.prisadka_q": "drilling · {n}",
