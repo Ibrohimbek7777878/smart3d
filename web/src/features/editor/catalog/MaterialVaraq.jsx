@@ -14,11 +14,27 @@ import { useMaterialVaraq } from './material.js';
 const YOGOCH = 'repeating-linear-gradient(95deg, rgba(0,0,0,.10) 0 1px, transparent 1px 7px)';
 const NUQTA = (rang) => ({ display: 'inline-block', width: '22px', height: '22px', flex: '0 0 22px', borderRadius: '50%', background: rang || 'transparent', border: rang ? '1px solid rgba(0,0,0,.25)' : '1px dashed var(--mut)' });
 
+/* #182: Asosiy 100 — rang oilasi bo'yicha guruhlar (simple ko'rinishda — "Ko'p ishlatiladigan" ostida; qidiruvda — natijalar boshida) */
+function Asosiy({ s }) {
+  return s.asosiy.length ? (
+    <section data-material-asosiy="" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <span style={hint}>{t('mebel.asosiy')} · {t('mebel.asosiy_izoh')} · {s.asosiySoni}</span>
+      {s.asosiy.map(b => (
+        <div key={b.k} data-material-asosiy-guruh={b.k} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <span style={{ ...hint, display: 'flex', alignItems: 'center', gap: '8px' }}><span style={{ ...NUQTA(b.rang), width: '14px', height: '14px', flex: '0 0 14px' }}></span>{b.label} · {b.plitkalar.length}</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(132px, 1fr))', gap: '8px' }}>
+            {b.plitkalar.map(p => <Plitka key={p.key} p={p} />)}
+          </div>
+        </div>))}
+    </section>) : null;
+}
+
 export function Plitka({ p }) {
   return (
     <div data-material-plitka="" data-on={p.on ? '1' : '0'} style={{ background: 'var(--sfc2)', borderRadius: '16px', border: p.on ? '2px solid var(--acc)' : '1px solid var(--line)', padding: p.on ? '0' : '1px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <button onClick={p.pick} aria-pressed={p.on} aria-label={p.nom} style={{ border: '0', background: 'none', color: 'var(--txt)', cursor: 'pointer', textAlign: 'left', padding: '0', display: 'flex', flexDirection: 'column', flex: '1' }}>
         <span data-material-namuna="" style={{ position: 'relative', display: 'block', height: '64px', width: '100%', background: p.rang ? (p.yogoch ? YOGOCH + ', ' + p.rang : p.rang) : 'repeating-linear-gradient(45deg, var(--sfc3) 0 6px, transparent 6px 12px)' }}>
+          {p.taxminiy ? <span data-material-taxminiy="" title={t('mebel.rang_taxminiy')} aria-label={t('mebel.rang_taxminiy')} style={{ position: 'absolute', left: '6px', bottom: '6px', minWidth: '20px', height: '20px', padding: '0 5px', borderRadius: '10px', background: 'rgba(15,34,41,.72)', color: '#fff', fontSize: '12px', fontWeight: '800', display: 'grid', placeItems: 'center' }}>≈</span> : null}
           {p.on ? <span style={{ position: 'absolute', top: '6px', right: '6px', width: '24px', height: '24px', borderRadius: '50%', background: 'var(--acc)', color: 'var(--ink)', display: 'grid', placeItems: 'center' }}><Ikon n="tayyor" size={14} gap={0} /></span> : null}
         </span>
         <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', padding: '8px 10px 4px' }}>
@@ -42,6 +58,8 @@ export default function MaterialVaraq() {
       {s.qismlar.length ? <div data-material-qism=""><Chiplar list={s.qismlar} /></div> : null}
       {s.doiralar.length ? <div data-material-doira=""><Chiplar list={s.doiralar} /></div> : <span style={hint}>{s.doira}</span>}
     </div>
+    {/* #182: qidiruv — ikkala ko'rinishda (Asosiy 100 va Boshqa ranglar); bitta element — yozish paytida fokus yo'qolmaydi */}
+    <input data-material-qidiruv="" value={s.q} onChange={s.onQ} placeholder={t('mebel.qidiruv_nom_yoki_sku_masalan')} style={input} />
     {s.mashhur.length ? (
       <section data-material-mashhur="" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
@@ -54,9 +72,9 @@ export default function MaterialVaraq() {
           {s.mashhur.map(p => <Plitka key={p.key} p={p} />)}
         </div>
       </section>) : null}
+    {!s.hammasi ? <Asosiy s={s} /> : null}
     {s.hammasi ? (<>
     {!s.mashhur.length && s.hammasiQaytish ? <button data-material-mashhurga="" onClick={s.hammasiTogla} style={{ ...chip(false), minHeight: '40px' }}>{t('mebel.mashhur')}</button> : null}
-    <input data-material-qidiruv="" value={s.q} onChange={s.onQ} placeholder={t('mebel.qidiruv_nom_yoki_sku_masalan')} style={input} />
     <div data-material-rang="" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
       {s.ranglar.map(r => (
         <button key={r.k} onClick={r.pick} aria-pressed={r.on} aria-label={r.label} title={r.label} style={{ ...chip(r.on), padding: '0 10px 0 6px', display: 'inline-flex', alignItems: 'center', gap: '6px', minHeight: '40px', fontSize: '13px' }}>
@@ -72,6 +90,7 @@ export default function MaterialVaraq() {
         {s.qalinlik.length ? <><span style={hint}>{t('mebel.qalinlik')}</span><Chiplar list={s.qalinlik} /></> : null}
         {s.turlar.length ? <><span style={hint}>{t('mebel.standart_material')}</span><div data-material-standart=""><Chiplar list={s.turlar} /></div></> : null}
       </div>) : null}
+    {s.q ? <Asosiy s={s} /> : null}
     <div data-material-royxat="" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       {s.bolimlar.map(b => (
         <section key={b.k} data-material-bolim={b.k} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -94,7 +113,7 @@ export default function MaterialVaraq() {
     <div data-material-joriy="" style={{ position: 'sticky', bottom: '-24px', margin: '0 -20px -24px', padding: '12px 20px 20px', background: 'var(--sfc)', borderTop: '1px solid var(--line)', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}>
       <span style={NUQTA(s.joriyRang)}></span>
       <span style={{ display: 'flex', flexDirection: 'column', minWidth: '0', flex: '1' }}>
-        <span style={{ fontSize: '12px', color: 'var(--mut)' }}>{t('mebel.tanlandi')} · {s.doira}</span>
+        <span style={{ fontSize: '12px', color: 'var(--mut)' }}>{t('mebel.tanlandi')} · {s.doira}{s.joriyIzoh ? ' · ' + s.joriyIzoh : ''}</span>
         <span style={{ fontWeight: '800', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.joriy}</span>
       </span>
       <span style={{ fontWeight: '800', textAlign: 'right', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>{s.joriyQalin}<br />{s.joriyNarx}</span>

@@ -1,5 +1,7 @@
 import { baseForSheet } from './hisob.js';
 import { dekorRang } from '../../../app/js/engine/rang.js';
+import { asosiyRang, dekorKalit } from '../../../app/js/engine/dekorAsosiy.js';
+import { dekorNomi } from '../features/editor/catalog/dekor.js';
 
 /* TZ-23 E: ERP plitasi (1281 ta, materials-index.json) — alohida material kodi (ERP-…) bo'lib hisobga qo'shiladi:
  * har qism (korpus, fasad, orqa, stoleshnitsa) va har modul o'z dekorida bo'ladi, raskroy har dekorni alohida listda
@@ -60,10 +62,25 @@ export function erpSaqla(H, doc, kodlar) {
   return doc;
 }
 
+/** #182: Asosiy 100 dekor yozuvi — ERP kodi bo'yicha, bo'lmasa dekor nomi kaliti bo'yicha (boshqa ishlab chiqaruvchi/qalinlik) */
+function asosiyYozuv(H, code, name) {
+  const A = H && H.dekorAsosiy;
+  if (!A) return null;
+  return (code && A.kod.get(code)) || (name && A.kalit.get(dekorKalit(dekorNomi(String(name).split(/[\r\n]/)[0], '').nom))) || null;
+}
+
+/** ERP plitasi → dekor rangi: Asosiy 100 namunasi (plitka va 3D bir xil), bo'lmasa nomidan (taxminiy) */
+export function plitaRangi(H, sh) {
+  const e = asosiyYozuv(H, erpKod(sh), sh.name);
+  return e ? asosiyRang(e) : dekorRang(sh.name);
+}
+
 /** material kodi → nomi va dekor rangi (3D va ro'yxat uchun) */
 export function materialRang(H, code) {
   const m = ((H && H.materials && H.materials.panel_materials) || []).find(x => x.code === code);
-  return m ? dekorRang(m.name) : null;
+  if (!m) return null;
+  const e = /^ERP-/.test(code) ? asosiyYozuv(H, code, m.name) : null;
+  return e ? asosiyRang(e) : dekorRang(m.name);
 }
 
 /** TZ-23 E: Bazis materialini almashtirish — fragment nusxasi, detallar yangi materialda (asl fragment o'zgarmaydi).

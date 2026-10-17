@@ -1261,5 +1261,10 @@
  "kromka.F": "front",
  "kromka.B": "back",
  "kromka.L": "left end",
- "kromka.R": "right end"
+ "kromka.R": "right end",
+ "mebel.asosiy": "Top 100",
+ "mebel.asosiy_izoh": "most used in the shop and in stock",
+ "mebel.rang_taxminiy": "Approximate colour (no photo in ERP)",
+ "mebel.dekorsiz": "standard, no decor chosen",
+ "mebel.loyihadan": "from project"
 }

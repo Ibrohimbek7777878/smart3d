@@ -54,7 +54,7 @@ async function asosiy(page, R) {
   /* #151: sodda ko'rinish — tepada "Ko'p ishlatiladigan" (8-12 dekor, narxli), qidiruv/rang/filtr "Boshqa ranglar" orqasida */
   R.mashhur = await M(() => { const m = document.querySelector('[data-material-mashhur]'); const pl = m ? [...m.querySelectorAll('[data-material-plitka]')] : [];
     return { n: pl.length, narxsiz: pl.filter(x => /narx yo'q/i.test(x.innerText)).length, boshqa: !!document.querySelector('[data-material-boshqa]'),
-      yashirin: !document.querySelector('[data-material-qidiruv]') && !document.querySelector('[data-material-rang]') && !document.querySelector('[data-material-filtr]') }; });
+      yashirin: !!document.querySelector('[data-material-qidiruv]') && !document.querySelector('[data-material-rang]') && !document.querySelector('[data-material-filtr]') }; });
   const tiles = () => M(() => [...document.querySelectorAll('[data-material-mashhur] [data-material-plitka]')].map(x => ({ t: x.innerText.replace(/\s+/g, ' ').trim(), ch: [...x.querySelectorAll('[data-material-qalinlik] button')].map(b => b.innerText.trim()) })));
   R.jadvalKorpus = await tiles();
   R.kashemir = R.jadvalKorpus.some(x => /^Кашемир /.test(x.t) && /525 000/.test(x.t));   // ERP: ЛДСП Ультрадекор 5,796 Кашемир UR 16мм
