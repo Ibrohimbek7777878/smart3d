@@ -119,6 +119,26 @@ async function asosiy(page, R) {
   R.kQaytdi.mebel = await M(() => window.__app.doc.placements.length);
   await page.screenshot({ path: `${OUT}/marshrut-loyiha.png` });
 
+  /* 9) haqiqiy server (server/routes/sahifalar.js ILOVA_YOLI): chuqur manzil — app.html (CSP — app.html bilan bir xil), noma'lum — 404;
+     kirmagan /sozlamalar/narxlar → /kirish?qaytish=…, ma'lumot /data/… dan (404 yo'q), kirgach — o'sha bo'lim, keyin /loyiha/<id> */
+  const SRV = `http://127.0.0.1:${process.env.NPORT}`;
+  {
+    const g = (p) => page.request.get(SRV + p), csp = (r) => r.headers()['content-security-policy'] || '';
+    const a = await g('/app.html'), l = await g('/loyiha/' + ID), n = await g('/sozlamalar/narxlar/'), x = await g('/loyiha/abc');
+    R.srv = { loyiha: l.status(), narxlar: n.status(), html: (await l.text()).includes('id="root"'), csp: !!csp(a) && csp(l) === csp(a), yoq: x.status() };
+  }
+  await page.goto(SRV + '/sozlamalar/narxlar'); await kut(() => M(() => !!window.__app && window.__app.state.dataReady), 15000);
+  await M(() => localStorage.setItem('s3d-til', 'uz'));     // boshqa origin — o'z sozlamasi; yangilash: /kirish?qaytish=… saqlanadi
+  await page.reload(); await kut(() => M(() => !!window.__app && window.__app.state.dataReady), 15000); await page.waitForTimeout(800);
+  R.srvKirish = await holat();
+  await fill('jasur@', email); await fill('kamida 8', 'parol12345');
+  await click(/^Kirish$/);
+  await kut(async () => (await ekran()) === 'settings' && yol() === '/sozlamalar/narxlar', 15000);
+  R.srvNarxlar = await holat();
+  await page.goto(SRV + '/loyiha/' + ID); await kut(async () => (await ekran()) === 'app', 15000); await page.waitForTimeout(1200);
+  R.srvLoyiha = await holat();
+  R.srvLoyiha.mebel = await M(() => window.__app.doc.placements.length);
+
   R.xatolar = errs; R.yoq = yoq;
   const L = '/loyiha/' + ID, is = (h, y, e) => h.yol === y && h.ekran === e;
   R.ok = is(R.eskiReg, '/royxat', 'reg') && !R.eskiReg.hash && is(R.eskiLogin, '/kirish', 'login') && is(R.oddiyApp, '/royxat', 'reg')
@@ -133,5 +153,8 @@ async function asosiy(page, R) {
     && R.dYangi.ekran === 'app' && R.dYangi.mebel === 0 && is(R.dYoq, '/loyihalar', 'projects') && R.dYoq.xabar
     && is(R.chiqdi, '/kirish', 'login') && R.chiqdiOrqaga.ekran === 'login'
     && is(R.kLoyiha, '/kirish?qaytish=' + encodeURIComponent(L), 'login') && is(R.kQaytdi, L, 'app') && R.kQaytdi.mebel === nMebel
+    && R.srv.loyiha === 200 && R.srv.narxlar === 200 && R.srv.html && R.srv.csp && R.srv.yoq === 404
+    && is(R.srvKirish, '/kirish?qaytish=%2Fsozlamalar%2Fnarxlar', 'login') && is(R.srvNarxlar, '/sozlamalar/narxlar', 'settings')
+    && is(R.srvLoyiha, L, 'app') && R.srvLoyiha.mebel === nMebel
     && !errs.length && !yoq.length;
 }
