@@ -55,9 +55,9 @@ ok(splitSegments({ axis: 'h', x0: 0, x1: 1800, y0: 50, y1: 600, h: 720, members:
 let d = deriveKitchen(doc([base('a', 0, 50), base('b', 600, 50), upper('u1', 0, 50), upper('u2', 600, 50)], K), catalog);
 ok(d.length === 4, 'stol+sokol+dobor + karniz = 4 (1 pastki run, 1 ustki run)');
 const st = d.find(p => p.frg === 'SP-ST-001');
-ok(st && st.w === 1200 && st.z === 720 && st.h === 18 && st.auto === true, 'stoleshnitsa 1200×550 @z=720');
+ok(st && st.w === 1200 && st.z === 720 && st.h === 26 && st.auto === true, 'stoleshnitsa 1200×550 @z=720');
 ok(d.some(p => p.frg === 'SP-ST-002' && p.no3d === true && p.z === 0 && p.h === 100), 'sokol no3d z=0 h=100');
-ok(d.some(p => p.frg === 'SP-ST-003' && p.z === 738 && p.h === 60), 'dobor z=738 (720+18) h=60');
+ok(d.some(p => p.frg === 'SP-ST-003' && p.z === 746 && p.h === 60), 'dobor z=738 (720+26) h=60');
 const kr = d.find(p => p.frg === 'SP-ST-004');
 ok(kr && kr.z === 2170 && kr.h === 60, 'karniz ustki tepasida z=2170');
 
@@ -106,8 +106,8 @@ ok(prod.perModule && prod.perModule.length === cls.length, 'perModule = cutlist 
 
 /* ── 7) Uzun run: 2 segment stoleshnitsa ── */
 d = deriveKitchen(doc([base('a', 0, 50), base('b', 600, 50), base('c', 1200, 50), base('d', 1800, 50), base('e', 2400, 50), base('f', 3000, 50)], { stoleshnitsa: true, sokol: false }), catalog);
-ok(d.length === 2, '3600mm run → 2 stoleshnitsa segmenti');
-ok(d[0].w + d[1].w === 3600, 'segmentlar yig\'indisi = 3600');
+ok(d.length === 1 && d[0].std === 4200, '3600mm run → 1 stoleshnitsa (4200 standart, egasi #162)');
+ok(d[0].w === 3600, 'bo\'lak uzunligi = 3600');
 
 /* ── 8) vertikal run → rot=90 (detal uzunligi W, varaqqa sig'adi) ── */
 const vBase = (id, x, y) => ({ id, frg: 'SP-K-001', name: 'pastki', x, y, z: 0, w: 600, d: 550, h: 720, rot: 90, qty: 1 });
@@ -143,7 +143,7 @@ ok(!/Cutout/.test(nc), 'Excellon NC: cutout teshik sifatida YOQ (faqat drill)');
 
 /* ── 11) o'rnatma texnika: bo'sh korpus — cutlist 0 detal, tannarx 0 ── */
 const appl = {
-  code: 'SP-T-001', name: "O'rnatma pech", category: 'appliance', group: 'texnika',
+  code: 'SP-TX-001', name: "O'rnatma pech", category: 'appliance', group: 'texnika',
   w: 600, d: 600, h: 600, price_mode: 'unit', price: 0, parts: [], holes: [], hardware: [], edge: []
 };
 const acl = cutlist(appl, 600, 600, 600, mats, { projectSlots: {} });

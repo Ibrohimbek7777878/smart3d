@@ -19,7 +19,7 @@ before(async () => {
   execFileSync(process.execPath, ['init-db.js'], {
     cwd: SERVER_DIR, env: { ...process.env, DB_PATH: db, ADMIN_PASSWORD: 'test-admin-parol-2', ADMIN_EMAIL: 'admin@smart3d.uz' }, stdio: 'pipe'
   });
-  const port = 20000 + Math.floor(Math.random() * 20000);
+  const port = 24000 + Math.floor(Math.random() * 1000);
   base = `http://127.0.0.1:${port}`;
   const env = { ...process.env, PORT: String(port), DB_PATH: db, JWT_SECRET: 'auth-test-' + 'y'.repeat(40), NODE_ENV: 'test' };
   delete env.ESKIZ_EMAIL; delete env.ESKIZ_PASSWORD;                 // haqiqiy SMS yuborilmasin
@@ -47,6 +47,10 @@ async function login(tel, name) {
   return v.json();
 }
 const DOC = (n) => ({ app: 'smart3d', v: 2, name: 'Oshxona ' + n, doc: { room: { outline: [[0, 0], [3600, 0], [3600, 3000], [0, 3000]] }, placements: [{ id: 'p1', frg: 'MC-KP-02', x: 0, y: 50, z: 0, w: 600, d: 450, h: 708 }] } });
+
+test('kirish usullari: test serverida SMS bor (dev_code bilan)', async () => {
+  assert.deepEqual(await (await api('/api/auth/usullar')).json(), { email: true, sms: true, google: false, googleClientId: '' });
+});
 
 test('telefon formati noto\'g\'ri → 400', async () => {
   for (const tel of ['123', '+7 999 123 45 67', 'abc']) {
@@ -88,6 +92,24 @@ test('email bilan ro\'yxat: telefon S1 formatiga keltiriladi, takror raqam — 4
   assert.equal(ok.status, 200);
 });
 
+test('TZ-09: email + parol bilan ro\'yxat va kirish — ism, telefon (S1), sex nomi saqlanadi; /api/me ham qaytaradi', async () => {
+  const r = await api('/api/register', { method: 'POST', body: { email: 'usta.tz09@test.uz', password: 'parol12345', name: 'Jasur', phone: '+998 97 555 44 33', shop: 'Mebel-Pro' } });
+  assert.equal(r.status, 200);
+  const j = await r.json();
+  assert.equal(j.user.phone, '998975554433');
+  assert.equal(j.user.shop, 'Mebel-Pro');
+  const l = await api('/api/login', { method: 'POST', body: { email: 'USTA.tz09@test.uz', password: 'parol12345' } });
+  assert.equal(l.status, 200);
+  const lj = await l.json();
+  assert.deepEqual([lj.user.name, lj.user.phone, lj.user.shop], ['Jasur', '998975554433', 'Mebel-Pro']);
+  const me = await (await api('/api/me', { token: lj.token })).json();
+  assert.deepEqual([me.email, me.phone, me.shop], ['usta.tz09@test.uz', '998975554433', 'Mebel-Pro']);
+  const bad = await api('/api/login', { method: 'POST', body: { email: 'usta.tz09@test.uz', password: 'notogri-parol' } });
+  assert.equal(bad.status, 401);
+  const html = await api('/api/register', { method: 'POST', body: { email: 'x.tz09@test.uz', password: 'parol12345', shop: '<b>x</b>' } });
+  assert.equal(html.status, 400, 'sex nomida HTML rad etiladi');
+});
+
 test('loyihalar: yaratish, ro\'yxat, ochish, yangilash; boshqa usta ko\'rmaydi; o\'chirish — yashirish', async () => {
   const A = await login('998991110001', 'A');
   const B = await login('998991110002', 'B');
@@ -111,6 +133,50 @@ test('loyihalar: yaratish, ro\'yxat, ochish, yangilash; boshqa usta ko\'rmaydi; 
   assert.equal((await api('/api/projects/' + id, { method: 'DELETE', token: A.token })).status, 200);
   assert.equal((await (await api('/api/projects', { token: A.token })).json()).length, 0);
   assert.equal((await api('/api/projects/' + id, { token: A.token })).status, 404);
+});
+
+test('TZ-09: loyiha kartasi — mijoz ismi saqlanadi, ro\'yxatda modul soni', async () => {
+  const { token } = await login('+998 99 777 66 55', 'Karta Usta');
+  const body = { name: 'Oshxona-Aziza', client: 'Aziza Karimova', total_price: 5701103, doc: DOC('K') };
+  const c = await api('/api/projects', { method: 'POST', token, body });
+  assert.equal(c.status, 200);
+  const { id } = await c.json();
+  let list = await (await api('/api/projects', { token })).json();
+  let it = list.find(p => p.id === id);
+  assert.deepEqual([it.name, it.client, it.modules], ['Oshxona-Aziza', 'Aziza Karimova', 1]);
+  const one = await (await api('/api/projects/' + id, { token })).json();
+  assert.equal(one.client, 'Aziza Karimova');
+  await api('/api/projects/' + id, { method: 'PUT', token, body: { ...body, client: 'Boshqa Mijoz' } });
+  list = await (await api('/api/projects', { token })).json();
+  assert.equal(list.find(p => p.id === id).client, 'Boshqa Mijoz');
+  const bad = await api('/api/projects', { method: 'POST', token, body: { ...body, client: '<b>x</b>' } });
+  assert.equal(bad.status, 400, 'mijoz nomida HTML rad etiladi');
+});
+
+test('TZ-09: sozlamalar — ustama, stanok profili, logo; har usta o\'zinikini; noto\'g\'ri qiymat 400', async () => {
+  /* email bilan (SMS cheklovi — soatiga 10 ta — boshqa testlar uchun qolsin) */
+  const reg = async (e) => (await api('/api/register', { method: 'POST', body: { email: e, password: 'parol12345' } })).json();
+  const a = await reg('sozlama.a@test.uz'), b = await reg('sozlama.b@test.uz');
+  assert.equal((await api('/api/settings')).status, 401);
+  let g = await (await api('/api/settings', { token: a.token })).json();
+  assert.deepEqual(g, { markup_pct: null, stanoklar: null, logo: null, til: null });
+  const LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+  const p = await api('/api/settings', { method: 'PUT', token: a.token, body: { markup_pct: 0.4, stanoklar: ['dxf', 'altendorf'], logo: LOGO } });
+  assert.equal(p.status, 200);
+  g = await (await api('/api/settings', { token: a.token })).json();
+  assert.deepEqual([g.markup_pct, g.stanoklar, g.logo], [0.4, ['dxf', 'altendorf'], LOGO]);
+  const gb = await (await api('/api/settings', { token: b.token })).json();
+  assert.equal(gb.markup_pct, null, 'boshqa usta sozlamasi ko\'rinmaydi');
+  for (const bad of [{ markup_pct: 5 }, { stanoklar: ['biesse'] }, { logo: 'data:image/svg+xml;base64,PHN2Zz4=' }, { logo: 'javascript:alert(1)' }]) {
+    assert.equal((await api('/api/settings', { method: 'PUT', token: a.token, body: bad })).status, 400, JSON.stringify(bad));
+  }
+});
+
+test('TZ-18: til akkauntda saqlanadi (uz/ru/en), boshqasi — 400', async () => {
+  const a = await (await api('/api/register', { method: 'POST', body: { email: 'til.a@test.uz', password: 'parol12345' } })).json();
+  assert.equal((await api('/api/settings', { method: 'PUT', token: a.token, body: { til: 'ru' } })).status, 200);
+  assert.equal((await (await api('/api/settings', { token: a.token })).json()).til, 'ru');
+  assert.equal((await api('/api/settings', { method: 'PUT', token: a.token, body: { til: 'de' } })).status, 400);
 });
 
 test('loyiha: tokensiz 401, buzilgan doc 400', async () => {

@@ -1,0 +1,5 @@
+# TZ-19: qidiruv tizimlari — faqat sayt; ilova va API indekslanmaydi
+User-agent: *
+Allow: /
+Disallow: /app.html
+Disallow: /api/

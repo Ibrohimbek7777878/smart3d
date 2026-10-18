@@ -9,7 +9,12 @@ Chiqish: app/data/fragments-mc.json  — MC-… fragmentlar (qayta ishga tushiri
 
 Asosiy qoidalar:
   · Bazis o'qlari: X = eni (w), Y = bo'yi (h), Z = chuqurligi (d). Panel o'lchami global
-    bbox'dan (guruhlar joylashuvi daraxtda qo'shiladi); detal pozitsiyasi fragmentga yozilmaydi.
+    bbox'dan (guruhlar joylashuvi daraxtda qo'shiladi).
+  · Joy (TZ-17): har detal nusxasining bbox burchagi modul boshidan (yon devorlar va to'liq enli
+    gorizontallar burchagi) formula bilan — `joy: {o: normal o'qi, p: [[x, y, z], ...]}`. Formula
+    yaqin chetga (0, ½, ⅓ … yoki to'liq o'lcham) bog'lanadi, detal o'lchami cho'zilsa — chetlari ham
+    to'g'ri yuradi. Bazis guruhi (tortma, eshik, polka bloki) cho'zilmaydigan o'qda bitta blok bo'lib
+    siljiydi. Standart o'lchamda Bazis qiymati bilan AYNAN teng (±0.6 mm) bo'lishi shart.
   · Gabarit faqat korpus panellaridan: D = yon devor chuqurligi, W = to'liq enli gorizontal
     panel eni, H = yon devor bo'yi + yon devorlarni yopuvchi to'liq enli gorizontallar.
   · Formula: modul bo'ylab cho'zilgan detal (≥ 50% o'q) → "o'q − k·t" yoki "o'q − c";
@@ -25,14 +30,18 @@ import json
 import math
 import re
 import sys
-from collections import Counter, OrderedDict
+from collections import Counter, OrderedDict, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "data1" / "modulniy" / "modulniy"
+if not SRC.exists():                                         # dizayn worktree: data1 asosiy papkada (git'da yo'q)
+    SRC = ROOT.parent / "Smart3D" / "data1" / "modulniy" / "modulniy"
 PARSER_DIR = ROOT.parent / "mebelcity-platform" / "client_erp" / "DOCS" / "bazis_erp_paket"
 OUT = ROOT / "app" / "data" / "fragments-mc.json"
 LINKS = ROOT / "app" / "data" / "id-links.json"
+_BOGLASH = ROOT / "app" / "data" / "furnitura-boglash.json"
+BOGLASH = json.loads(_BOGLASH.read_text(encoding="utf8"))["links"] if _BOGLASH.exists() else {}
 STD = ROOT / "app" / "data" / "sex-standartlari.json"
 FURN = ROOT / "app" / "data" / "furnitura-catalog.json"
 MATIDX = ROOT / "app" / "data" / "materials-index.json"
@@ -40,7 +49,10 @@ MATIDX = ROOT / "app" / "data" / "materials-index.json"
 sys.path.insert(0, str(PARSER_DIR))
 sys.path.insert(0, str(Path(__file__).resolve().parent))   # -I rejimida ham scripts/ dagi modul topilsin
 sys.dont_write_bytecode = True   # parser boshqa loyihada — u yerga __pycache__ yozilmasin (faqat o'qish, 2.10)
-import b3d_full_parser as P  # noqa: E402
+try:
+    import b3d_full_parser as P  # noqa: E402
+except ImportError:              # parser boshqa loyihada — CI da yo'q; tokens()/norm() ni narx_jadval.py ishlata oladi
+    P = None
 import bazis_daraxt  # noqa: E402  — asosiy model daraxti (amallar tarixisiz, global joylashuv)
 import bazis_teshik  # noqa: E402  — mahkamlagichdan teshiklar (TZ-06)
 
@@ -109,9 +121,10 @@ def panel_box(o):
     poly = P.contour_polygon(o["contour_outer"])
     th = float(o.get("thickness") or 16)
     pts = [[v[i] + x * ax[0][i] + y * ax[1][i] + z * ax[2][i] for i in range(3)] for (x, y) in poly for z in (0.0, th)]
-    size = [round(max(p[i] for p in pts) - min(p[i] for p in pts), 1) for i in range(3)]
+    mn = [min(p[i] for p in pts) for i in range(3)]
+    size = [round(max(p[i] for p in pts) - mn[i], 1) for i in range(3)]
     normal = AX[max(range(3), key=lambda i: abs(ax[2][i]))]
-    return size, normal, th
+    return size, normal, th, mn
 
 
 # ── detal roli ───────────────────────────────────────────────────────────────
@@ -181,6 +194,95 @@ def coord_formula(c, size, f):
     if abs(r) < 0.05:
         return f"({f})"
     return f"({f}) - {fmt_num(r)}" if r > 0 else f"({f}) + {fmt_num(-r)}"
+
+
+FRAKS = [(0, 1), (1, 1), (1, 2), (1, 3), (2, 3), (1, 4), (3, 4)]
+
+
+def olcham_k(expr, axis, dims, t):
+    """Detal o'lchami shu o'q bo'yicha: standart qiymati s0 va qiyaligi k (o'lcham = k·S + …)."""
+    var = AXIS_VAR[axis]
+    W, H, D = dims
+    S = {"w": W, "h": H, "d": D}[var]
+    ev = lambda v: eval_formula(str(expr), *(v if var == k else S0 for k, S0 in (("w", W), ("h", H), ("d", D))), t)  # noqa: E731
+    s0 = ev(S)
+    return s0, (ev(S + 120) - s0) / 120
+
+
+def best_anchor(start, s0, k, S):
+    """Boshi a·S + c, oxiri (a + k)·S + c' — a ∈ {0, ¼, ⅓, ½, ⅔, ¾, 1}, |c| + |c'| eng kichigi (detal eng yaqin
+    chetlarga bog'lanadi; ½ ga kichik, ⅓/¼ ga katta jarima — faqat kerak bo'lsa, masalan 3 eshik)."""
+    best = None
+    for n, m in FRAKS:
+        a = n / m
+        if a + k > 1 + 1e-6:
+            continue
+        c, ce = start - a * S, start + s0 - (a + k) * S
+        cost = abs(c) + abs(ce) + (0 if n in (0, m) else 20 if 2 * n == m else 60)   # oddiy chet (0, to'liq) afzal
+        if best is None or cost < best[0] - 1e-6:
+            best = (cost, n, m)
+    return best[1], best[2]
+
+
+def fmt_joy(nm, start, S, axis, t):
+    """a·var + c formula satri; c = k·t bo'lsa — "t" (korpus qalinligi o'zgarsa ham to'g'ri)."""
+    n, m = nm
+    var = AXIS_VAR[axis]
+    c = round(start - n / m * S, 1)
+    term = "" if n == 0 else var if n == m else f"{var}/{m}" if n == 1 else f"{var}*{n}/{m}"
+    cs = fmt_num(abs(c))
+    for kk in (1, 2, 3, 4):
+        if abs(abs(c) - kk * t) < 0.05:
+            cs = "t" if kk == 1 else f"{kk}*t"
+    if not term:
+        return cs if c >= 0 else "-" + cs
+    if abs(c) < 0.05:
+        return term
+    return f"{term} - {cs}" if c < 0 else f"{term} + {cs}"
+
+
+def joy_hammasi(kutish, O, dims, t, notes):
+    """Har detal nusxasi uchun joy formulalari [x, y, z] (Bazis o'qlari, modul boshidan) — part["joy"] ga.
+    Bazis guruhi shu o'q bo'yicha cho'zilmasa va modulning yarmidan kichik bo'lsa — guruh bitta chetga
+    bog'lanadi (tortma qismlari birga siljiydi)."""
+    S_of = dict(zip(AX, dims))
+    items = []
+    for pi, (part, ps, normal, len_ax, wid_ax, fl, fw) in enumerate(kutish):
+        size_of = {normal: None, len_ax: fl, wid_ax: fw}
+        for p in ps:
+            info = {}
+            for i, a in enumerate(AX):
+                se = size_of[a] if size_of[a] is not None else fmt_num(round(p["th"], 1))
+                s0, k = olcham_k(se, a, dims, t)
+                info[a] = (round(p["mn"][i] - O[i], 1), s0, k)
+            items.append((pi, p, info))
+    anchor, by_grp = {}, defaultdict(list)
+    for it in items:
+        if it[1].get("grp") is not None:
+            by_grp[it[1]["grp"]].append(it)
+    for g, its in by_grp.items():
+        for a in AX:
+            if all(abs(it[2][a][2]) < 1e-9 for it in its):
+                g0 = min(it[2][a][0] for it in its)
+                g1 = max(it[2][a][0] + it[2][a][1] for it in its)
+                if g1 - g0 < 0.5 * S_of[a]:                  # kichik blok; modulni egallagan guruh — har detal o'zi
+                    anchor[(g, a)] = best_anchor(g0, g1 - g0, 0, S_of[a])
+    out, xato = defaultdict(list), defaultdict(list)
+    for pi, p, info in items:
+        row = []
+        for a in AX:
+            start, s0, k = info[a]
+            f = fmt_joy(anchor.get((p.get("grp"), a)) or best_anchor(start, s0, k, S_of[a]), start, S_of[a], a, t)
+            got = eval_formula(f, *dims, t)
+            if abs(got - start) > 0.6:
+                xato[pi].append(f"{a}: {f} = {got:g}, Bazis {start:g}")
+                f = fmt_num(start) if start >= 0 else "-" + fmt_num(-start)
+            row.append(f)
+        out[pi].append(row)
+    for pi, (part, ps, normal, *_r) in enumerate(kutish):
+        part["joy"] = OrderedDict(o=normal, p=out[pi])
+        if xato[pi]:
+            notes.append(f"{ps[0]['name']}: joy formulasi Bazis bilan mos emas ({'; '.join(xato[pi][:2])}) — o'zgarmas joy olindi")
 
 
 def nom_bom(s):
@@ -388,13 +490,17 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
     obs = bazis_daraxt.daraxt(path)
     objs = bazis_daraxt.yozuvlar(obs) if obs is not None else load_objects(path)
     raw = []
+    grp, stek = {}, {}
+    for i, ob in enumerate(obs or []):                   # ildiz darajasidagi blok (tortma, eshik, polka) — qattiq guruh
+        stek[ob["chuqur"]] = i
+        grp[i] = stek[0] if ob["chuqur"] >= 1 else None
     for i, o in enumerate(objs):
         if o.get("modelCode") != 4002 or not o.get("contour_outer"):
             continue
-        size, normal, th = panel_box(o)
+        size, normal, th, mn = panel_box(o)
         flat = [s for a, s in zip(AX, size) if a != normal]
         raw.append(dict(name=str(o.get("name") or "detal").strip(), material=str(o.get("material") or ""),
-                        size=size, normal=normal, th=th, role=role_of(o.get("name"), o.get("material"), normal, th),
+                        size=size, normal=normal, th=th, mn=mn, grp=grp.get(i), role=role_of(o.get("name"), o.get("material"), normal, th),
                         bb_m2=flat[0] * flat[1] / 1e6, kontur_m2=P._poly_area(o["contour_outer"]) / 1e6,
                         tp=bazis_teshik.panel(obs[i], o, P) if obs is not None else None))
     notes = []
@@ -413,6 +519,9 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
     caps = [p for p in horiz if abs(p["size"][0] - W) < 1 and p["role"] == "korpus"]
     H = side_h + min(len(caps), 2) * t if side_h else max((p["size"][1] for p in panels), default=0)
     W, H, D = round(W), round(H), round(D)
+    # modul boshi (TZ-17): yon devorlar va to'liq enli gorizontallar burchagi — joy formulalari shundan
+    box = sides + caps or korpus or panels
+    O = [min(p["mn"][i] for p in (sides or box)) if i != 1 else min(p["mn"][1] for p in box) for i in range(3)]
 
     # teshiklar (TZ-06): har panel nusxasining Bazis o'lchamidagi teshiklari
     jts, qoldi = bazis_teshik.birikmalar(obs, [p["tp"] for p in raw]) if obs is not None else ([], [])
@@ -428,7 +537,7 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
         sig = tuple(sorted(imzo.get(id(p["tp"]), [])))
         key = (p["role"], p["name"].lower(), tuple(round(s) for s in p["size"]), p["normal"], p["material"], sig)
         groups.setdefault(key, []).append(p)
-    parts, used_codes, part_of = [], Counter(), {}
+    parts, used_codes, part_of, kutish = [], Counter(), {}, []
     for (role, _, size, normal, _m, _sig), ps in groups.items():
         p0 = ps[0]
         n = len(ps)
@@ -461,10 +570,12 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
             part["edge"] = "hammasi:kromka_fasad"
         elif role in ("korpus", "polka"):
             part["edge"] = {"F": "kromka_korpus"}
+        kutish.append((part, ps, normal, len_ax, wid_ax, fl, fw))
         parts.append(part)
         for k, pp in enumerate(ps):
             part_of[id(pp["tp"])] = (part, k == 0)          # (detal satri, vakil nusxami)
 
+    joy_hammasi(kutish, O, (W, H, D), t, notes)
     birik, birik_xato = teshik_birikmalari(jts, part_of, W, H, D, t)
 
     # furnitura va mahkamlagich — Bazis BOM (mahkamlagich guruhi — birikma sxemasi, zapchast emas)
@@ -481,6 +592,8 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
                          name=nm, qty=int(x.get("count") or 1), unit=x.get("unit") or "dona")
         if rec.get("holat") in ("aniq", "tasdiqlangan"):
             hw["id"] = rec["id"]
+        elif hw["code"] in BOGLASH:      # TZ-20: egasi tasdiqlagan kod → ID jadvali (furnitura-boglash.json)
+            hw["id"] = BOGLASH[hw["code"]]
         hardware.append(hw)
     for m in bom.get("materials", []):
         nm = m["name"]
@@ -498,6 +611,13 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
     std_key = std_tpl.format(n=1 if ndoor <= 1 else 2) if std_tpl else None
     frag = OrderedDict(code=f"MC-{prefix}-{idx:02d}", name=f"MC · {title}", category=category, group=group,
                        w=W, d=D, h=H)
+    # oyoq va sokol (2026-10-16, egasi #119): Bazis'da pol — Y=0; korpus oyoqda bo'lsa (pastki shkaflar — 100 mm)
+    # modul shu balandlikda turadi va sokol modulning o'z detali (korpus ostida) — oshxona qatoriga ikkinchi sokol qo'yilmaydi
+    oyoq = round(O[1])
+    if oyoq > 0:
+        frag["default_z"] = oyoq
+    if any(p["mn"][1] < O[1] - 1 and p["role"] == "korpus" for p in panels):
+        frag["sokol_ichida"] = True
     if category == "cabinet" and re.search(r"yash|ящик|kargo", title, re.I):
         frag["category"] = "drawer_base" if not re.search(r"kargo", title, re.I) else "cargo_base"
     fixed_dims = []
@@ -577,7 +697,7 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
         material_code="LDSP16" if t == 16 else "LDSP18",
         slots=slots,
         parts=parts, edge=[], holes=[], hardware=hardware, auto_hardware=False,
-        manba=OrderedDict(fayl=str(path.relative_to(ROOT)), bazis_olcham=[W, D, H] if not notes else None,
+        manba=OrderedDict(fayl=str(path.relative_to(SRC.parents[2])), bazis_olcham=[W, D, H] if not notes else None, joy_olcham=[W, D, H],
                           bazis_panel=len(raw), stoleshnitsa_chiqarildi=len(dropped),
                           bom_kromka_m=round(sum(e.get("totalLength_m", 0) for e in bom.get("edgeBands", [])), 2),
                           bom_maydon_m2=OrderedDict((mm["name"], mm["totalArea_m2"]) for mm in bom.get("materials", [])),
@@ -611,6 +731,8 @@ def build_fragment(path, sec, idx, std, matchers, old_links, links_out):
 
 
 def main():
+    if P is None:
+        sys.exit(f"b3d_full_parser topilmadi ({PARSER_DIR}) — .fr3d import faqat sexning to'liq papkasida ishlaydi")
     std = json.loads(STD.read_text(encoding="utf8"))
     old_links = {}
     if LINKS.exists():

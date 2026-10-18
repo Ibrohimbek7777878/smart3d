@@ -46,17 +46,44 @@ export const DEFAULT_ROOM = {
 
 export function createScene(container, opts = {}) {
   if (!container) throw new Error('sp-scene: container topilmadi');
+  /* TZ-09: ixtiyoriy mavzu (yangi frontend dizayni). Berilmasa — hammasi avvalgidek.
+     theme: { colors:{bg,wall3D,wallSide,floor,glass,...}, exposure, lights(scene,THREE)→update(bbox), cam3d(bbox,h)→{pos,target} } */
+  const TH = opts.theme || null;
+  const C = TH ? Object.assign({}, CLR, TH.colors || {}) : CLR;
 
   /* ── Renderer ───────────────────────────────────────────────────────── */
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
     preserveDrawingBuffer: true,      // B2
-    alpha: false
+    alpha: !!TH                       // mavzu: fon — sahna orqasidagi CSS (dizayndagi gradient)
   });
+  if (TH) {
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = TH.exposure || 1.15;
+  }
+  /* zoomda tekstura aniq: anisotropik filtr (kuchsiz qurilmada 4, qolganida 8 — tezlik pasaymasin) */
+  const ANISO = Math.max(1, Math.min(renderer.capabilities.getMaxAnisotropy(), (navigator.hardwareConcurrency || 4) <= 4 ? 4 : 8));
+  THREE.Texture.DEFAULT_ANISOTROPY = ANISO;
+  let anisoSon = -1;
+  function anisoQo() {
+    const n = renderer.info.memory.textures;
+    if (n === anisoSon) return;                  // yangi tekstura qo'shilmagan — aylanib chiqmaymiz
+    anisoSon = n;
+    scene.traverse(o => {
+      const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+      for (const m of ms) for (const k of ['map', 'normalMap', 'roughnessMap', 'bumpMap', 'aoMap']) {
+        const t = m[k];
+        if (t && t.isTexture && t.anisotropy < ANISO) { t.anisotropy = ANISO; t.needsUpdate = true; }
+      }
+    });
+  }
   renderer.xr.enabled = true;          // WebXR / VR (VRButton)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));   // B12
-  renderer.setClearColor(CLR.bg);
+  renderer.setClearColor(C.bg, TH ? 0 : 1);
   renderer.domElement.style.display = 'block';
+  renderer.domElement.style.width = '100%';     // canvas CSS o'lchami konteynerga bog'liq (dpr ≠ 1 da ham to'liq)
+  renderer.domElement.style.height = '100%';
   renderer.domElement.style.touchAction = 'none';
   container.appendChild(renderer.domElement);
 
@@ -71,10 +98,10 @@ export function createScene(container, opts = {}) {
 
   /* ── Sahna ─────────────────────────────────────────────────────────── */
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(CLR.bg);
+  scene.background = TH ? null : new THREE.Color(C.bg);
 
   const cam2d = new THREE.OrthographicCamera(-2000, 2000, 1500, -1500, -100000, 100000);
-  const cam3d = new THREE.PerspectiveCamera(45, 1, 10, 300000);
+  const cam3d = new THREE.PerspectiveCamera(TH && TH.fov ? TH.fov : 45, 1, 10, 300000);   // mavzu: dizayndagi 32°
   /* DIQQAT: 2D kamera TO'G'RI Z bo'ylab (pastga) qaraydi — shuning uchun uning
      `up`osi Z bo'lsa, up va qarash yo'nalishi PARALLEL bo'lib, matritsa
      noto'g'ri chiqadi (sahnа bo'sh ko'rinadi). Reja ko'rinishida ekrandagi
@@ -85,11 +112,17 @@ export function createScene(container, opts = {}) {
 
   let active = cam2d;                 // joriy kamera (toggle almashadi)
   let mode = '2d';
+  /* TZ-23 (D1): 3D da ortografik kamera (Orto — perspektivasiz, chizmadagidek). Ixtiyoriy: setOrto(true) chaqirilmasa — yo'q */
+  let cam3o = null, orto = false;
 
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xd8d2c4, 1.15));
-  const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
-  dirLight.position.set(2500, -3500, 5500);
-  scene.add(dirLight);
+  let themeLights = null;
+  if (TH && TH.lights) themeLights = TH.lights(scene, THREE);
+  else {
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xd8d2c4, 1.15));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    dirLight.position.set(2500, -3500, 5500);
+    scene.add(dirLight);
+  }
 
   /* ── Guruhlar (keyingi kunlar shu yerga qo'shadir) ─────────────────── */
   const gGrid = new THREE.Group();   gGrid.name = 'grid';
@@ -103,24 +136,28 @@ export function createScene(container, opts = {}) {
   /* ── Materiallar ────────────────────────────────────────────────────── */
   /* 3Dda devor YARIM SHAFFOF — ichidagi mebel hamma burchakdan ko'rinadi
      (dollhouse uslubi). 2Dda esa zich qoladi (matWall2D). */
-  const matWall3D = new THREE.MeshLambertMaterial({
-    color: CLR.wallSurf3D, transparent: true, opacity: 0.45,
-    side: THREE.DoubleSide, depthWrite: false
-  });
-  const matWall2D = new THREE.MeshBasicMaterial({ color: CLR.wallFill2D, transparent: true, opacity: 0.85 });
+  const matWall3D = TH
+    ? new THREE.MeshStandardMaterial({ color: C.wall3D, roughness: 1 })          // mavzu: zich devor (dizayn)
+    : new THREE.MeshLambertMaterial({
+      color: C.wallSurf3D, transparent: true, opacity: 0.45,
+      side: THREE.DoubleSide, depthWrite: false
+    });
+  const matWallSide = TH ? new THREE.MeshStandardMaterial({ color: C.wallSide || C.wall3D, roughness: 1 }) : matWall3D;
+  const matGlass = TH ? new THREE.MeshStandardMaterial({ color: C.glass, roughness: 0.3, emissive: C.glassEmissive || 0x10282C, emissiveIntensity: 0.5 }) : null;
+  const matWall2D = new THREE.MeshBasicMaterial({ color: C.wallFill2D, transparent: true, opacity: 0.85 });
   const matLine = (color, opacity = 1) =>
     new THREE.LineBasicMaterial({ color: color, transparent: opacity < 1, opacity: opacity });
 
   /* ── F6: qayta qurishda yangi material yaratilmaydi — ular SHARED va
      clearGroup ularni dispose QILMAYDI (faqat guruh ichidagi geometry va
      SHARED bo'lmagan materiallar tozalanadi). ── */
-  const matEdge = matLine(CLR.edge);
-  const matGridMinor = matLine(CLR.gridMinor, 0.5);
-  const matGridMajor = matLine(CLR.gridMajor, 0.85);
-  const matFloor = new THREE.MeshBasicMaterial({ color: CLR.floor });
+  const matEdge = matLine(C.edge);
+  const matGridMinor = matLine(C.gridMinor, 0.5);
+  const matGridMajor = matLine(C.gridMajor, 0.85);
+  const matFloor = TH ? new THREE.MeshStandardMaterial({ color: C.floor, roughness: 0.9 }) : new THREE.MeshBasicMaterial({ color: C.floor });
   /* F1: quvur/rozetka belgisi (Line emas — Mesh uchun BasicMaterial) */
-  const matUtil = new THREE.MeshBasicMaterial({ color: CLR.edge });
-  const SHARED_MATS = new Set([matWall3D, matWall2D, matEdge, matGridMinor, matGridMajor, matFloor, matUtil]);
+  const matUtil = new THREE.MeshBasicMaterial({ color: C.edge });
+  const SHARED_MATS = new Set([matWall3D, matWallSide, matWall2D, matEdge, matGridMinor, matGridMajor, matFloor, matUtil].concat(matGlass ? [matGlass] : []));
 
   /* Guruhni bo'shatish + GPU resurslarini tozalash.
      Eski kod `.clear()` ishlatgan edi — devor/to'r har qayta qurilganda
@@ -190,6 +227,10 @@ export function createScene(container, opts = {}) {
     const openings = (room && room.openings) || [];
 
     let count = 0;
+    /* mavzu: poligon yo'nalishi (soat strelkasiga qarshi bo'lsa o'ng normal — tashqariga) */
+    let area2 = 0;
+    for (let i = 0; i < pts.length; i++) { const a = pts[i], b = pts[(i + 1) % pts.length]; area2 += a.x * b.y - b.x * a.y; }
+    const outSign = area2 >= 0 ? 1 : -1;
     for (let i = 0; i < pts.length; i++) {
       const p0 = pts[i], p1 = pts[(i + 1) % pts.length];
       const len = Math.hypot(p1.x - p0.x, p1.y - p0.y);
@@ -201,9 +242,22 @@ export function createScene(container, opts = {}) {
         depth: thick, bevelEnabled: false
       });
       geo3.translate(-len / 2, -height / 2, -thick / 2);
-      const m3 = new THREE.Mesh(geo3, matWall3D);
+      const m3 = new THREE.Mesh(geo3, TH && Math.abs(p1.y - p0.y) > Math.abs(p1.x - p0.x) ? matWallSide : matWall3D);
       placeWall(m3, p0, p1, height);
       m3.userData = { kind: 'wall', index: i, len: len, height: height, openings: mine.length };
+      if (TH) {
+        const ax = (p1.x - p0.x) / len, ay = (p1.y - p0.y) / len;
+        m3.userData.out = new THREE.Vector3(ay * outSign, -ax * outSign, 0);      // tashqariga qaragan normal
+        m3.userData.mid = new THREE.Vector3((p0.x + p1.x) / 2, (p0.y + p1.y) / 2, 0);
+        /* derazada oyna (dizayn: glass) */
+        for (const o of mine) {
+          if (o.type !== 'window') continue;
+          const ow = Math.max(1, Number(o.width) || 1), oh = Math.max(1, Number(o.height) || 1);
+          const g = new THREE.Mesh(new THREE.BoxGeometry(ow, oh, 8), matGlass);
+          g.position.set(-len / 2 + (Number(o.offset) || 0) + ow / 2, -height / 2 + (Number(o.sill) || 0) + oh / 2, 0);
+          m3.add(g);
+        }
+      }
       gWalls3D.add(m3);
 
       // 2D — reja ko'rinishi + chiziq.
@@ -291,6 +345,7 @@ export function createScene(container, opts = {}) {
   }
 
   let bbox = bboxFrom([{ x: 0, y: 0 }, { x: 4200, y: 0 }, { x: 4200, y: 3100 }, { x: 0, y: 3100 }]);
+  let wallH = 2700;
 
   /* ── Kamerani sig'dirish (B4: 2D frustum = bbox + 20%) ─────────────── */
   /* Ekranning tepasidagi `insetTop` px sahna tugmalari (#viewCtl) bilan band —
@@ -318,6 +373,15 @@ export function createScene(container, opts = {}) {
   }
 
   function fit3D() {
+    if (TH && TH.cam3d) {
+      const v = TH.cam3d(bbox, wallH);
+      const d = Math.max(bbox.w, bbox.h) * 1.5 + 1200;
+      cam3d.near = Math.max(10, d / 200); cam3d.far = d * 15;
+      cam3d.position.set(v.pos[0], v.pos[1], v.pos[2]);
+      cam3d.lookAt(v.target[0], v.target[1], v.target[2]);
+      cam3d.updateProjectionMatrix();
+      return;
+    }
     const d = Math.max(bbox.w, bbox.h) * 1.5 + 1200;
     cam3d.near = Math.max(10, d / 100);
     cam3d.far = d * 15;
@@ -334,10 +398,15 @@ export function createScene(container, opts = {}) {
 
     gWalls2D.visible = mode === '2d';
     gWalls3D.visible = mode === '3d';
-    gGrid.visible = true;
+    gGrid.visible = TH ? mode === '2d' : true;
 
     if (mode === '2d') { fit2D(); active = cam2d; }
-    else { fit3D(); active = cam3d; if (api._controls) { api._controls.enabled = true; } }
+    else {
+      fit3D();
+      if (orto && cam3o) { ortoMos(cam3d.position.distanceTo(api._controls ? api._controls.target : new THREE.Vector3(bbox.cx, bbox.cy, 0))); active = cam3o; }
+      else active = cam3d;
+      if (api._controls) { api._controls.enabled = true; }
+    }
 
     lastToggleMs = performance.now() - t0;
     api._invalidate();
@@ -345,25 +414,58 @@ export function createScene(container, opts = {}) {
     return lastToggleMs;
   }
 
+  /* orto kamera: perspektiva kamerasining joyi va yo'nalishi, ko'rinish o'lchami — nishongacha masofa bo'yicha */
+  function ortoMos(dist) {
+    if (!cam3o) return;
+    const W = Math.max(container.clientWidth, 1), H = Math.max(container.clientHeight, 1);
+    const hh = Math.max(150, dist * Math.tan(THREE.MathUtils.degToRad(cam3d.fov / 2)));
+    cam3o.position.copy(cam3d.position); cam3o.quaternion.copy(cam3d.quaternion);
+    cam3o.top = hh; cam3o.bottom = -hh; cam3o.left = -hh * W / H; cam3o.right = hh * W / H;
+    cam3o.near = -300000; cam3o.far = 300000; cam3o.zoom = 1;
+    cam3o.updateProjectionMatrix();
+  }
+
   /* ── Hajam ─────────────────────────────────────────────────────────── */
   function resize() {
     const w = Math.max(container.clientWidth, 1), h = Math.max(container.clientHeight, 1);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);          // brauzer masshtabi o'zgarsa yangilanadi
+    if (renderer.getPixelRatio() !== dpr) renderer.setPixelRatio(dpr);
     renderer.setSize(w, h, false);
     cam3d.aspect = w / h;
     cam3d.updateProjectionMatrix();
+    if (cam3o) { const hh = (cam3o.top - cam3o.bottom) / 2; cam3o.left = -hh * w / h; cam3o.right = hh * w / h; cam3o.updateProjectionMatrix(); }
     if (mode === '2d') fit2D();
     if (labelRenderer) labelRenderer.setSize(w, h);
     api._invalidate();
   }
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
   if (ro) ro.observe(container);
+  window.addEventListener('resize', resize);     // brauzer masshtabi (Ctrl +/−) resize hodisasini ham beradi
+  /* masshtab (dpr) o'zgarishi — konteyner o'lchami o'zgarmasligi mumkin, shuning uchun alohida kuzatamiz */
+  (function dprKuzat() {
+    if (typeof matchMedia !== 'function') return;
+    const mq = matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+    const on = () => { resize(); dprKuzat(); };
+    mq.addEventListener ? mq.addEventListener('change', on, { once: true }) : mq.addListener(on);
+  })();
 
   /* ── Render (ixtiyoriy uzluksiz sikl — drag paytida 60 fps) ───────── */
   let needsRender = true;
   let rafId = 0;
-  function render() { renderer.render(scene, active); labelRenderer.render(scene, active); }
+  const _v = new THREE.Vector3();
+  function cullWalls() {
+    if (!TH || mode !== '3d') return;
+    for (const w of gWalls3D.children) {
+      const u = w.userData;
+      if (!u || !u.out) continue;
+      _v.copy(cam3d.position).sub(u.mid); _v.z = 0;
+      w.visible = _v.dot(u.out) <= 0;          // kamera devorning tashqarisida — devor ko'rinmaydi
+    }
+  }
+  function render() { if (renderer.getPixelRatio() !== Math.min(window.devicePixelRatio || 1, 2)) resize(); cullWalls(); anisoQo(); renderer.render(scene, active); labelRenderer.render(scene, active); if (listeners.render) emit('render'); }
   /* XR (VR) rejimida setAnimationLoop SHART — rAF o'rniga */
   function loop() {
+    if (listeners.frame) emit('frame');           // TZ-09: animatsiya (eshik ochilishi) — har kadr
     if (api._controls && api._controls.update) api._controls.update();
     if (needsRender || renderer.xr.isPresenting) { needsRender = false; render(); }
   }
@@ -375,20 +477,34 @@ export function createScene(container, opts = {}) {
   /* ── Tashqi API ────────────────────────────────────────────────────── */
   const api = {
     THREE, scene, renderer, labelRenderer, container,
+    theme: TH,
     groups: { grid: gGrid, floor: gFloor, walls2d: gWalls2D, walls3d: gWalls3D, items: gItems, labels: gLabels },
     get camera() { return active; },
     get cam2d() { return cam2d; },
     get cam3d() { return cam3d; },
+    get cam3o() { return cam3o; },
+    get orto() { return orto; },
+    /** TZ-23: 3D da ortografik kamera (on) yoki perspektiva; nishon — orbit markazi. Qaytaradi — endi faol 3D kamera */
+    setOrto(on, target) {
+      orto = !!on;
+      if (orto && !cam3o) { cam3o = new THREE.OrthographicCamera(-1, 1, 1, -1, -300000, 300000); cam3o.up.set(0, 0, 1); }
+      if (orto) ortoMos(target ? cam3d.position.distanceTo(target) : 5000);
+      if (mode === '3d') active = orto ? cam3o : cam3d;
+      api._invalidate();
+      return orto ? cam3o : cam3d;
+    },
     get mode() { return mode; },
     get bbox() { return bbox; },
+    /** 3D aylanish markazi (mavzu bo'lsa — uning ko'rinishi) */
+    camTarget() { return TH && TH.cam3d ? TH.cam3d(bbox, wallH).target : [bbox.cx, bbox.cy, 0]; },
     get lastToggleMs() { return lastToggleMs; },
 
     setMode: m => applyMode(m),
     toggle: () => applyMode(mode === '2d' ? '3d' : '2d'),
     getMode: () => mode,
 
-    /** Chizmani yangilaydi: devorlar + to'r + pol + kamera. */
-    setDoc(next) {
+    /** Chizmani yangilaydi: devorlar + to'r + pol + kamera. o.kamera === false — 2D kamera joyida qoladi (TZ-25: devor tahriri) */
+    setDoc(next, o = {}) {
       const d = next || {};
       api._doc = d;                       // getDoc() shundan o'qiydi
       const room = d.room || DEFAULT_ROOM;
@@ -397,8 +513,12 @@ export function createScene(container, opts = {}) {
         .map(p => ({ x: Number(p[0]) || 0, y: Number(p[1]) || 0 }));
       const walls = buildWalls(room);
       bbox = bboxFrom(pts);
+      wallH = Number(room.wall_height) || 2700;
+      if (themeLights && themeLights.update) themeLights.update(bbox, wallH);
       buildGrid(bbox);
-      if (mode === '2d') fit2D();
+      /* kamera joyida qolsa ham — xona ko'rinishdan chiqib ketsa, sig'diriladi */
+      const korinadi = bbox.minX >= cam2d.left && bbox.maxX <= cam2d.right && bbox.minY >= cam2d.bottom && bbox.maxY <= cam2d.top;
+      if (mode === '2d' && (o.kamera !== false || !korinadi)) fit2D();
       api._invalidate();
       emit('doc', { walls: walls, bbox: bbox });
       return { walls: walls, bbox: bbox };
@@ -453,10 +573,12 @@ export function createScene(container, opts = {}) {
     _invalidate() { needsRender = true; if (!rafId) render(); },
     _render: render,
     _startLoop() { if (!rafId) { rafId = 1; renderer.setAnimationLoop(loop); } },
+    _loopOn: () => !!rafId,                       // VR: sessiyadan oldingi sikl holati
     _stopLoop() { if (rafId) { renderer.setAnimationLoop(null); rafId = 0; } },
     _resize: resize,
 
     /* QA (F6): GPU'dagi geometry/textures soni — qayta qurishda o'smasligi kerak */
+    _aniso: () => ANISO,
     _info: () => ({
       geometries: renderer.info.memory.geometries,
       textures: renderer.info.memory.textures
@@ -465,6 +587,7 @@ export function createScene(container, opts = {}) {
     dispose() {
       api._stopLoop();
       if (ro) ro.disconnect();
+      window.removeEventListener('resize', resize);
       scene.traverse(o => {
         if (o.geometry) o.geometry.dispose();
         const mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];

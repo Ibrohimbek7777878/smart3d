@@ -12,6 +12,8 @@
  *   AI_TIMEOUT_MS standart 30000
  */
 import Anthropic from '@anthropic-ai/sdk';
+import { TIL_IZOH, TURLAR, specTekshir } from '../app/js/engine/konstruksiyaTili.js';
+import { oshxonaSxemadan } from '../app/js/engine/oshxonaTili.js';
 
 const KINDS = ['pastki', 'ustki', 'burchak', 'shkaf', 'stol', 'divan', 'orol'];
 const FEATURES = ['sink', 'stove', 'fridge', 'corner', 'upper', 'tall', 'wardrobe', 'island'];
@@ -26,10 +28,15 @@ export const AI_SCHEMA = obj({
   }),
   features: obj(Object.fromEntries(FEATURES.map(f => [f, { type: 'boolean' }]))),
   orders: { type: 'array', items: obj({ kind: { type: 'string', enum: KINDS }, qty: { type: 'integer' } }) },
+  /* egasi #166: oshxona parametrlari (mm; 0 — aytilmagan). Sayt AI'siz tahlilchi natijasini asos qiladi, bu — faqat bo'sh joylarga */
+  oshxona: obj(Object.fromEntries([
+    'uzunlik_mm', 'q1_boyi_mm', 'q1_chuqurligi_mm', 'q2_boyi_mm', 'q2_chuqurligi_mm', 'q3_boyi_mm', 'q3_chuqurligi_mm', 'fartuk_mm',
+    'tortma_soni', 'gaz_mm', 'vytyajka_mm', 'stol_qalinlik_mm', 'stol_chuqurligi_mm'].map(k => [k, { type: 'integer' }])
+    .concat(['ruchkasiz', 'gola', 'haytek', 'tandem_vakuum'].map(k => [k, { type: 'boolean' }])))),
   unknown: { type: 'array', items: { type: 'string' } }
 });
 
-const SYSTEM = `Siz mebel ustasining (o'zbek, rus yoki aralash tilda, og'zaki) gapini tuzilmaga o'girasiz.
+const SYSTEM = `Siz mebel ustasining (o'zbek, rus, ingliz yoki aralash tilda, og'zaki) gapini tuzilmaga o'girasiz.
 Faqat matnda AYTILGAN narsani yozing, hech narsani o'ylab topmang:
 - room.w_mm, room.d_mm — xona eni va chuqurligi, millimetrda ("3.6x3 m" → 3600 va 3000). Aytilmagan bo'lsa 0.
 - room.h_mm — shift balandligi, mm. Aytilmagan bo'lsa 0. Mebel balandligi xona balandligi EMAS.
@@ -37,6 +44,7 @@ Faqat matnda AYTILGAN narsani yozing, hech narsani o'ylab topmang:
 - room.openings — deraza (window) va eshik (door), kengligi mm ("eshik 90 sm" → 900).
 - features — aytilgan jihozlar: moyka (sink), plita/duxovka (stove), xolodilnik (fridge), burchak (corner), ustki shkaflar (upper), penal (tall), garderob (wardrobe), orol (island).
 - orders — miqdori aytilgan mebel: pastki, ustki (osma), burchak, shkaf (garderob, penal), stol, divan, orol. Faqat aniq son aytilganlar.
+- oshxona — oshxona parametrlari, aytilmagani 0 yoki false: uzunlik_mm (oshxona qatori uzunligi, "kuxnya 4500 mm"), q1/q2/q3 — 1-qavat (pastki, bo'yi poldan stoleshnitsa ustigacha), 2-qavat (ustki), 3-qavat (antresol): boyi_mm va chuqurligi_mm; fartuk_mm; tortma_soni; gaz_mm va vytyajka_mm (eni); stol_qalinlik_mm, stol_chuqurligi_mm (stoleshnitsa); ruchkasiz ("bezruchka", "без ручек"), gola (Gola profil), haytek, tandem_vakuum (Tandem vakuum yo'naltiruvchi).
 - unknown — tushunilmagan bo'laklar (qisqa).
 Faqat JSON qaytaring.`;
 
@@ -62,7 +70,9 @@ export function normalizeParsed(j) {
     .filter(o => o && KINDS.includes(o.kind) && num(o.qty) >= 1)
     .map(o => ({ kind: o.kind, qty: Math.min(50, num(o.qty)) }));
   const unknown = (Array.isArray(j.unknown) ? j.unknown : []).slice(0, 10).map(s => String(s).slice(0, 100));
-  return { room, orders, unknown };
+  /* oshxona — xom (sayt oshxonaTekshir bilan chegaraga keltiradi); aytilmagan bo'lsa maydon yo'q */
+  const oshxona = oshxonaSxemadan(j.oshxona);
+  return oshxona ? { room, orders, unknown, oshxona } : { room, orders, unknown };
 }
 
 export function aiConfig() {
@@ -78,14 +88,14 @@ const TIMEOUT = () => Number(process.env.AI_TIMEOUT_MS) || 30000;
 
 /* ── Claude (rasmiy SDK) ── */
 let anthropicClient = null;
-async function viaAnthropic(text, model) {
+async function viaAnthropic(text, model, system = SYSTEM, schema = AI_SCHEMA, effort = 'low') {
   anthropicClient = anthropicClient || new Anthropic({ apiKey: process.env.AI_API_KEY || process.env.ANTHROPIC_API_KEY, timeout: TIMEOUT(), maxRetries: 2 });
   const gen5 = /^claude-(opus|sonnet|haiku|fable)-5/.test(model);
   const withFallback = /^claude-(opus-5|opus-5-5|fable-5|fable-5-1|sonnet-5-5)$/.test(model);   // server-side fallback qo'llaydigan modellar
   const params = {
-    model, max_tokens: 4000, system: SYSTEM,
+    model, max_tokens: 4000, system,
     messages: [{ role: 'user', content: text }],
-    output_config: { format: { type: 'json_schema', schema: AI_SCHEMA }, ...(gen5 ? { effort: 'low' } : {}) }
+    output_config: { format: { type: 'json_schema', schema }, ...(gen5 ? { effort } : {}) }
   };
   const res = withFallback
     ? await anthropicClient.beta.messages.create({ ...params, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' })
@@ -106,13 +116,13 @@ async function postJson(url, body, headers) {
     return await r.json();
   } finally { clearTimeout(t); }
 }
-const schemaHint = '\nJSON sxemasi (aynan shu maydonlar):\n' + JSON.stringify(AI_SCHEMA);
+const schemaHint = (schema) => '\nJSON sxemasi (aynan shu maydonlar):\n' + JSON.stringify(schema);
 
 /* ── Gemini (Google) ── */
-async function viaGemini(text, model) {
+async function viaGemini(text, model, system = SYSTEM, schema = AI_SCHEMA) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
   const j = await postJson(url, {
-    systemInstruction: { parts: [{ text: SYSTEM + schemaHint }] },
+    systemInstruction: { parts: [{ text: system + schemaHint(schema) }] },
     contents: [{ role: 'user', parts: [{ text }] }],
     generationConfig: { responseMimeType: 'application/json' }
   }, { 'x-goog-api-key': process.env.AI_API_KEY });
@@ -122,11 +132,11 @@ async function viaGemini(text, model) {
 }
 
 /* ── OpenAI'ga mos API (OpenAI, DeepSeek, Ollama, OpenRouter…) ── */
-async function viaOpenAI(text, model) {
+async function viaOpenAI(text, model, system = SYSTEM, schema = AI_SCHEMA) {
   const base = (process.env.AI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
   const j = await postJson(base + '/chat/completions', {
     model,
-    messages: [{ role: 'system', content: SYSTEM + schemaHint }, { role: 'user', content: text }],
+    messages: [{ role: 'system', content: system + schemaHint(schema) }, { role: 'user', content: text }],
     response_format: { type: 'json_object' }
   }, process.env.AI_API_KEY ? { authorization: 'Bearer ' + process.env.AI_API_KEY } : {});
   const c = j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
@@ -142,4 +152,37 @@ export async function llmParse(text) {
     : cfg.provider === 'gemini' ? await viaGemini(text, cfg.model)
       : await viaOpenAI(text, cfg.model);
   return { parsed: normalizeParsed(raw), engine: `${cfg.provider}:${cfg.model}` };
+}
+
+/* ═══ TZ-26: AI konstruksiya — usta matni → konstruksiya tili (app/js/engine/konstruksiyaTili.js) ═══
+ * AI faqat matnni tilga o'giradi; o'lcham chegarasi, eshik va polka qoidalari, chizma, narx — tizimda (specTekshir). */
+const int = { type: 'integer' };
+const TARKIB = { eshik: int, petlya: { type: 'string', enum: ['chap', 'ong', 'auto'] }, polka: int, tortma: int, shtanga: { type: 'boolean' } };
+const QATLAM = obj({ boyi: int, ...TARKIB });
+const BOLIM = obj({ eni: int, ...TARKIB, ajrat: { type: 'string', enum: ['polka', 'auto'] }, qatlamlar: { type: 'array', items: QATLAM } });
+const MAT = obj({ nom: { type: 'string' }, qalinlik: int });   // dekor nomi matndagidek — ERP ro'yxatidan saytda qidiriladi
+export const KONS_SCHEMA = obj({
+  tur: { type: 'string', enum: [...TURLAR, 'xona'] }, nom: { type: 'string' }, eni: int, chuqurligi: int, boyi: int,
+  tag: { type: 'string', enum: ['sokol', 'oyoq', 'yoq', 'auto'] }, qopqoq: { type: 'string', enum: ['yaxlit', 'planka', 'auto'] },
+  bolimlar: { type: 'array', items: BOLIM },
+  orqa: { type: 'string', enum: ['hdf', 'yergacha', 'yoq', 'auto'] },
+  material: obj({ korpus: MAT, polka: MAT, fasad: MAT }),
+  furnitura: obj({ birikma: { type: 'string', enum: ['konfirmat', 'ekssentrik', 'auto'] }, polka: { type: 'string', enum: ['polkaderjatel', 'auto'] }, ruchka: int }),
+  eksport: { type: 'string', enum: ['obj', 'yoq'] },
+  tushunilmadi: { type: 'array', items: { type: 'string' } }
+});
+const KONS_SYSTEM = `Siz mebel ustasining (o'zbek, rus, ingliz yoki aralash tilda, og'zaki) BITTA mebel konstruksiyasi haqidagi gapini Smart3D konstruksiya tiliga o'girasiz.
+${TIL_IZOH}
+- tushunilmadi — matnning tushunilmagan bo'laklari (qisqa).
+Faqat JSON qaytaring.`;
+
+/** text → { natija: { spec, tuzatish, tushunilmadi } | { xona: true }, engine }. AI javobi tuzilmasi noto'g'ri bo'lsa — Error */
+export async function llmKonstruksiya(text) {
+  const cfg = aiConfig();
+  if (!cfg.enabled) throw new Error('AI sozlanmagan');
+  const raw = cfg.provider === 'anthropic' ? await viaAnthropic(text, cfg.model, KONS_SYSTEM, KONS_SCHEMA, 'medium')
+    : cfg.provider === 'gemini' ? await viaGemini(text, cfg.model, KONS_SYSTEM, KONS_SCHEMA)
+      : await viaOpenAI(text, cfg.model, KONS_SYSTEM, KONS_SCHEMA);
+  if (!raw || typeof raw !== 'object' || ![...TURLAR, 'xona'].includes(raw.tur)) throw new Error('AI javobi tuzilmasi noto\'g\'ri');
+  return { natija: specTekshir(raw), engine: `${cfg.provider}:${cfg.model}` };
 }

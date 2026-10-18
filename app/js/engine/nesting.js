@@ -8,7 +8,7 @@
  *   - Varaq: LDSP/MDF uchun 2800×2070 yoki 2440×1220 (materials.json)
  *   - Trim (chetini tozalash): trimL va trimW (standart 10 mm) — varaq chetidagi
  *     shikastlangan/iflos qismlarni hisobdan chiqarib, effL va effW ga joylashtirish
- *   - Kerf: har bir detalga +4 mm (arracha qalinligi)
+ *   - Kerf: 4 mm (arracha qalinligi) — faqat qo'shni detallar orasida (TZ-20, 2026-10-17)
  *   - Textura / Grain direction:
  *       'uzunlik' (length/y): detal uzunligi varaq uzunligi bo'ylab bo'lishi shart (aylanish man etiladi)
  *       'en' (width/x): detal uzunligi varaq eni bo'ylab
@@ -47,7 +47,7 @@ function packStrip(items, L0, W0, kerf, maxRot) {
   /* placement: X = o.l, Y = o.w; xIsLength — X o'lchami detning uzunligimi */
   const place = (it, o, x, y) => {
     placed.push({
-      id: it.id + '#' + placed.length, src: it.src || it,
+      id: it.id + '#' + placed.length, it, src: it.src || it,
       x, y, w: o.l, h: o.w, rotated: o.rot,
       xIsLength: o.rot ? !it.lIsLength : it.lIsLength
     });
@@ -88,51 +88,151 @@ function packStrip(items, L0, W0, kerf, maxRot) {
   return { placed, unplaced, remnants };
 }
 
-/** Bir varaqqa guillotine (BSSF) joylashtirish. */
+/* ── Guillotine joylashtirish (bitta varaq) ─────────────────────────
+ * items l/w — KERF QO'SHILGAN; varaq L0×W0 = samarali o'lcham + kerf
+ * (kerf faqat qo'shni detallar orasida: n ta detal + (n−1) kerf ≤ samarali o'lcham).
+ * Erkin to'rtburchak detal qo'yilgach IKKI bo'lakka bo'linadi (bitta to'g'ri
+ * kesim — arra stanogi uchun guillotine saqlanadi):
+ *   fit   — qaysi bo'sh joy: 'bssf' (qisqa tomon qoldig'i eng kam), 'blsf'
+ *           (uzun tomon qoldig'i eng kam), 'baf' (maydon qoldig'i eng kam);
+ *   split — qaysi kesim avval: 'slas' / 'llas' (qoldiq o'qi qisqa / uzun),
+ *           'minas' / 'maxas' (kichik bo'lak eng kichik / eng katta),
+ *           'sas' / 'las' (bo'sh joyning qisqa / uzun o'qi).
+ * Sig'magan detallar — keyingi varaqqa (unplaced). */
+function fitScore(fit, fw, fh, w, h) {
+  const dw = fw - w, dh = fh - h;
+  const lo = Math.min(dw, dh), hi = Math.max(dw, dh);
+  if (fit === 'blsf') return [hi, lo];
+  if (fit === 'baf') return [fw * fh - w * h, lo];
+  return [lo, hi];
+}
+
+function splitHorizontal(split, fw, fh, w, h) {
+  const rw = fw - w, rh = fh - h;
+  switch (split) {
+    case 'llas': return rw > rh;
+    case 'minas': return w * rh > rw * h;
+    case 'maxas': return w * rh <= rw * h;
+    case 'sas': return fw <= fh;
+    case 'las': return fw > fh;
+    default: return rw <= rh;          // 'slas'
+  }
+}
+
 function packSheet(items, L0, W0, opt = {}) {
   const maxRot = opt.maxRot != null ? opt.maxRot : 2;   // 1=yo'q, 2=90°
-  const kerf = opt.kerf != null ? opt.kerf : KERF_DEFAULT;
+  const fit = opt.fit || 'bssf', split = opt.split || 'slas';
   const free = [{ x: 0, y: 0, w: L0, h: W0 }];
   const placed = [], unplaced = [];
 
   for (const it of items) {
-    let best = null, bi = -1, rot = false;
+    let best = null;
     const allowRot = (it.canRotate !== false) && (maxRot >= 2);
     for (let i = 0; i < free.length; i++) {
       const f = free[i];
-      // to'g'ri (0°)
-      if (it.l <= f.w && it.w <= f.h) {
-        const s = Math.min(f.w - it.l, f.h - it.w);
-        if (!best || s < best.s) { best = { s, x: f.x, y: f.y, w: it.l, h: it.w, f: i }; rot = false; }
-      }
-      // 90° aylantirilgan (faqat ruxsat bo'lsa)
-      if (allowRot && it.w <= f.w && it.l <= f.h) {
-        const s = Math.min(f.w - it.w, f.h - it.l);
-        if (!best || s < best.s) { best = { s, x: f.x, y: f.y, w: it.w, h: it.l, f: i }; rot = true; }
+      for (let r = 0; r < (allowRot ? 2 : 1); r++) {
+        const w = r ? it.w : it.l, h = r ? it.l : it.w;
+        if (w > f.w || h > f.h) continue;
+        const s = fitScore(fit, f.w, f.h, w, h);
+        if (!best || s[0] < best.s[0] || (s[0] === best.s[0] && s[1] < best.s[1])) best = { s, i, w, h, rot: r === 1 };
       }
     }
     if (!best) { unplaced.push(it); continue; }
 
-    const f = free[best.f];
+    const f = free[best.i];
     placed.push({
-      id: it.id, x: best.x, y: best.y, w: best.w, h: best.h, rotated: rot,
-      xIsLength: rot ? !it.lIsLength : it.lIsLength,   // X o'lchami detning uzunligimi
+      id: it.id, it, x: f.x, y: f.y, w: best.w, h: best.h, rotated: best.rot,
+      xIsLength: best.rot ? !it.lIsLength : it.lIsLength,   // X o'lchami detning uzunligimi
       src: it.src || it
     });
-    free.splice(best.f, 1);
-    
-    // Guillotine bo'linishi
+    free.splice(best.i, 1);
+
+    /* guillotine: ikki bo'lak — o'ng (x bo'ylab qoldiq) va past (y bo'ylab qoldiq) */
     const rw = f.w - best.w, rh = f.h - best.h;
-    if (rw >= 10 && best.h >= 10) free.push({ x: f.x + best.w, y: f.y, w: rw, h: best.h });
-    if (rh >= 10 && best.w >= 10) free.push({ x: f.x, y: f.y + best.h, w: best.w, h: rh });
-    if (rw >= 10 && rh >= 10) free.push({ x: f.x + best.w, y: f.y + best.h, w: rw, h: rh });
-    
-    // mayda bo'shliqlarni tozalash
-    for (let i = free.length - 1; i >= 0; i--) {
-      if (free[i].w < 10 || free[i].h < 10) free.splice(i, 1);
-    }
+    const hor = splitHorizontal(split, f.w, f.h, best.w, best.h);
+    const right = { x: f.x + best.w, y: f.y, w: rw, h: hor ? best.h : f.h };
+    const bottom = { x: f.x, y: f.y + best.h, w: hor ? f.w : best.w, h: rh };
+    if (right.w >= 10 && right.h >= 10) free.push(right);
+    if (bottom.w >= 10 && bottom.h >= 10) free.push(bottom);
   }
   return { placed, unplaced, free };
+}
+
+/* ── Ko'p o'tishli tanlov (BSSF rejimi) ─────────────────────────────
+ * Bir nechta saralash tartibi × joy tanlash × kesim qoidasi bilan butun
+ * material joylanadi; ikki usulda:
+ *   a) har sozlama butun materialni varaqma-varaq teradi;
+ *   b) har varaqda barcha sozlamalar sinaladi, eng ko'p maydon to'ldirgani olinadi.
+ * Eng kam varaq, teng bo'lsa — oxirgi varaq eng bo'sh (oldingilar eng to'la,
+ * qoldiq bir joyda katta). Tasodif va vaqt yo'q — natija deterministik. */
+const SORTS = [
+  (a, b) => (b.l * b.w) - (a.l * a.w),                                         // maydon
+  (a, b) => Math.max(b.l, b.w) - Math.max(a.l, a.w) || Math.min(b.l, b.w) - Math.min(a.l, a.w),   // uzun tomon
+  (a, b) => Math.min(b.l, b.w) - Math.min(a.l, a.w) || Math.max(b.l, b.w) - Math.max(a.l, a.w),   // qisqa tomon
+  (a, b) => (b.l + b.w) - (a.l + a.w),                                         // perimetr
+  (a, b) => b.w - a.w || b.l - a.l,                                            // varaq eni bo'ylab
+  (a, b) => b.l - a.l || b.w - a.w                                             // varaq uzunligi bo'ylab
+];
+const FITS = ['bssf', 'blsf', 'baf'];
+const SPLITS = ['slas', 'llas', 'minas', 'maxas', 'sas', 'las'];
+
+function sortedBy(items, k) {
+  const cmp = SORTS[k];
+  return items.map((it, i) => [it, i]).sort((a, b) => cmp(a[0], b[0]) || a[1] - b[1]).map(x => x[0]);
+}
+
+function placedArea(r) { let a = 0; for (const p of r.placed) a += p.w * p.h; return a; }
+
+/** sozlama bo'yicha butun pool'ni varaqma-varaq teradi → [{placed, free}] */
+function runPlan(pool, L0, W0, cfg) {
+  const out = [];
+  let rest = pool, guard = 0;
+  while (rest.length && guard++ < 500) {
+    const r = packSheet(rest, L0, W0, cfg);
+    if (!r.placed.length) break;
+    out.push(r);
+    rest = r.unplaced;
+  }
+  return out;
+}
+
+function betterPlan(a, b) {
+  if (!b) return true;
+  const na = a.reduce((s, r) => s + r.placed.length, 0), nb = b.reduce((s, r) => s + r.placed.length, 0);
+  if (na !== nb) return na > nb;                       // (himoya) ko'proq detal joylashgani
+  if (a.length !== b.length) return a.length < b.length;
+  if (!a.length) return false;
+  return placedArea(a[a.length - 1]) < placedArea(b[b.length - 1]);
+}
+
+function bestPlan(items, L0, W0, maxRot) {
+  const cfgs = [];
+  for (let k = 0; k < SORTS.length; k++) for (const fit of FITS) for (const split of SPLITS) cfgs.push({ k, fit, split, maxRot });
+  const orders = SORTS.map((_, k) => sortedBy(items, k));
+
+  /* a) har sozlama — butun material */
+  let best = null;
+  for (const c of cfgs) {
+    const plan = runPlan(orders[c.k], L0, W0, c);
+    if (betterPlan(plan, best)) best = plan;
+  }
+
+  /* b) varaqma-varaq eng to'la varaq (har varaqda barcha sozlamalar) */
+  const greedy = [];
+  let rest = new Set(items), guard = 0;
+  while (rest.size && guard++ < 500) {
+    let top = null, topA = -1;
+    for (const c of cfgs) {
+      const r = packSheet(orders[c.k].filter(it => rest.has(it)), L0, W0, c);
+      const a = placedArea(r);
+      if (a > topA) { top = r; topA = a; }
+    }
+    if (!top || !top.placed.length) break;
+    greedy.push(top);
+    rest = new Set(top.unplaced);
+  }
+  if (betterPlan(greedy, best)) best = greedy;
+  return best || [];
 }
 
 /**
@@ -191,16 +291,28 @@ export function nestPanels(panels, opt = {}) {
   }
   items.sort((a, b) => (b.l * b.w) - (a.l * a.w));
 
-  const sheets = [];
-  let pool = items, guard = 0;
-  const allRemnants = [];
-  while (pool.length && guard < 500) {
-    guard++;
-    const r = mode === 'strip'
-      ? packStrip(pool, effL, effW, kerf, maxRot)
-      : packSheet(pool, effL, effW, { kerf, maxRot });
-    if (!r.placed.length) break; // bitta ham joylashmadi → cheksiz loopdan chiqish
+  /* Kerf faqat QO'SHNI detallar orasida (oxirgi detaldan keyin emas): har detal
+   * l+kerf egallaydi, varaq esa samarali o'lcham + kerf — n detal + (n−1) kerf ≤ eff. */
+  const binL = effL + kerf, binW = effW + kerf;
+  let plan;
+  if (mode === 'strip') {
+    plan = [];
+    let rest = items, guard = 0;
+    while (rest.length && guard++ < 500) {
+      const r = packStrip(rest, binL, binW, kerf, maxRot);
+      if (!r.placed.length) break; // bitta ham joylashmadi → cheksiz loopdan chiqish
+      plan.push(r);
+      rest = r.unplaced;
+    }
+  } else {
+    plan = bestPlan(items, binL, binW, maxRot);
+  }
 
+  const sheets = [];
+  const allRemnants = [];
+  const joylashdi = new Set();
+  for (const r of plan) {
+    for (const x of r.placed) joylashdi.add(x.it);
     let used = 0;
     const parts = r.placed.map(x => {
       used += x.src.length * x.src.width;
@@ -229,10 +341,11 @@ export function nestPanels(panels, opt = {}) {
       used_area: Math.round(used)
     });
 
-    // qoldiqlar (remnants) — trim offset bilan
-    const rawRems = r.remnants || (r.free || [])
-      .filter(f => Math.min(f.w, f.h) >= Math.min(remMinA, remMinB) && (f.w * f.h) / 1e6 >= remUsableMin)
-      .map(f => ({ x: f.x, y: f.y, w: f.w, h: f.h, area: f.w * f.h }));
+    // qoldiqlar (remnants) — trim offset bilan; varaq chetidagi kerf zaxirasi kesib tashlanadi
+    const rawRems = (r.remnants || r.free || []).map(f => {
+      const w = Math.min(f.x + f.w, effL) - f.x, h = Math.min(f.y + f.h, effW) - f.y;
+      return { x: f.x, y: f.y, w, h, area: w * h };
+    });
 
     for (const rm of rawRems) {
       if (Math.min(rm.w, rm.h) >= Math.min(remMinA, remMinB) && rm.area / 1e6 >= remUsableMin) {
@@ -252,8 +365,8 @@ export function nestPanels(panels, opt = {}) {
         });
       }
     }
-    pool = r.unplaced;
   }
+  const pool = items.filter(it => !joylashdi.has(it));
 
   const sheetArea = sheetL * sheetW * (sheets.length || 0);
   const usedArea = sheets.reduce((s, x) => s + x.used_area, 0);
@@ -320,7 +433,9 @@ export function nestProject(parts, materials, cfg = {}) {
     sheetPrice[m.code] = m.sheet_price || 0;
   });
   const groups = {};
-  for (const p of parts) (groups[p.material || 'DEFAULT'] = groups[p.material || 'DEFAULT'] || []).push(p);
+  /* standart bo'lak materiallari (stoleshnitsa 3050/4200) — varaqqa kroy qilinmaydi, productionCost dona bilan hisoblaydi */
+  const donaMat = new Set((materials.panel_materials || []).filter(m => m.unit_piece).map(m => m.code));
+  for (const p of parts) if (!donaMat.has(p.material)) (groups[p.material || 'DEFAULT'] = groups[p.material || 'DEFAULT'] || []).push(p);
 
   const kerf = cfg.kerf != null ? +cfg.kerf : (materials.kerf || 4);
   const trimL = cfg.trimL != null ? +cfg.trimL : (materials.trimL != null ? +materials.trimL : (materials.trim || TRIM_DEFAULT));

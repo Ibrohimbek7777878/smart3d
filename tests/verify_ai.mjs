@@ -10,6 +10,9 @@ const ai = await import(pathToFileURL(APP + '/js/ai.js').href);
 const rules = await import(pathToFileURL(APP + '/js/engine/rules.js').href);
 const { parseZamer, suggestLayout, aiBuild } = ai;
 const { validateDoc, footprint, itemsOverlap } = rules;
+/* egasi #152: devor chetidan bo'shliq — devor qalinligining yarmi (50) + DEVOR_ORALIQ (oldin 50: modul devor yuzasiga tiralardi) */
+const { DEVOR_ORALIQ } = await import(pathToFileURL(APP + '/js/engine/devorOraliq.js').href);
+const M = 50 + DEVOR_ORALIQ;
 
 const frags = JSON.parse(fs.readFileSync(APP + '/data/fragments.json', 'utf8'));
 const catalog = Object.fromEntries(frags.map(f => [f.code, f]));
@@ -41,7 +44,7 @@ const eq = (name, got, want) =>
   eq('A1 "U shakl + burchak" → U', r.room.layoutType, 'U');
   {
     const pl = suggestLayout(r.room, catalog, r.orders);
-    const wing = pl.filter(p => p.rot === 90 && Math.abs(footprint(p).x1 - (r.room.w - 50)) < 1);
+    const wing = pl.filter(p => p.rot === 90 && Math.abs(footprint(p).x1 - (r.room.w - M)) < 1);
     ok('A1 U shakl haqiqatan U quradi (o\'ng qanot rot90, devorga yopishqoq)', wing.length >= 1,
        'total=' + pl.length + ' wing=' + wing.length);
   }
@@ -103,12 +106,12 @@ function checkLayout(name, room) {
      JSON.stringify(leftBase.map(p => footprint(p).y0)));
 
   const fridge = pl.find(p => p.frg === 'SP-K-015');
-  ok('A2 L: xolodilnik chap devor tepasida (y1 = D-50)',
-     fridge && Math.abs(footprint(fridge).y1 - 2750) < 1,
+  ok('A2 L: xolodilnik chap devor tepasida (y1 = D-M)',
+     fridge && Math.abs(footprint(fridge).y1 - (2800 - M)) < 1,
      fridge ? JSON.stringify(footprint(fridge)) : 'yo\'q');
 
-  /* rot270 chap devor moduli haqiqatan devorga yopishqoq (x0 = 50) */
-  ok('A2 L: chap devor moduli x0 = 50 mm', leftBase.every(p => Math.abs(footprint(p).x0 - 50) < 1),
+  /* rot270 chap devor moduli haqiqatan devorga yopishqoq (x0 = M) */
+  ok('A2 L: chap devor moduli x0 = M mm', leftBase.every(p => Math.abs(footprint(p).x0 - M) < 1),
      JSON.stringify(leftBase.map(p => footprint(p).x0)));
 }
 
@@ -116,14 +119,14 @@ function checkLayout(name, room) {
   const pl = checkLayout('A2 U', { w: 4200, d: 3000, layoutType: 'U', features: {} });
   eq('A2 U: 11 modul (2 burchak + 3 o\'rta + 3+3 qanot) — hech biri rad etilmagan', pl.length, 11);
 
-  const rightWing = pl.filter(p => p.rot === 90 && Math.abs(footprint(p).x1 - 4150) < 1);
+  const rightWing = pl.filter(p => p.rot === 90 && Math.abs(footprint(p).x1 - (4200 - M)) < 1);
   eq('A2 U: o\'ng qanot 3 ta, devorga yopishqoq', rightWing.length, 3);
 
-  const rightCorner = pl.find(p => p.rot === 0 && Math.abs(footprint(p).x1 - 4150) < 1 && Math.abs(footprint(p).y0 - 50) < 1);
+  const rightCorner = pl.find(p => p.rot === 0 && Math.abs(footprint(p).x1 - (4200 - M)) < 1 && Math.abs(footprint(p).y0 - M) < 1);
   ok('A2 U: o\'ng burchak rot0, burchakda turibdi', !!rightCorner,
      rightCorner ? JSON.stringify(footprint(rightCorner)) : 'yo\'q');
 
-  const leftWing = pl.filter(p => p.rot === 270 && Math.abs(footprint(p).x0 - 50) < 1);
+  const leftWing = pl.filter(p => p.rot === 270 && Math.abs(footprint(p).x0 - M) < 1);
   eq('A2 U: chap qanot 3 ta, devorga yopishqoq', leftWing.length, 3);
 }
 
@@ -195,6 +198,66 @@ const upper = { id: 'p2', frg: 'SP-K-002', x: 500, y: 500, z: 1450, w: 600, d: 3
   ok('A1 aiBuild 4+3: ustma-ust yo\'q', !v.warnings.concat(v.errors).some(w => /OVERLAP/.test(w.code)), JSON.stringify(v.warnings));
   const s = await aiBuild('oshxona 2x3, pastki 9 ta', catalog);
   ok('A1 sig\'magan buyurtma → "so\'raldi … sig\'di" ogohlantirishi', (s.notes || []).some(x => /pastki: 9 ta so'raldi/.test(x)), JSON.stringify(s.notes));
+}
+
+/* ══════════════ TZ-18 8-bosqich: AI uch tilda (internetsiz qoidali tahlilchi) ══════════════ */
+{
+  const I18N = join(APP, '..', 'web', 'src', 'i18n');
+  const lug = (l) => JSON.parse(fs.readFileSync(join(I18N, l + '.json'), 'utf8'));
+  const UZ = lug('uz'), RU = lug('ru'), EN = lug('en');
+  const izi = (r) => JSON.stringify([r.room.w, r.room.d, r.room.h, r.room.layoutType,
+    Object.entries(r.room.features).filter(([, v]) => v).map(([k]) => k), r.orders]);
+  /* AI oynasidagi namunalar — tarjimasi o'zbekchadagidek tushuniladi (3-namuna "tokcha" — polka; tahlilchi uni miqdor deb sanamaydi, faqat o'lcham) */
+  for (const k of ['ai.misol1', 'ai.misol2']) {
+    const u = izi(parseZamer(UZ[k]));
+    eq('TZ-18 ' + k + ' ru = uz', JSON.parse(izi(parseZamer(RU[k]))), JSON.parse(u));
+    eq('TZ-18 ' + k + ' en = uz', JSON.parse(izi(parseZamer(EN[k]))), JSON.parse(u));
+  }
+  for (const L of [RU, EN]) { const r = parseZamer(L['ai.misol3']); eq('TZ-18 ai.misol3 o\'lcham (' + (L === RU ? 'ru' : 'en') + ')', [r.room.w, r.room.d], [5000, 4000]); }
+
+  const sum = (o, k) => o.filter(x => x.kind === k).reduce((s, x) => s + x.qty, 0);
+  let r = parseZamer('П-образная кухня 4 на 3 метра, мойка, плита, холодильник, три верхних шкафа, окно 120 см');
+  eq('TZ-18 ru: П-образная 4 на 3 метра → U 4000×3000', [r.room.layoutType, r.room.w, r.room.d], ['U', 4000, 3000]);
+  ok('TZ-18 ru: мойка, плита, холодильник', r.room.features.sink && r.room.features.stove && r.room.features.fridge);
+  eq('TZ-18 ru: "три верхних" → 3 ustki; окно 120 см → 1200', [sum(r.orders, 'ustki'), r.room.openings.map(o => o.type + o.width)], [3, ['window1200']]);
+  r = parseZamer('кухня 3 с половиной на 2.8 м, высота потолка 2.6, мойка в углу, 3 штуки нижних');
+  eq('TZ-18 ru: "3 с половиной на 2.8", потолок 2.6, "в углу" → L, 3 штуки нижних',
+    [r.room.w, r.room.d, r.room.h, r.room.layoutType, sum(r.orders, 'pastki')], [3500, 2800, 2600, 'L', 3]);
+  r = parseZamer('внутри шкафа полка');
+  eq('TZ-18 ru: "внутри" — "три" emas (miqdor yo\'q)', r.orders, []);
+  r = parseZamer('3 столешницы');
+  eq('TZ-18 ru: столешница — stol emas', r.orders, []);
+
+  r = parseZamer('L-shaped kitchen 3.6m x 3m, sink, stove, fridge, 3 upper cabinets');
+  eq('TZ-18 en: L-shaped 3.6m x 3m → L 3600×3000', [r.room.layoutType, r.room.w, r.room.d], ['L', 3600, 3000]);
+  ok('TZ-18 en: sink, stove, fridge, upper', r.room.features.sink && r.room.features.stove && r.room.features.fridge && r.room.features.upper);
+  eq('TZ-18 en: 3 upper → 3 ustki', sum(r.orders, 'ustki'), 3);
+  r = parseZamer('U-shaped kitchen 4 by 3 m, ceiling 2.8, window 1.2 m, two base cabinets, 2 tables');
+  eq('TZ-18 en: 4 by 3 m, ceiling 2.8, window 1.2 m, two base, 2 tables',
+    [r.room.layoutType, r.room.w, r.room.d, r.room.h, r.room.openings.map(o => o.type + o.width), sum(r.orders, 'pastki'), sum(r.orders, 'stol')],
+    ['U', 4000, 3000, 2800, ['window1200'], 2, 2]);
+  r = parseZamer('kitchen with 2 doors');
+  eq('TZ-18 en: "with 2" — xona balandligi emas', r.room.h, 2700);
+  r = parseZamer('cabinet height 2400, kitchen 3x4');
+  eq('TZ-18 en: "cabinet height 2400" — mebel balandligi, xona emas', [r.room.h, r.unknown.length], [2700, 1]);
+  r = parseZamer('3600 mm x 3000 mm kitchen');
+  eq('TZ-18: "3600 mm x 3000 mm" → 3600×3000', [r.room.w, r.room.d], [3600, 3000]);
+  r = parseZamer('360 sm x 300 sm');
+  eq('TZ-18: "360 sm x 300 sm" → 3600×3000', [r.room.w, r.room.d], [3600, 3000]);
+  r = parseZamer('oshxona 3000x4000 mebel');
+  eq('TZ-18: "3000x4000 mebel" — "m" birlik emas', [r.room.w, r.room.d], [3000, 4000]);
+
+  /* bitta oshxona uch tilda — bir xil loyiha */
+  const uch = ['oshxona 4x3, L shakl, moyka, plita, xolodilnik, 3 ta ustki',
+    'угловая кухня 4x3, мойка, плита, холодильник, 3 верхних',
+    'L-shaped kitchen 4x3, sink, stove, fridge, 3 upper'];
+  const qur = [];
+  for (const m of uch) qur.push(await aiBuild(m, catalog));
+  const iz = (b) => JSON.stringify(b.doc.placements.map(p => [p.frg, p.x, p.y, p.rot]).sort());
+  ok('TZ-18 aiBuild: uz/ru/en — bir xil joylashuv', iz(qur[0]) === iz(qur[1]) && iz(qur[1]) === iz(qur[2]) && qur[0].doc.placements.length > 0,
+    qur.map(b => b.doc.placements.length).join('/'));
+  const vr = validateDoc(qur[1].doc, { catalog });
+  ok('TZ-18 aiBuild ru: ustma-ust yo\'q', !vr.warnings.concat(vr.errors).some(w => /OVERLAP/.test(w.code)), JSON.stringify(vr.warnings));
 }
 
 console.log('\n' + (fails === 0 ? `=== HAMMASI OK (${n} ta tekshiruv) ===` : `=== ${fails}/${n} XATO ===`));
