@@ -110,7 +110,9 @@ const Sd = qolla(S, { ish_haqi: { detal: 20000 } });
 ok('ish haqi detal 12 000 → 20 000: oshdi', hisob(Sd).laborCost > pK.laborCost);
 const Su = qolla(S, { ustama: { foiz: 20 } });
 const pU = hisob(Su);
-ok('ustama 35% → 20%: mijoz narxi = tannarx × 1,20', pU.markupPct === 0.2 && pU.clientTotal === Math.round(pU.totalCost * 1.2));
+/* TZ-32 yakuniy Q2: ustama faqat plita+furnitura narxiga; xizmatlar (raspil, kromka, prisadka, Bazis, ish haqi) ustamasiz */
+ok('ustama 35% → 20%: mijoz narxi = (plita+furnitura) × 1,20 + xizmatlar (ustamasiz)', pU.markupPct === 0.2
+  && pU.clientTotal === Math.round((pU.sheetCost + pU.hwCost) * 1.2) + pU.raspilCost + pU.edgeCost + pU.holeCost + pU.bazisCost + pU.laborCost);
 ok('usta o\'z ustamasi (Sozlamalar) ustun', hisob(Su, { markupPct: 0.5 }).markupPct === 0.5);
 
 console.log('\n[3] Narx aniqligi');

@@ -247,7 +247,7 @@ export const XLSX_YORLIQ_UZ = {
   b4: '4. ISHLAB CHIQARISH XIZMATLARI VA ISH HAQI', b4h: ['№', 'Kod', 'Nomi', "O'lchov birligi", 'Hajmi', 'Tarif', 'Summa'], b4j: "4-BO'LIM JAMI (Xizmatlar):",
   b5: '5. TANNARX, FOYDA VA YAKUNIY XULOSA', b5h: ['№', 'Modda', 'Tavsif', 'Hisob asosi', '', 'Ulush (%)', 'Summa'],
   tannarx: 'Tannarx', tannarxT: 'Materiallar + Furnitura + Xizmatlar va ish haqi', tannarxA: "2 + 3 + 4 bo'limlar",
-  ustama: 'Ustama (foyda)', ustamaT: 'Tannarxga nisbatan', ustamaA: '{p}% ustama',
+  ustama: 'Ustama (foyda)', ustamaT: 'Plita va furnitura narxiga (xizmatlar ustamasiz)', ustamaA: '{p}% ustama',
   yakuniy: "MIJOZ TO'LAYDIGAN YAKUNIY SUMMA:", toliqEmas: "* Smeta to'liq emas: {n} ta narx bazada yo'q (0 so'm deb olingan) — ", dona: 'dona'
 };
 const qoy = (s, v) => String(s).replace(/\{(\w+)\}/g, (m, k) => (v[k] != null ? v[k] : m));
@@ -374,7 +374,7 @@ export function buildXLSX(opts = {}) {
   addRow([{ v: Y.b5, s: 2 }], 22);
   addRow(Y.b5h.map(h => ({ v: h, s: 3 })), 20);
 
-  /* UI va 1-bo'lim bilan bir xil: tannarx = 2+3+4, mijoz narxi = tannarx × (1 + ustama) */
+  /* UI va 1-bo'lim bilan bir xil: tannarx = 2+3+4, mijoz narxi = (plita+furnitura) × (1 + ustama) + xizmatlar (TZ-32 yakuniy Q2) */
   const directCost = p2Sum + p3Sum + p4Sum;
   const markupPct = Math.round((prod.markupPct != null ? prod.markupPct : (prod.margin || 1) - 1) * 100);
   const finalTotal = prod.clientTotal != null ? prod.clientTotal : Math.round(directCost * (1 + markupPct / 100));
