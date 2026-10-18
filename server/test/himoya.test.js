@@ -26,7 +26,7 @@ before(async () => {
   tmp = fs.mkdtempSync(path.join(os.tmpdir(), 's3d-himoya-'));
   dbFile = path.join(tmp, 'test.db');
   execFileSync(process.execPath, ['init-db.js'], { cwd: SERVER_DIR, env: { ...process.env, DB_PATH: dbFile, ADMIN_PASSWORD: ADMIN_PW, ADMIN_EMAIL: 'admin@smart3d.uz' }, stdio: 'pipe' });
-  port = 20000 + Math.floor(Math.random() * 20000);
+  port = 26000 + Math.floor(Math.random() * 1000);
   base = `http://127.0.0.1:${port}`;
   proc = spawn(process.execPath, ['index.js'], { cwd: SERVER_DIR, env: { ...process.env, PORT: String(port), DB_PATH: dbFile, JWT_SECRET: 'h'.repeat(48), NODE_ENV: 'test' } });
   proc.stdout.on('data', d => { out += d; });

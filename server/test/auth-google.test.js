@@ -22,7 +22,7 @@ const token = (o = {}, key = A.privateKey) => jwt.sign({
 }, key, { algorithm: 'RS256', keyid: 'k1', ...(o.exp ? {} : { expiresIn: 600 }) });
 
 async function start(env) {
-  const port = 20000 + Math.floor(Math.random() * 20000);
+  const port = 23000 + Math.floor(Math.random() * 1000);
   const p = spawn(process.execPath, ['index.js'], { cwd: SERVER_DIR, env: { ...process.env, PORT: String(port), DB_PATH: path.join(tmp, 'test.db'), JWT_SECRET: 'g-test-' + 'z'.repeat(40), NODE_ENV: 'test', ...env } });
   await new Promise((resolve, reject) => {
     let out = ''; const t = setTimeout(() => reject(new Error('server ishga tushmadi: ' + out)), 8000);

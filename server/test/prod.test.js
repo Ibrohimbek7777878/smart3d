@@ -15,7 +15,7 @@ const procs = [];
 after(() => { procs.forEach(p => p.kill()); fs.rmSync(tmp, { recursive: true, force: true }); });
 
 function start(extra) {
-  const port = 20000 + Math.floor(Math.random() * 20000);
+  const port = 28000 + Math.floor(Math.random() * 1000);
   const env = { ...process.env, PORT: String(port), DB_PATH: db, NODE_ENV: 'production', ...extra };
   for (const k of ['ESKIZ_EMAIL', 'ESKIZ_PASSWORD', 'AI_PROVIDER', 'AI_API_KEY']) delete env[k];
   if (extra.JWT_SECRET === undefined) delete env.JWT_SECRET;

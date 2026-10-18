@@ -34,7 +34,7 @@ async function serverOch(env0) {
   tmp = tmp || fs.mkdtempSync(path.join(os.tmpdir(), 's3d-kons-'));
   const db = path.join(tmp, 'test' + serverlar.length + '.db');
   execFileSync(process.execPath, ['init-db.js'], { cwd: SERVER_DIR, env: { ...process.env, DB_PATH: db, ADMIN_PASSWORD: 'test-admin-parol-6' }, stdio: 'pipe' });
-  const port = 20000 + Math.floor(Math.random() * 20000);
+  const port = 21000 + Math.floor(Math.random() * 1000);
   const env = { ...process.env, PORT: String(port), DB_PATH: db, JWT_SECRET: 'kons-test-' + 'k'.repeat(40), NODE_ENV: 'test' };
   for (const k of ['ESKIZ_EMAIL', 'ESKIZ_PASSWORD', 'AI_PROVIDER', 'AI_API_KEY', 'AI_MODEL', 'AI_BASE_URL', 'ANTHROPIC_API_KEY', 'ANTHROPIC_BASE_URL', 'ANTHROPIC_AUTH_TOKEN']) delete env[k];
   Object.assign(env, env0);

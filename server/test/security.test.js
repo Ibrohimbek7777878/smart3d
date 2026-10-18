@@ -29,7 +29,7 @@ function startServer(env) {
     p.on('exit', (code) => done({ p, out, started: false, code }));
   });
 }
-const freePort = () => 20000 + Math.floor(Math.random() * 20000);
+const freePort = () => 30000 + Math.floor(Math.random() * 1000);
 const api = (p, opts = {}) => fetch(base + p, {
   ...opts,
   headers: { 'content-type': 'application/json', ...(opts.headers || {}) }

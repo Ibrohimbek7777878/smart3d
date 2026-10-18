@@ -18,7 +18,7 @@ before(async () => {
   tmp = fs.mkdtempSync(path.join(os.tmpdir(), 's3d-ord-'));
   const db = dbPath = path.join(tmp, 'test.db');
   execFileSync(process.execPath, ['init-db.js'], { cwd: SERVER_DIR, env: { ...process.env, DB_PATH: db, ADMIN_PASSWORD: 'test-admin-parol-3', ADMIN_EMAIL: 'admin@smart3d.uz' }, stdio: 'pipe' });
-  const port = 20000 + Math.floor(Math.random() * 20000);
+  const port = 25000 + Math.floor(Math.random() * 1000);
   base = `http://127.0.0.1:${port}`;
   const env = { ...process.env, PORT: String(port), DB_PATH: db, JWT_SECRET: 'ord-test-' + 'o'.repeat(40), NODE_ENV: 'test' };
   delete env.ESKIZ_EMAIL; delete env.ESKIZ_PASSWORD;

@@ -35,7 +35,7 @@ before(async () => {
   tmp = fs.mkdtempSync(path.join(os.tmpdir(), 's3d-tg-'));
   const db = path.join(tmp, 'test.db');
   execFileSync(process.execPath, ['init-db.js'], { cwd: SERVER_DIR, env: { ...process.env, DB_PATH: db, ADMIN_PASSWORD: 'test-admin-parol-3', ADMIN_EMAIL: 'admin@smart3d.uz' }, stdio: 'pipe' });
-  const port = 20000 + Math.floor(Math.random() * 20000);
+  const port = 32000 + Math.floor(Math.random() * 1000);
   base = `http://127.0.0.1:${port}`;
   const env = { ...process.env, PORT: String(port), DB_PATH: db, JWT_SECRET: 'tg-test-' + 'z'.repeat(40), NODE_ENV: 'test',
     TELEGRAM_BOT_TOKEN: TOKEN, TELEGRAM_WEBHOOK_SECRET: SIR, TELEGRAM_API_URL: `http://127.0.0.1:${tgSrv.address().port}`,

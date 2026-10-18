@@ -22,7 +22,7 @@ before(async () => {
   tmp = fs.mkdtempSync(path.join(os.tmpdir(), 's3d-xato-'));
   const db = path.join(tmp, 'test.db');
   execFileSync(process.execPath, ['init-db.js'], { cwd: SERVER_DIR, env: { ...process.env, DB_PATH: db, ADMIN_PASSWORD: ADMIN_PW, ADMIN_EMAIL: 'admin@smart3d.uz' }, stdio: 'pipe' });
-  const port = 20000 + Math.floor(Math.random() * 20000);
+  const port = 33000 + Math.floor(Math.random() * 1000);
   base = `http://127.0.0.1:${port}`;
   proc = spawn(process.execPath, ['index.js'], { cwd: SERVER_DIR, env: { ...process.env, PORT: String(port), DB_PATH: db, JWT_SECRET: 'x'.repeat(48), NODE_ENV: 'test' } });
   proc.stdout.on('data', d => { out += d; });
