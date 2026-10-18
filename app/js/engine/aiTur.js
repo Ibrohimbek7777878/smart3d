@@ -11,8 +11,9 @@
  *     So'ralgan buyum shablonda bo'lsa — belgilanadi; bo'lmasa — katalogdagi shu turdagi modul qo'shiladi (KIND_MODUL);
  *     katalogda yo'q bo'lsa — qizil qator "bajarilmadi". Raqam o'ylab topilmaydi: aytilmagan o'lcham — shablon sukuti (kartada "sukut").
  */
-import { konstruksiyami } from './konstruksiyaTili.js';
-import { OSHXONA_SOZ } from './oshxonaTili.js';
+import { konstruksiyami, matndanSpec, specTekshir } from './konstruksiyaTili.js';
+import { OSHXONA_SOZ, oshxonami } from './oshxonaTili.js';
+import { modulTuri as katalogTuri, buyumdanTop, katalogdanTop } from './katalogTanlash.js';
 
 const tayyorla = (m) => String(m || '').toLowerCase().replace(/[ʻʼ’‘`´]/g, "'").replace(/(\d),(\d)/g, '$1.$2').replace(/\s+/g, ' ');
 
@@ -36,43 +37,59 @@ const DEVOR_BOYLAB = /devor\s*bo'?y(?:lab|i|iga)|butun\s*devor|вдоль\s*(?:�
 
 /* buyumlar (so'ralgan mebel turi) — matndan */
 const BUYUM = {
-  krovat: /krovat[a-z']*|karavot[a-z']*|kravat[a-z']*|karovat[a-z']*|кроват[а-яё]*|(?<![a-z])beds?(?![a-z])/,
+  krovat: /krovat[a-z']*|toshqin|kir\s*yotoq[a-z']*|karyera|karavot[a-z']*|kravat[a-z']*|karovat[a-z']*|кроват[а-яё]*|(?<![a-z])beds?(?![a-z])/,
   tumba: /(?<!tv\s|тв\s|tv-|тв-)(?:tumba[a-z']*|тумб[а-яё]*|nightstands?|bedside\s*tables?)/,
   komod: /komod[a-z']*|комод[а-яё]*|dresser|chest of drawers/,
   kupe: /kupe|купе|sliding\s*wardrobe/,
   poyabzal: /poyabzal[a-z']*|oyoq\s*kiyim[a-z']*|обув[а-яё]*|shoe\s*(?:cabinet|rack|storage)?/,
   ilgich: /kiyim\s*il(?:gich|adigan)[a-z']*|ilgich[a-z']*|veshalka[a-z]*|вешалк[а-яё]*|coat\s*(?:hanger|rack|panel)|coat/,
-  garderob: /garderob(?!\s*xona)[a-z']*|гардероб(?!н)[а-яё]*|wardrobe|closet|kiyim\s*shkaf[a-z']*/,
+  garderob: /garderob(?!\s*xona)[a-z']*|garmon[a-z']*|гардероб(?!н)[а-яё]*|wardrobe|closet|kiyim\s*shkaf[a-z']*/,
   tv: /(?<![a-zа-яё])(?:tv|тв)(?![a-zа-яё])|televizor[a-z']*|телевизор[а-яё]*/,
   vitrina: /vitrina[a-z']*|витрин[а-яё]*|display\s*cabinets?/,
   divan: /divan[a-z']*|диван[а-яё]*|sofa|couch/,
-  javon: /javon[a-z']*|tokcha[a-z']*|stellaj[a-z']*|стеллаж[а-яё]*|bookcase|shel(?:f|ves)|kitob/,
+  javon: /javon[a-z']*|(?<![a-z])toka(?![a-z])|tokcha[a-z']*|stellaj[a-z']*|стеллаж[а-яё]*|bookcase|shel(?:f|ves)|kitob/,
   parta: /parta[a-z']*|парт[аыу](?![а-яё])/,
-  stol: /(?<![a-z])stol(?!eshn|ichn|ishn)[a-z']*|(?<![а-яё])стол(?!еш)[а-яё]*|desks?|(?<![a-z])tables?/,
+  stol: /(?<![a-z])stol(?!eshn|ichn|ishn)[a-z']*|kofe[a-z']*|coffee\s*table|журнальн[а-яё]*|(?<![а-яё])стол(?!еш)[а-яё]*|desks?|(?<![a-z])tables?/,
   kozgu: /ko'zgu[a-z']*|kozgu[a-z']*|зеркал[а-яё]*|mirror/,
-  rakovina: /rakovina[a-z']*|lavabo|раковин[а-яё]*|умывальн[а-яё]*|vanity|(?<![a-z])sink/
+  rakovina: /rakovina[a-z']*|lavabo|раковин[а-яё]*|умывальн[а-яё]*|vanity|(?<![a-z])sink/,
+  /* egasi #209 (14): qolgan tayyor modul turlari — bitta modul sifatida tanlanadi (katalogTanlash.buyumdanTop) */
+  stul: /(?<![a-z])stul[a-z']*|(?<![а-яё])стул[а-яё]*|(?<![a-z])chairs?(?![a-z])/,
+  kreslo: /kresl[a-z']*|кресл[а-яё]*|armchair/,
+  hammom: /hammom[a-z']*\s+(?:shkaf|tumba|garderob|polka|tokcha)[a-z']*|dori\s*shkaf[a-z']*|gyalka|yuvish\s*stol[a-z']*|ванн[а-яё]*\s+шкаф|bathroom\s*cabinet/,
+  penal: /penal[a-z']*|muzlatgich\s*yon[a-z']*|пенал[а-яё]*|kolonna[a-z']*|колонн[а-яё]*|tall\s*(?:shkaf|cabinet)|baland\s*shkaf[a-z']*/,
+  burchak: /burchak[a-z']*\s*(?:oshxona\s*)?(?:shkaf|modul)[a-z']*|burchakli\s*(?:shkaf|modul)[a-z']*|углов[а-яё]*\s+(?:шкаф|модул)[а-яё]*|corner\s*(?:cabinet|unit)/,
+  orol: /orol[a-z']*\s*(?:modul|shkaf)[a-z']*|остров[а-яё]*\s+модул[а-яё]*|island\s*(?:unit|module)/,
+  antresol: /antresol[a-z']*|antirsol[a-z']*|entresol[a-z']*|антресол[а-яё]*|mezzanine/,
+  peshxona: /peshxona|zashibka|кладов[а-яё]*|pantry/,
+  derazaosti: /deraza\s*ost[a-z']*|под\s*окн[а-яё]*|under\s*window/,
+  pech: /pishirish\s*panel[a-z']*|варочн[а-яё]*\s+панел[а-яё]*|hob\s*(?:base|unit)/,
+  eshik: /ichki\s*eshik[a-z']*|xona\s*eshig[a-z']*|межкомнатн[а-яё]*\s+двер[а-яё]*|interior\s*door/,
+  deraza: /deraza[a-z']*|(?<![a-z])oyna(?![a-z])|(?<![а-яё])окн[оа](?![а-яё])|(?<![a-z])windows?(?![a-z])/,
+  stoleshnitsa: /stoleshnitsa[a-z']*|столешниц[а-яё]*|countertop|karniz|sokol\s*plank[a-z']*|backsplash|(?<![a-z])dobor[a-z']*|добор/,
+  yozuv: /yozuv\s*stol[a-z']*|письменн[а-яё]*\s+стол|writing\s*desk/,
+  dobor: /yon\s*dobor[a-z']*|dobor[a-z']*\s*(?:pastki|ustki)/,
+  texnika: /(?:o'rnatma|built-?in)\s*(?:muzlatgich|xolodilnik)|встраиваем[а-яё]*\s+холодильник|(?<![a-z])(?:muzlatgich|xolodilnik)\s*\d{3}|duxovk[a-z']*|духовк[а-яё]*|posudomoyk[a-z']*|посудомо[а-яё]*|mikroto'?lqin[a-z']*|микроволн[а-яё]*|chimene[a-z']*|(?<![a-z])plita[a-z']*|варочн[а-яё]*/
 };
+/* aniqroq tur bilan bir matnda umumiyroq tur (hammom shkafi — tumba, rakovina; deraza osti — deraza) — umumiysi tashlanadi */
+const UMUMIY_TUR = { yozuv: ['stol', 'tumba'], vitrina: ['javon'], ilgich: ['javon', 'garderob'], texnika: ['stol'], dobor: ['stoleshnitsa'], parta: ['tumba', 'stol'], penal: ['texnika', 'garderob'], hammom: ['tumba', 'rakovina', 'kozgu', 'garderob', 'javon', 'stol'], rakovina: ['tumba'], kozgu: ['garderob'], stoleshnitsa: ['stol'], derazaosti: ['deraza'], antresol: ['garderob'], peshxona: ['tumba'], pech: ['texnika'], burchak: ['garderob'], orol: [] };
+/* konstruksiya tili (polka, eshik, tortma soni) bilan ham tushuniladigan turlar — shu so'rovlar avvalgi yo'lda (katalogdanTop) qoladi */
+const KONS_TUR = new Set(['garderob', 'kupe', 'tumba', 'komod', 'javon']);
+/* konstruksiya tarkibi (shtanga, bo'lim, chapda/o'ngda …) aytilgan bo'lsa — avvalgi yo'l (konstruksiya tili), tur so'zi (ilgich, tumba …) tarkib tavsifida uchrasa ham; aytilmasa — nom/o'lcham bo'yicha */
+const TARKIB_SOZ = /shtang|bo'lim|секци|штанг|section|(?<![a-z'])(?:chap|o'ng|o'rta)(?:da|ida)?(?![a-z'])|слева|справа|bo'limli|(?<![a-z'])(?:tepada|pastida)(?![a-z'])|qatlam|etaj/;
+const UCH_OLCHAM = /(?<![\d.])\d{2,4}\s*[x×х*]\s*\d{2,4}\s*[x×х*]\s*\d{2,4}(?![\d.])/;
+const YAGONA_KABINET = /(?<![a-z])(?:pastki|ustki|osma)\s*(?:shkaf|modul|tumba)|(?:нижн|верхн)[а-яё]*\s+(?:шкаф|тумб|модул)/;
+const REJA_BELGI = /[lгpпuу][\s-]*(?:shakl|образн|shape)|\d+\s*ta\s*(?:pastki|ustki)|\d+\s*(?:нижн|верхн)|(?<![\d.])\d{4,5}\s*(?:mm|мм)?\s*(?:uzun|длин)|(?:uzun|длин)[a-zа-я]*\s*\d{4}|etaj|qavat|burchakli\s*oshxona/;
+/* texnika so'zlaridan tashqari oshxona belgilari (moyka, osma, L shakl …) — bunda so'rov oshxona */
+const OSHXONA_BELGI = /moyka|rakovina|chanoq|мойк|(?<![a-z])sink|xolodilnik|muzlatgich|холодильн|fridge|vit[iy]?ch?k|vyt[iy]?ajk|вытяжк|stoleshn|столешн|osma|navesn|навесн|ustki|верхн|upper|[lгpпuу][\s-]*(?:shakl|образн|shape)|burchakli|углов|orol|остров|island|\d+\s*ta\s*(?:pastki|ustki)/;
 /* buyum → katalogdagi asosiy modul (shablonda bo'lmasa qo'shiladi). null — katalogda shu turdagi modul yo'q (egasiga ro'yxat) */
 export const KIND_MODUL = {
   krovat: 'MC-KR-04', tumba: null, komod: 'SP-BD-005', kupe: 'SP-G-010', poyabzal: 'SP-W-008', ilgich: 'SP-D-002', garderob: 'SP-W-006',
-  tv: 'SP-SH-002', vitrina: 'SP-SH-004', divan: 'SP-S-006', javon: 'SP-SH-005', parta: 'MC-PA-02', stol: 'SP-T-007', kozgu: 'SP-H-011', rakovina: 'SP-H-010'
+  tv: 'SP-SH-002', vitrina: 'SP-SH-004', divan: 'SP-S-006', javon: 'SP-SH-005', parta: 'MC-PA-02', stol: 'SP-T-007', kozgu: 'SP-H-011', rakovina: 'SP-H-010',
+  stul: 'SP-C-004', kreslo: 'SP-S-003'
 };
-/* katalog moduli → buyum turi (shablon tarkibini so'ralgan bilan solishtirish uchun) */
-export function modulTuri(f) {
-  if (!f) return null;
-  const n = String(f.name || '').toLowerCase(), c = f.category, g = f.group;
-  if (c === 'bed') return g === 'komod' ? 'komod' : /boshka|toshqin/.test(n) ? null : 'krovat';
-  if (c === 'wardrobe') return /kupe/.test(n) ? 'kupe' : /poyabzal/.test(n) ? 'poyabzal' : 'garderob';
-  if (c === 'coat_hanger') return 'ilgich';
-  if (c === 'shelf') return g === 'tv' ? 'tv' : g === 'vitirina' ? 'vitrina' : 'javon';
-  if (c === 'sofa') return 'divan';
-  if (c === 'desk') return /parta/.test(n) || g === 'bolalar' ? 'parta' : 'stol';
-  if (c === 'table') return 'stol';
-  if (c === 'vanity') return 'rakovina';
-  if (c === 'mirror_cabinet') return 'kozgu';
-  if (c === 'bathroom') return 'garderob';
-  return null;
-}
+/* katalog moduli → buyum turi (shablon tarkibini so'ralgan bilan solishtirish uchun) — bitta manba: katalogTanlash.modulTuri.
+   Shablon ichida: 'stol' (ish/ovqat stoli, yozuv stoli), 'parta' (bolalar), 'hammom' shkafi — garderob emas, rakovina/ko'zgu alohida */
+export const modulTuri = katalogTuri;
 
 const SONLAR = [[1, "bir|bitta|один|одна|одну|one|a|an"], [2, "ikki|ikkita|два|две|двух|two|pair of"], [3, "uch|uchta|три|трёх|трех|three"], [4, "to'rt|tort|to'rtta|четыре|four"]];
 /** buyum so'zidan oldingi son ("ikki tumba", "2 ta tumba", "две тумбы") — topilmasa 1 */
@@ -95,7 +112,9 @@ export function buyumlar(matn) {
     if (tur === 'krovat' && /bed\s*room|bedroom/.test(s) && !/(?<![a-z])beds?(?![a-z]|room)/.test(s.replace(/bed\s*room|bedroom/g, ''))) continue;
     out.push({ tur, n: soni(s, m.index), i: m.index });
   }
-  return out.sort((a, b) => a.i - b.i);
+  const tashla = new Set(out.flatMap(b => UMUMIY_TUR[b.tur] || []));
+  if (/(?<![a-z])stol[a-z']*\s+stul/.test(s)) tashla.add('stol');                       // "ovqat stoli stuli" — stul (ezafa)
+  return out.filter(b => !tashla.has(b.tur)).sort((a, b) => a.i - b.i);
 }
 
 /** son + birlik → mm (birliksiz: 10 dan kichik — metr, aks holda mm) */
@@ -146,11 +165,23 @@ function krovatEni(s) {
 export function aiTur(matn) {
   const s = tayyorla(matn);
   if (!s.trim()) return { tur: 'nomalum' };
-  const oshxonaSoz = OSHXONA_SOZ.test(s);
+  /* "Oshxona pastki shkaf 900x550x720" — "oshxona" modul tavsifi (uzunlik, etaj, qavat aytilmagan): bitta modul, oshxona rejasi emas */
+  const oshxonaSoz0 = OSHXONA_SOZ.test(s);
+  const by0 = buyumlar(s);
+  const yagonaModul = oshxonaSoz0 && !oshxonami(s) && !REJA_BELGI.test(s) && (by0.length === 1 || (konstruksiyami(s) && /(?<![\d.])\d{3,4}\s*[x×х*]\s*\d{3,4}\s*[x×х*]\s*\d{2,4}(?![\d.])/.test(s)));
+  const oshxonaSoz = oshxonaSoz0 && !yagonaModul;
   const xona = XONALAR.find(x => x.re.test(s));
   const by = buyumlar(s);
+  /* egasi #209 (14): bitta mebel/modul turi (stol, krovat, divan, stul, hammom shkafi, TV, penal, antresol, eshik, deraza, texnika …) —
+     xona so'zisiz bitta tur so'ralsa — katalogdagi shu turdagi modul (nom/o'lcham bo'yicha). Avval bu matnlar "tushunmadim" chiqarardi */
+  const bitta = by.length === 1 ? by[0].tur : null;
+  const buyumTur = (t) => ({ tur: 'modul', buyum: [t] });
   if (!oshxonaSoz) {
     if (xona) {
+      /* xona so'zi + bitta mebel turi + bitta mebelning uch o'lchami ("Ofis stoli 1400x700x750", "Mehmonxona divani 2200x900x800") — xona emas, shu modul */
+      if (bitta && UCH_OLCHAM.test(s) && !KONS_TUR.has(bitta)) return buyumTur(bitta);
+      /* xona so'zi + hammom shkafi/rakovina/ko'zgu ("hammom ko'zguli shkaf 800") — xona emas, bitta hammom moduli */
+      if (xona.xona === 'hammom' && bitta && ['hammom', 'rakovina', 'kozgu'].includes(bitta)) return buyumTur(bitta);
       /* xona so'zi + bitta mebel konstruksiyasi ("yotoqxona uchun shkaf 1200 4 polka") — bitta modul */
       if (by.length <= 1 && konstruksiyami(s) && /\d/.test(s.replace(xona.re, ''))) return { tur: 'modul' };
       const id = xona.xona === 'ofis' && UY_OFIS.test(s) ? 'ofis-uy' : xona.id;
@@ -160,9 +191,14 @@ export function aiTur(matn) {
     /* turi aytilmagan xona va buyumlar ("4.2x3.1 xona, 1 garderob, 1 stol") — faqat so'ralgan buyumlar, katalogdagi asosiy modul bilan */
     if (XONA_SOZ.test(s) && by.length && !konstruksiyami(s.replace(XONA_SOZ, ' '))) return { tur: 'shablon', shablon: 'xona', xona: 'xona' };
     if (XONA_SOZ.test(s) && by.length >= 2) return { tur: 'shablon', shablon: 'xona', xona: 'xona' };
+    /* bir nechta tur, xona so'zisiz ("krovat 1600 va ikki tumba", "stol va 4 stul") — ular uchun xona shabloni */
+    if (by.length >= 2 && !OSHXONA_BELGI.test(s) && !REJA_BELGI.test(s)) return { tur: 'shablon', shablon: 'xona', xona: 'xona' };
+    if (bitta && !(konstruksiyami(s) && TARKIB_SOZ.test(s)) && !REJA_BELGI.test(s)) return buyumTur(bitta);   // oshxona rejasi belgisi (L shakl, uzunlik, etaj …) bo'lmasa — tur so'zining o'zi (plita, penal …) oshxona emas
   }
   if (oshxonaSoz) return { tur: 'oshxona' };
   if (konstruksiyami(s)) return { tur: 'modul' };
+  /* "pastki shkaf 600 moyka uchun", "ustki shkaf vityajka" — oshxona rejasi emas (L/P shakl, uzunlik, "N ta pastki", texnika yo'q), bitta oshxona moduli */
+  if (YAGONA_KABINET.test(s) && !REJA_BELGI.test(s)) return { tur: 'modul' };
   /* xona so'zisiz oshxona belgilari (avvalgi yo'l): moyka, plita, muzlatgich, osma/ustki, L/P shakl, burchakli, orol, "4 ta pastki" */
   if (/moyka|rakovina|chanoq|мойк|(?<![a-z])sink|plita|(?<![a-zа-яё])gaz(?![a-z])|плит|stove|(?<![a-z])hob(?![a-z])|xolodilnik|muzlatgich|холодильн|fridge|duxovk|духовк|vit[iy]?ch?k|vyt[iy]?ajk|вытяжк|stoleshn|столешн|osma|navesn|навесн|ustki|верхн|upper|[lгpпuу][\s-]*(?:shakl|образн|shape)|burchakli|углов|orol|остров|island|\d+\s*ta\s*(?:pastki|ustki)/.test(s)) return { tur: 'oshxona' };
   return { tur: 'nomalum', buyumlar: by };
@@ -222,4 +258,14 @@ export function shablonReja(matn, prompt, catalog) {
   const soralganTur = new Set(soralgan.map(b => b.tur));
   for (const x of toplam) if (!x._soraldi && !soralganTur.has(x._turi) && soralgan.length) q('shablondan', { frg: x.kod, nom: (catalog[x.kod] || {}).name || x.kod }, { manba: 'sukut' });
   return { prompt: Object.assign({}, prompt, { toplam: toplam.map(({ _turi, _soraldi, ...x }) => x) }), kirish, qatorlar };
+}
+
+/**
+ * Bitta modul so'rovi → katalogdan eng mos tayyor modul (engine darajasida: web ham, test ham shu yo'ldan foydalanadi).
+ * yo — aiTur natijasi (tur 'modul'); buyum bo'lsa — tur bo'yicha (buyumdanTop), aks holda konstruksiya tili (katalogdanTop).
+ */
+export function modulniTop(matn, catalog, yo = aiTur(matn)) {
+  if (yo.buyum) return buyumdanTop(yo.buyum, matn, catalog);
+  const raw = matndanSpec(matn);
+  return katalogdanTop(specTekshir(raw).spec, raw, catalog, matn);
 }

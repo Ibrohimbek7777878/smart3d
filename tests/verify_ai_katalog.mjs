@@ -5,10 +5,10 @@
  * Ishlatish: node tests/verify_ai_katalog.mjs */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { aiTur, shablonReja, buyumlar } from '../app/js/engine/aiTur.js';
+import { aiTur, shablonReja, buyumlar, modulniTop, KIND_MODUL } from '../app/js/engine/aiTur.js';
 import { promptLoyiha } from '../app/js/engine/promptlar.js';
 import { matndanSpec, specTekshir } from '../app/js/engine/konstruksiyaTili.js';
-import { katalogdanTop } from '../app/js/engine/katalogTanlash.js';
+import { katalogdanTop, modulTuri, modulBelgilari, buyumdanTop } from '../app/js/engine/katalogTanlash.js';
 import { konstruksiya } from '../app/js/engine/konstruktor/index.js';
 import { aiBuild } from '../app/js/ai.js';
 import { applySexStandart } from '../app/js/engine/standart.js';
@@ -124,6 +124,67 @@ ok('avvalgi modul matnlari — modul', ['shkaf 1200 4 polka', 'komod 6 tortma', 
 ok('xona so\'zi + bitta mebel — modul', aiTur('yotoqxona uchun shkaf 1200x600x2200, 2 eshik').tur === 'modul');
 ok('buyumlar: "ikki tumba" — 2', S(buyumlar('yotoqxona: krovat 1600, ikki tumba, garderob').map(b => [b.tur, b.n])) === S([['krovat', 1], ['tumba', 2], ['garderob', 1]]));
 ok('natija har safar bir xil', S(shablon(SORA[7], 'yotoqxona').r) === S(shablon(SORA[7], 'yotoqxona').r));
+
+/* ══ egasi #209 (14): "130 ta tayyor moduldan AI barchasidan terib bersin" — qamrov ══
+ * N = katalogdagi hamma tayyor modul: SP-… (85) + MC-… (38) + o'rnatma texnika SP-TX-… (7) = 130.
+ * "AI ishlata oladigan" = shu modulning O'Z belgilari (tur so'zi, o'lchami, eshik/tortma/polka soni, nomidagi maxsus so'z) bilan
+ * yozilgan oddiy so'rov AI orqali aynan shu modulni tanlaydi. Belgilari bir xil modullar ajratilmaydi — "juft" deb ro'yxatlanadi
+ * (ikkinchisi ham uchraydi, lekin boshqa modul bilan bir xil so'rovga to'g'ri keladi). Hech narsa o'ylab topilmaydi. */
+const NOM_SOZ = (f) => String(f.name || '').replace(/^MC\s*·\s*/, '').replace(/\([^)]*\d+\s*x\s*\d+[^)]*\)/g, ' ').replace(/[()+,]/g, ' ').replace(/\s+/g, ' ').trim();
+const MAXSUS_SOZ = /moyka|gluxoy|vityachka|kargo|duxovoy nije|tandir|aventos|sushilka|pufog/i;
+function sorov(f) {
+  const k = modulTuri(f), b = modulBelgilari(f), ol = `${f.w}x${f.d}x${f.h}`;
+  const sozlar = (String(f.name || '').match(MAXSUS_SOZ) || []);
+  const tarkib = (b.eshik ? ` ${b.eshik} eshik` : ' eshiksiz') + (b.tortma ? ` ${b.tortma} tortma` : '') + (b.polka ? ` ${b.polka} polka` : '');
+  if (k === 'penal' && /^SP-K-006$/.test(f.code)) return `${NOM_SOZ(f)} ${ol}`;
+  if (/^kuxnya-(pastki|ustki)$/.test(f.group) && !/^SP-ST/.test(f.code)) return `${f.group === 'kuxnya-pastki' ? 'pastki' : 'ustki'} shkaf ${sozlar.join(' ')} ${ol}${tarkib}`;
+  if (/^MC-(SH|KR)/.test(f.code)) return `${k === 'krovat' ? 'krovat spalni' : 'garderob shkaf'} ${(String(f.name).match(/\d{3}/) || ['000'])[0]} ${ol}`;
+  if (k === 'parta') return `parta ${NOM_SOZ(f).replace(/парта/i, '')} ${ol}`;
+  if (/^MC-K[AK]/.test(f.code)) return `${k === 'antresol' ? 'antresol' : 'penal'} ${sozlar.join(' ')} ${ol}${tarkib}`;
+  return `${NOM_SOZ(f)} ${ol}`;
+}
+const tanla = (m) => { const yo = aiTur(m); if (yo.tur !== 'modul') return { tur: yo.tur, frg: null }; const t = modulniTop(m, cat, yo); return { tur: 'modul', frg: t && t.topildi ? t.frg : null, t }; };
+{
+  const hammasi = Object.values(cat);
+  const natija = hammasi.map(f => { const q = sorov(f), r = tanla(q); return { code: f.code, q, got: r.frg, tur: r.tur, ok: r.frg === f.code }; });
+  /* belgilari bir xil modullar: so'rov matni ham, o'lchami ham, soni ham bir xil → juft (bittasi tanlanadi) */
+  const guruh = {};
+  for (const n of natija) (guruh[n.q] = guruh[n.q] || []).push(n.code);
+  const juft = natija.filter(n => !n.ok && guruh[n.q].length > 1 && n.got && guruh[n.q].includes(n.got));
+  const oks = natija.filter(n => n.ok).length;
+  const yoq = natija.filter(n => !n.ok && !juft.includes(n));
+  console.log(`  AI ishlata oladigan tayyor modullar: ${oks} / ${hammasi.length}` + (juft.length ? ` (+${juft.length} ta belgilari bir xil juft, alohida tanlanmaydi: ${juft.map(n => n.code + '≡' + n.got).join(', ')})` : ''));
+  if (process.env.KATALOG_TOLIQ) console.log(natija.filter(n => !n.ok).map(n => `    ${n.code} [${n.q}] → ${n.got || n.tur}`).join('\n'));
+  if (yoq.length) console.log(`  tanilmay qolganlar (${yoq.length}): ${yoq.map(n => n.code).join(', ')}`);
+  ok('qamrov: 130 modulning kamida 127 tasi AI orqali o\'z belgilari bilan tanlanadi (oldin: 26 — bitta modul yo\'li, 53 — barcha yo\'l)', oks >= 127, `${oks}/${hammasi.length}: ${yoq.concat(juft).map(n => n.code + '[' + n.q + ']→' + (n.got || n.tur)).join('; ')}`);
+  ok('qamrov: N = 85 SP + 38 MC + 7 texnika = 130', hammasi.length === 130 && hammasi.filter(f => /^SP-TX/.test(f.code)).length === 7);
+}
+
+/* har modul turi uchun oddiy so'rov → tanlangan kod (nom/tur/o'lcham bo'yicha; xona so'zi ham, 3 o'lcham ham yo'q) */
+{
+  const T = [
+    ['divan 2000', 'SP-S-001'], ['mehmonxona divani 2200x900x800', 'SP-S-006'], ['kreslo', 'SP-S-003'], ['ofis kreslasi 650x650x1100', 'SP-C-001'], ['oshxona stuli 400x400x900', 'SP-C-004'],
+    ['ish stoli 1400', 'SP-T-004'], ['kompyuter stoli', 'SP-T-005'], ['ovqat stoli 6 kishilik', 'SP-T-002'], ['jurnal stoli', 'SP-S-004'], ['yozuv stoli 3 tortmali tumba 1400x700x750', 'SP-O-010'],
+    ['krovat 1600', 'SP-BD-003'], ['kir yotoq 180', 'SP-BD-004'], ['komod 6 tortma', 'SP-BD-005'], ['bolalar parta 800x490x730', 'MC-PA-02'],
+    ['tv taxta 1.8 m', 'SP-SH-002'], ['kitob javoni', 'SP-SH-003'], ['vitrina', 'SP-SH-004'], ['kiyim ilgich', 'SP-D-002'], ['poyabzal shkafi 800', 'SP-W-008'],
+    ["hammom ko'zguli shkaf", 'SP-H-011'], ['hammom osma tumba rakovina', 'SP-H-010'], ['gyalka shkafi', 'SP-B-005'],
+    ['penal duxovka', 'SP-K-020'], ['antresol 2 fasad', 'MC-KA-02'], ['burchak shkaf', 'SP-K-027'], ['ichki eshik', 'SP-D-001'], ['deraza 1400', 'SP-WI-001'],
+    ['duxovka', 'SP-TX-001'], ['posudomoyka', 'SP-TX-002'], ['stoleshnitsa 3 m', 'SP-ST-001'], ['kupe 2400 3 eshik', 'SP-G-011'], ['garderob 1800', 'SP-W-006'],
+    ['pastki shkaf 600 moyka uchun 2 eshik', 'MC-KP-08'], ['ustki shkaf vityachka 2 eshik', 'MC-KU-10']
+  ];
+  for (const [m, kod] of T) { const r = tanla(m); ok(`tur: «${m}» → ${kod}`, r.frg === kod, S(r.tur) + ' ' + r.frg); }
+  /* shablon va oshxona yo'llari buzilmadi; bir nechta tur — xona shabloni (har biri katalogdan); tanilmagan — hech narsa */
+  ok('«krovat 1600 va ikki tumba» — bitta modul emas, xona shabloni', aiTur('krovat 1600 va ikki tumba').tur === 'shablon');
+  ok('«stol va 4 stul» — xona shabloni', aiTur('stol va 4 stul').tur === 'shablon');
+  ok('«hammom 2x2.5, shkaf, rakovina» — xona (hammom shabloni)', aiTur('hammom 2x2.5 m, rakovina, ko\'zgu').tur === 'shablon');
+  ok('«salom», «mashina chizib ber» — tanilmadi (modul tanlanmaydi)', ['salom', 'mashina chizib ber', 'samolyot'].every(m => aiTur(m).tur === 'nomalum'));
+  /* katalogda yo'q tur — "bajarilmadi": tumba (krovat yonida) katalogda yo'q → KIND_MODUL bo'sh */
+  ok("katalogda yo'q tur (krovat yonidagi tumba) — KIND_MODUL bo'sh, shablon qizil qator beradi", KIND_MODUL.tumba === null);
+  ok("hamma KIND_MODUL kodi katalogda bor", Object.values(KIND_MODUL).every(c => !c || cat[c]), S(Object.values(KIND_MODUL).filter(c => c && !cat[c])));
+  /* o'lcham chegaradan chiqsa — eng yaqin ruxsat etilgan qiymat va "mos emas" qatori (jim emas) */
+  const d = tanla('kupe 5000 3 eshik');
+  ok('«kupe 5000» — o\'lcham chegaradan tashqari: jim qabul qilinmaydi (topilmadi yoki «mos emas» qatori)', d.t && (!d.t.topildi || d.t.mosEmas.some(x => x.k === 'eni')), S(d.t && [d.t.topildi, d.t.mosEmas]));
+}
 
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);
 process.exit(fail ? 1 : 0);
