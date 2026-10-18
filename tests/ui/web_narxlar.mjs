@@ -117,12 +117,13 @@ async function asosiy(page, R) {
   R.tel = await M(() => { const r = document.querySelector('[data-set="narxlar"]').getBoundingClientRect(); return { sigadi: r.left >= 0 && r.right <= innerWidth + 1, hScroll: document.documentElement.scrollWidth > innerWidth + 1 }; });
   await page.locator('[data-set="narxlar"]').screenshot({ path: `${OUT}/narxlar-390.png` });
 
+  /* jadvalRaspil: 6 sukut raspil qatori (ERP Holzma 1–3, Altendorf 1–3; TZ-32 E) + 2 ta test qatori */
   R.errs = errs;
   R.ok = R.boshlangich.taxmin > 0 && R.boshlangich.jadval &&
     /6 qator o'qildi — 4 yangi, 0 o'zgargan, 0 bir xil, 2 o'tkazildi/.test(R.korib) && /— → 18 000/.test(R.korib) &&
     R.saqlandi && R.korishYopildi && R.tanlov.raspil === 'T-RASPIL-1' && R.tanlov.kromka._sukut === 'T-KROMKA-1' &&
     R.ishHaqi.detal === 'egasi' && R.ishHaqi.modul === 'egasi' && R.ishHaqi.ustama === 'egasi' &&
-    R.jadvalRaspil === 2 && R.tarix >= 6 &&
+    R.jadvalRaspil === 8 && R.tarix >= 6 &&
     R.prod.pct > 0 && R.prod.raspil > 0 && R.aniqTugma.includes('Narx aniqligi ' + R.prod.pct + '%') && R.raspilQator && R.aniqRoyxat.length > 0 &&
     R.toliqEmasYoq && R.tel.sigadi && !R.tel.hScroll && errs.length === 0;
 }
