@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { validateDoc } from '../../../app/js/engine/rules.js';
 import { buildOBJ, cutlistCSV, smetaCSV, xncCSV, download, hasDownloadHandler } from '../../../app/js/engine/objexport.js';
 import { buildGLB } from '../../../app/js/engine/glbexport.js';
+import { logoBytes, logoDataUrl } from '../../../app/js/engine/logo.js';
 import { buildXLSX, XLSX_YORLIQ_UZ } from '../../../app/js/engine/xlsxexport.js';
 import { buildBPJ } from '../../../app/js/engine/bpj.js';
 import { buildProject as buildGlProject } from '../../../app/js/engine/giblab.js';
@@ -100,6 +101,9 @@ export const eksport = {
   .logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
   .logo i{width:38px;height:38px;border-radius:12px;background:#FF7A45;color:#2A1206;display:grid;place-items:center;font-weight:800;font-style:normal;font-size:16px}
   .logo b{font-size:18px;display:block;line-height:1.1} .logo small{font-size:11px;color:#555}
+  .logo .bt{height:44px;width:44px;object-fit:contain}
+  .pgLogo{display:none}
+  @media print{.pgLogo{display:block;position:fixed;top:0;right:0;height:30px;width:30px}}   /* har betda */
   .logo .usta{height:28px;max-width:120px;object-fit:contain;margin-left:auto}   /* usta logosi — Bittada belgisidan kichik (S4) */
   h1{font-size:20px;margin:0 0 2px} h2{font-size:15px;margin:18px 0 8px;border-bottom:2px solid #333;padding-bottom:3px}
   .meta{color:#555;font-size:12px;margin-bottom:14px}
@@ -111,7 +115,8 @@ export const eksport = {
   footer{margin-top:24px;color:#777;font-size:11px;border-top:1px solid #ccc;padding-top:6px}
   @media print{body{margin:12mm}}
 </style></head><body>
-<div class="logo"><i>3D</i><span><b>Smart3D</b><small>by Bittada</small></span>${/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(c.logo || '') ? `<img class="usta" src="${c.logo}" alt="${esc(t('hujjat.r_logo_alt'))}">` : ''}</div>
+${logoDataUrl() ? `<img class="pgLogo" src="${logoDataUrl()}" alt="Bittada">` : ''}
+<div class="logo">${logoDataUrl() ? `<img class="bt" src="${logoDataUrl()}" alt="Bittada" width="44" height="44">` : '<i>3D</i>'}<span><b>Smart3D</b><small>by Bittada</small></span>${/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(c.logo || '') ? `<img class="usta" src="${c.logo}" alt="${esc(t('hujjat.r_logo_alt'))}">` : ''}</div>
 <h1>${esc(name)}</h1>
 <div class="meta">${esc(t('hujjat.r_meta', { d: new Date().toLocaleDateString(T.locale), m: c.matCode }))}</div>
 <h2>${esc(t('hujjat.r_k'))}</h2>
@@ -175,7 +180,7 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
     safe(c, () => {
       const res = c.res;
       const T = hujjatTili(c);
-      const x = buildXLSX({ doc: c.doc, catalog: c.H.catalog, materials: c.H.effectiveMaterials(c.sheet), priceRes: res.priceRes, prod: res.prod,
+      const x = buildXLSX({ logo: logoBytes(), doc: c.doc, catalog: c.H.catalog, materials: c.H.effectiveMaterials(c.sheet), priceRes: res.priceRes, prod: res.prod,
         nest: res.nest, sheet: c.sheet, materialCode: c.matCode, projectName: c.name || (T.uz ? 'Smart3D Loyihasi' : T.yorliq.loyiha), services: c.H.services,
         yorliq: T.yorliq, modulNomi: T.modul, qatorNomi: T.qator, birlik: T.birlik });
       download(fname(c) + '-smeta.xlsx', x, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

@@ -41,6 +41,7 @@ const SHELL = [
   'js/engine/slots.js',
   'js/engine/standart.js', 'js/auth.js', 'js/auth-core.js',
   'js/engine/xlsxexport.js',
+  'js/engine/logo.js',
   /* ma'lumotlar (app.js boot() da yuklanadi) */
   'data/appliances.json',
   'data/fragments-mc.json',

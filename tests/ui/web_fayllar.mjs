@@ -71,7 +71,9 @@ async function asosiy(page, R) {
     const [pop] = await Promise.all([page.context().waitForEvent('page', { timeout: 15000 }), btn('Hisobot (PDF)').click()]);
     await pop.waitForLoadState('domcontentloaded');
     const t = await pop.evaluate(() => document.body.innerText, null, false);
-    R.hisobot = { logo: /Smart3D/.test(t) && /by Bittada/.test(t), jami: (t.match(/JAMI: ([\d ]+) so'm/) || [])[1] || null };
+    await pop.waitForLoadState('load').catch(() => {});
+    const img = await pop.evaluate(() => { const i = document.querySelector('img.bt'); return !!(i && i.complete && i.naturalWidth >= 100); }, null, false);   // Bittada logosi haqiqatan yuklangan
+    R.hisobot = { logo: /Smart3D/.test(t) && /by Bittada/.test(t) && img, jami: (t.match(/JAMI: ([\d ]+) so'm/) || [])[1] || null };
     await pop.close();
   } catch (e) { R.hisobot = { xato: String(e.message).split('\n')[0] }; }
   R.tezOrada = await M(() => [...document.querySelectorAll('[data-panel] button')].filter(b => /tez orada/.test(b.textContent)).map(b => b.textContent.trim() + (b.disabled ? ' [o\'chiq]' : ' [ochiq!]')));
