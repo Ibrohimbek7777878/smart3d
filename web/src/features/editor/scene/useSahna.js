@@ -16,6 +16,7 @@ import { openMaterial } from '../catalog/material.js';
 import { openSheet } from '../../../store/ui.js';
 import { tahrirla } from '../chizish/chizish.js';
 import { belgiGuruh } from '../../../services/belgi3d.js';
+import { texnikaTuri, texnikaSukut, TEXNIKA_QISMLAR, TEXNIKA_PALITRA } from '../../../../../app/js/texnika3d.js';
 
 /* egasi #167: detal kartasi — teshiklar (soni, tur bo'yicha) va kromka (tomonlar, qalinlik) matni; kesim bilan bog'lanmasa — "—" */
 const son1 = (v) => String(Math.round(v * 10) / 10).replace('.', ',');
@@ -87,7 +88,20 @@ export function useModulKarta() {
     key: ev => { if (ev.key === 'Enter') ev.target.blur(); }
   });
   const canIns = ichiniKorsaBoladi(smF);
+  /* egasi #232: o'rnatma texnika — qismlar (korpus, eshik, ruchka …) rangi palitradan yoki o'zi tanlagan */
+  const tTuri = smF.category === 'appliance' ? texnikaTuri(smF.code) : null;
+  const tSukut = tTuri ? texnikaSukut(tTuri) : null;
+  const hex = (n) => '#' + (n >>> 0).toString(16).padStart(6, '0');
+  const texnika = tTuri ? {
+    qismlar: TEXNIKA_QISMLAR[tTuri].map(q => {
+      const joriy = (sm.texnikaRang && sm.texnikaRang[q] != null) ? sm.texnikaRang[q] : (tSukut[q] != null ? tSukut[q] : tSukut.korpus);
+      return { id: q, label: t('texnika.q_' + q), joriy: hex(joriy), joriyN: joriy, tanla: (n) => A.setTexnikaRang(q, n) };
+    }),
+    palitra: TEXNIKA_PALITRA.map(c => ({ id: c.id, label: t('texnika.r_' + c.id), hex: hex(c.rang), n: c.rang })),
+    sukut: A.texnikaSukutRang, ozgargan: !!sm.texnikaRang
+  } : null;
   return {
+    texnika,
     show: true, deselect: () => select(null),
     sm: { openLabel: (smOpen ? t('umumiy.yopish') : t('sahna.ochish')) + (smF.category === 'drawer_base' ? t('sahna.tortmalar') : t('sahna.eshiklar')), canIns, noIns: !canIns,
       name: L.joyNomi(project.H, sm, smF), code: sm.frg, warn: ed.warn[sm.id] || '', hasWarn: !!ed.warn[sm.id],
