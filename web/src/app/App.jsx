@@ -13,6 +13,7 @@ import Onboarding from '../features/onboarding/Onboarding.jsx';
 import Header from '../features/shell/Header.jsx';
 import Loyihalar from '../features/projects/Loyihalar.jsx';
 import Sozlamalar from '../features/settings/Sozlamalar.jsx';
+import AdminQobiq from '../features/admin/AdminQobiq.jsx';
 import EditorPage from '../features/editor/EditorPage.jsx';
 import AiOyna from '../features/editor/ai/AiOyna.jsx';
 import IchiniKorish from '../features/editor/inside/IchiniKorish.jsx';
@@ -32,6 +33,7 @@ export default function App() {
   return (
     <div data-s3a="" style={{"minHeight":"100vh","background":"var(--bg)","color":"var(--txt)","fontFamily":"'Manrope',system-ui,sans-serif","fontSize":"16px","lineHeight":"1.5","WebkitFontSmoothing":"antialiased"}}>
       {screen === 'tg' ? <TgKutish /> : null}
+      {screen === 'admin' ? <M m="admin" joy="sahifa"><AdminQobiq /></M> : null}
       {screen === 'reg' || screen === 'login' ? <M m="auth" joy="sahifa"><Kirish /></M> : null}
       {screen === 'onb1' || screen === 'onb2' ? <M m="onboarding" joy="sahifa"><Onboarding /></M> : null}
       {Page ? (

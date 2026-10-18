@@ -5,6 +5,7 @@ import { input } from '../../shared/ui/styles.js';
 import { useSozlamalar } from './useSozlamalar.js';
 import Qoldiqlar from './Qoldiqlar.jsx';
 import Narxlar from './Narxlar.jsx';
+import { openAdmin } from '../admin/actions.js';
 import Buyurtmalar from '../buyurtma/Buyurtmalar.jsx';
 
 /* TZ-09: dizaynda yo'q sahifa — "Sozlamalar" (dizayndagi tugma faqat xabar chiqarardi: "sex logosi, narx ustamasi,
@@ -68,6 +69,7 @@ export default function Sozlamalar() {
         <section style={card} data-set="akkaunt">
           <span style={title}>{t('sozlama.akkaunt')}</span>
           {(S.akkaunt || []).map((r, i) => (<div key={i} style={row}><span style={{ color: 'var(--mut)' }}>{r[0]}</span><span style={{ fontWeight: '700', textAlign: 'right' }}>{r[1]}</span></div>))}
+          {S.admin ? <button onClick={() => openAdmin()} data-admin-havola="sozlama" style={ghost}>{t('admin.sarlavha')}</button> : null}
           <button onClick={S.logout} style={{ ...ghost, color: 'var(--danger)' }}>{t('sozlama.chiqish')}</button>
         </section>
 
