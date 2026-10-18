@@ -18,8 +18,8 @@ function smart3dData() {
     configureServer(server) {
       server.middlewares.use('/data', (req, res, next) => {
         const f = path.join(DATA, decodeURIComponent((req.url || '').split('?')[0]));
-        if (!f.startsWith(DATA + path.sep) || !/\.(json|webp)$/.test(f) || !fs.existsSync(f)) return next();
-        res.setHeader('Content-Type', f.endsWith('.webp') ? 'image/webp' : 'application/json; charset=utf-8');
+        if (!f.startsWith(DATA + path.sep) || !/\.(json|webp|png)$/.test(f) || !fs.existsSync(f)) return next();
+        res.setHeader('Content-Type', f.endsWith('.webp') ? 'image/webp' : f.endsWith('.png') ? 'image/png' : 'application/json; charset=utf-8');
         fs.createReadStream(f).pipe(res);
       });
     },

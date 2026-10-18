@@ -18,6 +18,7 @@ import { nestProject } from './engine/nesting.js';
 import { buildOBJ, cutlistCSV, smetaCSV, xncCSV, download } from './engine/objexport.js';
 import { buildGLB } from './engine/glbexport.js';
 import { buildXLSX } from './engine/xlsxexport.js';
+import { logoBytes, logoDataUrl } from './engine/logo.js';
 import { buildBPJ } from './engine/bpj.js';
 import { buildProject as buildGlProject } from './engine/giblab.js';
 import { cncBundle, cutGCode } from './engine/cnc.js';
@@ -1082,9 +1083,11 @@ function printReport() {
   .tot{font-weight:700;font-size:15px;margin-top:8px;text-align:right}
   .stats{display:flex;gap:18px;margin:6px 0} .stats b{font-size:16px}
   footer{margin-top:24px;color:#777;font-size:11px;border-top:1px solid #ccc;padding-top:6px}
-  @media print{body{margin:12mm}}
+  .pgLogo{display:none} .hd{display:flex;align-items:center;gap:10px}
+  @media print{body{margin:12mm}.pgLogo{display:block;position:fixed;top:0;right:0;height:30px;width:30px}}
 </style></head><body>
-<h1>${esc(name)}</h1>
+${logoDataUrl() ? `<img class="pgLogo" src="${logoDataUrl()}" alt="Bittada">` : ''}
+<div class="hd">${logoDataUrl() ? `<img src="${logoDataUrl()}" alt="Bittada" width="44" height="44">` : ''}<h1>${esc(name)}</h1></div>
 <div class="meta">Smart3D hisobot · ${new Date().toLocaleDateString('uz-UZ')} · material: ${esc(state.materialCode)}</div>
 <h2>1. Kotirovka (mijozga)</h2>
 <table><thead><tr><th>Mebel</th><th class=n>Miq.</th><th class=n>Narx</th><th class=n>Summa</th></tr></thead>
@@ -1114,6 +1117,7 @@ function exportXlsx() {
     const res = state._res;
     const name = ($('#projName').textContent.trim() || 'smart3d').replace(/\s+/g, '_');
     const xlsx = buildXLSX({
+      logo: logoBytes(),
       doc: state.doc,
       catalog: state.catalog,
       materials: effectiveMaterials(),

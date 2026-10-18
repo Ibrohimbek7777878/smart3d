@@ -140,6 +140,7 @@ const CONTENT_TYPES_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
   <Default Extension="xml" ContentType="application/xml"/>
+  <Default Extension="png" ContentType="image/png"/>
   <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
   <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
   <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
@@ -425,22 +426,32 @@ export function buildXLSX(opts = {}) {
     <col min="7" max="7" width="20" customWidth="1"/>
   </cols>`;
 
+  const logo = (opts.logo && opts.logo.length > 8) ? opts.logo : null;   // Bittada logosi (PNG baytlari) — qoidalar 6.3/S4
   const sheetXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
   ${colsXml}
   <sheetData>
     ${rowsXml.join('\n')}
-  </sheetData>
+  </sheetData>${logo ? '\n  <drawing r:id="rId1"/>' : ''}
 </worksheet>`;
 
   /* ── 4. OpenXML ZIP Arxivini yig'ish ── */
   const zip = new SimpleZip();
-  zip.addFile('[Content_Types].xml', CONTENT_TYPES_XML);
+  zip.addFile('[Content_Types].xml', logo ? CONTENT_TYPES_XML.replace('</Types>', '  <Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>\n</Types>') : CONTENT_TYPES_XML);
   zip.addFile('_rels/.rels', ROOT_RELS_XML);
   zip.addFile('xl/workbook.xml', WORKBOOK_XML);
   zip.addFile('xl/_rels/workbook.xml.rels', WORKBOOK_RELS_XML);
   zip.addFile('xl/styles.xml', STYLES_XML);
   zip.addFile('xl/worksheets/sheet1.xml', sheetXml);
+  if (logo) {
+    zip.addFile('xl/worksheets/_rels/sheet1.xml.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>`);
+    zip.addFile('xl/drawings/_rels/drawing1.xml.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/logo-bittada.png"/></Relationships>`);
+    zip.addFile('xl/drawings/drawing1.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><xdr:oneCellAnchor><xdr:from><xdr:col>6</xdr:col><xdr:colOff>600000</xdr:colOff><xdr:row>0</xdr:row><xdr:rowOff>30000</xdr:rowOff></xdr:from><xdr:ext cx="342900" cy="342900"/><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="2" name="Bittada logo" descr="Bittada"/><xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill><xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="342900" cy="342900"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/></xdr:oneCellAnchor></xdr:wsDr>`);
+    zip.addFile('xl/media/logo-bittada.png', logo);
+  }
 
   return zip.generate();
 }
