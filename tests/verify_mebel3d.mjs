@@ -87,5 +87,44 @@ ok(boshiXda(cat['MC-KR-04']) && !boshiXda(cat['SP-BD-003']) && !boshiXda(cat['SP
   mv[0].obj.position.y = mv[0].dist; g.updateMatrixWorld(true);
   ok(new THREE.Box3().setFromObject(mv[0].obj).max.y > a + 100, 'komod: tortma ochilganda old tomonga chiqadi');
 }
+
+/* TZ-35: klassik garnitur — yumshoq boshli/ustunchali krovat, trimo (2×3 tortma + oyna), ramkali fasad, karniz, umumiy rang, push */
+{
+  const th = { mat: (k) => new THREE.MeshStandardMaterial({ color: k === 'glass' ? 0x6fa3aa : 0x9a7448 }), rangMat: (r) => new THREE.MeshStandardMaterial({ color: r.rang }), ustki: () => false, glass: () => false };
+  const KASH = 0xd2c2ac;
+  const rangi = (g) => { const s = new Set(); g.traverse(o => { if (o.isMesh && o.material && o.material.color && !(o.userData && o.userData.kind === 'hitBox')) s.add(o.material.color.getHex()); }); return s; };
+  const qismlar = (g, id) => { let c = 0; g.traverse(o => { if (o.isMesh && o.userData.part && o.userData.part.id === id) c++; }); return c; };
+  const chegara = (code, g, f) => { g.updateMatrixWorld(true); const b = new THREE.Box3().setFromObject(g); return b.max.x <= f.w / 2 + 1 && b.min.x >= -f.w / 2 - 1 && b.max.y <= f.d / 2 + 1 && b.min.y >= -f.d / 2 - 1 && b.max.z <= f.h / 2 + 1 && b.min.z >= -f.h / 2 - 1; };
+  const kr = cat['MC-KR-04'];
+  const g = mebelMesh(THREE, kr, kr.w, kr.d, kr.h, { theme: th, klassik: true, garnituRang: KASH });
+  ok(chegara('MC-KR-04', g, kr), 'klassik krovat: o\'lchamlar modul chegarasida');
+  ok(qismlar(g, 'ustun') === 4 && qismlar(g, 'ustun_oyoq') === 4, 'klassik krovat: 4 ta ustuncha (shar uchli)');
+  ok(qismlar(g, 'bosh_yumshoq') === 1 && qismlar(g, 'oyoq_yumshoq') === 1 && qismlar(g, 'tugma') > 8, 'klassik krovat: yumshoq boshi va oyoq tomoni, kapitone tugmachalar');
+  ok(rangi(g).has(KASH) && rangi(g).has(0xf2ede3), 'klassik krovat: umumiy rang (kashemir) + oq matras');
+  const g0 = mebelMesh(THREE, kr, kr.w, kr.d, kr.h, { theme: th });
+  ok(qismlar(g0, 'ustun') === 0, 'klassik bayrog\'isiz — oddiy krovat (o\'zgarmaydi)');
+  const km = cat['SP-BD-005'], gt = mebelMesh(THREE, km, 1200, km.d, km.h, { theme: th, klassik: true, push: true, garnituRang: KASH });
+  const mvt = gt.userData.movers;
+  ok(mvt.length === 6 && mvt.every(m => m.type === 'drawer'), 'trimo: 2 qator × 3 = 6 tortma');
+  ok(chegara('trimo', gt, { w: 1200, d: km.d, h: km.h }), 'trimo: o\'lchamlar chegarada (ruchkasiz)');
+  let oyna = 0, ruchka = 0, relyef = 0; gt.traverse(o => { if (o.isMesh && o.userData.part && o.userData.part.id === 'oyna') oyna++; if (o.isMesh && o.material === undefined) ruchka++; });
+  ok(oyna === 1, 'trimo: tepasida oyna paneli (alohida shisha mesh)');
+  const gh = mebelMesh(THREE, km, 1200, km.d, km.h, { theme: th, klassik: true, garnituRang: KASH });
+  const bsay = (g) => { let n = 0; g.traverse(o => { if (o.isMesh) n++; }); return n; };
+  ok(bsay(gh) > bsay(gt), 'trimo: push (ruchkasiz) — ruchka mesh\'lari yo\'q');
+  ok(bsay(gt) > bsay(mebelMesh(THREE, km, 1200, km.d, km.h, { theme: th, push: true })), 'trimo: klassik — fasadda ramka relyefi bor');
+  ok(rangi(gt).has(KASH), 'trimo: umumiy rang');
+  const g800 = mebelMesh(THREE, km, 800, km.d, km.h, { theme: th });
+  ok(g800.userData.movers.length === 4, 'komod 800: 4 tortma, oyna yo\'q (o\'zgarmagan)');
+  /* shkaf: ramkali eshiklar + karniz (materials3d zanjiri), push — ruchka yo'q */
+  const sw = cat['SP-W-006'];
+  const mkTh = Object.assign({}, th, { mat: () => new THREE.MeshStandardMaterial({ color: 0x9a7448 }) });
+  const a = makeItemMesh(THREE, sw, sw.w, sw.d, sw.h, { theme: mkTh });
+  const b = makeItemMesh(THREE, sw, sw.w, sw.d, sw.h, { theme: mkTh, klassik: true, garnituRang: KASH, push: true });
+  const kl = (gg) => { let n = 0; gg.traverse(o => { if (o.userData && o.userData.klassik) n++; }); return n; };
+  ok(kl(a) === 0 && kl(b) >= 2 * 8 + 3, `shkaf: klassik — ramkali eshiklar (2 panel × 4 tasma) va karniz (${kl(b)})`);
+  ok(rangi(b).has(KASH) && !rangi(a).has(KASH), 'shkaf: umumiy rang butun garniturda');
+  ok(b.userData.doorsCount === a.userData.doorsCount && b.userData.movers.length === a.userData.movers.length, 'shkaf: eshiklar soni o\'zgarmaydi');
+}
 ok(Object.keys(tur).sort().join() === 'boshi,burchak,divan,komod,kreslo,krovat,skameyka,toshqin', 'barcha turlar: ' + Object.keys(tur));
 console.log(`✅ verify_mebel3d: ${n} tekshiruv`);

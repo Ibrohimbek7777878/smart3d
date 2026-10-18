@@ -93,6 +93,8 @@ function toplamIchki(W, D, H, items, catalog) {
       for (const s of nuqtalar) {
         const p = Object.assign({ id: 'p' + id, frg: f.code, name: f.name, z, w, d: f.d, h: f.h, qty: 1 }, devorga(it.devor, s, bo, W, D));
         if (burish) buril90(p, it.devor, s, f, W, D);
+        if (it.klassik) p.klassik = true;                                   // TZ-35: garnitur — klassik ramkali fasad, yumshoq krovat (faqat 3D ko'rinish)
+        if (it.push) p.push = true;                                          // ruchkasiz (3D: ruchka chizilmaydi; kesim/narx o'zgarmaydi)
         if (ichida(p, W, D) && !placements.some(q => kesishadi(p, q))) { joy = p; break; }
       }
       if (joy) break;
@@ -123,5 +125,6 @@ export function promptLoyiha(prompt, kirish, catalog, o = {}) {
     return { xona, placements: v.placements, kitchen: v.kitchen, sigmadi: [], shakl: v.shakl };
   }
   const t = toplamJoyla(W, D, H, prompt.toplam, catalog);
+  if (prompt.garnituRang) for (const p of t.placements) if (p.klassik) p.garnituRang = +prompt.garnituRang;   // TZ-35: butun garnitur bitta rangda (kashemir)
   return { xona, placements: t.placements, sigmadi: t.sigmadi };
 }

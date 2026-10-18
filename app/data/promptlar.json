@@ -47,7 +47,8 @@
    "nom": { "uz": "Yotoqxona", "ru": "Спальня", "en": "Bedroom" },
    "izoh": { "uz": "Garnitur: ikki kishilik karavot, 3 qanotli garderob, komod, deraza va eshik (yon tumbalar katalogda yo'q)", "ru": "Гарнитур: двуспальная кровать, трёхстворчатый шкаф, комод, окно и дверь (прикроватных тумб в каталоге нет)", "en": "Suite: double bed, three-door wardrobe, chest of drawers, window and door (no bedside tables in the catalogue)" },
    "maydon": [ { "k": "eni", "q": 4000, "min": 3400, "max": 7000 }, { "k": "chuqurligi", "q": 3600, "min": 3000, "max": 7000 } ],
-   "toplam": [ { "kod": "MC-KR-04", "devor": "orqa", "joy": "markaz" }, { "kod": "SP-W-006", "devor": "chap", "joy": "oxir" }, { "kod": "SP-BD-005", "devor": "ong", "joy": "markaz" }, { "kod": "SP-WI-001", "devor": "old", "joy": "markaz", "z": 900 }, { "kod": "SP-D-001", "devor": "old", "joy": "oxir" } ],
+   "garnituRang": 13812396,
+   "toplam": [ { "kod": "MC-KR-04", "devor": "orqa", "joy": "markaz", "klassik": true }, { "kod": "SP-W-006", "devor": "chap", "joy": "oxir", "klassik": true, "push": true }, { "kod": "SP-BD-005", "devor": "ong", "joy": "markaz", "w": 1200, "klassik": true, "push": true }, { "kod": "SP-WI-001", "devor": "old", "joy": "markaz", "z": 900 }, { "kod": "SP-D-001", "devor": "old", "joy": "oxir" } ],
    "yoq": [ { "tur": "tumba", "n": 2 } ]
   },
   {

@@ -202,6 +202,11 @@ const tanla = (m) => { const yo = aiTur(m); if (yo.tur !== 'modul') return { tur
     ok(`garnitur ${e}x${c}: karavot boshi orqa devorga (90° burilgan, uzunligi 2000 xonaga qaraydi), xona o'rtasida`, kr.rot === 90 && Math.round(fk.y1 - fk.y0) === 2000 && Math.round(fk.x1 - fk.x0) === 1750 && Math.abs((fk.x0 + fk.x1) / 2 - e / 2) <= 5, S([kr.rot, fk]));
     ok(`garnitur ${e}x${c}: deraza balandda (z 900), eshik polda`, pl.find(p => p.frg === 'SP-WI-001').z === 900 && pl.find(p => p.frg === 'SP-D-001').z === 0);
   }
+  {
+    const r = promptLoyiha(yp, {}, cat), pk = (c) => r.placements.find(p => p.frg === c);
+    ok('garnitur: karavot, garderob, komod — klassik va BITTA umumiy rang (kashemir), deraza/eshik rangsiz', ['MC-KR-04', 'SP-W-006', 'SP-BD-005'].every(c => pk(c).klassik && pk(c).garnituRang === 0xD2C2AC) && !pk('SP-WI-001').garnituRang && !pk('SP-D-001').klassik, S(r.placements.map(p => [p.frg, p.klassik, p.garnituRang])));
+    ok('garnitur: garderob va komod ruchkasiz (push — faqat ko\'rinish), komod trimo eni 1200, p.ruchkasiz YO\'Q (kesim/narx o\'zgarmaydi)', pk('SP-W-006').push && pk('SP-BD-005').push && pk('SP-BD-005').w === 1200 && r.placements.every(p => !p.ruchkasiz));
+  }
   const rj = shablonReja('yotoqxona 4x3.6', yp, cat);
   ok("garnitur: yon tumbalar — «bajarilmadi» qatori (karavot yonidagi tumba ×2), qizil", rj.qatorlar.some(z => z.kalit === 'buyum_yoq' && z.v.b === 'tumba' && z.v.n === 2 && z.diqqat), S(rj.qatorlar));
   const rj2 = shablonReja('yotoqxona 4x3.6 va ikki tumba', yp, cat);

@@ -44,6 +44,36 @@ function yumGeo(THREE, bw, bd, bh, r) {
   return g;
 }
 
+/** klassik ramkali fasad (TZ-35): eshik / tortma oldiga ikkita ramka relyefi — yuqorisi katta, pastkisi kichik (tor eshikda — bitta).
+ *  mesh — BoxGeometry(w, t, h) (old yuza +y); relyef mesh'ning bolasi (eshik bilan birga ochiladi). Ramka 5 mm ko'tarilgan. */
+export function klassikRelyef(THREE, mesh, mat, w, t, h) {
+  const m = Math.min(55, w * 0.18, h * 0.18), fw = Math.min(18, m * 0.45), raise = 5, yy = t / 2 + raise / 2;
+  const iw = w - 2 * m, ih = h - 2 * m, gap = 36;
+  if (!(iw > 60 && ih > 100)) return;
+  const kichik = ih > 700 && iw > 200 ? Math.round(ih * 0.30) : 0;
+  const panels = kichik ? [[h / 2 - m - (ih - kichik - gap) / 2, ih - kichik - gap], [-h / 2 + m + kichik / 2, kichik]] : [[0, ih]];
+  const strip = (cx, cz, sw, sh) => {
+    const b = new THREE.Mesh(new THREE.BoxGeometry(sw, raise, sh), mat);
+    b.position.set(cx, yy, cz); b.castShadow = true; b.userData = { slot: 'mebel', klassik: true };
+    mesh.add(b);
+  };
+  for (const [cz, ph] of panels) {
+    strip(0, cz + ph / 2 - fw / 2, iw, fw); strip(0, cz - ph / 2 + fw / 2, iw, fw);
+    strip(-iw / 2 + fw / 2, cz, fw, ph - 2 * fw); strip(iw / 2 - fw / 2, cz, fw, ph - 2 * fw);
+  }
+}
+
+/** klassik karniz (shkaf tepasida, old tomonda pog'onali) — modul guruhiga qo'shiladi (markazda). Old tomonga ≤ 50 mm chiqadi. */
+export function klassikKarniz(THREE, group, mat, w, d, h) {
+  const kat = [[h - 95, h - 65, 30], [h - 65, h - 30, 42], [h - 30, h, 54]];
+  for (const [z0, z1, ch] of kat) {
+    const b = new THREE.Mesh(new THREE.BoxGeometry(w, ch + 10, z1 - z0), mat);
+    b.position.set(0, d / 2 + (ch - 10) / 2, (z0 + z1) / 2 - h / 2);
+    b.castShadow = true; b.userData = { slot: 'mebel', klassik: true };
+    group.add(b);
+  }
+}
+
 /**
  * @returns {THREE.Group} modul guruhi (themedMesh bilan bir xil userData: movers, themed)
  */
@@ -55,6 +85,9 @@ export function mebelMesh(THREE, frag, w, d, h, opts = {}) {
   const upholst = !!frag && frag.production === 'upholstery';
   const dekor = (r) => th.rangMat(r);
   const yogochMat = () => (Rg.korpus ? dekor(Rg.korpus) : th.mat ? th.mat('wood') : std(THREE, 0x9a7448, 0.6));
+  const GR = opts.garnituRang, klassik = !!opts.klassik, push = !!opts.push;
+  /** rangni yorqinroq (k > 0) yoki to'qroq (k < 0) qilish */
+  const ton = (hex, k) => { const c = [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255].map(v => Math.max(0, Math.min(255, Math.round(k >= 0 ? v + (255 - v) * k : v * (1 + k))))); return (c[0] << 16) | (c[1] << 8) | c[2]; };
   const M = {
     yogoch: yogochMat(),
     fasad: Rg.fasad ? dekor(Rg.fasad) : th.mat ? th.mat('wood') : std(THREE, 0x9a7448, 0.6),
@@ -66,8 +99,16 @@ export function mebelMesh(THREE, frag, w, d, h, opts = {}) {
     korpa: std(THREE, 0xb8afa3, 0.96),
     plinth: std(THREE, 0x2b2622, 0.7),
     ichi: std(THREE, 0xd8cdb8, 0.7),
-    ruchka: th.mat ? th.mat('handle') : std(THREE, 0x6b7280, 0.35, 0.8)
+    ruchka: th.mat ? th.mat('handle') : std(THREE, 0x6b7280, 0.35, 0.8),
+    tugma: std(THREE, 0x6e5f4e, 0.6),
+    oyna: th.mat ? th.mat('glass') : std(THREE, 0xb9cad2, 0.08, 0.35)
   };
+  if (GR) {                                           // garnitur: butun komplekt bitta rangda (kashemir) — "Modul materiali" tanlangan bo'lsa, o'sha ustun
+    if (!Rg.korpus) M.yogoch = std(THREE, GR, 0.55);
+    if (!Rg.fasad) { M.fasad = std(THREE, GR, 0.5); M.mato = std(THREE, GR, 0.95); M.mato2 = std(THREE, ton(GR, 0.05), 0.95); }
+    M.korpa = std(THREE, ton(GR, -0.1), 0.96);
+    M.tugma = std(THREE, ton(GR, -0.32), 0.6);
+  }
   const group = new THREE.Group();
   const hit = new THREE.Mesh(new THREE.BoxGeometry(w, d, h), new THREE.MeshBasicMaterial({ visible: false }));
   hit.userData = { kind: 'hitBox' };
@@ -135,6 +176,66 @@ export function mebelMesh(THREE, frag, w, d, h, opts = {}) {
     blok(M.korpa, mx0 - 6, mx1 + 6, ky0, my1 + 6, zr - 30, Math.min(H, zr + 80 + 28), part('korpa', "Ko'rpa", [mx1 - mx0, my1 - ky0, 110]), 50, g);
   }
 
+  const kura = (mat, cx, cy, cz, r, part, parent = group) => {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), mat);
+    m.position.set(cx, cy, Z(cz)); m.castShadow = true;
+    m.userData = { slot: 'mebel' }; if (part) { m.userData.part = part; m.userData.panelId = part.id; }
+    parent.add(m); soni++;
+    return m;
+  };
+  /** kapitone tugmachalar: (x0..x1, z0..z1) oynada, old yuza y — shaxmat tartibida */
+  const tugmalar = (x0, x1, z0, z1, y, dy, g, id = 'tugma') => {
+    const pw = x1 - x0, ph = z1 - z0, nx = Math.max(3, Math.round(pw / 170)), nz = Math.max(2, Math.round(ph / 150));
+    for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+      const sh = j % 2 ? 0.5 : 0;
+      if (j % 2 && i === nx - 1) continue;
+      kura(M.tugma, x0 + (i + 0.5 + sh) * pw / nx, y + dy, z0 + (j + 0.5) * ph / nz, 11, P(id, 'Kapitone tugma', [22, 22, 22]), g);
+    }
+  };
+
+  /* ── klassik krovat (TZ-35): burchak ustunchalar (shar uchli), yumshoq boshi (kapitone) va yumshoq oyoq tomoni, matras, yostiq ── */
+  function krovatKlassik(W, L, H, g) {
+    const zr = Math.min(400, Math.max(300, Math.round(H * 0.34)));
+    const kp = 70, T = 28, hy = 12, hT = 80, fT = 60;                       // ustun kesimi, yon taxta, boshi/oyoq yumshoq qalinligi
+    const rail = M.yogoch, pF = Math.min(H - 60, zr + 340), rk = 34;
+    for (const sx of [-1, 1]) {
+      const cx = sx * (W / 2 - kp / 2);
+      blok(rail, cx - kp / 2, cx + kp / 2, -L / 2, -L / 2 + kp, 0, H - 2 * rk, P('ustun', 'Ustuncha (bosh)', [kp, kp, H]), 0, g);
+      kura(rail, cx, -L / 2 + kp / 2, H - rk, rk, P('ustun', 'Ustuncha (bosh)', [rk * 2, rk * 2, rk * 2]), g);
+      blok(rail, cx - kp / 2, cx + kp / 2, L / 2 - kp, L / 2, 0, pF - 2 * rk, P('ustun_oyoq', 'Ustuncha (oyoq)', [kp, kp, pF]), 0, g);
+      kura(rail, cx, L / 2 - kp / 2, pF - rk, rk, P('ustun_oyoq', 'Ustuncha (oyoq)', [rk * 2, rk * 2, rk * 2]), g);
+      blok(rail, sx > 0 ? W / 2 - kp / 2 - T / 2 : -W / 2 + kp / 2 - T / 2, sx > 0 ? W / 2 - kp / 2 + T / 2 : -W / 2 + kp / 2 + T / 2, -L / 2 + kp, L / 2 - kp, zr - 140, zr + 10, P('karkas', 'Yon taxta', [T, L, 150]), 0, g);
+    }
+    const px0 = -W / 2 + kp, px1 = W / 2 - kp;
+    blok(rail, -W / 2 + kp / 2, W / 2 - kp / 2, -L / 2 + 4, -L / 2 + 4 + 56, zr - 140, zr - 60, P('bosh', 'Boshi (taxta)', [W - kp, 56, 80]), 0, g);
+    blok(M.mato, px0, px1, -L / 2 + hy, -L / 2 + hy + hT, zr - 60, H - 130, P('bosh_yumshoq', 'Boshi (yumshoq, kapitone)', [px1 - px0, hT, H - 130 - zr + 60]), 40, g);
+    blok(rail, px0, px1, -L / 2 + 4, -L / 2 + 4 + 62, H - 130, H - 70, P('bosh', 'Boshi (yuqori taxta)', [px1 - px0, 62, 60]), 0, g);
+    tugmalar(px0 + 40, px1 - 40, zr - 20, H - 170, -L / 2 + hy + hT, 4, g);
+    blok(rail, -W / 2 + kp / 2, W / 2 - kp / 2, L / 2 - 4 - 56, L / 2 - 4, zr - 140, zr - 60, P('oyoq_tomon', 'Oyoq tomon (taxta)', [W - kp, 56, 80]), 0, g);
+    blok(M.mato, px0, px1, L / 2 - hy - fT, L / 2 - hy, zr - 60, zr + 200, P('oyoq_yumshoq', "Oyoq tomon (yumshoq)", [px1 - px0, fT, 260]), 35, g);
+    blok(rail, px0, px1, L / 2 - 4 - 62, L / 2 - 4, zr + 200, zr + 250, P('oyoq_tomon', 'Oyoq tomon (yuqori taxta)', [px1 - px0, 62, 50]), 0, g);
+    tugmalar(px0 + 50, px1 - 50, zr - 20, zr + 180, L / 2 - hy, 0, g, 'oyoq_tugma');
+    blok(rail, px0, px1, -L / 2 + kp, L / 2 - kp, zr - 118, zr - 100, null, 0, g);
+    const mx0 = -W / 2 + kp / 2 + T / 2 + 8 + 14, mx1 = -mx0, my0 = -L / 2 + hy + hT + 8, my1 = L / 2 - hy - fT - 8;
+    blok(M.matras, mx0, mx1, my0, my1, zr - 100, zr + 80, P('matras', 'Matras', [mx1 - mx0, my1 - my0, 180]), 45, g);
+    const pd = 380, np = 2, ph = 70, pw = Math.min(620, (mx1 - mx0 - 40 * (np + 1)) / np), py0 = my0 + 20;
+    for (let i = 0; i < np; i++) {
+      const cx = (i - (np - 1) / 2) * (pw + 40);
+      blok(M.yostiq, cx - pw / 2, cx + pw / 2, py0, py0 + pd, zr + 80, zr + 80 + ph, P('yostiq', 'Yostiq', [pw, pd, ph]), 60, g);
+    }
+    blok(M.korpa, mx0 - 6, mx1 + 6, py0 + pd + 25, my1 + 6, zr - 30, zr + 108, P('korpa', "Ko'rpa", [mx1 - mx0, my1 - py0 - pd - 25, 110]), 50, g);
+  }
+
+  /* ── klassik ramkali tortma fasadi (TZ-35): fasad ustiga ramka relyefi (4 ta ingichka tasma, 4 mm ko'tarilgan) ── */
+  const ramka = (mat, cx, cz, fw, fh, y, parent) => {
+    const m = Math.min(26, fw * 0.14, fh * 0.14), t = 14, hh = fh - 2 * m, ww = fw - 2 * m;
+    if (!(ww > 30 && hh > 30)) return;
+    blok(mat, cx - ww / 2, cx + ww / 2, y, y + 4, cz + hh / 2 - t, cz + hh / 2, null, 0, parent);
+    blok(mat, cx - ww / 2, cx + ww / 2, y, y + 4, cz - hh / 2, cz - hh / 2 + t, null, 0, parent);
+    blok(mat, cx - ww / 2, cx - ww / 2 + t, y, y + 4, cz - hh / 2 + t, cz + hh / 2 - t, null, 0, parent);
+    blok(mat, cx + ww / 2 - t, cx + ww / 2, y, y + 4, cz - hh / 2 + t, cz + hh / 2 - t, null, 0, parent);
+  };
+
   /* ── divan / kreslo / burchak / skameyka ── */
   function divan(kind) {
     const maxN = (iw) => Math.max(1, Math.round(iw / 650));
@@ -186,30 +287,52 @@ export function mebelMesh(THREE, frag, w, d, h, opts = {}) {
     bolak(-w / 2 + 25, w / 2 - 25, n, 10, (a, b) => blok(M.mato, a, b, -d / 2 + 30, d / 2, 170, h - 30, P('bosh_yumshoq', 'Boshi (yumshoq)', [b - a, d - 30, h - 200]), 45));
   }
 
-  /* ── komod: karkas, ustki taxta, 4 tortma (oldinga suriladi), ruchkalar ── */
+  /* ── komod / trimo: karkas, ustki taxta, tortmalar (oldinga suriladi). Eni ≥ 1000 mm — trimo: 2 qator × 3 = 6 tortma, tepasida oyna paneli.
+     klassik — ramkali fasad; push — ruchkasiz (ruchka chizilmaydi). ── */
   function komod() {
-    const T = 18, pl = 70, top = 25, n = 4, yf = d / 2 - 36;               // yf — karkasning old cheti; fasad shundan keyin
+    const trimo = w >= 1000, T = 18, pl = 70, top = 25;
+    const mirrorH = trimo ? Math.round(h * 0.34) : 0, bodyTop = h - mirrorH;          // trimo: pastki qismi 66%, tepasida oyna
+    const rows = trimo ? 2 : 4, cols = trimo ? 3 : 1;
+    const fy1 = d / 2 - (push ? 4 : 16), fT = 18, yf = fy1 - fT - 2;                   // fasad old yuzasi; karkas old cheti
     blok(M.plinth, -w / 2 + 20, w / 2 - 20, -d / 2 + 20, yf - 10, 0, pl, null);
-    blok(M.yogoch, -w / 2, -w / 2 + T, -d / 2, yf, pl, h - top, P('karkas', 'Karkas', [T, d, h - top - pl]));
-    blok(M.yogoch, w / 2 - T, w / 2, -d / 2, yf, pl, h - top, P('karkas', 'Karkas', [T, d, h - top - pl]));
-    blok(M.yogoch, -w / 2 + T, w / 2 - T, -d / 2, -d / 2 + 8, pl, h - top, P('orqa', 'Orqa devor', [w, 8, h - top - pl]));
+    blok(M.yogoch, -w / 2, -w / 2 + T, -d / 2, yf, pl, bodyTop - top, P('karkas', 'Karkas', [T, d, bodyTop - top - pl]));
+    blok(M.yogoch, w / 2 - T, w / 2, -d / 2, yf, pl, bodyTop - top, P('karkas', 'Karkas', [T, d, bodyTop - top - pl]));
+    blok(M.yogoch, -w / 2 + T, w / 2 - T, -d / 2, -d / 2 + 8, pl, bodyTop - top, P('orqa', 'Orqa devor', [w, 8, bodyTop - top - pl]));
     blok(M.yogoch, -w / 2 + T, w / 2 - T, -d / 2 + 8, yf, pl, pl + T, null);
-    blok(M.yogoch, -w / 2, w / 2, -d / 2, d / 2, h - top, h, P('usti', 'Ustki taxta', [w, d, top]));
-    const z0 = pl + T, pitch = (h - top - z0) / n;
-    for (let i = 0; i < n; i++) {
-      const key = 'tortma_' + (i + 1), zb = z0 + (n - 1 - i) * pitch;       // 1-tortma — eng tepada
+    blok(M.yogoch, -w / 2, w / 2, -d / 2, d / 2, bodyTop - top, bodyTop, P('usti', 'Ustki taxta', [w, d, top]));
+    const z0 = pl + T, pitch = (bodyTop - top - z0) / rows;
+    const iw = w - 2 * T, cw = (iw - (cols - 1) * T) / cols;
+    for (let c = 1; c < cols; c++) { const x0 = -w / 2 + T + c * cw + (c - 1) * T; blok(M.yogoch, x0, x0 + T, -d / 2 + 8, yf, pl, bodyTop - top, P('karkas', 'Tik bo\'lgich', [T, d, bodyTop - top - pl])); }
+    for (let r = 1; r < rows; r++) blok(M.yogoch, -w / 2 + T, w / 2 - T, -d / 2 + 8, yf, z0 + r * pitch - T / 2, z0 + r * pitch + T / 2, null);
+    let k = 0;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const key = 'tortma_' + (++k), zb = z0 + (rows - 1 - r) * pitch;                 // 1-tortma — chap yuqorida
+      const cx0 = -w / 2 + T + c * (cw + T), cxm = cx0 + cw / 2;
       const gr = new THREE.Group(); group.add(gr);
       movers.push({ obj: gr, type: 'drawer', dist: Math.max(100, (d - 60) * 0.75), key });
-      const part = P(key, i + 1 + '-tortma', [w - 2 * T, 18, pitch - 4]);
-      const f = blok(M.fasad, -w / 2 + T + 2, w / 2 - T - 2, d / 2 - 34, d / 2 - 16, zb + 2, zb + pitch - 2, part, 0, gr);
+      const part = P(key, k + '-tortma', [cw + T - 4, fT, pitch - 4]);
+      const fx0 = cx0 - (c ? T / 2 : 0) + 2 - (c ? 0 : 0), fx1 = cx0 + cw + (c < cols - 1 ? T / 2 : 0) - 2;
+      const f = blok(M.fasad, cols > 1 ? fx0 : -w / 2 + T + 2, cols > 1 ? fx1 : w / 2 - T - 2, fy1 - fT, fy1, zb + 2, zb + pitch - 2, part, 0, gr);
       if (f) f.userData.mover = key;
-      const hw = Math.min(180, w * 0.28);
-      blok(M.ruchka, -hw / 2, hw / 2, d / 2 - 16, d / 2, zb + pitch / 2 - 6, zb + pitch / 2 + 6, part, 0, gr);
-      const tx0 = -w / 2 + T + 14, tx1 = w / 2 - T - 14, ty0 = -d / 2 + 14, ty1 = d / 2 - 36;
+      if (klassik) ramka(M.fasad, (fx0 + fx1) / 2, zb + pitch / 2, cols > 1 ? fx1 - fx0 : w - 2 * T - 4, pitch - 4, fy1, gr);
+      if (!push) {
+        const hw = Math.min(trimo ? 110 : 180, cw * 0.4);
+        blok(M.ruchka, cxm - hw / 2, cxm + hw / 2, fy1, d / 2, zb + pitch / 2 - 6, zb + pitch / 2 + 6, part, 0, gr);
+      }
+      const tx0 = cx0 + 14, tx1 = cx0 + cw - 14, ty0 = -d / 2 + 14, ty1 = yf - 4;
       blok(M.ichi, tx0, tx1, ty0, ty1, zb + 14, zb + 28, null, 0, gr);
       blok(M.ichi, tx0, tx0 + 14, ty0, ty1, zb + 14, zb + pitch - 40, null, 0, gr);
       blok(M.ichi, tx1 - 14, tx1, ty0, ty1, zb + 14, zb + pitch - 40, null, 0, gr);
       blok(M.ichi, tx0, tx1, ty0, ty0 + 14, zb + 14, zb + pitch - 40, null, 0, gr);
+    }
+    if (trimo) {                                                                          // oyna paneli: ramka (karkas rangida) + shisha — alohida mesh
+      const mz0 = bodyTop, mz1 = h, mx = w * 0.06, ft = 40, fw = 50, my = -d / 2;
+      const fp = P('oyna_ramka', 'Oyna ramkasi', [w - 2 * mx, ft, mz1 - mz0]);
+      blok(M.yogoch, -w / 2 + mx, w / 2 - mx, my, my + ft, mz1 - fw, mz1, fp);
+      blok(M.yogoch, -w / 2 + mx, w / 2 - mx, my, my + ft, mz0, mz0 + fw, fp);
+      blok(M.yogoch, -w / 2 + mx, -w / 2 + mx + fw, my, my + ft, mz0 + fw, mz1 - fw, fp);
+      blok(M.yogoch, w / 2 - mx - fw, w / 2 - mx, my, my + ft, mz0 + fw, mz1 - fw, fp);
+      blok(M.oyna, -w / 2 + mx + fw - 4, w / 2 - mx - fw + 4, my + ft / 2 - 3, my + ft / 2 + 3, mz0 + fw - 4, mz1 - fw + 4, P('oyna', 'Oyna (shisha)', [w - 2 * mx - 2 * fw, 6, mz1 - mz0 - 2 * fw]));
     }
   }
 
@@ -219,7 +342,7 @@ export function mebelMesh(THREE, frag, w, d, h, opts = {}) {
       const inner = new THREE.Group();
       if (burish) inner.rotation.z = -Math.PI / 2;
       group.add(inner);
-      krovat(burish ? d : w, burish ? w : d, h, inner);
+      if (klassik && h > 600) krovatKlassik(burish ? d : w, burish ? w : d, h, inner); else krovat(burish ? d : w, burish ? w : d, h, inner);
       break;
     }
     case 'boshi': boshi(); break;
