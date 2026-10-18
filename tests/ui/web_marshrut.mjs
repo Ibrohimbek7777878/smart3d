@@ -51,7 +51,7 @@ async function asosiy(page, R) {
   R.himoyaReg = await holat();
   const email = 'marshrut' + Date.now() + '@test.uz';
   await fill('Jasur', 'Marshrut Usta'); await fill('jasur@', email);
-  const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
+  const tel = page.locator('input[inputmode=numeric]').first(); if (await tel.count()) { await tel.click(); await tel.type('9' + String(Date.now()).slice(-8)); }   // #209: telefon maydoni ro'yxatda yo'q
   await fill('kamida 8', 'parol12345');
   await click(/^Ro'yxatdan o'tish$/);
   await kut(async () => (await ekran()) === 'projects' && yol() === '/loyihalar', 15000);

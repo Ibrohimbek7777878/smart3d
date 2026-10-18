@@ -34,7 +34,7 @@ async function asosiy(page, R) {
 
   /* 2) kirgan foydalanuvchi, ish bor — C chiqadi, ish yo'qolmasin */
   await fill('Jasur', 'Yangilanish Usta'); await fill('jasur@', 'yangi' + Date.now() + '@test.uz');
-  const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
+  const tel = page.locator('input[inputmode=numeric]').first(); if (await tel.count()) { await tel.click(); await tel.type('9' + String(Date.now()).slice(-8)); }   // #209: telefon maydoni ro'yxatda yo'q
   await fill('kamida 8', 'parol12345');
   await page.getByText(/^Ro'yxatdan o'tish$/).last().click();
   await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });

@@ -26,8 +26,8 @@ async function asosiy(page, R) {
   await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
   await page.reload(); await page.waitForTimeout(1500);
   await fill('Jasur', 'Sozlama Usta'); await fill('jasur@', 'sozlama' + Date.now() + '@test.uz');
-  const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
-  await fill('kamida 8', 'parol12345'); await fill('Mebel-Pro', 'Sinov Sex');
+  const tel = page.locator('input[inputmode=numeric]').first(); if (await tel.count()) { await tel.click(); await tel.type('9' + String(Date.now()).slice(-8)); }   // #209: telefon maydoni ro'yxatda yo'q
+  await fill('kamida 8', 'parol12345');
   await click(/^Ro'yxatdan o'tish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: darhol ish joyi
   await page.locator('[data-tez="kitchen"]').click(); await page.waitForTimeout(800);   // TZ-25: tez boshlash — oshxona
   for (let i = 0; i < 60 && !(await M(() => window.__app && window.__app.res)); i++) await page.waitForTimeout(250);
@@ -38,7 +38,7 @@ async function asosiy(page, R) {
   /* sozlamalar sahifasi — tepadagi akkaunt tugmasidan (TZ-25: chap menyu o'rnida asboblar) */
   await page.locator('[data-sozlamalar]').first().click(); await waitText('Narx ustamasi');
   await page.screenshot({ path: `${OUT}/sozlamalar-1440.png`, fullPage: true });
-  R.akkaunt = await has('Sinov Sex');
+  R.akkaunt = await has('Sozlama Usta');
 
   /* ustama 50% → narx o'zgaradi, saqlanadi (server) */
   const mk = page.locator('[data-set="ustama"] input');

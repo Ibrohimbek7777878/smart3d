@@ -33,54 +33,14 @@ async function asosiy(page, R) {
   await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
   await page.goto(page.url().split('#')[0] + '?t=' + Date.now() + '#s=login'); await page.waitForTimeout(1500);
 
-  /* 1) kirish oynasida SMS tugmasi */
+  /* #209: SMS usuli ko'rinmaydi (kodi qoldi) — kirishda ham, ro'yxatda ham; email forma ishlaydi */
   R.tugma = await page.locator('[data-kirish-usul]').count();
-  await page.locator('[data-kirish-usul]').click(); await page.waitForTimeout(300);
+  R.emailBor = await page.locator('input[type=email]').count();
   R.telMaydon = await page.locator('[data-sms-tel]').count();
-  R.emailYoq = !(await page.locator('input[type=email]').count());
-
-  /* 2) noto'g'ri raqam → xabar; to'g'risi → kod yuboriladi */
-  await page.locator('[data-sms-tel]').fill('123'); await page.locator('[data-kirish-cta]').click(); await page.waitForTimeout(300);
-  R.telXato = await has("Telefon 9 raqam");
-  await page.locator('[data-sms-tel]').fill(raqam);
-  const kod = await kodOl();
-  R.kodKeldi = /^\d{6}$/.test(kod || '');
-  R.kodMaydon = await page.locator('[data-sms-kod]').count();
-  R.taymer = await has('soniyadan keyin');
-  R.toast = await has('Kod yuborildi');
-  await page.screenshot({ path: `${OUT}/sms-1440-kod.png` });
-
-  /* 3) noto'g'ri kod → xabar */
-  await page.locator('[data-sms-kod]').fill(kod === '000000' ? '111111' : '000000');
-  await page.locator('[data-kirish-cta]').click(); await page.waitForTimeout(800);
-  R.kodXato = await has("Kod noto'g'ri");
-
-  /* 4) to'g'ri kod + ism → yangi akkaunt → ish joyi (TZ-25) */
-  await page.locator('[data-sms-kod]').fill(kod);
-  await page.locator('input[autocomplete=name]').fill('SMS Usta');
-  await page.locator('[data-kirish-cta]').click();
-  R.onboarding = await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 }).then(() => true, () => false);
-  R.user = await M(() => ({ name: window.__app.state.user && window.__app.state.user.name, phone: window.__app.state.user && window.__app.state.user.phone }));
-
-  /* 5) chiqib, o'sha raqam bilan qayta kirish → ish joyi (TZ-25) */
-  await M(async () => { await fetch('/api/logout', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }); localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
-  await page.goto(page.url().split('#')[0].split('?')[0] + '?t=' + Date.now() + '#s=login'); await page.waitForTimeout(1500);
-  await page.locator('[data-kirish-usul]').click(); await page.waitForTimeout(300);
-  await page.locator('[data-sms-tel]').fill(raqam);
-  const kod2 = await kodOl();
-  await page.locator('[data-sms-kod]').fill(kod2 || '');
-  await page.locator('[data-kirish-cta]').click();
-  R.qaytaKirdi = await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 }).then(() => true, () => false);
-
-  /* 6) telefon (390) — oyna sig'adi */
-  await M(async () => { await fetch('/api/logout', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }); localStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(page.url().split('#')[0].split('?')[0] + '?t=' + Date.now() + '#s=login'); await page.waitForTimeout(1500);
-  await page.locator('[data-kirish-usul]').click(); await page.waitForTimeout(300);
+  await page.goto(page.url().split('#')[0].split('?')[0] + '?t=' + Date.now() + '#s=reg'); await page.waitForTimeout(1500);
+  R.regTugma = await page.locator('[data-kirish-usul]').count();
   R.hScroll = await M(() => document.documentElement.scrollWidth > innerWidth + 1);
-  await page.screenshot({ path: `${OUT}/sms-390.png` });
 
   R.errs = errs;
-  R.ok = R.tugma === 1 && R.telMaydon === 1 && R.emailYoq && R.telXato && R.kodKeldi && R.kodMaydon === 1 && R.taymer && R.toast &&
-    R.kodXato && R.onboarding && R.user.name === 'SMS Usta' && R.user.phone === '998' + raqam && R.qaytaKirdi && !R.hScroll && errs.length === 0;
+  R.ok = R.tugma === 0 && R.regTugma === 0 && R.telMaydon === 0 && R.emailBor === 1 && !R.hScroll && errs.length === 0;
 }

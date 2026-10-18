@@ -16,6 +16,8 @@ function regViewer(T, h, o) {
   return v;
 }
 
+/* #209: SMS usuli yashirin (kodi qoladi) — yoqish uchun true */
+const SMS_KORINADI = false;
 const STRENGTH_C = ['var(--sfc3)', 'var(--danger)', 'var(--acc)', 'var(--cyan)', 'var(--cyan)'];
 
 /** Kirish / Ro'yxat ekrani qiymatlari */
@@ -31,12 +33,12 @@ export function useKirish() {
   const [hozir, setHozir] = useState(Date.now());
   const qoldi = Math.max(0, Math.ceil((f.qayta - hozir) / 1000));
   useEffect(() => { if (!qoldi) return undefined; const id = setTimeout(() => setHozir(Date.now()), 1000); return () => clearTimeout(id); }, [qoldi, hozir]);
-  const smsUsul = !reg && auth.smsBor && f.usul === 'sms';
+  const smsUsul = SMS_KORINADI && !reg && auth.smsBor && f.usul === 'sms';
   const gId = auth.googleId, googleBor = !!gId && !smsUsul;
   const gRef = useCallback(el => { if (el && gId) googleTugma(el, gId); }, [gId, reg]);
   return {
-    googleBor, gRef, googleNomi: t('kirish.google_nomi'), yoki: t('kirish.yoki'),
-    smsBor: !reg && auth.smsBor, smsUsul, yuborildi: smsUsul && f.yuborildi,
+    googleBor, gRef, googleNomi: t('kirish.google_davom'), yoki: t('kirish.yoki'),
+    smsBor: SMS_KORINADI && !reg && auth.smsBor, smsUsul, yuborildi: smsUsul && f.yuborildi,
     usulCta: smsUsul ? t('kirish.email_bilan') : t('kirish.telefon_bilan'),
     usulAlmash: () => usulAlmash(smsUsul ? 'email' : 'sms'),
     kod: f.kod, eKod: e.kod || '', bKod: bd('kod'),

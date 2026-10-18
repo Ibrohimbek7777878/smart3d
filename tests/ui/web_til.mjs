@@ -27,7 +27,7 @@ async function asosiy(page, R) {
   await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'ru'); });
   await page.reload(); await page.waitForTimeout(1500);
   await fill('Жасур', '<b>Usta'); await fill('jasur@', 'tilru' + Date.now() + '@test.uz');
-  { const tl = page.locator('input[inputmode=numeric]').first(); await tl.click(); await tl.type('9' + String(Date.now()).slice(-8)); }
+  { const tl = page.locator('input[inputmode=numeric]').first(); if (await tl.count()) { await tl.click(); await tl.type('9' + String(Date.now()).slice(-8)); } }
   await fill('минимум 8', 'parol12345');
   await page.locator('button', { hasText: /^Регистрация$/ }).last().click();
   R.ruServer = await (async () => { for (let i = 0; i < 25; i++) { if (await has('Введено неверное значение')) return true; await page.waitForTimeout(200); } return false; })();
@@ -40,7 +40,7 @@ async function asosiy(page, R) {
   await page.reload(); await page.waitForTimeout(1500);
   R.boshlangich = await M(() => document.documentElement.lang);
   await fill('Jasur', 'Til Usta'); await fill('jasur@', 'til' + Date.now() + '@test.uz');
-  const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
+  const tel = page.locator('input[inputmode=numeric]').first(); if (await tel.count()) { await tel.click(); await tel.type('9' + String(Date.now()).slice(-8)); }   // #209: telefon maydoni ro'yxatda yo'q
   await fill('kamida 8', 'parol12345');
   await click(/^Ro'yxatdan o'tish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: darhol ish joyi
   await page.locator('[data-tez="kitchen"]').click(); await page.waitForTimeout(800);   // TZ-25: tez boshlash — oshxona

@@ -5,6 +5,8 @@ import { useKirish } from './useKirish.js';
 
 /* TZ-23 C4: telefon + SMS kod — maydonlar ro'yxatdagi "Telefon" va "Ismingiz" uslubida (dizayn bo'laklari) */
 const MAYDON = {"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none"};
+/* #209: ro'yxat formasi — Ism + Email + Parol; telefon va do'kon maydonlari kodda qoladi, lekin ko'rinmaydi */
+const ROYXAT_QOSHIMCHA = false;
 const XATO = {"fontSize":"13px","color":"var(--danger)","fontWeight":"600"};
 function SmsMaydonlar({ v }) {
   return (<>
@@ -97,6 +99,14 @@ export default function Kirish() {
               <span className="sc-interp">{v.f?.sub}</span>
             </p>
           </div>
+          {/* TZ-31: Google bilan kirish — #209: kirishda ham, ro'yxatda ham eng tepada — birinchi kirish = ro'yxat; faqat server GOOGLE_CLIENT_ID sozlagan bo'lsa */}
+          {v.googleBor ? (
+            <div data-google="" style={{"display":"flex","flexDirection":"column","gap":"12px","alignItems":"center"}}>
+              <div ref={v.gRef} aria-label={v.googleNomi} style={{"width":"100%","minHeight":"44px","display":"flex","justifyContent":"center"}}></div>
+              <div style={{"display":"flex","alignItems":"center","gap":"12px","width":"100%","color":"var(--mut)","fontSize":"13px","fontWeight":"700"}}>
+                <span style={{"flex":"1","height":"1px","background":"var(--line)"}}></span>{v.yoki}<span style={{"flex":"1","height":"1px","background":"var(--line)"}}></span>
+              </div>
+            </div>) : null}
           <div style={{"display":"flex","flexDirection":"column","gap":"16px"}}>
             {v.isReg ? (<>
               <label style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
@@ -124,7 +134,7 @@ export default function Kirish() {
                 </span>
               </>) : null}
             </label>
-            {v.isReg ? (<>
+            {v.isReg && ROYXAT_QOSHIMCHA ? (<>
             <label style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
               <span style={{"fontSize":"14px","fontWeight":"700","color":"var(--txt)"}}>
                 {t('kirish.telefon')}
@@ -171,7 +181,7 @@ export default function Kirish() {
               </>) : null}
             </label>
             </>)}
-            {v.isReg ? (<>
+            {v.isReg && ROYXAT_QOSHIMCHA ? (<>
               <label style={{"display":"flex","flexDirection":"column","gap":"6px"}}>
                 <span style={{"fontSize":"14px","fontWeight":"700","color":"var(--txt)"}}>
                   {t('kirish.sex_nomi')}
@@ -186,14 +196,6 @@ export default function Kirish() {
           <button onClick={v.smsUsul ? v.smsSubmit : v.submitAuth} data-kirish-cta="" style={{"height":"56px","borderRadius":"16px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer","transition":"transform .15s ease-out"}} className="h0">
             <span className="sc-interp">{v.smsUsul ? v.smsCta : v.f?.cta}</span>
           </button>
-          {/* TZ-31: Google bilan kirish — faqat server GOOGLE_CLIENT_ID sozlagan bo'lsa; tugmani Google o'zi chizadi */}
-          {v.googleBor ? (
-            <div data-google="" style={{"display":"flex","flexDirection":"column","gap":"12px","alignItems":"center"}}>
-              <div style={{"display":"flex","alignItems":"center","gap":"12px","width":"100%","color":"var(--mut)","fontSize":"13px","fontWeight":"700"}}>
-                <span style={{"flex":"1","height":"1px","background":"var(--line)"}}></span>{v.yoki}<span style={{"flex":"1","height":"1px","background":"var(--line)"}}></span>
-              </div>
-              <div ref={v.gRef} aria-label={v.googleNomi} style={{"width":"100%","minHeight":"44px","display":"flex","justifyContent":"center"}}></div>
-            </div>) : null}
           {/* TZ-23 C4: telefon + SMS bilan kirish (server SMS ishlaganda) — dizayndagi ikkinchi darajali tugma uslubida */}
           {v.smsBor ? (
             <button onClick={v.usulAlmash} data-kirish-usul="" style={{"height":"48px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"700","fontSize":"15px","cursor":"pointer"}}>

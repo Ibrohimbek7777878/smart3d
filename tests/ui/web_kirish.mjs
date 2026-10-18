@@ -39,16 +39,15 @@ async function asosiy(page, R) {
   /* 1) bo'sh forma — 4 ta xato, dizayn uslubida */
   await click(/^Ro'yxatdan o'tish$/); await page.waitForTimeout(400);
   const t1 = await txt();
-  R.boshForma = ['Ismingizni yozing', "Emailni to'g'ri yozing", "Telefon 9 raqam bo'lishi kerak", 'Parol kamida 8 belgi'].map(x => t1.includes(x));
+  R.telefonYoq = !(await page.locator('input[inputmode=numeric]').count()) && !(await page.locator('input[placeholder*="Mebel-Pro"]').count());   // #209: faqat ism + email + parol
+  R.boshForma = ['Ismingizni yozing', "Emailni to'g'ri yozing", 'Parol kamida 8 belgi'].map(x => t1.includes(x));
   await page.screenshot({ path: `${OUT}/kirish-1440-3-xatolar.png` });
 
   R.qadam = '2)';
   /* 2) to'g'ri ro'yxat → TZ-25: darhol ish joyi (so'rovnomasiz); server: ism, email, telefon (S1), sex nomi */
   await fill('Jasur', 'Usta Sinov');
   await fill('jasur@', 'usta.web@test.uz');
-  await tel('901112233');
   await fill('kamida 8', 'parol12345');
-  await fill('Mebel-Pro', 'Sinov Sex');
   await click(/^Ro'yxatdan o'tish$/);
   R.onboarding = await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 }).then(() => true, () => false) && !(await has('Nima yasaymiz'));
   R.server = await M(async () => {
@@ -56,7 +55,7 @@ async function asosiy(page, R) {
     return { email: me.email, phone: me.phone, shop: me.shop, name: me.name };
   });
   R.kalitJSdaYoq = await M(() => localStorage.getItem('smart3d.token') === null && !document.cookie.includes('s3d_sess'));
-  R.serverTogri = R.server.phone === '998901112233' && R.server.shop === 'Sinov Sex' && R.server.email === 'usta.web@test.uz';
+  R.serverTogri = R.server.phone === '' && R.server.name === 'Usta Sinov' && R.server.email === 'usta.web@test.uz';
 
   R.qadam = '3)';
   /* 3) qayta ochilganda — kirgan holat saqlanadi, ish joyi (TZ-25) */
@@ -82,19 +81,17 @@ async function asosiy(page, R) {
   /* 5) takror email va takror telefon — dizayndagi xato matni */
   await M(() => { localStorage.removeItem('smart3d.token'); localStorage.removeItem('smart3d.user'); localStorage.removeItem('s3d-last-email'); });
   await yangiSahifa('reg'); await page.waitForTimeout(2000);
-  await fill('Jasur', 'Boshqa Usta'); await fill('jasur@', 'usta.web@test.uz'); await tel('935556677'); await fill('kamida 8', 'parol12345');
+  await fill('Jasur', 'Boshqa Usta'); await fill('jasur@', 'usta.web@test.uz'); await fill('kamida 8', 'parol12345');
   await click(/^Ro'yxatdan o'tish$/); await page.waitForTimeout(1200);
   R.takrorEmail = await has('Bu email bilan akkaunt bor — kirish');
-  await fill('jasur@', 'boshqa.web@test.uz'); await tel('901112233');
-  await click(/^Ro'yxatdan o'tish$/); await page.waitForTimeout(1200);
-  R.takrorTelefon = await has('Bu raqam bilan akkaunt bor — kirish');
 
   /* TZ-31: Google sozlanmagan serverda "Google bilan kirish" tugmasi yo'q */
   await M(() => { localStorage.removeItem('smart3d.token'); localStorage.removeItem('smart3d.user'); });
   await yangiSahifa('login'); await page.waitForTimeout(1500);
   R.googleYoq = (await page.locator('[data-google]').count()) === 0;
+  R.smsYoq = (await page.locator('[data-kirish-usul]').count()) === 0;   // #209: SMS tugmasi yashirin
 
   R.errs = errs;
   R.ok = R.boshForma.every(Boolean) && R.onboarding && R.serverTogri && R.kalitJSdaYoq && R.chiqdi === 401 && R.qaytaOchildi && R.emailEsda === 'usta.web@test.uz' &&
-    R.notogriParol && R.kirdi && R.takrorEmail && R.takrorTelefon && R.googleYoq && errs.length === 0;
+    R.notogriParol && R.kirdi && R.takrorEmail && R.telefonYoq && R.smsYoq && R.googleYoq && errs.length === 0;
 }
