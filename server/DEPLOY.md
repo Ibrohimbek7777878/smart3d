@@ -206,6 +206,14 @@ Tashqi so'rov: server Google kalitlarini `https://www.googleapis.com/oauth2/v3/c
 
 **Orqaga qaytish:** oldingi papka va 1-qadamdagi zaxira.
 
+**Bitta buyruq bilan (`server/yangilash.sh`):** zaxira, `git pull --ff-only`, o'rnatish, build va sinov portida (baza nusxasi bilan) tekshiruvni bajaradi; sukut bo'yicha qayta ishga tushirmaydi.
+```bash
+APP_DIR=/srv/smart3d ENV_FILE=/etc/smart3d.env DB_PATH=/var/lib/smart3d/smart3d.db BACKUP_DIR=/var/backups/smart3d \
+  SERVICE_CMD='pm2 reload smart3d' PROD_URL=https://smart3d.bittada.uz bash server/yangilash.sh          # tayyorlash va sinov
+# ... xuddi shu buyruq oxiriga --restart qo'shilsa — SERVICE_CMD bajariladi va 30 soniya ichida /api/health tekshiriladi
+```
+Xatoda skript qaysi bosqichda yiqilganini va orqaga qaytish buyrug'ini (`git checkout <eski commit>` + build) chiqaradi. Parametrlar: `bash server/yangilash.sh --help`.
+
 ## 10. Hali hal qilinmagan
 - **L1:** mijozlarning shaxsiy ma'lumotlari O'zbekistondagi serverda saqlanishi — yurist xulosasi kerak.
 - **Monitoring:** hozircha `/api/health` va PM2 / systemd logi. Tashqi monitoring keyin.
