@@ -215,7 +215,7 @@ export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyTo
     out.sort((a, b) => a.tartib - b.tartib);
     res.set('Cache-Control', 'no-cache').json({ promptlar: out });
   });
-  r.get('/api/admin/promptlar', guard, (req, res) => res.set('Cache-Control', 'no-store').json({ promptlar: promptRoyxat() }));
+  r.get('/api/admin/promptlar', guard, (req, res) => res.set('Cache-Control', 'no-store').json(promptRoyxat()));
   r.post('/api/admin/promptlar', guard, himoya((req, res) => {
     const b = obj(req.body);
     const mavjud = promptRoyxat();
