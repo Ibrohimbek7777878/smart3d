@@ -13,9 +13,10 @@
 import { evalFormula, roundMm } from './expr.js';
 import { resolveSlots } from './slots.js';
 import { chizmaYech } from './chizish.js';
-import { joyQutilar, d6Teshiklar, D6, petlyaSoni } from './d6.js';
+import { joyQutilar, d6Teshiklar } from './d6.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
 import { kromkaXizmat, prisadkaXizmat, raspilXizmat, tasdiqMi, ustamaManbasi } from './narxStavka.js';
+import { D6, petlyaSoni as d6PetlyaSoni } from './d6.js';            // TZ-32 B6: SP modul petlyasi (3c)
 
 /** D6 teshiklari prisadka narxi — mavjud stavka bo'yicha (materials.json hole_kinds); qolganlari — 'drill' */
 const D6_STAVKA = { d6_kosa: 'hinge', d6_eksentrik: 'cam' };
@@ -374,7 +375,7 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
       if (p.slot !== 'fasad' || !/eshik|door/i.test(p.code) || /tortma|drawer|yashik|gorizontal/i.test(p.code)) continue;
       const H = p.finish_length, W = p.finish_width;
       if ((W > 650 && H > 1500) || H < 2 * K.uch) continue;          // kupe (surma) eshik — d6.js kupemi; juda past eshik
-      const n = petlyaSoni(H), ys = Array.from({ length: n }, (_, k) => K.uch + (n > 1 ? k * (H - 2 * K.uch) / (n - 1) : 0));
+      const n = d6PetlyaSoni(H), ys = Array.from({ length: n }, (_, k) => K.uch + (n > 1 ? k * (H - 2 * K.uch) / (n - 1) : 0));
       const add = (x, y, dia, depth, kind) => holes.push({ fragment: frag.code, part: p.code, ref: p.ref, side: 'F', yuza: 1,
         x: r1(x - dedOf(p.code, 'F')), y: r1(y - dedOf(p.code, 'L')), dia, depth, kind, qty: 1, nusxa: 1 });
       for (const Y of ys) {

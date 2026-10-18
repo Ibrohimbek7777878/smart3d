@@ -3,7 +3,8 @@
  *            har detal varaqqa sig'adi (2800 × 2070, chetidan 10 mm — nesting.js TRIM_DEFAULT); tortma yon devori
  *            chuqurlikka sig'adi (MC/Bazis qoidasi: tortma yoni = d − 50, MC-KP-03/04/09/10/11).
  *   OLCHAM — sex turiga mos modulda `standart` maydoni (sex-standartlari.json) bor; sukut o'lchami sex oralig'ida.
- *   FURN   — har olinadigan polkaga 4 polkaderjatel (ERP 90002019); korpus qutisida konfirmat (MC uzunlik jadvali).
+ *   FURN   — har olinadigan polkaga 4 polkaderjatel (ERP 90002019); korpus qutisida konfirmat (MC uzunlik jadvali);
+ *            eshigi yo'q modulga (dobor, tortma, kargo) avtomatik petlya qo'shilmaydi (B8).
  *   KROMKA — korpus/polka detali: old qirra (F) bor, orqa qirra (B) yo'q; fasad — 4 tomon; 16 yangi modul — slot formatida
  *            (kromka_korpus / kromka_fasad, MC modullari kabi).
  *   PETLYA — eski 'hinge' yozuvi yo'q; har ochiladigan eshikda kosa D6 qoidasida (uchidan 105, qirradan 21,5; soni petlyaSoni).
@@ -123,6 +124,11 @@ export function tekshir(f0) {
   if (qutimi(f) && !hw.some(h => KONFIRMAT.test((h.code || '') + ' ' + (h.name || '')))) x('FURN', "konfirmat yo'q" + (QS ? ' (quti-shablon, 7-savol)' : ''), QS);
   if (/ustki|osma/i.test(f.group + ' ' + f.name) && f.h < 2030 && qutimi(f) && !hw.some(h => /NAVES/i.test(h.code))) x('FURN', "osma modulda naves yo'q (TZ-32 dan tashqari)", true);
   if (hw.some(h => h.code === 'TS-1730') && eshikSoni(f)) x('FURN', 'TS-1730 petlya sifatida (4-savol)', true);
+  {                                                                                            // B8: eshiksiz modulga avtomatik petlya yo'q
+    const auto = cutlist(f, f.w, f.d, f.h, mats, {}).hardware.filter(h => h._auto && /PET/i.test(h.code));
+    const lift = f.parts.some(p => /gorizontal/i.test(p.code));
+    if (auto.length && !f.parts.some(p => /eshik|door/i.test(p.code))) x('FURN', `eshigi yo'q modulga avtomatik petlya ${auto[0].qty} ta${lift ? ' (lift fasad — petlya turi texnolog bilan)' : ''}`, lift);
+  }
   for (const h of hw) if (NARXSIZ_18.includes(h.code)) { x('FURN', `${h.code} narxsiz (5-savol)`, true); }
   /* KROMKA */
   if (!KROMKA_YOQ_TUR.has(f.category) && f.production === 'panel') {

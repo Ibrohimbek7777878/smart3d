@@ -11298,7 +11298,8 @@
     "zapchast_soni": true
    }
   ],
-  "izoh": "TZ-32 B5: min_d 500 → 550 — tortma yoni 500 mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − 50, MC-KP-03/04/09/10/11)"
+  "izoh": "TZ-32 B5: min_d 500 → 550 — tortma yoni 500 mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − 50, MC-KP-03/04/09/10/11) | TZ-32 B8: auto_hardware false — fasad detali eshik emas (fasad_kichik, fasad_katta): avtomatik petlya/ruchka qo'shilmaydi",
+  "auto_hardware": false
  },
  {
   "code": "SP-K-023",
@@ -11621,7 +11622,8 @@
     "zapchast_soni": true
    }
   ],
-  "izoh": "TZ-32 B5: min_d 500 → 550 — tortma yoni 500 mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − 50, MC-KP-03/04/09/10/11)"
+  "izoh": "TZ-32 B5: min_d 500 → 550 — tortma yoni 500 mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − 50, MC-KP-03/04/09/10/11) | TZ-32 B8: auto_hardware false — fasad detali eshik emas (fasad_katta): avtomatik petlya/ruchka qo'shilmaydi",
+  "auto_hardware": false
  },
  {
   "code": "SP-K-024",
@@ -11913,7 +11915,9 @@
     "teshiklar": [],
     "zapchast_soni": true
    }
-  ]
+  ],
+  "auto_hardware": false,
+  "izoh": "TZ-32 B8: auto_hardware false — fasad detali eshik emas (fasad): avtomatik petlya/ruchka qo'shilmaydi"
  },
  {
   "code": "SP-K-025",
@@ -13850,7 +13854,8 @@
    }
   ],
   "holes": [],
-  "izoh": "TZ-22: devor/burchak yonidagi planka — eshik va tutqich ochilishi uchun (eni 40–100 mm, taklif; texnolog tasdiqlaydi) | TZ-32 B5: min_h 100 → 600 — detal 'h − 100' 0 bo'lmasin; pastki qator bo'yi sexda 600–880 (sex-standartlari.json oshxona_pastki)"
+  "izoh": "TZ-22: devor/burchak yonidagi planka — eshik va tutqich ochilishi uchun (eni 40–100 mm, taklif; texnolog tasdiqlaydi) | TZ-32 B5: min_h 100 → 600 — detal 'h − 100' 0 bo'lmasin; pastki qator bo'yi sexda 600–880 (sex-standartlari.json oshxona_pastki) | TZ-32 B8: auto_hardware false — fasad detali eshik emas (dobor_yon): avtomatik petlya/ruchka qo'shilmaydi",
+  "auto_hardware": false
  },
  {
   "code": "SP-ST-006",
@@ -13893,6 +13898,7 @@
    }
   ],
   "holes": [],
-  "izoh": "TZ-22: devor/burchak yonidagi planka — eshik va tutqich ochilishi uchun (eni 40–100 mm, taklif; texnolog tasdiqlaydi)"
+  "izoh": "TZ-22: devor/burchak yonidagi planka — eshik va tutqich ochilishi uchun (eni 40–100 mm, taklif; texnolog tasdiqlaydi) | TZ-32 B8: auto_hardware false — fasad detali eshik emas (dobor_yon): avtomatik petlya/ruchka qo'shilmaydi",
+  "auto_hardware": false
  }
 ]

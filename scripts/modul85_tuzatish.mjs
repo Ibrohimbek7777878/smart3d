@@ -14,6 +14,8 @@
  *   B4  konfirmat — MC modullaridagi eng ko'p uchragan Bazis qoidasi "Евровинт 7х50 (32) симм" (58 birikma):
  *       S 60, P 32, jadval [[150,1],[600,2],[1200,3],[2400,4]] — har gorizontal panel × 2 uchi; soni o'lchamga qarab (cutlist).
  *   B5  xato modullar — har birining manbasi pastda.
+ *   B8  yon dobor (SP-ST-005/006), tortmali (K-022/023) va kargo (K-024) — fasad detali eshik emas: auto_hardware false
+ *       (avtomatik petlya/ruchka qo'shilmaydi; Tez oshxonada dobor uchun 8 ta ortiqcha petlya edi).
  *   B6  petlya teshigi — eski 'hinge' yozuvlari (eshik o'rtasida, bir joyda bir nechta) olib tashlanadi; joyi va soni endi
  *       cutlist.js da D6 qoidasi bo'yicha (d6.js: kosa eshik uchidan 105 mm, qirradan 21,5 mm; sex fayllari, 534 eshik).
  * Egasi javobini kutayotganlar (TS-1730, korpus 16 mm, 12 quti-shablon, K-004/BD-005 nomi, narxsiz kodlar) — tegilmaydi.
@@ -62,6 +64,7 @@ function sexTuri(f) {
   if (f.category === 'wardrobe' && f.h >= 1780) return 'shkaf';
   return null;
 }
+const AUTO_YOQ = new Set(['SP-ST-005', 'SP-ST-006', 'SP-K-022', 'SP-K-023', 'SP-K-024']);   // B8: yon dobor, tortmali, kargo
 const TORTMA_ZAZOR = 50;                                             // MC-KP-03/04/09/10/11: Боковина ящика = d − 50
 
 for (const f of frags) {
@@ -184,6 +187,15 @@ for (const f of frags) {
     const n = f.holes.length;
     f.holes = f.holes.filter(h => h.kind !== 'hinge');
     yoz('B6', f.code, `${n - f.holes.length} ta eski petlya yozuvi olib tashlandi (D6 qoidasi cutlist da)`);
+  }
+  /* ── B8: eshigi yo'q, lekin fasad detali bor modul (yon dobor, tortma, kargo) — cutlist avtomatik petlya/ruchka qo'shmasin:
+   *  furnitura ro'yxati to'liq (auto_hardware: false — Bazis/MC modullaridagidek). Dobor — planka (petlya ham, ruchka ham yo'q);
+   *  tortma va kargo — yo'naltiruvchi va ruchka ro'yxatda bor, petlya yo'q. ── */
+  if (QADAM.has('B8') && AUTO_YOQ.has(f.code) && f.auto_hardware !== false) {
+    f.auto_hardware = false;
+    const m = "TZ-32 B8: auto_hardware false — fasad detali eshik emas (" + f.parts.filter(p => slotOf(p) === 'fasad').map(p => p.code).join(', ') + "): avtomatik petlya/ruchka qo'shilmaydi";
+    f.izoh = f.izoh ? f.izoh + ' | ' + m : m;
+    yoz('B8', f.code, 'auto_hardware: false');
   }
 }
 
