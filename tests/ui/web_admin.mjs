@@ -36,9 +36,9 @@ async function asosiy(page, R) {
 
   /* 1) admin bo'lmagan → 404 ko'rinishi */
   await page.goto(origin + '/admin/furnitura'); await page.waitForTimeout(1500);
-  for (let i = 0; i < 30 && !/404\.html/.test(page.url()); i++) await page.waitForTimeout(200);
-  R.yoq404 = /404\.html/.test(page.url());
-  R.yoq404Matn = (await txt()).includes('404') && (await txt()).includes('Sahifa topilmadi');
+  await page.waitForTimeout(1500);
+  R.yoq404 = !!(await page.locator('[data-admin-emas]').count());   // egasi #261: 404 o'rniga tushuntirish kartasi
+  R.yoq404Matn = (await txt()).includes("faqat admin uchun") && !/404\.html/.test(page.url());
   R.yoqTabYoq = (await page.locator('[data-admin-tab]').count()) === 0;
 
   /* soxta server (SHARTNOMA shakli) */

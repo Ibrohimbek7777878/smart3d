@@ -1519,5 +1519,8 @@
  "admin.qaytarish": "Qaytarish",
  "admin.tarix_qaytar_sarlavha": "O'zgarishni qaytarasizmi?",
  "admin.tarix_qaytar_matn": "{bolim} · {kalit}: eski qiymat tiklanadi.",
- "admin.tarix_qaytarildi": "Qaytarildi"
+ "admin.tarix_qaytarildi": "Qaytarildi",
+ "admin.admin_emas": "Bu bo'lim faqat admin uchun",
+ "admin.admin_emas_izoh": "Siz oddiy foydalanuvchi akkaunti bilan kirgansiz. Admin panelga admin akkaunt bilan kiring.",
+ "admin.admin_bilan_kirish": "Admin akkaunt bilan kirish"
 }
