@@ -1401,5 +1401,12 @@
  "texnika.r_qora": "Qora",
  "texnika.r_zanglamas": "Zanglamas po'lat",
  "texnika.r_bronza": "Bronza",
- "texnika.sukut": "Asl ranglarga qaytarish"
+ "texnika.sukut": "Asl ranglarga qaytarish",
+ "tez.yotoqxona": "Yotoqxona",
+ "tez.mehmonxona": "Mehmonxona",
+ "tez.garderob": "Garderob",
+ "tez.yotoqxona_matn": "yotoqxona 4x5",
+ "tez.mehmonxona_matn": "mehmonxona 4x6",
+ "tez.garderob_matn": "garderob xona 2x3",
+ "chizish.butun_xona": "Butun xona kerakmi? Pastdagi matn qatoriga yozing: masalan «yotoqxona 4x5»."
 }

@@ -31,6 +31,9 @@ function shaklQoy(tur) {
   toast(t('devor.shakl_qoyildi', { nom: t('devor.shakl_' + tur) }) + (eski ? ' · ' + t('devor.teshiklar_olindi') : ''));
 }
 
+/* egasi #245: tez boshlash — tayyor xona matni qatorga yoziladi va darhol quriladi (butun xona katalog modullaridan) */
+function tezMatn(matn) { setText(matn); matnniQur(); }
+
 export default function MatnQatori() {
   const ai = useSlice('ai'), ij = useSlice('ishjoyi');
   useSlice('project');
@@ -50,7 +53,7 @@ export default function MatnQatori() {
   const chiplar = devor
     ? [[t('devor.yopish'), tugat, 'yopish'], [t('devor.oxirgisi'), oxirgisiniOchir, 'orqaga'], [t('devor.bekor'), bekor, 'bekor'],
       [t('devor.shakl_rect'), () => shaklQoy('rect'), 'rect'], [t('devor.shakl_L'), () => shaklQoy('L'), 'L'], [t('devor.shakl_P'), () => shaklQoy('P'), 'P']]
-    : bosh ? (davom.soni ? [[t('davom.chip', { n: davom.soni }), () => openSheet('davom', {}), 'davom']] : []).concat([[t('tez.oshxona'), tezOshxona, 'kitchen']].concat(oddiy ? [] : [[t('asbob.devor'), () => asbobTanla('devor'), 'devor']]).concat([
+    : bosh ? (davom.soni ? [[t('davom.chip', { n: davom.soni }), () => openSheet('davom', {}), 'davom']] : []).concat([[t('tez.oshxona'), tezOshxona, 'kitchen'], [t('tez.yotoqxona'), () => tezMatn(t('tez.yotoqxona_matn')), 'yotoqxona'], [t('tez.mehmonxona'), () => tezMatn(t('tez.mehmonxona_matn')), 'mehmonxona'], [t('tez.garderob'), () => tezMatn(t('tez.garderob_matn')), 'garderob']].concat(oddiy ? [] : [[t('asbob.devor'), () => asbobTanla('devor'), 'devor']]).concat([
       [t('tayyor.tab_tayyor'), () => set('ai', { open: true, tab: 'tayyor' }), 'tayyor']])) : [];
   return (
     <div data-matn-qatori="" style={{ flex: '0 0 auto', borderTop: '1px solid var(--line)', background: 'rgba(15,34,41,.96)', padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
