@@ -28,7 +28,7 @@ export const devorYarim = (room) => (num(room && room.wall_thickness) || 100) / 
 export const devorChegara = (room, oraliq = DEVOR_ORALIQ) => devorYarim(room) + num(oraliq);
 
 /** devorlar: A → B, u — yo'nalish (birlik), n — xona ichiga normal, len */
-function devorlar(outline) {
+export function devorlar(outline) {
   const pts = outline || [], k = pts.length, out = [];
   let a2 = 0;
   for (let i = 0; i < k; i++) { const a = pts[i], b = pts[(i + 1) % k]; a2 += num(a[0]) * num(b[1]) - num(b[0]) * num(a[1]); }
@@ -151,14 +151,14 @@ export function ichkiXona(room, T = devorChegara(room)) {
 
 /* ── surish (#151): devorga yopishish, devor ichiga kirmaslik, modullar bir-biriga kirmasligi ── */
 
-const zKesishadi = (a, b) => {
+export const zKesishadi = (a, b) => {
   const ah = num(a.h), bh = num(b.h);
   if (!(ah > 0) || !(bh > 0)) return true;
   const az = num(a.z), bz = num(b.z);
   return az < bz + bh - 0.5 && bz < az + ah - 0.5;
 };
 /** ikki modul footprint'i x/y bo'yicha kesishishi (musbat — kirgan, manfiy — oraliq) */
-function kesim(A, B) {
+export function kesim(A, B) {
   return { ox: Math.min(A.x1, B.x1) - Math.max(A.x0, B.x0), oy: Math.min(A.y1, B.y1) - Math.max(A.y0, B.y0) };
 }
 
