@@ -8,7 +8,9 @@ import { roomBBox } from '../../../../../app/js/engine/rules.js';
 import { konstruksiya } from '../../../../../app/js/engine/konstruktor/index.js';
 import { konstruksiyami } from '../../../../../app/js/engine/konstruksiyaTili.js';
 import { aiKonstruksiya } from './konstruksiya.js';
-import { oshxonaQatorlar, kartaQatorlar, shablonQatorlar, nomalumQatorlar } from './oshxona.js';
+import { oshxonaQatorlar, kartaQatorlar, shablonQatorlar, nomalumQatorlar, garniturQatorlar } from './oshxona.js';
+import { garnituraReja } from '../../../../../app/js/engine/garnitur.js';
+import { erpQosh } from '../../../services/erpMaterial.js';
 import { aiTur, shablonReja, XONA_SHABLON } from '../../../../../app/js/engine/aiTur.js';
 import { promptLoyiha } from '../../../../../app/js/engine/promptlar.js';
 import KUTUBXONA from '../../../../../app/data/promptlar.json';
@@ -66,6 +68,39 @@ function shablondanQur(text, yo) {
   toast(t('ai.sh_qurdi', { nom, n: doc.placements.length, w: r.xona.W, d: r.xona.D }) + (r.sigmadi.length ? ' · ' + t('tayyor.sigmadi', { n: r.sigmadi.length }) : ''));
 }
 
+/** TZ-35: garnitur (spalniy garnitur: karavot + shkaf + trimo + oyna) — matn bo'laklarga ajratiladi, har buyum o'z o'lchami bilan katalogdan;
+ *  rang butun garniturga (ERP dekori); har bo'lak va xususiyat kartada (bajarildi / qisman / bajarilmadi), tushunilmaganlar ro'yxatda */
+function garniturdanQur(text) {
+  const H = project.H;
+  if (!H) { tushunmadim(text); return; }
+  const g = garnituraReja(text, H.catalog, { sheets: (H.sheetCatalog && H.sheetCatalog.sheets) || [] });
+  const qatorlar = garniturQatorlar(g);
+  if (!g.placements.length) {                          // hech narsa qurilmadi — karta sababi bilan (joriy loyiha o'zgarmaydi)
+    set('ai', { open: false, mic: false });
+    openSheet('aioshxona', { sarlavha: 'ai.g_sarlavha', qatorlar });
+    toast(t('ai.tur_yoq_toast'));
+    return;
+  }
+  const room = L.freshRoom();
+  room.outline = g.xona.outline; room.wall_height = g.xona.H;
+  room.utilities = (project.doc.room && project.doc.room.utilities) || [];
+  const doc = L.newDoc(room);
+  doc.placements = g.placements.filter(x => H.catalog[x.frg]);
+  doc.kitchen = L.freshKitchen();
+  /* butun garnitur bitta dekorda: korpus, ichki qism (polka) va fasad — ERP plitasi (kashemir …) */
+  if (g.rang && g.rang.korpus) {
+    const kod = {}, olish = (sh) => (kod[sh.name] = kod[sh.name] || erpQosh(H, doc, sh));
+    for (const p of doc.placements) if (p.dekor) p.slots = Object.assign({}, p.slots || {}, { korpus: olish(g.rang.korpus), polka: olish(g.rang.korpus), fasad: olish(g.rang.fasad || g.rang.korpus) });
+  }
+  project.tarix.belgi('ai');                          // bekor qilish: AI qurish — bitta qadam
+  project.reset(doc);
+  set('ai', { open: false, mic: false });
+  set('editor', { sel: null, part: null, warn: {} });
+  project.changed('room', true);
+  openSheet('aioshxona', { sarlavha: 'ai.g_sarlavha', qatorlar });
+  toast(t('ai.sh_qurdi', { nom: t('ai.g_sarlavha'), n: doc.placements.length, w: g.xona.W, d: g.xona.D }) + (g.bajarilmadi.length ? ' · ' + t('ai.g_h_bajarilmadi') + ': ' + g.bajarilmadi.length : ''));
+}
+
 /** matndan loyiha quriladi (joriy loyiha almashadi; teshiklar va oshxona sozlamasi saqlanadi) */
 export async function runAI(silent) {
   const text = get().ai.text.trim();
@@ -73,6 +108,7 @@ export async function runAI(silent) {
   const H = project.H;
   /* egasi #183: xona turi — tayyor shablon; tanilmagan — qurilmaydi (avval har qanday matnga oshxona qurilardi) */
   const yo = aiTur(text);
+  if (yo.tur === 'garnitur') { try { garniturdanQur(text); } catch (e) { if (!silent) xato('S3D-AI-101', { matn: t('ai.xato', { s: e.message }), modul: 'editor/ai', err: e }); } return; }
   if (yo.tur === 'shablon') { try { shablondanQur(text, yo); } catch (e) { if (!silent) xato('S3D-AI-101', { matn: t('ai.xato', { s: e.message }), modul: 'editor/ai', err: e }); } return; }
   if (yo.tur === 'nomalum') { tushunmadim(text); return; }
   try {

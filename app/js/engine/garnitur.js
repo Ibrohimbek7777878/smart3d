@@ -53,13 +53,13 @@ const UST_SOZ = /(?<![a-z'])(?:tepa|ust|yuqori)[a-z']*|сверху|наверх
 /* umumiy gap belgilari (bo'lakda buyum so'zi yo'q bo'lsa — butun garniturga tegishli) */
 const UMUMIY = /umumiy|общ[а-яё]*|overall|general|(?:classic|klassik|классик)|model(?![a-z])|push|пуш|tip-?on|ruchkasiz|без\s*ручек|handle-?less|(?<![a-z])rang|цвет|colou?r|garnitur|гарнитур|(?<![a-z])set(?![a-z])/;
 /* bilingan ("tanilgan") so'zlar — yig'indida tushunilmagan so'zlar ro'yxatiga tushmaydi */
-const TANISH = new RegExp([
+const TANISH = new RegExp("(?<![a-zа-яё'])(?:" + [
   'spalni[a-z\']*', 'yotoq[a-z\']*', 'razmer[a-z\']*', 'model[a-z\']*', 'detal[a-z\']*', 'qism[a-z\']*', 'tepa[a-z\']*', 'ust[a-z\']*', 'yuqori[a-z\']*', 'mexanizm[a-z\']*', 'umumiy', 'rang[a-z\']*',
   'o\'rta[a-z\']*', 'chekka[a-z\']*', 'chet[a-z\']*', 'yon[a-z\']*', 'tortma[a-z\']*', 'kiyim', 'ilish', 'ilgich', 'shtanga', 'polka[a-z\']*', 'eshik[a-z\']*', 'fasad[a-z\']*', 'korpus[a-z\']*',
   'ldsp', 'mm', 'sm', 'metr', 'bosh', 'oyoq', 'garnitur[a-z\']*', 'bo\'lim[a-z\']*', 'chap[a-z\']*', 'o\'ng[a-z\']*', 'pastki', 'ostida', 'qanot[a-z\']*', 'ochiq', 'yopiq', 'ikki', 'uch', 'bitta', 'ta',
   'мебель', 'комплект', 'гарнитур[а-яё]*', 'центр[а-яё]*', 'спальн[а-яё]*', 'размер[а-яё]*', 'деталь', 'детали', 'часть', 'частях', 'частей', 'сверху', 'механизм[а-яё]*', 'общ[а-яё]*', 'цвет[а-яё]*', 'середин[а-яё]*', 'краям?[а-яё]*', 'полк[а-яё]*', 'ящик[а-яё]*', 'вешалк[а-яё]*', 'штанг[а-яё]*', 'одежд[а-яё]*', 'дверц[а-яё]*', 'двер[а-яё]*', 'головн[а-яё]*', 'ножн[а-яё]*', 'мягк[а-яё]*', 'классическ[а-яё]*', 'классик[а-яё]*', 'лдсп', 'без', 'ручек', 'пуш', 'для', 'из', 'на', 'над', 'при', 'три', 'две', 'два', 'одна', 'один',
   'both', 'bedroom', 'bed', 'room', 'set', 'size', 'part', 'parts', 'section', 'sections', 'soft', 'details', 'detail', 'head', 'foot', 'end', 'ends', 'middle', 'edges', 'shelf', 'shelves', 'hanging', 'rail', 'drawers', 'drawer', 'mirror', 'top', 'above', 'handle[a-z]*', 'overall', 'color', 'colour', 'classic', 'model', 'push', 'mechanism', 'with', 'and', 'the', 'for', 'of', 'in', 'on', 'two', 'three', 'one', 'wardrobe', 'closet', 'dressing', 'table', 'chipboard', 'upholstered', 'sleeping', 'width', 'length'
-].join('|'), 'g');
+].join('|') + ")(?![a-zа-яё'])", 'g');
 /* gapni bezovchi so'zlar (iltimos, menga …) — ro'yxatga tushmaydi */
 const GAP_SOZ = /^(?:va|ham|hamda|bilan|uchun|iltimos|menga|kerak|qilib|qilish|bering|ber|qil|bo'lsin|bo'lsa|boladi|bo'ladi|dan|dagi|da|ga|ni|ning|и|а|но|или|пожалуйста|мне|нужн[а-яё]*|сделай[а-яё]*|нужен|нужна|с|со|and|or|please|make|need|me|a|an|to|of|is|are|be)$/;
 
