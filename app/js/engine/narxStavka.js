@@ -8,7 +8,7 @@
  *
  * Hujjat:
  *   xizmatlar: { <kod>: { nom, guruh: raspil|kromka|prisadka, qiymat, birlik, kategoriya, manba: 'sex jadvali'|'egasi', sana } }
- *   tanlov:    { raspil: <kod>|null, kromka: { _sukut|<kromka kodi>: <kod> }, prisadka: { <teshik turi>: <kod> }, bazis: { onlayn|oflayn: <kod> } }
+ *   tanlov:    { raspil: <kod>|null, raspil_yupqa?: <kod> (TZ-36: HDF ≤ 3 mm list uchun raspil), kromka: { _sukut|<kromka kodi>|E<eni>x<qalinlik> (TZ-36: "E19x1"): <kod> }, prisadka: { <teshik turi>: <kod> }, bazis: { onlayn|oflayn: <kod> } }
  *   ish_haqi:  { yoqilgan, detal, modul } — har biri { qiymat, manba, sana }
  *   ustama:    { foiz: { qiymat (0–300), manba, sana } } */
 
@@ -119,6 +119,11 @@ export function narxQollash(cur, patch) {
   if (patch.tanlov != null) {
     const tn = obyekt(patch.tanlov, 'tanlov');
     if ('raspil' in tn) { const v = tekKod(tn.raspil, 'raspil', 'tanlov.raspil'); yoz('tanlov.raspil', next.tanlov.raspil, v); next.tanlov.raspil = v; }
+    if ('raspil_yupqa' in tn) {   // TZ-36 K3: HDF/yupqa list uchun raspil (ixtiyoriy)
+      const v = tekKod(tn.raspil_yupqa, 'raspil', 'tanlov.raspil_yupqa');
+      yoz('tanlov.raspil_yupqa', next.tanlov.raspil_yupqa || null, v);
+      if (v) next.tanlov.raspil_yupqa = v; else delete next.tanlov.raspil_yupqa;
+    }
     for (const g of ['kromka', 'prisadka', 'bazis']) {
       if (tn[g] == null) continue;
       const m = obyekt(tn[g], 'tanlov.' + g);
@@ -136,6 +141,7 @@ export function narxQollash(cur, patch) {
   }
   /* xizmat o'chirilsa — unga bog'langan tanlov ham bo'shaydi */
   if (next.tanlov.raspil && !next.xizmatlar[next.tanlov.raspil]) { yoz('tanlov.raspil', next.tanlov.raspil, null); next.tanlov.raspil = null; }
+  if (next.tanlov.raspil_yupqa && !next.xizmatlar[next.tanlov.raspil_yupqa]) { yoz('tanlov.raspil_yupqa', next.tanlov.raspil_yupqa, null); delete next.tanlov.raspil_yupqa; }
   for (const g of ['kromka', 'prisadka', 'bazis']) for (const [k, kod] of Object.entries(next.tanlov[g] || {})) if (!next.xizmatlar[kod]) { yoz(`tanlov.${g}.${k}`, kod, null); delete next.tanlov[g][k]; }
   const qiymatQ = (grp, k, v) => { const eski = next[grp][k]; const q = { qiymat: v, manba: 'egasi', sana: bugun() }; if (!eski || eski.qiymat !== v || eski.manba !== 'egasi') { next[grp][k] = q; yoz(grp + '.' + k, eski, q); } };
   if (patch.ish_haqi != null) {
@@ -199,11 +205,19 @@ export function xizmatFarq(cur, yuklangan) {
 
 /* ─────────── hisobda: stavka → narx ─────────── */
 const xz = (S, kod) => (S && kod && S.xizmatlar && S.xizmatlar[kod]) || null;
-/** kromka kodi (nuqtasiz) → tanlangan xizmat yoki sukut */
-export function kromkaXizmat(S, code) {
+/** TZ-36 K2: kromka nomi ("Кромка 19/1 …", "ПВХ 21/0,8") → o'lcham kaliti "E<eni>x<qalinlik>" (E19x1, E19x0.4) yoki null.
+ *  ERP kromka xizmati eni/qalinligiga qarab narxlanadi (19/0,4 — 3 000, 19/1 — 4 000, 21/1 — 4 800, 35/1 — 5 700, 42/2 — 9 500 so'm/m). */
+export function kromkaOlchamKaliti(nom) {
+  const m = /(?:^|[^\d])(\d{2})\s*\/\s*(\d(?:[.,]\d+)?)/.exec(String(nom || ''));
+  return m ? 'E' + m[1] + 'x' + m[2].replace(',', '.') : null;
+}
+/** kromka kodi (nuqtasiz) → tanlangan xizmat yoki sukut. nom (ixtiyoriy) — kromka nomi: kod bo'yicha tanlov yo'q bo'lsa
+ *  o'lchamga ("E19x1") qarab, u ham yo'q bo'lsa — _sukut */
+export function kromkaXizmat(S, code, nom) {
   if (!S || !S.tanlov) return null;
   const k = String(code).replace(/\./g, ''), m = S.tanlov.kromka || {};
-  return xz(S, m[k]) || xz(S, m[code]) || xz(S, m._sukut);
+  const ok = kromkaOlchamKaliti(nom);
+  return xz(S, m[k]) || xz(S, m[code]) || (ok ? xz(S, m[ok]) : null) || xz(S, m._sukut);
 }
 /** D6 teshigi (d6.js) va MC birikma teshigi → egasi tanlashi mumkin bo'lgan umumiy qatorlar (o'zining qatori bo'lmasa shular).
  *  d6_kosa — petlya (Bazis 'petlya' yoki modul 'hinge'); d6_eksentrik — eksentrik (Bazis 'eksentrik' yoki modul 'cam').
@@ -229,6 +243,8 @@ export function prisadkaXizmat(S, key, kind) {
   return null;
 }
 export const raspilXizmat = (S) => (S && S.tanlov ? xz(S, S.tanlov.raspil) : null);
+/** TZ-36 K3: yupqa list (HDF ≤ 3 mm) uchun raspil xizmati (tanlov.raspil_yupqa) — ERP: Holzma 1 (25 000); tanlanmagan — null (umumiy raspil) */
+export const raspilYupqaXizmat = (S) => (S && S.tanlov ? xz(S, S.tanlov.raspil_yupqa) : null);
 /** TZ-32 E3: Bazis loyiha xizmati (tur: 'onlayn' | 'oflayn') → narx qatori (detal boshiga) yoki null */
 export const bazisXizmat = (S, tur) => (S && S.tanlov && S.tanlov.bazis ? xz(S, S.tanlov.bazis[tur]) : null);
 

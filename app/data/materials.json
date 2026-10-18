@@ -316,10 +316,20 @@
    "erp_id": 11578,
    "izoh": "Fasad MDF16 (egasi: korpus bilan bir xil oq gladkiy): ERP id 11578, display_price_uzs 580 515 (list 640 000), varaq 2800×2070 (bizning standart format), qoldiq bor. Sexda LMDF kam sotiladi (56 buyurtmada eng ko'pi Кашемир 5981 — 4 list); oq gladkiy ularning orasida yagona, korpus tanloviga mos."
   },
-  "HDF3": null
+  "HDF3": {
+   "sku": "0110 PE",
+   "nom": "ЛХДФ 2,5мм 2800*2070 Белый 5,796кв",
+   "uzs": 140000,
+   "l": 2800,
+   "w": 2070,
+   "manba": "ERP",
+   "sana": "2026-10-18",
+   "erp_id": 11750,
+   "izoh": "TZ-36 K3: ERP buyurtmalarida (12 tadan 9 tasida HDF bor) shu mahsulot 140 000 so'mdan sotilgan, miqdori 1–5 list (2800×2070); mahsulot kartasida display_price_uzs 137 058,95 (list 165 000). Barcha HDF materiallari bitta kroy guruhi (bazis/loyiha.js), raspil — Holzma 1."
+  }
  },
  "sukut_narx": {
-  "_izoh": "TZ-32 E (2026-10-18): sukut narx stavkalari — Bittada ERP xizmatlar jadvalidan (mijoz narxi, client_price; faqat o'qish). Boshlang'ich hujjat (narxSukut) shu yerdan to'ldiriladi; egasi/admin Sozlamalar → Narxlar da o'zgartiradi. 'tanlov' — oldindan tanlangan qator (raspil: Holzma 2 — ERP buyurtmalarida eng ko'p; kromka: korpus 19/0,4 — 3 000/m, fasad 19/2 — 4 900/m (egasi); prisadka: teshik turi → ERP присадка xizmati). 'bazis' — usta narx panelida tanlaydigan xizmat (sukut o'chiq, S3): onlayn = Bazis3 (3 000/detal), oflayn = Bazis6 (6 000/detal).",
+  "_izoh": "TZ-32 E (2026-10-18): sukut narx stavkalari — Bittada ERP xizmatlar jadvalidan (mijoz narxi, client_price; faqat o'qish). Boshlang'ich hujjat (narxSukut) shu yerdan to'ldiriladi; egasi/admin Sozlamalar → Narxlar da o'zgartiradi. 'tanlov' — oldindan tanlangan qator (raspil: Holzma 2 — ERP buyurtmalarida eng ko'p; kromka: korpus 19/0,4 — 3 000/m, fasad 19/2 — 4 900/m (egasi); prisadka: teshik turi → ERP присадка xizmati). 'bazis' — usta narx panelida tanlaydigan xizmat (sukut o'chiq, S3): onlayn = Bazis3 (3 000/detal), oflayn = Bazis6 (6 000/detal). TZ-36 (2026-10-18): kromka — eni/qalinligiga qarab (kalit E<eni>x<qalinlik>: Bazis kromka nomi «19/1» → ERP «ПВХ 19/1 прямая» 4 000; 21/1 — «глянцевая прямая» 4 800 (oddiy «21/1 прямая» ERP'da yo'q); 35/1 — 5 700; 42/2 — «глянцевая прямая» 9 500; kod bo'yicha tanlov (PVC04, PVC2) ustun). raspil_yupqa — HDF/3 mm list uchun Holzma 1 (25 000); LDSP uchun raspil — Holzma 2. Prisadka ЕВРО: yuza+qirra bitta juftlik (cutlist.js).",
   "xizmatlar": {
    "7802360156": {
     "nom": "Услуга Распила Holzma 2",
@@ -482,6 +492,42 @@
     "kategoriya": "Bazis",
     "manba": "sex jadvali",
     "sana": "2026-10-18"
+   },
+   "780236012397": {
+    "nom": "Услуга ПВХ 19/1 прямая",
+    "guruh": "kromka",
+    "qiymat": 4000.0,
+    "birlik": "m",
+    "kategoriya": "Услуга кромирование",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236012405": {
+    "nom": "Услуга ПВХ 21/1 глянцевая прямая",
+    "guruh": "kromka",
+    "qiymat": 4800.0,
+    "birlik": "m",
+    "kategoriya": "Услуга кромирование",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236012432": {
+    "nom": "Услуга ПВХ 35/1 прямая",
+    "guruh": "kromka",
+    "qiymat": 5700.0,
+    "birlik": "m",
+    "kategoriya": "Услуга кромирование",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236012437": {
+    "nom": "Услуга ПВХ 42/2 глянцевая прямая",
+    "guruh": "kromka",
+    "qiymat": 9500.0,
+    "birlik": "m",
+    "kategoriya": "Услуга кромирование",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
    }
   },
   "tanlov": {
@@ -490,7 +536,13 @@
     "_sukut": "780236012395",
     "PVC04": "780236012395",
     "PVC2": "780236012400",
-    "REHAU2": "780236012400"
+    "REHAU2": "780236012400",
+    "E19x1": "780236012397",
+    "E21x1": "780236012405",
+    "E35x1": "780236012432",
+    "E42x2": "780236012437",
+    "E19x0.4": "780236012395",
+    "E19x2": "780236012400"
    },
    "prisadka": {
     "konfirmat_yuza": "780236010911",
@@ -509,7 +561,8 @@
    "bazis": {
     "onlayn": "03",
     "oflayn": "04"
-   }
+   },
+   "raspil_yupqa": "7802360124"
   }
  },
  "furnitura_yashirin": {
@@ -704,5 +757,10 @@
   "markup_pct": 0.35,
   "price_src": "egasi, 2026-10-17",
   "note": "Mijoz narxi = tannarx × (1 + markup_pct). 35% — egasi tasdiqladi (2026-10-17, SORIZLAR #181: \"35 foiz qolsin\"). Usta o'z ustamasini Sozlamalarda, admin — Narxlar bo'limida o'zgartira oladi."
+ },
+ "kromka_chiqit": {
+  "foiz": 8,
+  "manba": "TZ-36 K2: 12 ta ERP buyurtmasi — ERP kromka metri / chizmadagi metr: mediana 1,084 (9 tasida 1,04–1,10; 3832 — 1,58, 3860 — 1,23 chetga chiqqan). Faqat hisob (narx) uchun; kesim/eksportdagi metr o'zgarmaydi.",
+  "sana": "2026-10-18"
  }
 }
