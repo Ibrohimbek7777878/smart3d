@@ -420,7 +420,7 @@ function renderExCheck(val, doc, cutlists, nest) {
       </div>`;
   }
   /* AUDIT-2026-10-14 §3: stanok fayllari haqiqiy stanokda sinalmagan */
-  html += `<div class="msg warn">⚠️ <b>SINOV:</b> stanok fayllari (DXF, NC, G-code, PTP, Altendorf)
+  html += `<div class="msg warn">⚠️ <b>SINOV:</b> stanok fayllari (DXF, NC, G-code, PTP, kesim rejasi)
     hali sexda sinalmagan — ishlab chiqarishda ishlatmang.</div>`;
   $('#exCheck').innerHTML = html;
 }
@@ -879,9 +879,8 @@ function integrityCheck(needCutlist) {
 function exportOBJ() {
   if (!integrityCheck(false)) return;
   const r = buildOBJ(Object.assign({}, state.doc, { placements: viewPlacements() }), state.catalog);
-  download('smart3d-model.obj', r.obj, 'text/plain');
-  setTimeout(() => download('smart3d-model.mtl', r.mtl, 'text/plain'), 350);
-  toast('OBJ + MTL yuklanmoqda — ' + r.placements.length + ' guruh', 'good');
+  download('smart3d-model.obj', r.obj, 'text/plain');   // egasi #223: bitta .obj fayl (rangli variant yangi saytda: «OBJ + rang (.zip)»)
+  toast('OBJ yuklanmoqda — ' + r.placements.length + ' guruh', 'good');
 }
 function exportGlb() {
   if (!integrityCheck(false)) return;
@@ -1234,7 +1233,7 @@ function exportMpr() {
   cncSafe((nest, cls) => cncBundle(nest, cls).mpr, '-homag.mpr', 'text/plain', 'Homag WoodWOP MPR dasturi tayyor');
 }
 function exportAltendorf() {
-  cncSafe((nest, cls) => cncBundle(nest, cls).altendorf, '-altendorf-fazali-kesim.txt', 'text/plain', 'Altendorf fazali kesim xaritasi tayyor');
+  cncSafe((nest, cls) => cncBundle(nest, cls).altendorf, '-kesim-rejasi.txt', 'text/plain', 'Fazali kesim rejasi (matn) tayyor');
 }
 
 /* ═══════════════════ LAYOUT / TABS ═══════════════════ */

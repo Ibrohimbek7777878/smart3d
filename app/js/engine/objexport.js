@@ -71,6 +71,7 @@ function buildMTL(catalog) {
  * Butun loyiha hujjatini detallarga ajratilgan sanoat darajasidagi OBJ'ga aylantiradi.
  * @param {Object} doc — {room:{outline, wall_height, openings}, placements:[{id,frg,x,y,z,w,d,h,rot,qty}]}
  * @param {Object} catalog — {code: frag}
+ * @param {{mtllib?:boolean}} [opt] — mtllib:true bo'lsa OBJ ichiga `mtllib smart3d.mtl` yoziladi (rangli variant)
  * @returns {{obj:string, mtl:string, holes:any[], placements:any[]}}
  */
 export function buildOBJ(doc, catalog, opt = {}) {
@@ -85,7 +86,8 @@ export function buildOBJ(doc, catalog, opt = {}) {
     '# Smart3D Detallashtirilgan Model Eksporti (OBJ)',
     '# units: mm · axes: x=width y=depth z=height (Z-up)',
     '# Har bir mebel haqiqiy panellar (yon, tub, qopqoq, eshik, tokcha) bilan yozilgan',
-    'mtllib smart3d.mtl'
+    /* egasi #223: odatiy OBJ — bitta fayl (mtllib yo'q; usemtl/o nomlari qoladi, rang yo'q). opt.mtllib=true — alohida .mtl bilan */
+    ...(opt.mtllib ? ['mtllib smart3d.mtl'] : [])
   ].join('\n');
 
   /* ── 1) Pol / xona (outline ko'tarilgan holda) ─────────────────── */

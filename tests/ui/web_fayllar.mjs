@@ -60,9 +60,9 @@ async function asosiy(page, R) {
   R.objTugma = await M(() => [...document.querySelectorAll('[data-panel] button')].map(b => b.textContent.trim()).filter(x => /^OBJ/.test(x)));
   R.objModul = R.tanlandi ? await objOqi('OBJ — tanlangan modul') : null;
   R.objOk = R.objButun.xona && R.objButun.modullar >= 1 && R.tanlandi && !!R.objModul && !R.objModul.xona && R.objModul.modullar === 1 &&
-    /\.obj$/.test(R.objModul.nom) && R.objModul.nom !== 'smart3d-model.obj' && R.objModul.mtl === R.objModul.nom.replace(/\.obj$/, '.mtl') && R.objTugma.join() === 'OBJ — tanlangan modul';
+    /\.obj$/.test(R.objModul.nom) && R.objModul.nom !== 'smart3d-model.obj' && R.objModul.mtl === undefined && R.objButun.mtl === undefined && R.objTugma.join() === 'OBJ — tanlangan modul,OBJ + rang (.zip: .obj + .mtl)';   // egasi #223: bitta .obj (mtllib yo'q); rangli variant — .zip
   R.fayllar = {};
-  for (const l of ['Excel smeta', 'Detallar (CSV)', 'Loyiha fayli', 'Smeta (CSV)', 'Teshiklar (JSON)', 'GLB (3D/AR)', 'GibLab', 'DXF', 'G-code', 'PTP', 'NC', 'XNC', 'Altendorf', 'Rasm']) {
+  for (const l of ['Excel smeta', 'Detallar (CSV)', 'Loyiha fayli', 'Smeta (CSV)', 'Teshiklar (JSON)', 'GLB (3D/AR)', 'GibLab', 'DXF', 'G-code', 'PTP', 'NC', 'XNC', 'Kesim rejasi (matn)', 'Rasm']) {
     R.fayllar[l] = await yukla(l);
     await page.waitForTimeout(300);
   }

@@ -36,6 +36,8 @@ ok(ro.mtl.includes('newmtl cat_outlet') && ro.mtl.includes('newmtl cat_pipe'), '
 ok((ro.obj.match(/o rozetka_/g) || []).length === 2, 'OBJ: 2 ta rozetka obyekti');
 ok((ro.obj.match(/o quvur_/g) || []).length === 1, 'OBJ: 1 ta quvur obyekti');
 ok(ro.obj.includes('usemtl cat_outlet') && ro.obj.includes('usemtl cat_pipe'), 'OBJ: usemtl outlet/pipe');
+ok(!/^mtllib/m.test(ro.obj), 'OBJ (egasi #223): odatiy — bitta fayl, mtllib qatori yo\'q');
+ok(/^mtllib smart3d\.mtl$/m.test(buildOBJ(docL, {}, { mtllib: true }).obj), 'OBJ + rang: mtllib qatori bor (zip varianti)');
 
 /* ── bo'sh utilities — eskidek o'zgarmasdan ── */
 const r0 = buildGLB({ room: { outline: L, wall_height: 2700, wall_thickness: 100, openings: [] }, placements: [] }, {});
