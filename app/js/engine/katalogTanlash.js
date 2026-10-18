@@ -156,7 +156,7 @@ export function modulTuri(f) {
 /** so'ralgan tur → qaysi modul turlaridan tanlanadi ("garderob" — kupe va poyabzal shkafi ham, "stol" — ish va ovqat stollari …) */
 const TUR_KENG = {
   garderob: ['garderob', 'kupe', 'poyabzal'], kupe: ['kupe'], hammom: ['hammom', 'rakovina', 'kozgu'], rakovina: ['rakovina', 'hammom'], kozgu: ['kozgu', 'hammom'],
-  divan: ['divan'], stul: ['stul'], kreslo: ['divan', 'stul'], stol: ['stol'], yozuv: ['stol'], krovat: ['krovat', 'komod'], tumba: ['tumba', 'komod'], komod: ['komod', 'tumba'],
+  divan: ['divan'], stul: ['stul'], kreslo: ['divan', 'stul'], stol: ['stol'], yozuv: ['stol'], krovat: ['krovat', 'komod'], trimo: ['komod'], tumba: ['tumba', 'komod'], komod: ['komod', 'tumba'],
   javon: ['javon', 'vitrina', 'tv'], pastki: ['pastki', 'tumba'], ustki: ['ustki', 'antresol']
 };
 const IKKILAMCHI = /boshka|toshqin|yon dobor|dobor|sokol|karniz|ichki javon/i;   // asosiy modul emas (qo'shimcha) — nomi so'ralmasa tanlanmaydi

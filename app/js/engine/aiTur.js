@@ -40,6 +40,8 @@ const BUYUM = {
   krovat: /krovat[a-z']*|toshqin|kir\s*yotoq[a-z']*|karyera|karavot[a-z']*|kravat[a-z']*|karovat[a-z']*|кроват[а-яё]*|(?<![a-z])beds?(?![a-z])/,
   tumba: /(?<!tv\s|тв\s|tv-|тв-)(?:tumba[a-z']*|тумб[а-яё]*|nightstands?|bedside\s*tables?)/,
   komod: /komod[a-z']*|комод[а-яё]*|dresser|chest of drawers/,
+  /* TZ-35: trimo (tortmali kiyinish stoli, tepasida oyna) — katalogdagi komod moduli */
+  trimo: /trimo[a-z']*|trumo[a-z']*|трюмо|dressing\s*table|vanity\s*table|туалетн[а-яё]*\s+столик/,
   kupe: /kupe|купе|sliding\s*wardrobe/,
   poyabzal: /poyabzal[a-z']*|oyoq\s*kiyim[a-z']*|обув[а-яё]*|shoe\s*(?:cabinet|rack|storage)?/,
   ilgich: /kiyim\s*il(?:gich|adigan)[a-z']*|ilgich[a-z']*|veshalka[a-z]*|вешалк[а-яё]*|coat\s*(?:hanger|rack|panel)|coat/,
@@ -83,7 +85,7 @@ const REJA_BELGI = /[lгpпuу][\s-]*(?:shakl|образн|shape)|\d+\s*ta\s*(?:
 const OSHXONA_BELGI = /moyka|rakovina|chanoq|мойк|(?<![a-z])sink|xolodilnik|muzlatgich|холодильн|fridge|vit[iy]?ch?k|vyt[iy]?ajk|вытяжк|stoleshn|столешн|osma|navesn|навесн|ustki|верхн|upper|[lгpпuу][\s-]*(?:shakl|образн|shape)|burchakli|углов|orol|остров|island|\d+\s*ta\s*(?:pastki|ustki)/;
 /* buyum → katalogdagi asosiy modul (shablonda bo'lmasa qo'shiladi). null — katalogda shu turdagi modul yo'q (egasiga ro'yxat) */
 export const KIND_MODUL = {
-  krovat: 'MC-KR-04', tumba: null, komod: 'SP-BD-005', kupe: 'SP-G-010', poyabzal: 'SP-W-008', ilgich: 'SP-D-002', garderob: 'SP-W-006',
+  krovat: 'MC-KR-04', tumba: null, komod: 'SP-BD-005', trimo: 'SP-BD-005', kupe: 'SP-G-010', poyabzal: 'SP-W-008', ilgich: 'SP-D-002', garderob: 'SP-W-006',
   tv: 'SP-SH-002', vitrina: 'SP-SH-004', divan: 'SP-S-006', javon: 'SP-SH-005', parta: 'MC-PA-02', stol: 'SP-T-007', kozgu: 'SP-H-011', rakovina: 'SP-H-010',
   stul: 'SP-C-004', kreslo: 'SP-S-003'
 };
@@ -161,10 +163,22 @@ function krovatEni(s) {
   return v >= 800 && v <= 2200 ? v : 0;
 }
 
+/* TZ-35 B1: garnitur — bir nechta mebel + joylashuv ("spalniy garnitur, krovat 1800x2100, shkaf 2400x2300, trimo …"): matn bo'laklarga ajratiladi (engine/garnitur.js).
+   Oshxona garniturasi ("oshxona garnituri") — avvalgi oshxona yo'li. "trimo" bilan ikki+ tur — ham garnitur (shablon trimoni bilmaydi). */
+const GARNITUR = /garnitur[a-z']*|гарнитур[а-яё]*|(?:bed\s*room|bedroom|furniture)\s*(?:set|suite)|комплект\s*(?:мебел|спальн)/;
+const YOTOQ_SOZ = /spalni[a-z']*|спальн[а-яё]*|yotoq[a-z']*|bed\s*room|bedroom|krovat|karavot|кроват|(?<![a-z])beds?(?![a-z])|trimo|трюмо|dressing\s*table/;
+export function garniturmi(matn) {
+  const s = tayyorla(matn);
+  if (!s.trim() || OSHXONA_SOZ.test(s)) return false;
+  if (GARNITUR.test(s)) return YOTOQ_SOZ.test(s);
+  return BUYUM.trimo.test(s) && buyumlar(s).length >= 2;
+}
+
 /** matn → nima so'ralgani */
 export function aiTur(matn) {
   const s = tayyorla(matn);
   if (!s.trim()) return { tur: 'nomalum' };
+  if (garniturmi(s)) return { tur: 'garnitur' };
   /* "Oshxona pastki shkaf 900x550x720" — "oshxona" modul tavsifi (uzunlik, etaj, qavat aytilmagan): bitta modul, oshxona rejasi emas */
   const oshxonaSoz0 = OSHXONA_SOZ.test(s);
   const by0 = buyumlar(s);

@@ -234,7 +234,7 @@ const ICH = {
   polka: /(\d+)\s*(?:ta(?:dan)?\s*)?(?:teng\s+|равн[а-яё]*\s+|одинаков[а-яё]*\s+|equal\s+)?(?:polka|пол(?:к|ок)|shel)|(?:polka|пол(?:к|ок)[^\s\d:,.;]*|shel[^\s\d:,.;]*)\s*(\d+)/,
   tortma: /(\d+)\s*(?:ta\s*)?(?:tortma|yashik|ящик|выдвиж|drawer)|(?:tortma[^\s\d:,.;]*|ящик[^\s\d:,.;]*|drawer[^\s\d:,.;]*)\s*(\d+)/,
   eshik: /(\d+)\s*(?:ta\s*)?(?:eshik(?!siz)|дверц|двер|створ|door)|(?:eshik(?!siz)[^\s\d:,.;]*|двер[^\s\d:,.;]*|door[^\s\d:,.;]*)\s*(\d+)/,   // "eshiksiz 3 tortma" — 3 eshik emas
-  shtanga: /shtang|vishil|veshil|ilgich|iladigan|iluvchi|osiladigan|veshal|штанг|вешал|плечик|(?<![a-z])rod(?![a-z])|hanging|rail/,
+  shtanga: /shtang|vishil|veshil|ilgich|(?<![a-z'])ilish|iladigan|iluvchi|osiladigan|veshal|штанг|вешал|плечик|(?<![a-z])rod(?![a-z])|hanging|rail/,
   eshiksiz: /eshiksiz|ochiq\b|без двер|открыт|no doors?|open\b/
 };
 const XONA = /\bxona|комнат|\broom\b|reja|планировк|\bl ?shakl|burchakli oshxona|г-образ|п-образ|u-shape|l-shape|orol|остров|island|xolodilnik|холодильник|fridge|plita|плит|stove|moyka|мойк|sink|\d+\s*ta\s*(?:pastki|ustki|shkaf|modul)|\d+\s*(?:нижн|верхн|шкаф)[^\s\d:,.;]*\s+и\s+\d+/;
