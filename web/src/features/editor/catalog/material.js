@@ -108,7 +108,7 @@ function stolVaraq(q, yangiFiltr) {
   const qq = String(q.q || '').toLowerCase().trim(), chek = q.chek || STOL_CHEK;
   const royxat = ((data && data.items) || []).filter(d => (!q.th || d.qalinlik === q.th) && (!qq || (d.nom + ' ' + d.sku).toLowerCase().includes(qq)))
     .sort((a, b) => ((b.qalinlik === T) - (a.qalinlik === T)) || (a.qalinlik - b.qalinlik) || ((b.qoldiq_m2 > 0) - (a.qoldiq_m2 > 0)) || (b.qoldiq_m2 - a.qoldiq_m2));
-  const korinadi = royxat.slice(0, chek);
+  const sanoq = {}, korinadi = royxat.filter(d => (sanoq[d.qalinlik] = (sanoq[d.qalinlik] || 0) + 1) <= chek);   // har qalinlik bo'limi alohida chegarada (38 mm ham ko'rinsin)
   const tanla = (d) => () => {
     const kk = doc.kitchen || (doc.kitchen = L.freshKitchen());
     kk.stolT = d.qalinlik; kk.stolErp = d.erp_id;
@@ -138,8 +138,8 @@ function stolVaraq(q, yangiFiltr) {
     qalinlik: [{ label: t('mebel.rang_hammasi'), on: !q.th, pick: () => yangiFiltr({ th: null }) }]
       .concat([26, 38].map(v => ({ label: v + ' ' + t('umumiy.mm'), on: q.th === v, pick: () => yangiFiltr({ th: q.th === v ? null : v }) }))),
     turlar: [], asli: null, ranglar: [], q: q.q, onQ: ev => yangiFiltr({ q: ev.target.value }), umumiy: null, loyihadagi: null,
-    jami: royxat.length > chek ? t('mebel.plita_soni', { n: chek, jami: royxat.length }) : null,
-    yana: royxat.length > chek ? { n: royxat.length - chek, pick: () => yangiFiltr({ chek: chek + STOL_CHEK }) } : null,
+    jami: royxat.length > korinadi.length ? t('mebel.plita_soni', { n: korinadi.length, jami: royxat.length }) : null,
+    yana: royxat.length > korinadi.length ? { n: royxat.length - korinadi.length, pick: () => yangiFiltr({ chek: chek + STOL_CHEK }) } : null,
     bolimlar, bor: royxat.length > 0
   };
 }
