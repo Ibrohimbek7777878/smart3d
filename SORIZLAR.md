@@ -545,3 +545,7 @@ buni togirla va vr qismin ham togirlab chiq 85ta modulin togirlab chiq va narx a
 (iqtibos — mening ro'yxatim: ERP .xlsx larni GitHub'dan olib tashlash; serverni yangi versiyaga o'tkazish va git orqali yangilanadigan qilish; "Teshik, rang va kromka"; Rover)
 
 203. rover kere emas
+
+204. https://mebelcity.bittada.uz/ bu saytn link va login [LOGIN YASHIRILDI] parol[PAROL YASHIRILDI] kirasan va bundan lsit soniga hisoblash kere bizni dasturimiz materilani  va prisadka uslugani ham korib chiq va kochir va qoshimchasiga bazis uslugalarni ham korib chiq va ol
+
+206. end qara olgan malumotlaring boshqa claude ham biladimi yani ikkalaing gaplashib ishlashing kere va deadline 16:00 gacha loyha tayyor bolish kere senga sayt link va login paroln berdim uni boshqa claudega ham ber u ham  oziga kereli datalarin olsin va ishn boshlashlaring kere shuni iloj bormi

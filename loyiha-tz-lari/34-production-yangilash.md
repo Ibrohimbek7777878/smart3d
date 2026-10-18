@@ -1,6 +1,6 @@
 # TZ-34 — Production'ni yangi versiyaga o'tkazish va git orqali yangilash
 
-**Sana:** 2026-10-18 · **Navbat:** 34 · **Holat:** TASDIQ KUTILMOQDA (egasi #201: "ha boshlayver"; production bo'lgani uchun tasdiq va "restart qil" alohida)
+**Sana:** 2026-10-18 · **Navbat:** 34 · **Holat:** 8-band BAJARILDI 2026-10-18 (`server/yangilash.sh`, `dizayn` 00cbbd9); serverga o'tkazish — TASDIQ KUTILMOQDA (egasi #201: "ha boshlayver"; production bo'lgani uchun tarmoq, bajaruvchi, vaqt va "restart qil" alohida)
 **Koordinator:** smart3d-51.
 
 ## Hozirgi holat (tekshirilgan 2026-10-18, faqat o'qish)
