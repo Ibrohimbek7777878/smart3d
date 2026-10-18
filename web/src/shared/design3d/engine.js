@@ -8,7 +8,8 @@ function s3Load(){return import('three').then(async T=>{let gl=false;try{const c
 function s3Box(T,x,y,z){const s=a=>1;return new T.BoxGeometry(x,y,z,s(x),s(y),s(z))}
 const s3cl=x=>x<0?0:x>1?1:x;
 const s3f1=x=>x.toFixed(1).replace('.',',');
-function s3P(name,n,size,pos,dir,mat,dim,lab,edge){return{name,n,size,pos,dir,mat,dim,lab:lab!==false,edge:edge||''}}
+function s3P(name,n,size,pos,dir,mat,dim,lab,edge,deco){const p={name,n,size,pos,dir,mat,dim,lab:lab!==false,edge:edge||''};if(deco){p.deco=true;p.lab=false}return p}
+/* deco:true — faqat bezak (stoleshnitsa); detal/zapchast/kromka/maydon/ro'yxatga KIRMAYDI (list s3Spec da lab bo'yicha, stats qo'lda) */
 
 function s3SpecKP(W){
   const D=450,H=708,dw=(W-4)/2,iw=W-32,s=W/2-8,z2=D/2-40,x=W/2-8;
@@ -22,7 +23,8 @@ function s3SpecKP(W){
     s3P('Polka',1,[iw,16,410],[0,362,-17],[0,250,0],'ldsp',iw+'×410'),
     s3P('Eshik',2,[dw,704,16],[-(dw/2+1),354,D/2+10],[-170,0,560],'wood','704×'+dw,true,'4 tomoni · 2 mm'),
     s3P('Eshik',2,[dw,704,16],[dw/2+1,354,D/2+10],[170,0,560],'wood','704×'+dw,false,'4 tomoni · 2 mm'),
-    s3P('Orqa devor',1,[W-2,706,3],[0,355,-(D/2+2)],[0,0,-460],'hdf','706×'+(W-2))
+    s3P('Orqa devor',1,[W-2,706,3],[0,355,-(D/2+2)],[0,0,-460],'hdf','706×'+(W-2)),
+    s3P('Stoleshnitsa',1,[W,30,D+20],[0,723,10],[0,260,0],'top','',false,'',true)
   ];
   const hw=[
     {name:'Oyoqcha 100 mm',cnt:4,kind:'leg',items:[[-1,-1],[1,-1],[-1,1],[1,1]].map(([a,b])=>({p:[a*(W/2-50),-50,b*(D/2-50)],d:[0,-520,0]}))},
@@ -105,6 +107,7 @@ function s3Mats(T,pC,pP){const wood=s3WoodTex(T);const clip=m=>{if(pC)m.clipping
     white:()=>new T.MeshStandardMaterial({color:0xBDB5A6,roughness:.85}),
     wood:()=>clip(new T.MeshStandardMaterial(S3_SVG?{color:0xB4834F,roughness:.55}:{color:0xffffff,map:wood,roughness:.55})),
     hdf:()=>clip(new T.MeshStandardMaterial({color:0xC4A57F,roughness:.95})),
+    top:()=>new T.MeshStandardMaterial({color:0x5C5F68,roughness:.45}),
     stone:()=>new T.MeshStandardMaterial({color:0xA79F92,roughness:.5}),
     dark:()=>new T.MeshStandardMaterial({color:0x2C2B31,roughness:.6}),
     metal:new T.MeshStandardMaterial({color:0xC8CCD3,metalness:.45,roughness:.3}),
