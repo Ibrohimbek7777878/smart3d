@@ -70,7 +70,7 @@ async function asosiy(page, R) {
   const EGA = 'mebel turi:shkaf balandlig 2100mm , eniga 1200mm,chuqurlig 580mm,korpusi va ichki qism materali:kashemir,16mm , fasad dubzalatoy,16mm, ikki eshikli chap tomondan 1 metr kiyim iladigan vishilkali joy, tepa va pastida polkalar bor bittadan , ong tomonda qolgan qismmi 6ta teng polkadan iborat , korpus brikmasi konfirmat, polkalar polka derjatel, bilan mahkamlanad  ruchka 1mterlik uzun ruchkadan qoyilad korpus bakavinasi yergacha va sokilli boladi,  obj formatda yubor gpirmasdan yubor';
   await yoz(EGA);
   R.katalogEga = await karta();
-  const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 20000 }).catch(() => null), baribir()]);
+  const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 20000, predicate: d => /\.obj$/.test(d.suggestedFilename()) })   /* .obj va .mtl ketma-ket keladi — faqat .obj */.catch(() => null), baribir()]);
   await kut((n) => Object.keys(window.__app.doc.chizmalar || {}).length > n, R.shkaf.n);
   await page.waitForTimeout(800);
   R.ega = await M(() => {
