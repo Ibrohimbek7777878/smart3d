@@ -707,3 +707,7 @@ bu prompt lekin natija oddiy 2ta shkaf qilb berdi nega bundya bold kosntruskiay 
 264. boshla unda
 
 265. (2 skrinshot: slayd 5 va 6, PDF ko'rinishda) qara bu yerda korsatilgan duxofka va rangli xaladelnik bizda yoqku hamda teshiklarigacha aniq korsatidgan qismlarimiz ham hali tayor emas nega kod yozma shuntir bormi tayormi nech fozi bolgan qancha ish qolgan
+
+266. admin panel ishladm krib yaan 404 ga otvord
+
+267. githubga psu qilb qoy
