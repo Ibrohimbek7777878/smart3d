@@ -63,6 +63,7 @@ export default function Header() {
         <button onClick={v.tilMenu} aria-label={t('sarlavha.til')} data-til-menyu="" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto"}}>
           <Ikon n="til" size={19} gap={0} />
         </button>
+        {v.admin ? <button onClick={v.goAdmin} data-admin-havola="" title={t('admin.sarlavha')} aria-label={t('admin.sarlavha')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--acct)","cursor":"pointer","display":"grid","placeItems":"center","padding":"0"}}><Ikon n="sozlash" size={19} gap={0} /></button> : null}
         <div role="button" tabIndex={0} aria-label={t('umumiy.sozlamalar')} data-sozlamalar onClick={v.openSettings} onKeyDown={v.avatarKey} style={{"width":"44px","height":"44px","borderRadius":"999px","background":"var(--sfc2)","border":"1px solid var(--line)","display":"grid","placeItems":"center","fontWeight":"800","fontSize":"14px","color":"var(--cyan)","cursor":"pointer"}}>
           <span className="sc-interp">{v.initials}</span>
         </div>

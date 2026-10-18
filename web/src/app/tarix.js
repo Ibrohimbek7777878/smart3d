@@ -7,6 +7,7 @@ import { TELEGRAM } from './bridge/telegram.js';
 import { yopiqQil } from './klaviatura.js';
 import { goProjects, openProject } from '../features/projects/actions.js';
 import { openSettings } from '../features/settings/actions.js';
+import { openAdmin } from '../features/admin/actions.js';
 import { ishJoyiOch, yangiIshJoyi } from '../features/editor/ishjoyi/ishjoyi.js';
 import { yolniOqi, qaytishniOqi, ekranYoli } from './marshrutlar.js';
 
@@ -18,7 +19,7 @@ import { yolniOqi, qaytishniOqi, ekranYoli } from './marshrutlar.js';
  * (klaviatura.js yopiqQil, Esc tartibi), keyin oldingi manzil; ilovadan chiqib ketmaydi — tarix boshida "ildiz" yozuvi turadi.
  * "Oldinga" — haqiqiy brauzer tarixi bo'yicha. Telegram ichida — Telegram'ning o'z "orqaga" tugmasi (TZ-16), manzil o'zgarmaydi. */
 const KIRISH = new Set(['reg', 'login', 'tg']);           // kirish ekranlari — ilova ekranlari bilan chegara
-const EKRAN = new Set(['app', 'projects', 'settings']);   // tarix boshida "orqaga" — shu ekranlar orasida (TZ-27)
+const EKRAN = new Set(['app', 'projects', 'settings', 'admin']);   // tarix boshida "orqaga" — shu ekranlar orasida (TZ-27)
 
 let yoq = true;                       // o'rnatilmagan: Telegram ichida yoki History API yo'q
 let kutilgan = null;                  // kirgandan keyin ochiladigan marshrut (yolniOqi natijasi)
@@ -69,6 +70,7 @@ function joriy() {
   const sc = get().nav.screen;
   if (sc !== bolimEkran) { bolim = null; bolimEkran = null; }
   const id = sc === 'app' && S.currentId != null ? String(S.currentId) : null;
+  if (sc === 'admin') bolim = get().nav.adminBolim || 'narxlar';
   const qaytish = (sc === 'login' || sc === 'reg') && kutilgan ? kutilgan.yol : null;
   return { sc, id, yol: ekranYoli({ screen: sc, id, bolim, qaytish }) };
 }
@@ -153,6 +155,7 @@ async function ochish(m, tarixdan) {
       openSettings();
       if (m.bolim) { bolim = m.bolim; bolimEkran = 'settings'; korsat('[data-set="' + m.bolim + '"]'); }
       return;
+    case 'admin': openAdmin(m.bolim); return;           // TZ-37: admin panel (role tekshiruvi — AdminQobiq)
     case 'buyurtmalar': {                                // admin — Sozlamalardagi "Buyurtmalar", usta — Loyihalarimdagi "Buyurtmalarim"
       const admin = ((get().auth.user || S.user || {}).role) === 'admin';
       if (admin) openSettings(); else goProjects();

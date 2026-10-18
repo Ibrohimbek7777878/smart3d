@@ -7,13 +7,14 @@
  *   /loyiha/:id             shu loyiha ish joyida       /sozlamalar           sozlamalar
  *   /sozlamalar/narxlar     sozlamalar, Narxlar bo'limi /buyurtmalar          buyurtmalar: admin — Sozlamalarda, usta — Loyihalarimda
  *   /tg                     Telegram mini-app kutish ekrani
+ *   /admin, /admin/(narxlar|furnitura|promptlar|standart|tarix)   admin panel (TZ-37; faqat role=admin, aks holda 404 ko'rinishi)
  * Kirmagan foydalanuvchi himoyalangan manzilni ochsa — /kirish?qaytish=<manzil>, kirgach o'sha manzil ochiladi. */
 
 /** loyiha raqami — son (server bilan bir xil: server/routes/sahifalar.js ILOVA_YOLI). UUID'ga o'tilsa — ikkalasi birga kengayadi */
 const ID_RE = /^\d{1,15}$/;
 
 /** app.html beriladigan yo'llar (server, vite preview, service worker) — oxiridagi "/" bilan ham */
-export const ILOVA_YOL_RE = /^\/(?:kirish|royxat|loyihalar|loyiha\/(?:yangi|\d{1,15})|sozlamalar(?:\/narxlar)?|buyurtmalar|tg)\/?$/;
+export const ILOVA_YOL_RE = /^\/(?:kirish|royxat|loyihalar|loyiha\/(?:yangi|\d{1,15})|sozlamalar(?:\/narxlar)?|buyurtmalar|tg|admin(?:\/(?:narxlar|furnitura|promptlar|standart|tarix))?)\/?$/;
 
 /** kirmasdan ochiladigan manzillar */
 const OCHIQ = new Set(['kirish', 'royxat', 'tg']);
@@ -29,6 +30,7 @@ export function yolniOqi(pathname) {
   let m;
   if (q[0] === 'loyiha') m = q[1] === 'yangi' ? { nom: 'yangi' } : ID_RE.test(q[1]) ? { nom: 'loyiha', id: q[1] } : null;
   else if (q[0] === 'sozlamalar') m = q[1] ? { nom: 'sozlamalar', bolim: q[1] } : { nom: 'sozlamalar' };
+  else if (q[0] === 'admin') m = { nom: 'admin', bolim: q[1] || 'narxlar' };
   else m = { nom: q[0] };
   if (!m) return null;
   m.himoya = !OCHIQ.has(m.nom);
@@ -55,6 +57,7 @@ export function ekranYoli(o) {
     case 'settings': return o.bolim === 'buyurtmalar' ? '/buyurtmalar' : o.bolim === 'narxlar' ? '/sozlamalar/narxlar' : '/sozlamalar';
     case 'app': return o.id != null && ID_RE.test(String(o.id)) ? '/loyiha/' + o.id : '/loyiha/yangi';
     case 'onb1': case 'onb2': return '/loyiha/yangi';          // "Nima yasaymiz" (yashirilgan, TZ-25) — yangi loyiha
+    case 'admin': return o.bolim && o.bolim !== 'narxlar' ? '/admin/' + o.bolim : '/admin';
     case 'tg': return '/tg';
     default: return null;
   }
