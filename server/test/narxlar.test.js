@@ -42,14 +42,17 @@ async function usta(tel) {
   return (await api('/api/auth/sms/verify', { method: 'POST', body: { phone: tel, code: dev_code, name: 'Usta' } })).json();
 }
 const admin = async () => (await (await api('/api/login', { method: 'POST', body: { email: 'admin@smart3d.uz', password: ADMIN_PW } })).json()).token;
-const RASPIL = { '780236010807': { nom: 'Услуга Распила Altendorf 1', guruh: 'raspil', qiymat: 18000, birlik: 'list', manba: 'sex jadvali', sana: '2026-07-03' } };
+let BOSH = null;   // TZ-32 E: boshlang'ich xizmatlar — ERP sukut stavkalari (materials.json sukut_narx)
+const RASPIL = { '780236019999': { nom: 'Услуга Распила Altendorf 1', guruh: 'raspil', qiymat: 18000, birlik: 'list', manba: 'sex jadvali', sana: '2026-07-03' } };
 
 test('boshlang\'ich holat: hamma o\'qiydi, ish haqi — "taxmin", ustama 35% — "egasi" (materials.json, TZ-30)', async () => {
   const r = await api('/api/narxlar');
   assert.equal(r.status, 200);
   const g = await r.json();
-  assert.deepEqual(g.xizmatlar, {});
-  assert.equal(g.tanlov.raspil, null);
+  BOSH = g.xizmatlar;
+  assert.ok(Object.keys(BOSH).length >= 18 && Object.values(BOSH).every(r => r.manba === 'sex jadvali' && r.sana && r.qiymat > 0), 'sukut — ERP xizmatlari, manbali');
+  assert.equal(g.tanlov.raspil, '7802360156', 'sukut raspil — Holzma 2');
+  assert.deepEqual(g.tanlov.bazis, { onlayn: '03', oflayn: '04' });
   assert.equal(g.ish_haqi.detal.manba, 'taxmin');
   assert.equal(g.ish_haqi.detal.qiymat, 12000);
   assert.equal(g.ustama.foiz.qiymat, 35);
@@ -65,19 +68,19 @@ test('faqat admin: tokensiz 401, usta 403 (S3D-AUTH-006), tarix ham', async () =
   assert.equal(r.status, 403);
   assert.equal((await r.json()).code, 'S3D-AUTH-006');
   assert.equal((await api('/api/narxlar/tarix', { token: U.token })).status, 403);
-  assert.deepEqual((await (await api('/api/narxlar')).json()).xizmatlar, {}, 'usta so\'rovidan keyin o\'zgarmadi');
+  assert.deepEqual((await (await api('/api/narxlar')).json()).xizmatlar, BOSH, 'usta so\'rovidan keyin o\'zgarmadi');
 });
 
 test('noto\'g\'ri qiymat rad etiladi (400, S3D-NARX-001) va hech narsa yozilmaydi', async () => {
   const T = await admin();
   const yomon = [
-    { xizmatlar: { a1: { ...RASPIL['780236010807'], qiymat: -5 } } },
-    { xizmatlar: { a1: { ...RASPIL['780236010807'], qiymat: 'abc' } } },
-    { xizmatlar: { a1: { ...RASPIL['780236010807'], qiymat: 5e6 } } },                 // aql chegarasi: list boshiga 1 mln
-    { xizmatlar: { a1: { ...RASPIL['780236010807'], guruh: 'boshqa' } } },
-    { xizmatlar: { a1: { ...RASPIL['780236010807'], manba: 'taxmin' } } },              // taxmin — faqat boshlang'ich
-    { xizmatlar: { a1: { ...RASPIL['780236010807'], nom: '<script>' } } },
-    { xizmatlar: { 'yomon kod!': RASPIL['780236010807'] } },
+    { xizmatlar: { a1: { ...RASPIL['780236019999'], qiymat: -5 } } },
+    { xizmatlar: { a1: { ...RASPIL['780236019999'], qiymat: 'abc' } } },
+    { xizmatlar: { a1: { ...RASPIL['780236019999'], qiymat: 5e6 } } },                 // aql chegarasi: list boshiga 1 mln
+    { xizmatlar: { a1: { ...RASPIL['780236019999'], guruh: 'boshqa' } } },
+    { xizmatlar: { a1: { ...RASPIL['780236019999'], manba: 'taxmin' } } },              // taxmin — faqat boshlang'ich
+    { xizmatlar: { a1: { ...RASPIL['780236019999'], nom: '<script>' } } },
+    { xizmatlar: { 'yomon kod!': RASPIL['780236019999'] } },
     { tanlov: { raspil: 'yoq_kod' } },
     { tanlov: { prisadka: { nomalum_tur: 'x' } } },
     { ish_haqi: { detal: -1 } },
@@ -91,7 +94,7 @@ test('noto\'g\'ri qiymat rad etiladi (400, S3D-NARX-001) va hech narsa yozilmayd
     assert.equal(r.status, 400, JSON.stringify(body));
     assert.equal((await r.json()).code, 'S3D-NARX-001', JSON.stringify(body));
   }
-  assert.deepEqual((await (await api('/api/narxlar')).json()).xizmatlar, {});
+  assert.deepEqual((await (await api('/api/narxlar')).json()).xizmatlar, BOSH);
   assert.equal((await (await api('/api/narxlar/tarix', { token: T })).json()).length, 0, 'rad etilgani tarixga yozilmadi');
 });
 
@@ -99,14 +102,14 @@ test('admin: xizmat + tanlov + ish haqi + ustama → saqlanadi, tarix (kim, eski
   const T = await admin();
   let r = await api('/api/narxlar', { method: 'PUT', token: T, body: { xizmatlar: RASPIL } });
   assert.equal(r.status, 200);
-  r = await api('/api/narxlar', { method: 'PUT', token: T, body: { tanlov: { raspil: '780236010807' }, ish_haqi: { yoqilgan: false, detal: '0' }, ustama: { foiz: 30 } } });
+  r = await api('/api/narxlar', { method: 'PUT', token: T, body: { tanlov: { raspil: '780236019999' }, ish_haqi: { yoqilgan: false, detal: '0' }, ustama: { foiz: 30 } } });
   assert.equal(r.status, 200);
   const j = await r.json();
   assert.equal(j.ozgarish, 4);
   const g = await (await api('/api/narxlar')).json();
-  assert.equal(g.tanlov.raspil, '780236010807');
-  assert.equal(g.xizmatlar['780236010807'].manba, 'sex jadvali');
-  assert.equal(g.xizmatlar['780236010807'].sana, '2026-07-03');
+  assert.equal(g.tanlov.raspil, '780236019999');
+  assert.equal(g.xizmatlar['780236019999'].manba, 'sex jadvali');
+  assert.equal(g.xizmatlar['780236019999'].sana, '2026-07-03');
   assert.equal(g.ish_haqi.yoqilgan.qiymat, false);
   assert.equal(g.ish_haqi.detal.qiymat, 0);
   assert.equal(g.ish_haqi.detal.manba, 'egasi');
@@ -121,11 +124,11 @@ test('admin: xizmat + tanlov + ish haqi + ustama → saqlanadi, tarix (kim, eski
   assert.equal(ust.eski.qiymat, 35);
   assert.equal(ust.yangi.qiymat, 30);
   assert.ok(ust.kim && ust.vaqt);
-  assert.equal(tarix.find(x => x.kalit === 'xizmatlar.780236010807').eski, null);
+  assert.equal(tarix.find(x => x.kalit === 'xizmatlar.780236019999').eski, null);
   /* xizmat o'chirilsa — unga bog'langan tanlov ham bo'shaydi (tarixda) */
-  r = await api('/api/narxlar', { method: 'PUT', token: T, body: { xizmatlar: { '780236010807': null } } });
+  r = await api('/api/narxlar', { method: 'PUT', token: T, body: { xizmatlar: { '780236019999': null } } });
   assert.equal(r.status, 200);
   const g2 = await (await api('/api/narxlar')).json();
   assert.equal(g2.tanlov.raspil, null);
-  assert.ok((await (await api('/api/narxlar/tarix', { token: T })).json()).some(x => x.kalit === 'tanlov.raspil' && x.eski === '780236010807' && x.yangi === null));
+  assert.ok((await (await api('/api/narxlar/tarix', { token: T })).json()).some(x => x.kalit === 'tanlov.raspil' && x.eski === '780236019999' && x.yangi === null));
 });
