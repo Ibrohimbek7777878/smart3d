@@ -70,10 +70,24 @@ export default function ModulKarta() {
       {v.chizma ? <button onClick={v.chizma} data-chizma-tahrir="" style={{"height":"48px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
         <Ikon n="tahrir" /><span className="sc-interp">{t('chizish.tahrirlash')}</span>
       </button> : null}
+      {/* egasi #232: o'rnatma texnika — qismlar (korpus, eshik, ruchka, shisha, tugma) rangi: tayyor palitra + o'zi tanlagan rang */}
+      {v.texnika ? <div data-texnika-ranglar="" style={{"display":"flex","flexDirection":"column","gap":"8px","padding":"10px 12px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)"}}>
+        <span style={{"fontSize":"14px","fontWeight":"800"}}><Ikon n="material" />{t('mebel.modul_materiali')}</span>
+        {v.texnika.qismlar.map(q => (<div key={q.id} data-texnika-qism={q.id} style={{"display":"flex","alignItems":"center","gap":"6px","flexWrap":"wrap"}}>
+          <span style={{"flex":"1 1 70px","fontSize":"13px","fontWeight":"700","color":"var(--mut)"}}>{q.label}</span>
+          {v.texnika.palitra.map(c => (<button key={c.id} type="button" title={c.label} aria-label={q.label + ' · ' + c.label} data-texnika-rang={q.id + ':' + c.hex} onClick={() => q.tanla(c.n)}
+            style={{"width":"28px","height":"28px","borderRadius":"50%","background":c.hex,"cursor":"pointer","padding":"0","border":q.joriy.toLowerCase() === c.hex.toLowerCase() ? '3px solid var(--acc)' : '1px solid rgba(255,255,255,.35)'}}></button>))}
+          <label title={t('korinish.oz_rang')} style={{"position":"relative","width":"28px","height":"28px","borderRadius":"50%","border":"1px dashed var(--mut)","display":"grid","placeItems":"center","cursor":"pointer","color":"var(--mut)","fontSize":"15px","overflow":"hidden"}}>
+            +<input type="color" aria-label={q.label + ' · ' + t('korinish.oz_rang')} data-texnika-oz={q.id} value={q.joriy} onChange={(e) => q.tanla(parseInt(e.target.value.slice(1), 16))} style={{"position":"absolute","inset":"0","opacity":"0","cursor":"pointer"}} />
+          </label>
+        </div>))}
+        {v.texnika.ozgargan ? <button type="button" onClick={v.texnika.sukut} data-texnika-sukut="" style={{"height":"36px","borderRadius":"10px","border":"1px solid var(--line)","background":"var(--sfc)","color":"var(--txt)","fontWeight":"700","fontSize":"13px","cursor":"pointer"}}>{t('texnika.sukut')}</button> : null}
+      </div> : null}
       {/* TZ-23 E: shu modul materiali (dizayndagi tugma uslubi) */}
-      <button onClick={v.material} data-modul-material="" style={{"height":"48px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"800","fontSize":"15px","cursor":"pointer","overflow":"hidden","textOverflow":"ellipsis","whiteSpace":"nowrap","padding":"0 12px"}}>
+      {!v.texnika ? <button onClick={v.material} data-modul-material="" style={{"height":"48px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"800","fontSize":"15px","cursor":"pointer","overflow":"hidden","textOverflow":"ellipsis","whiteSpace":"nowrap","padding":"0 12px"}}>
         <Ikon n="material" /><span className="sc-interp">{v.matLabel}</span>
       </button>
+      : null}
       <span style={{"fontSize":"12px","color":"var(--mut)","textWrap":"pretty"}}>
         {t('sahna.eshik_yoki_tortmani_bosing')}
       </span>
