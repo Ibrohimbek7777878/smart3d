@@ -45,7 +45,7 @@ export default function Header() {
         {v.isEditor ? (<>
           <button onClick={v.goStep3} style={{"height":"44px","padding":"0 14px","borderRadius":"999px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"15px","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","fontVariantNumeric":"tabular-nums","whiteSpace":"nowrap"}}>
             <span className="sc-interp">{v.price?.total}</span>{t('sarlavha.som')}
-            <span style={{"fontSize":"13px"}}>
+            <span data-hide-m="" style={{"fontSize":"13px"}}>
               {v.price?.star}
             </span>
           </button>
@@ -60,7 +60,7 @@ export default function Header() {
             <Ikon n="excel" size={18} gap={0} /><span data-hide-m="" style={{"marginLeft":"6px"}}>{t('qadam.fayllar')}</span>
           </button>}
         </>) : null}
-        <button onClick={v.tilMenu} aria-label={t('sarlavha.til')} data-til-menyu data-hide-m="" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto"}}>
+        <button onClick={v.tilMenu} aria-label={t('sarlavha.til')} data-til-menyu="" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto"}}>
           <Ikon n="til" size={19} gap={0} />
         </button>
         <div role="button" tabIndex={0} aria-label={t('umumiy.sozlamalar')} data-sozlamalar onClick={v.openSettings} onKeyDown={v.avatarKey} style={{"width":"44px","height":"44px","borderRadius":"999px","background":"var(--sfc2)","border":"1px solid var(--line)","display":"grid","placeItems":"center","fontWeight":"800","fontSize":"14px","color":"var(--cyan)","cursor":"pointer"}}>

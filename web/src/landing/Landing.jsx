@@ -119,6 +119,7 @@ export default class Landing extends React.Component {
       cnt:{detal:Math.round(st.detal*c),zap:Math.round(st.zap*c),krom:s3f1(st.krom*c),area:s3f1(st.area*c)},
       ph,replay:()=>this.play(),demoNoGL:!!s.demoNoGL,
       tilNomi:(TILLAR.find(x=>x[0]===til())||TILLAR[0])[1],
+      tilMenuTepa:e=>{const r=e.currentTarget.getBoundingClientRect();this.setState({tilMenu:{top:Math.round(r.bottom+8),right:Math.round(window.innerWidth-r.right)}})},
       tilMenu:e=>{const r=e.currentTarget.getBoundingClientRect();this.setState({tilMenu:{top:Math.max(8,Math.round(r.top-150)),right:Math.round(window.innerWidth-r.right)}})},
       sel:s.sel?{...s.sel,name:tr(s.sel.name),mat:tr(s.sel.mat),edge:tr(s.sel.edge),n:t('sayt.dona_n',{n:s.sel.n})}:{},hasSel:!!s.sel,closeSel:()=>this.highlight(null),fq
     }}

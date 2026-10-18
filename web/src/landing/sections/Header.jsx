@@ -41,9 +41,13 @@ export default function Header({ v }) {
           <a data-desk="" href="app.html#login" onClick={v.goLogin} style={{"height":"44px","padding":"0 18px","borderRadius":"14px","display":"flex","alignItems":"center","whiteSpace":"nowrap","color":"var(--txt)","fontWeight":"700","fontSize":"15px","border":"1px solid var(--line)"}} className="h5">
             {t('kirish.kirish')}
           </a>
-          <a href="app.html#reg" onClick={v.goReg} style={{"height":"44px","padding":"0 20px","borderRadius":"14px","display":"flex","alignItems":"center","whiteSpace":"nowrap","color":"var(--ink)","fontWeight":"800","fontSize":"15px","background":"var(--acc)"}} className="h6">
+          <a data-desk="" href="app.html#reg" onClick={v.goReg} style={{"height":"44px","padding":"0 20px","borderRadius":"14px","display":"flex","alignItems":"center","whiteSpace":"nowrap","color":"var(--ink)","fontWeight":"800","fontSize":"15px","background":"var(--acc)"}} className="h6">
             {t('kirish.royxat')}
           </a>
+          {/* #219: til tugmasi tepada (telefonda ham) */}
+          <button onClick={v.tilMenuTepa} aria-haspopup="menu" aria-label="Til / Язык / Language" data-til-menyu="" style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto"}}>
+            <Ikon n="til" size={19} gap={0} />
+          </button>
           <button data-mob="" onClick={v.toggleMenu} aria-label={t('sayt.menyu')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"18px","cursor":"pointer"}}>
             <Ikon n="menyu" size={20} gap={0} style={{ verticalAlign: "middle" }} />
           </button>
@@ -65,6 +69,9 @@ export default function Header({ v }) {
           </a>
           <a href="app.html#login" onClick={v.goLogin} style={{"padding":"12px","color":"var(--txt)","fontWeight":"700"}}>
             {t('kirish.kirish')}
+          </a>
+          <a href="app.html#reg" onClick={v.goReg} style={{"padding":"12px","color":"var(--acc)","fontWeight":"800"}}>
+            {t('kirish.royxat')}
           </a>
         </div>
       </>) : null}

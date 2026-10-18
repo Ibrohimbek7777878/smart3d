@@ -1,3 +1,4 @@
+import TilTugma from '../../shared/ui/TilTugma.jsx';
 import React from 'react';
 import { t } from '../../i18n/index.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
@@ -18,6 +19,7 @@ export default function Onboarding() {
           </span>
         </div>
         <div style={{"display":"flex","alignItems":"center","gap":"10px"}}>
+          <TilTugma />
           <div style={{"display":"flex","gap":"4px"}}>
             {(v.onb?.bars || []).map((b, $index) => (<React.Fragment key={$index}>
               <span style={{"width":"28px","height":"5px","borderRadius":"9px","background":b?.c}}></span>
