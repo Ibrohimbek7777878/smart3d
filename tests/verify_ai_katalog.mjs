@@ -186,5 +186,41 @@ const tanla = (m) => { const yo = aiTur(m); if (yo.tur !== 'modul') return { tur
   ok('«kupe 5000» — o\'lcham chegaradan tashqari: jim qabul qilinmaydi (topilmadi yoki «mos emas» qatori)', d.t && (!d.t.topildi || d.t.mosEmas.some(x => x.k === 'eni')), S(d.t && [d.t.topildi, d.t.mosEmas]));
 }
 
+/* egasi #239–#241: yotoqxona GARNITURI (shablon) — ikki kishilik karavot (boshi devorga), 3 qanotli garderob, komod, deraza, eshik;
+   yon tumbalar katalogda yo'q — "bajarilmadi" qatori; o'lchamga moslashadi, ustma-ust 0, devordan 3 mm */
+{
+  const yp = P.find(x => x.id === 'yotoqxona');
+  const kod = yp.toplam.map(x => x.kod);
+  ok('garnitur: karavot MC-KR-04 + garderob SP-W-006 + komod SP-BD-005 + deraza SP-WI-001 + eshik SP-D-001', S(kod.slice().sort()) === S(['MC-KR-04', 'SP-BD-005', 'SP-D-001', 'SP-W-006', 'SP-WI-001'].sort()), S(kod));
+  for (const [e, c] of [[4000, 3600], [3400, 3000], [5200, 4200], [7000, 7000]]) {
+    const r = promptLoyiha(yp, { eni: e, chuqurligi: c }, cat);
+    const pl = r.placements, fp = pl.map(footprint);
+    ok(`garnitur ${e}x${c}: hammasi joylandi, sig'madi yo'q`, pl.length === 5 && !r.sigmadi.length, S([pl.length, r.sigmadi]));
+    ok(`garnitur ${e}x${c}: ustma-ust 0, katalogdan`, !ustmaUst(pl) && katalogdan(pl));
+    ok(`garnitur ${e}x${c}: devordan 3 mm (orqa, chap, ong, old)`, fp.every(f => f.x0 >= 52.5 && f.y0 >= 52.5 && f.x1 <= e - 52.5 && f.y1 <= c - 52.5) && fp.some(f => Math.round(f.y0) === 53) && fp.some(f => Math.round(f.x0) === 53) && fp.some(f => Math.round(e - f.x1) === 53) && fp.some(f => Math.round(c - f.y1) === 53), S(fp.map(f => [f.x0, f.y0, f.x1, f.y1].map(Math.round))));
+    const kr = pl.find(p => p.frg === 'MC-KR-04'), fk = footprint(kr);
+    ok(`garnitur ${e}x${c}: karavot boshi orqa devorga (90° burilgan, uzunligi 2000 xonaga qaraydi), xona o'rtasida`, kr.rot === 90 && Math.round(fk.y1 - fk.y0) === 2000 && Math.round(fk.x1 - fk.x0) === 1750 && Math.abs((fk.x0 + fk.x1) / 2 - e / 2) <= 5, S([kr.rot, fk]));
+    ok(`garnitur ${e}x${c}: deraza balandda (z 900), eshik polda`, pl.find(p => p.frg === 'SP-WI-001').z === 900 && pl.find(p => p.frg === 'SP-D-001').z === 0);
+  }
+  const rj = shablonReja('yotoqxona 4x3.6', yp, cat);
+  ok("garnitur: yon tumbalar — «bajarilmadi» qatori (karavot yonidagi tumba ×2), qizil", rj.qatorlar.some(z => z.kalit === 'buyum_yoq' && z.v.b === 'tumba' && z.v.n === 2 && z.diqqat), S(rj.qatorlar));
+  const rj2 = shablonReja('yotoqxona 4x3.6 va ikki tumba', yp, cat);
+  ok("garnitur: tumba so'ralsa — qator takrorlanmaydi", rj2.qatorlar.filter(z => z.kalit === 'buyum_yoq' && z.v.b === 'tumba').length === 1);
+  const rk = shablon('yotoqxona 5x4, krovat 1600, garderob', 'yotoqxona');
+  ok("garnitur: krovat 1600 — SP-BD-003 (burilmaydi, eni 1600), qolgan garnitur saqlanadi, ustma-ust 0", rk.r.placements.find(p => p.frg === 'SP-BD-003') && rk.r.placements.find(p => p.frg === 'SP-BD-003').rot === 0 && rk.r.placements.some(p => p.frg === 'SP-WI-001') && !ustmaUst(rk.r.placements), S(rk.r.placements.map(p => [p.frg, p.rot])));
+  /* bolalar va mehmonxona shablonlari ham deraza + eshik bilan to'liqroq: chegara o'lchamlarida sig'madi yo'q, ustma-ust 0 */
+  for (const id of ['bolalar', 'mehmonxona-tv']) {
+    const pr = P.find(x => x.id === id), mm = pr.maydon;
+    ok(`${id}: deraza SP-WI-001 va eshik SP-D-001 bor`, pr.toplam.some(x => x.kod === 'SP-WI-001') && pr.toplam.some(x => x.kod === 'SP-D-001'));
+    for (const [a, b] of [[0, 0], [1, 1], [0, 1], [1, 0], [0.5, 0.5]]) {
+      const k = { eni: mm[0].min + (mm[0].max - mm[0].min) * a, chuqurligi: mm[1].min + (mm[1].max - mm[1].min) * b };
+      const r = promptLoyiha(pr, k, cat);
+      ok(`${id} ${Math.round(k.eni)}x${Math.round(k.chuqurligi)}: sig'madi yo'q, ustma-ust 0`, !r.sigmadi.length && !ustmaUst(r.placements) && katalogdan(r.placements), S(r.sigmadi));
+    }
+  }
+  const ai = aiTur('yotoqxona 4x3.6');
+  ok('garnitur: AI «yotoqxona» so\'rovi shablonga tushadi', ai.tur === 'shablon' && ai.shablon === 'yotoqxona');
+}
+
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);
 process.exit(fail ? 1 : 0);

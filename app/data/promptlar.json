@@ -45,23 +45,24 @@
   {
    "id": "yotoqxona", "kat": "yotoqxona", "usul": "toplam",
    "nom": { "uz": "Yotoqxona", "ru": "Спальня", "en": "Bedroom" },
-   "izoh": { "uz": "Karavot, 3 qanotli garderob va komod", "ru": "Кровать, трёхстворчатый шкаф и комод", "en": "Bed, three-door wardrobe and a chest of drawers" },
+   "izoh": { "uz": "Garnitur: ikki kishilik karavot, 3 qanotli garderob, komod, deraza va eshik (yon tumbalar katalogda yo'q)", "ru": "Гарнитур: двуспальная кровать, трёхстворчатый шкаф, комод, окно и дверь (прикроватных тумб в каталоге нет)", "en": "Suite: double bed, three-door wardrobe, chest of drawers, window and door (no bedside tables in the catalogue)" },
    "maydon": [ { "k": "eni", "q": 4000, "min": 3400, "max": 7000 }, { "k": "chuqurligi", "q": 3600, "min": 3000, "max": 7000 } ],
-   "toplam": [ { "kod": "MC-KR-04", "devor": "orqa", "joy": "markaz" }, { "kod": "SP-W-006", "devor": "chap", "joy": "oxir" }, { "kod": "SP-BD-005", "devor": "ong", "joy": "markaz" } ]
+   "toplam": [ { "kod": "MC-KR-04", "devor": "orqa", "joy": "markaz" }, { "kod": "SP-W-006", "devor": "chap", "joy": "oxir" }, { "kod": "SP-BD-005", "devor": "ong", "joy": "markaz" }, { "kod": "SP-WI-001", "devor": "old", "joy": "markaz", "z": 900 }, { "kod": "SP-D-001", "devor": "old", "joy": "oxir" } ],
+   "yoq": [ { "tur": "tumba", "n": 2 } ]
   },
   {
    "id": "bolalar", "kat": "bolalar", "usul": "toplam",
    "nom": { "uz": "Bolalar xonasi", "ru": "Детская", "en": "Kids' room" },
-   "izoh": { "uz": "Bir kishilik karavot, parta, kitob javoni, garderob", "ru": "Односпальная кровать, парта, книжный стеллаж, шкаф", "en": "Single bed, desk, bookcase, wardrobe" },
+   "izoh": { "uz": "Bir kishilik karavot, parta, kitob javoni, garderob, deraza va eshik", "ru": "Односпальная кровать, парта, книжный стеллаж, шкаф, окно и дверь", "en": "Single bed, desk, bookcase, wardrobe, window and door" },
    "maydon": [ { "k": "eni", "q": 3200, "min": 2600, "max": 6000 }, { "k": "chuqurligi", "q": 3200, "min": 2600, "max": 6000 } ],
-   "toplam": [ { "kod": "MC-KR-02", "devor": "orqa", "joy": "bosh" }, { "kod": "MC-PA-02", "devor": "ong", "joy": "bosh" }, { "kod": "SP-SH-003", "devor": "ong", "joy": "oxir" }, { "kod": "SP-W-005", "devor": "old", "joy": "oxir" } ]
+   "toplam": [ { "kod": "MC-KR-02", "devor": "orqa", "joy": "bosh" }, { "kod": "MC-PA-02", "devor": "ong", "joy": "bosh" }, { "kod": "SP-SH-003", "devor": "ong", "joy": "oxir" }, { "kod": "SP-W-005", "devor": "old", "joy": "oxir" }, { "kod": "SP-WI-001", "devor": "chap", "joy": "markaz", "z": 900 }, { "kod": "SP-D-001", "devor": "old", "joy": "bosh" } ]
   },
   {
    "id": "mehmonxona-tv", "kat": "mehmonxona", "usul": "toplam",
    "nom": { "uz": "Mehmonxona — TV zona", "ru": "Гостиная — ТВ-зона", "en": "Living room — TV wall" },
-   "izoh": { "uz": "TV taxta, ikki vitrina, divan qarshida", "ru": "ТВ-тумба, две витрины, диван напротив", "en": "TV unit, two display cabinets, sofa opposite" },
+   "izoh": { "uz": "TV taxta, ikki vitrina, divan qarshida, deraza va eshik", "ru": "ТВ-тумба, две витрины, диван напротив, окно и дверь", "en": "TV unit, two display cabinets, sofa opposite, window and door" },
    "maydon": [ { "k": "eni", "q": 4500, "min": 3400, "max": 8000 }, { "k": "chuqurligi", "q": 4000, "min": 3000, "max": 8000 } ],
-   "toplam": [ { "kod": "SP-SH-002", "devor": "orqa", "joy": "markaz" }, { "kod": "SP-SH-004", "devor": "orqa", "joy": "bosh" }, { "kod": "SP-SH-004", "devor": "orqa", "joy": "oxir" }, { "kod": "SP-S-006", "devor": "old", "joy": "markaz" } ]
+   "toplam": [ { "kod": "SP-SH-002", "devor": "orqa", "joy": "markaz" }, { "kod": "SP-SH-004", "devor": "orqa", "joy": "bosh" }, { "kod": "SP-SH-004", "devor": "orqa", "joy": "oxir" }, { "kod": "SP-S-006", "devor": "old", "joy": "markaz" }, { "kod": "SP-WI-001", "devor": "chap", "joy": "markaz", "z": 900 }, { "kod": "SP-D-001", "devor": "ong", "joy": "oxir" } ]
   },
   {
    "id": "ofis-ikki", "kat": "ofis", "usul": "toplam",

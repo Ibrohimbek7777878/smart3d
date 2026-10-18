@@ -256,6 +256,8 @@ export function shablonReja(matn, prompt, catalog) {
     q('buyum_qoshildi', { b: b.tur, n: b.n, frg: kod, nom: catalog[kod].name }, { manba: 'katalog' });
   }
   const soralganTur = new Set(soralgan.map(b => b.tur));
+  /* shablon garniturida katalogda yo'q buyum (yotoqxona: yon tumbalar) — jim tashlanmaydi: "bajarilmadi" qatori */
+  for (const y of prompt.yoq || []) if (!soralganTur.has(y.tur)) q('buyum_yoq', { b: y.tur, n: y.n || 1 }, { diqqat: true, manba: 'katalog' });
   for (const x of toplam) if (!x._soraldi && !soralganTur.has(x._turi) && soralgan.length) q('shablondan', { frg: x.kod, nom: (catalog[x.kod] || {}).name || x.kod }, { manba: 'sukut' });
   return { prompt: Object.assign({}, prompt, { toplam: toplam.map(({ _turi, _soraldi, ...x }) => x) }), kirish, qatorlar };
 }

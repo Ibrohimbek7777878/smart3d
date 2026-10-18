@@ -8,6 +8,7 @@
  */
 import { footprint } from './rules.js';
 import { devorChegara } from './devorOraliq.js';
+import { boshiXda } from '../mebel3d.js';
 
 export const KATEGORIYALAR = ['oshxona', 'garderob', 'yotoqxona', 'bolalar', 'mehmonxona', 'ofis', 'dahliz', 'hammom'];
 const QADAM = 10;
@@ -31,6 +32,14 @@ function devorga(devor, s, w, W, D) {
     case 'old': return { x: s + w, y: D, rot: 180 };
     default: return { x: s, y: 0, rot: 0 };
   }
+}
+
+/** krovat boshi devorga: asosiy joylashuv (devorga) o'rniga 90° burilgan — kesim (x0,y0) shu devor bo'ylab bo (=d) × chuqurlik (=w) to'rtburchakka tushadi */
+function buril90(p, devor, s, f, W, D) {
+  const nishon = footprint(Object.assign({ w: f.d, d: f.w }, devorga(devor, s, f.d, W, D)));      // devor bo'ylab f.d, chuqurligi f.w
+  const rot = (p.rot + 90) % 360;
+  const o = footprint({ w: f.w, d: f.d, x: 0, y: 0, rot });
+  p.rot = rot; p.x = nishon.x0 - o.x0; p.y = nishon.y0 - o.y0;
 }
 
 const kesishadi = (a, b) => {
@@ -65,20 +74,25 @@ function toplamIchki(W, D, H, items, catalog) {
     const z = it.z != null ? +it.z : +f.default_z || 0;
     if (z + f.h > H) { sigmadi.push(it.kod); continue; }
     /* eni: "toldir" — devorga sig'adigan eng kattasi (chegarada), aks holda o'zi yoki berilgan son (chegarada) */
-    const enlar = it.w === 'toldir'
+    /* egasi #239–#241: uzun o'qi x bo'lgan krovat (MC-KR-01/04/05, boshi -x da) — 90° buriladi: boshi devorga tiralib, uzun tomoni xonaga qaraydi;
+       devor bo'ylab o'lchami — krovat eni (d), devordan chuqurligi — uzunligi (w) */
+    const burish = boshiXda(f);
+    const enlar = burish ? [f.w] : it.w === 'toldir'
       ? (() => { const a = []; for (let v = Math.min(maxW, L); v >= minW; v -= 50) a.push(v); if (!a.length || a[a.length - 1] !== minW) a.push(minW); return a; })()
       : [Math.min(maxW, Math.max(minW, +it.w || f.w))];
     let joy = null;
     for (const w of enlar) {
-      if (w > L) continue;
+      const bo = burish ? f.d : w;                      // devor bo'ylab egallagan uzunlik
+      if (bo > L) continue;
       /* boshlanish nuqtalari: bosh — 0 dan oldinga, oxir — oxiridan orqaga, markaz — o'rtadan ikki tomonga */
       const nuqtalar = [];
-      const oxir = Math.floor((L - w) / QADAM) * QADAM;
+      const oxir = Math.floor((L - bo) / QADAM) * QADAM;
       if (it.joy === 'oxir') for (let s = oxir; s >= 0; s -= QADAM) nuqtalar.push(s);
-      else if (it.joy === 'markaz') { const m = Math.round((L - w) / 2); nuqtalar.push(m); for (let k = QADAM; k <= L; k += QADAM) { if (m - k >= 0) nuqtalar.push(m - k); if (m + k <= L - w) nuqtalar.push(m + k); } }
-      else for (let s = 0; s <= L - w; s += QADAM) nuqtalar.push(s);
+      else if (it.joy === 'markaz') { const m = Math.round((L - bo) / 2); nuqtalar.push(m); for (let k = QADAM; k <= L; k += QADAM) { if (m - k >= 0) nuqtalar.push(m - k); if (m + k <= L - bo) nuqtalar.push(m + k); } }
+      else for (let s = 0; s <= L - bo; s += QADAM) nuqtalar.push(s);
       for (const s of nuqtalar) {
-        const p = Object.assign({ id: 'p' + id, frg: f.code, name: f.name, z, w, d: f.d, h: f.h, qty: 1 }, devorga(it.devor, s, w, W, D));
+        const p = Object.assign({ id: 'p' + id, frg: f.code, name: f.name, z, w, d: f.d, h: f.h, qty: 1 }, devorga(it.devor, s, bo, W, D));
+        if (burish) buril90(p, it.devor, s, f, W, D);
         if (ichida(p, W, D) && !placements.some(q => kesishadi(p, q))) { joy = p; break; }
       }
       if (joy) break;
