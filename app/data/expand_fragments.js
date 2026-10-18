@@ -14,6 +14,11 @@
  *   - Slotlar arxitekturasi: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3" }
  *   - Haqiqiy formulalar: w, d, h, t (LDSP qalinligi)
  *   - Real bozor narxi (UZS)
+ *
+ * DIQQAT: skript faqat fragments.json da YO'Q kodni qo'shadi — mavjud modul o'zgarmaydi. Asosiy manba — fragments.json;
+ * keyingi tuzatishlar: scripts/geometriya_tuzatish.mjs (TZ-05), scripts/modul85_tuzatish.mjs (TZ-32 B: polkaderjatel,
+ * kromka, standart, konfirmat, xato modullar). TZ-32 B2 kromka qoidasi (MC/Bazis: korpus — old qirra, orqa qirra (B) —
+ * kromkasiz; fasad — 4 tomon) shu yerdagi SP-O-011 qopqoq va SP-D-002 shapka_polka ga ham yozildi.
  */
 import fs from 'fs';
 import path from 'path';
@@ -401,7 +406,7 @@ const newFragments = [
     slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h - 60", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
-      { code: "qopqoq", qty: 1, len: "w", width: "d", slot: "korpus", edge: { F: "kromka_korpus", B: "kromka_korpus", L: "kromka_korpus", R: "kromka_korpus" }, tekstura: "uzunlik" },
+      { code: "qopqoq", qty: 1, len: "w", width: "d", slot: "korpus", edge: { F: "kromka_korpus", L: "kromka_korpus", R: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "tub", qty: 1, len: "w - 2 * t", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "tortma_fasad", qty: 3, len: "(h - 60 - 2 * t) / 3", width: "w - 4", slot: "fasad", edge: { F: "kromka_fasad", B: "kromka_fasad", L: "kromka_fasad", R: "kromka_fasad" }, tekstura: "uzunlik" },
       { code: "tortma_yon", qty: 6, len: "400", width: "100", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -453,7 +458,7 @@ const newFragments = [
     slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "asosiy_panel", qty: 1, len: "h", width: "w", slot: "korpus", edge: { F: "kromka_korpus", B: "kromka_korpus", L: "kromka_korpus", R: "kromka_korpus" }, tekstura: "uzunlik" },
-      { code: "shapka_polka", qty: 1, len: "w", width: "d", slot: "korpus", edge: { F: "kromka_korpus", B: "kromka_korpus", L: "kromka_korpus", R: "kromka_korpus" }, tekstura: "uzunlik" },
+      { code: "shapka_polka", qty: 1, len: "w", width: "d", slot: "korpus", edge: { F: "kromka_korpus", L: "kromka_korpus", R: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "kroneyshteyn", qty: 2, len: "200", width: "200", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" }
     ],
     hardware: [

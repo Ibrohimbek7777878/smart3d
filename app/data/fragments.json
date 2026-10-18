@@ -67,8 +67,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -88,6 +87,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -153,26 +160,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -187,9 +174,24 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_pastki_1e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w=600 sex oralig'idan (300–540) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-K-002",
@@ -252,8 +254,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -265,6 +266,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -330,26 +339,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -366,7 +355,15 @@
     "qty": 4
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_ustki_1e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w=600 sex oralig'idan (300–540) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-K-003",
@@ -428,8 +425,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -441,6 +437,14 @@
     ],
     "material": "PVC2",
     "thickness": 0.4
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -509,9 +513,152 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_ustki_2e",
+  "standart_olchamlar": [
+   "d"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi",
+   "h=450 sex oralig'idan (460–1140) tashqarida — o'z chegarasi qoldi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
+  ]
  },
  {
   "code": "SP-K-004",
@@ -574,8 +721,23 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -611,10 +773,25 @@
    {
     "code": "GD-04",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 8,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "production": "panel",
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_pastki_2e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi"
+  ]
  },
  {
   "code": "SP-K-005",
@@ -675,8 +852,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -688,6 +864,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -753,26 +937,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 6
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 6
    }
   ],
   "hardware": [
@@ -789,7 +953,13 @@
     "qty": 4
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_ustki_2e",
+  "standart_olchamlar": [
+   "w",
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-K-006",
@@ -857,8 +1027,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -878,6 +1047,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -943,26 +1120,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -977,9 +1134,21 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 24,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_penal",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-K-007",
@@ -1039,8 +1208,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1052,6 +1220,14 @@
     ],
     "material": "PVC2",
     "thickness": 0.4
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -1120,9 +1296,144 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
+  ]
  },
  {
   "code": "SP-K-008",
@@ -1175,8 +1486,15 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1248,9 +1566,145 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_pastki_2e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
+  ]
  },
  {
   "code": "SP-K-009",
@@ -1320,8 +1774,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1341,6 +1794,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1406,26 +1867,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 6
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 6
    }
   ],
   "hardware": [
@@ -1440,6 +1881,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 8,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -1518,6 +1966,30 @@
     ],
     "material": "PVC2",
     "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -1554,10 +2026,22 @@
    {
     "code": "NOG-90",
     "qty": 8
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 20,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "production": "panel",
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-W-002",
@@ -1625,8 +2109,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1646,6 +2129,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1711,26 +2202,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 4
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 4
    }
   ],
   "hardware": [
@@ -1745,9 +2216,23 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 20,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "h"
+  ],
+  "standart_izoh": [
+   "d=620 sex oralig'idan (350–600) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-W-003",
@@ -1815,8 +2300,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1836,6 +2320,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1901,26 +2393,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -1935,9 +2407,21 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 24,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-W-004",
@@ -2004,8 +2488,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2017,6 +2500,22 @@
     ],
     "material": "PVC2",
     "thickness": 0.4
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "toka",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -2089,9 +2588,149 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
+  ]
  },
  {
   "code": "SP-B-001",
@@ -2159,8 +2798,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2180,6 +2818,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2245,26 +2891,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 4
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 4
    }
   ],
   "hardware": [
@@ -2279,6 +2905,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -2344,8 +2977,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2357,6 +2989,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2422,26 +3062,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 4
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 4
    }
   ],
   "hardware": [
@@ -2526,8 +3146,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2547,6 +3166,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2612,26 +3239,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -2646,6 +3253,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -2731,7 +3345,15 @@
   "price": 1250000,
   "material_code": "UPHOLSTERY",
   "production": "upholstery",
-  "parts": [],
+  "parts": [
+   {
+    "code": "karkas",
+    "qty": 1,
+    "len": "w-200",
+    "width": "d-200",
+    "material": "LDSP18"
+   }
+  ],
   "edge": [],
   "holes": [],
   "hardware": [
@@ -2740,7 +3362,8 @@
     "qty": 1
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "izoh": "TZ-32 B5: detal yo'q edi — boshqa yumshoq mebel modullaridagi (SP-S-001/002, SP-C-001/002, SP-BD-001) karkas shabloni (w−200 × d−200); haqiqiy kreslo chizmasi emas"
  },
  {
   "code": "SP-S-004",
@@ -2790,6 +3413,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "oyoq",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "qator",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2890,6 +3529,22 @@
     ],
     "material": "PVC2",
     "thickness": 2
+   },
+   {
+    "code": "oyoq",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "qator",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -2987,6 +3642,22 @@
     ],
     "material": "PVC2",
     "thickness": 2
+   },
+   {
+    "code": "oyoq",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "qator",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -3077,6 +3748,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "oyoq",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "qator",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3301,6 +3988,14 @@
   "edge": [
    {
     "code": "polka",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   },
+   {
+    "code": "yon",
     "sides": [
      "F"
     ],
@@ -3533,8 +4228,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3546,6 +4240,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3591,16 +4301,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -3615,9 +4315,24 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_ustki_1e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w=800 sex oralig'idan (300–540) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-K-011",
@@ -3691,8 +4406,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3715,6 +4429,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3760,26 +4490,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -3794,9 +4504,22 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_ustki_2e",
+  "standart_olchamlar": [
+   "w",
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-K-012",
@@ -3870,8 +4593,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3894,6 +4616,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3939,26 +4677,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -3973,6 +4691,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -4070,8 +4795,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4094,6 +4818,46 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4139,26 +4903,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -4173,9 +4917,21 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 16,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_penal",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-K-014",
@@ -4236,8 +4992,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4249,6 +5004,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4294,16 +5057,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -4320,7 +5073,15 @@
     "qty": 4
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_pastki_1e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w=600 sex oralig'idan (300–540) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-K-015",
@@ -4395,8 +5156,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4408,6 +5168,30 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4453,16 +5237,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -4477,9 +5251,21 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 8,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_penal",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-W-005",
@@ -4567,8 +5353,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4591,6 +5376,38 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4636,26 +5453,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -4670,9 +5467,21 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 12,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-W-006",
@@ -4773,8 +5582,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4808,6 +5616,46 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4853,36 +5701,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik3",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -4897,9 +5715,21 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 16,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-W-007",
@@ -5013,8 +5843,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -5062,6 +5891,54 @@
     ],
     "material": "PVC2",
     "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift5",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -5104,46 +5981,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik3",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik4",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -5158,9 +5995,21 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 20,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-W-008",
@@ -5241,8 +6090,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -5265,6 +6113,30 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -5310,26 +6182,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -5344,6 +6196,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 8,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -5428,8 +6287,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -5441,6 +6299,38 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -5486,16 +6376,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -5510,9 +6390,23 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 12,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "h"
+  ],
+  "standart_izoh": [
+   "d=900 sex oralig'idan (350–600) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-T-004",
@@ -6093,8 +6987,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6117,6 +7010,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6162,26 +7071,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -6196,6 +7085,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -6287,8 +7183,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6300,6 +7195,46 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6345,16 +7280,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -6369,6 +7294,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 16,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -6466,8 +7398,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6490,6 +7421,46 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6535,26 +7506,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -6569,6 +7520,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 16,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -6654,8 +7612,47 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6715,6 +7712,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 16,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -7232,16 +8236,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -7319,8 +8313,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -7332,6 +8325,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -7376,16 +8377,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -7484,8 +8475,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -7508,6 +8498,30 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -7553,26 +8567,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -7587,6 +8581,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 8,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -7677,8 +8678,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -7701,6 +8701,38 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -7746,26 +8778,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -7780,6 +8792,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 12,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -7918,7 +8937,7 @@
   "d": 900,
   "h": 800,
   "min_w": 1800,
-  "max_w": 2800,
+  "max_w": 2780,
   "stretch_axis": "xy",
   "price_mode": "unit",
   "price": 1650000,
@@ -8032,7 +9051,8 @@
     "qty": 4
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "izoh": "TZ-32 B5: max_w 2800 → 2780 — ust/past/orqa detali (eni = w) varaqqa sig'sin (2800 × 2070, chetidan 10 mm)"
  },
  {
   "code": "SP-C-003",
@@ -8343,8 +9363,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -8356,6 +9375,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -8401,16 +9436,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -8425,6 +9450,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -8488,8 +9520,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -8501,6 +9532,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -8545,16 +9584,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -8662,8 +9691,55 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift5",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -8723,6 +9799,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 20,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -8846,7 +9929,19 @@
    {
     "code": "CONFIRMAT",
     "qty": 24
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 16,
+    "unit": "dona",
+    "id": "90002019"
    }
+  ],
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
   ]
  },
  {
@@ -8968,7 +10063,19 @@
    {
     "code": "CONFIRMAT",
     "qty": 36
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 24,
+    "unit": "dona",
+    "id": "90002019"
    }
+  ],
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
   ]
  },
  {
@@ -9101,6 +10208,141 @@
    {
     "code": "TRUBA-OVAL",
     "qty": 1
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
+   }
+  ],
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "h"
+  ],
+  "standart_izoh": [
+   "d: tortma yoni 450 mm — d ≥ 500 (MC: yon = d − 50), sex min 350 bilan to'qnashadi — o'z chegarasi qoldi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
    }
   ]
  },
@@ -9222,6 +10464,259 @@
    {
     "code": "NOG-100",
     "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 16,
+    "unit": "dona"
+   }
+  ],
+  "standart": "oshxona_penal",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — texnika_polka × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d - 20",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — texnika_polka × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d - 20",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — texnika_polka × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d - 20",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — texnika_polka × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d - 20",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
    }
   ]
  },
@@ -9332,6 +10827,139 @@
    {
     "code": "NOG-100",
     "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
+   }
+  ],
+  "standart": "oshxona_penal",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
    }
   ]
  },
@@ -9345,7 +10973,7 @@
   "h": 720,
   "min_w": 400,
   "max_w": 900,
-  "min_d": 500,
+  "min_d": 550,
   "max_d": 650,
   "stretch_axis": "xy",
   "price_mode": "unit",
@@ -9472,8 +11100,206 @@
    {
     "code": "NOG-100",
     "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
-  ]
+  ],
+  "standart": "oshxona_pastki_2e",
+  "standart_olchamlar": [
+   "h"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi",
+   "d: tortma yoni 500 mm — d ≥ 550 (MC: yon = d − 50), sex min 450 bilan to'qnashadi — o'z chegarasi qoldi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
+  ],
+  "izoh": "TZ-32 B5: min_d 500 → 550 — tortma yoni 500 mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − 50, MC-KP-03/04/09/10/11) | TZ-32 B8: auto_hardware false — fasad detali eshik emas (fasad_kichik, fasad_katta): avtomatik petlya/ruchka qo'shilmaydi",
+  "auto_hardware": false
  },
  {
   "code": "SP-K-023",
@@ -9485,7 +11311,7 @@
   "h": 720,
   "min_w": 600,
   "max_w": 1200,
-  "min_d": 500,
+  "min_d": 550,
   "max_d": 650,
   "stretch_axis": "xy",
   "price_mode": "unit",
@@ -9598,8 +11424,206 @@
    {
     "code": "NOG-100",
     "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
-  ]
+  ],
+  "standart": "oshxona_pastki_2e",
+  "standart_olchamlar": [
+   "h"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi",
+   "d: tortma yoni 500 mm — d ≥ 550 (MC: yon = d − 50), sex min 450 bilan to'qnashadi — o'z chegarasi qoldi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
+  ],
+  "izoh": "TZ-32 B5: min_d 500 → 550 — tortma yoni 500 mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − 50, MC-KP-03/04/09/10/11) | TZ-32 B8: auto_hardware false — fasad detali eshik emas (fasad_katta): avtomatik petlya/ruchka qo'shilmaydi",
+  "auto_hardware": false
  },
  {
   "code": "SP-K-024",
@@ -9694,8 +11718,206 @@
    {
     "code": "NOG-100",
     "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
-  ]
+  ],
+  "standart": "oshxona_pastki_1e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
+  ],
+  "auto_hardware": false,
+  "izoh": "TZ-32 B8: auto_hardware false — fasad detali eshik emas (fasad): avtomatik petlya/ruchka qo'shilmaydi"
  },
  {
   "code": "SP-K-025",
@@ -9794,6 +12016,140 @@
    {
     "code": "RUCHKA-128",
     "qty": 2
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
+   }
+  ],
+  "standart": "oshxona_ustki_2e",
+  "standart_olchamlar": [
+   "w",
+   "d",
+   "h"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
    }
   ]
  },
@@ -9901,6 +12257,149 @@
    {
     "code": "RUCHKA-128",
     "qty": 2
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
+   }
+  ],
+  "standart": "oshxona_ustki_2e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
    }
   ]
  },
@@ -10022,6 +12521,134 @@
    {
     "code": "RUCHKA-128",
     "qty": 1
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
+   }
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub_l × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "600 - 2 * t",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub_l × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "600 - 2 * t",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq_l × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "600 - 2 * t",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq_l × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "600 - 2 * t",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
    }
   ]
  },
@@ -10178,7 +12805,7 @@
   "h": 550,
   "min_w": 400,
   "max_w": 500,
-  "min_d": 400,
+  "min_d": 450,
   "max_d": 550,
   "stretch_axis": "y",
   "price_mode": "unit",
@@ -10212,7 +12839,6 @@
     "slot": "korpus",
     "edge": {
      "F": "kromka_korpus",
-     "B": "kromka_korpus",
      "L": "kromka_korpus",
      "R": "kromka_korpus"
     },
@@ -10287,8 +12913,137 @@
    {
     "code": "RUCHKA-128",
     "qty": 3
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
-  ]
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
+  ],
+  "izoh": "TZ-32 B5: min_d 400 → 450 — tortma yoni 400 mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − 50, MC-KP-03/04/09/10/11)"
  },
  {
   "code": "SP-D-002",
@@ -10337,7 +13092,6 @@
     "slot": "korpus",
     "edge": {
      "F": "kromka_korpus",
-     "B": "kromka_korpus",
      "L": "kromka_korpus",
      "R": "kromka_korpus"
     },
@@ -10376,7 +13130,7 @@
   "h": 500,
   "min_w": 600,
   "max_w": 1200,
-  "min_d": 400,
+  "min_d": 450,
   "max_d": 550,
   "stretch_axis": "x",
   "price_mode": "unit",
@@ -10466,8 +13220,197 @@
    {
     "code": "NAVES-CAMAR",
     "qty": 2
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
-  ]
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga_tepa × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga_tepa × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga_tepa × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga_tepa × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
+  ],
+  "izoh": "TZ-32 B5: min_d 400 → 450 — tortma yoni 400 mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − 50, MC-KP-03/04/09/10/11)"
  },
  {
   "code": "SP-H-011",
@@ -10573,6 +13516,141 @@
    {
     "code": "NAVES-REG",
     "qty": 2
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 8,
+    "unit": "dona",
+    "id": "90002019"
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 4,
+    "unit": "dona"
+   }
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
    }
   ]
  },
@@ -10747,7 +13825,7 @@
   "max_w": 150,
   "min_d": 16,
   "max_d": 700,
-  "min_h": 100,
+  "min_h": 600,
   "max_h": 2700,
   "stretch_axis": "xyz",
   "price_mode": "unit",
@@ -10776,7 +13854,8 @@
    }
   ],
   "holes": [],
-  "izoh": "TZ-22: devor/burchak yonidagi planka — eshik va tutqich ochilishi uchun (eni 40–100 mm, taklif; texnolog tasdiqlaydi)"
+  "izoh": "TZ-22: devor/burchak yonidagi planka — eshik va tutqich ochilishi uchun (eni 40–100 mm, taklif; texnolog tasdiqlaydi) | TZ-32 B5: min_h 100 → 600 — detal 'h − 100' 0 bo'lmasin; pastki qator bo'yi sexda 600–880 (sex-standartlari.json oshxona_pastki) | TZ-32 B8: auto_hardware false — fasad detali eshik emas (dobor_yon): avtomatik petlya/ruchka qo'shilmaydi",
+  "auto_hardware": false
  },
  {
   "code": "SP-ST-006",
@@ -10819,6 +13898,7 @@
    }
   ],
   "holes": [],
-  "izoh": "TZ-22: devor/burchak yonidagi planka — eshik va tutqich ochilishi uchun (eni 40–100 mm, taklif; texnolog tasdiqlaydi)"
+  "izoh": "TZ-22: devor/burchak yonidagi planka — eshik va tutqich ochilishi uchun (eni 40–100 mm, taklif; texnolog tasdiqlaydi) | TZ-32 B8: auto_hardware false — fasad detali eshik emas (dobor_yon): avtomatik petlya/ruchka qo'shilmaydi",
+  "auto_hardware": false
  }
 ]
