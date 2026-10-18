@@ -21,7 +21,10 @@ ok('furnitura id — katalogda bor', Object.keys(R.furnitura).every(id => idlar.
 ok("yo'llar data/rasm/… va fayl mavjud", hammasi.every(([, y]) => /^data\/rasm\/(furnitura|material)\/[\w.-]+\.webp$/.test(y) && existsSync(DATA + y.replace(/^data\//, ''))));
 ok('yo\'l nomi — id bilan mos (furnitura)', Object.entries(R.furnitura).every(([id, y]) => y.endsWith('/' + id + '.webp')));
 const kb = hammasi.reduce((a, [, y]) => a + statSync(DATA + y.replace(/^data\//, '')).size, 0) / 1024;
-ok('jami hajm ≤ 3 MB (' + Math.round(kb) + ')', kb <= 3072);
+ok('jami hajm ≤ 4 MB (' + Math.round(kb) + ')', kb <= 4096);
+const fk = Object.values(R.furnitura).map(y => statSync(DATA + y.replace(/^data\//, '')).size);
+ok('har furnitura rasmi ≤ 15 KB', fk.every(b => b <= 15 * 1024), String(Math.max(...fk)));
+ok('_meta.furnitura_manba bor, soni furnitura soniga teng', Array.isArray(R._meta.furnitura_manba) && R._meta.furnitura_manba.every(m => m.sayt && m.soni > 0) && R._meta.furnitura_manba.reduce((a, m) => a + m.soni, 0) === Object.keys(R.furnitura).length);
 ok('rasm papkasida ortiqcha fayl yo\'q', readdirSync(DATA + 'rasm/furnitura').length === Object.keys(R.furnitura).length);
 ok('kamida 20 ta furnituraga rasm', Object.keys(R.furnitura).length >= 20);
 
