@@ -8,7 +8,9 @@
  *       Eski modullarda qo'shilgan qirra shu modulning o'z korpus kromkasi (yon devor yozuvi) bilan bir xil; ust/qopqoq orqa
  *       qirrasidagi (B) kromka olib tashlanadi. Yangi 16 modul (slot formati) — qopqoq va polka B qirrasi olib tashlanadi.
  *   B3  standart — sex-standartlari.json turi (egasi tasdiqlagan, 2026-10-15). Sukut o'lchami sex oralig'idan tashqarida
- *       bo'lgan o'lcham standart_olchamlar ga kirmaydi (MC importidagi qoida: o'z o'lchami oraliqdan uzoq — o'zgarmas).
+ *       bo'lgan o'lcham standart_olchamlar ga kirmaydi (MC importidagi qoida: o'z o'lchami oraliqdan uzoq — o'zgarmas);
+ *       eshiksiz modulga w qo'llanmaydi (sex: "w — modul eni, eshik enidan hisoblangan"); qattiq tortma yoni d ≥ yon + 50 talab
+ *       qilsa — d qo'llanmaydi. Sababi modulning standart_izoh maydonida.
  *   B4  konfirmat — MC modullaridagi eng ko'p uchragan Bazis qoidasi "Евровинт 7х50 (32) симм" (58 birikma):
  *       S 60, P 32, jadval [[150,1],[600,2],[1200,3],[2400,4]] — har gorizontal panel × 2 uchi; soni o'lchamga qarab (cutlist).
  *   B5  xato modullar — har birining manbasi pastda.
@@ -120,6 +122,7 @@ for (const f of frags) {
       const tortmaL = f.parts.filter(p => /^tortma_yon/.test(p.code) && !isNaN(+p.len)).map(p => +p.len);
       for (const k of ['w', 'd', 'h']) {
         if (!t[k]) continue;
+        if (k === 'w' && !eshikSoni(f)) { izoh.push("w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi"); continue; }
         if ((t[k].min != null && f[k] < t[k].min) || (t[k].max != null && f[k] > t[k].max)) { izoh.push(`${k}=${f[k]} sex oralig'idan (${t[k].min}–${t[k].max}) tashqarida — o'z chegarasi qoldi`); continue; }
         if (k === 'd' && tortmaL.length && Math.max(...tortmaL) + TORTMA_ZAZOR > t.d.min) { izoh.push(`d: tortma yoni ${Math.max(...tortmaL)} mm — d ≥ ${Math.max(...tortmaL) + TORTMA_ZAZOR} (MC: yon = d − ${TORTMA_ZAZOR}), sex min ${t.d.min} bilan to'qnashadi — o'z chegarasi qoldi`); continue; }
         dims.push(k);

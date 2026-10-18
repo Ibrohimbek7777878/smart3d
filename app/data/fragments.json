@@ -203,7 +203,15 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_pastki_1e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w=600 sex oralig'idan (300–540) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-K-002",
@@ -387,7 +395,15 @@
     "qty": 4
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_ustki_1e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w=600 sex oralig'idan (300–540) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-K-003",
@@ -546,7 +562,15 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_ustki_2e",
+  "standart_olchamlar": [
+   "d"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi",
+   "h=450 sex oralig'idan (460–1140) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-K-004",
@@ -671,7 +695,15 @@
    }
   ],
   "production": "panel",
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_pastki_2e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi"
+  ]
  },
  {
   "code": "SP-K-005",
@@ -853,7 +885,13 @@
     "qty": 4
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_ustki_2e",
+  "standart_olchamlar": [
+   "w",
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-K-006",
@@ -1057,7 +1095,12 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_penal",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-K-007",
@@ -1349,7 +1392,15 @@
     "qty": 4
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_pastki_2e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi"
+  ]
  },
  {
   "code": "SP-K-009",
@@ -1701,7 +1752,12 @@
    }
   ],
   "production": "panel",
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-W-002",
@@ -1905,7 +1961,14 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "h"
+  ],
+  "standart_izoh": [
+   "d=620 sex oralig'idan (350–600) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-W-003",
@@ -2109,7 +2172,12 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-W-004",
@@ -2285,7 +2353,12 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-B-001",
@@ -3940,7 +4013,15 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_ustki_1e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w=800 sex oralig'idan (300–540) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-K-011",
@@ -4141,7 +4222,13 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_ustki_2e",
+  "standart_olchamlar": [
+   "w",
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-K-012",
@@ -4588,7 +4675,12 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_penal",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-K-014",
@@ -4740,7 +4832,15 @@
     "qty": 4
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_pastki_1e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w=600 sex oralig'idan (300–540) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-K-015",
@@ -4929,7 +5029,12 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "oshxona_penal",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-W-005",
@@ -5160,7 +5265,12 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-W-006",
@@ -5433,7 +5543,12 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-W-007",
@@ -5748,7 +5863,12 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ]
  },
  {
   "code": "SP-W-008",
@@ -6168,7 +6288,14 @@
     "id": "90002019"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "h"
+  ],
+  "standart_izoh": [
+   "d=900 sex oralig'idan (350–600) tashqarida — o'z chegarasi qoldi"
+  ]
  },
  {
   "code": "SP-T-004",
@@ -9828,6 +9955,11 @@
     "unit": "dona",
     "id": "90002019"
    }
+  ],
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
   ]
  },
  {
@@ -9957,6 +10089,11 @@
     "unit": "dona",
     "id": "90002019"
    }
+  ],
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "d",
+   "h"
   ]
  },
  {
@@ -10090,6 +10227,13 @@
     "code": "TRUBA-OVAL",
     "qty": 1
    }
+  ],
+  "standart": "shkaf",
+  "standart_olchamlar": [
+   "h"
+  ],
+  "standart_izoh": [
+   "d: tortma yoni 450 mm — d ≥ 500 (MC: yon = d − 50), sex min 350 bilan to'qnashadi — o'z chegarasi qoldi"
   ]
  },
  {
@@ -10211,6 +10355,11 @@
     "code": "NOG-100",
     "qty": 4
    }
+  ],
+  "standart": "oshxona_penal",
+  "standart_olchamlar": [
+   "d",
+   "h"
   ]
  },
  {
@@ -10321,6 +10470,11 @@
     "code": "NOG-100",
     "qty": 4
    }
+  ],
+  "standart": "oshxona_penal",
+  "standart_olchamlar": [
+   "d",
+   "h"
   ]
  },
  {
@@ -10461,6 +10615,14 @@
     "code": "NOG-100",
     "qty": 4
    }
+  ],
+  "standart": "oshxona_pastki_2e",
+  "standart_olchamlar": [
+   "h"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi",
+   "d: tortma yoni 500 mm — d ≥ 550 (MC: yon = d − 50), sex min 450 bilan to'qnashadi — o'z chegarasi qoldi"
   ]
  },
  {
@@ -10587,6 +10749,14 @@
     "code": "NOG-100",
     "qty": 4
    }
+  ],
+  "standart": "oshxona_pastki_2e",
+  "standart_olchamlar": [
+   "h"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi",
+   "d: tortma yoni 500 mm — d ≥ 550 (MC: yon = d − 50), sex min 450 bilan to'qnashadi — o'z chegarasi qoldi"
   ]
  },
  {
@@ -10683,6 +10853,14 @@
     "code": "NOG-100",
     "qty": 4
    }
+  ],
+  "standart": "oshxona_pastki_1e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi"
   ]
  },
  {
@@ -10783,6 +10961,12 @@
     "code": "RUCHKA-128",
     "qty": 2
    }
+  ],
+  "standart": "oshxona_ustki_2e",
+  "standart_olchamlar": [
+   "w",
+   "d",
+   "h"
   ]
  },
  {
@@ -10897,6 +11081,14 @@
     "unit": "dona",
     "id": "90002019"
    }
+  ],
+  "standart": "oshxona_ustki_2e",
+  "standart_olchamlar": [
+   "d",
+   "h"
+  ],
+  "standart_izoh": [
+   "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi"
   ]
  },
  {
