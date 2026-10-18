@@ -199,10 +199,11 @@ if (STAT) {
   for (const t of TURLAR) for (const n of natija) for (const z of n.r[t].filter(z => !z.k)) console.log(`  ${t} ${n.code}: ${z.m}`);
 }
 const toza = natija.filter(n => TURLAR.every(t => !n.r[t].some(z => !z.k))).length;
+const tozaQ = natija.filter(n => [...QATIY].every(t => !n.r[t].some(z => !z.k))).length;
 const tozaK = natija.filter(n => TURLAR.every(t => !n.r[t].length)).length;
 const pcts = natija.map(n => n.pct).filter(v => v != null).sort((a, b) => a - b);
 const med = pcts.length ? (pcts.length % 2 ? pcts[(pcts.length - 1) / 2] : (pcts[pcts.length / 2 - 1] + pcts[pcts.length / 2]) / 2) : null;
-console.log(`\nStatistika: ${SP.length} modul; toza (kutilmoqda hisobga olinmasa) ${toza}, to'liq toza ${tozaK}; narx aniqligi eng yuqori ${pcts[pcts.length - 1]}%, mediana ${med}%`);
+console.log(`\nStatistika: ${SP.length} modul; qat'iy turlarda toza ${tozaQ}; toza (kutilmoqda hisobga olinmasa) ${toza}, to'liq toza ${tozaK}; narx aniqligi eng yuqori ${pcts[pcts.length - 1]}%, mediana ${med}%`);
 for (const t of TURLAR) {
   const a = natija.filter(n => n.r[t].some(z => !z.k)).length, b = natija.filter(n => n.r[t].some(z => z.k)).length;
   console.log(`  ${t.padEnd(7)} kamchilik: ${String(a).padStart(2)} modul${b ? `; kutilmoqda: ${b} modul` : ''}`);
