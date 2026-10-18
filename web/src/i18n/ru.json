@@ -1476,5 +1476,12 @@
  "texnika.r_qora": "Чёрный",
  "texnika.r_zanglamas": "Нержавейка",
  "texnika.r_bronza": "Бронза",
- "texnika.sukut": "Вернуть исходные цвета"
+ "texnika.sukut": "Вернуть исходные цвета",
+ "tez.yotoqxona": "Спальня",
+ "tez.mehmonxona": "Гостиная",
+ "tez.garderob": "Гардероб",
+ "tez.yotoqxona_matn": "спальня 4x5",
+ "tez.mehmonxona_matn": "гостиная 4x6",
+ "tez.garderob_matn": "гардеробная 2x3",
+ "chizish.butun_xona": "Нужна вся комната? Напишите в строке внизу, например «спальня 4x5»."
 }

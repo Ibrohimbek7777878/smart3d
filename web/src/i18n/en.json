@@ -1476,5 +1476,12 @@
  "texnika.r_qora": "Black",
  "texnika.r_zanglamas": "Stainless steel",
  "texnika.r_bronza": "Bronze",
- "texnika.sukut": "Reset to original colours"
+ "texnika.sukut": "Reset to original colours",
+ "tez.yotoqxona": "Bedroom",
+ "tez.mehmonxona": "Living room",
+ "tez.garderob": "Wardrobe",
+ "tez.yotoqxona_matn": "bedroom 4x5",
+ "tez.mehmonxona_matn": "living room 4x6",
+ "tez.garderob_matn": "walk-in wardrobe 2x3",
+ "chizish.butun_xona": "Need a whole room? Type it in the line below, e.g. \"bedroom 4x5\"."
 }

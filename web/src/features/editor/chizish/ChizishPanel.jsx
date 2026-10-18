@@ -58,9 +58,11 @@ export default function ChizishPanel() {
       <h2 style={{ margin: '0', fontSize: '22px', fontWeight: '800', letterSpacing: '-.02em' }}><Ikon n="tahrir" size={20} />{t('chizish.sarlavha')}</h2>
       <button onClick={v.yop} data-chizish-yop="" style={{ ...btnGhost, height: '40px' }}>{v.tanlov ? t('umumiy.yopish') : t('chizish.tayyor')}</button>
     </div>);
+  const butunXona = <span data-butun-xona="" style={hint}>{t('chizish.butun_xona')}</span>;
   if (v.tanlov) {
     return (<div data-chizish="" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       {sarlavha}
+      {butunXona}
       <span style={hint}>{t('chizish.tur_tanlang')}</span>
       {v.turlar.map(x => (
         <button key={x.tur} onClick={x.pick} data-chizish-tur={x.tur} style={{ ...card, padding: '14px 16px', textAlign: 'left', cursor: 'pointer', color: 'var(--txt)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
