@@ -279,9 +279,267 @@
  "sukut_erp": {
   "_izoh": "TZ-32 A1: sukut plita → ERP mahsuloti (egasi tanlaydi, 2-savol). null — bog'lanmagan (narx yuqoridagi panel_materials dan). Bog'lash: {\"sku\": \"…\", \"nom\": \"…\", \"uzs\": <ERP narxi>, \"manba\": \"ERP\", \"sana\": \"YYYY-MM-DD\"} — hisob yuklanganda shu plitaning sheet_price, price_src va sku shu yerdan olinadi, \"taxminiy\" belgisi tushadi (engine/narxStavka.js sukutErpQollash).",
   "LDSP18": null,
-  "LDSP16": null,
-  "MDF16": null,
+  "LDSP16": {
+   "sku": "0110 SM",
+   "nom": "ЛДСП Ультрадекор 5,0325 Белый гладкий 0110 16мм",
+   "uzs": 341761,
+   "l": 2750,
+   "w": 1830,
+   "manba": "ERP",
+   "sana": "2026-10-18",
+   "erp_id": 10807,
+   "izoh": "Egasi roziligi (2026-10-18): korpus uchun Ультрадекор Белый гладкий 16мм. ERP /api/v2/products id 10807: 2026-10-18 da display_price_uzs 341 761 (data paketi 2026-10-16 da 309 184 edi — narx oshgan; list 410 000 — mijozga sotuv narxi). Sexda eng ko'p: 56 buyurtmada 7 list (4,575 «фасадный SM» — 6 list). Varaq 2750×1830 — narx shu format uchun."
+  },
+  "MDF16": {
+   "sku": "0101 SM",
+   "nom": "ЛМДФ 1/2 5,796 Белый Гладкий (односторонний) 16мм",
+   "uzs": 580515,
+   "l": 2800,
+   "w": 2070,
+   "manba": "ERP",
+   "sana": "2026-10-18",
+   "erp_id": 11578,
+   "izoh": "Fasad MDF16 (egasi: korpus bilan bir xil oq gladkiy): ERP id 11578, display_price_uzs 580 515 (list 640 000), varaq 2800×2070 (bizning standart format), qoldiq bor. Sexda LMDF kam sotiladi (56 buyurtmada eng ko'pi Кашемир 5981 — 4 list); oq gladkiy ularning orasida yagona, korpus tanloviga mos."
+  },
   "HDF3": null
+ },
+ "sukut_narx": {
+  "_izoh": "TZ-32 E (2026-10-18): sukut narx stavkalari — Bittada ERP xizmatlar jadvalidan (mijoz narxi, client_price; faqat o'qish). Boshlang'ich hujjat (narxSukut) shu yerdan to'ldiriladi; egasi/admin Sozlamalar → Narxlar da o'zgartiradi. 'tanlov' — oldindan tanlangan qator (raspil: Holzma 2 — ERP buyurtmalarida eng ko'p; kromka: korpus 19/0,4 — 3 000/m, fasad 19/2 — 4 900/m (egasi); prisadka: teshik turi → ERP присадка xizmati). 'bazis' — usta narx panelida tanlaydigan xizmat (sukut o'chiq, S3): onlayn = Bazis3 (3 000/detal), oflayn = Bazis6 (6 000/detal).",
+  "xizmatlar": {
+   "7802360156": {
+    "nom": "Услуга Распила Holzma 2",
+    "guruh": "raspil",
+    "qiymat": 43000,
+    "birlik": "list",
+    "kategoriya": "Услуги Распила",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "7802360124": {
+    "nom": "Услуга Распила Holzma 1",
+    "guruh": "raspil",
+    "qiymat": 25000,
+    "birlik": "list",
+    "kategoriya": "Услуги Распила",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "2": {
+    "nom": "Услуга Распила Holzma 3",
+    "guruh": "raspil",
+    "qiymat": 48000,
+    "birlik": "list",
+    "kategoriya": "Услуги Распила",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236012336": {
+    "nom": "Услуга Распила Altendorf 2",
+    "guruh": "raspil",
+    "qiymat": 33000,
+    "birlik": "list",
+    "kategoriya": "Услуги Распила",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010807": {
+    "nom": "Услуга Распила Altendorf 1",
+    "guruh": "raspil",
+    "qiymat": 18000,
+    "birlik": "list",
+    "kategoriya": "Услуги Распила",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236012338": {
+    "nom": "Услуга Распила Altendorf 3",
+    "guruh": "raspil",
+    "qiymat": 38000,
+    "birlik": "list",
+    "kategoriya": "Услуги Распила",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236012395": {
+    "nom": "Услуга ПВХ 19/0,4+0,6 прямая",
+    "guruh": "kromka",
+    "qiymat": 3000,
+    "birlik": "m",
+    "kategoriya": "Услуга кромирование",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236012400": {
+    "nom": "Услуга ПВХ 19/2 прямая",
+    "guruh": "kromka",
+    "qiymat": 4900,
+    "birlik": "m",
+    "kategoriya": "Услуга кромирование",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010911": {
+    "nom": "ПРИСАДКА ЕВРО",
+    "guruh": "prisadka",
+    "qiymat": 1600,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236020072": {
+    "nom": "ПРИСАДКА ЕВРО 2",
+    "guruh": "prisadka",
+    "qiymat": 1200,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010863": {
+    "nom": "ПРИСАДКА МЕТКА 3-2,5",
+    "guruh": "prisadka",
+    "qiymat": 300,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010829": {
+    "nom": "ПРИСАДКА ПЕТЛЕ",
+    "guruh": "prisadka",
+    "qiymat": 900,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010817": {
+    "nom": "ПРИСАДКА ПОЛКАДЕРЖАТЕЛ",
+    "guruh": "prisadka",
+    "qiymat": 800,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010901": {
+    "nom": "ПРИСАДКА РУЧКА",
+    "guruh": "prisadka",
+    "qiymat": 800,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010915": {
+    "nom": "ПРИСАДКА ШКАНТ",
+    "guruh": "prisadka",
+    "qiymat": 800,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010843": {
+    "nom": "ПРИСАДКА ЭКСЕРТРИК",
+    "guruh": "prisadka",
+    "qiymat": 1400,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "03": {
+    "nom": "Bazis3",
+    "guruh": "bazis",
+    "qiymat": 3000,
+    "birlik": "detal",
+    "kategoriya": "Bazis",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "04": {
+    "nom": "Bazis6",
+    "guruh": "bazis",
+    "qiymat": 6000,
+    "birlik": "detal",
+    "kategoriya": "Bazis",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   }
+  },
+  "tanlov": {
+   "raspil": "7802360156",
+   "kromka": {
+    "_sukut": "780236012395",
+    "PVC04": "780236012395",
+    "PVC2": "780236012400",
+    "REHAU2": "780236012400"
+   },
+   "prisadka": {
+    "konfirmat_yuza": "780236010911",
+    "konfirmat_qirra": "780236010911",
+    "petlya": "780236010829",
+    "hinge": "780236010829",
+    "polka": "780236010817",
+    "ruchka": "780236010901",
+    "shkant": "780236010915",
+    "dowel": "780236010915",
+    "eksentrik": "780236010843",
+    "cam": "780236010843",
+    "belgi": "780236010863",
+    "mark": "780236010863"
+   },
+   "bazis": {
+    "onlayn": "03",
+    "oflayn": "04"
+   }
+  }
+ },
+ "furnitura_yashirin": {
+  "_izoh": "TZ-32 E7 (egasi #209: 'narxsiz furnituralarni ro'yxatga qo'shma, olib tashla, keyin eslatib turasan'): ERP'da (2026-10-18) bir qiymatli mos mahsulot topilmagan 18 furnitura kodi smeta va narx ro'yxatidan YASHIRILADI (engine/cutlist.js productionCost; natijada `yashirin`). Kodga narx yoki ERP ID bog'lansa (furnitura-boglash.json / materials.hardware) — avtomatik qaytadi. Eslatish: tests/verify_narx_erp.mjs ro'yxatni chiqaradi.",
+  "sana": "2026-10-18",
+  "kodlar": [
+   "KUPE-SYS-02",
+   "KUPE-SYS-03",
+   "TRUBA-OVAL",
+   "CONFIRMAT",
+   "PETLYA-MUZ",
+   "SLIDER-MUZ",
+   "TANDEM-500",
+   "TANDEM-400-NAM",
+   "KARGO-200",
+   "NAVES-REG",
+   "NAVES-OGIR",
+   "NAVES-CAMAR",
+   "LIFT-HF",
+   "GILDIRAK-ROLIK",
+   "ZAMOK-MARKAZIY",
+   "KRYUCHOK-3TALIK",
+   "PETLYA-NAM",
+   "TIP-ON"
+  ],
+  "sabab": {
+   "KUPE-SYS-02": "ERP'da купе tizimi to'plami yo'q (faqat uplotnitel/mexanizm qismlari)",
+   "KUPE-SYS-03": "xuddi shu",
+   "TRUBA-OVAL": "ERP: труба овальная — 4 xil (хром 3 м 31 500, oltin 36 000, qora 32 000, alyuminiy 100 000); moduldagi uzunlik/tur aniq emas",
+   "CONFIRMAT": "ERP: konfirmat 7×50 dona narxida yo'q (винт конфирмат kg bilan; 6,3×50 — 650/dona, o'lcham mos emas)",
+   "PETLYA-MUZ": "ERP: Hettich холодильник petlyasi 72 000 / 540 000 — tur aniq emas",
+   "SLIDER-MUZ": "ERP: muzlatgich eshik fiksatori 300 000 — mos ekani aniq emas",
+   "TANDEM-500": "ERP: TANDEM 5 xil (BAYFU 50 — 95 000, 45 — 130 000 …) — juft yoki dona, sinf aniq emas",
+   "TANDEM-400-NAM": "xuddi shu (400 mm, 'NAM' ma'nosi aniq emas)",
+   "KARGO-200": "ERP: KARGO 1411 SOFT 502 000 / STARAX 364 000 — 200 mm eni nomda yo'q",
+   "NAVES-REG": "ERP: навес 4 400–6 600 (turi: L-type, Daset, Lux) — aniq tur noma'lum",
+   "NAVES-OGIR": "ERP: og'ir navesi yo'q",
+   "NAVES-CAMAR": "ERP: camar navesi yo'q",
+   "LIFT-HF": "ERP: Hettich/Aventos HF yo'q; boshqa lift 25 000–528 750 (gaz/garderob) — mos emas",
+   "GILDIRAK-ROLIK": "ERP: roliklar 24 000–150 000, qaysi biri noma'lum",
+   "ZAMOK-MARKAZIY": "ERP: zamok 5 000–18 000 (врезной/потайной/mini) — markaziy turi noma'lum",
+   "KRYUCHOK-3TALIK": "ERP: kryuchok 62 400–88 800 (bitta), 3 talik yo'q",
+   "PETLYA-NAM": "'NAM' ma'nosi aniq emas",
+   "TIP-ON": "ERP: Tip-On/Blumotion topilmadi (faqat Push-to-open adapter 15 120 — boshqa mahsulot)"
+  }
  },
  "edge_materials": [
   {

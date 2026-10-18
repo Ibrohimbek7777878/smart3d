@@ -8,20 +8,22 @@
  *
  * Hujjat:
  *   xizmatlar: { <kod>: { nom, guruh: raspil|kromka|prisadka, qiymat, birlik, kategoriya, manba: 'sex jadvali'|'egasi', sana } }
- *   tanlov:    { raspil: <kod>|null, kromka: { _sukut|<kromka kodi>: <kod> }, prisadka: { <teshik turi>: <kod> } }
+ *   tanlov:    { raspil: <kod>|null, kromka: { _sukut|<kromka kodi>: <kod> }, prisadka: { <teshik turi>: <kod> }, bazis: { onlayn|oflayn: <kod> } }
  *   ish_haqi:  { yoqilgan, detal, modul } — har biri { qiymat, manba, sana }
  *   ustama:    { foiz: { qiymat (0–300), manba, sana } } */
 
 export const MANBALAR = ['egasi', 'sex jadvali', 'taxmin'];
 export const TASDIQ_MANBA = ['egasi', 'sex jadvali'];
-export const GURUHLAR = ['raspil', 'kromka', 'prisadka'];
+export const GURUHLAR = ['raspil', 'kromka', 'prisadka', 'bazis'];
+/** TZ-32 E3: Bazis loyiha xizmati — detal soniga qarab; usta narx panelida tanlaydi (onlayn / oflayn) */
+export const BAZIS_TURLARI = ['onlayn', 'oflayn'];
 /** aql chegarasi (so'm): list, metr, dona; ish haqi — detal, modul; ustama — % */
-export const AQL = { raspil: 1e6, kromka: 2e5, prisadka: 1e5, detal: 1e6, modul: 1e7, foiz: 300 };
+export const AQL = { raspil: 1e6, kromka: 2e5, prisadka: 1e5, bazis: 1e5, detal: 1e6, modul: 1e7, foiz: 300 };
 /** teshik turi (hisobdagi kalit: Bazis turi yoki fragment teshigi turi) — prisadka qatoriga bog'lanadi */
 export const TESHIK_TURLARI = ['konfirmat_yuza', 'konfirmat_qirra', 'petlya', 'polka', 'ruchka', 'shkant', 'eksentrik', 'belgi',
   'drill', 'dowel', 'hinge', 'cam', 'mark', 'cutout', 'd6_kosa', 'd6_eksentrik', 'd6_eks_qirra', 'd6_eks_bolt'];
 /** sex jadvalidagi kategoriya → guruh */
-const KATEGORIYA = { 'Услуги Распила': 'raspil', 'Услуга кромирование': 'kromka', 'Услуги сверления': 'prisadka', 'Услуги пазования': 'prisadka' };
+const KATEGORIYA = { 'Услуги Распила': 'raspil', 'Услуга кромирование': 'kromka', 'Услуги сверления': 'prisadka', 'Услуги пазования': 'prisadka', 'Bazis': 'bazis' };
 const KOD_RE = /^[\w.\-]{1,40}$/;
 const SANA_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -42,11 +44,18 @@ export function narxSukut(materials) {
   const q = (qiymat) => ({ qiymat, manba: 'taxmin', sana });
   const um = ustamaManbasi(materials);
   const uSana = um === 'egasi' ? ((/\d{4}-\d{2}-\d{2}/.exec(materials.pricing.price_src) || [])[0] || sana) : sana;   // "egasi, 2026-10-17" → sana
-  return {
-    versiya: 1, xizmatlar: {}, tanlov: { raspil: null, kromka: {}, prisadka: {} },
+  let doc = {
+    versiya: 1, xizmatlar: {}, tanlov: { raspil: null, kromka: {}, prisadka: {}, bazis: {} },
     ish_haqi: { yoqilgan: q(true), detal: q(lab.panel_per_piece || 0), modul: q(lab.per_fragment_min || 0) },
     ustama: { foiz: { qiymat: Math.round(mk * 1000) / 10, manba: um, sana: uSana } }
   };
+  /* TZ-32 E: ERP xizmatlar jadvalidagi sukut stavkalar va oldindan tanlangan qatorlar (materials.json sukut_narx) — har qiymat
+     manbali; buzuq yozuv hujjatni buzmaydi (o'sha qism tashlab ketiladi) */
+  const sn = materials && materials.sukut_narx;
+  if (sn && typeof sn === 'object') {
+    try { doc = narxQollash(doc, { xizmatlar: sn.xizmatlar || {}, tanlov: sn.tanlov || {} }).next; } catch (e) { if (!narxXatoMi(e)) throw e; }
+  }
+  return doc;
 }
 
 class NarxXato extends Error {}
@@ -107,13 +116,15 @@ export function narxQollash(cur, patch) {
   if (patch.tanlov != null) {
     const tn = obyekt(patch.tanlov, 'tanlov');
     if ('raspil' in tn) { const v = tekKod(tn.raspil, 'raspil', 'tanlov.raspil'); yoz('tanlov.raspil', next.tanlov.raspil, v); next.tanlov.raspil = v; }
-    for (const g of ['kromka', 'prisadka']) {
+    for (const g of ['kromka', 'prisadka', 'bazis']) {
       if (tn[g] == null) continue;
       const m = obyekt(tn[g], 'tanlov.' + g);
       if (Object.keys(m).length > 200) yoq(`tanlov.${g}: 200 tagacha`);
+      next.tanlov[g] = next.tanlov[g] || {};   // eski hujjatda bazis bo'lmasligi mumkin
       for (const [k, kod] of Object.entries(m)) {
         if (!KOD_RE.test(k)) yoq(`tanlov.${g}: kalit noto'g'ri`);
         if (g === 'prisadka' && !TESHIK_TURLARI.includes(k)) yoq(`tanlov.prisadka: noma'lum teshik turi ${k}`);
+        if (g === 'bazis' && !BAZIS_TURLARI.includes(k)) yoq(`tanlov.bazis: onlayn yoki oflayn (${k})`);
         const v = tekKod(kod, g, `tanlov.${g}.${k}`);
         yoz(`tanlov.${g}.${k}`, next.tanlov[g][k] || null, v);
         if (v) next.tanlov[g][k] = v; else delete next.tanlov[g][k];
@@ -122,7 +133,7 @@ export function narxQollash(cur, patch) {
   }
   /* xizmat o'chirilsa — unga bog'langan tanlov ham bo'shaydi */
   if (next.tanlov.raspil && !next.xizmatlar[next.tanlov.raspil]) { yoz('tanlov.raspil', next.tanlov.raspil, null); next.tanlov.raspil = null; }
-  for (const g of ['kromka', 'prisadka']) for (const [k, kod] of Object.entries(next.tanlov[g])) if (!next.xizmatlar[kod]) { yoz(`tanlov.${g}.${k}`, kod, null); delete next.tanlov[g][k]; }
+  for (const g of ['kromka', 'prisadka', 'bazis']) for (const [k, kod] of Object.entries(next.tanlov[g] || {})) if (!next.xizmatlar[kod]) { yoz(`tanlov.${g}.${k}`, kod, null); delete next.tanlov[g][k]; }
   const qiymatQ = (grp, k, v) => { const eski = next[grp][k]; const q = { qiymat: v, manba: 'egasi', sana: bugun() }; if (!eski || eski.qiymat !== v || eski.manba !== 'egasi') { next[grp][k] = q; yoz(grp + '.' + k, eski, q); } };
   if (patch.ish_haqi != null) {
     const ih = obyekt(patch.ish_haqi, 'ish_haqi');
@@ -165,7 +176,7 @@ export function xizmatJadvalOqish(rows) {
     const sana = typeof sv === 'number' && sv > 20000 && sv < 80000 ? new Date(Date.UTC(1899, 11, 30) + Math.round(sv) * 864e5).toISOString().slice(0, 10)
       : String(sv || '').trim().slice(0, 10);
     xizmatlar[kod] = { nom: String(r[ix.nom] || '').trim().replace(/[<>]/g, '').slice(0, 200), guruh, qiymat: Math.round(narx * 100) / 100,
-      birlik: { raspil: 'list', kromka: 'm', prisadka: 'dona' }[guruh], kategoriya: String(r[ix.kategoriya]).trim(),
+      birlik: { raspil: 'list', kromka: 'm', prisadka: 'dona', bazis: 'detal' }[guruh], kategoriya: String(r[ix.kategoriya]).trim(),
       manba: 'sex jadvali', sana: SANA_RE.test(sana) ? sana : bugun() };
   }
   return { xizmatlar, otkazildi, jami };
@@ -215,10 +226,12 @@ export function prisadkaXizmat(S, key, kind) {
   return null;
 }
 export const raspilXizmat = (S) => (S && S.tanlov ? xz(S, S.tanlov.raspil) : null);
+/** TZ-32 E3: Bazis loyiha xizmati (tur: 'onlayn' | 'oflayn') → narx qatori (detal boshiga) yoki null */
+export const bazisXizmat = (S, tur) => (S && S.tanlov && S.tanlov.bazis ? xz(S, S.tanlov.bazis[tur]) : null);
 
 /* ─────────── TZ-32 A1: sukut plita → ERP mahsuloti (materials.json sukut_erp) ─────────── */
 /**
- * materials.sukut_erp: { <panel kodi>: null | { sku, nom, uzs, manba, sana } } — egasi tanlagan ERP mahsuloti (2-savol).
+ * materials.sukut_erp: { <panel kodi>: null | { sku, nom, uzs, manba, sana, l?, w? } } — egasi tanlagan ERP mahsuloti (2-savol).
  * Bog'langan plitaning narxi va manbasi shu yerdan, "taxminiy" belgisi tushadi. null yoki to'liq bo'lmagan yozuv — o'zgarmaydi
  * (narx o'ylab topilmaydi). Hisob yuklanganda bir marta chaqiriladi (web/src/services/hisob.js createHisob, app.js boot).
  * @returns {number} bog'langan plitalar soni
@@ -236,6 +249,8 @@ export function sukutErpQollash(materials) {
     pm.price_src = String(v.manba || 'ERP').slice(0, 40) + ', ' + v.sana;
     if (v.sku) pm.sku = String(v.sku).slice(0, 60);
     if (v.nom) pm.sku_nom = String(v.nom).slice(0, 200);
+    /* varaq formati — narx shu mahsulotning formati uchun (masalan ERP 4,575 = 2500×1830); aks holda narx noto'g'ri varaqqa tushadi */
+    if (Number(v.l) > 100 && Number(v.w) > 100) pm.sheets = [[Number(v.l), Number(v.w)]];
     delete pm.taxminiy;
     n++;
   }

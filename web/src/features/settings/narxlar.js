@@ -14,7 +14,7 @@ import { xizmatJadvalOqish, xizmatFarq, TESHIK_TURLARI, AQL } from '../../../../
  * tanlaydi (raspil stanogi, kromka xizmati, teshik turi → prisadka). Sex jadvali BRAUZERDA o'qiladi — fayl serverga ham,
  * repoga ham tushmaydi; serverga faqat ko'rib chiqilgan qatorlar boradi. Pul harakati yo'q, ERP'ga yozilmaydi. */
 const setIn = (p) => set('settings', p);
-const GURUH_TARTIB = ['raspil', 'kromka', 'prisadka'];
+const GURUH_TARTIB = ['raspil', 'kromka', 'prisadka', 'bazis'];
 
 /** serverdagi stavkalar → hisob (yuklashda va saqlangach). Server yo'q bo'lsa — materials.json ("taxmin") qoladi. */
 export async function loadNarxlar() {

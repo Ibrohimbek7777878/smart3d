@@ -15,7 +15,7 @@ import { resolveSlots } from './slots.js';
 import { chizmaYech } from './chizish.js';
 import { joyQutilar, d6Teshiklar, petlyaSoni } from './d6.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
-import { kromkaXizmat, prisadkaXizmat, raspilXizmat, tasdiqMi, ustamaManbasi } from './narxStavka.js';
+import { kromkaXizmat, prisadkaXizmat, raspilXizmat, bazisXizmat, tasdiqMi, ustamaManbasi } from './narxStavka.js';
 import { D6, petlyaSoni as d6PetlyaSoni } from './d6.js';            // TZ-32 B6: SP modul petlyasi (3c)
 
 /** D6 teshiklari prisadka narxi — mavjud stavka bo'yicha (materials.json hole_kinds); qolganlari — 'drill' */
@@ -529,6 +529,11 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     const m = hwByCode[hw.code];
     return m && m.price > 0 ? m.price : 0;
   };
+  /* TZ-32 E7: ERP'da aniq narxi topilmagan furnitura (materials.furnitura_yashirin.kodlar) smeta va narx ro'yxatidan yashiriladi —
+     "narxsiz" qator bo'lib aniqlikni tushirmaydi. Narx/ID bog'lansa (hwUnitPrice > 0) yashirilmaydi. Yashirilganlar `yashirin` da qaytadi. */
+  const yashirinKod = new Set((materials.furnitura_yashirin && materials.furnitura_yashirin.kodlar) || []);
+  const yashirinMi = (hw) => yashirinKod.has(hw.code) && !(hwUnitPrice(hw) > 0);
+  const yashirinAgg = {};
   const hwName = (hw) => (furnById[hw.id || (opt.furnituraBoglash || {})[hw.code]] || {}).name || (hwByCode[hw.code] || {}).name || hw.name || hw.code;
   const hwPrice = (hw) => {
     const price = hwUnitPrice(hw);
@@ -579,6 +584,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       edgeAgg[key].meters += e.meters;
     }
     for (const hw of cl.hardware || []) {
+      if (yashirinMi(hw)) { const y = yashirinAgg[hw.code] = yashirinAgg[hw.code] || { code: hw.code, qty: 0 }; y.qty += hw.qty; continue; }
       hwAgg[hw.code] = hwAgg[hw.code] || { code: hw.code, qty: 0, id: hw.id, name: hw.name, unit: hw.unit };
       hwAgg[hw.code].qty += hw.qty;
     }
@@ -715,6 +721,17 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     });
   }
 
+  /* 4b) TZ-32 E3: Bazis loyiha xizmati — detal soniga qarab (onlayn / oflayn); faqat usta narx panelida tanlasa (S3: sukut o'chiq).
+     Qator narxi — stavkalardagi 'bazis' guruhi (ERP Bazis3 / Bazis6). Stavka bo'lmasa taklif summasi 0 va xizmat qo'shilmaydi. */
+  const bTur = opt.xizmatlar && (opt.xizmatlar.bazis === 'onlayn' || opt.xizmatlar.bazis === 'oflayn') ? opt.xizmatlar.bazis : null;
+  const bRate = { onlayn: bazisXizmat(S, 'onlayn'), oflayn: bazisXizmat(S, 'oflayn') };
+  const bazisPerPart = bTur && bRate[bTur] ? bRate[bTur].qiymat : 0;
+  const bazisCost = totalParts * bazisPerPart;
+  if (bazisCost > 0) {
+    lines.push({ group: 'Xizmatlar', code: 'bazis', name: `Bazis loyiha (${bTur === 'onlayn' ? 'onlayn' : 'oflayn'}) — ${totalParts} detal × ${bazisPerPart}`,
+      qty: totalParts, unit: 'detal', unit_price: bazisPerPart, amount: bazisCost, tasdiq: tasdiqMi(bRate[bTur].manba), manba: bRate[bTur].manba, xizmat: bRate[bTur].nom });
+  }
+
   /* 5) Sex ish haqi (arralash + yig'ish) — TZ-20 stavkasi (detal / modul boshiga, yoqilgan yoki o'chirilgan) → materials.labor (taxmin) */
   const ih = S && S.ish_haqi ? S.ish_haqi : null;
   const ihOn = !(ih && ih.yoqilgan && ih.yoqilgan.qiymat === false);
@@ -741,7 +758,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   }
 
   /* Jami */
-  const totalCost = sheetCost + raspilCost + edgeCost + hwCost + holeCost + laborCost;
+  const totalCost = sheetCost + raspilCost + edgeCost + hwCost + holeCost + bazisCost + laborCost;
   const clientTotal = Math.round(totalCost * (1 + markup));
 
   /* TZ-20: "Narx aniqligi X%" — mijoz narxining qancha qismi tasdiqlangan manbadan (ERP plita/furnitura, egasi yoki sex
@@ -769,8 +786,9 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     }
     if (raspilCost && areaTotal > 0) for (const p of cl.parts || []) cost += (p.length * p.width) / areaTotal * raspilCost;   // raspil — maydon ulushi bo'yicha
     for (const e of cl.edges || []) cost += e.meters * edgeRate(e.material).price;
-    for (const hw of cl.hardware || []) cost += hw.qty * hwUnitPrice(hw);
+    for (const hw of cl.hardware || []) if (!yashirinMi(hw)) cost += hw.qty * hwUnitPrice(hw);
     if (teshikOn) for (const hl of cl.holes || []) cost += (hl.qty || 1) * (hl.nusxa || 1) * holeRate(hl.tur || hl.kind, hl.kind).price;
+    cost += bazisPerPart * (cl.parts || []).length;
     if (totalParts) cost += laborCost * (cl.parts || []).length / totalParts;
     return { cost: Math.round(cost), client: Math.round(cost * (1 + markup)) };
   });
@@ -790,13 +808,17 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     clientTotal,
     perModule,
     missing,
+    yashirin: Object.values(yashirinAgg),   // TZ-32 E7: narxi topilmagani uchun yashirilgan furnitura (eslatish uchun)
     taxminiy,
-    xizmat_taklif: { teshik: { tanlangan: teshikOn, qty: totalHoles, amount: teshikOn ? holeCost : holeTaklif } },
+    xizmat_taklif: { teshik: { tanlangan: teshikOn, qty: totalHoles, amount: teshikOn ? holeCost : holeTaklif },
+      bazis: { tanlangan: bTur && bRate[bTur] ? bTur : null, qty: totalParts, narxBor: !!(bRate.onlayn && bRate.oflayn),
+        onlayn: bRate.onlayn ? totalParts * bRate.onlayn.qiymat : 0, oflayn: bRate.oflayn ? totalParts * bRate.oflayn.qiymat : 0, amount: bazisCost } },
     sheetCost,
     raspilCost,
     edgeCost,
     hwCost,
     holeCost,
+    bazisCost,
     laborCost,
     aniqlik,
     totalWorkshopCost: totalCost,
@@ -809,6 +831,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       edgeCost,
       hwCost,
       holeCost,
+      bazisCost,
       laborCost,
       markupAmount: clientTotal - totalCost,
       sheetsCount: totalSheetsCount,

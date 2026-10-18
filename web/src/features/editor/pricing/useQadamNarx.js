@@ -46,11 +46,20 @@ function flipPrisadka(on) {
   toast(on ? t('narx.prisadka_qoshildi') : t('narx.prisadka_olindi'));
 }
 
+/** TZ-32 E3: Bazis loyiha xizmati — usta tanlaydi (onlayn / oflayn, bittasi); sukut o'chiq (S3) */
+function flipBazis(tur, joriy) {
+  const yangi = joriy === tur ? null : tur;
+  project.doc.xizmatlar = Object.assign({}, project.doc.xizmatlar, { bazis: yangi });
+  project.scheduleRecalc(true);
+  toast(yangi ? t('narx.bazis_qoshildi') : t('narx.bazis_olindi'));
+}
+
 export function useQadamNarx() {
   const ed = useSlice('editor'), pj = useSlice('project'), auth = useSlice('auth');
   const R = project.res, pr = R ? R.priceRes : null, prod = R ? R.prod : null, B = prod ? prod.breakdown : {}, NS = R ? R.nest.summary : {};
   const missN = prod ? prod.missing.length : 0;
   const xzt = (prod && prod.xizmat_taklif && prod.xizmat_taklif.teshik) || { tanlangan: false, qty: 0, amount: 0 };
+  const xzb = (prod && prod.xizmat_taklif && prod.xizmat_taklif.bazis) || { tanlangan: null, qty: 0, narxBor: false };
   const taxminiy = (prod && prod.taxminiy) || [];
   const rs = raskroy(R, ed.rk);
   const det = {};
@@ -76,10 +85,14 @@ export function useQadamNarx() {
       [t('narx.kromka') + (taxminiy.includes('Kromka') ? t('narx.taxminiy') : ''), t('narx.metr', { n: dec(B.edgeMeters) }), prod.edgeCost],
       [t('narx.zapchast'), t('narx.dona_n', { n: B.hwCount || 0 }), prod.hwCost],
       [t('narx.teshiklar') + (xzt.tanlangan ? (taxminiy.includes('Prisadka') ? t('narx.taxminiy') : '') : t('narx.tanlanmagan')), t('narx.prisadka_q', { n: B.holeCount || 0 }), prod.holeCost],
+      ...(prod.bazisCost ? [[t('narx.bazis'), t('narx.bazis_q', { n: xzb.qty, s: raqam(prod.bazisCost / (xzb.qty || 1)) }), prod.bazisCost]] : []),   // TZ-32 E3
       [t('narx.ish_haqi'), t('narx.sex'), prod.laborCost]].map(r => ({ name: r[0], q: r[1], p: raqam(r[2] || 0) })) : [],
     xz: { on: !!xzt.tanlangan, sub: xzt.qty ? t('narx.teshik_sub', { n: xzt.qty, s: raqam(xzt.amount) }) : t('narx.teshik_yoq'),
       note: !xzt.tanlangan && xzt.qty ? t('narx.prisadka_eslatma') : '',
       flip: () => flipPrisadka(!xzt.tanlangan) },
+    /* TZ-32 E3: Bazis loyiha — ikki variant (stavka bo'lsa); narx panelidagi tanlov, hisobga doc.xizmatlar.bazis orqali */
+    bz: xzb.narxBor ? ['onlayn', 'oflayn'].map(tur => ({ key: tur, label: t('narx.bazis_' + tur), on: xzb.tanlangan === tur,
+      sub: t('narx.bazis_sub', { n: xzb.qty, s: raqam(xzb[tur]) }), flip: () => flipBazis(tur, xzb.tanlangan) })) : [],
     rk: { n: rs.rk + 1, rects: rs.rects, ar: rs.cur ? rs.cur.L + '/' + rs.cur.W : '2800/2070',
       summary: t('narx.raskroy_summary', { v: NS.total_sheets || 0, d: NS.panel_count || 0, i: Math.max(0, Math.round(100 - (NS.utilization_pct || 0))) }),
       dots: Array.from({ length: rs.n }, (_, i) => ({ w: i === rs.rk ? '22px' : '6px', c: i === rs.rk ? 'var(--acc)' : 'var(--sfc3)' })) },

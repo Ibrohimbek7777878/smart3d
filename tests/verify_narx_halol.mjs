@@ -22,6 +22,8 @@ const { createHisob, loadData } = await import('../web/src/services/hisob.js');
 
 const J = (p) => JSON.parse(readFileSync(fileURLToPath(new URL('../app/data/' + p, import.meta.url)), 'utf8'));
 const mats = J('materials.json');
+/* TZ-32 E: narxSukut endi ERP sukut stavkalarini ham beradi (materials.json sukut_narx); bu test BO'SH hujjat mexanikasini tekshiradi */
+const matsBosh = Object.assign({}, mats); delete matsBosh.sukut_narx;
 const sheets = J('sheet-catalog.json').sheets;
 const mc = J('fragments-mc.json').fragments;
 const SRC = readFileSync(fileURLToPath(new URL('../app/js/engine/cutlist.js', import.meta.url)), 'utf8');
@@ -50,9 +52,17 @@ ok('hisob: LDSP16/MDF16 plita qatori — "taxmin", LDSP18 — "ERP" (tasdiqlanga
   JSON.stringify([pl(p0, 'MDF16').manba, pl(p0, 'LDSP18').manba]));
 ok('hisob: taxmin plita aniqlik ro\'yxatida', p0.aniqlik.taxmin.some(t => t.code === 'MDF16' && /^Plita/.test(t.group)));
 /* sukut_erp — bog'lash imkoni (egasi javobigacha bo'sh) */
-ok('sukut_erp: LDSP18, LDSP16, MDF16, HDF3 — hozir bog\'lanmagan (null)', mats.sukut_erp && ['LDSP18', 'LDSP16', 'MDF16', 'HDF3'].every(k => k in mats.sukut_erp && mats.sukut_erp[k] === null));
+/* TZ-32 E4 (egasi roziligi 2026-10-18): korpus plitasi LDSP16 = ERP "Ультрадекор Белый гладкий 16мм"; qolganlari hali bog'lanmagan (null) */
+const sl = mats.sukut_erp && mats.sukut_erp.LDSP16;
+ok('sukut_erp: LDSP18, HDF3 — bog\'lanmagan (null); LDSP16 va MDF16 — ERP mahsuloti (sku, nom, narx, sana, format)', mats.sukut_erp && ['LDSP18', 'HDF3'].every(k => k in mats.sukut_erp && mats.sukut_erp[k] === null)
+  && mats.sukut_erp.MDF16 && mats.sukut_erp.MDF16.uzs === 580515 && mats.sukut_erp.MDF16.erp_id === 11578
+  && sl && sl.sku === '0110 SM' && sl.uzs === 341761 && /Ультрадекор.*Белый.*гладкий/.test(sl.nom) && sl.manba === 'ERP' && /^\d{4}-\d{2}-\d{2}$/.test(sl.sana) && sl.l === 2750 && sl.w === 1830);
+const m0 = JSON.parse(JSON.stringify(mats));
+ok('sukutErpQollash: LDSP16 bog\'lanadi — narx, sku, manba, varaq formati; "taxminiy" tushadi', sukutErpQollash(m0) === 2 && pm(m0, 'LDSP16').sheet_price === 341761 && !pm(m0, 'LDSP16').taxminiy
+  && pm(m0, 'LDSP16').sku === '0110 SM' && /^ERP, 2026-/.test(pm(m0, 'LDSP16').price_src) && JSON.stringify(pm(m0, 'LDSP16').sheets) === '[[2750,1830]]' && pm(m0, 'MDF16').sheet_price === 580515 && !pm(m0, 'MDF16').taxminiy);
 const m1 = JSON.parse(JSON.stringify(mats));
-ok('sukutErpQollash: null — hech narsa o\'zgarmaydi', sukutErpQollash(m1) === 0 && JSON.stringify(m1) === JSON.stringify(mats));
+m1.sukut_erp.LDSP16 = null; m1.sukut_erp.MDF16 = null;
+ok('sukutErpQollash: null — hech narsa o\'zgarmaydi', sukutErpQollash(m1) === 0 && JSON.stringify(m1) === JSON.stringify(Object.assign(JSON.parse(JSON.stringify(mats)), { sukut_erp: m1.sukut_erp })));
 m1.sukut_erp.MDF16 = { sku: 'T-1', nom: 'test', uzs: 0, manba: 'ERP', sana: '2026-10-18' };
 m1.sukut_erp.LDSP16 = { sku: 'T-2', nom: 'test', uzs: 300000, manba: 'ERP' };
 ok('sukutErpQollash: narxi 0 yoki sanasiz yozuv — bog\'lanmaydi (o\'ylab topilmaydi)', sukutErpQollash(m1) === 0 && pm(m1, 'MDF16').taxminiy && pm(m1, 'LDSP16').taxminiy);
@@ -66,14 +76,14 @@ const H = createHisob(await loadData((nom) => Promise.resolve(J(nom))));
 const erpSh = sheets.find(s => s.type === 'LDSP' && +s.th === 16 && s.uzs > 0);
 const eff = H.effectiveMaterials(erpSh);
 ok('effectiveMaterials: narxli ERP plitasi tanlansa — LDSP16 narxi ERP\'dan, "taxminiy" emas; asl materials.json o\'zgarmaydi',
-  pm(eff, 'LDSP16').sheet_price === erpSh.uzs && !pm(eff, 'LDSP16').taxminiy && pm(H.materials, 'LDSP16').taxminiy);
+  pm(eff, 'LDSP16').sheet_price === erpSh.uzs && !pm(eff, 'LDSP16').taxminiy && pm(H.materials, 'LDSP16').sheet_price === 341761);   // asl (sukut ERP) o'zgarmaydi
 const mb = JSON.parse(JSON.stringify(mats));
 materiallarniQosh(mb, { panel: [{ code: 'BZ-T1', name: 'Bazis test', thickness: 16, asos: 'LDSP18' }] });
 ok('Bazis sintetik materiali (boshqa plitaning narxi) — "taxminiy"', pm(mb, 'BZ-T1').taxminiy === true && pm(mb, 'BZ-T1').sheet_price === pm(mats, 'LDSP18').sheet_price);
 
 console.log('\n[A2] Teshik kalitlari → prisadka qatori');
 const X = (nom, q) => ({ nom, guruh: 'prisadka', qiymat: q, birlik: 'dona', manba: 'sex jadvali', sana: '2026-05-12' });   // TEST stavkalari
-const S = narxQollash(narxSukut(mats), {
+const S = narxQollash(narxSukut(matsBosh), {
   xizmatlar: { E1: X('Evro (test)', 1600), E2: X('Evro qirra (test)', 1200), P1: X('Polka (test)', 800), R1: X('Ruchka (test)', 801), B1: X('Metka (test)', 300) },
   tanlov: { prisadka: { konfirmat_yuza: 'E1', konfirmat_qirra: 'E2', polka: 'P1', ruchka: 'R1', belgi: 'B1' } }
 }).next;
@@ -86,7 +96,7 @@ const pT = productionCost([clK], mats, { stavka: S, xizmatlar: { teshik: true } 
 const hl = (k) => pT.lines.find(l => l.code === 'hole:' + k) || {};
 ok('MC modul hisobida: evrovint, evrovint_torets, d6_polka — sex jadvali narxi, tasdiqlangan', ['evrovint', 'evrovint_torets', 'd6_polka'].every(k => hl(k).tasdiq && hl(k).unit_price === kut[k]),
   JSON.stringify(['evrovint', 'evrovint_torets', 'd6_polka'].map(k => [hl(k).unit_price, hl(k).manba])));
-const pS0 = productionCost([clK], mats, { stavka: narxSukut(mats), xizmatlar: { teshik: true } });
+const pS0 = productionCost([clK], mats, { stavka: narxSukut(matsBosh), xizmatlar: { teshik: true } });
 ok('tanlov bo\'lmasa — avvalgidek (materials.json, taxmin)', ['evrovint', 'd6_polka'].every(k => { const l = pS0.lines.find(x => x.code === 'hole:' + k); return l && !l.tasdiq && l.unit_price === 300; }));
 
 console.log('\n[A3] Soni 0 bo\'lgan furnitura');
@@ -122,7 +132,7 @@ ok('MC-KU-04: petlya qatori narxda (ERP bog\'lanishi — tasdiqlangan)', petL.qt
 console.log('\n[A6] Ish haqi qatori nomi');
 const R = (q) => ({ nom: 'Raspil (test)', guruh: 'raspil', qiymat: q, birlik: 'list', manba: 'sex jadvali', sana: '2026-07-03' });
 const K = { nom: 'Kromka (test)', guruh: 'kromka', qiymat: 3000, birlik: 'm', manba: 'sex jadvali', sana: '2026-07-03' };
-const s0 = narxSukut(mats);
+const s0 = narxSukut(matsBosh);
 const sR = narxQollash(s0, { xizmatlar: { R1: R(18000), K1: K }, tanlov: { raspil: 'R1' } }).next;
 const sK = narxQollash(s0, { xizmatlar: { R1: R(18000), K1: K }, tanlov: { kromka: { _sukut: 'K1' } } }).next;
 const sRK = narxQollash(sR, { tanlov: { kromka: { _sukut: 'K1' } } }).next;

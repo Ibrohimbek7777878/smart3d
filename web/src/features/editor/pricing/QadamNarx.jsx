@@ -127,6 +127,7 @@ export default function QadamNarx() {
           {t('narx.xizmatlar_usta_tanlaydi')}
         </span>
         <Toggle label={t('narx.teshik_burgilash_prisadka')} sub={v.xz.sub} on={v.xz.on} onFlip={v.xz.flip} />
+        {(v.bz || []).map((b) => (<Toggle key={b.key} label={b.label} sub={b.sub} on={b.on} onFlip={b.flip} />))}
         {v.xz?.note ? (<>
           <span style={{"fontSize":"13px","color":"var(--danger)","fontWeight":"600","paddingTop":"6px","display":"flex","alignItems":"center","gap":"6px"}}><Ikon n="ogohlantirish" size={15} gap={0} />{v.xz?.note}</span>
         </>) : null}
