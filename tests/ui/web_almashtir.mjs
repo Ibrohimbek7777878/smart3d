@@ -126,10 +126,13 @@ async function asosiy(page, R) {
 
   /* 4) telefon 390 */
   await page.setViewportSize({ width: 390, height: 844 }); await page.waitForTimeout(900);
+  await page.locator('[data-panel-yop]').first().click().catch(() => {}); await page.waitForTimeout(500);   // telefonda katalog varag'i 3D ni yopadi
   await M(() => window.__app.sahna.center()); await page.waitForTimeout(500);
   const m2 = await modullar();
-  let t2 = null;
-  for (const p of m2.filter(p => p.z < 300)) {
+  await page.screenshot({ path: `${OUT}/almashtir-5a-390.png` });
+  R.tel0 = { sel: await M(() => window.__app.state.sel), nuqtalar: await M(() => window.__app.sahna.items.meshes.filter(m => !m.userData.auto).length), nuqta: await nuqta(null) };
+  let t2 = m2.find(p => p.id === R.tel0.sel) || null;   // Ctrl+Y dan keyin modul tanlangan holda qoladi (karta ochiq)
+  for (const p of t2 ? [] : m2.filter(p => p.z < 300)) {
     const b = await nuqta(p.id);
     if (!b) continue;
     await page.mouse.click(b.x, b.y); await page.waitForTimeout(500);
