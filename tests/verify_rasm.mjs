@@ -21,7 +21,7 @@ ok('furnitura id — katalogda bor', Object.keys(R.furnitura).every(id => idlar.
 ok("yo'llar data/rasm/… va fayl mavjud", hammasi.every(([, y]) => /^data\/rasm\/(furnitura|material)\/[\w.-]+\.webp$/.test(y) && existsSync(DATA + y.replace(/^data\//, ''))));
 ok('yo\'l nomi — id bilan mos (furnitura)', Object.entries(R.furnitura).every(([id, y]) => y.endsWith('/' + id + '.webp')));
 const kb = hammasi.reduce((a, [, y]) => a + statSync(DATA + y.replace(/^data\//, '')).size, 0) / 1024;
-ok('jami hajm ≤ 600 KB (' + Math.round(kb) + ')', kb <= 600);
+ok('jami hajm ≤ 3 MB (' + Math.round(kb) + ')', kb <= 3072);
 ok('rasm papkasida ortiqcha fayl yo\'q', readdirSync(DATA + 'rasm/furnitura').length === Object.keys(R.furnitura).length);
 ok('kamida 20 ta furnituraga rasm', Object.keys(R.furnitura).length >= 20);
 
@@ -39,6 +39,18 @@ const H2 = Object.assign({}, H, { rasmlar: { materiallar: { [kod]: { src: 'data/
 const r1 = E.materialRang(H2, kod);
 ok('rasm bor — rang obyektida rasm + rasmMm', r1 && r1.rasm === 'data/rasm/material/soxta.webp' && r1.rasmMm[0] === 1000 && typeof r1.rang === 'number');
 ok("materialRasm — yo'q material → null", E.materialRasm(H, 'ERP-yoq', 'x') === null);
+
+/* material swatchlari: kalitlar Asosiy 100 da, fayllar kichik, har biri alohida fayl */
+const asosiy = JSON.parse(readFileSync(DATA + 'dekor-asosiy.json', 'utf8')).items, kalitlar = new Set(asosiy.map(x => x.kalit));
+const mk = Object.keys(R.materiallar);
+ok('material kalitlari "dekor|<kalit>" va dekor-asosiy.json da bor', mk.length > 0 && mk.every(k => k.startsWith('dekor|') && kalitlar.has(k.slice(6))));
+ok('kamida 80 ta dekorga swatch (' + mk.length + ')', mk.length >= 80);
+ok('har swatch ≤ 30 KB', Object.values(R.materiallar).every(v => statSync(DATA + (typeof v === 'string' ? v : v.src).replace(/^data\//, '')).size <= 30 * 1024));
+ok('material papkasida ortiqcha fayl yo\'q', readdirSync(DATA + 'rasm/material').length === new Set(Object.values(R.materiallar).map(v => typeof v === 'string' ? v : v.src)).size);
+ok('_meta.material_manba bor', Array.isArray(R._meta.material_manba) && R._meta.material_manba.length > 0);
+const d0 = asosiy.find(x => R.materiallar['dekor|' + x.kalit]);
+const rr = E.materialRasm(H, null, d0.dekor);
+ok('materialRasm(dekor nomi) → rasm yo\'li', rr && rr.src === R.materiallar['dekor|' + d0.kalit], JSON.stringify(rr));
 
 const THREE = await import('../web/node_modules/three/build/three.module.js');
 const { uvMm } = await import('../app/js/materials3d.js');
