@@ -1,0 +1,40 @@
+/* Landing — global qoidalar (prototipdagi <helmet> dan) */
+html,body{margin:0;background:#0F2229}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+[data-s3d]{--bg:#0F2229;--bg2:#12282F;--sfc:#173239;--sfc2:#204049;--txt:#ECF4F2;--mut:#9DB8B5;--line:rgba(236,244,242,.12);--acc:#FF7A45;--acct:#FF956B;--ink:#2A1206;--cyan:#5FE1C4;--lav:#B9A6FF;--pch:#FFB59A;--shadow:none}
+[data-s3d] a{color:var(--acct);text-decoration:none}
+[data-s3d] a:hover{color:var(--txt)}
+[data-s3d] button{font-family:inherit}
+[data-s3d] :focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+[data-rv]{transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1);transform-origin:50% 100%}
+[data-rv="0"]{opacity:0;transform:perspective(1200px) rotateX(14deg) translateY(40px)}
+input[type=range]{accent-color:#FF7A45;width:100%;height:44px;margin:0;cursor:pointer}
+@media (max-width:1080px){[data-desk]{display:none !important}}
+@media (min-width:1081px){[data-mob]{display:none !important}}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}[data-rv="0"]{opacity:1;transform:none}}
+
+/* hover holatlari (prototipdagi style-hover) */
+.h0:hover{color:var(--txt) !important;background:var(--sfc) !important}
+.h1:hover{color:var(--txt) !important;background:var(--sfc) !important}
+.h2:hover{color:var(--txt) !important;background:var(--sfc) !important}
+.h3:hover{color:var(--txt) !important;background:var(--sfc) !important}
+.h4:hover{color:var(--txt) !important;background:var(--sfc) !important}
+.h5:hover{border-color:var(--mut) !important;color:var(--txt) !important}
+.h6:hover{color:var(--ink) !important;background:var(--acct) !important}
+.h7:hover{transform:translateY(-2px) !important;box-shadow:0 14px 36px rgba(255,122,69,.35) !important;color:var(--ink) !important}
+.h8:hover{border-color:var(--cyan) !important}
+.h9:hover{transform:perspective(1000px) rotateX(5deg) rotateY(-6deg) translateY(-6px) !important;border-color:var(--acc) !important}
+.h10:hover{transform:perspective(1000px) rotateX(5deg) rotateY(-6deg) translateY(-6px) !important;border-color:var(--acc) !important}
+.h11:hover{transform:perspective(1000px) rotateX(5deg) rotateY(-6deg) translateY(-6px) !important;border-color:var(--acc) !important}
+.h12:hover{border-color:var(--acc) !important}
+.h13:hover{transform:translateY(-2px) !important;color:var(--ink) !important}
+.h14:hover{transform:perspective(1000px) rotateX(5deg) rotateY(-6deg) translateY(-6px) !important;border-color:var(--acc) !important}
+.h15:hover{transform:perspective(1000px) rotateX(5deg) rotateY(-6deg) translateY(-6px) !important;border-color:var(--acc) !important}
+.h16:hover{transform:perspective(1000px) rotateX(5deg) rotateY(-6deg) translateY(-6px) !important;border-color:var(--acc) !important}
+.h17:hover{transform:perspective(1000px) rotateX(5deg) rotateY(-6deg) translateY(-6px) !important;border-color:var(--acc) !important}
+.h18:hover{transform:perspective(1000px) rotateX(5deg) rotateY(-6deg) translateY(-6px) !important;border-color:var(--acc) !important}
+.h19:hover{transform:perspective(1000px) rotateX(5deg) rotateY(-6deg) translateY(-6px) !important;border-color:var(--acc) !important}
+.h20:hover{transform:perspective(1000px) rotateX(5deg) rotateY(-6deg) translateY(-6px) !important;border-color:var(--acc) !important}
+.h21:hover{transform:perspective(1000px) rotateX(5deg) rotateY(-6deg) translateY(-6px) !important;border-color:var(--acc) !important}
+.h22:hover{transform:translateY(-2px) !important;color:var(--txt) !important}

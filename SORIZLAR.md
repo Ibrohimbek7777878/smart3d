@@ -671,3 +671,7 @@ bu prompt lekin natija oddiy 2ta shkaf qilb berdi nega bundya bold kosntruskiay 
 248. qara hozir prompt yozsak bizdag bor 130ta moduldan olib chizb berad shundaymi shuni narsa hozir qoshib tayor ishlaydigan qilb ber
 
 249. (skrinshot: lokal saytda L shakldagi to'liq oshxona 3D) prompt yozgan konstruksiya uchun huddi shunday qilb umumiy chizb berish kere  ha tasdiqlayman boshla
+
+250. loyhan qaysi qismlar atayyor boyag xatolik togirlandimi konstruksiyan toliq yopildim bizda bor 130ta modul asosida chizb berish kere
+
+251. ha udna 50xil promtpt ayorlab qoy shu assodia qilinsin
