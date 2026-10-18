@@ -89,9 +89,15 @@ async function asosiy(page, R) {
   await M(() => { localStorage.removeItem('smart3d.token'); localStorage.removeItem('smart3d.user'); });
   await yangiSahifa('login'); await page.waitForTimeout(1500);
   R.googleYoq = (await page.locator('[data-google]').count()) === 0;
-  R.smsYoq = (await page.locator('[data-kirish-usul]').count()) === 0;   // #209: SMS tugmasi yashirin
+  R.smsYoq = (await page.locator('[data-kirish-usul]').count()) === 0;
+  /* #229: Google sozlangan (soxta client id) — konteyner saytning maydonlari bilan bir xil o'lchamda */
+  await page.route('**/api/auth/usullar', r => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ sms: false, google: true, googleClientId: '123456-fake.apps.googleusercontent.com' }) }));
+  await yangiSahifa('login'); await page.waitForTimeout(2500);
+  R.gKonteyner = await M(() => { const e = document.querySelector('[data-google-tugma]'); if (!e) return null; const c = getComputedStyle(e), r = e.getBoundingClientRect(); return { h: Math.round(r.height), rad: c.borderTopLeftRadius, over: c.overflow, fit: r.right <= innerWidth }; });
+  R.googleKonteynerOk = !!R.gKonteyner && R.gKonteyner.h === 52 && R.gKonteyner.rad === '14px' && R.gKonteyner.over === 'hidden' && R.gKonteyner.fit;
+  await page.unroute('**/api/auth/usullar');   // #209: SMS tugmasi yashirin
 
   R.errs = errs;
   R.ok = R.boshForma.every(Boolean) && R.onboarding && R.serverTogri && R.kalitJSdaYoq && R.chiqdi === 401 && R.qaytaOchildi && R.emailEsda === 'usta.web@test.uz' &&
-    R.notogriParol && R.kirdi && R.takrorEmail && R.telefonYoq && R.smsYoq && R.googleYoq && errs.length === 0;
+    R.notogriParol && R.kirdi && R.takrorEmail && R.telefonYoq && R.smsYoq && R.googleYoq && R.googleKonteynerOk && errs.length === 0;
 }

@@ -164,8 +164,14 @@ export async function googleTugma(el, clientId) {
     await gisYukla();
     const gid = window.google.accounts.id;
     if (gisId !== clientId) { gid.initialize({ client_id: clientId, callback: (r) => googleKirish(r && r.credential), ux_mode: 'popup' }); gisId = clientId; }
-    el.textContent = '';
-    gid.renderButton(el, { type: 'standard', theme: 'filled_black', size: 'large', shape: 'pill', text: 'continue_with', logo_alignment: 'left', width: Math.min(360, el.clientWidth || 360), locale: til() });
+    const chiz = () => {
+      const w = Math.max(200, Math.min(400, Math.floor((el.clientWidth || 400) - 2)));
+      if (el._gW === w && el._gT === til()) return;
+      el._gW = w; el._gT = til(); el.textContent = '';
+      gid.renderButton(el, { type: 'standard', theme: 'filled_black', size: 'large', shape: 'rectangular', text: 'continue_with', logo_alignment: 'left', width: w, locale: til() === 'uz' ? 'uz' : 'en' });
+    };
+    chiz();
+    if (!el._gRO && typeof ResizeObserver !== 'undefined') { el._gRO = new ResizeObserver(() => chiz()); el._gRO.observe(el); }
   } catch (_) { xato('S3D-NET-101', { modul: 'auth/google' }); }
 }
 

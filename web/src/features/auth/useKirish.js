@@ -4,7 +4,7 @@ import { telGuruh } from '../../shared/lib/format.js';
 import { useViewer } from '../../shared/design3d/useViewer.js';
 import { s3Viewer, s3Mats, s3Build, s3Apply, s3Spec } from '../../shared/design3d/engine.js';
 import { setField, submitAuth, swapAuth, loadUsullar, usulAlmash, smsYubor, smsKirish, googleTugma } from './actions.js';
-import { t } from '../../i18n/index.js';
+import { t, til } from '../../i18n/index.js';
 
 /* ro'yxat oynasidagi aylanuvchi shkaf — dizayn animatsiyasi (marketing namunasi, o'zgarishsiz) */
 function regViewer(T, h, o) {
@@ -35,7 +35,7 @@ export function useKirish() {
   useEffect(() => { if (!qoldi) return undefined; const id = setTimeout(() => setHozir(Date.now()), 1000); return () => clearTimeout(id); }, [qoldi, hozir]);
   const smsUsul = SMS_KORINADI && !reg && auth.smsBor && f.usul === 'sms';
   const gId = auth.googleId, googleBor = !!gId && !smsUsul;
-  const gRef = useCallback(el => { if (el && gId) googleTugma(el, gId); }, [gId, reg]);
+  const gRef = useCallback(el => { if (el && gId) googleTugma(el, gId); }, [gId, reg, til()]);
   return {
     googleBor, gRef, googleNomi: t('kirish.google_davom'), yoki: t('kirish.yoki'),
     smsBor: SMS_KORINADI && !reg && auth.smsBor, smsUsul, yuborildi: smsUsul && f.yuborildi,

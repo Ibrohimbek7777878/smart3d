@@ -41,3 +41,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
   border:2px solid var(--acc,#FF7A45);color:var(--acc,#FF7A45);font-size:20px;line-height:1;font-weight:800;
   box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:auto;touch-action:none;cursor:grab;user-select:none}
 .rot-handle.is-active{cursor:grabbing;background:var(--acc,#FF7A45);color:var(--ink,#2A1206)}
+
+/* #229: Google tugmasi konteyneri — saytga mos hover/focus */
+.g-tugma:hover,.g-tugma:focus-within{border-color:var(--acc) !important}
+.g-tugma iframe{margin:0 auto}
