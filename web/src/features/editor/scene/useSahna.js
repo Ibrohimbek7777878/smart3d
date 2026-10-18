@@ -87,7 +87,18 @@ export function useModulKarta() {
     key: ev => { if (ev.key === 'Enter') ev.target.blur(); }
   });
   const canIns = ichiniKorsaBoladi(smF);
+  const xH = +(project.doc.room && project.doc.room.wall_height) || 2700, rotNow = ((+sm.rot || 0) % 360 + 360) % 360, zNow = +sm.z || 0;
+  const tomonlar = [['old', 0], ['orqa', 180], ['chap', 90], ['ong', 270]].map(([k, r]) => ({ k, label: t('sahna.tomon_' + k), on: rotNow === r, go: () => A.tomon(k) }));
+  const zTez = [['pol', 0], ['ustki', 1450], ['oyna', 900], ['shift', Math.max(0, xH - sm.h)]].map(([k, z]) => ({ k, label: t('sahna.z_' + k), z, on: zNow === z, go: () => A.setZ(z) }));
   return {
+    plc: {
+      tomonlar, zTez, rotVal: ed.raw.rot ?? rotNow, zVal: ed.raw.z ?? zNow, zMax: Math.max(0, xH - sm.h),
+      rotInput: ev => { const val = ev.target.value; set('editor', s => ({ raw: { ...s.raw, rot: val } })); },
+      rotCommit: () => { if (ed.raw.rot !== undefined && ed.raw.rot !== '') A.setRot(ed.raw.rot); else set('editor', s => ({ raw: { ...s.raw, rot: undefined } })); },
+      zInput: ev => { const val = ev.target.value; set('editor', s => ({ raw: { ...s.raw, z: val } })); },
+      zCommit: () => { if (ed.raw.z !== undefined && ed.raw.z !== '') A.setZ(ed.raw.z); else set('editor', s => ({ raw: { ...s.raw, z: undefined } })); },
+      key: ev => { if (ev.key === 'Enter') ev.target.blur(); }
+    },
     show: true, deselect: () => select(null),
     sm: { openLabel: (smOpen ? t('umumiy.yopish') : t('sahna.ochish')) + (smF.category === 'drawer_base' ? t('sahna.tortmalar') : t('sahna.eshiklar')), canIns, noIns: !canIns,
       name: L.joyNomi(project.H, sm, smF), code: sm.frg, warn: ed.warn[sm.id] || '', hasWarn: !!ed.warn[sm.id],

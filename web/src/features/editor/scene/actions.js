@@ -55,6 +55,11 @@ export function setDim(key, val) {
 }
 export function moveBy(mm) { const p = selected(); if (p) { L.moveAlong(p, mm); L.devordan(project.doc, p); project.changed('items'); } }   // #152: devorga kirmaydi
 export function rotate() { const p = selected(); if (p) { L.rotate90(p); L.devordan(project.doc, p); project.changed('items'); } }
+/** egasi #236: qaraydigan tomon (old/orqa/chap/ong) va erkin burchak (0–359°) */
+export function setRot(deg) { const p = selected(); if (p) { L.setRot(p, deg); L.devordan(project.doc, p); set('editor', s => ({ raw: { ...s.raw, rot: undefined } })); project.changed('items'); } }
+export function tomon(k) { if (k in L.TOMON_ROT) setRot(L.TOMON_ROT[k]); }
+/** balandlik (p.z, mm) — xona balandligidan chiqmaydi */
+export function setZ(z) { const p = selected(); if (p) { L.setZ(p, z, project.doc.room && project.doc.room.wall_height); set('editor', s => ({ raw: { ...s.raw, z: undefined } })); project.changed('items'); } }
 export function duplicate() {
   const p = selected(); if (!p) return;
   const c = L.duplicatePlacement(project.doc, p.id);

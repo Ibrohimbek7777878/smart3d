@@ -7,6 +7,7 @@
  *    - Fasad va korpus slotlari mustaqil ranglarda ko'rinadi.
  */
 import { getModulePanels } from './engine/assembler.js';
+import { derazaYasa, DERAZA_KATEGORIYA } from './engine/deraza3d.js';
 
 /** Kategoriya → rang (yumshoq, ko'z uchun qulay). */
 export const CATEGORY_COLOR = {
@@ -201,6 +202,13 @@ function themedMesh(THREE, frag, w, d, h, asm, theme, group, rang) {
   const hitMesh = new THREE.Mesh(hitGeo, new THREE.MeshBasicMaterial({ visible: false }));
   hitMesh.userData = { kind: 'hitBox' };
   group.add(hitMesh);
+  if (frag && DERAZA_KATEGORIYA.test(frag.category)) {      // egasi #236: real oyna/eshik (faqat ko'rinish; hisob parts'dan)
+    const oyna = frag.category === 'window';
+    const ramka = R.korpus ? dekor(R.korpus) : (R.fasad && !oyna ? dekor(R.fasad) : theme.mat(oyna ? 'white' : 'wood'));
+    derazaYasa(THREE, group, frag.category, w, d, h, { ramka, qanot: R.fasad ? dekor(R.fasad) : (oyna ? null : ramka), handle: mats.handle }, frag.name);
+    group.userData = { kind: 'item', code, name: frag.name, category: frag.category, w, d, h, panelsCount: asm.panels.length, doorsCount: 0, movers: [], themed: true, deraza: true };
+    return group;
+  }
   const movers = [], drawers = {};
   for (const p of asm.panels) {
     const mat = (p.code === 'bazis' && bazisMat(p)) || (p.slot === 'fasad' ? mats.fasad : p.slot === 'orqa' ? mats.orqa : p.slot === 'polka' ? mats.polka : p.slot === 'stoleshnitsa' ? mats.stol : mats.korpus);
