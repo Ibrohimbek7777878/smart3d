@@ -13,6 +13,18 @@ import { boshiXda } from '../mebel3d.js';
 export const KATEGORIYALAR = ['oshxona', 'garderob', 'yotoqxona', 'bolalar', 'mehmonxona', 'ofis', 'dahliz', 'hammom'];
 const QADAM = 10;
 
+/** TZ-37: kutubxona serverdan (/api/promptlar: fayl + admin bazasi) — api(yol) → Promise<json>. Server yo'q, xato yoki shakl noto'g'ri bo'lsa —
+ *  jim statik ro'yxat (statik — app/data/promptlar.json). Yaroqsiz yozuvlar (noma'lum kategoriya, maydonsiz parametrli, matnsiz) tashlanadi. */
+export async function promptlarYukla(statik, api) {
+  try {
+    const list = (await api('/api/promptlar') || {}).promptlar;
+    if (!Array.isArray(list)) return statik;
+    const yaxshi = list.filter(p => p && typeof p.id === 'string' && KATEGORIYALAR.includes(p.kat) && p.nom && typeof p.nom.uz === 'string'
+      && (p.usul ? Array.isArray(p.maydon) : !!(p.matn && typeof p.matn.uz === 'string' && p.matn.uz)));
+    return yaxshi.length ? yaxshi : statik;
+  } catch (e) { return statik; }
+}
+
 /** kiritilgan raqamlar → maydon chegaralari ichida (bo'sh yoki xato — standart qiymat) */
 export function qiymatlar(prompt, kirish = {}) {
   const out = {};

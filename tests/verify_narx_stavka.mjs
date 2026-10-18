@@ -75,7 +75,9 @@ ok('raspil stavkasi 18 000 → 25 000: narx oshdi', hisob(S2).clientTotal > pR.c
 S = qolla(S, { tanlov: { kromka: { _sukut: 'K1' } } });
 const pK = hisob(S);
 const em = pK.breakdown.edgeMeters;
-ok(`kromka: ${em} m × 4000 = ${pK.edgeCost}`, pK.edgeCost === Object.values(pK._edgeAgg).reduce((t, a) => t + Math.round(a.meters * 4000), 0) && Math.abs(pK.edgeCost - em * 4000) < 4000, String(pK.edgeCost));
+/* TZ-36 K2: narx metriga kromka chiqiti (materials.kromka_chiqit.foiz = 8) qo'shiladi: m × 1,08 × 4000 */
+const CHQ = 1 + mats.kromka_chiqit.foiz / 100;
+ok(`kromka: ${em} m × ${CHQ} (chiqit) × 4000 = ${pK.edgeCost}`, pK.edgeCost === Object.values(pK._edgeAgg).reduce((t, a) => t + Math.round(a.meters * CHQ * 4000), 0) && Math.abs(pK.edgeCost - em * CHQ * 4000) < 4000, String(pK.edgeCost));
 ok('kromka qatori tasdiqlangan, "taxminiy" emas', pK.lines.filter(l => l.group === 'Kromka').every(l => l.tasdiq && !l.taxminiy) && !pK.taxminiy.includes('Kromka'));
 /* prisadka — Bazis turi bo'yicha (konfirmat, polka, ruchka — hammasi 'drill' turi) */
 const bz = { parts: [{ length: 500, width: 300, material: 'LDSP16', qty: 1 }], edges: [], hardware: [],

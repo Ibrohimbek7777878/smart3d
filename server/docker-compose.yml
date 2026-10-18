@@ -1,3 +1,4 @@
+# ISHLATILMAYDI (TZ-07): ishlaydigan server — index.js (SQLite), Docker: server/Dockerfile. Bu PostgreSQL/Redis varianti ishga tushmaydi.
 # Smart3D Production Docker Compose
 version: '3.8'
 
@@ -9,7 +10,7 @@ services:
     environment:
       POSTGRES_DB: smart3d
       POSTGRES_USER: smart3d
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-smart3d_secret}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD majburiy}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
@@ -45,9 +46,9 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgres://smart3d:${DB_PASSWORD:-smart3d_secret}@postgres:5432/smart3d
+      DATABASE_URL: postgres://smart3d:${DB_PASSWORD:?DB_PASSWORD majburiy}@postgres:5432/smart3d
       REDIS_URL: redis://redis:6379
-      JWT_SECRET: ${JWT_SECRET:-smart3d-secret-2026}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET majburiy (kamida 32 belgi)}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8811,https://smart3d.uz}
     depends_on:
       postgres:

@@ -123,7 +123,13 @@ export default function Narxlar() {
         <Qiymat label={t('narxlar.ustama')} q={s.ustama} admin={s.admin} />
       </div>
       <span style={hint}>{t('narxlar.ish_izoh')}</span>
-      {s.admin ? <button onClick={s.saqlaQiymat} data-narx-qiymat-saqla="" style={{ ...btn, alignSelf: 'flex-start' }}>{t('umumiy.saqlash')}</button> : null}
+      {s.admin ? (
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button onClick={s.saqlaQiymat} data-narx-qiymat-saqla="" style={btn}>{t('umumiy.saqlash')}</button>
+          <button onClick={() => s.sukutga('ish_haqi')} data-narx-sukut="ish_haqi" style={ghost}>{t('narxlar.sukut_ish_haqi')}</button>
+          <button onClick={() => s.sukutga('hammasi')} data-narx-sukut="hammasi" style={ghost}>{t('narxlar.sukut_hammasi')}</button>
+        </div>) : null}
+      {s.admin ? <span style={hint}>{t('narxlar.sukut_izoh')}</span> : null}
 
       <span style={sub}>{t('narxlar.jadval')}</span>
       {s.jadval.map(g => (

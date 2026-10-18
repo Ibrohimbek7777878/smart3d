@@ -33,6 +33,18 @@ export const XATOLAR = {
   /* TZ-20: narx stavkalari (Sozlamalar → Narxlar) */
   'S3D-NARX-001': { http: 400, matn: 'Narx stavkasi noto\'g\'ri' },
   'S3D-NARX-002': { http: 500, matn: 'Narx stavkalari bazada buzilgan — boshlang\'ich qiymat ishlatildi' },
+  /* TZ-37: admin panel (furnitura bog'lash, tayyor promptlar, standart konstruksiya, tarix) */
+  'S3D-ADM-001': { http: 400, matn: 'Admin panel: kiritilgan qiymat noto\'g\'ri' },
+  'S3D-ADM-002': { http: 400, matn: 'Furnitura (erp_id) katalogda yo\'q' },
+  'S3D-ADM-003': { http: 400, matn: 'Tayyor so\'rov maydonlari noto\'g\'ri' },
+  'S3D-ADM-004': { http: 404, matn: 'Tayyor so\'rov topilmadi' },
+  'S3D-ADM-005': { http: 400, matn: 'Standart konstruksiya noto\'g\'ri' },
+  'S3D-ADM-006': { http: 404, matn: 'Tarix yozuvi topilmadi' },
+  'S3D-ADM-007': { http: 409, matn: 'Bu o\'zgarish allaqachon qaytarilgan yoki qaytarib bo\'lmaydi' },
+  'S3D-ADM-008': { http: 404, matn: 'Furnitura bog\'lash topilmadi' },
+  'S3D-ADM-009': { http: 409, matn: 'Bunday id allaqachon bor' },
+  'S3D-ADM-101': { matn: 'Admin panel ma\'lumoti saqlanmadi' },
+  'S3D-ADM-102': { matn: 'Admin panel ma\'lumoti o\'qilmadi' },
   /* TZ-24 B: shaxsiy shablonlar */
   'S3D-SHB-001': { http: 404, matn: 'Shablon topilmadi' },
   'S3D-SHB-002': { http: 409, matn: 'Shablonlar ko\'p — 100 tagacha; keraksizini o\'chiring' },

@@ -37,3 +37,26 @@ test('zaxira: nusxa yaratiladi, butun, ma\'lumot bor; oxirgi KEEP tasi qoladi', 
 test('zaxira: baza yo\'q bo\'lsa — xato kodi bilan to\'xtaydi', () => {
   assert.throws(() => execFileSync(process.execPath, ['backup.js'], { cwd: SERVER_DIR, env: { ...process.env, DB_PATH: path.join(tmp, 'yoq.db'), BACKUP_DIR: dir }, stdio: 'pipe' }));
 });
+
+test('TZ-36 P9: tiklash sinovi — DEPLOY.md qadamlari (nusxani joyiga ko\'chirish, -wal/-shm o\'chirish) bazani nusxa holatiga qaytaradi', () => {
+  const jadvallar = (d) => Object.fromEntries(d.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name").all()
+    .map(t => [t.name, d.prepare(`SELECT COUNT(*) AS n FROM "${t.name}"`).get().n]));
+  const asl = new Database(db);
+  const oldin = jadvallar(asl);
+  const out = execFileSync(process.execPath, ['backup.js'], { cwd: SERVER_DIR, env: { ...process.env, DB_PATH: db, BACKUP_DIR: dir, KEEP: '5' } }).toString();
+  const nusxa = JSON.parse(out.trim().split('\n').pop()).nusxa;
+  /* "ofat": zaxiradan keyin ma'lumot buziladi (foydalanuvchi qo'shildi, loyiha jadvali o'chdi) */
+  asl.prepare("INSERT INTO users (name, email, password_hash, role) VALUES ('Keyin', 'keyin@example.com', 'x', 'user')").run();
+  asl.exec('DROP TABLE IF EXISTS narx_history; DELETE FROM fragments');
+  assert.notDeepEqual(jadvallar(asl), oldin);
+  asl.close();
+  /* tiklash: servis to'xtagan; nusxa -> DB_PATH; -wal va -shm o'chiriladi */
+  for (const x of ['-wal', '-shm']) fs.rmSync(db + x, { force: true });
+  fs.copyFileSync(nusxa, db);
+  const t = new Database(db);
+  assert.equal(t.pragma('integrity_check', { simple: true }), 'ok');
+  const keyin = jadvallar(t);
+  assert.equal(t.prepare("SELECT COUNT(*) AS n FROM users WHERE email='keyin@example.com'").get().n, 0, 'zaxiradan keyingi yozuv qaytmasligi kerak');
+  for (const [nom, n] of Object.entries(oldin)) assert.equal(keyin[nom], n, `${nom}: qatorlar soni nusxadagi bilan bir xil`);
+  t.close();
+});

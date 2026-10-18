@@ -8,14 +8,14 @@ import { bazisLoyiha } from '../../../../app/js/engine/bazis/loyiha.js';
 import { bpjOqi, bpjMatn } from '../../../../app/js/engine/bazis/bpj.js';
 
 self.onmessage = (e) => {
-  const { bytes, fayl } = e.data || {};
+  const { bytes, fayl, furnituraBoglash } = e.data || {};
   try {
     const u8 = new Uint8Array(bytes);
     /* .bpj — Bazis skripti eksporti (JSON): joylashuv global, to'g'ridan o'giriladi */
     if (/\.bpj$/i.test(fayl || '')) {
       const b = bpjOqi(bpjMatn(u8));
       if (b.xato) { self.postMessage({ xato: b.xato, xabar: 'BPJ JSON emas' }); return; }
-      const rb = bazisLoyiha(b.objects, { fayl, format: b.format, fittings: b.fittings, fasteners: b.fasteners });
+      const rb = bazisLoyiha(b.objects, { fayl, format: b.format, fittings: b.fittings, fasteners: b.fasteners, furnituraBoglash });
       if (rb.xato) { self.postMessage({ xato: rb.xato }); return; }
       rb.hisobot.usul = 'bpj';
       self.postMessage(Object.assign({ ok: true }, rb));
@@ -29,7 +29,7 @@ self.onmessage = (e) => {
       if (r.encrypted) { self.postMessage({ xato: 'S3D-BAZIS-102' }); return; }
     }
     const sp = generateSpecification(r.objects);
-    const res = bazisLoyiha(r.objects, { fayl, format: r.format || usul, fittings: sp.fittings, fasteners: sp.fasteners });
+    const res = bazisLoyiha(r.objects, { fayl, format: r.format || usul, fittings: sp.fittings, fasteners: sp.fasteners, furnituraBoglash });
     if (res.xato) { self.postMessage({ xato: res.xato }); return; }
     res.hisobot.usul = usul;
     self.postMessage(Object.assign({ ok: true }, res));

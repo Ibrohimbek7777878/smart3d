@@ -27,6 +27,52 @@ export const CHEGARA = {
   tumba: { eni: [250, 1000], chuqurligi: [300, 650], boyi: [450, 950] },
   ustki: { eni: [200, 1200], chuqurligi: [200, 450], boyi: [250, 1000] }
 };
+/* TZ-37: standart konstruksiya (admin panel, sozlama 'standart_konstruksiya') — matnda AYTILMAGAN qiymatlar uchun sukut.
+ * Aytilgan qiymat ustun. Standart berilmasa (server yo'q, admin yozmagan) — hozirgi qattiq sukutlar (xulq o'zgarmaydi). */
+export const STANDART_SUKUT = {
+  korpus: { nom: 'LDSP', qalinlik: 16 }, fasad: { nom: 'MDF', qalinlik: 16 }, orqa: { nom: 'HDF', qalinlik: 3 }, polka: { nom: 'LDSP', qalinlik: 16 },
+  ruchka: { tur: 'standart', uzunlik: 0 }, birikma: 'konfirmat', tag: 'oyoq', oyoqBalandlik: 100
+};
+/** Standartni tekshirish (server PUT va brauzer bitta qoida) → { std } yoki { xato: 'matn' } */
+export function standartTekshir(raw) {
+  const r = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : null;
+  if (!r) return { xato: "standart obyekt bo'lishi kerak" };
+  const S = STANDART_SUKUT, std = {};
+  const matn = (v, f, max) => {
+    if (typeof v !== 'string') return { xato: `${f}: matn bo'lishi kerak` };
+    const t = v.trim();
+    if (!t || t.length > max) return { xato: `${f}: 1…${max} belgi` };
+    if (/[<>]/.test(t)) return { xato: `${f}: < va > mumkin emas` };
+    return { v: t };
+  };
+  const son = (v, f, a, b) => (typeof v === 'number' && Number.isFinite(v) && v >= a && v <= b ? { v } : { xato: `${f}: ${a}…${b} oralig'idagi son bo'lishi kerak` });
+  for (const [k, [a, b]] of [['korpus', [3, 50]], ['fasad', [3, 50]], ['orqa', [2, 20]], ['polka', [3, 50]]]) {
+    const x = r[k] == null ? S[k] : r[k];
+    if (!x || typeof x !== 'object' || Array.isArray(x)) return { xato: `${k}: obyekt bo'lishi kerak` };
+    const nom = matn(x.nom == null ? S[k].nom : x.nom, `${k}.nom`, 60), q = son(x.qalinlik == null ? S[k].qalinlik : x.qalinlik, `${k}.qalinlik`, a, b);
+    if (nom.xato) return nom;
+    if (q.xato) return q;
+    std[k] = { nom: nom.v, qalinlik: q.v };
+  }
+  const rx = r.ruchka == null ? S.ruchka : r.ruchka;
+  if (!rx || typeof rx !== 'object' || Array.isArray(rx)) return { xato: "ruchka: obyekt bo'lishi kerak" };
+  const tur = matn(rx.tur == null ? S.ruchka.tur : rx.tur, 'ruchka.tur', 40);
+  if (tur.xato) return tur;
+  const ul = rx.uzunlik == null ? 0 : rx.uzunlik;
+  if (!(ul === 0 || (typeof ul === 'number' && Number.isFinite(ul) && ul >= 96 && ul <= 2500))) return { xato: 'ruchka.uzunlik: 0 yoki 96…2500' };
+  std.ruchka = { tur: tur.v, uzunlik: ul };
+  const bi = r.birikma == null ? S.birikma : r.birikma;
+  if (!['konfirmat', 'ekssentrik'].includes(bi)) return { xato: 'birikma: konfirmat yoki ekssentrik' };
+  std.birikma = bi;
+  const tg = r.tag == null ? S.tag : r.tag;
+  if (!['oyoq', 'sokol'].includes(tg)) return { xato: 'tag: oyoq yoki sokol' };
+  std.tag = tg;
+  const ob = son(r.oyoqBalandlik == null ? S.oyoqBalandlik : r.oyoqBalandlik, 'oyoqBalandlik', 20, 300);
+  if (ob.xato) return ob;
+  std.oyoqBalandlik = ob.v;
+  return { std };
+}
+
 const T = 16;                                               // to'g'rilash hisobi — LDSP 16 (polka standarti)
 const POLKA_MAX = QOIDA.polkaEni[16] || 800, ESHIK_MAX = QOIDA.eshikMax || 600, ORA_MIN = 150;
 
@@ -63,14 +109,17 @@ function tarkib(x) {
  * Tekshirish va to'g'rilash. raw — AI yoki tahlilchi javobi (har qanday shakl: yetishmagan maydon — standart).
  * @returns {{ spec, tuzatish: Array<{kod, ...}>, tushunilmadi: string[] }} yoki { xona: true } (bu konstruksiya emas)
  */
-export function specTekshir(raw) {
+export function specTekshir(raw, standart) {
+  const std = standart && standartTekshir(standart).std || null;   // TZ-37: aytilmagan qiymatlar uchun admin standarti
   const r = raw && typeof raw === 'object' ? raw : {};
   if (r.tur === 'xona') return { xona: true, tushunilmadi: [] };
   const tuzatish = [];
   let tur = TURLAR.includes(r.tur) ? r.tur : 'shkaf';
   const asos = yangiChizma(tur), ch = CHEGARA[tur];
-  const tagTur = ['sokol', 'oyoq', 'yoq'].includes(r.tag) ? r.tag : asos.tag.tur;
-  const oyoq = (tur === 'pastki' || tur === 'tumba') && tagTur !== 'yoq' ? (asos.tag.h || 100) : 0;
+  const tagAytilgan = ['sokol', 'oyoq', 'yoq'].includes(r.tag);
+  const tagTur = tagAytilgan ? r.tag : ((tur === 'pastki' || tur === 'tumba') && std ? std.tag : asos.tag.tur);
+  const oyoqH = std && tagTur === 'oyoq' && !tagAytilgan && std.oyoqBalandlik !== (asos.tag.h || 100) ? std.oyoqBalandlik : 0;                  // standartdagi oyoq balandligi (faqat aytilmagan oyoq uchun)
+  const oyoq = (tur === 'pastki' || tur === 'tumba') && tagTur !== 'yoq' ? (oyoqH || asos.tag.h || 100) : 0;
   const ol = (k, std) => {
     const v = son(r[k]);
     if (!(v > 0)) return std;
@@ -160,15 +209,18 @@ export function specTekshir(raw) {
   const rm = r.material && typeof r.material === 'object' ? r.material : {};
   const matOl = (x) => ({ nom: x && typeof x.nom === 'string' ? x.nom.replace(/[<>]/g, '').trim().slice(0, 60) : '', qalinlik: ichida(son(x && x.qalinlik), [0, 40]) });
   const material = { korpus: matOl(rm.korpus), polka: matOl(rm.polka), fasad: matOl(rm.fasad) };
+  if (std) for (const k of ['korpus', 'polka', 'fasad']) if (material[k].nom && !material[k].qalinlik) material[k].qalinlik = std[k].qalinlik;   // dekor aytilgan, qalinlik aytilmagan
   if (!material.polka.nom && material.korpus.nom) material.polka = Object.assign({}, material.korpus);   // ichki qism — korpus dekorida
   const rf = r.furnitura && typeof r.furnitura === 'object' ? r.furnitura : {};
-  const furnitura = { birikma: ['konfirmat', 'ekssentrik'].includes(rf.birikma) ? rf.birikma : 'auto', polka: rf.polka === 'polkaderjatel' ? 'polkaderjatel' : 'auto', ruchka: 0 };
+  const furnitura = { birikma: ['konfirmat', 'ekssentrik'].includes(rf.birikma) ? rf.birikma : (std && std.birikma === 'ekssentrik' ? 'ekssentrik' : 'auto'),   // konfirmat — dvigatelning o'z sukuti ('auto')
+    polka: rf.polka === 'polkaderjatel' ? 'polkaderjatel' : 'auto', ruchka: 0 };
   const ru = son(rf.ruchka);
   if (ru > 0) { furnitura.ruchka = ichida(ru, [96, 2500]); if (furnitura.ruchka !== ru) tuzatish.push({ kod: 'ruchka', n: ru, m: furnitura.ruchka }); }
+  else if (std && std.ruchka.uzunlik >= 96) furnitura.ruchka = std.ruchka.uzunlik;
   const orqa = ['hdf', 'yergacha', 'yoq'].includes(r.orqa) ? r.orqa : 'auto';
   return {
     spec: { tur, nom, eni, chuqurligi, boyi, tag, qopqoq: ['yaxlit', 'planka'].includes(r.qopqoq) ? r.qopqoq : asos.qopqoq, bolimlar,
-      orqa, material, furnitura, eksport: r.eksport === 'obj' ? 'obj' : '' },
+      orqa, material, furnitura, eksport: r.eksport === 'obj' ? 'obj' : '', ...(oyoqH ? { oyoqH } : {}) },
     tuzatish, tushunilmadi: (Array.isArray(r.tushunilmadi) ? r.tushunilmadi : []).slice(0, 10).map(s => String(s).slice(0, 80))
   };
 }
@@ -184,14 +236,14 @@ function ichkidanBolimlar(ichki) {
 /** toza spec → chizma (engine/chizish.js) */
 export function specdanChizma(spec) {
   const ch = yangiChizma(spec.tur);
-  const oyoq = (spec.tur === 'pastki' || spec.tur === 'tumba') && spec.tag !== 'yoq' ? (ch.tag.h || 100) : 0;
+  const oyoq = (spec.tur === 'pastki' || spec.tur === 'tumba') && spec.tag !== 'yoq' ? (spec.oyoqH || ch.tag.h || 100) : 0;
   ch.w = spec.eni; ch.d = spec.chuqurligi; ch.h = spec.boyi - oyoq;
   ch.qopqoq = spec.qopqoq;
   if (spec.orqa === 'yoq') ch.orqa = 'yoq';
   if (spec.orqa === 'yergacha' && (spec.tur === 'shkaf' || spec.tur === 'erkin')) ch.orqaYer = true;   // HDF polgacha (sokol ortini yopadi)
   if (spec.furnitura && spec.furnitura.ruchka > 0) ch.ruchka = { l: spec.furnitura.ruchka };
   if (spec.furnitura && spec.furnitura.birikma === 'ekssentrik') ch.birikma = 'ekssentrik';         // korpus — eksentrikda (d6.js EKS)
-  if (spec.tur !== 'ustki') ch.tag = { tur: spec.tag, h: spec.tag === 'yoq' ? 0 : spec.tag === (yangiChizma(spec.tur).tag.tur) ? ch.tag.h : spec.tag === 'sokol' ? 84 : 100 };
+  if (spec.tur !== 'ustki') ch.tag = { tur: spec.tag, h: spec.tag === 'yoq' ? 0 : spec.tag === (yangiChizma(spec.tur).tag.tur) ? ch.tag.h : spec.tag === 'oyoq' && spec.oyoqH > 0 ? spec.oyoqH : spec.tag === 'sokol' ? 84 : 100 };
   const tugun = (x) => {
     const n = {};
     if (x.eshik > 0) { n.eshik = x.eshik; if (x.eshik === 1) n.petlya = x.petlya === 'ong' ? 'ong' : 'chap'; }

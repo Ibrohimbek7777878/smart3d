@@ -21,13 +21,13 @@ const ok = (name, cond, extra = '') => { n++; if (!cond) { fails++; console.log(
 const SANA = /^\d{4}-\d{2}-\d{2}$/;
 
 console.log('\n[E4] Sukut plita — ERP mahsuloti');
-for (const [kod, id, narx] of [['LDSP16', 10807, 341761], ['MDF16', 11578, 580515]]) {
+for (const [kod, id, narx] of [['LDSP16', 10807, 341761], ['MDF16', 11578, 580515], ['HDF3', 11750, 140000]]) {
   const v = mats.sukut_erp[kod];
   ok(`${kod}: sku, nom, narx ${narx}, sana, manba ERP, ERP id ${id}, varaq formati`, v && v.sku && v.nom && v.uzs === narx && SANA.test(v.sana) && v.manba === 'ERP' && v.erp_id === id && v.l > 1000 && v.w > 1000 && v.izoh);
 }
 const m1 = JSON.parse(JSON.stringify(mats));
-ok('sukutErpQollash: LDSP16 va MDF16 narxi ERP, "taxminiy" tushadi, manba matnida ERP + sana', sukutErpQollash(m1) === 2
-  && ['LDSP16', 'MDF16'].every(k => { const p = m1.panel_materials.find(x => x.code === k); return !p.taxminiy && /^ERP, \d{4}-/.test(p.price_src) && p.sheet_price === mats.sukut_erp[k].uzs && p.sheets[0][0] === mats.sukut_erp[k].l; }));
+ok('sukutErpQollash: LDSP16, MDF16 va HDF3 narxi ERP, "taxminiy" tushadi, manba matnida ERP + sana', sukutErpQollash(m1) === 3
+  && ['LDSP16', 'MDF16', 'HDF3'].every(k => { const p = m1.panel_materials.find(x => x.code === k); return !p.taxminiy && /^ERP, \d{4}-/.test(p.price_src) && p.sheet_price === mats.sukut_erp[k].uzs && p.sheets[0][0] === mats.sukut_erp[k].l; }));
 
 console.log('\n[E2/E5/E8] Sukut narx hujjati');
 const S = narxSukut(mats);

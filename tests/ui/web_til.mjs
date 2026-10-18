@@ -97,17 +97,16 @@ async function asosiy(page, R) {
   await page.locator('[data-set="til"] button', { hasText: 'O\'zbekcha' }).click(); await page.waitForTimeout(400);
   R.uz = await M(() => document.documentElement.lang);
 
-  /* sayt (bosh sahifa): pastdagi til tugmasi → menyu → Русский (sahifa qayta yuklanmaydi) */
+  /* sayt (bosh sahifa): sarlavhadagi til tugmasi (egasi #255: pastki tugma olib tashlangan) → menyu → Русский (sahifa qayta yuklanmaydi) */
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(new URL(page.url()).origin + '/?t=' + Date.now());   // TZ-30: sayt ildizi (ilova manzili /loyiha/5 … bo'lishi mumkin) await page.waitForTimeout(2000);
-  await page.locator('footer button[aria-haspopup=menu]').scrollIntoViewIfNeeded();
-  await page.locator('footer button[aria-haspopup=menu]').click(); await page.waitForTimeout(300);
+  await page.locator('header button[data-til-menyu]').first().click(); await page.waitForTimeout(300);
   await page.locator('[role=menuitemradio][lang=ru]').click(); await page.waitForTimeout(500);
-  R.sayt = { lang: await M(() => document.documentElement.lang), tugma: await M(() => document.querySelector('footer button[aria-haspopup=menu]').textContent.trim()) };
+  R.sayt = { lang: await M(() => document.documentElement.lang), tugma: await M(() => (document.querySelector('header button[data-til-menyu]') || document.body).getAttribute('aria-label') || 'bor'), pastkiYoq: await M(() => !document.querySelector('footer button[aria-haspopup=menu]')) };
   await M(() => localStorage.setItem('s3d-til', 'uz'));
 
   R.errs = errs;
-  R.ok = R.ruServer && !R.ruServerUz && R.ruYorliq.length === 0 && R.ruExcel && /^ru\|[1-9]/.test(R.ruPdf || '') && R.ruKatalog.length > 0 && R.ruKatalog.every(n => /[А-Яа-яЁё]/.test(n)) && R.ruQolgan.length === 0 && R.sayt.lang === 'ru' && R.sayt.tugma === 'Русский' && yuklandi && R.menyu.join('|') === 'O\'zbekcha|Русский|English' && R.ru.lang === 'ru' && R.ru.saqlandi === 'ru' && R.ru.menyuYopiq &&
+  R.ok = R.ruServer && !R.ruServerUz && R.ruYorliq.length === 0 && R.ruExcel && /^ru\|[1-9]/.test(R.ruPdf || '') && R.ruKatalog.length > 0 && R.ruKatalog.every(n => /[А-Яа-яЁё]/.test(n)) && R.ruQolgan.length === 0 && R.sayt.lang === 'ru' && R.sayt.pastkiYoq && yuklandi && R.menyu.join('|') === 'O\'zbekcha|Русский|English' && R.ru.lang === 'ru' && R.ru.saqlandi === 'ru' && R.ru.menyuYopiq &&
     R.ru.qaytaYuklanmadi && R.ru.narx === narxUz && R.ru.server === 'ru' && R.escYopdi && R.eslabQoldi === 'ru' && R.sozlamaTil.length === 3 && R.en === 'en' &&
     R.uz === 'uz' && !R.hScroll && errs.length === 0;
 }

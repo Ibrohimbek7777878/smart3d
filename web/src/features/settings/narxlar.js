@@ -3,7 +3,7 @@ import { inflateRaw } from 'pako';
 import { get, set, useSlice } from '../../store/index.js';
 import { project } from '../../store/project.js';
 import { S } from '../../store/session.js';
-import { xato, toast } from '../../store/ui.js';
+import { xato, toast, confirm } from '../../store/ui.js';
 import { raqam } from '../../shared/lib/format.js';
 import { t, serverXato } from '../../i18n/index.js';
 import { xlsxOqish } from '../../../../app/js/engine/xlsxOqish.js';
@@ -46,6 +46,19 @@ export async function saveNarxlar(patch, xabar) {
   if (get().settings.narxTarix) loadNarxTarix();
   toast(xabar || t('narxlar.saqlandi', { n: j.ozgarish }));
   return true;
+}
+
+/** TZ-36 P7: admin — sukut stavkalarga qaytarish (serverda eski saqlangan qiymat qolgan bo'lsa). qamrov: 'ish_haqi' | 'hammasi'.
+ *  Tasdiqdan keyin POST /api/narxlar/sukut; o'zgarish tarixga yoziladi, hisob darhol yangilanadi. */
+export function sukutgaQaytar(qamrov) {
+  confirm({ title: t('narxlar.sukut_sarlavha'), text: t('narxlar.sukut_matn_' + qamrov), ok: t('narxlar.sukut_tasdiq'), danger: true, yes: async () => {
+    const j = await sorov('/api/narxlar/sukut', { method: 'POST', body: { qamrov } }, 'S3D-NARX-101');
+    if (!j) return;
+    narxQollaHisob(j.narxlar);
+    setIn({ narxIn: null });
+    if (get().settings.narxTarix) loadNarxTarix();
+    toast(j.ozgarish ? t('narxlar.sukut_qaytdi', { n: j.ozgarish }) : t('narxlar.sukut_allaqachon'));
+  } });
 }
 
 export async function loadNarxTarix() {
@@ -162,6 +175,7 @@ export function useNarxlar() {
       detal: qator('detal', ih.detal, t('narxlar.b_detal')), modul: qator('modul', ih.modul, t('narxlar.b_modul')) },
     ustama: qator('foiz', us.foiz, '%'),
     saqlaQiymat,
+    sukutga: (q) => admin && sukutgaQaytar(q),
     jadval,
     yuklash: y ? {
       matn: t('narxlar.korib_chiqish', { f: y.fayl, j: y.jami, a: y.farq.yangi.length, b: y.farq.ozgargan.length, c: y.farq.bir_xil, d: y.otkazildi }),

@@ -26,7 +26,7 @@ import { createJurnal } from './jurnal.js';
 import { securityHeaders, inlineScriptHashes, TG_ILOVA } from './himoya.js';
 import { loadConfig, APP_DIR, WEB_DIST } from './lib/config.js';
 import { openDb } from './lib/db.js';
-import { yadroSxema, mcModullar } from './lib/sxema.js';
+import { yadroSxema, mcModullar, adminSxema, promptlarSeed } from './lib/sxema.js';
 import { createAuth, zaifAdminTekshir } from './lib/auth.js';
 import { rateLimit } from './lib/limit.js';
 import { fail, xatoIshlovchi } from './lib/xato.js';
@@ -50,6 +50,7 @@ import furnituraRouter from './routes/furnitura.js';
 import remnantsRouter from './routes/remnants.js';
 import aiRouter from './routes/ai.js';
 import logRouter from './routes/log.js';
+import adminPanelRouter from './routes/admin-panel.js';
 import healthRouter from './routes/health.js';
 
 const cfg = loadConfig();
@@ -59,6 +60,8 @@ const db = openDb(cfg.DB_PATH);
 const jurnal = createJurnal(db);
 yadroSxema(db);
 mcModullar(db, APP_DIR);
+adminSxema(db);
+promptlarSeed(db, APP_DIR);
 zaifAdminTekshir(db, cfg.PROD);
 
 /* ── Express ── */
@@ -88,7 +91,7 @@ app.use(sahifa.statik);
 /* ── API (har modul — o'z routerida, manzillar to'liq: /api/...) ── */
 for (const router of [authRouter, authSmsRouter, authGoogleRouter, telegramRouter, projectsRouter, shablonlarRouter, materialsRouter, fragmentsRouter,
   ordersRouter, servicesRouter, settingsRouter, sexStandartlariRouter, narxlarRouter, furnituraRouter, remnantsRouter, aiRouter,
-  logRouter, healthRouter]) app.use(router(ctx));
+  adminPanelRouter, logRouter, healthRouter]) app.use(router(ctx));
 
 /* ── xatolar: noma'lum API — JSON 404; noma'lum sahifa — 404.html; qolgani — xato ishlovchisi ── */
 app.use('/api', (req, res) => fail(res, 'S3D-SRV-002'));

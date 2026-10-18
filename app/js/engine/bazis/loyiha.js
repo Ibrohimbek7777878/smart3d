@@ -33,6 +33,14 @@ const TR = { а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж:
 /** fr3d_import.py slug() bilan bir xil (id-links.json dagi BZ- kodlariga mos) */
 export const slug = (s) => (Array.from(String(s || '').toLowerCase()).map(c => TR[c] != null ? TR[c] : c).join('').replace(/[^a-z0-9]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '')) || 'detal';
 
+/** TZ-36 K5: Bazis stoleshnitsa → katalog kodi STOL<qalinlik>-<standart uzunlik>. Qalinlik — nomdagi «26мм/38мм» (Bazis panel qalinligi
+ *  ba'zan 38 bo'lib keladi: 3877, 4250 — nomi 26); nomida yo'q bo'lsa — panel qalinligi. Uzunlik: bo'lak 3050 ga sig'sa 3050, aks holda 4200. */
+export function stolKodi(nom, t, uzun) {
+  const m = /(?:^|\D)(26|38)\s*(?:мм|mm)/i.exec(String(nom || ''));
+  const T = m ? +m[1] : t >= 32 ? 38 : 26;
+  return 'STOL' + T + '-' + (uzun > 3050 ? 4200 : 3050);
+}
+
 /** material nomi + qalinlik → { tur, ishlab, asos (materials.json kodi), varaq } */
 export function materialTuri(nom, t) {
   const n = String(nom || '');
@@ -172,7 +180,10 @@ export function bazisLoyiha(objects, o = {}) {
     const a0 = [-c1[0], c0[2], c0[1]], a1 = [-c0[0], c1[2], c1[1]];
     for (let i = 0; i < 3; i++) { mn[i] = Math.min(mn[i], a0[i]); mx[i] = Math.max(mx[i], a1[i]); }
     const slot = mt.tur === 'hdf' ? 'orqa' : (ESHIK.test(nom) || mt.tur === 'akril') ? 'fasad' : 'korpus';
-    const mkod = mt.ishlab ? 'BZM-' + fnv(mnom + '|' + t) : null;
+    /* TZ-36 K3: barcha HDF (orqa devor) — bitta material = bitta kroy guruhi (ERP: bitta ЛХДФ 2,5мм 2800*2070 list, dekor farqi yo'q).
+       TZ-36 K5: stoleshnitsa — varaq (LDSP) emas, katalogdagi standart bo'lak (STOL26-3050 …): narxi stoleshnitsa narxida */
+    const stol = mt.tur === 'stoleshnitsa';
+    const mkod = !mt.ishlab ? null : stol ? stolKodi(mnom, t, Math.max(dl, dw)) : mt.tur === 'hdf' ? 'BZM-hdf' : 'BZM-' + fnv(mnom + '|' + t);
     /* TZ-23 A5: material (3D rangi va almashtirish uchun) — [nom, BZM kodi] */
     const mk = mnom + '|' + (mkod || '');
     if (!matIdx.has(mk) && bazisMat.length < PANEL3D_MAX) { matIdx.set(mk, bazisMat.length); bazisMat.push([mnom, mkod]); }
@@ -197,9 +208,9 @@ export function bazisLoyiha(objects, o = {}) {
       c.soni++; if (c.misol.length < 3 && !c.misol.includes(nom)) c.misol.push(nom);
       continue;
     }
-    /* material — sintetik kod (dekor bo'yicha alohida list) */
-    if (!matlar.has(mkod)) matlar.set(mkod, { code: mkod, name: mnom, thickness: t, tur: mt.tur, asos: mt.asos, varaq: mt.varaq, detal: 0 });
-    matlar.get(mkod).detal++;
+    /* material — sintetik kod (dekor bo'yicha alohida list); stoleshnitsa — katalog kodi (sintetik material qo'shilmaydi) */
+    if (!stol && !matlar.has(mkod)) matlar.set(mkod, { code: mkod, name: mnom, thickness: t, tur: mt.tur, asos: mt.asos, varaq: mt.tur === 'hdf' ? null : mt.varaq, detal: 0 });
+    if (!stol) matlar.get(mkod).detal++;
     /* kromka: tomon → kromka kodi */
     const tomonlar = {};
     for (const b of p.butts || []) {
@@ -249,6 +260,7 @@ export function bazisLoyiha(objects, o = {}) {
   for (const g of [...guruh.values()].sort((a, b) => b.soni - a.soni || (b.dl * b.dw) - (a.dl * a.dw))) {
     const code = 'bz' + (++n);
     parts.push({ code, nom: g.nom, qty: g.soni, len: String(g.dl), width: String(g.dw), slot: g.slot, material_code: g.mkod,
+      ...(g.tur === 'stoleshnitsa' ? { stol_birga: true } : {}),
       tekstura: g.tur === 'hdf' || (g.tur === 'ldsp' && oddiyDekor(g.mnom)) ? 'erkin' : 'uzunlik', bazis_material: g.mnom });
     const boyicha = {};
     for (const [s, k] of Object.entries(g.tomonlar)) (boyicha[k] = boyicha[k] || []).push(s);

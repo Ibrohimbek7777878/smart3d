@@ -85,7 +85,7 @@ export async function aiKonstruksiya(matn, aiOn, o = {}) {
   if (ai && ai.xona) return 'xona';
   /* AI javobi serverda tekshirilgan — saytda yana bir bor (bir xil qoida); AI'siz — tahlilchi */
   const xom = ai ? ai.spec : matndanSpec(matn);
-  const n = specTekshir(xom);
+  const n = specTekshir(xom, project.H.standart);   // TZ-37: aytilmagan qiymatlar — admin standarti (yo'q bo'lsa — qattiq sukut)
   if (n.xona && !o.buyum) return 'xona';
   if (!o.chiz) {
     const tan = o.buyum ? buyumdanTop(o.buyum, matn, project.H.catalog) : katalogdanTop(n.spec, xom, project.H.catalog, matn);

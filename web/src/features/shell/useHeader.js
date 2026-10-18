@@ -7,6 +7,7 @@ import { useRejim } from '../editor/oddiy/rejim.js';
 import { panel } from '../editor/ishjoyi/ishjoyi.js';
 import { goProjects } from '../projects/actions.js';
 import { openSettings } from '../settings/actions.js';
+import { openAdmin } from '../admin/actions.js';
 
 const SAVE_IKON = { ok: 'saqlandi', busy: 'bulut', off: 'internetYoq' };   // saqlandi / saqlanmoqda / internet yo'q
 
@@ -16,6 +17,7 @@ export function useHeader() {
   const u = auth.user || {}, sv = auth.save, rj = useRejim();
   return {
     isEditor: nav.screen === 'app',
+    admin: u.role === 'admin', goAdmin: () => openAdmin(),   // TZ-37: faqat admin
     goProjects, goStep3: () => panel(3), openSettings: () => openSettings(),
     oddiy: rj.oddiy,
     fayllar: () => panel(4), fayllarOn: nav.screen === 'app' && ed.step === 4,   // TZ-25: tepadagi Fayllar tugmasi
