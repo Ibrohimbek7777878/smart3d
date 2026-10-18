@@ -93,6 +93,13 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,woff2,json,png,svg,webp,webmanifest}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
+        /* furnitura/material rasmlari (~1000 ta, ~4.5 MB) — oldindan yuklanmaydi (telefonda birinchi o'rnatish og'irlashmasin); ko'rilganda keshlanadi */
+        globIgnores: ['**/rasm/**'],
+        runtimeCaching: [{
+          urlPattern: ({ url }) => url.pathname.startsWith('/data/rasm/'),
+          handler: 'CacheFirst',
+          options: { cacheName: 's3d-rasm', expiration: { maxEntries: 1200, maxAgeSeconds: 60 * 60 * 24 * 90 }, cacheableResponse: { statuses: [200] } }
+        }],
         /* TZ-30: ekran manzillari (/loyihalar, /loyiha/5 …) internetsiz ham ochiladi — keshdagi app.html; "/", /eski/, /api — tegilmaydi */
         navigateFallback: 'app.html',
         navigateFallbackAllowlist: [SW_ILOVA_YOL],
