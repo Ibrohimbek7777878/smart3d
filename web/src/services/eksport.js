@@ -204,6 +204,35 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
     setTimeout(() => download(fn + '.mtl', r.mtl, 'text/plain'), 350);
     c.toast(t('hujjat.t_obj', { n: r.placements.length }));
   },
+  /* TZ-33 A: SketchUp (.skp — Free va Pro) va SketchUp Pro zaxirasi (.dae, COLLADA 1.4.1): xonasiz — plita va furnitura.
+     Fayl brauzerda yasaladi; yozuvchi (openskp) faqat shu tugma bosilganda yuklanadi (alohida bo'lak). Tanlangan modul bo'lsa — faqat u. */
+  skp(c) { return this._sketchup(c, 'skp'); },
+  dae(c) { return this._sketchup(c, 'dae'); },
+  async _sketchup(c, tur) {
+    if (!ok(c, false)) return;
+    const kod = (code, e) => (c.xatoK ? c.xatoK(code, e) : failed(c, e, t('xato.' + code)));
+    let M;
+    try {
+      M = await Promise.all([import('../features/editor/eksport/model.js'), tur === 'skp' ? import('../features/editor/eksport/skp.js') : import('../features/editor/eksport/dae.js')]);
+    } catch (e) { kod('S3D-EXP-103', e); return; }
+    try {
+      const id = c.opt && c.opt.id != null ? c.opt.id : c.sel;
+      const pl = id != null ? c.doc.placements.find(p => p.id === id) : null;
+      const model = M[0].eksportModeli(view(c), c.H, (c.res && c.res.cutlists) || [], { only: pl ? pl.id : null, nom: {
+        modul: (f) => modulNomi(c.H, f), material: (code, asl) => materialNomi(c.H, code, asl),
+        qatlam: [t('skp.q_korpus'), t('skp.q_fasad'), t('skp.q_orqa'), t('skp.q_furnitura')],
+        furn: { petlya: t('skp.f_petlya'), polka: t('skp.f_polka'), ruchka: t('skp.f_ruchka'), napr: t('skp.f_napr'), oyoq: t('skp.f_oyoq'), shtanga: t('skp.f_shtanga') } } });
+      if (!model.modullar.length) { c.toast(t('hujjat.t_bosh')); return; }
+      const nom = pl ? '-' + String(model.modullar[0].nom).trim().replace(/[^\p{L}\p{N}]+/gu, '_').replace(/^_|_$/g, '') : '';
+      const fn = fname(c) + nom;
+      if (tur === 'skp') download(fn + '.skp', new Blob([M[1].skpYoz(model)], { type: 'application/vnd.sketchup.skp' }), 'application/vnd.sketchup.skp');
+      else download(fn + '.dae', M[1].daeYoz(model), 'model/vnd.collada+xml');
+      const d = model.modullar.reduce((a, m) => a + m.detallar.length * m.qty, 0), f = model.modullar.reduce((a, m) => a + m.furnitura.length * m.qty, 0);
+      const j = model.modullar.reduce((a, m) => a + m.joysiz.reduce((s, x) => s + x.soni, 0) * m.qty, 0);
+      const s = { m: model.modullar.reduce((a, m) => a + m.qty, 0), d, f };
+      c.toast((tur === 'skp' ? t('hujjat.t_skp', s) : t('hujjat.t_dae', s)) + (j ? t('hujjat.t_skp_joysiz', { n: j }) : ''));
+    } catch (e) { kod(tur === 'skp' ? 'S3D-EXP-102' : 'S3D-EXP-104', e); }
+  },
   teshiklar(c) {
     if (!ok(c, false)) return;
     const r = buildOBJ(view(c), c.H.catalog, { cutlists: (c.res && c.res.cutlists) || [] });
@@ -264,7 +293,7 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
       c.toast(t('hujjat.t_kdt', { n, d: model.detallar.length }) + (ogoh.spTeshik ? t('hujjat.t_sp_teshik', { n: ogoh.spTeshik }) : '') + t('hujjat.t_sinov'));
     });
   },
-  /** BPJ (TZ-17 gacha faqat admin, SINOV) */
+  /** BPJ (TZ-17; TZ-33 B1 — hamma uchun ko'rinadi, SINOV: haqiqiy Bazis'da tekshirilmagan; yo'riqnoma — Fayllar → Bazis) */
   bpj(c) {
     if (!ok(c, false)) return;
     safe(c, () => {

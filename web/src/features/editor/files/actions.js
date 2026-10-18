@@ -9,7 +9,8 @@ function ctx(opt) {
   const st = get(), p = st.project;
   return { opt, sel: st.editor && st.editor.sel, doc: project.doc, H: project.H, res: project.res, name: p.name, matCode: p.matCode, fasadCode: p.fasadCode, sheet: p.sheet,
     nestCfg: project.H ? project.nestCfg() : {}, sp: scene.sahna && scene.sahna.sp, toast, logo: st.settings.sets.logo,
-    fail: (e, nom) => xato('S3D-EXP-101', { matn: t('fayllar.yaratilmadi', { nom: nom || t('fayllar.fayl'), s: (e && e.message) || e }), modul: 'editor/files', err: e }) };
+    fail: (e, nom) => xato('S3D-EXP-101', { matn: t('fayllar.yaratilmadi', { nom: nom || t('fayllar.fayl'), s: (e && e.message) || e }), modul: 'editor/files', err: e }),
+    xatoK: (code, e) => xato(code, { modul: 'editor/eksport', err: e }) };   // TZ-33: o'z kodi bilan (S3D-EXP-102…104)
 }
 
 /** k — eksport turi: 'hisobot', 'rasm', 'excel', 'giblab', 'dxf', ... Xato bo'lsa — kod bilan xabar (S3D-EXP-101) */
