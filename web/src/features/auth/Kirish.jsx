@@ -104,7 +104,7 @@ export default function Kirish() {
           {/* TZ-31: Google bilan kirish — #209: kirishda ham, ro'yxatda ham eng tepada — birinchi kirish = ro'yxat; faqat server GOOGLE_CLIENT_ID sozlagan bo'lsa */}
           {v.googleBor ? (
             <div data-google="" style={{"display":"flex","flexDirection":"column","gap":"12px","alignItems":"center"}}>
-              <div ref={v.gRef} aria-label={v.googleNomi} style={{"width":"100%","minHeight":"44px","display":"flex","justifyContent":"center"}}></div>
+              <div ref={v.gRef} aria-label={v.googleNomi} data-google-tugma="" className="g-tugma" style={{"width":"100%","maxWidth":"440px","height":"52px","borderRadius":"14px","overflow":"hidden","border":"1px solid var(--line)","background":"var(--sfc)","display":"flex","alignItems":"center","justifyContent":"center","transition":"border-color .15s"}}></div>
               <div style={{"display":"flex","alignItems":"center","gap":"12px","width":"100%","color":"var(--mut)","fontSize":"13px","fontWeight":"700"}}>
                 <span style={{"flex":"1","height":"1px","background":"var(--line)"}}></span>{v.yoki}<span style={{"flex":"1","height":"1px","background":"var(--line)"}}></span>
               </div>
