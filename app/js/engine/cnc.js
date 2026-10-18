@@ -278,7 +278,7 @@ export function drillNC(nest, cutlists) {
 /* ── 3) PTP CSV ──────────────────────────────────────────────────────────── */
 export function ptpCSV(nest, cutlists) {
   const sheetsData = collectSheetHoles(nest, cutlists);
-  const head = 'Varaq;Material;Detal;Ref;X(mm);Y(mm);Eni;Boy;Aylangan;Teshik;Kromka';
+  const head = 'Varaq;Material;Detal;Ref;X(mm);Y(mm);Boy;Eni;Aylangan;Teshik;Material (detal)';
   const rows = [];
   for (const sd of sheetsData) {
     for (const p of sd.sheet.parts || []) {
