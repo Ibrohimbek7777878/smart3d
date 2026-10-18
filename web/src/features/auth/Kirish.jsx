@@ -2,6 +2,7 @@ import React from 'react';
 import { t } from '../../i18n/index.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 import { useKirish } from './useKirish.js';
+import TilTugma from '../../shared/ui/TilTugma.jsx';
 
 /* TZ-23 C4: telefon + SMS kod — maydonlar ro'yxatdagi "Telefon" va "Ismingiz" uslubida (dizayn bo'laklari) */
 const MAYDON = {"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none"};
@@ -38,6 +39,7 @@ export default function Kirish() {
   const v = useKirish();
   return (
     <div data-auth="" style={{"minHeight":"100vh","display":"grid","gridTemplateColumns":"minmax(0,1.1fr) minmax(0,1fr)"}}>
+      <TilTugma fixed />
       <aside data-auth-aside="" style={{"position":"relative","overflow":"hidden","background":"radial-gradient(ellipse 70% 60% at 50% 45%,rgba(255,122,69,.18),transparent 70%),#0C1C22","borderRight":"1px solid var(--line)","display":"flex","flexDirection":"column","padding":"32px 40px"}}>
         <a href="index.html" style={{"display":"flex","alignItems":"center","gap":"10px","position":"relative","zIndex":"2","color":"var(--txt)"}}>
           <div style={{"width":"38px","height":"38px","borderRadius":"12px","background":"var(--acc)","color":"var(--ink)","display":"grid","placeItems":"center","fontWeight":"800","fontSize":"16px"}}>
