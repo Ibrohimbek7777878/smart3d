@@ -280,17 +280,27 @@
   "_izoh": "TZ-32 A1: sukut plita → ERP mahsuloti (egasi tanlaydi, 2-savol). null — bog'lanmagan (narx yuqoridagi panel_materials dan). Bog'lash: {\"sku\": \"…\", \"nom\": \"…\", \"uzs\": <ERP narxi>, \"manba\": \"ERP\", \"sana\": \"YYYY-MM-DD\"} — hisob yuklanganda shu plitaning sheet_price, price_src va sku shu yerdan olinadi, \"taxminiy\" belgisi tushadi (engine/narxStavka.js sukutErpQollash).",
   "LDSP18": null,
   "LDSP16": {
-   "sku": "0101 SM",
-   "nom": "ЛДСП Ультрадекор 4,575 Белый фасадный SM (гладкий) 16мм",
-   "uzs": 298295,
-   "l": 2500,
+   "sku": "0110 SM",
+   "nom": "ЛДСП Ультрадекор 5,0325 Белый гладкий 0110 16мм",
+   "uzs": 341761,
+   "l": 2750,
    "w": 1830,
    "manba": "ERP",
    "sana": "2026-10-18",
-   "erp_id": 10756,
-   "izoh": "Egasi roziligi (2026-10-18): korpus uchun Ультрадекор Белый гладкий 16мм. ERP /api/v2/products: yagona Ultradekor 'Белый гладкий' 16мm; narx — display_price_uzs (list 380 000 — mijozga sotuv narxi). Varaq 2500×1830 — narx shu format uchun."
+   "erp_id": 10807,
+   "izoh": "Egasi roziligi (2026-10-18): korpus uchun Ультрадекор Белый гладкий 16мм. ERP /api/v2/products id 10807: 2026-10-18 da display_price_uzs 341 761 (data paketi 2026-10-16 da 309 184 edi — narx oshgan; list 410 000 — mijozga sotuv narxi). Sexda eng ko'p: 56 buyurtmada 7 list (4,575 «фасадный SM» — 6 list). Varaq 2750×1830 — narx shu format uchun."
   },
-  "MDF16": null,
+  "MDF16": {
+   "sku": "0101 SM",
+   "nom": "ЛМДФ 1/2 5,796 Белый Гладкий (односторонний) 16мм",
+   "uzs": 580515,
+   "l": 2800,
+   "w": 2070,
+   "manba": "ERP",
+   "sana": "2026-10-18",
+   "erp_id": 11578,
+   "izoh": "Fasad MDF16 (egasi: korpus bilan bir xil oq gladkiy): ERP id 11578, display_price_uzs 580 515 (list 640 000), varaq 2800×2070 (bizning standart format), qoldiq bor. Sexda LMDF kam sotiladi (56 buyurtmada eng ko'pi Кашемир 5981 — 4 list); oq gladkiy ularning orasida yagona, korpus tanloviga mos."
+  },
   "HDF3": null
  },
  "sukut_narx": {

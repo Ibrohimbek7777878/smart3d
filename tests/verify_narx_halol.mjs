@@ -54,13 +54,14 @@ ok('hisob: taxmin plita aniqlik ro\'yxatida', p0.aniqlik.taxmin.some(t => t.code
 /* sukut_erp — bog'lash imkoni (egasi javobigacha bo'sh) */
 /* TZ-32 E4 (egasi roziligi 2026-10-18): korpus plitasi LDSP16 = ERP "Ультрадекор Белый гладкий 16мм"; qolganlari hali bog'lanmagan (null) */
 const sl = mats.sukut_erp && mats.sukut_erp.LDSP16;
-ok('sukut_erp: LDSP18, MDF16, HDF3 — bog\'lanmagan (null); LDSP16 — ERP mahsuloti (sku, nom, narx, sana, format)', mats.sukut_erp && ['LDSP18', 'MDF16', 'HDF3'].every(k => k in mats.sukut_erp && mats.sukut_erp[k] === null)
-  && sl && sl.sku === '0101 SM' && sl.uzs === 298295 && /Ультрадекор.*Белый.*гладкий/.test(sl.nom) && sl.manba === 'ERP' && /^\d{4}-\d{2}-\d{2}$/.test(sl.sana) && sl.l === 2500 && sl.w === 1830);
+ok('sukut_erp: LDSP18, HDF3 — bog\'lanmagan (null); LDSP16 va MDF16 — ERP mahsuloti (sku, nom, narx, sana, format)', mats.sukut_erp && ['LDSP18', 'HDF3'].every(k => k in mats.sukut_erp && mats.sukut_erp[k] === null)
+  && mats.sukut_erp.MDF16 && mats.sukut_erp.MDF16.uzs === 580515 && mats.sukut_erp.MDF16.erp_id === 11578
+  && sl && sl.sku === '0110 SM' && sl.uzs === 341761 && /Ультрадекор.*Белый.*гладкий/.test(sl.nom) && sl.manba === 'ERP' && /^\d{4}-\d{2}-\d{2}$/.test(sl.sana) && sl.l === 2750 && sl.w === 1830);
 const m0 = JSON.parse(JSON.stringify(mats));
-ok('sukutErpQollash: LDSP16 bog\'lanadi — narx, sku, manba, varaq formati; "taxminiy" tushadi', sukutErpQollash(m0) === 1 && pm(m0, 'LDSP16').sheet_price === 298295 && !pm(m0, 'LDSP16').taxminiy
-  && pm(m0, 'LDSP16').sku === '0101 SM' && /^ERP, 2026-/.test(pm(m0, 'LDSP16').price_src) && JSON.stringify(pm(m0, 'LDSP16').sheets) === '[[2500,1830]]' && pm(m0, 'MDF16').taxminiy);
+ok('sukutErpQollash: LDSP16 bog\'lanadi — narx, sku, manba, varaq formati; "taxminiy" tushadi', sukutErpQollash(m0) === 2 && pm(m0, 'LDSP16').sheet_price === 341761 && !pm(m0, 'LDSP16').taxminiy
+  && pm(m0, 'LDSP16').sku === '0110 SM' && /^ERP, 2026-/.test(pm(m0, 'LDSP16').price_src) && JSON.stringify(pm(m0, 'LDSP16').sheets) === '[[2750,1830]]' && pm(m0, 'MDF16').sheet_price === 580515 && !pm(m0, 'MDF16').taxminiy);
 const m1 = JSON.parse(JSON.stringify(mats));
-m1.sukut_erp.LDSP16 = null;
+m1.sukut_erp.LDSP16 = null; m1.sukut_erp.MDF16 = null;
 ok('sukutErpQollash: null — hech narsa o\'zgarmaydi', sukutErpQollash(m1) === 0 && JSON.stringify(m1) === JSON.stringify(Object.assign(JSON.parse(JSON.stringify(mats)), { sukut_erp: m1.sukut_erp })));
 m1.sukut_erp.MDF16 = { sku: 'T-1', nom: 'test', uzs: 0, manba: 'ERP', sana: '2026-10-18' };
 m1.sukut_erp.LDSP16 = { sku: 'T-2', nom: 'test', uzs: 300000, manba: 'ERP' };
@@ -75,7 +76,7 @@ const H = createHisob(await loadData((nom) => Promise.resolve(J(nom))));
 const erpSh = sheets.find(s => s.type === 'LDSP' && +s.th === 16 && s.uzs > 0);
 const eff = H.effectiveMaterials(erpSh);
 ok('effectiveMaterials: narxli ERP plitasi tanlansa — LDSP16 narxi ERP\'dan, "taxminiy" emas; asl materials.json o\'zgarmaydi',
-  pm(eff, 'LDSP16').sheet_price === erpSh.uzs && !pm(eff, 'LDSP16').taxminiy && pm(H.materials, 'LDSP16').sheet_price === 298295);   // asl (sukut ERP) o'zgarmaydi
+  pm(eff, 'LDSP16').sheet_price === erpSh.uzs && !pm(eff, 'LDSP16').taxminiy && pm(H.materials, 'LDSP16').sheet_price === 341761);   // asl (sukut ERP) o'zgarmaydi
 const mb = JSON.parse(JSON.stringify(mats));
 materiallarniQosh(mb, { panel: [{ code: 'BZ-T1', name: 'Bazis test', thickness: 16, asos: 'LDSP18' }] });
 ok('Bazis sintetik materiali (boshqa plitaning narxi) — "taxminiy"', pm(mb, 'BZ-T1').taxminiy === true && pm(mb, 'BZ-T1').sheet_price === pm(mats, 'LDSP18').sheet_price);
