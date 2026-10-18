@@ -11,7 +11,7 @@
  *   - Hammom osma rakovina tumbalari va ko'zguli shkaflar
  *
  * Har bir modulda:
- *   - Slotlar arxitekturasi: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3" }
+ *   - Slotlar arxitekturasi: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3" } (egasi #209: korpus 16 mm — sex standarti; avval LDSP18)
  *   - Haqiqiy formulalar: w, d, h, t (LDSP qalinligi)
  *   - Real bozor narxi (UZS)
  *
@@ -40,8 +40,8 @@ const newFragments = [
     w: 1600, d: 600, h: 2200,
     min_w: 1200, max_w: 2000, min_d: 550, max_d: 700,
     stretch_axis: "xy", price_mode: "unit", price: 2850000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "ust", qty: 1, len: "w - 2 * t", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -66,8 +66,8 @@ const newFragments = [
     w: 2400, d: 600, h: 2400,
     min_w: 2100, max_w: 3000, min_d: 550, max_d: 700,
     stretch_axis: "xy", price_mode: "unit", price: 4200000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "ust", qty: 1, len: "w - 2 * t", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -92,8 +92,8 @@ const newFragments = [
     w: 900, d: 550, h: 2100,
     min_w: 800, max_w: 1100, min_d: 500, max_d: 650,
     stretch_axis: "xy", price_mode: "unit", price: 1950000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "ust", qty: 1, len: "w - 2 * t", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -121,8 +121,8 @@ const newFragments = [
     w: 600, d: 600, h: 2100,
     min_w: 600, max_w: 600, min_d: 550, max_d: 650,
     stretch_axis: "y", price_mode: "unit", price: 1650000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "ust", qty: 1, len: "w - 2 * t", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -146,8 +146,8 @@ const newFragments = [
     w: 600, d: 600, h: 2100,
     min_w: 600, max_w: 600, min_d: 550, max_d: 650,
     stretch_axis: "y", price_mode: "unit", price: 1750000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "ust", qty: 1, len: "w - 2 * t", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -172,8 +172,8 @@ const newFragments = [
     w: 600, d: 550, h: 720,
     min_w: 400, max_w: 900, min_d: 500, max_d: 650,
     stretch_axis: "xy", price_mode: "unit", price: 820000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "tub", qty: 1, len: "w - 2 * t", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -199,8 +199,8 @@ const newFragments = [
     w: 800, d: 550, h: 720,
     min_w: 600, max_w: 1200, min_d: 500, max_d: 650,
     stretch_axis: "xy", price_mode: "unit", price: 980000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "tub", qty: 1, len: "w - 2 * t", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -225,8 +225,8 @@ const newFragments = [
     w: 200, d: 550, h: 720,
     min_w: 150, max_w: 300, min_d: 500, max_d: 650,
     stretch_axis: "y", price_mode: "unit", price: 460000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "tub", qty: 1, len: "w - 2 * t", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -250,8 +250,8 @@ const newFragments = [
     w: 800, d: 320, h: 720,
     min_w: 600, max_w: 900, min_d: 300, max_d: 400,
     stretch_axis: "xy", price_mode: "unit", price: 590000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "qopqoq", qty: 1, len: "w - 2 * t", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -274,8 +274,8 @@ const newFragments = [
     w: 800, d: 320, h: 720,
     min_w: 600, max_w: 1200, min_d: 300, max_d: 400,
     stretch_axis: "xy", price_mode: "unit", price: 780000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "qopqoq", qty: 1, len: "w - 2 * t", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -298,8 +298,8 @@ const newFragments = [
     w: 600, d: 600, h: 720,
     min_w: 550, max_w: 650, min_d: 550, max_d: 650,
     stretch_axis: "y", price_mode: "unit", price: 680000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon_chap", qty: 1, len: "h", width: "320", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "yon_ong", qty: 1, len: "h", width: "320", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -325,8 +325,8 @@ const newFragments = [
     w: 1800, d: 350, h: 300,
     min_w: 1400, max_w: 2400, min_d: 300, max_d: 450,
     stretch_axis: "x", price_mode: "unit", price: 1100000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "qopqoq", qty: 1, len: "w", width: "d", slot: "korpus", edge: { F: "kromka_korpus", B: "kromka_korpus", L: "kromka_korpus", R: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -350,8 +350,8 @@ const newFragments = [
     w: 800, d: 350, h: 2000,
     min_w: 600, max_w: 1200, min_d: 300, max_d: 450,
     stretch_axis: "xy", price_mode: "unit", price: 1250000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "qopqoq", qty: 1, len: "w - 2 * t", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -375,8 +375,8 @@ const newFragments = [
     w: 1400, d: 700, h: 750,
     min_w: 1200, max_w: 1800, min_d: 600, max_d: 800,
     stretch_axis: "xy", price_mode: "unit", price: 1350000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "stoleshnitsa", qty: 1, len: "w", width: "d", slot: "korpus", edge: { F: "kromka_fasad", B: "kromka_fasad", L: "kromka_fasad", R: "kromka_fasad" }, tekstura: "uzunlik" },
       { code: "oyoq_chap", qty: 1, len: "h - t", width: "d - 50", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -402,8 +402,8 @@ const newFragments = [
     w: 400, d: 450, h: 550,
     min_w: 400, max_w: 500, min_d: 400, max_d: 550,
     stretch_axis: "y", price_mode: "unit", price: 540000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h - 60", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "qopqoq", qty: 1, len: "w", width: "d", slot: "korpus", edge: { F: "kromka_korpus", L: "kromka_korpus", R: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -430,8 +430,8 @@ const newFragments = [
     w: 900, d: 380, h: 500,
     min_w: 600, max_w: 1200, min_d: 320, max_d: 450,
     stretch_axis: "x", price_mode: "unit", price: 680000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "yon", qty: 2, len: "h", width: "d", slot: "korpus", edge: { F: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "qopqoq", qty: 1, len: "w", width: "d", slot: "korpus", edge: { F: "kromka_korpus", B: "kromka_korpus", L: "kromka_korpus", R: "kromka_korpus" }, tekstura: "uzunlik" },
@@ -454,8 +454,8 @@ const newFragments = [
     w: 800, d: 250, h: 1400,
     min_w: 600, max_w: 1200, min_d: 200, max_d: 300,
     stretch_axis: "xy", price_mode: "unit", price: 420000,
-    material_code: "LDSP18", production: "panel",
-    slots: { korpus: "LDSP18", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
+    material_code: "LDSP16", production: "panel",
+    slots: { korpus: "LDSP16", fasad: "MDF16", orqa: "HDF3", kromka_korpus: "PVC04", kromka_fasad: "PVC2" },
     parts: [
       { code: "asosiy_panel", qty: 1, len: "h", width: "w", slot: "korpus", edge: { F: "kromka_korpus", B: "kromka_korpus", L: "kromka_korpus", R: "kromka_korpus" }, tekstura: "uzunlik" },
       { code: "shapka_polka", qty: 1, len: "w", width: "d", slot: "korpus", edge: { F: "kromka_korpus", L: "kromka_korpus", R: "kromka_korpus" }, tekstura: "uzunlik" },

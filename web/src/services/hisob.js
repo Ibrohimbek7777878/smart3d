@@ -90,7 +90,7 @@ export function createHisob(data) {
       return true;
     },
 
-    /** Korpus/fasad kodi materials.json da bormi (eski boot: noma'lum bo'lsa LDSP18 / MDF16). */
+    /** Korpus/fasad kodi materials.json da bormi (eski boot: noma'lum bo'lsa LDSP16 / MDF16). */
     knownMaterial(code) { return (mats.panel_materials || []).some(m => m.code === code); },
 
     /** F2: foydalanuvchi placements + synthetic oshxona elementlari (auto, persist emas). */

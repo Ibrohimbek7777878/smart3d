@@ -41,7 +41,7 @@ const state = {
   doc: null,
   catalog: {},          // {code: frag}
   materials: null,      // materials.json
-  materialCode: 'LDSP18',   // korpus (va polka) materiali — slots.korpus
+  materialCode: 'LDSP16',   // korpus (va polka) materiali — slots.korpus (egasi #209: sex standarti 16 mm)
   fasadCode: 'MDF16',       // fasad (eshik, tortma) materiali — slots.fasad
   sheetCatalog: null,   // ERP katalogi (sheet-catalog.json)
   searchIndex: null,    // material ID + fuzzy qidiruv indeksi
@@ -1335,7 +1335,7 @@ function buildProjectPayload() {
 /** Loyiha faylini ilovaga qo'llash (tuzilma tekshirilgan bo'lishi kerak) */
 function applyProjectPayload(p) {
   $('#projName').textContent = p.name || 'Loyiha';
-  state.materialCode = p.material || 'LDSP18';
+  state.materialCode = p.material || 'LDSP16';
   state.fasadCode = p.fasad || 'MDF16';
   state.sheet = p.sheet || null;
   renderMaterials(); renderSheetSel(); renderCatalog();
@@ -1431,7 +1431,7 @@ async function boot() {
   } catch (e) { /* buzilgan kesh — defaults bilan davom */ }
   delete state.nestCfg._meta;
   const known = (c) => (mats.panel_materials || []).some(m => m.code === c);
-  if (!known(state.materialCode)) state.materialCode = 'LDSP18';
+  if (!known(state.materialCode)) state.materialCode = 'LDSP16';
   if (!known(state.fasadCode)) state.fasadCode = 'MDF16';
 
   /* sahna */

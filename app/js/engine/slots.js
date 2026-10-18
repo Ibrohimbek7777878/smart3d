@@ -13,11 +13,13 @@
  *     hamda haqiqiy narx bo'yicha hisoblanadi.
  */
 
+/* egasi #209 (13): korpus va polka — LDSP 16 mm (sex standarti: MC Bazis modullari fragments-mc.json — korpus LDSP16, 38/38;
+   ERP plitalari sheet-catalog.json: LDSP 16 mm — 439, 18 mm — 16; Bazis buyurtmalari). Stoleshnitsa, dobor, karniz — o'zgarmaydi */
 export const DEFAULT_SLOTS = {
-  korpus: 'LDSP18',
+  korpus: 'LDSP16',
   fasad: 'MDF16',
   orqa: 'HDF3',
-  polka: 'LDSP18',
+  polka: 'LDSP16',
   kromka_korpus: 'PVC04',
   kromka_fasad: 'PVC2',
   /* F2: oshxona qo'shimchalari (ERP stoleshnitsa materiali kelguncha) */
@@ -56,19 +58,19 @@ export function resolveSlots(projectSlots = {}, placementOverride = {}, material
 
     /** Slot bo'yicha plita materiali kodini qaytaradi */
     getMaterialCode(slotName) {
-      return merged[slotName] || merged.korpus || 'LDSP18';
+      return merged[slotName] || merged.korpus || 'LDSP16';
     },
 
     /** Slot bo'yicha plita obyektini qaytaradi */
     getMaterial(slotName) {
       const code = this.getMaterialCode(slotName);
-      return panelMap[code] || { code, name: code, thickness: 18, sheet_price: 500000 };
+      return panelMap[code] || { code, name: code, thickness: 16, sheet_price: 500000 };
     },
 
     /** Slot bo'yicha material qalinligi t (mm) */
     getThickness(slotName) {
       const mat = this.getMaterial(slotName);
-      return mat.thickness != null ? mat.thickness : 18;
+      return mat.thickness != null ? mat.thickness : 16;
     },
 
     /** Slot bo'yicha kromka materiali (narx — productionCost'da, bazadan) */
