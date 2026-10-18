@@ -1,5 +1,5 @@
 /* TZ-09 6-bosqich: "Fayllar" — har tugma haqiqiy fayl beradi (nom, hajm), hisobot oynasi ochiladi, logo bor.
- * Biesse/Homag — "tez orada" (bosilmaydi), BPJ — oddiy ustaga "tez orada". Ishlatish: bash tests/ui/web.sh fayllar */
+ * Biesse/Homag — "tez orada" (bosilmaydi); BPJ — TZ-33 B1 dan hamma uchun ("Bazis (.bpj) · SINOV", web_eksport_skp.mjs). Ishlatish: bash tests/ui/web.sh fayllar */
 export default async function run(page) {
   const R = {};
   try { await asosiy(page, R); } catch (e) {
@@ -77,5 +77,5 @@ async function asosiy(page, R) {
   R.tezOrada = await M(() => [...document.querySelectorAll('[data-panel] button')].filter(b => /tez orada/.test(b.textContent)).map(b => b.textContent.trim() + (b.disabled ? ' [o\'chiq]' : ' [ochiq!]')));
   R.errs = errs;
   const yaxshi = R.objOk && Object.values(R.fayllar).every(f => f.nom && f.hajm > 0);
-  R.ok = yaxshi && R.hisobot && R.hisobot.logo && !!R.hisobot.jami && R.tezOrada.length === 3 && R.tezOrada.every(x => /o'chiq/.test(x)) && errs.length === 0;
+  R.ok = yaxshi && R.hisobot && R.hisobot.logo && !!R.hisobot.jami && R.tezOrada.length === 2 && R.tezOrada.every(x => /o'chiq/.test(x)) && errs.length === 0;
 }

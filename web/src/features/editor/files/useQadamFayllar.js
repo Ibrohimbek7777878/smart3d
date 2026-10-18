@@ -2,15 +2,19 @@ import { useSlice } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { STANOK } from '../../settings/constants.js';
 import { faylYukla } from './actions.js';
+import { openSheet } from '../../../store/ui.js';
 import { t } from '../../../i18n/index.js';
 
 /* TZ-19: "Fayllar" qadami — tekshiruv va fayl guruhlari. Har yorliq — haqiqiy fayl. Biesse/Homag — TZ-11 gacha yo'q
- * (doim namuna detal chiqaradi, TZ-01); BPJ — TZ-17 gacha faqat admin, SINOV. "Smeta (CSV)", "OBJ", "Teshiklar (JSON)" —
- * eski saytdagi fayllar yo'qolmasin. Stanok fayllari — Sozlamalardagi stanok profili bo'yicha. */
+ * (doim namuna detal chiqaradi, TZ-01); BPJ — SINOV (TZ-33 B1: hamma uchun). "Smeta (CSV)", "OBJ", "Teshiklar (JSON)" —
+ * eski saytdagi fayllar yo'qolmasin. Stanok fayllari — Sozlamalardagi stanok profili bo'yicha.
+ * TZ-33: "SketchUp (.skp)" va "SketchUp Pro (.dae)" — OBJ yonida (tanlangan modul yoki butun loyiha); "Bazis (.bpj)" — hamma uchun
+ * (SINOV belgisi bilan), bosilganda 3 qadamli yo'riqnoma va yuklab olish tugmasi (eksport/BpjYoriq.jsx). */
 export function useQadamFayllar() {
   const auth = useSlice('auth'), st = useSlice('settings');
   useSlice('project');
   const edSel = useSlice('editor').sel;
+  const modul = edSel != null && project.doc && project.pl(edSel);
   const R = project.res, NS = R ? R.nest.summary : {}, pr = R ? R.priceRes : null, prod = R ? R.prod : null;
   const missN = prod ? prod.missing.length : 0;
   let detTotal = 0;
@@ -20,10 +24,11 @@ export function useQadamFayllar() {
   const groups = [
     { title: t('fayllar.mijozga'), col: 'var(--cyan)', sub: t('fayllar.logo_bilan'), mainLabel: t('fayllar.hisobot'), mainIkon: 'chop', main: 'hisobot', more: [[t('fayllar.rasm'), 'rasm', 'rasm'], ['360°', 'panorama', 'aylanish'], ['GLB (3D/AR)', 'glb']] },
     { title: t('fayllar.sexga'), col: 'var(--lav)', sub: t('fayllar.sexga_sub', { d: NS.panel_count || 0, v: NS.total_sheets || 0 }), mainLabel: t('fayllar.excel'), mainIkon: 'excel', main: 'excel',
-      more: [[t('fayllar.detallar_csv'), 'cutlist'], [t('fayllar.loyiha_fayli'), 'loyiha'], [t('fayllar.smeta_csv'), 'smetaCsv'], [edSel != null && project.doc && project.pl(edSel) ? t('fayllar.obj_modul') : t('fayllar.obj_loyiha'), 'obj'], [t('fayllar.teshiklar_json'), 'teshiklar']] },
+      more: [[t('fayllar.detallar_csv'), 'cutlist'], [t('fayllar.loyiha_fayli'), 'loyiha'], [t('fayllar.smeta_csv'), 'smetaCsv'], [modul ? t('fayllar.obj_modul') : t('fayllar.obj_loyiha'), 'obj'],
+        [modul ? t('fayllar.skp_modul') : t('fayllar.skp_loyiha'), 'skp'], [modul ? t('fayllar.dae_modul') : t('fayllar.dae_loyiha'), 'dae'], [t('fayllar.teshiklar_json'), 'teshiklar']] },
     { title: t('fayllar.stanokka'), col: 'var(--acct)', sub: t('fayllar.dastursiz'), mainLabel: 'GibLab', main: 'giblab',
       more: [['DXF', 'dxf'], ['G-code', 'gcode'], [t('fayllar.tez_orada', { nom: 'Biesse' }), null], [t('fayllar.tez_orada', { nom: 'Homag' }), null], ['PTP', 'ptp'], ['NC', 'nc'], ['XNC', 'xnc'], ['Altendorf', 'altendorf'],
-        admin ? [t('fayllar.sinov', { nom: 'Bazis (BPJ)' }), 'bpj'] : [t('fayllar.tez_orada', { nom: 'Bazis (BPJ)' }), null],
+        [t('fayllar.sinov', { nom: 'Bazis (.bpj)' }), 'bpj', null, () => openSheet('bpjYoriq', {})],   // TZ-33 B1: avval yo'riqnoma
         /* TZ-11: Bazis eksportidek GibLab .project va KDT prisadka — texnolog sinovigacha faqat admin, SINOV */
         ...(admin ? [[t('fayllar.sinov', { nom: 'GibLab (Bazis)' }), 'giblabBazis'], [t('fayllar.sinov', { nom: 'KDT prisadka' }), 'kdt']] : [])]
         .filter(([, k]) => !k || !stanoklar || !STANOK.some(x => x[0] === k) || stanoklar.includes(k)) }];
@@ -34,6 +39,6 @@ export function useQadamFayllar() {
       ...(R ? R.val.errors : []).map(x => ({ ok: false, text: x.message || x.code })),
       ...(missN ? [{ ok: false, text: t('fayllar.zapchast_narxsiz', { n: missN }) }] : [])],
     fileGroups: groups.map(g => ({ ...g, main: () => faylYukla(g.main),
-      more: g.more.map(([l, k, ikon]) => ({ label: l, ikon, dis: !k, c: k ? 'var(--txt)' : 'var(--mut)', cur: k ? 'pointer' : 'not-allowed', go: () => { if (k) faylYukla(k); } })) }))
+      more: g.more.map(([l, k, ikon, go]) => ({ label: l, ikon, dis: !k, c: k ? 'var(--txt)' : 'var(--mut)', cur: k ? 'pointer' : 'not-allowed', go: () => { if (go) go(); else if (k) faylYukla(k); } })) }))
   };
 }

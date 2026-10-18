@@ -13,6 +13,7 @@ import FurnituraVaraq from './catalog/FurnituraVaraq.jsx';
 import DavomVaraq from '../projects/DavomVaraq.jsx';
 import BuyurtmaVaraq from '../buyurtma/BuyurtmaVaraq.jsx';
 import OshxonaAiVaraq from './ai/OshxonaVaraq.jsx';
+import BpjYoriq from './eksport/BpjYoriq.jsx';
 import { materialTitle } from './catalog/material.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 
@@ -27,7 +28,8 @@ const VARAQ = {
   furnitura: { title: () => <><Ikon n="furnitura" size={18} />{t('furnitura.sarlavha')}</>, label: 'furnitura.sarlavha', Body: FurnituraVaraq },
   davom: { title: () => <><Ikon n="papka" size={18} />{t('davom.sarlavha')}</>, label: 'davom.sarlavha', Body: DavomVaraq },   // TZ-27
   buyurtma: { title: () => <><Ikon n="buyurtma" size={18} />{t('buyurtma.sarlavha')}</>, label: 'buyurtma.sarlavha', Body: BuyurtmaVaraq },   // TZ-23 C1
-  aioshxona: { title: (vq) => <><Ikon n={vq.sarlavha ? 'ai' : 'oshxona'} size={18} />{t(vq.sarlavha || 'ai.osh_sarlavha')}</>, label: 'ai.osh_sarlavha', Body: OshxonaAiVaraq }   // egasi #166, #168
+  aioshxona: { title: (vq) => <><Ikon n={vq.sarlavha ? 'ai' : 'oshxona'} size={18} />{t(vq.sarlavha || 'ai.osh_sarlavha')}</>, label: 'ai.osh_sarlavha', Body: OshxonaAiVaraq },   // egasi #166, #168
+  bpjYoriq: { title: () => <><Ikon n="bazis" size={18} />{t('bpj.sarlavha')}</>, label: 'bpj.sarlavha', Body: BpjYoriq }   // TZ-33 B1
 };
 
 export default function Varaqlar() {

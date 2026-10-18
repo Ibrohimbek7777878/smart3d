@@ -66,6 +66,10 @@ export const XATOLAR = {
   'S3D-DATA-101': { matn: 'Ma\'lumot yuklanmadi — internetni tekshiring' },
   'S3D-CALC-101': { matn: 'Hisoblashda xato — narx yangilanmadi' },
   'S3D-EXP-101': { matn: 'Fayl yaratilmadi' },
+  /* TZ-33 A: SketchUp eksporti */
+  'S3D-EXP-102': { matn: 'SketchUp (.skp) fayli yaratilmadi' },
+  'S3D-EXP-103': { matn: 'SketchUp eksporti yuklanmadi — internetni tekshirib, qayta urinib ko\'ring' },
+  'S3D-EXP-104': { matn: 'SketchUp Pro (.dae) fayli yaratilmadi' },
   'S3D-SCENE-101': { matn: '3D sahna ochilmadi' },
   'S3D-SCENE-102': { matn: '3D ko\'rinish ochilmadi' },
   'S3D-AI-101': { matn: 'AI xato' },
