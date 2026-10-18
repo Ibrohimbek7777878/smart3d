@@ -21,7 +21,7 @@ const XZ = { xizmatlar: { teshik: true } };   // TZ-03: prisadka tanlangan holat
 const p0 = productionCost([cl], mats, XZ);
 const tx = (p) => p.lines.filter(l => l.taxminiy).map(l => l.group);
 ok(`tasdiqlanmagan manba → taxminiy: ${p0.taxminiy.join(', ')}`,
-  ['Kromka', 'Prisadka', 'Ish haqi'].every(g => p0.taxminiy.includes(g)), JSON.stringify(p0.taxminiy));
+  ['Kromka', 'Prisadka'].every(g => p0.taxminiy.includes(g)) && !p0.taxminiy.includes('Ish haqi'), JSON.stringify(p0.taxminiy));   // Q3: ish haqi 0, tasdiqlangan
 ok('qator nomida "— taxminiy"', p0.lines.filter(l => l.taxminiy).every(l => / — taxminiy$/.test(l.name)) && tx(p0).length > 0);
 const m2 = JSON.parse(JSON.stringify(mats));
 m2.edge_materials.forEach(e => { e.price_src = 'egasi, test'; });

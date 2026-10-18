@@ -42,11 +42,14 @@ export function narxSukut(materials) {
   const sana = ((materials && materials._meta && materials._meta.updated) || '').slice(0, 10) || null;
   const mk = materials && materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0.35;
   const q = (qiymat) => ({ qiymat, manba: 'taxmin', sana });
+  /* ish haqi: materials.labor.price_src "egasi, <sana>" bo'lsa — tasdiqlangan (egasi #222 Q3: ERP'da ish haqi xizmat narxiga kiritilgan, alohida stavka 0) */
+  const ihTasdiq = /^egasi/.test(String(lab.price_src || ''));
+  const ihQ = (qiymat) => (ihTasdiq ? { qiymat, manba: 'egasi', sana: (/\d{4}-\d{2}-\d{2}/.exec(lab.price_src) || [])[0] || sana } : q(qiymat));
   const um = ustamaManbasi(materials);
   const uSana = um === 'egasi' ? ((/\d{4}-\d{2}-\d{2}/.exec(materials.pricing.price_src) || [])[0] || sana) : sana;   // "egasi, 2026-10-17" → sana
   let doc = {
     versiya: 1, xizmatlar: {}, tanlov: { raspil: null, kromka: {}, prisadka: {}, bazis: {} },
-    ish_haqi: { yoqilgan: q(true), detal: q(lab.panel_per_piece || 0), modul: q(lab.per_fragment_min || 0) },
+    ish_haqi: { yoqilgan: ihQ(true), detal: ihQ(lab.panel_per_piece || 0), modul: ihQ(lab.per_fragment_min || 0) },
     ustama: { foiz: { qiymat: Math.round(mk * 1000) / 10, manba: um, sana: uSana } }
   };
   /* TZ-32 E: ERP xizmatlar jadvalidagi sukut stavkalar va oldindan tanlangan qatorlar (materials.json sukut_narx) — har qiymat

@@ -209,11 +209,11 @@
   },
   {
    "code": "STOL26-3050",
-   "name": "Stoleshnitsa 26 mm × 3050",
+   "name": "Ультрадекор Столешница 26мм Черная бронза Gloss R9 3050×600×26",
    "thickness": 26,
    "factor": 1.0,
-   "sheet_price": 0,
-   "price_src": "yoq",
+   "sheet_price": 638939,
+   "price_src": "ERP 2026-10-18",
    "unit_piece": true,
    "std_l": 3050,
    "sheets": [
@@ -222,7 +222,12 @@
      600
     ]
    ],
-   "src": "egasi #162, narxi yo'q"
+   "src": "sukut dekor ERP C514 GL (349147 so'm/m², qoldiq 2654.0 m²): eng ko'p qoldiqli; ilovada dekor tanlanadi (stoleshnitsa-erp.json)",
+   "erp": {
+    "id": 16598,
+    "sku": "C514 GL",
+    "narx_m2": 349147
+   }
   },
   {
    "code": "STOL26-4200",
@@ -230,7 +235,7 @@
    "thickness": 26,
    "factor": 1.0,
    "sheet_price": 0,
-   "price_src": "yoq",
+   "price_src": "yoq — ERP'da 26 mm sukut dekorida 4200 mm uzunlik yo'q (ilova tanlangan dekor uzunligini ishlatadi)",
    "unit_piece": true,
    "std_l": 4200,
    "sheets": [
@@ -239,15 +244,15 @@
      600
     ]
    ],
-   "src": "egasi #162, narxi yo'q"
+   "src": "TZ-32 yakuniy: narx dekor bo'yicha (stoleshnitsa-erp.json)"
   },
   {
    "code": "STOL38-3050",
-   "name": "Stoleshnitsa 38 mm × 3050",
+   "name": "КЕДР ПРОФ Столешница 38мм Королевский опал светлый мат 3050×600×38",
    "thickness": 38,
    "factor": 1.0,
-   "sheet_price": 0,
-   "price_src": "yoq",
+   "sheet_price": 879242,
+   "price_src": "ERP 2026-10-18",
    "unit_piece": true,
    "std_l": 3050,
    "sheets": [
@@ -256,15 +261,20 @@
      600
     ]
    ],
-   "src": "egasi #162, narxi yo'q"
+   "src": "sukut dekor ERP 3062/S (480460 so'm/m², qoldiq 355.0 m²): eng ko'p qoldiqli; ilovada dekor tanlanadi (stoleshnitsa-erp.json)",
+   "erp": {
+    "id": 16122,
+    "sku": "3062/S",
+    "narx_m2": 480460
+   }
   },
   {
    "code": "STOL38-4200",
-   "name": "Stoleshnitsa 38 mm × 4200",
+   "name": "КЕДР ПРОФ Столешница 38мм Королевский опал светлый мат 4200×600×38",
    "thickness": 38,
    "factor": 1.0,
-   "sheet_price": 0,
-   "price_src": "yoq",
+   "sheet_price": 1210759,
+   "price_src": "ERP 2026-10-18",
    "unit_piece": true,
    "std_l": 4200,
    "sheets": [
@@ -273,7 +283,12 @@
      600
     ]
    ],
-   "src": "egasi #162, narxi yo'q"
+   "src": "sukut dekor ERP 3062/S (480460 so'm/m², qoldiq 355.0 m²): eng ko'p qoldiqli; ilovada dekor tanlanadi (stoleshnitsa-erp.json)",
+   "erp": {
+    "id": 16122,
+    "sku": "3062/S",
+    "narx_m2": 480460
+   }
   }
  ],
  "sukut_erp": {
@@ -675,9 +690,10 @@
   }
  ],
  "labor": {
-  "panel_per_piece": 12000,
-  "per_fragment_min": 40000,
-  "note": "Kesim + yig'ish ish haqi (taxminiy)"
+  "panel_per_piece": 0,
+  "per_fragment_min": 0,
+  "price_src": "egasi, 2026-10-18",
+  "note": "ERP: ish haqi xizmat narxiga kiritilgan (sex tannarxi) — alohida detal/modul ish haqi ERP'da yo'q (egasi #222 Q3: «ERP'da qanday yozilgan, shu bo'yicha ishlaymiz»). Avvalgi taxmin: 12 000 so'm/detal, 40 000 so'm/modul — olib tashlandi."
  },
  "sheet_sizes_default": [
   2800,

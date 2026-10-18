@@ -49,7 +49,7 @@ export default function QadamNarx() {
             <span className="sc-interp">{v.price?.profit}</span>
           </span>
           <span style={{"fontSize":"12px","color":"var(--mut)"}}>
-            {t('narx.som')}
+            {t('narx.som')} · {t('narx.foyda_izoh')}
           </span>
         </div>
       </div>

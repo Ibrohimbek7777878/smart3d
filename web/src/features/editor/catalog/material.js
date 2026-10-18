@@ -9,6 +9,9 @@ import { asosiyRang } from '../../../../../app/js/engine/dekorAsosiy.js';
 import { raqam } from '../../../shared/lib/format.js';
 import { t } from '../../../i18n/index.js';
 import { dekorlarga } from './dekor.js';
+import { dekorRang } from '../../../../../app/js/engine/rang.js';
+import { stolQalinlik } from '../../../../../app/js/engine/kitchen.js';
+import { stolDekor, stolDonaNarx } from '../../../../../app/js/engine/stoleshnitsa.js';
 
 /* TZ-19 (TZ-09 8-bosqich) → TZ-23 E: material va rang tanlash.
  *   qism  — korpus, polka, fasad, orqa devor, stoleshnitsa;
@@ -96,6 +99,51 @@ function tozala(qismlar) {
   return n;
 }
 
+/* TZ-32 yakuniy (egasi #222 Q1): stoleshnitsa dekori — ERP stoleshnitsa ro'yxatidan (app/data/stoleshnitsa-erp.json), har biri o'z narxi bilan.
+ * Tanlov doc.kitchen.stolErp (+ qalinlik stolT); narx — ERP m2 narxi x bo'lak maydoni (engine/stoleshnitsa.js). Sukut — qalinlik bo'yicha eng ko'p qoldiqli. */
+const STOL_CHEK = 60;
+function stolVaraq(q, yangiFiltr) {
+  const H = project.H, data = H.stolErp, doc = project.doc, k = doc.kitchen || {};
+  const T = stolQalinlik(k), cur = stolDekor(data, k), sukutId = data && data.sukut ? data.sukut[String(T)] : null;
+  const qq = String(q.q || '').toLowerCase().trim(), chek = q.chek || STOL_CHEK;
+  const royxat = ((data && data.items) || []).filter(d => (!q.th || d.qalinlik === q.th) && (!qq || (d.nom + ' ' + d.sku).toLowerCase().includes(qq)))
+    .sort((a, b) => ((b.qalinlik === T) - (a.qalinlik === T)) || (a.qalinlik - b.qalinlik) || ((b.qoldiq_m2 > 0) - (a.qoldiq_m2 > 0)) || (b.qoldiq_m2 - a.qoldiq_m2));
+  const sanoq = {}, korinadi = royxat.filter(d => (sanoq[d.qalinlik] = (sanoq[d.qalinlik] || 0) + 1) <= chek);   // har qalinlik bo'limi alohida chegarada (38 mm ham ko'rinsin)
+  const tanla = (d) => () => {
+    const kk = doc.kitchen || (doc.kitchen = L.freshKitchen());
+    kk.stolT = d.qalinlik; kk.stolErp = d.erp_id;
+    project.changed('room', true);
+    toast(t('mebel.material_tanlandi', { qism: t('mebel.qism_stol'), nom: d.dekor }));
+  };
+  const plitka = (d) => {
+    const r = dekorRang(d.dekor), std = d.uzunliklar[0];
+    return { key: 'stol' + d.erp_id, nom: d.dekor, sub: [d.brend, d.sku, t('mebel.stol_qoldiq', { n: Math.round(d.qoldiq_m2) }), String(sukutId) === String(d.erp_id) ? t('mebel.stol_sukut') : ''].filter(Boolean).join(' · '),
+      rang: r ? hex(r.rang) : null, yogoch: !!(r && r.yogoch), rasm: null, on: !!cur && cur.erp_id === d.erp_id, taxminiy: !r,
+      price: std + '×' + (d.eni || 600) + ' · ' + raqam(stolDonaNarx(d, std)) + ' ' + t('umumiy.som'), pick: tanla(d), variantlar: [] };
+  };
+  const bolimlar = [];
+  for (const d of korinadi) {
+    let b = bolimlar.find(x => x.k === String(d.qalinlik));
+    if (!b) bolimlar.push(b = { k: String(d.qalinlik), label: d.qalinlik + ' ' + t('umumiy.mm'), rang: null, plitkalar: [] });
+    b.plitkalar.push(plitka(d));
+  }
+  const curR = cur ? dekorRang(cur.dekor) : null;
+  return {
+    qism: 'stol', doira: t('mebel.butun_loyiha'),
+    joriy: cur ? cur.dekor : '', joriyRang: curR ? hex(curR.rang) : null, joriyIzoh: '',
+    joriyQalin: cur ? cur.qalinlik + ' ' + t('umumiy.mm') : '', joriyNarx: cur ? raqam(cur.narx_m2) + ' ' + t('umumiy.som') + '/m²' : t('mebel.narx_yoq'),
+    qismlar: QISMLAR.map(x => ({ label: t('mebel.qism_' + x), on: x === 'stol', pick: () => yangiFiltr({ qism: x, guruh: null, th: null, tur: null, q: '' }) })),
+    doiralar: [], mashhur: [], hammasi: true, asosiy: [], asosiySoni: 0, hammasiQaytish: false, hammasiTogla: () => {}, boshqaSoni: royxat.length,
+    filOchiq: true, filSoni: q.th ? 1 : 0, filTogla: () => {}, turlarERP: [],
+    qalinlik: [{ label: t('mebel.rang_hammasi'), on: !q.th, pick: () => yangiFiltr({ th: null }) }]
+      .concat([26, 38].map(v => ({ label: v + ' ' + t('umumiy.mm'), on: q.th === v, pick: () => yangiFiltr({ th: q.th === v ? null : v }) }))),
+    turlar: [], asli: null, ranglar: [], q: q.q, onQ: ev => yangiFiltr({ q: ev.target.value }), umumiy: null, loyihadagi: null,
+    jami: royxat.length > korinadi.length ? t('mebel.plita_soni', { n: korinadi.length, jami: royxat.length }) : null,
+    yana: royxat.length > korinadi.length ? { n: royxat.length - korinadi.length, pick: () => yangiFiltr({ chek: chek + STOL_CHEK }) } : null,
+    bolimlar, bor: royxat.length > 0
+  };
+}
+
 export function useMaterialVaraq() {
   const q = useSlice('ui').vq, pj = useSlice('project');
   const H = project.H, qism = q.qism || 'korpus';
@@ -103,6 +151,7 @@ export function useMaterialVaraq() {
   const yangiFiltr = (patch) => patchSheet(Object.assign({ chek: undefined }, patch));
   const bz = q.bazis && project.doc.bazis ? q.bazis : null, bzM = bz ? bazisMat(bz) : null, almash = (bz && project.doc.bazis.almash) || {};
   const p = q.modul ? project.pl(q.modul) : null;
+  if (qism === 'stol' && !bz && !p && H.stolErp) return stolVaraq(q, yangiFiltr);
   const cur = bz ? almash[bz] || bz : joriy(pj, qism, p);
   const qismNom = bz ? t('mebel.bazis_material') : t('mebel.qism_' + qism);
   const pm = H.materials.panel_materials || [];

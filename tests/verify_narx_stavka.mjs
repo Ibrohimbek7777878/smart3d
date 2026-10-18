@@ -110,14 +110,16 @@ const Sd = qolla(S, { ish_haqi: { detal: 20000 } });
 ok('ish haqi detal 12 000 → 20 000: oshdi', hisob(Sd).laborCost > pK.laborCost);
 const Su = qolla(S, { ustama: { foiz: 20 } });
 const pU = hisob(Su);
-ok('ustama 35% → 20%: mijoz narxi = tannarx × 1,20', pU.markupPct === 0.2 && pU.clientTotal === Math.round(pU.totalCost * 1.2));
+/* TZ-32 yakuniy Q2: ustama faqat plita+furnitura narxiga; xizmatlar (raspil, kromka, prisadka, Bazis, ish haqi) ustamasiz */
+ok('ustama 35% → 20%: mijoz narxi = (plita+furnitura) × 1,20 + xizmatlar (ustamasiz)', pU.markupPct === 0.2
+  && pU.clientTotal === Math.round((pU.sheetCost + pU.hwCost) * 1.2) + pU.raspilCost + pU.edgeCost + pU.holeCost + pU.bazisCost + pU.laborCost);
 ok('usta o\'z ustamasi (Sozlamalar) ustun', hisob(Su, { markupPct: 0.5 }).markupPct === 0.5);
 
 console.log('\n[3] Narx aniqligi');
 ok(`hozirgi (stavkasiz): ${p0.aniqlik.pct}% (${p0.aniqlik.taxmin.length} taxmin qator, ${p0.aniqlik.narxsiz} narxsiz)`, p0.aniqlik.pct > 0 && p0.aniqlik.pct < 100 && !p0.aniqlik.taxmin.some(t => t.group === 'Ustama'));
 /* TZ-30 (egasi #181, 2026-10-17): ustama 35% — egasi tasdiqladi (materials.json pricing.price_src "egasi, 2026-10-17") */
 ok('sukut ustama — 35%, manba "egasi", sana 2026-10-17 (server boshlang\'ich hujjati va stavkasiz hisob)', s0.ustama.foiz.qiymat === 35 && s0.ustama.foiz.manba === 'egasi'
-  && s0.ustama.foiz.sana === '2026-10-17' && p0.aniqlik.ustama_manba === 'egasi' && pS.aniqlik.ustama_manba === 'egasi' && s0.ish_haqi.detal.manba === 'taxmin');
+  && s0.ustama.foiz.sana === '2026-10-17' && p0.aniqlik.ustama_manba === 'egasi' && pS.aniqlik.ustama_manba === 'egasi' && s0.ish_haqi.detal.manba === 'egasi' && s0.ish_haqi.detal.qiymat === 0 && s0.ish_haqi.modul.qiymat === 0);   // Q3: ish haqi ERP xizmat narxida, sukut 0 (egasi #222)
 const matsT = Object.assign({}, mats, { pricing: { markup_pct: 0.35 } });   // price_src yo'q — avvalgidek "taxmin"
 ok('price_src "egasi…" bo\'lmasa — ustama "taxmin" (avvalgidek)', narxSukut(matsT).ustama.foiz.manba === 'taxmin'
   && productionCost(cls, matsT, OPT).aniqlik.taxmin.some(t => t.group === 'Ustama') && productionCost(cls, matsT, OPT).clientTotal === p0.clientTotal);
@@ -196,7 +198,7 @@ xx = 50;
 for (const [c, w] of [['MC-KU-04', 600], ['MC-KU-07', 600], ['MC-KU-03', 300]]) { docT.placements.push({ id: 'u' + docT.placements.length, frg: c, x: xx, y: 50, z: 1450, w, d: cat[c].d, h: cat[c].h, rot: 0 }); xx += w; }
 const rw = Hh.recalc(docT, { materialCode: 'LDSP16', fasadCode: 'LDSP16' });
 ok(`skript = web hisob: mijoz ${natija.mijoz}, narxsiz ${natija.narxsiz}`, natija.mijoz === rw.prod.clientTotal && natija.tannarx === rw.prod.totalCost && natija.narxsiz === rw.prod.missing.length);
-ok('stoleshnitsa (STOL26-3050) narxsiz — LDSP listidan narxlanmaydi', natija.narxsizlar.includes('STOL26-3050') && natija.aniqlik <= 99);
+ok('stoleshnitsa (STOL26-3050) — narxi ERP dekordan (narxsiz emas), LDSP listidan narxlanmaydi', !natija.narxsizlar.includes('STOL26-3050') && rw.prod.lines.some(l => l.code === 'STOL26-3050' && l.manba === 'ERP' && l.unit_price > 0));
 
 console.log(`\n=== ${fails ? 'XATO' : 'HAMMASI OK'} (${n - fails} pass, ${fails} fail) ===`);
 process.exit(fails ? 1 : 0);
