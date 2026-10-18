@@ -37,7 +37,7 @@ const DEVOR_BOYLAB = /devor\s*bo'?y(?:lab|i|iga)|butun\s*devor|вдоль\s*(?:�
 
 /* buyumlar (so'ralgan mebel turi) — matndan */
 const BUYUM = {
-  krovat: /krovat[a-z']*|toshqin|kir\s*yotoq[a-z']*|karyera|karavot[a-z']*|kravat[a-z']*|karovat[a-z']*|кроват[а-яё]*|(?<![a-z])beds?(?![a-z])/,
+  krovat: /krovat[a-z']*|toshqin|kir\s*yotoq[a-z']*|karyera|karyola[a-z']*|karavot[a-z']*|karavat[a-z']*|kravat[a-z']*|karovat[a-z']*|кроват[а-яё]*|карават[а-яё]*|каравот[а-яё]*|(?<![a-z])beds?(?![a-z])/,
   tumba: /(?<!tv\s|тв\s|tv-|тв-)(?:tumba[a-z']*|тумб[а-яё]*|nightstands?|bedside\s*tables?)/,
   komod: /komod[a-z']*|комод[а-яё]*|dresser|chest of drawers/,
   /* TZ-35: trimo (tortmali kiyinish stoli, tepasida oyna) — katalogdagi komod moduli */
@@ -166,12 +166,49 @@ function krovatEni(s) {
 /* TZ-35 B1: garnitur — bir nechta mebel + joylashuv ("spalniy garnitur, krovat 1800x2100, shkaf 2400x2300, trimo …"): matn bo'laklarga ajratiladi (engine/garnitur.js).
    Oshxona garniturasi ("oshxona garnituri") — avvalgi oshxona yo'li. "trimo" bilan ikki+ tur — ham garnitur (shablon trimoni bilmaydi). */
 const GARNITUR = /garnitur[a-z']*|гарнитур[а-яё]*|(?:bed\s*room|bedroom|furniture)\s*(?:set|suite)|комплект\s*(?:мебел|спальн)/;
-const YOTOQ_SOZ = /spalni[a-z']*|спальн[а-яё]*|yotoq[a-z']*|bed\s*room|bedroom|krovat|karavot|кроват|(?<![a-z])beds?(?![a-z])|trimo|трюмо|dressing\s*table/;
+const YOTOQ_SOZ = /spalni[a-z']*|спальн[а-яё]*|yotoq[a-z']*|bed\s*room|bedroom|krovat|karavot|karavat|karyola|кроват|карават|каравот|(?<![a-z])beds?(?![a-z])|trimo|трюмо|dressing\s*table/;
+
+/* TZ-35 A (qabul kamchiligi): o'lcham o'z buyumiga. Xona o'lchami faqat "xona/xonasi/room/комната" so'zi bilan yonma-yon ("xona 4x5", "4x5 xona", "xonasi 4x5 m") */
+export const O_JUFT = "\\d+(?:\\.\\d+)?\\s*(?:mm|мм|sm|см|cm|m(?![a-z])|м(?![а-яё]))?\\s*[x×х*]\\s*\\d+(?:\\.\\d+)?\\s*(?:mm|мм|sm|см|cm|m(?![a-z])|м(?![а-яё]))?(?:\\s*[x×х*]\\s*\\d+(?:\\.\\d+)?\\s*(?:mm|мм|sm|см|cm)?)?";
+const XONA_SO = "(?<![a-z])xona[a-z']*|комнат[а-яё]*|(?<![a-z])room(?![a-z])";
+const XONA_ONDAN = new RegExp("(?:" + XONA_SO + ")\\s*(?:o'?lcham[a-z']*|размер[а-яё]*|size)?\\s*[:=—–-]?\\s*(?:" + O_JUFT + ")", 'g');
+/* «4x5 xona» — faqat metrda (≤ 99): «shkaf 2400x2300 xonasi 4x5» da 2400x2300 shkafniki */
+const XONA_KEYIN = new RegExp("(?<![\\d.x×х*])\\d{1,2}(?:\\.\\d+)?\\s*m?\\s*[x×х*]\\s*\\d{1,2}(?:\\.\\d+)?\\s*m?\\s*(?:li|lik)?\\s*(?:" + XONA_SO + ")", 'g');
+/** matndan xona o'lchamlarini ajratadi: { xona: [bo'lak …], qolgan: matn } — buyum o'lchamlari qolgan matnda */
+export function xonaOlchamAjrat(matn) {
+  const xona = [];
+  let q = String(matn || '');
+  const ol = (re) => { q = q.replace(re, (m) => { xona.push(m); return ' '; }); };
+  ol(XONA_ONDAN);
+  if (!xona.length) ol(XONA_KEYIN);
+  return { xona, qolgan: q.replace(/\s+/g, ' ').trim() };
+}
+const GAR_SHKAF = /shkaf[a-z']*|шкаф[а-яё]*|garderob[a-z']*|гардероб[а-яё]*|wardrobe|closet|kupe|купе/;
+const GAR_BUYUM = [['krovat', BUYUM.krovat], ['trimo', BUYUM.trimo], ['shkaf', GAR_SHKAF], ['komod', BUYUM.komod]];
+/** "<buyum> <A>x<B>" juftliklari: {tur → true}; xona o'lchamlari hisobga olinmaydi. Qisqa matn ("krovat 1800x2100 va shkaf 2400x2300") ham garnitur */
+export function buyumOlchamlari(matn) {
+  const s = xonaOlchamAjrat(String(matn || '').toLowerCase().replace(/[ʻʼ’‘`´]/g, "'").replace(/(\d),(\d)/g, '$1.$2')).qolgan;
+  const out = {};
+  for (const cl of s.split(/[,;\n]|\s+(?:va|и|and|hamda|\+)\s+/)) {
+    const dm = new RegExp(O_JUFT).exec(cl);
+    if (!dm || !/\d{3,4}/.test(dm[0])) continue;
+    const hs = [];
+    for (const [tur, re] of GAR_BUYUM) { const m = new RegExp(re.source).exec(cl); if (m) hs.push({ tur, i: m.index }); }
+    if (!hs.length) continue;
+    /* o'lchamga eng yaqin buyum so'zi (oldinda yoki keyinda) */
+    hs.sort((a, b) => Math.abs(a.i - dm.index) - Math.abs(b.i - dm.index));
+    out[hs[0].tur] = true;
+  }
+  return out;
+}
 export function garniturmi(matn) {
   const s = tayyorla(matn);
   if (!s.trim() || OSHXONA_SOZ.test(s)) return false;
   if (GARNITUR.test(s)) return YOTOQ_SOZ.test(s);
-  return BUYUM.trimo.test(s) && buyumlar(s).length >= 2;
+  if (BUYUM.trimo.test(s) && buyumlar(s).length >= 2) return true;
+  /* garnitur so'zisiz: kamida ikki XIL buyum o'z o'lchami bilan, ulardan biri yotoqxona buyumi (krovat/trimo) — "krovat 1800x2100 va shkaf 2400x2300" */
+  const bo = buyumOlchamlari(s);
+  return Object.keys(bo).length >= 2 && (bo.krovat || bo.trimo);
 }
 
 /** matn → nima so'ralgani */
