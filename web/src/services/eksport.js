@@ -187,7 +187,7 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
       c.toast(t('hujjat.t_excel'));
     });
   },
-  cutlist(c) { if (ok(c, true)) safe(c, () => download('smart3d-cutlist.csv', cutlistCSV(c.res.cutlists), 'text/csv')); },
+  cutlist(c) { if (ok(c, true)) safe(c, () => download('smart3d-cutlist.csv', '\ufeff' + cutlistCSV(c.res.cutlists), 'text/csv')); },
   loyiha(c) {
     if (!ok(c, false)) return;
     download('smart3d-project.json', JSON.stringify({ app: 'smart3d', v: 2, ts: Date.now(), material: c.matCode, fasad: c.fasadCode, sheet: c.sheet || null, name: c.name, doc: c.doc }, null, 1), 'application/json');
@@ -195,7 +195,7 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
   smetaCsv(c) {
     if (!ok(c, true)) return;
     const pr = c.res.priceRes;
-    download('smart3d-smeta.csv', smetaCSV(pr.lines.map(l => ({ group: 'Mebel', name: l.name, qty: l.qty, unit: 'dona', unit_price: l.unit_price, amount: l.amount })), pr.total), 'text/csv');
+    download('smart3d-smeta.csv', '\ufeff' + smetaCSV(pr.lines.map(l => ({ group: 'Mebel', name: l.name, qty: l.qty, unit: 'dona', unit_price: l.unit_price, amount: l.amount })), pr.total), 'text/csv');
   },
   /** egasi #223: «OBJ» — BITTA .obj fayl (mtllib yo'q; material nomlari usemtl/o guruhlarida qoladi, rang yo'q).
    *  Rangli variant — objRang: .zip ichida .obj + .mtl. Faqat tanlangan modul (c.opt.id yoki editor.sel); tanlanmagan — butun loyiha. */
