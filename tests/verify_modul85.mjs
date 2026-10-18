@@ -6,7 +6,8 @@
  *   FURN   — har olinadigan polkaga 4 polkaderjatel (ERP 90002019); korpus qutisida konfirmat (MC uzunlik jadvali).
  *   KROMKA — korpus/polka detali: old qirra (F) bor, orqa qirra (B) yo'q; fasad — 4 tomon; 16 yangi modul — slot formatida
  *            (kromka_korpus / kromka_fasad, MC modullari kabi).
- *   TESHIK — bir koordinatada qty > 1 teshik yo'q; petlya kosasi eshik uchidan 105 mm (d6.js D6.kosa) — B6.
+ *   PETLYA — eski 'hinge' yozuvi yo'q; har ochiladigan eshikda kosa D6 qoidasida (uchidan 105, qirradan 21,5; soni petlyaSoni).
+ *   TESHIK — bir koordinatada qty > 1 (eski shablon teshiklari) va teshiksiz korpus — faqat hisobot (joy manbasi yo'q).
  *   NARX   — 85 modul narx aniqligi (eng yuqori / mediana) — faqat ma'lumot.
  * Egasi javobini kutayotganlar (TZ-32 4-bo'lim) yiqitmaydi — "kutilmoqda" ro'yxatida chiqadi.
  * Ishga tushirish: node tests/verify_modul85.mjs [--stat] [--fayl <fragments.json>] */
@@ -14,7 +15,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { cutlist, productionCost } from '../app/js/engine/cutlist.js';
 import { applySexStandart } from '../app/js/engine/standart.js';
-import { D6 } from '../app/js/engine/d6.js';
+import { D6, petlyaSoni } from '../app/js/engine/d6.js';
 
 const DATA = fileURLToPath(new URL('../app/data/', import.meta.url));
 const J = (n) => JSON.parse(readFileSync(DATA + n, 'utf8'));
@@ -67,7 +68,7 @@ export function sexTuri(f) {
 /** bitta modul tekshiruvi → { tur: [{m, k}] } (k — kutilmoqda: egasi javobi) */
 export function tekshir(f0) {
   const f = JSON.parse(JSON.stringify(f0));
-  const R = { QUR: [], OLCHAM: [], FURN: [], KROMKA: [], TESHIK: [] };
+  const R = { QUR: [], OLCHAM: [], FURN: [], KROMKA: [], PETLYA: [], TESHIK: [] };
   const x = (tur, m, k = false) => R[tur].push({ m, k });
   if (f.production === 'none') return R;
   /* QUR */
@@ -146,16 +147,26 @@ export function tekshir(f0) {
       }
     }
   }
-  /* TESHIK (B6) */
-  if (qutimi(f) && !(f.holes || []).length && !(f.birikmalar || []).some(b => (b.teshiklar || []).length)) x('TESHIK', "teshik yo'q");
-  for (const hl of f.holes || []) {
-    if ((+hl.qty || 1) > 1) x('TESHIK', `${hl.part} ${hl.kind} @${hl.x},${hl.y}: bir joyda ${hl.qty} ta`);
-    if (hl.kind === 'hinge') {
-      const p = f.parts.find(q => q.code === hl.part);
-      const ok = p && String(hl.x) === String(D6.kosa.chet) && (String(hl.y) === String(D6.kosa.uch) || /- *105$/.test(String(hl.y)));
-      if (!ok) x('TESHIK', `${hl.part} petlya @${hl.x},${hl.y} (sex: chetdan ${D6.kosa.chet}, uchidan ${D6.kosa.uch})`);
+  /* PETLYA (B6, qat'iy): eski qo'lda yozilgan 'hinge' yo'q; har ochiladigan eshikda D6 kosa — uchidan 105, qirradan 21,5, soni
+   * petlyaSoni (d6.js), bir joyda bitta. TESHIK (hisobot): bir koordinatada qty > 1 (eski shablon teshiklari), teshiksiz korpus. */
+  for (const hl of f.holes || []) if (hl.kind === 'hinge') x('PETLYA', `${hl.part}: eski petlya yozuvi @${hl.x},${hl.y} ×${hl.qty || 1}`);
+  {
+    const sliding = (f.hardware || []).some(h => /KUPE|SLID|RAIL|ROLIK/i.test(h.code || ''));
+    const cl = cutlist(f, f.w, f.d, f.h, mats, {});
+    for (const p of cl.parts) {
+      if (sliding || p.slot !== 'fasad' || !/eshik|door/i.test(p.code) || /tortma|drawer|yashik|gorizontal/i.test(p.code)) continue;
+      const H = p.finish_length, W = p.finish_width;
+      if ((W > 650 && H > 1500) || H < 2 * D6.kosa.uch) continue;
+      const k = cl.holes.filter(hl => hl.ref === p.ref && hl.kind === 'd6_kosa');
+      const ded = (H - p.length) / 2;                                    // L/R kromka (kesim koordinatasi)
+      const ys = k.map(hl => Math.round((hl.y + ded) * 10) / 10).sort((a, b) => a - b);
+      const okJoy = k.length === petlyaSoni(H) && Math.abs(ys[0] - D6.kosa.uch) < 0.6 && Math.abs(ys[ys.length - 1] - (H - D6.kosa.uch)) < 0.6
+        && new Set(k.map(hl => hl.x + ',' + hl.y)).size === k.length && k.every(hl => (hl.qty || 1) === 1);
+      if (!okJoy) x('PETLYA', `${p.ref}: kosa ${k.length} ta (kerak ${petlyaSoni(H)}), y ${ys.join('/')} (kerak ${D6.kosa.uch} va H − ${D6.kosa.uch})`);
     }
   }
+  if (qutimi(f) && !(f.holes || []).length && !(f.birikmalar || []).some(b => (b.teshiklar || []).length)) x('TESHIK', "korpus teshiklari yo'q (faqat petlya — D6)");
+  for (const hl of f.holes || []) if ((+hl.qty || 1) > 1) x('TESHIK', `${hl.part} ${hl.kind} @${hl.x},${hl.y}: bir joyda ${hl.qty} ta`);
   return R;
 }
 
@@ -169,9 +180,9 @@ function aniqlik(f) {
 /* ── ishga tushirish ── */
 const SP = frags.filter(f => /^SP-/.test(f.code));
 const natija = SP.map(f => ({ code: f.code, r: tekshir(f), pct: aniqlik(f) }));
-const TURLAR = ['QUR', 'OLCHAM', 'FURN', 'KROMKA', 'TESHIK'];
-/* qat'iy turlar — tuzatilganlar (TZ-32 B1–B5); B6 tuzatilsa TESHIK ham shu ro'yxatga o'tadi */
-const QATIY = new Set(['QUR', 'OLCHAM', 'FURN', 'KROMKA']);
+const TURLAR = ['QUR', 'OLCHAM', 'FURN', 'KROMKA', 'PETLYA', 'TESHIK'];
+/* qat'iy turlar — tuzatilganlar (TZ-32 B1–B6); TESHIK (eski shablon teshiklari joyi) — hisobot, manba kelguncha */
+const QATIY = new Set(['QUR', 'OLCHAM', 'FURN', 'KROMKA', 'PETLYA']);
 
 let pass = 0, fail = 0;
 const ok = (name, cond, info = '') => { if (cond) { pass++; if (!STAT) console.log('  ✓', name); } else { fail++; console.log('  ✗', name, info); } };
@@ -197,7 +208,7 @@ for (const t of TURLAR) {
   const xato = natija.filter(n => n.r[t].some(z => !z.k));
   const msg = xato.slice(0, 4).map(n => n.code + ': ' + n.r[t].find(z => !z.k).m).join(' | ');
   if (QATIY.has(t)) ok(`${t}: kamchiliksiz (${SP.length - xato.length}/${SP.length})`, !xato.length, msg);
-  else console.log(`  · ${t}: ${xato.length} modulda kamchilik (hali qat'iy emas — B6): ${msg}`);
+  else console.log(`  · ${t}: ${xato.length} modulda kamchilik (hisobot, yiqitmaydi — joy manbasi yo'q): ${msg}`);
 }
 /* kutilmoqda — egasi javobi (TZ-32 4-bo'lim), yiqitmaydi */
 const kut = {};

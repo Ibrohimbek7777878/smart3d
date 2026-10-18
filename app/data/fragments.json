@@ -160,26 +160,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -358,26 +338,6 @@
     "dia": 8,
     "depth": 30,
     "kind": "dowel",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -977,26 +937,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 6
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 6
    }
   ],
   "hardware": [
@@ -1179,26 +1119,6 @@
     "dia": 8,
     "depth": 30,
     "kind": "dowel",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -1947,26 +1867,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 6
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 6
    }
   ],
   "hardware": [
@@ -2302,26 +2202,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 4
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 4
    }
   ],
   "hardware": [
@@ -2512,26 +2392,6 @@
     "dia": 8,
     "depth": 30,
     "kind": "dowel",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -3031,26 +2891,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 4
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 4
    }
   ],
   "hardware": [
@@ -3222,26 +3062,6 @@
     "depth": 30,
     "kind": "dowel",
     "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 4
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 4
    }
   ],
   "hardware": [
@@ -3418,26 +3238,6 @@
     "dia": 8,
     "depth": 30,
     "kind": "dowel",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik",
-    "side": "B",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -4501,16 +4301,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -4700,26 +4490,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -4906,26 +4676,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -5153,26 +4903,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -5326,16 +5056,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -5516,16 +5236,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -5742,26 +5452,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -6010,36 +5700,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik3",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -6321,46 +5981,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik3",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik4",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -6562,26 +6182,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -6775,16 +6375,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -7481,26 +7071,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -7709,16 +7279,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -7945,26 +7505,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -8696,16 +8236,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -8847,16 +8377,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -9046,26 +8566,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -9277,26 +8777,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
-   },
-   {
-    "part": "eshik2",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],
@@ -9956,16 +9436,6 @@
     "depth": 13,
     "kind": "drill",
     "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
-    "qty": 2
    }
   ],
   "hardware": [
@@ -10114,16 +9584,6 @@
     "dia": 5,
     "depth": 13,
     "kind": "drill",
-    "qty": 2
-   },
-   {
-    "part": "eshik1",
-    "side": "F",
-    "x": 100,
-    "y": "h/2-64",
-    "dia": 35,
-    "depth": 12,
-    "kind": "hinge",
     "qty": 2
    }
   ],

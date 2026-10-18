@@ -13,7 +13,7 @@
 import { evalFormula, roundMm } from './expr.js';
 import { resolveSlots } from './slots.js';
 import { chizmaYech } from './chizish.js';
-import { joyQutilar, d6Teshiklar } from './d6.js';
+import { joyQutilar, d6Teshiklar, D6, petlyaSoni } from './d6.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
 import { kromkaXizmat, prisadkaXizmat, raspilXizmat, tasdiqMi, ustamaManbasi } from './narxStavka.js';
 
@@ -364,6 +364,23 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
       });
     } catch (err) {
       errors.push({ code: 'E_BAD_EXPR', message: `${frag.code} D6: ${err.message}` });
+    }
+  } else if (/^SP-/.test(frag.code || '') && !frag.chizma && !frag.bazis3d && frag.production !== 'none' && opt.d6 !== false
+    && !(frag.hardware || []).some(hw => /KUPE|SLID|RAIL|ROLIK/i.test(hw.code || ''))) {
+    /* TZ-32 B6: umumiy (SP, joysiz) modul — eshik petlyasi D6 qoidasi bo'yicha (d6.js: kosa eshik uchidan 105, qirradan 21,5;
+     * vintlari ±24, 6 mm ichkarida; soni eshik bo'yiga qarab). Petlya qirrasi — F (eshik simmetrik); kupe va tortma — yo'q. */
+    const r1 = (v) => Math.round(v * 10) / 10, K = D6.kosa, V3 = D6.kosaVint;
+    for (const p of parts) {
+      if (p.slot !== 'fasad' || !/eshik|door/i.test(p.code) || /tortma|drawer|yashik|gorizontal/i.test(p.code)) continue;
+      const H = p.finish_length, W = p.finish_width;
+      if ((W > 650 && H > 1500) || H < 2 * K.uch) continue;          // kupe (surma) eshik — d6.js kupemi; juda past eshik
+      const n = petlyaSoni(H), ys = Array.from({ length: n }, (_, k) => K.uch + (n > 1 ? k * (H - 2 * K.uch) / (n - 1) : 0));
+      const add = (x, y, dia, depth, kind) => holes.push({ fragment: frag.code, part: p.code, ref: p.ref, side: 'F', yuza: 1,
+        x: r1(x - dedOf(p.code, 'F')), y: r1(y - dedOf(p.code, 'L')), dia, depth, kind, qty: 1, nusxa: 1 });
+      for (const Y of ys) {
+        add(K.chet, Y, K.d, K.dp, 'd6_kosa');
+        for (const s of [-1, 1]) add(K.chet + V3.ichkari, Y + s * V3.oraliq, V3.d, V3.dp, 'd6_vint');
+      }
     }
   }
 

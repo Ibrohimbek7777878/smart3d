@@ -14,6 +14,8 @@
  *   B4  konfirmat — MC modullaridagi eng ko'p uchragan Bazis qoidasi "Евровинт 7х50 (32) симм" (58 birikma):
  *       S 60, P 32, jadval [[150,1],[600,2],[1200,3],[2400,4]] — har gorizontal panel × 2 uchi; soni o'lchamga qarab (cutlist).
  *   B5  xato modullar — har birining manbasi pastda.
+ *   B6  petlya teshigi — eski 'hinge' yozuvlari (eshik o'rtasida, bir joyda bir nechta) olib tashlanadi; joyi va soni endi
+ *       cutlist.js da D6 qoidasi bo'yicha (d6.js: kosa eshik uchidan 105 mm, qirradan 21,5 mm; sex fayllari, 534 eshik).
  * Egasi javobini kutayotganlar (TS-1730, korpus 16 mm, 12 quti-shablon, K-004/BD-005 nomi, narxsiz kodlar) — tegilmaydi.
  *
  * Ishlatish: node scripts/modul85_tuzatish.mjs --qadam B1 [--yoz]
@@ -175,6 +177,13 @@ for (const f of frags) {
       iz(`TZ-32 B5: min_d ${old} → ${f.min_d} — tortma yoni ${Math.max(...tl)} mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − ${TORTMA_ZAZOR}, MC-KP-03/04/09/10/11)`);
       yoz('B5', f.code, `min_d ${old} → ${f.min_d}`);
     }
+  }
+  /* ── B6: petlya teshigi — eski qo'lda yozilgan 'hinge' (eshik o'rtasida, bir joyda 2–6 ta) olib tashlanadi; o'rniga cutlist
+   *  D6 qoidasi bilan hisoblaydi (d6.js D6.kosa: eshik uchidan 105, qirradan 21,5; soni — petlyaSoni, sex 534 eshik). ── */
+  if (QADAM.has('B6') && (f.holes || []).some(h => h.kind === 'hinge')) {
+    const n = f.holes.length;
+    f.holes = f.holes.filter(h => h.kind !== 'hinge');
+    yoz('B6', f.code, `${n - f.holes.length} ta eski petlya yozuvi olib tashlandi (D6 qoidasi cutlist da)`);
   }
 }
 
