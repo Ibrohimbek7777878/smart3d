@@ -11,6 +11,8 @@ import { matndanSpec, specTekshir } from '../app/js/engine/konstruksiyaTili.js';
 import { katalogdanTop, modulTuri, modulBelgilari, buyumdanTop } from '../app/js/engine/katalogTanlash.js';
 import { konstruksiya } from '../app/js/engine/konstruktor/index.js';
 import { aiBuild } from '../app/js/ai.js';
+import { garnituraReja } from '../app/js/engine/garnitur.js';
+import { devorChegara } from '../app/js/engine/devorOraliq.js';
 import { applySexStandart } from '../app/js/engine/standart.js';
 import { footprint } from '../app/js/engine/rules.js';
 
@@ -184,6 +186,57 @@ const tanla = (m) => { const yo = aiTur(m); if (yo.tur !== 'modul') return { tur
   /* o'lcham chegaradan chiqsa — eng yaqin ruxsat etilgan qiymat va "mos emas" qatori (jim emas) */
   const d = tanla('kupe 5000 3 eshik');
   ok('«kupe 5000» — o\'lcham chegaradan tashqari: jim qabul qilinmaydi (topilmadi yoki «mos emas» qatori)', d.t && (!d.t.topildi || d.t.mosEmas.some(x => x.k === 'eni')), S(d.t && [d.t.topildi, d.t.mosEmas]));
+}
+
+/* ══ TZ-35 B+C (egasi #242–#244): spalniy garnitur — matn BO'LAKLARGA ajratiladi, har buyum o'z o'lchami bilan ══
+ * Oldin: oddiy 1 ta shkaf 1800×2100 (birinchi son hammasiga), krovat/trimo/oyna/yumshoq/push/klassik tilda yo'q, tushunilmaganlar ro'yxati bo'sh. */
+{
+  const sheets = J('sheet-catalog.json').sheets;
+  const UZ = "spalniy garnitur, classic model, spalniy razmeri 1800x2100 mm ldsp, bosh va oyoq qismida yumshoq detallari, shkafi 2400x2300 mm 3 qismdan (o'rtada kiyim ilish, 2 chekkasi polka), trimosi tortmali tepasida oyna, ruchkasiz push mexanizmda, umumiy rangi kashemir";
+  const RU = 'спальный гарнитур, классика, размер спальни 1800x2100 мм лдсп, мягкие детали в изголовье и в ногах, шкаф 2400x2300 мм из 3 частей (в центре штанга для одежды, по краям полки), трюмо с ящиками, сверху зеркало, без ручек push, общий цвет кашемир';
+  const EN = 'bedroom set, classic model, bed size 1800x2100 mm chipboard, upholstered head and foot, wardrobe 2400x2300 mm in 3 sections (hanging rail in the middle, shelves on both edges), dressing table with drawers and a mirror on top, handleless push mechanism, overall color cashmere';
+  const T = devorChegara({ wall_thickness: 100 });
+  const holat = (g, kalit) => (g.qatorlar.find(z => z.kalit === kalit) || {}).holat;
+  for (const [til, m] of [['uz', UZ], ['ru', RU], ['en', EN]]) {
+    const yo = aiTur(m), g = garnituraReja(m, cat, { sheets });
+    const k = g.placements.map(p => p.frg).sort();
+    ok(`G1[${til}] garnitur turi (oldin: modul — 1 ta shkaf)`, yo.tur === 'garnitur', S(yo));
+    ok(`G2[${til}] 5 modul, katalogdan: krovat SP-BD-004 + yumshoq bosh SP-BD-002 + shkaf SP-G-011 + trimo SP-BD-005 + oyna SP-H-011`,
+      S(k) === S(['SP-BD-002', 'SP-BD-004', 'SP-BD-005', 'SP-G-011', 'SP-H-011']) && katalogdan(g.placements), S(k));
+    const kr = g.placements.find(p => p.frg === 'SP-BD-004'), sh = g.placements.find(p => p.frg === 'SP-G-011'), tr = g.placements.find(p => p.frg === 'SP-BD-005'), oy = g.placements.find(p => p.frg === 'SP-H-011'), bosh = g.placements.find(p => p.frg === 'SP-BD-002');
+    ok(`G3[${til}] o'lcham o'z buyumiga: krovat 1800×2100, shkaf eni 2400 bo'yi 2300 (birinchi son hammasiga olinmadi)`, kr.w === 1800 && kr.d === 2100 && sh.w === 2400 && sh.h === 2300 && tr.w !== 1800 && tr.w !== 2400, S([kr.w, kr.d, sh.w, sh.h, tr.w]));
+    ok(`G4[${til}] ustma-ust 0, hammasi xona ichida va devordan ≥ ${T} mm`, !ustmaUst(g.placements) && g.sigmadi.length === 0 && g.placements.every(p => { const f = footprint(p); return f.x0 >= T - 0.5 && f.y0 >= T - 0.5 && f.x1 <= g.xona.W - T + 0.5 && f.y1 <= g.xona.D - T + 0.5; }), S(g.xona));
+    ok(`G5[${til}] krovat orqa devorda, markazda, bosh tomoni devorda (yumshoq bosh devorga tegib, krovat uning oldida)`,
+      bosh.y === T && Math.abs(kr.y - (T + bosh.d)) < 1 && Math.abs((kr.x + kr.w / 2) - g.xona.W / 2) < 6 && kr.rot === 0, S([bosh.y, kr.y, kr.x, g.xona.W]));
+    ok(`G6[${til}] shkaf yon (chap) devor bo'ylab, trimo old devorda markazda, oyna trimo ustida (bir xil markaz, z = trimo bo'yi)`,
+      sh.rot === 270 && sh.x === T && tr.rot === 180 && Math.abs((tr.x - tr.w / 2) - g.xona.W / 2) < 6 && oy.z === tr.h && Math.abs(oy.x - tr.x) < 1 && oy.kozgu === true, S([sh.rot, sh.x, tr.rot, tr.x, oy.z, tr.h]));
+    const dek = g.placements.filter(p => p.dekor);
+    ok(`G7[${til}] rang BUTUN garniturga: har modulda bir xil «Кашемир» dekori (korpus va fasad)`, dek.length === 5 && new Set(dek.map(p => p.dekor.korpus + '|' + p.dekor.fasad)).size === 1 && /Кашемир/.test(dek[0].dekor.korpus) && /Кашемир/.test(dek[0].dekor.fasad), S(dek.map(p => p.dekor)));
+    ok(`G8[${til}] klassik uslub — hamma modulda uslub:'klassik'; push — shkaf va trimoda push:true (ruchkasiz); yumshoq krovat belgisi`,
+      g.placements.every(p => p.uslub === 'klassik') && sh.push === true && tr.push === true && kr.push === undefined && S(kr.yumshoq) === S({ bosh: true, oyoq: true }), S([sh.push, tr.push, kr.yumshoq]));
+    /* B3: har bo'lak va xususiyat — holat bilan; jim tashlash yo'q */
+    ok(`G9[${til}] bo'laklar holati: krovat/shkaf/trimo bajarildi, oyna qisman (hammom ko'zgusi), yumshoq bosh bajarildi, yumshoq oyoq BAJARILMADI (sabab bilan), push va klassik qisman, rang bajarildi`,
+      holat(g, 'krovat') === 'bajarildi' && holat(g, 'shkaf') === 'bajarildi' && holat(g, 'trimo') === 'bajarildi' && holat(g, 'oyna') === 'qisman' && holat(g, 'yumshoq_bosh') === 'bajarildi'
+      && holat(g, 'yumshoq_oyoq') === 'bajarilmadi' && holat(g, 'push') === 'qisman' && holat(g, 'uslub_klassik') === 'qisman' && holat(g, 'rang') === 'bajarildi' && holat(g, 'ldsp') === 'bajarildi', S(g.qatorlar.map(z => z.kalit + ':' + z.holat)));
+    ok(`G10[${til}] bajarilmaganlar ro'yxati bo'sh emas (yumshoq oyoq, push, klassik, oyna, kupe) va hammasi sabab bilan; tilda tanilmagan so'z yo'q`,
+      g.bajarilmadi.length >= 4 && g.bajarilmadi.every(z => z.diqqat) && ['yumshoq_oyoq', 'push', 'uslub_klassik', 'oyna', 'shkaf_kupe'].every(x => g.bajarilmadi.some(z => z.kalit === x)) && g.tushunilmadi.length === 0, S([g.bajarilmadi.map(z => z.kalit), g.tushunilmadi]));
+    ok(`G11[${til}] shkaf tarkibi: 3 qism, o'rtada shtanga (modulda bor), chetlarda polka — kartada`, holat(g, 'shkaf_qism') === 'bajarildi' && holat(g, 'shkaf_shtanga_bor') === 'bajarildi' && holat(g, 'shkaf_polka') === 'bajarildi' && g.qatorlar.find(z => z.kalit === 'shkaf_qism').v.n === 3);
+    ok(`G12[${til}] har bo'lakka qator bor: 4 buyum bo'lagi tanildi (krovat, shkaf, trimo, oyna), umumiy bo'laklar jim tashlanmadi`, S(g.bolaklar.map(b => b.tur)) === S(['krovat', 'shkaf', 'trimo', 'oyna']) && g.umumiy.bolaklar >= 7, S([g.bolaklar.map(b => b.tur), g.umumiy]));
+    ok(`G13[${til}] xona aytilmagan — sukut: garnitur sig'adigan eng kichik (qator «xona_sukut»), modullar orasi ≥ 500 mm`, holat(g, 'xona_sukut') === 'sukut' && g.xona.W >= 3000 && g.xona.D >= 3000, S(g.xona));
+  }
+  const g1 = garnituraReja(UZ, cat, { sheets }), g2 = garnituraReja(UZ, cat, { sheets });
+  ok('G14 natija har safar bir xil', S(g1.placements) === S(g2.placements) && S(g1.qatorlar) === S(g2.qatorlar));
+  /* jim tashlash yo'q: tanilmagan so'z — ro'yxatda; katalogda yo'q tur (tumba) — bajarilmadi */
+  const gU = garnituraReja(UZ + ', qizil flamingo bo\'lsin', cat, { sheets });
+  ok('G15 tilda tanilmagan so\'zlar kartada («Tushunilmadi: qizil, flamingo») va bajarilmadi ro\'yxatida', gU.tushunilmadi.includes('flamingo') && gU.tushunilmadi.includes('qizil') && gU.bajarilmadi.some(z => z.kalit === 'tushunilmadi'), S(gU.tushunilmadi));
+  const gT = garnituraReja("yotoqxona garnituri: karavot 1600, ikki tumba, shkaf 1800x2200, xona 4x3.5 m", cat, { sheets });
+  ok('G16 katalogda yo\'q tur (ikki tumba) — bajarilmadi (jim emas); aytilgan xona 4×3.5 — shu o\'lchamda; karavot 1600', holat(gT, 'buyum_yoq') === 'bajarilmadi' && gT.qatorlar.find(z => z.kalit === 'buyum_yoq').v.n === 2 && gT.xona.W === 4000 && gT.xona.D === 3500 && gT.placements.some(p => p.frg === 'SP-BD-003' && p.w === 1600), S([gT.xona, gT.placements.map(p => p.frg + ':' + p.w)]));
+  const gK = garnituraReja("spalniy garnitur xona 3x3 m, krovat 1800x2100, shkaf 2400x2300, trimo", cat, { sheets });
+  ok('G17 xona kichik — kengaytiriladi va kartada aytiladi (xona_keng), ustma-ust 0, sig\'madi 0', holat(gK, 'xona_keng') === 'qisman' && gK.xona.W > 3000 && !ustmaUst(gK.placements) && gK.sigmadi.length === 0, S([gK.xona, gK.kengaydi]));
+  ok('G18 rang ERP ro\'yxatida yo\'q — bajarilmadi (jim emas), modullar standartda', holat(garnituraReja(UZ.replace('kashemir', 'zumrad kosmik'), cat, { sheets }), 'rang_yoq') === 'bajarilmadi');
+  ok('G19 yo\'naltirish: «oshxona garnituri 3 metr» — oshxona (garnitur emas); «krovat 1600 va ikki tumba» — shablon; bitta «trimo tortmali» — modul → komod SP-BD-005', aiTur('oshxona garnituri 3 metr').tur === 'oshxona' && aiTur('krovat 1600 va ikki tumba').tur === 'shablon'
+    && aiTur('trimo tortmali').tur === 'modul' && (modulniTop('trimo tortmali', cat) || {}).frg === 'SP-BD-005');
+  ok('G20 «krovat 1800x2100, shkaf 2400x2300, trimo» (garnitur so\'zisiz) ham — garnitur, oldingi birinchi-son xatosi yo\'q', aiTur('krovat 1800x2100, shkaf 2400x2300, trimo').tur === 'garnitur');
 }
 
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);

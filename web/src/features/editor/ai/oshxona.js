@@ -116,6 +116,23 @@ export function shablonQatorlar(nom, rj, r, catalog) {
   return out;
 }
 
+/** TZ-35: garnitur (engine/garnitur.js garnituraReja) → karta qatorlari. HAR bo'lak va xususiyat uchun holat (bajarildi / qisman / bajarilmadi);
+ *  tilda tanilmagan so'zlar — "Tushunilmadi: …" (hech narsa jim tashlanmaydi) */
+export function garniturQatorlar(g) {
+  const out = [];
+  const q = (matn, manba, diqqat) => out.push({ matn, manba: manba || 'matn', diqqat: !!diqqat });
+  q(t('ai.g_tanildi', { n: g.umumiy.buyum, m: g.umumiy.bolaklar }), 'katalog');
+  for (const z of g.qatorlar) {
+    const v = Object.assign({}, z.v);
+    if (v.b) v.b = t('ai.b_' + (v.b === 'oyna' ? 'oyna' : v.b));
+    if (v.o) v.o = t('kons.k_' + v.o);
+    if (z.kalit === 'xona_keng') { v.W = z.v.W; v.D = z.v.D; }
+    const matn = t('ai.g_' + z.kalit, v);
+    q(z.holat === 'sukut' || z.kalit === 'tushunilmadi' ? matn : t('ai.g_h_' + z.holat) + ' · ' + matn, z.manba, z.diqqat);
+  }
+  return out;
+}
+
 /** tanilmagan so'rov — karta: "Tushunmadim" + tayyor variantlar (hech narsa qurilmaydi) */
 export function nomalumQatorlar(text, promptlar) {
   const nom = (p) => (p.nom && (p.nom[til()] || p.nom.uz)) || p.id;
