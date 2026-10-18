@@ -22,6 +22,8 @@ const { createHisob, loadData } = await import('../web/src/services/hisob.js');
 
 const J = (p) => JSON.parse(readFileSync(fileURLToPath(new URL('../app/data/' + p, import.meta.url)), 'utf8'));
 const mats = J('materials.json');
+/* TZ-32 E: narxSukut endi ERP sukut stavkalarini ham beradi (materials.json sukut_narx); bu test BO'SH hujjat mexanikasini tekshiradi */
+const matsBosh = Object.assign({}, mats); delete matsBosh.sukut_narx;
 const sheets = J('sheet-catalog.json').sheets;
 const mc = J('fragments-mc.json').fragments;
 const SRC = readFileSync(fileURLToPath(new URL('../app/js/engine/cutlist.js', import.meta.url)), 'utf8');
@@ -80,7 +82,7 @@ ok('Bazis sintetik materiali (boshqa plitaning narxi) — "taxminiy"', pm(mb, 'B
 
 console.log('\n[A2] Teshik kalitlari → prisadka qatori');
 const X = (nom, q) => ({ nom, guruh: 'prisadka', qiymat: q, birlik: 'dona', manba: 'sex jadvali', sana: '2026-05-12' });   // TEST stavkalari
-const S = narxQollash(narxSukut(mats), {
+const S = narxQollash(narxSukut(matsBosh), {
   xizmatlar: { E1: X('Evro (test)', 1600), E2: X('Evro qirra (test)', 1200), P1: X('Polka (test)', 800), R1: X('Ruchka (test)', 801), B1: X('Metka (test)', 300) },
   tanlov: { prisadka: { konfirmat_yuza: 'E1', konfirmat_qirra: 'E2', polka: 'P1', ruchka: 'R1', belgi: 'B1' } }
 }).next;
@@ -93,7 +95,7 @@ const pT = productionCost([clK], mats, { stavka: S, xizmatlar: { teshik: true } 
 const hl = (k) => pT.lines.find(l => l.code === 'hole:' + k) || {};
 ok('MC modul hisobida: evrovint, evrovint_torets, d6_polka — sex jadvali narxi, tasdiqlangan', ['evrovint', 'evrovint_torets', 'd6_polka'].every(k => hl(k).tasdiq && hl(k).unit_price === kut[k]),
   JSON.stringify(['evrovint', 'evrovint_torets', 'd6_polka'].map(k => [hl(k).unit_price, hl(k).manba])));
-const pS0 = productionCost([clK], mats, { stavka: narxSukut(mats), xizmatlar: { teshik: true } });
+const pS0 = productionCost([clK], mats, { stavka: narxSukut(matsBosh), xizmatlar: { teshik: true } });
 ok('tanlov bo\'lmasa — avvalgidek (materials.json, taxmin)', ['evrovint', 'd6_polka'].every(k => { const l = pS0.lines.find(x => x.code === 'hole:' + k); return l && !l.tasdiq && l.unit_price === 300; }));
 
 console.log('\n[A3] Soni 0 bo\'lgan furnitura');
@@ -129,7 +131,7 @@ ok('MC-KU-04: petlya qatori narxda (ERP bog\'lanishi — tasdiqlangan)', petL.qt
 console.log('\n[A6] Ish haqi qatori nomi');
 const R = (q) => ({ nom: 'Raspil (test)', guruh: 'raspil', qiymat: q, birlik: 'list', manba: 'sex jadvali', sana: '2026-07-03' });
 const K = { nom: 'Kromka (test)', guruh: 'kromka', qiymat: 3000, birlik: 'm', manba: 'sex jadvali', sana: '2026-07-03' };
-const s0 = narxSukut(mats);
+const s0 = narxSukut(matsBosh);
 const sR = narxQollash(s0, { xizmatlar: { R1: R(18000), K1: K }, tanlov: { raspil: 'R1' } }).next;
 const sK = narxQollash(s0, { xizmatlar: { R1: R(18000), K1: K }, tanlov: { kromka: { _sukut: 'K1' } } }).next;
 const sRK = narxQollash(sR, { tanlov: { kromka: { _sukut: 'K1' } } }).next;

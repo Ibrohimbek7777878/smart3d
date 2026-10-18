@@ -18,6 +18,8 @@ import { xlsxOqish } from '../app/js/engine/xlsxOqish.js';
 
 const J = (p) => JSON.parse(readFileSync(fileURLToPath(new URL('../app/data/' + p, import.meta.url)), 'utf8'));
 const mats = J('materials.json');
+/* TZ-32 E: narxSukut endi ERP sukut stavkalarini ham beradi (materials.json sukut_narx); bu test BO'SH hujjat mexanikasini tekshiradi */
+const matsBosh = Object.assign({}, mats); delete matsBosh.sukut_narx;
 let n = 0, fails = 0;
 const ok = (name, cond, extra = '') => { n++; if (!cond) { fails++; console.log('FAIL  ' + name + (extra ? '  → ' + extra : '')); } else console.log('ok    ' + name); };
 const JADVAL = fileURLToPath(new URL('../../Smart3D/Smart3D_toplam_2026-10-16/04_xizmat_narxlari/Xizmat_narxlari.xlsx', import.meta.url));
@@ -54,7 +56,7 @@ const qolla = (cur, patch) => narxQollash(cur, patch).next;
 
 console.log('\n[1] Stavka berilmasa — avvalgidek');
 const p0 = productionCost(cls, mats, OPT);
-const s0 = narxSukut(mats);
+const s0 = narxSukut(matsBosh);
 const pS = hisob(s0);
 ok(`boshlang'ich (taxmin) stavka bilan jami bir xil: ${p0.clientTotal}`, pS.clientTotal === p0.clientTotal && pS.totalCost === p0.totalCost, `${pS.clientTotal} ≠ ${p0.clientTotal}`);
 ok('raspil qatori yo\'q (tanlanmagan)', !pS.lines.some(l => l.code === 'raspil') && pS.raspilCost === 0);

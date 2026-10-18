@@ -293,6 +293,200 @@
   "MDF16": null,
   "HDF3": null
  },
+ "sukut_narx": {
+  "_izoh": "TZ-32 E (2026-10-18): sukut narx stavkalari — Bittada ERP xizmatlar jadvalidan (mijoz narxi, client_price; faqat o'qish). Boshlang'ich hujjat (narxSukut) shu yerdan to'ldiriladi; egasi/admin Sozlamalar → Narxlar da o'zgartiradi. 'tanlov' — oldindan tanlangan qator (raspil: Holzma 2 — ERP buyurtmalarida eng ko'p; kromka: korpus 19/0,4 — 3 000/m, fasad 19/2 — 4 900/m (egasi); prisadka: teshik turi → ERP присадка xizmati). 'bazis' — usta narx panelida tanlaydigan xizmat (sukut o'chiq, S3): onlayn = Bazis3 (3 000/detal), oflayn = Bazis6 (6 000/detal).",
+  "xizmatlar": {
+   "7802360156": {
+    "nom": "Услуга Распила Holzma 2",
+    "guruh": "raspil",
+    "qiymat": 43000,
+    "birlik": "list",
+    "kategoriya": "Услуги Распила",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "7802360124": {
+    "nom": "Услуга Распила Holzma 1",
+    "guruh": "raspil",
+    "qiymat": 25000,
+    "birlik": "list",
+    "kategoriya": "Услуги Распила",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "2": {
+    "nom": "Услуга Распила Holzma 3",
+    "guruh": "raspil",
+    "qiymat": 48000,
+    "birlik": "list",
+    "kategoriya": "Услуги Распила",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236012336": {
+    "nom": "Услуга Распила Altendorf 2",
+    "guruh": "raspil",
+    "qiymat": 33000,
+    "birlik": "list",
+    "kategoriya": "Услуги Распила",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010807": {
+    "nom": "Услуга Распила Altendorf 1",
+    "guruh": "raspil",
+    "qiymat": 18000,
+    "birlik": "list",
+    "kategoriya": "Услуги Распила",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236012338": {
+    "nom": "Услуга Распила Altendorf 3",
+    "guruh": "raspil",
+    "qiymat": 38000,
+    "birlik": "list",
+    "kategoriya": "Услуги Распила",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236012395": {
+    "nom": "Услуга ПВХ 19/0,4+0,6 прямая",
+    "guruh": "kromka",
+    "qiymat": 3000,
+    "birlik": "m",
+    "kategoriya": "Услуга кромирование",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236012400": {
+    "nom": "Услуга ПВХ 19/2 прямая",
+    "guruh": "kromka",
+    "qiymat": 4900,
+    "birlik": "m",
+    "kategoriya": "Услуга кромирование",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010911": {
+    "nom": "ПРИСАДКА ЕВРО",
+    "guruh": "prisadka",
+    "qiymat": 1600,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236020072": {
+    "nom": "ПРИСАДКА ЕВРО 2",
+    "guruh": "prisadka",
+    "qiymat": 1200,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010863": {
+    "nom": "ПРИСАДКА МЕТКА 3-2,5",
+    "guruh": "prisadka",
+    "qiymat": 300,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010829": {
+    "nom": "ПРИСАДКА ПЕТЛЕ",
+    "guruh": "prisadka",
+    "qiymat": 900,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010817": {
+    "nom": "ПРИСАДКА ПОЛКАДЕРЖАТЕЛ",
+    "guruh": "prisadka",
+    "qiymat": 800,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010901": {
+    "nom": "ПРИСАДКА РУЧКА",
+    "guruh": "prisadka",
+    "qiymat": 800,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010915": {
+    "nom": "ПРИСАДКА ШКАНТ",
+    "guruh": "prisadka",
+    "qiymat": 800,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "780236010843": {
+    "nom": "ПРИСАДКА ЭКСЕРТРИК",
+    "guruh": "prisadka",
+    "qiymat": 1400,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "03": {
+    "nom": "Bazis3",
+    "guruh": "bazis",
+    "qiymat": 3000,
+    "birlik": "detal",
+    "kategoriya": "Bazis",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   },
+   "04": {
+    "nom": "Bazis6",
+    "guruh": "bazis",
+    "qiymat": 6000,
+    "birlik": "detal",
+    "kategoriya": "Bazis",
+    "manba": "sex jadvali",
+    "sana": "2026-10-18"
+   }
+  },
+  "tanlov": {
+   "raspil": "7802360156",
+   "kromka": {
+    "_sukut": "780236012395",
+    "PVC04": "780236012395",
+    "PVC2": "780236012400",
+    "REHAU2": "780236012400"
+   },
+   "prisadka": {
+    "konfirmat_yuza": "780236010911",
+    "konfirmat_qirra": "780236010911",
+    "petlya": "780236010829",
+    "hinge": "780236010829",
+    "polka": "780236010817",
+    "ruchka": "780236010901",
+    "shkant": "780236010915",
+    "dowel": "780236010915",
+    "eksentrik": "780236010843",
+    "cam": "780236010843",
+    "belgi": "780236010863",
+    "mark": "780236010863"
+   },
+   "bazis": {
+    "onlayn": "03",
+    "oflayn": "04"
+   }
+  }
+ },
  "edge_materials": [
   {
    "code": "PVC2",
