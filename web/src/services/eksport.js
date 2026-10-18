@@ -190,7 +190,10 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
   cutlist(c) { if (ok(c, true)) safe(c, () => download('smart3d-cutlist.csv', '\ufeff' + cutlistCSV(c.res.cutlists), 'text/csv')); },
   loyiha(c) {
     if (!ok(c, false)) return;
-    download('smart3d-project.json', JSON.stringify({ app: 'smart3d', v: 2, ts: Date.now(), material: c.matCode, fasad: c.fasadCode, sheet: c.sheet || null, name: c.name, doc: c.doc }, null, 1), 'application/json');
+    /* saqlanadigan loyiha bilan bir xil yuk (project.payload): oldin polka/orqa/stol materiali, mijoz va ERP materiallar tushib qolardi —
+       fayl qayta ochilganda narx o'zgarib ketardi */
+    const yuk = c.payload ? c.payload() : { app: 'smart3d', v: 2, ts: Date.now(), material: c.matCode, fasad: c.fasadCode, sheet: c.sheet || null, name: c.name, doc: c.doc };
+    download('smart3d-project.json', JSON.stringify(yuk, null, 1), 'application/json');
   },
   smetaCsv(c) {
     if (!ok(c, true)) return;
