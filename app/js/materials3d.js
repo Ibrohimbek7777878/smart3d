@@ -125,6 +125,21 @@ export function makeItemMesh(THREE, frag, w, d, h, opts = {}) {
   return group;
 }
 
+/** Tekstura mm masshtabida: BoxGeometry UV (har yoq 0..1) → yoq o'lchami / rasmning haqiqiy o'lchami (mm). Tekstura RepeatWrapping bo'lishi kerak.
+ *  Geometriya har panelda alohida, shu sababli material umumiy bo'lsa ham takrorlanish har panelda to'g'ri. */
+export function uvMm(geo, mmEni, mmBoyi) {
+  const pr = geo.parameters || {}, X = pr.width, Y = pr.height, Z = pr.depth;
+  const uv = geo.attributes.uv, nr = geo.attributes.normal;
+  if (!uv || !nr || !(mmEni > 0) || !(mmBoyi > 0)) return geo;
+  for (let i = 0; i < uv.count; i++) {
+    const ax = Math.abs(nr.getX(i)), ay = Math.abs(nr.getY(i));
+    const [a, b] = ax > 0.5 ? [Z, Y] : ay > 0.5 ? [X, Z] : [X, Y];   // yoqning eni va bo'yi (mm)
+    uv.setXY(i, uv.getX(i) * a / mmEni, uv.getY(i) * b / mmBoyi);
+  }
+  uv.needsUpdate = true;
+  return geo;
+}
+
 /** Tanlanganlikni belgilaydi (chegara rangini o'zgartiradi). */
 export function setSelected(mesh, THREE, isSelected) {
   if (!mesh) return;
@@ -178,7 +193,7 @@ function themedMesh(THREE, frag, w, d, h, asm, theme, group, rang) {
   const bazisMat = (p) => {
     const r = (R.bazis && R.bazis[p.mi]) || p.rang;
     if (!r || !theme.rangMat || (p.slot === 'fasad' && glass)) return null;
-    const k = r.rang + (r.yogoch ? 'y' : '');
+    const k = r.rang + (r.yogoch ? 'y' : '') + (r.rasm || '');
     if (!bzMat.has(k)) bzMat.set(k, theme.rangMat(r));
     return bzMat.get(k);
   };
@@ -198,7 +213,9 @@ function themedMesh(THREE, frag, w, d, h, asm, theme, group, rang) {
         continue;
       }
     }
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(p.w, p.d, p.h), mat);
+    const pg = new THREE.BoxGeometry(p.w, p.d, p.h);
+    if (mat.userData && mat.userData.rasmMm) uvMm(pg, mat.userData.rasmMm[0], mat.userData.rasmMm[1]);   // material rasmi — mm masshtabida
+    const mesh = new THREE.Mesh(pg, mat);
     mesh.castShadow = true; mesh.receiveShadow = true;
     mesh.userData = { panelId: p.id, name: p.name, slot: p.slot, part: { id: p.id, name: p.name, slot: p.slot, size: [p.w, p.d, p.h] } };
     if (p.isDrawer) {                                         // tortma: fasad + tutqich (+ quti — pastda) bitta guruhda

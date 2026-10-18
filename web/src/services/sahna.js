@@ -73,6 +73,11 @@ export function dizaynMavzu() {
     /* #182: yog'och dekor — o'z rangidagi tekstura (asos — dekor rangi, tola chiziqlari to'qroq): plitkadagi namuna bilan bir xil.
        Avval tekstura 0xB4834F ga nisbatan bo'yalardi — undan ochroq dekor (Сонома, Вотан, Ясень …) standart yog'ochdan farqlanmasdi */
     rangMat(r) {
+      if (r.rasm) {                                          // material rasmi bor — tekstura (sRGB, mm masshtabida takrorlanadi: materials3d.uvMm); yuklangunча — rang
+        const m = new THREE.MeshStandardMaterial({ color: 0xffffff, map: rasmTex(r.rasm), roughness: 0.55 });
+        m.userData.rang = r.rang; m.userData.rasmMm = r.rasmMm || [2800, 2070];
+        return m;
+      }
       if (r.yogoch) {
         const m = new THREE.MeshStandardMaterial({ map: yogochTex(r.rang), roughness: 0.62 });
         m.userData.rang = r.rang;
@@ -91,6 +96,15 @@ export function dizaynMavzu() {
  *  cheklov (surish qoidalari, #151), onRotate, onRotateEnd, onTap, getTeshik (egasi #167: joy id → teshik3d() natijasi | null) } */
 /* #182: yog'och teksturasi — dekor rangi asos, tola chiziqlari shu rangdan to'qroq (engine.js s3WoodTex uslubi); rang bo'yicha kesh */
 const YOGOCH_TEX = new Map();
+/* material rasmi → tekstura (sRGB, takrorlanadi); URL bo'yicha kesh. Yuklanmasa (404) — tekstura bo'sh, material oq emas: rang saqlanadi */
+const RASM_TEX = new Map();
+function rasmTex(src) {
+  if (RASM_TEX.has(src)) return RASM_TEX.get(src);
+  const t = new THREE.TextureLoader().load(src.startsWith('/') ? src : '/' + src, undefined, undefined, () => {});
+  t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
+  RASM_TEX.set(src, t);
+  return t;
+}
 function yogochTex(rang) {
   if (YOGOCH_TEX.has(rang)) return YOGOCH_TEX.get(rang);
   const c = document.createElement('canvas'); c.width = c.height = 512;

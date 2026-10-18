@@ -75,12 +75,25 @@ export function plitaRangi(H, sh) {
   return e ? asosiyRang(e) : dekorRang(sh.name);
 }
 
-/** material kodi → nomi va dekor rangi (3D va ro'yxat uchun) */
+/** Material rasmi (rasmlar.json.materiallar): kalit — ERP kodi, bo'lmasa dekor nomi kaliti; qiymat — yo'l yoki { src, mm: [eni, bo'yi] }.
+ *  Natija { src: 'data/…', mm: [eni, bo'yi] } | null. mm — rasmdagi haqiqiy o'lcham (3D da takrorlanish shu masshtabda; sukut — butun plita 2800×2070) */
+export function materialRasm(H, code, name) {
+  const R = H && H.rasmlar && H.rasmlar.materiallar;
+  if (!R || !Object.keys(R).length) return null;
+  const k = (code && R[code]) ? code : (name ? 'dekor|' + dekorKalit(dekorNomi(String(name).split(/[\r\n]/)[0], '').nom) : null);
+  const v = k && R[k];
+  if (!v) return null;
+  const src = typeof v === 'string' ? v : v.src, mm = (v && v.mm) || [2800, 2070];
+  return src ? { src, mm } : null;
+}
+
+/** material kodi → nomi va dekor rangi (3D va ro'yxat uchun); rasm bo'lsa — rang obyektiga rasm/rasmMm qo'shiladi (3D tekstura) */
 export function materialRang(H, code) {
   const m = ((H && H.materials && H.materials.panel_materials) || []).find(x => x.code === code);
   if (!m) return null;
   const e = /^ERP-/.test(code) ? asosiyYozuv(H, code, m.name) : null;
-  return e ? asosiyRang(e) : dekorRang(m.name);
+  const rang = e ? asosiyRang(e) : dekorRang(m.name), ras = materialRasm(H, code, m.name);
+  return ras ? Object.assign({ rang: 0xffffff }, rang, { rasm: ras.src, rasmMm: ras.mm }) : rang;
 }
 
 /** TZ-23 E: Bazis materialini almashtirish — fragment nusxasi, detallar yangi materialda (asl fragment o'zgarmaydi).

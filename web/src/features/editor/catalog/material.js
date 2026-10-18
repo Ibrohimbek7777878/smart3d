@@ -3,7 +3,7 @@ import { project } from '../../../store/project.js';
 import { toast, openSheet, patchSheet } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
 import { baseForSheet, slotForBase } from '../../../services/hisob.js';
-import { erpKod, erpQosh, materialRang, plitaRangi } from '../../../services/erpMaterial.js';
+import { erpKod, erpQosh, materialRang, materialRasm, plitaRangi } from '../../../services/erpMaterial.js';
 import { RANG_GURUHLARI, GURUH_RANG } from '../../../../../app/js/engine/rang.js';
 import { asosiyRang } from '../../../../../app/js/engine/dekorAsosiy.js';
 import { raqam } from '../../../shared/lib/format.js';
@@ -183,7 +183,7 @@ export function useMaterialVaraq() {
     const narx = (sh) => (sh.uzs > 0 ? raqam(sh.uzs) + ' ' + t('umumiy.som') : t('mebel.narx_yoq'));
     const on = g.variantlar.find(v => erpKod(v) === cur) || null, kor = on || sukut;
     return {
-      key: g.key, nom: g.nom, sub: [g.brend, g.tur].filter(Boolean).join(' · '), rang: r ? hex(r.rang) : null, yogoch: !!(r && r.yogoch),
+      key: g.key, nom: g.nom, sub: [g.brend, g.tur].filter(Boolean).join(' · '), rang: r ? hex(r.rang) : null, yogoch: !!(r && r.yogoch), rasm: ((x) => (x ? '/' + x.src : null))(materialRasm(H, erpKod(kor), kor.name)),
       on: !!on, price: narx(kor), pick: tanla(kor),
       variantlar: g.variantlar.length > 1 || kor.th ? g.variantlar.map(v => ({ label: (+v.th || 0) + ' ' + t('umumiy.mm'), on: kor === v, pick: tanla(v) })) : []
     };

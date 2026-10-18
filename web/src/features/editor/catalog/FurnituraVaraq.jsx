@@ -9,7 +9,8 @@ import { useFurnituraVaraq } from './furnitura.js';
 function Qator({ r }) {
   return (
     <div style={{ ...listRow, alignItems: 'flex-start' }}>
-      <span style={{ display: 'flex', flexDirection: 'column', minWidth: '0' }}>
+      {r.rasm ? <img data-furnitura-rasm="" src={r.rasm} alt={r.name} width="48" height="48" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = 'none'; }} style={{ width: '48px', height: '48px', flex: '0 0 48px', objectFit: 'contain', borderRadius: '10px', background: '#fff', border: '1px solid var(--line)' }} /> : null}
+      <span style={{ display: 'flex', flexDirection: 'column', minWidth: '0', flex: '1' }}>
         <span style={{ fontWeight: '700' }}>{r.name}</span><span style={{ fontSize: '12px', color: 'var(--mut)' }}>{r.sub}</span>
       </span>
       <span style={{ fontWeight: '800', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums', color: r.yoq ? 'var(--mut)' : 'var(--txt)' }}>{r.price}</span>
