@@ -67,8 +67,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -88,6 +87,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -259,8 +266,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -272,6 +278,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -435,8 +449,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -448,6 +461,14 @@
     ],
     "material": "PVC2",
     "thickness": 0.4
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -588,8 +609,23 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -696,8 +732,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -709,6 +744,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -878,8 +921,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -899,6 +941,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1067,8 +1117,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1080,6 +1129,14 @@
     ],
     "material": "PVC2",
     "thickness": 0.4
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -1210,8 +1267,15 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1355,8 +1419,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1376,6 +1439,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1560,6 +1631,30 @@
     ],
     "material": "PVC2",
     "thickness": 2
+   },
+   {
+    "code": "ust",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -1674,8 +1769,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1695,6 +1789,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1871,8 +1973,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -1892,6 +1993,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2067,8 +2176,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2080,6 +2188,22 @@
     ],
     "material": "PVC2",
     "thickness": 0.4
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "toka",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -2229,8 +2353,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2250,6 +2373,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2421,8 +2552,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2434,6 +2564,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2603,8 +2741,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2624,6 +2761,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -2877,6 +3022,22 @@
     ],
     "material": "PVC2",
     "thickness": 2
+   },
+   {
+    "code": "oyoq",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "qator",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -2971,6 +3132,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "oyoq",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "qator",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3071,6 +3248,22 @@
     ],
     "material": "PVC2",
     "thickness": 2
+   },
+   {
+    "code": "oyoq",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "qator",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
    }
   ],
   "holes": [
@@ -3161,6 +3354,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "oyoq",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "qator",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3385,6 +3594,14 @@
   "edge": [
    {
     "code": "polka",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 0.4
+   },
+   {
+    "code": "yon",
     "sides": [
      "F"
     ],
@@ -3617,8 +3834,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3630,6 +3846,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3782,8 +4014,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3806,6 +4037,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3968,8 +4215,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -3992,6 +4238,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4175,8 +4437,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4199,6 +4460,46 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4348,8 +4649,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4361,6 +4661,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4507,8 +4815,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4520,6 +4827,30 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4686,8 +5017,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4710,6 +5040,38 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4899,8 +5261,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -4934,6 +5295,46 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -5146,8 +5547,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -5192,6 +5592,54 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift5",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -5381,8 +5829,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -5405,6 +5852,30 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -5575,8 +6046,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -5588,6 +6058,38 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6247,8 +6749,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6271,6 +6772,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6448,8 +6965,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6461,6 +6977,46 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6634,8 +7190,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6658,6 +7213,46 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -6829,8 +7424,47 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -7501,8 +8135,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -7514,6 +8147,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -7666,8 +8307,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -7690,6 +8330,30 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -7866,8 +8530,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -7890,6 +8553,38 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -8539,8 +9234,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -8552,6 +9246,22 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -8691,8 +9401,7 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -8704,6 +9413,14 @@
      "B",
      "L",
      "R"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -8865,8 +9582,55 @@
    {
     "code": "ust",
     "sides": [
-     "F",
-     "B"
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "past",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift1",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift2",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift3",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift4",
+    "sides": [
+     "F"
+    ],
+    "material": "PVC2",
+    "thickness": 2
+   },
+   {
+    "code": "shift5",
+    "sides": [
+     "F"
     ],
     "material": "PVC2",
     "thickness": 2
@@ -10443,7 +11207,6 @@
     "slot": "korpus",
     "edge": {
      "F": "kromka_korpus",
-     "B": "kromka_korpus",
      "L": "kromka_korpus",
      "R": "kromka_korpus"
     },
@@ -10568,7 +11331,6 @@
     "slot": "korpus",
     "edge": {
      "F": "kromka_korpus",
-     "B": "kromka_korpus",
      "L": "kromka_korpus",
      "R": "kromka_korpus"
     },
