@@ -22,6 +22,12 @@ export async function mountSahna(host, onTap, alive = () => true) {
   if (!alive()) return;
   const H = project.H, ed = get().editor;
   const joylar = () => joyRanglari(H, H.viewPlacements(project.doc), get().project, project.doc.bazis);   // TZ-23 E: tanlangan material dekori 3D da
+  /* #235: sudrash/aylantirish paytida stoleshnitsa, sokol, dobor, karniz modul bilan birga suriladi (kadrda bir marta, faqat hosila mesh'lar) */
+  let autoRaf = 0;
+  const autoYangila = () => {
+    if (autoRaf) return;
+    autoRaf = requestAnimationFrame(() => { autoRaf = 0; if (scene.sahna) scene.sahna.items.setAuto(joylar()); });
+  };
   const sahna = createSahna(host, {
     getPlacements: () => joylar(),
     getRoom: () => project.doc.room,
@@ -30,12 +36,12 @@ export async function mountSahna(host, onTap, alive = () => true) {
       if (e.sel !== id) set('editor', { sel: id || null, raw: {}, part: null });
       if (id && e.tip === 0) set('editor', { tip: 1 });
     },
-    onDrag: (id, x, y) => { const p = project.pl(id); if (p) { p.x = x; p.y = y; project.scheduleRecalc(); } },
+    onDrag: (id, x, y) => { const p = project.pl(id); if (p) { p.x = x; p.y = y; project.scheduleRecalc(); autoYangila(); } },
     /* egasi #151: surish (2D va 3D) — devorga yopishadi, devor ichiga va qo'shni modulga kirmaydi (#152: devordan DEVOR_ORALIQ mm) */
     cheklov: (id) => surishCheklov(cheklovXonasi(project.doc), project.doc.placements, id),   // #156: magnit yo'q; Erkin maydonda devor yo'q
     /* qo'yib yuborildi yoki Esc — stoleshnitsa, sokol kabi hosila elementlar yangi joyga moslashadi, avtomatik saqlash */
     onDragEnd: (id, holat) => { if (holat !== 'joyida') project.changed('items'); },
-    onRotate: (id, rot, x, y) => { const p = project.pl(id); if (p) { p.rot = rot; p.x = x; p.y = y; project.scheduleRecalc(); } },
+    onRotate: (id, rot, x, y) => { const p = project.pl(id); if (p) { p.rot = rot; p.x = x; p.y = y; project.scheduleRecalc(); autoYangila(); } },
     onRotateEnd: () => project.changed('items'),
     onTap,
     getTeshik: (id) => teshikJoy(project.H, project.res, id, project.pl(id))   // egasi #167: rentgen belgilari — kesim ro'yxatidan

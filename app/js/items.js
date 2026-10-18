@@ -53,22 +53,28 @@ export function createItems(sp, opts = {}) {
   /** placements → mesh'lar (xotirani to'liq tozalash bilan). */
   function setPlacements(placements, cat) {
     if (cat) catalog = cat;
-    for (const m of meshes) {
-      group.remove(m);
-      m.traverse(child => {
-        if (child.geometry) child.geometry.dispose();
-        if (child.material) {
-          if (Array.isArray(child.material)) child.material.forEach(mat => mat.dispose());
-          else child.material.dispose();
-        }
-        if (child.element && child.element.remove) child.element.remove();   // TZ-09: CSS2D yorliq (tanlov o'lchami)
-      });
-    }
+    for (const m of meshes) disposeMesh(m);
     meshes.length = 0;
 
-    for (const p of placements || []) {
+    for (const p of placements || []) buildOne(p);
+    afterBuild(placements);
+  }
+  function disposeMesh(m) {
+    group.remove(m);
+    m.traverse(child => {
+      if (child.geometry) child.geometry.dispose();
+      if (child.material) {
+        if (Array.isArray(child.material)) child.material.forEach(mat => mat.dispose());
+        else child.material.dispose();
+      }
+      if (child.element && child.element.remove) child.element.remove();   // TZ-09: CSS2D yorliq (tanlov o'lchami)
+    });
+  }
+  /** bitta placement → mesh (sahnaga qo'shiladi) */
+  function buildOne(p) {
+    {
       const frag = catalog[p.frg];
-      if (!frag) continue;
+      if (!frag) return;
       const w = +p.w || +frag.w, d = +p.d || +frag.d, h = +p.h || +frag.h;
       const rot = ((+p.rot || 0) % 360 + 360) % 360;
       const mesh = makeItemMesh(THREE, frag, w, d, h, TH ? { theme: TH, hinge: p.hinge, rang: p._rang, ruchkasiz: !!p.ruchkasiz } : { ruchkasiz: !!p.ruchkasiz });   // egasi #166: Gola — ruchkasiz   // TZ-23 E: tanlangan material dekori
@@ -105,6 +111,15 @@ export function createItems(sp, opts = {}) {
       group.add(mesh);
       meshes.push(mesh);
     }
+  }
+  /** #235: sudrash/aylantirish PAYTIDA hosila elementlar (stoleshnitsa, sokol, dobor, karniz — p.auto) modul bilan birga suriladi:
+   *  faqat auto mesh'lar qayta quriladi, modullar (sudralayotgani ham) joyida qoladi. */
+  function setAuto(placements) {
+    for (let i = meshes.length - 1; i >= 0; i--) if (meshes[i].userData.auto) { disposeMesh(meshes[i]); meshes.splice(i, 1); }
+    for (const p of placements || []) if (p.auto) buildOne(p);
+    sp._invalidate();
+  }
+  function afterBuild(placements) {
     /* TZ-22: har eshikning xavfsiz ochilish burchagi — devor, mebel, tutqich va qo'shni eshikka tegmaydi (100° → 90° …) */
     if (TH) {
       try { doorMax = eshikBurchaklari(placements || [], catalog, opts.getRoom ? opts.getRoom() : null); } catch (e) { doorMax = {}; }
@@ -452,7 +467,7 @@ export function createItems(sp, opts = {}) {
     /* TZ-09 mavzu API */
     moverKeys, setOpen, isOpen: (k) => !!open[k],
     setFocus(id, partId) { focus = id && partId ? { id, part: partId } : null; applyFocus(); },
-    setPlacements, select, getSelected, meshes,
+    setPlacements, setAuto, select, getSelected, meshes,
     /** Ekran nuqtasida mebel bormi (controls.js: bo'sh joy = pan) */
     hitTest: (e) => !!pick(e),
     pickPartRay: (rc) => partFromRay(rc),
