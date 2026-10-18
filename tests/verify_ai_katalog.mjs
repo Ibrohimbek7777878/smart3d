@@ -5,7 +5,7 @@
  * Ishlatish: node tests/verify_ai_katalog.mjs */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { aiTur, shablonReja, buyumlar, modulniTop, KIND_MODUL } from '../app/js/engine/aiTur.js';
+import { aiTur, shablonReja, buyumlar, modulniTop, KIND_MODUL, XONA_SHABLON } from '../app/js/engine/aiTur.js';
 import { promptLoyiha } from '../app/js/engine/promptlar.js';
 import { matndanSpec, specTekshir } from '../app/js/engine/konstruksiyaTili.js';
 import { katalogdanTop, modulTuri, modulBelgilari, buyumdanTop, modulBolimSoni } from '../app/js/engine/katalogTanlash.js';
@@ -317,6 +317,67 @@ const tanla = (m) => { const yo = aiTur(m); if (yo.tur !== 'modul') return { tur
   }
   const ai = aiTur('yotoqxona 4x3.6');
   ok('garnitur: AI «yotoqxona» so\'rovi shablonga tushadi', ai.tur === 'shablon' && ai.shablon === 'yotoqxona');
+}
+
+/* ===== Qabul-50 kamchiliklari (agent/qabul50fix): ko'p mebelli matnda hech narsa jim yo'qolmasin; har bo'lak o'z o'lchamini oladi ===== */
+{
+  const sheets = J('sheet-catalog.json').sheets;
+  const xs = (m) => { const yo = aiTur(m); const p = yo.shablon === 'xona' ? XONA_SHABLON : P.find(x => x.id === yo.shablon); const rj = shablonReja(m, p, cat); return { yo, rj, r: promptLoyiha(rj.prompt, rj.kirish, cat) }; };
+  const tur = (r) => r.placements.map(p => modulTuri(cat[p.frg]));
+  const qat = (rj, kalit, b) => rj.qatorlar.filter(z => z.kalit === kalit && (!b || z.v.b === b));
+  const sozlar = (v) => Object.keys(v);
+  /* (1) #33: krovat va 2 tumba — tumba katalogda yo'q: qizil «bajarilmadi» qatori (jim emas) */
+  for (const m of ['krovat va 2 tumba', 'кровать и 2 тумбы', 'bed and 2 nightstands']) {
+    const x = xs(m);
+    ok(`Q33 «${m}» — krovat qurildi, tumba ×2 «bajarilmadi» (qizil), sig'madi 0`, x.yo.tur === 'shablon' && tur(x.r).filter(t => t === 'krovat').length === 1 && x.r.placements.length === 1 && qat(x.rj, 'buyum_yoq', 'tumba').some(z => z.v.n === 2 && z.diqqat) && !x.r.sigmadi.length, S([x.yo, x.rj.qatorlar]));
+  }
+  /* (1) #34: divan 2 metr va stol — divan eni 2000, stol alohida modul, sig'madi yo'q (xona kattalashadi, kartada aytiladi) */
+  for (const m of ['divan 2 metr va stol', 'диван 2 метра и стол', 'sofa 2 m and table']) {
+    const x = xs(m), dv = x.r.placements.find(p => modulTuri(cat[p.frg]) === 'divan');
+    ok(`Q34 «${m}» — divan eni 2000 + stol alohida modul, sig'madi 0, ustma-ust 0, xona kattalashgani kartada`, x.r.placements.length === 2 && dv && dv.w === 2000 && tur(x.r).includes('ish stoli') | tur(x.r).some(t => /stol/.test(t)) && !x.r.sigmadi.length && !ustmaUst(x.r.placements) && qat(x.rj, 'buyum_olcham', 'divan').length === 1 && x.rj.qatorlar.some(z => z.kalit === 'olcham_kengaydi' && z.diqqat), S([x.r.placements.map(p => [p.frg, p.w]), x.r.sigmadi, tur(x.r)]));
+  }
+  /* (1) #38: bolalar garnituri: krovat, stol, shkaf — stol tushib qolmaydi (bolalar shablonida parta = stol), shkaf, krovat bor */
+  for (const m of ["bolalar garnituri: krovat, stol, shkaf", 'детский гарнитур: кровать, стол, шкаф', 'kids set: bed, desk, wardrobe']) {
+    const x = xs(m), t = tur(x.r);
+    ok(`Q38 «${m.slice(0, 28)}» — krovat, stol (parta/stol), shkaf — hammasi; tushunilmadi/«bajarilmadi» jim emas; sig'madi 0`, t.includes('krovat') && t.some(z => ['parta', 'stol'].includes(z) || /stol/.test(z)) && t.some(z => ['garderob', 'kupe'].includes(z)) && !x.r.sigmadi.length && !ustmaUst(x.r.placements) && !x.rj.qatorlar.some(z => z.kalit === 'buyum_yoq'), S([x.yo, t, x.r.sigmadi]));
+  }
+  /* (1) #39: ofis: stol, shkaf, javon — shkaf jim tushmaydi */
+  for (const m of ['ofis: stol, shkaf, javon', 'офис: стол, шкаф, стеллаж', 'office: desk, cabinet, bookcase']) {
+    const x = xs(m), t = tur(x.r);
+    ok(`Q39 «${m}» — stol, shkaf (garderob), javon uchalasi; sig'madi 0`, x.yo.shablon === 'ofis-ikki' && x.r.placements.some(p => p.frg === 'SP-O-010') && t.includes('garderob') && x.r.placements.some(p => p.frg === 'SP-SH-005') && !x.r.sigmadi.length && !ustmaUst(x.r.placements), S([x.yo, x.r.placements.map(p => p.frg), x.r.sigmadi]));
+  }
+  /* (2) #32: karavot 1600x2000 va 2 eshikli garderob — garnitur (jim 0 modul emas), o'lcham krovatga, garderobda o'lcham yo'q, «2 eshikli» tushunilmadi emas */
+  for (const m of ['karavot 1600x2000 va 2 eshikli garderob', 'кровать 1600x2000 и 2-створчатый шкаф', 'bed 1600x2000 and 2 door wardrobe']) {
+    const yo = aiTur(m), g = yo.tur === 'garnitur' ? garnituraReja(m, cat, { sheets }) : null;
+    const kr = g && g.placements.find(p => modulTuri(cat[p.frg]) === 'krovat'), sh = g && g.placements.find(p => ['garderob', 'kupe'].includes(modulTuri(cat[p.frg])));
+    ok(`Q32 «${m}» — garnitur: krovat 1600×2000 + garderob; xona shablon emas; tushunilmadi bo'sh; ustma-ust 0`, g && g.placements.length === 2 && kr && sh && kr.w === 1600 && kr.d === 2000 && !g.tushunilmadi.length && !ustmaUst(g.placements) && !g.sigmadi.length, S([yo, g && g.placements.map(p => [p.frg, p.w, p.d]), g && g.tushunilmadi]));
+  }
+  ok('Q32 yo\'naltirish buzilmadi: «yotoqxona: krovat 1600x2000, garderob» — yotoqxona shabloni; «krovat 1600 va ikki tumba» — xona shabloni', aiTur('yotoqxona: krovat 1600x2000, garderob').tur === 'shablon' && aiTur('krovat 1600 va ikki tumba').tur === 'shablon');
+  /* (3) #36: bitta sonli «<buyum> <son>» o'z buyumiga eni; chegaradan chiqsa — eng yaqin chegara va kartada */
+  for (const m of ['garderob 2400 va komod 1200', 'гардероб 2400 и комод 1200', 'wardrobe 2400 and dresser 1200']) {
+    const x = xs(m), gd = x.r.placements.find(p => modulTuri(cat[p.frg]) === 'garderob'), km = x.r.placements.find(p => modulTuri(cat[p.frg]) === 'komod');
+    ok(`Q36 «${m}» — garderob eni 2400, komod eni 1200 (har biri o'zida); sig'madi 0; kartada ikki «eni» qatori`, gd && km && gd.w === 2400 && km.w === 1200 && !x.r.sigmadi.length && !ustmaUst(x.r.placements) && qat(x.rj, 'buyum_olcham').length === 2, S([x.r.placements.map(p => [p.frg, p.w]), x.r.sigmadi]));
+  }
+  {
+    const x = xs('garderob 5000 va komod 1200'), gd = x.r.placements.find(p => modulTuri(cat[p.frg]) === 'garderob'), f = cat[gd.frg];
+    ok('Q36 chegaradan chiqsa: garderob 5000 → modul max_w, kartada qizil qator (olcham chegarasi)', gd.w === +f.max_w && qat(x.rj, 'buyum_olcham_chegara', 'garderob').some(z => z.v.v === 5000 && z.v.m === gd.w && z.diqqat), S([gd.w, x.rj.qatorlar]));
+  }
+  /* (4) #47: antresol bilan kupe shkaf — kupe qurildi, antresol «bajarilmadi» (katalogda faqat oshxona antresoli) */
+  for (const m of ['antresol bilan kupe shkaf', 'антресоль и шкаф-купе', 'mezzanine and sliding wardrobe']) {
+    const x = xs(m);
+    ok(`Q47 «${m}» — kupe SP-G-010 qurildi, antresol ×1 «bajarilmadi» (qizil), jim emas`, x.r.placements.length === 1 && x.r.placements[0].frg === 'SP-G-010' && qat(x.rj, 'buyum_antresol_yoq', 'antresol').some(z => z.diqqat), S(x.rj.qatorlar));
+  }
+  ok('Q48 «bar peshtaxta aylana» — kutilgan xulq: tushunmadim (nomalum), hech narsa qurilmaydi', aiTur('bar peshtaxta aylana').tur === 'nomalum');
+  /* i18n: har buyum turi va yangi karta qatorlari uch tilda (kalit o'zi ko'rinib qolmasin) */
+  {
+    const src = readFileSync(fileURLToPath(new URL('../app/js/engine/aiTur.js', import.meta.url)), 'utf8');
+    const turlar = [...src.slice(src.indexOf('const BUYUM = {'), src.indexOf('/* aniqroq tur bilan')).matchAll(/^  (\w+):/gm)].map(m => m[1]);
+    for (const til of ['uz', 'ru', 'en']) {
+      const L = JSON.parse(readFileSync(fileURLToPath(new URL(`../web/src/i18n/${til}.json`, import.meta.url)), 'utf8'));
+      const yoq = turlar.filter(k => !L['ai.b_' + k]).concat(['olcham_kengaydi', 'buyum_olcham', 'buyum_olcham_chegara', 'buyum_antresol_yoq'].filter(k => !L['ai.sh_' + k]));
+      ok(`i18n[${til}] barcha buyum turlari (ai.b_*) va yangi qatorlar (ai.sh_*) tarjimada`, !yoq.length, yoq.join(','));
+    }
+  }
 }
 
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);

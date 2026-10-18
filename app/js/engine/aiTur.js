@@ -14,6 +14,7 @@
 import { konstruksiyami, matndanSpec, specTekshir } from './konstruksiyaTili.js';
 import { OSHXONA_SOZ, oshxonami } from './oshxonaTili.js';
 import { modulTuri as katalogTuri, buyumdanTop, katalogdanTop } from './katalogTanlash.js';
+import { promptLoyiha } from './promptlar.js';
 
 const tayyorla = (m) => String(m || '').toLowerCase().replace(/[ʻʼ’‘`´]/g, "'").replace(/(\d),(\d)/g, '$1.$2').replace(/\s+/g, ' ');
 
@@ -130,8 +131,8 @@ function mmga(v, b) {
 const B = "(mm|мм|sm|см|cm|metr[a-z]*|метр[а-яё]*|m|м)?";
 
 /** xona o'lchamlari: "4x3.6", "4000x3600" — eni, chuqurligi; aks holda xona so'zidan keyingi son ("dahliz 1800", "tv zona 3000") — eni */
-function xonaOlcham(s, xonaRe) {
-  const m = new RegExp("(\\d+(?:\\.\\d+)?)\\s*" + B + "\\s*[x×х*]\\s*(\\d+(?:\\.\\d+)?)\\s*" + B + "(?![a-zа-яё])").exec(s);
+function xonaOlcham(s, xonaRe, juft = true) {
+  const m = !juft ? null : new RegExp("(\\d+(?:\\.\\d+)?)\\s*" + B + "\\s*[x×х*]\\s*(\\d+(?:\\.\\d+)?)\\s*" + B + "(?![a-zа-яё])").exec(s);
   if (m) {
     const u = m[2] || m[4];
     const a = mmga(m[1], u), b = mmga(m[3], m[4] || m[2]);
@@ -183,6 +184,7 @@ export function xonaOlchamAjrat(matn) {
   if (!xona.length) ol(XONA_KEYIN);
   return { xona, qolgan: q.replace(/\s+/g, ' ').trim() };
 }
+const GARNITUR_BEGONA = new Set(['stol', 'parta', 'divan', 'tv', 'vitrina', 'stul', 'kreslo']);   // javon emas: «polka/shelves» shkaf tarkibida
 const GAR_SHKAF = /shkaf[a-z']*|шкаф[а-яё]*|garderob[a-z']*|гардероб[а-яё]*|wardrobe|closet|kupe|купе/;
 const GAR_BUYUM = [['krovat', BUYUM.krovat], ['trimo', BUYUM.trimo], ['shkaf', GAR_SHKAF], ['komod', BUYUM.komod]];
 /** "<buyum> <A>x<B>" juftliklari: {tur → true}; xona o'lchamlari hisobga olinmaydi. Qisqa matn ("krovat 1800x2100 va shkaf 2400x2300") ham garnitur */
@@ -204,11 +206,16 @@ export function buyumOlchamlari(matn) {
 export function garniturmi(matn) {
   const s = tayyorla(matn);
   if (!s.trim() || OSHXONA_SOZ.test(s)) return false;
-  if (GARNITUR.test(s)) return YOTOQ_SOZ.test(s);
+  /* qabul-50 #38: «bolalar garnituri: krovat, stol, shkaf» — garnitur tahlilchisi (engine/garnitur.js) faqat yotoqxona buyumlarini biladi;
+     stol, divan, javon … so'ralsa — xona shabloni (har buyum katalog moduli bilan, jim tashlanmaydi) */
+  if (GARNITUR.test(s)) return YOTOQ_SOZ.test(s) && !buyumlar(s).some(b => GARNITUR_BEGONA.has(b.tur) && !(b.tur === 'stol' && BUYUM.trimo.test(s)));   // «dressing table» — trimo, stol emas
   if (BUYUM.trimo.test(s) && buyumlar(s).length >= 2) return true;
   /* garnitur so'zisiz: kamida ikki XIL buyum o'z o'lchami bilan, ulardan biri yotoqxona buyumi (krovat/trimo) — "krovat 1800x2100 va shkaf 2400x2300" */
   const bo = buyumOlchamlari(s);
-  return Object.keys(bo).length >= 2 && (bo.krovat || bo.trimo);
+  if (Object.keys(bo).length >= 2 && (bo.krovat || bo.trimo)) return true;
+  /* qabul-50 #32: «karavot 1600x2000 va 2 eshikli garderob» — krovat/trimo o'z o'lchami bilan + shkaf/garderob (o'lchamsiz, «2 eshikli» kabi sifat bilan) — xona so'zi yo'q: garnitur */
+  if ((bo.krovat || bo.trimo) && GAR_SHKAF.test(s) && !XONALAR.some(x => x.re.test(s)) && !XONA_SOZ.test(s)) return true;
+  return false;
 }
 
 /** matn → nima so'ralgani */
@@ -255,6 +262,37 @@ export function aiTur(matn) {
   return { tur: 'nomalum', buyumlar: by };
 }
 
+/* katalogda yo'q buyum — sababi alohida (antresol: katalogda faqat oshxona antresollari, 500 mm) */
+const KIND_YOQ_SABAB = { antresol: 'buyum_antresol_yoq' };
+const EN_BIRLIK = "mm|мм|sm|см|cm|metr[a-z]*|метр[а-яё]*|m(?![a-z])|м(?![а-яё])";
+/** «divan 2 metr va stol», «garderob 2400 va komod 1200», «stol 1400x700» → { tur: eni mm } — o'lcham matn bo'lagida unga eng yaqin buyumga (krovat — krovatEni).
+ *  Bo'lak: vergul, «va/и/and/bilan», «:» bo'yicha. Son: birlikli («2 metr», «160 sm») yoki ≥300 (mm) yoki «AxB(xC)» juftlik (birinchisi — eni); «2 tumba», «2 eshikli» — son emas, soni */
+export function buyumEnlari(matn, soralgan) {
+  const s = tayyorla(matn), out = {};
+  const turlar = soralgan.filter(b => b.tur !== 'krovat' && BUYUM[b.tur]);
+  for (const cl of s.split(/[,;:\n]|\s+(?:va|и|and|hamda|bilan|with|\+)\s+/)) {
+    const nums = [];
+    const re = new RegExp("(\\d+(?:\\.\\d+)?)\\s*(?:(" + EN_BIRLIK + ")\\s*)?(?:[x×х*]\\s*\\d+(?:\\.\\d+)?\\s*(?:" + EN_BIRLIK + ")?)*", 'g');
+    let m;
+    while ((m = re.exec(cl))) {
+      const u = m[2], ju = /[x×х*]/.test(m[0]);
+      const x = +m[1];
+      if (!u && !ju && x < 300) continue;                                  // son (2 tumba, 2 eshikli, 4 polka)
+      if (/^(?:ta|шт)/.test(cl.slice(re.lastIndex).trim())) continue;     // «600 ta» emas
+      const mm = u ? mmga(x, u) : ju && x < 10 ? Math.round(x * 1000) : Math.round(x);
+      if (mm >= 200 && mm <= 6000) nums.push({ mm, i: m.index });
+    }
+    if (!nums.length) continue;
+    const hs = [];
+    for (const b of turlar) { const k = new RegExp(BUYUM[b.tur].source).exec(cl); if (k) hs.push({ tur: b.tur, i: k.index }); }
+    if (!hs.length) continue;
+    const n0 = nums[0];
+    hs.sort((a, c) => Math.abs(a.i - n0.i) - Math.abs(c.i - n0.i));
+    if (out[hs[0].tur] == null) out[hs[0].tur] = n0.mm;
+  }
+  return out;
+}
+
 /**
  * Tayyor so'rov + matndagi parametrlar → qurish rejasi (promptLoyiha uchun) va karta qatorlari.
  * @param {string} matn
@@ -265,7 +303,10 @@ export function shablonReja(matn, prompt, catalog) {
   const s = tayyorla(matn), qatorlar = [];
   const q = (kalit, v = {}, o = {}) => qatorlar.push(Object.assign({ kalit, v, manba: 'matn', diqqat: false }, o));
   const xona = XONALAR.find(x => x.id === prompt.id || (x.xona === 'ofis' && /^ofis/.test(prompt.id)));
-  const ol = xonaOlcham(s, xona ? xona.re : prompt.id === 'garderob-kupe' ? KUPE_DEVOR : prompt.id === 'xona' ? XONA_SOZ : null);
+  /* turi aytilmagan xona: «krovat 1600x2000 va stol» dagi juftlik xona o'lchami emas — faqat «xona» so'zi yonidagi («xona 4x5», «4x5 xona») */
+  let ol;
+  if (prompt.id === 'xona') { const xb = xonaOlchamAjrat(s).xona; ol = xb.length ? xonaOlcham(xb.join(' '), null) : xonaOlcham(s, XONA_SOZ, false); }
+  else ol = xonaOlcham(s, xona ? xona.re : prompt.id === 'garderob-kupe' ? KUPE_DEVOR : null);
   const kirish = {};
   for (const m of prompt.maydon || []) {
     const v = ol[m.k];
@@ -278,10 +319,27 @@ export function shablonReja(matn, prompt, catalog) {
   /* shablon tarkibi va so'ralgan buyumlar */
   const toplam = (prompt.toplam || []).map(x => Object.assign({}, x, { _turi: modulTuri(catalog[x.kod]) }));
   const soralgan = buyumlar(s);
+  /* qabul-50 #39: «shkaf» (turi aytilmagan — pastki/ustki/osma emas) buyum turlari ro'yxatida yo'q edi va jim tushib qolardi → kiyim shkafi (garderob) modulli */
+  if (!soralgan.some(b => b.tur === 'garderob' || b.tur === 'kupe')) {
+    const gm = /(?<!pastki |ustki |osma |нижн[а-яё]* |верхн[а-яё]* )(?:shkaf[a-z']*|шкаф[а-яё]*|cabinet|cupboard)/.exec(s);
+    const maxsus = soralgan.some(b => ['penal', 'hammom', 'poyabzal', 'vitrina', 'kozgu', 'texnika', 'pech', 'burchak', 'dobor', 'peshxona', 'derazaosti', 'antresol'].includes(b.tur));
+    if (gm && !maxsus && !/pastki\s*shkaf|ustki\s*shkaf|osma\s*shkaf/.test(s)) soralgan.push({ tur: 'garderob', n: soni(s, gm.index), i: gm.index });
+  }
   const kEni = krovatEni(s);
+  const OLCH = buyumEnlari(s, soralgan);
   const BOSH = ['old', 'ong', 'chap', 'orqa'];
+  /* aytilgan eni (o'z buyumiga) → toplam yozuvining eni: modul min/max chegarasi ichida, chiqsa — eng yaqin chegara va kartada aytiladi */
+  const enBogla = (tur, xs) => {
+    const v = OLCH[tur];
+    if (!v || !xs.length) return;
+    const f = catalog[xs[0].kod] || {}, a = +f.min_w || +f.w || 0, z = +f.max_w || +f.w || 0;
+    const m = a && z ? Math.min(z, Math.max(a, v)) : v;
+    xs.forEach(x => { x.w = m; });
+    if (m !== v) q('buyum_olcham_chegara', { b: tur, v, a, z, m }, { diqqat: true, manba: 'katalog' });
+    else q('buyum_olcham', { b: tur, v }, { manba: 'matn' });
+  };
   for (const b of soralgan) {
-    const bor = toplam.filter(x => x._turi === b.tur);
+    const bor = toplam.filter(x => x._turi === b.tur || (b.tur === 'stol' && x._turi === 'parta'));   // bolalar shablonida stol = parta
     if (b.tur === 'krovat' && kEni) {
       /* krovat eni — katalogdagi karavotlardan: eni chegarasi ichida, asl eni eng yaqini (teng bo'lsa — kod tartibi) */
       const nomzod = Object.values(catalog).filter(f => modulTuri(f) === 'krovat' && f.production !== 'none' && !/^CH-/.test(f.code)
@@ -299,18 +357,44 @@ export function shablonReja(matn, prompt, catalog) {
       /* so'ralgan soni shablondagidan ko'p — shu modul yana qo'shiladi (sig'masa — "sig'madi") */
       for (let k = bor.length; k < b.n; k++) toplam.push(Object.assign({}, bor[0], { joy: 'markaz', devor: BOSH[k % BOSH.length] }));
       q('buyum_bor', { b: b.tur, n: b.n, frg: bor[0].kod, nom: (catalog[bor[0].kod] || {}).name || bor[0].kod }, { manba: 'katalog' });
+      enBogla(b.tur, bor);
       continue;
     }
     const kod = KIND_MODUL[b.tur];
-    if (!kod || !catalog[kod]) { q('buyum_yoq', { b: b.tur, n: b.n }, { diqqat: true, manba: 'katalog' }); continue; }
-    for (let k = 0; k < b.n; k++) toplam.push({ kod, devor: BOSH[k % BOSH.length], joy: 'markaz', _turi: b.tur, _soraldi: true });
+    if (!kod || !catalog[kod]) { q(KIND_YOQ_SABAB[b.tur] || 'buyum_yoq', { b: b.tur, n: b.n }, { diqqat: true, manba: 'katalog' }); continue; }
+    const yangi = [];
+    for (let k = 0; k < b.n; k++) { const x = { kod, devor: BOSH[k % BOSH.length], joy: 'markaz', _turi: b.tur, _soraldi: true }; toplam.push(x); yangi.push(x); }
     q('buyum_qoshildi', { b: b.tur, n: b.n, frg: kod, nom: catalog[kod].name }, { manba: 'katalog' });
+    enBogla(b.tur, yangi);
   }
   const soralganTur = new Set(soralgan.map(b => b.tur));
   /* shablon garniturida katalogda yo'q buyum (yotoqxona: yon tumbalar) — jim tashlanmaydi: "bajarilmadi" qatori */
   for (const y of prompt.yoq || []) if (!soralganTur.has(y.tur)) q('buyum_yoq', { b: y.tur, n: y.n || 1 }, { diqqat: true, manba: 'katalog' });
   for (const x of toplam) if (!x._soraldi && !soralganTur.has(x._turi) && soralgan.length) q('shablondan', { frg: x.kod, nom: (catalog[x.kod] || {}).name || x.kod }, { manba: 'sukut' });
-  return { prompt: Object.assign({}, prompt, { toplam: toplam.map(({ _turi, _soraldi, ...x }) => x) }), kirish, qatorlar };
+  const natija = Object.assign({}, prompt, { toplam: toplam.map(({ _turi, _soraldi, ...x }) => x) });
+  /* qabul-50 #34/#36: xona o'lchami aytilmagan bo'lsa va so'ralgan mebellar shablon sukutiga sig'masa — aytilmagan o'lcham(lar) sig'guncha kattalashtiriladi
+     (shablon chegarasigacha; aytilgan o'lcham o'zgarmaydi), kartada aytiladi. Chegaraga yetib ham sig'masa — «sig'madi» qatori qoladi */
+  const sukutlar = (prompt.maydon || []).filter(m => qatorlar.some(z => z.kalit === 'olcham_sukut' && z.v.o === m.k));
+  if (sukutlar.length && toplam.length) {
+    const sigmadi = (k) => promptLoyiha(natija, k, catalog).sigmadi.length;
+    if (sigmadi(kirish)) {
+      const k = Object.assign({}, kirish);
+      for (let it = 0; it < 40 && sigmadi(k); it++) {
+        let o = false;
+        for (const m of sukutlar) if (k[m.k] < m.max) { k[m.k] = Math.min(m.max, k[m.k] + 200); o = true; }
+        if (!o) break;
+      }
+      if (!sigmadi(k) || sukutlar.some(m => k[m.k] !== kirish[m.k])) {
+        for (const m of sukutlar) {
+          if (k[m.k] === kirish[m.k]) continue;
+          const z = qatorlar.find(r => r.kalit === 'olcham_sukut' && r.v.o === m.k);
+          z.kalit = 'olcham_kengaydi'; z.v = { o: m.k, v: k[m.k], a: kirish[m.k] }; z.diqqat = true;
+          kirish[m.k] = k[m.k];
+        }
+      }
+    }
+  }
+  return { prompt: natija, kirish, qatorlar };
 }
 
 /**
