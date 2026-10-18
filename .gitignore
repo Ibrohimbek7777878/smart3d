@@ -3,6 +3,13 @@ node_modules/
 *.db
 *.db-wal
 *.db-shm
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+__pycache__/
+*.pyc
+server/backups/
 .env
 .env.*
 .DS_Store
@@ -19,4 +26,6 @@ data1/
 NARX.pdf
 *.xls
 /*.xlsx
+*.pem
+*.key
 .bsq_sinov/
