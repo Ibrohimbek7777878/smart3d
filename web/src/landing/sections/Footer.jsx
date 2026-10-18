@@ -17,7 +17,7 @@ export default function Footer({ v }) {
             {t('sayt.smart3d')}
           </span>
         </div>
-        <span style={{"padding":"4px 10px","border":"1px dashed var(--mut)","borderRadius":"8px","fontFamily":"'JetBrains Mono',monospace","fontSize":"12px","color":"var(--mut)"}}>
+        <span style={{"fontSize":"14px","fontWeight":"600","color":"var(--mut)"}}>
           {t('sayt.aloqa_egasi_beradi')}
         </span>
         {/* TZ-18: dizayndagi til belgisi — endi til menyusini ochadi (ilova bilan bir xil menyu) */}
