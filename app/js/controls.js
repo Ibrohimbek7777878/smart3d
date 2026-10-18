@@ -203,7 +203,10 @@ export function attachControls(sp, opts = {}) {
     const cam = sp.cam3d;
     if (!sp.orto && cam.isPerspectiveCamera) {
       const R = diag / 2, c = _c.set(bb.cx, bb.cy, 1000), dc = cam.position.distanceTo(c);
-      const near = clamp(dc > R ? (dc - R) * 0.5 : dc * 0.01, 5, 2000);
+      /* #234: kamera mebel qutisi ichida bo'lganda near ni kattaroq oladi (dc*2%, 10..60 mm; avval dc*1%, 5..) — chuqurlik buferi
+         aniqligi 2-6 marta yaxshi (16-bit GPU'larda 3 mm oraliqdagi yuzalar "urishib" miltillardi). Mebelga >= YAQIN_MIN (400 mm)
+         yaqinlashilmaydi, shuning uchun 60 mm kesilishga olib kelmaydi; yuqoriga chiqmaymiz — pol oldingi qismi kesilib qolmasin */
+      const near = clamp(dc > R ? (dc - R) * 0.5 : dc * 0.02, dc > R ? 5 : 10, dc > R ? 2000 : 60);
       const far = dc + R * 2 + 1000;
       if (Math.abs(near - cam.near) > cam.near * 0.02 || Math.abs(far - cam.far) > cam.far * 0.02) {
         cam.near = near; cam.far = far; cam.updateProjectionMatrix();
