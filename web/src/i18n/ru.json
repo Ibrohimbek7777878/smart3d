@@ -1415,5 +1415,17 @@
  "altendorf.q2": "Откройте этот .project в GibLab — раскрой оптимизирует сам GibLab.",
  "altendorf.q3": "Из GibLab выгружается файл для пилы Altendorf (.gibcut) и передаётся на станок.",
  "altendorf.eslatma": "Smart3D не пишет .gibcut: это закрытый формат GibLab (карта раскроя зашифрована). Нужен текстовый план на бумаге — Файлы → «План раскроя (текст)».",
- "altendorf.yuklab": "Скачать GibLab (.project)"
+ "altendorf.yuklab": "Скачать GibLab (.project)",
+ "texnika.q_korpus": "Корпус",
+ "texnika.q_eshik": "Дверца",
+ "texnika.q_ruchka": "Ручка",
+ "texnika.q_shisha": "Стекло",
+ "texnika.q_tugma": "Кнопки",
+ "texnika.q_konforka": "Конфорки",
+ "texnika.r_oq": "Белый",
+ "texnika.r_kulrang": "Серый",
+ "texnika.r_qora": "Чёрный",
+ "texnika.r_zanglamas": "Нержавейка",
+ "texnika.r_bronza": "Бронза",
+ "texnika.sukut": "Вернуть исходные цвета"
 }

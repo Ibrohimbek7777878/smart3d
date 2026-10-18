@@ -46,6 +46,17 @@ export function togglePartOpen() {
 }
 export function closePart() { set('editor', { part: null }); const it = items(); if (it) it.setFocus(null); }
 
+/** egasi #232: o'rnatma texnika qismining rangi (korpus, eshik, ruchka, shisha, tugma, konforka) — doc.placements[].texnikaRang, loyiha bilan saqlanadi;
+ *  rang === null — sukut (realistik) rangga qaytarish. Hisob/kesimga ta'sir qilmaydi (faqat 3D ko'rinish). */
+export function setTexnikaRang(qism, rang) {
+  const p = selected(); if (!p) return;
+  const r = Object.assign({}, p.texnikaRang || {});
+  if (rang == null) delete r[qism]; else r[qism] = rang;
+  if (Object.keys(r).length) p.texnikaRang = r; else delete p.texnikaRang;
+  project.changed('items', true);
+}
+export function texnikaSukutRang() { const p = selected(); if (!p) return; delete p.texnikaRang; project.changed('items', true); }
+
 /** modul o'lchami (chegarasiga keltiriladi, ogohlantirish kartada) */
 export function setDim(key, val) {
   const p = selected(), frag = project.fr(p); if (!p || !frag) return;

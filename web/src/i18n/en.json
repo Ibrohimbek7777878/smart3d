@@ -1415,5 +1415,17 @@
  "altendorf.q2": "Open this .project in GibLab — GibLab optimises the cutting itself.",
  "altendorf.q3": "GibLab exports the Altendorf saw file (.gibcut) and it goes to the machine.",
  "altendorf.eslatma": "Smart3D does not write .gibcut: it is GibLab's closed format (the cutting map is encrypted). For a printed text plan use Files → «Cutting plan (text)».",
- "altendorf.yuklab": "Download GibLab (.project)"
+ "altendorf.yuklab": "Download GibLab (.project)",
+ "texnika.q_korpus": "Body",
+ "texnika.q_eshik": "Door",
+ "texnika.q_ruchka": "Handle",
+ "texnika.q_shisha": "Glass",
+ "texnika.q_tugma": "Knobs",
+ "texnika.q_konforka": "Burners",
+ "texnika.r_oq": "White",
+ "texnika.r_kulrang": "Grey",
+ "texnika.r_qora": "Black",
+ "texnika.r_zanglamas": "Stainless steel",
+ "texnika.r_bronza": "Bronze",
+ "texnika.sukut": "Reset to original colours"
 }

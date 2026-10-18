@@ -71,7 +71,7 @@ export function createItems(sp, opts = {}) {
       if (!frag) continue;
       const w = +p.w || +frag.w, d = +p.d || +frag.d, h = +p.h || +frag.h;
       const rot = ((+p.rot || 0) % 360 + 360) % 360;
-      const mesh = makeItemMesh(THREE, frag, w, d, h, TH ? { theme: TH, hinge: p.hinge, rang: p._rang, ruchkasiz: !!p.ruchkasiz } : { ruchkasiz: !!p.ruchkasiz });   // egasi #166: Gola — ruchkasiz   // TZ-23 E: tanlangan material dekori
+      const mesh = makeItemMesh(THREE, frag, w, d, h, TH ? { theme: TH, hinge: p.hinge, rang: p._rang, texnikaRang: p.texnikaRang, ruchkasiz: !!p.ruchkasiz } : { ruchkasiz: !!p.ruchkasiz });   // egasi #166: Gola — ruchkasiz   // TZ-23 E: tanlangan material dekori
 
       // Agar oddiy mesh bo'lsa geometriyani siljitadi (Group allaqachon markazlashgan)
       if (mesh.geometry && mesh.geometry.translate) {
@@ -396,6 +396,7 @@ export function createItems(sp, opts = {}) {
         openV[key] = n;
         if (n !== t) busy = true;
         if (mv.type === 'door') mv.obj.rotation.z = mv.sign * n * Math.min(doorMax[key] || 1.75, OCHIQ_MAX);
+        else if (mv.type === 'flap') mv.obj.rotation.x = mv.sign * n * mv.max;   // egasi #232: texnika eshigi pastki sharnirda (duxovka, idish yuvish)
         else if (mv.type === 'drawer') mv.obj.position.y = n * mv.dist;   // TZ-09 Q5: tortma oldinga suriladi
       }
     }

@@ -1332,5 +1332,17 @@
  "altendorf.q2": "GibLab'da shu .project faylni oching — kesimni GibLab o'zi optimallashtiradi.",
  "altendorf.q3": "GibLab'dan Altendorf arrasi uchun fayl (.gibcut) chiqariladi va stanokka beriladi.",
  "altendorf.eslatma": "Smart3D .gibcut yozmaydi: bu GibLab'ning yopiq formati (kesim xaritasi shifrlangan). Qog'ozdagi matnli reja kerak bo'lsa — Fayllar → «Kesim rejasi (matn)».",
- "altendorf.yuklab": "GibLab (.project) yuklab olish"
+ "altendorf.yuklab": "GibLab (.project) yuklab olish",
+ "texnika.q_korpus": "Korpus",
+ "texnika.q_eshik": "Eshik",
+ "texnika.q_ruchka": "Ruchka",
+ "texnika.q_shisha": "Shisha",
+ "texnika.q_tugma": "Tugmalar",
+ "texnika.q_konforka": "Konforkalar",
+ "texnika.r_oq": "Oq",
+ "texnika.r_kulrang": "Kulrang",
+ "texnika.r_qora": "Qora",
+ "texnika.r_zanglamas": "Zanglamas po'lat",
+ "texnika.r_bronza": "Bronza",
+ "texnika.sukut": "Asl ranglarga qaytarish"
 }
