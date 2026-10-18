@@ -2,8 +2,11 @@
 
 | Buyruq | Nima tekshiradi |
 |---|---|
-| `bash tests/run-all.sh` | Node testlari (10 to'plam): kroy, GibLab, BPJ, AI tahlilchi, poligon xona, oshxona elementlari, GLB, eksportlar, MebelCity modullari, narx jadvali va "taxminiy" belgisi, xizmatlar, Bazis teshiklari |
+| `bash tests/run-all.sh` | Node testlari (11 to'plam): kroy, GibLab, BPJ, AI tahlilchi, poligon xona, oshxona elementlari, GLB, eksportlar, MebelCity modullari, narx jadvali va "taxminiy" belgisi, xizmatlar, Bazis teshiklari, yangi frontend hisob ko'prigi |
 | `bash tests/ui/run.sh` | Brauzer testlari: 7 qurilma, teginish, oynalar, smeta, MC modullari, eksport. Natija: `tests/ui/out/` (yoki `QA_OUT=...`) |
+| `bash tests/ui/dizayn.sh` | TZ-09: yangi frontend (`web/`) tasdiqlangan dizayn bilan pikselma-piksel bir xilmi — sayt va ilova, 1440 va 390 px (3D maydonlar chetlab). Farq bo'lsa `tests/ui/out/dizayn/yonma-*.png` |
+| `bash tests/ui/hisob_teng.sh` | TZ-09: yangi frontend hisobi eski sayt bilan aynan bir xilmi — 6 ssenariy (namuna, prisadka, AI U/L, garderob, ERP plita) |
+| `bash tests/ui/internetsiz.sh` | TZ-09: yangi frontend internetsiz ochiladimi (sayt, ilova, ma'lumot) |
 | `cd server && NODE_ENV=test npm test` | Server: kirish, xavfsizlik, API |
 | `node tests/giblab_check.mjs FAYL.project` | Istalgan GibLab `.project` faylini tekshirish |
 

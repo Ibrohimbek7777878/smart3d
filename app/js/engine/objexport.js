@@ -71,6 +71,7 @@ function buildMTL(catalog) {
  * Butun loyiha hujjatini detallarga ajratilgan sanoat darajasidagi OBJ'ga aylantiradi.
  * @param {Object} doc — {room:{outline, wall_height, openings}, placements:[{id,frg,x,y,z,w,d,h,rot,qty}]}
  * @param {Object} catalog — {code: frag}
+ * @param {{mtllib?:boolean}} [opt] — mtllib:true bo'lsa OBJ ichiga `mtllib smart3d.mtl` yoziladi (rangli variant)
  * @returns {{obj:string, mtl:string, holes:any[], placements:any[]}}
  */
 export function buildOBJ(doc, catalog, opt = {}) {
@@ -85,14 +86,15 @@ export function buildOBJ(doc, catalog, opt = {}) {
     '# Smart3D Detallashtirilgan Model Eksporti (OBJ)',
     '# units: mm · axes: x=width y=depth z=height (Z-up)',
     '# Har bir mebel haqiqiy panellar (yon, tub, qopqoq, eshik, tokcha) bilan yozilgan',
-    'mtllib smart3d.mtl'
+    /* egasi #223: odatiy OBJ — bitta fayl (mtllib yo'q; usemtl/o nomlari qoladi, rang yo'q). opt.mtllib=true — alohida .mtl bilan */
+    ...(opt.mtllib ? ['mtllib smart3d.mtl'] : [])
   ].join('\n');
 
   /* ── 1) Pol / xona (outline ko'tarilgan holda) ─────────────────── */
   const room = doc.room || {};
   const outline = room.outline || [];
   const wh = +room.wall_height || 2700;
-  if (outline.length >= 3) {
+  if (outline.length >= 3 && opt.only == null) {   // opt.only — faqat bitta modul: xona (pol/devor) chiqmaydi
     out.v.push('o floor');
     out.v.push('usemtl cat_floor');
     out.v.push(`# xona poligoni`);
@@ -179,6 +181,7 @@ export function buildOBJ(doc, catalog, opt = {}) {
 
   /* ── 2) Mebellar: har bir mebel panellar bo'yicha eksport qilinadi ── */
   for (const p of doc.placements || []) {
+    if (opt.only != null && p.id !== opt.only) continue;
     const frag = catalog[p.frg];
     if (!frag) continue;
     const w = +p.w || +frag.w, d = +p.d || +frag.d, h = +p.h || +frag.h;
@@ -253,7 +256,7 @@ export function buildOBJ(doc, catalog, opt = {}) {
           rotated: rot
         });
       }
-      const bHoles = frag.birikmalar && clById[p.id] ? clById[p.id].holes.filter(hl => /^evrovint/.test(hl.kind)) : [];
+      const bHoles = frag.birikmalar && clById[p.id] ? clById[p.id].holes.filter(hl => /^(evrovint|d6_eks)/.test(hl.kind)) : [];   // birikma: konfirmat yoki eksentrik (d6.js EKS)
       for (const hl of bHoles) {
         holes.push({
           placement: p.id, fragment: p.frg, part: hl.part, side: hl.side, torets: hl.torets,
@@ -284,14 +287,19 @@ export function buildOBJ(doc, catalog, opt = {}) {
 }
 
 /** Cutlist → CSV (Bazis/SketchUp atribut uchun). */
+/** CSV katagi: ajratgich (;), qo'shtirnoq yoki qator uzilishi bo'lsa — qo'shtirnoqqa olinadi (nom ichidagi ";" ustunlarni surib yubormasin) */
+const csvK = (v) => { const s = v == null ? '' : String(v); return /[;"\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+const csvQator = (r) => r.map(csvK).join(';');
+
 export function cutlistCSV(cutlists) {
   const rows = [['fragment', 'detail', 'length_mm', 'width_mm', 'material']];
   for (const cl of cutlists || []) {
     for (const p of cl.parts || []) {
-      rows.push([cl.fragment, p.code, p.length, p.width, p.material || '']);
+      /* soni (qty) bo'lsa — har dona alohida qator (qty ni e'tiborsiz qoldirish detallarni kam ko'rsatardi) */
+      for (let k = Math.max(1, Math.round(+p.qty || 1)); k > 0; k--) rows.push([cl.fragment, p.code, p.length, p.width, p.material || '']);
     }
   }
-  return rows.map(r => r.join(';')).join('\r\n') + '\r\n';
+  return rows.map(csvQator).join('\r\n') + '\r\n';
 }
 
 /** Smeta → CSV (narx jadvali). */
@@ -302,7 +310,7 @@ export function smetaCSV(lines, total) {
     rows.push([l.group, l.name, l.qty, l.unit, l.unit_price, l.amount]);
   }
   rows.push(['', '', '', '', 'JAMI', total]);
-  return rows.map(r => r.join(';')).join('\r\n') + '\r\n';
+  return rows.map(csvQator).join('\r\n') + '\r\n';
 }
 
 /** XNC CSV — GibLab "Импорт из Excel" uchun detal ro'yxati (kod 1_1). */
@@ -326,11 +334,17 @@ export function xncCSV(cutlists, materials, catalog) {
       idx++;
     }
   }
-  return rows.map(r => r.join(';')).join('\r\n') + '\r\n';
+  return rows.map(csvQator).join('\r\n') + '\r\n';
 }
+
+/* TZ-16: muqobil yuklash (Telegram Mini App — fayl bot chatiga yuboriladi); null — oddiy brauzer yuklab olishi */
+let downloadHandler = null;
+export function setDownloadHandler(fn) { downloadHandler = typeof fn === 'function' ? fn : null; }
+export const hasDownloadHandler = () => !!downloadHandler;
 
 /** Brauzerda faylni xavfsiz yuklab olish yordamchisi. */
 export function download(filename, content, mime) {
+  if (downloadHandler) return downloadHandler(filename, content, mime);
   if (typeof window === 'undefined' || !window.document) return;
   const blob = content instanceof Blob ? content : new Blob([content], { type: mime || 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);

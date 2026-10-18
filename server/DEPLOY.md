@@ -19,8 +19,24 @@ git archive --format=tar.gz -o smart3d.tar.gz HEAD
 # serverda:
 mkdir -p /srv/smart3d && tar -xzf smart3d.tar.gz -C /srv/smart3d
 cd /srv/smart3d/server && npm ci --omit=dev
+# yangi sayt (TZ-09/TZ-19) — build:
+cd /srv/smart3d/web && npm ci --include=dev && npx vite build
 ```
-Kerakli papkalar faqat `server/` va `app/` (frontend). `data1/` va `Smart3D_malumot/` serverga **kerak emas**.
+- **Kerakli papkalar:**
+  - `server/`;
+  - `web/` — build natijasi `web/dist/`;
+  - `app/` — ma'lumot va eski sayt.
+- **Kerak emas:** `data1/` va `Smart3D_malumot/`.
+
+**Manzillar (TZ-09 Q7).** Server `web/dist` ni o'zi ko'radi:
+- `/` — yangi sayt;
+- `/app.html` — ilova;
+- `/eski/` — eski sayt, 2 hafta zaxira (keyin alohida TZ bilan olib tashlanadi);
+- noma'lum sahifa — 404.
+
+`web/dist` yo'q bo'lsa, eski sayt avvalgidek `/` da qoladi. Shuning uchun build — majburiy qadam.
+
+Yangi sayt birinchi ochilganda brauzerdagi eski service worker yangisiga almashadi va eski keshlar tozalanadi. Shu sababli birinchi ochilishda eski sayt bir marta ko'rinishi mumkin.
 
 ## 3. Muhit fayli (gitga KIRMAYDI)
 `/etc/smart3d.env` — egasi `root`, guruhi `smart3d`, ruxsat `640`:
@@ -39,6 +55,10 @@ ESKIZ_FROM=4546
 # AI_PROVIDER=anthropic   # yoki gemini | openai
 # AI_MODEL=claude-opus-5-5
 # AI_API_KEY=<kalit>
+# Telegram Mini App (TZ-16) — ixtiyoriy (bo'lmasa Telegram kirishi o'chiq, sayt ishlayveradi)
+# TELEGRAM_BOT_TOKEN=<BotFather bergan kalit>
+# TELEGRAM_WEBHOOK_SECRET=<openssl rand -hex 24 natijasi>
+# TELEGRAM_WEBAPP_URL=https://smart3d.bittada.uz/app.html
 ```
 - `JWT_SECRET` 32 belgidan qisqa bo'lsa, production server ishga tushmaydi.
 - Standart `admin123` paroli bilan ham ishga tushmaydi.
@@ -83,13 +103,60 @@ server {
   server_name smart3d.bittada.uz;
   client_max_body_size 3m;
   location /ws { proxy_pass http://127.0.0.1:3070; proxy_http_version 1.1;
-                 proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade"; }
+                 proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade";
+                 proxy_set_header Host $host; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; }
   location / { proxy_pass http://127.0.0.1:3070;
                proxy_set_header Host $host; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                proxy_set_header X-Forwarded-Proto $scheme; }
 }
 ```
 HTTPS — `certbot --nginx -d smart3d.bittada.uz`. Sayt PWA va telefon kamerasi/mikrofoni uchun HTTPS shart.
+
+### Xavfsizlik (TZ-19)
+Sarlavhalarni server o'zi qo'yadi — nginx'da takrorlash shart emas: CSP, HSTS (faqat `NODE_ENV=production`), `X-Frame-Options`, `nosniff`.
+- **HTTPS majburiy.** Kirish cookie'si `Secure` — HTTP orqali production'da kirib bo'lmaydi.
+- **`proxy_set_header Host $host`** — ikkala `location` da ham bo'lsin. Server cookie bilan kelgan so'rovning shu saytdan ekanini Host bo'yicha tekshiradi (CSRF).
+- **`X-Forwarded-For`** — `/ws` da ham bo'lsin. Usiz WebSocket'ning IP chegarasi ishlamaydi (xavfsiz, lekin cheklovsiz).
+- **Jurnal.** Server stdout'iga JSON qatorlar yozadi (`{"t":…,"lvl":…,"code":"S3D-…","rid":…}`). Ogohlantirish va xatolar `error_log` jadvaliga ham tushadi. Admin ularni ilovadagi Sozlamalar → "Xatolar jurnali"dan ko'radi.
+- **Akkaunt bloklangan bo'lsa** (5 xato parol → 15 daqiqa), admin uchun ham. Darhol ochish: `ADMIN_PASSWORD='…' npm run admin-password`. U parolni almashtiradi, blokni yechadi va eski kirishlarni bekor qiladi.
+
+### AI — Claude'ni ulash (TZ-12, TZ-26) — admin sozlaydi
+Kalit faqat `/etc/smart3d.env` da turadi; chatga, kodga va gitga yozilmaydi. Kalitsiz ham hammasi ishlaydi (AI'siz tahlilchi).
+1. Anthropic konsolida API kalit oling (to'lov egasi hisobidan — har so'rov pullik; so'rov limiti serverda bor).
+2. `/etc/smart3d.env` ga yozing:
+   ```bash
+   AI_PROVIDER=anthropic
+   ANTHROPIC_API_KEY=<kalit>
+   # AI_MODEL=claude-opus-5-5     # standart; arzonroq: claude-sonnet-5-5 yoki claude-haiku-5-5
+   ```
+3. Serverni qayta ishga tushiring (admin), keyin tekshiring: `curl -s https://smart3d.bittada.uz/api/ai/status` → `{"enabled":true,"provider":"anthropic",…}`.
+4. Ishlatish: ish joyidagi matn qatoriga bitta mebel konstruksiyasini yozing (masalan "shkaf 1200x600x2200, chapda shtanga, o'ngda 4 polka, 2 eshik") — Claude uni konstruksiya tiliga o'giradi, tizim tekshirib chizadi; xona yoki oshxona matni — avvalgidek.
+5. Har so'rov `ai_log` jadvaliga yoziladi (matn, natija, xato). Kalitni olib tashlansa — AI'siz tahlilchiga qaytadi.
+- Boshqa provayder: `AI_PROVIDER=gemini` yoki `openai` (+ `AI_MODEL`, `AI_API_KEY`, `AI_BASE_URL`) — ikkala AI yo'li (xona va konstruksiya) bir xil ishlaydi.
+
+### Telegram bot (TZ-16) — admin sozlaydi
+Bot kaliti faqat `/etc/smart3d.env` da turadi. Chatga, kodga va gitga yozilmaydi.
+1. BotFather: `/newbot` — bot va kalit oling. Kalitni `TELEGRAM_BOT_TOKEN` ga yozing.
+2. BotFather: `/setmenubutton` — tugma matni "Smart3D", manzil `https://smart3d.bittada.uz/app.html`.
+3. Webhook — telefon raqami va `/start` javobi uchun. Kalit faqat serverda turadi, shuning uchun buyruqni server konsolida bering:
+   ```bash
+   set -a; . /etc/smart3d.env; set +a
+   curl -s "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
+        -d url=https://smart3d.bittada.uz/api/telegram/webhook \
+        -d secret_token="$TELEGRAM_WEBHOOK_SECRET" -d 'allowed_updates=["message"]'
+   ```
+4. nginx: fayl botga yuboriladi (10 MB gacha), shuning uchun shu yo'lga katta chegara qo'ying:
+   ```nginx
+   location /api/telegram/fayl { client_max_body_size 15m; proxy_pass http://127.0.0.1:3070;
+       proxy_set_header Host $host; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme; }
+   ```
+5. Serverni qayta ishga tushiring, keyin botda `/start` → "Smart3D" tugmasi bilan tekshiring.
+
+Xavfsizlik:
+- Telegram ma'lumoti faqat serverda bot kaliti bilan tekshiriladi. Eskirgani (24 soatdan eski) rad etiladi.
+- Ilova sahifasi (`/app.html`) faqat `web.telegram.org` ramkasiga ochiq, qolgan sahifalar ramkaga olinmaydi.
+- Telefon raqami faqat foydalanuvchining o'zi ulashsa olinadi (o'z raqami).
+- Saytdagi akkauntga avtomatik bog'lash faqat SMS bilan tasdiqlangan raqamga qilinadi. Email bilan ochilgan akkaunt ilovada email va parol bilan kirilgandan keyin ulanadi.
 
 ## 7. Tekshiruv
 ```bash
@@ -120,14 +187,32 @@ Har kuni 03:00 (cron, namuna):
 
 Tiklashni oyda bir marta test serverda sinab ko'ring.
 
+## 8a. Google bilan kirish (ixtiyoriy)
+1. Admin Google Cloud Console → APIs & Services → Credentials → **OAuth client ID** → turi **Web application** yaratadi.
+2. **Authorized JavaScript origins** = `https://smart.bittada.uz` (Redirect URI kerak emas).
+3. Client ID ni muhit fayliga yozing: `GOOGLE_CLIENT_ID=<...>.apps.googleusercontent.com` va servisni qayta ishga tushiring.
+4. Tekshiruv: `GET /api/auth/usullar` → `"google": true`. Sozlanmagan bo'lsa tugma ko'rinmaydi, `POST /api/auth/google` → 503 `S3D-AUTH-016`.
+
+Tashqi so'rov: server Google kalitlarini `https://www.googleapis.com/oauth2/v3/certs` dan oladi (keshlanadi).
+
 ## 9. Yangilash
 1. Zaxira: `node backup.js`.
-2. Yangi kodni alohida papkaga oching: `/srv/smart3d-<sana>`; `npm ci --omit=dev`.
+2. Yangi kodni alohida papkaga oching: `/srv/smart3d-<sana>`:
+   - `server/` da `npm ci --omit=dev`;
+   - `web/` da `npm ci --include=dev && npx vite build`.
 3. Test portida tekshiring (bazaning **nusxasi** bilan).
 4. Asosiy papkani almashtiring va servisni qayta ishga tushiring (admin).
 5. `/api/health` ni tekshiring.
 
 **Orqaga qaytish:** oldingi papka va 1-qadamdagi zaxira.
+
+**Bitta buyruq bilan (`server/yangilash.sh`):** zaxira, `git pull --ff-only`, o'rnatish, build va sinov portida (baza nusxasi bilan) tekshiruvni bajaradi; sukut bo'yicha qayta ishga tushirmaydi.
+```bash
+APP_DIR=/srv/smart3d ENV_FILE=/etc/smart3d.env DB_PATH=/var/lib/smart3d/smart3d.db BACKUP_DIR=/var/backups/smart3d \
+  SERVICE_CMD='pm2 reload smart3d' PROD_URL=https://smart3d.bittada.uz bash server/yangilash.sh          # tayyorlash va sinov
+# ... xuddi shu buyruq oxiriga --restart qo'shilsa — SERVICE_CMD bajariladi va 30 soniya ichida /api/health tekshiriladi
+```
+Xatoda skript qaysi bosqichda yiqilganini va orqaga qaytish buyrug'ini (`git checkout <eski commit>` + build) chiqaradi. Parametrlar: `bash server/yangilash.sh --help`.
 
 ## 10. Hali hal qilinmagan
 - **L1:** mijozlarning shaxsiy ma'lumotlari O'zbekistondagi serverda saqlanishi — yurist xulosasi kerak.

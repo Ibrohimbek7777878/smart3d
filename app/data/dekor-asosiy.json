@@ -1,0 +1,2506 @@
+{
+ "_meta": "Asosiy 100 dekor (egasi #182, 2026-10-17): narxli ERP plitalari LDSP/LMDF/MDF 16-18 mm. Tartib: sexdagi buyurtmalar soni (GibLab + Bazis), keyin ombordagi qoldiq (ERP), keyin narxli variantlar. rang_hex — dekor nomi va ishlab chiqaruvchi dekor kodi bo'yicha namuna rangi (ERP'da rasm yo'q); rang_ishonch: aniq | taxminiy. kodlar — ERP material kodlari (web/src/services/erpMaterial.js erpKod). Mijoz ma'lumoti yo'q. Qayta yaratish: scripts/dekor_asosiy.mjs.",
+ "items": [
+  {
+   "o": 1,
+   "dekor": "Белый Гладкий",
+   "kalit": "белый гладкий",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16,
+    18
+   ],
+   "kodlar": [
+    "ERP-3g31ig",
+    "ERP-1utcf11",
+    "ERP-1aqfh6y",
+    "ERP-9i7px",
+    "ERP-1bbv02e",
+    "ERP-1m8jv9z",
+    "ERP-apv9p6",
+    "ERP-pgft69"
+   ],
+   "rang_hex": "#f4f3ef",
+   "guruh": "oq",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 27,
+    "giblab": 8,
+    "bazis": 27,
+    "qoldiq": 183
+   }
+  },
+  {
+   "o": 2,
+   "dekor": "Белый",
+   "kalit": "белый",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1ovpi1q",
+    "ERP-1comy1z",
+    "ERP-12ap9sr",
+    "ERP-g0f3vz",
+    "ERP-kw84cj",
+    "ERP-hqtsnl"
+   ],
+   "rang_hex": "#f2f1ec",
+   "guruh": "oq",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 23,
+    "giblab": 10,
+    "bazis": 22,
+    "qoldiq": 349
+   }
+  },
+  {
+   "o": 3,
+   "dekor": "Кашемир",
+   "kalit": "кашемир",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1lxnuoy",
+    "ERP-7vuj5w",
+    "ERP-i86xby",
+    "ERP-1vjhpfa",
+    "ERP-2uzed0"
+   ],
+   "rang_hex": "#cec5b6",
+   "guruh": "bej",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 9,
+    "giblab": 3,
+    "bazis": 9,
+    "qoldiq": 5623
+   }
+  },
+  {
+   "o": 4,
+   "dekor": "Серый Графит",
+   "kalit": "серый графит",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1wykzyv",
+    "ERP-7viedh",
+    "ERP-rwtlw2",
+    "ERP-1cob3k2",
+    "ERP-1xfr6ei"
+   ],
+   "rang_hex": "#4b4e53",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 6,
+    "giblab": 5,
+    "bazis": 4,
+    "qoldiq": 2218
+   }
+  },
+  {
+   "o": 5,
+   "dekor": "Дуб Золотой",
+   "kalit": "дуб золотой",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-mrbzsc"
+   ],
+   "rang_hex": "#c19a5b",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 3,
+    "giblab": 0,
+    "bazis": 3,
+    "qoldiq": 2817
+   }
+  },
+  {
+   "o": 6,
+   "dekor": "Белый фасадный PE",
+   "kalit": "белый фасадный",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1b2ale8"
+   ],
+   "rang_hex": "#f3f2ee",
+   "guruh": "oq",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 2,
+    "giblab": 2,
+    "bazis": 0,
+    "qoldiq": 5825
+   }
+  },
+  {
+   "o": 7,
+   "dekor": "Дуб Вотан",
+   "kalit": "дуб вотан",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-wyr2ym",
+    "ERP-10lp1m9",
+    "ERP-uxn8sb"
+   ],
+   "rang_hex": "#9c8269",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 2,
+    "giblab": 2,
+    "bazis": 0,
+    "qoldiq": 2548
+   }
+  },
+  {
+   "o": 8,
+   "dekor": "Серый Шифер",
+   "kalit": "серый шифер",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1enr6ej"
+   ],
+   "rang_hex": "#6e7275",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 2,
+    "giblab": 0,
+    "bazis": 2,
+    "qoldiq": 191
+   }
+  },
+  {
+   "o": 9,
+   "dekor": "Серый камень",
+   "kalit": "серый камень",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-4nif5p",
+    "ERP-1ilzvjh"
+   ],
+   "rang_hex": "#8f8c86",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 1,
+    "giblab": 0,
+    "bazis": 1,
+    "qoldiq": 4902
+   }
+  },
+  {
+   "o": 10,
+   "dekor": "Антрацит",
+   "kalit": "антрацит",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-whyjln",
+    "ERP-4x7zl7",
+    "ERP-wjftlr",
+    "ERP-1g2it6e",
+    "ERP-a1mmrs",
+    "ERP-1xwr3fu"
+   ],
+   "rang_hex": "#3e4247",
+   "guruh": "qora",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 1,
+    "giblab": 0,
+    "bazis": 1,
+    "qoldiq": 3017
+   }
+  },
+  {
+   "o": 11,
+   "dekor": "Дуб Сонома",
+   "kalit": "дуб сонома",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-omdphk",
+    "ERP-1158khf",
+    "ERP-iw9ysr",
+    "ERP-s3xtof"
+   ],
+   "rang_hex": "#d3b58a",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 1,
+    "giblab": 1,
+    "bazis": 1,
+    "qoldiq": 1248
+   }
+  },
+  {
+   "o": 12,
+   "dekor": "Бетонный камень",
+   "kalit": "бетонный камень",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1yajd4d"
+   ],
+   "rang_hex": "#a7a39c",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 1,
+    "giblab": 0,
+    "bazis": 1,
+    "qoldiq": 265
+   }
+  },
+  {
+   "o": 13,
+   "dekor": "Бежевый",
+   "kalit": "бежевый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1q2wbvj",
+    "ERP-134sk5r",
+    "ERP-a2b4c0"
+   ],
+   "rang_hex": "#e2d3b6",
+   "guruh": "bej",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 1,
+    "giblab": 1,
+    "bazis": 0,
+    "qoldiq": 183
+   }
+  },
+  {
+   "o": 14,
+   "dekor": "Цемент Светлый",
+   "kalit": "цемент светлый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1ig0bet"
+   ],
+   "rang_hex": "#b9b6af",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 1,
+    "giblab": 1,
+    "bazis": 0,
+    "qoldiq": 161
+   }
+  },
+  {
+   "o": 15,
+   "dekor": "Слоновая кость",
+   "kalit": "слоновая кость",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-18z9fr0",
+    "ERP-11a7ycf"
+   ],
+   "rang_hex": "#ece4d0",
+   "guruh": "bej",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 1,
+    "giblab": 1,
+    "bazis": 0,
+    "qoldiq": 133
+   }
+  },
+  {
+   "o": 16,
+   "dekor": "Дуб Орегон",
+   "kalit": "дуб орегон",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-5ijy01"
+   ],
+   "rang_hex": "#a5754a",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 1,
+    "giblab": 1,
+    "bazis": 0,
+    "qoldiq": 128
+   }
+  },
+  {
+   "o": 17,
+   "dekor": "Сегни Cветлый",
+   "kalit": "сегни светлый",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-zniopb",
+    "ERP-7rlzk5"
+   ],
+   "rang_hex": "#d9c7a8",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 1,
+    "giblab": 0,
+    "bazis": 1,
+    "qoldiq": 115
+   }
+  },
+  {
+   "o": 18,
+   "dekor": "Стальной Серый",
+   "kalit": "стальной серый",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-174wesr",
+    "ERP-c8s4dx"
+   ],
+   "rang_hex": "#7d8186",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 1,
+    "giblab": 1,
+    "bazis": 0,
+    "qoldiq": 109
+   }
+  },
+  {
+   "o": 19,
+   "dekor": "Белый Шагрень",
+   "kalit": "белый шагрень",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1bt6imb",
+    "ERP-1tzi5tr",
+    "ERP-163wi30",
+    "ERP-18jqlgz",
+    "ERP-hsfm89"
+   ],
+   "rang_hex": "#f0efe9",
+   "guruh": "oq",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 1,
+    "giblab": 1,
+    "bazis": 0,
+    "qoldiq": 65
+   }
+  },
+  {
+   "o": 20,
+   "dekor": "Сосна Астана",
+   "kalit": "сосна астана",
+   "tur": [
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-13v9o6r"
+   ],
+   "rang_hex": "#dccbb0",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 1,
+    "giblab": 0,
+    "bazis": 1,
+    "qoldiq": 54
+   }
+  },
+  {
+   "o": 21,
+   "dekor": "Ясень Анкор темный",
+   "kalit": "ясень анкор темный",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1dz7407",
+    "ERP-1cnwovv",
+    "ERP-1m1smtt"
+   ],
+   "rang_hex": "#6b5240",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 1,
+    "giblab": 1,
+    "bazis": 0,
+    "qoldiq": 19
+   }
+  },
+  {
+   "o": 22,
+   "dekor": "Бодега темный",
+   "kalit": "бодега темный",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-10iiz5z",
+    "ERP-1dkb6cz"
+   ],
+   "rang_hex": "#5e4535",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 1,
+    "giblab": 0,
+    "bazis": 1,
+    "qoldiq": 0
+   }
+  },
+  {
+   "o": 23,
+   "dekor": "Белый Бриллиант",
+   "kalit": "белый бриллиант",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-10yntky",
+    "ERP-mq0hj0",
+    "ERP-10hx05i"
+   ],
+   "rang_hex": "#f6f6f3",
+   "guruh": "oq",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 3090
+   }
+  },
+  {
+   "o": 24,
+   "dekor": "Дуб Белый",
+   "kalit": "дуб белый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-f6kwq2"
+   ],
+   "rang_hex": "#e6dccb",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 1585
+   }
+  },
+  {
+   "o": 25,
+   "dekor": "Сосна Лофт Белая",
+   "kalit": "сосна лофт белая",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-15s1yaj",
+    "ERP-h7h5di"
+   ],
+   "rang_hex": "#e8e0d2",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 997
+   }
+  },
+  {
+   "o": 26,
+   "dekor": "Морское Дерево Винтаж",
+   "kalit": "морское дерево винтаж",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1kbg8gn"
+   ],
+   "rang_hex": "#9c8f7e",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 994
+   }
+  },
+  {
+   "o": 27,
+   "dekor": "Дуб Бурбон",
+   "kalit": "дуб бурбон",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-175s20q",
+    "ERP-s3phb4"
+   ],
+   "rang_hex": "#9a6b43",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 853
+   }
+  },
+  {
+   "o": 28,
+   "dekor": "Ясень Шимо светлый",
+   "kalit": "ясень шимо светлый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-s7ns94",
+    "ERP-16h915q"
+   ],
+   "rang_hex": "#dccdb3",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 802
+   }
+  },
+  {
+   "o": 29,
+   "dekor": "Дуб Табачный",
+   "kalit": "дуб табачный",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-m2gbkl"
+   ],
+   "rang_hex": "#8b6440",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 777
+   }
+  },
+  {
+   "o": 30,
+   "dekor": "Орех Селект Каминный",
+   "kalit": "орех селект каминный",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-gibfsu",
+    "ERP-98yc6o"
+   ],
+   "rang_hex": "#6a4a33",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 748
+   }
+  },
+  {
+   "o": 31,
+   "dekor": "Зелёный камень",
+   "kalit": "зеленый камень",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-sf7b5t"
+   ],
+   "rang_hex": "#6f7d6b",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 656
+   }
+  },
+  {
+   "o": 32,
+   "dekor": "Сатин",
+   "kalit": "сатин",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-cp04cm",
+    "ERP-c74jx",
+    "ERP-yegpho",
+    "ERP-9owg8w",
+    "ERP-1b8hi0y"
+   ],
+   "rang_hex": "#e9e5dc",
+   "guruh": "bej",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 595
+   }
+  },
+  {
+   "o": 33,
+   "dekor": "Крослайн Латте",
+   "kalit": "крослайн латте",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1k59zeh"
+   ],
+   "rang_hex": "#c7b39a",
+   "guruh": "bej",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 514
+   }
+  },
+  {
+   "o": 34,
+   "dekor": "Дуб Харбор золотой",
+   "kalit": "дуб харбор золотой",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-vgxedn"
+   ],
+   "rang_hex": "#b78a55",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 492
+   }
+  },
+  {
+   "o": 35,
+   "dekor": "Дуб Кунео коричневый",
+   "kalit": "дуб кунео коричневый",
+   "tur": [
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-bzww13"
+   ],
+   "rang_hex": "#7f5b3e",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 464
+   }
+  },
+  {
+   "o": 36,
+   "dekor": "Орех Франклин Табачный",
+   "kalit": "орех франклин табачный",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-awhn72"
+   ],
+   "rang_hex": "#7a5236",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 453
+   }
+  },
+  {
+   "o": 37,
+   "dekor": "Дуб Парящий",
+   "kalit": "дуб парящий",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-38yfrz"
+   ],
+   "rang_hex": "#b79874",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 413
+   }
+  },
+  {
+   "o": 38,
+   "dekor": "Дуб Кремовый Светлый",
+   "kalit": "дуб кремовый светлый",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-77mivb",
+    "ERP-1plf6no"
+   ],
+   "rang_hex": "#e3d3b8",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 398
+   }
+  },
+  {
+   "o": 39,
+   "dekor": "Платина",
+   "kalit": "платина",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-w7agsg",
+    "ERP-13u94pf",
+    "ERP-15fged4"
+   ],
+   "rang_hex": "#b8b6b1",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 386
+   }
+  },
+  {
+   "o": 40,
+   "dekor": "Дуб Серый",
+   "kalit": "дуб серый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-ij3k2e"
+   ],
+   "rang_hex": "#8e8a82",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 356
+   }
+  },
+  {
+   "o": 41,
+   "dekor": "Ясень Анкор светлый",
+   "kalit": "ясень анкор светлый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1uji8bn",
+    "ERP-1l819dq",
+    "ERP-rm08kx"
+   ],
+   "rang_hex": "#d2bfa0",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 347
+   }
+  },
+  {
+   "o": 42,
+   "dekor": "Светло-Серый",
+   "kalit": "светло-серый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1f7situ",
+    "ERP-5s1k21"
+   ],
+   "rang_hex": "#c4c5c3",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 337
+   }
+  },
+  {
+   "o": 43,
+   "dekor": "Кипарисовый зеленый",
+   "kalit": "кипарисовый зеленый",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-73l3o4",
+    "ERP-1brx5x2",
+    "ERP-1fvtf5w",
+    "ERP-1ryg0iq"
+   ],
+   "rang_hex": "#4f6650",
+   "guruh": "rangli",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 328
+   }
+  },
+  {
+   "o": 44,
+   "dekor": "Черный",
+   "kalit": "черный",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16,
+    18
+   ],
+   "kodlar": [
+    "ERP-8az7xe",
+    "ERP-rc7h3m",
+    "ERP-2w9v4e",
+    "ERP-1cpvbf9"
+   ],
+   "rang_hex": "#232326",
+   "guruh": "qora",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 304
+   }
+  },
+  {
+   "o": 45,
+   "dekor": "Белый Платиновый",
+   "kalit": "белый платиновый",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-av622j",
+    "ERP-yh6rnd",
+    "ERP-9v9chi"
+   ],
+   "rang_hex": "#e9e9e5",
+   "guruh": "oq",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 300
+   }
+  },
+  {
+   "o": 46,
+   "dekor": "Сосна Астана Original",
+   "kalit": "сосна астана original",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-12sybm6"
+   ],
+   "rang_hex": "#dccbb0",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 292
+   }
+  },
+  {
+   "o": 47,
+   "dekor": "Угольный камень",
+   "kalit": "угольный камень",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1fadtv2"
+   ],
+   "rang_hex": "#4e4f50",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 279
+   }
+  },
+  {
+   "o": 48,
+   "dekor": "Скандинавское Дерево Белое",
+   "kalit": "скандинавское дерево белое",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-x8yy6p"
+   ],
+   "rang_hex": "#e5dfd3",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 277
+   }
+  },
+  {
+   "o": 49,
+   "dekor": "Белый глянец 0110",
+   "kalit": "белый глянец",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-13jpitj"
+   ],
+   "rang_hex": "#f7f7f5",
+   "guruh": "oq",
+   "yuza": "glyanes",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 272
+   }
+  },
+  {
+   "o": 50,
+   "dekor": "Дуб Фристайл",
+   "kalit": "дуб фристайл",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-qlhu62"
+   ],
+   "rang_hex": "#a88660",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 272
+   }
+  },
+  {
+   "o": 51,
+   "dekor": "Капучино",
+   "kalit": "капучино",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-sm21km"
+   ],
+   "rang_hex": "#b39a7e",
+   "guruh": "bej",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 266
+   }
+  },
+  {
+   "o": 52,
+   "dekor": "Серая галька",
+   "kalit": "серая галька",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16,
+    18
+   ],
+   "kodlar": [
+    "ERP-2izovi",
+    "ERP-ajisfy"
+   ],
+   "rang_hex": "#a39e95",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 265
+   }
+  },
+  {
+   "o": 53,
+   "dekor": "Дуб Эвок Прибрежный",
+   "kalit": "дуб эвок прибрежный",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1sv895n"
+   ],
+   "rang_hex": "#9f8a70",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 262
+   }
+  },
+  {
+   "o": 54,
+   "dekor": "Дуб Сантана",
+   "kalit": "дуб сантана",
+   "tur": [
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1iw36jn"
+   ],
+   "rang_hex": "#a07a55",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 252
+   }
+  },
+  {
+   "o": 55,
+   "dekor": "Серый уголь",
+   "kalit": "серый уголь",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    18
+   ],
+   "kodlar": [
+    "ERP-ltmf7i"
+   ],
+   "rang_hex": "#4f5154",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 249
+   }
+  },
+  {
+   "o": 56,
+   "dekor": "Серый перламутровый",
+   "kalit": "серый перламутровый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1ia6c7c"
+   ],
+   "rang_hex": "#a9a8a4",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 246
+   }
+  },
+  {
+   "o": 57,
+   "dekor": "Корбридж",
+   "kalit": "корбридж",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-any89u"
+   ],
+   "rang_hex": "#8d8a84",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 226
+   }
+  },
+  {
+   "o": 58,
+   "dekor": "Дуб Бунратти SE светлый",
+   "kalit": "дуб бунратти se светлый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-8dvvmh"
+   ],
+   "rang_hex": "#c9ae88",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 225
+   }
+  },
+  {
+   "o": 59,
+   "dekor": "Шелковый камень",
+   "kalit": "шелковый камень",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-14uz3zx",
+    "ERP-17wwmpb"
+   ],
+   "rang_hex": "#cfcac1",
+   "guruh": "bej",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 217
+   }
+  },
+  {
+   "o": 60,
+   "dekor": "Золотая Патина",
+   "kalit": "золотая патина",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-2oesij"
+   ],
+   "rang_hex": "#b49460",
+   "guruh": "bej",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 217
+   }
+  },
+  {
+   "o": 61,
+   "dekor": "Дуб Сторсунд",
+   "kalit": "дуб сторсунд",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-18pie7f",
+    "ERP-e5dvxr"
+   ],
+   "rang_hex": "#a47d58",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 215
+   }
+  },
+  {
+   "o": 62,
+   "dekor": "Дуб Венге",
+   "kalit": "дуб венге",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-7eij08"
+   ],
+   "rang_hex": "#3b2a22",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 214
+   }
+  },
+  {
+   "o": 63,
+   "dekor": "Рамух Белый",
+   "kalit": "рамух белый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-gmlm26"
+   ],
+   "rang_hex": "#ece9e2",
+   "guruh": "oq",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 211
+   }
+  },
+  {
+   "o": 64,
+   "dekor": "Мрамор Пьетра Графитовый",
+   "kalit": "мрамор пьетра графитовый",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-116quo",
+    "ERP-1kw0etg"
+   ],
+   "rang_hex": "#4e5054",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 208
+   }
+  },
+  {
+   "o": 65,
+   "dekor": "Арктика Серая",
+   "kalit": "арктика серая",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1im7nku"
+   ],
+   "rang_hex": "#b8bbbd",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 207
+   }
+  },
+  {
+   "o": 66,
+   "dekor": "Бетон",
+   "kalit": "бетон",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1n0i5ya",
+    "ERP-12u274u"
+   ],
+   "rang_hex": "#9c9a96",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 205
+   }
+  },
+  {
+   "o": 67,
+   "dekor": "Альби Полуночно-Синий",
+   "kalit": "альби полуночно-синий",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-12uhukl"
+   ],
+   "rang_hex": "#263a55",
+   "guruh": "rangli",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 205
+   }
+  },
+  {
+   "o": 68,
+   "dekor": "Розовый антик",
+   "kalit": "розовый антик",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-hcbbrp"
+   ],
+   "rang_hex": "#d2a8a2",
+   "guruh": "rangli",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 202
+   }
+  },
+  {
+   "o": 69,
+   "dekor": "Дуб Каселла натуральный",
+   "kalit": "дуб каселла натуральный",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1cqub9"
+   ],
+   "rang_hex": "#b58e62",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 196
+   }
+  },
+  {
+   "o": 70,
+   "dekor": "Аруша глянец",
+   "kalit": "аруша глянец",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-xwojuv"
+   ],
+   "rang_hex": "#d8cdbe",
+   "guruh": "bej",
+   "yuza": "glyanes",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 190
+   }
+  },
+  {
+   "o": 71,
+   "dekor": "Зелёный эвкалипт",
+   "kalit": "зеленый эвкалипт",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1o1ofah"
+   ],
+   "rang_hex": "#6d806c",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 190
+   }
+  },
+  {
+   "o": 72,
+   "dekor": "Графит",
+   "kalit": "графит",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-egna68"
+   ],
+   "rang_hex": "#4a4c50",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 181
+   }
+  },
+  {
+   "o": 73,
+   "dekor": "Тессеа Серовато-Бежевый",
+   "kalit": "тессеа серовато-бежевый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1bb2i9f"
+   ],
+   "rang_hex": "#bfb4a4",
+   "guruh": "bej",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 172
+   }
+  },
+  {
+   "o": 74,
+   "dekor": "Крем бежевый",
+   "kalit": "крем бежевый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-gvc1pm"
+   ],
+   "rang_hex": "#e6d8bc",
+   "guruh": "bej",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 165
+   }
+  },
+  {
+   "o": 75,
+   "dekor": "Бетон Чикаго тёмно-серый",
+   "kalit": "бетон чикаго темно-серый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-ne9h0b"
+   ],
+   "rang_hex": "#5f5e5b",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 161
+   }
+  },
+  {
+   "o": 76,
+   "dekor": "Дуб Фэрбенк",
+   "kalit": "дуб фэрбенк",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1i05vri"
+   ],
+   "rang_hex": "#a68a6a",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 160
+   }
+  },
+  {
+   "o": 77,
+   "dekor": "Моккочино",
+   "kalit": "моккочино",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-122528g"
+   ],
+   "rang_hex": "#8b7462",
+   "guruh": "bej",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 157
+   }
+  },
+  {
+   "o": 78,
+   "dekor": "Серебристый матовый",
+   "kalit": "серебристый матовый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-16bjzhk"
+   ],
+   "rang_hex": "#bfc1c2",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 154
+   }
+  },
+  {
+   "o": 79,
+   "dekor": "Вяз Либерти Серебрянный",
+   "kalit": "вяз либерти серебрянный",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-rhdu3a"
+   ],
+   "rang_hex": "#b9b5ad",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 146
+   }
+  },
+  {
+   "o": 80,
+   "dekor": "Лунный Мрамор",
+   "kalit": "лунный мрамор",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-bkdt7c"
+   ],
+   "rang_hex": "#dad7d0",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 137
+   }
+  },
+  {
+   "o": 81,
+   "dekor": "Белый Премиум",
+   "kalit": "белый премиум",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16,
+    18
+   ],
+   "kodlar": [
+    "ERP-1to0j3v",
+    "ERP-13dnb1d"
+   ],
+   "rang_hex": "#f5f4f0",
+   "guruh": "oq",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 136
+   }
+  },
+  {
+   "o": 82,
+   "dekor": "Цемент",
+   "kalit": "цемент",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1c6pevm"
+   ],
+   "rang_hex": "#9e9b95",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 133
+   }
+  },
+  {
+   "o": 83,
+   "dekor": "Дуб Галифакс олово",
+   "kalit": "дуб галифакс олово",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-t53th1"
+   ],
+   "rang_hex": "#7e7468",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 132
+   }
+  },
+  {
+   "o": 84,
+   "dekor": "Дуб Сакраменто коричневый",
+   "kalit": "дуб сакраменто коричневый",
+   "tur": [
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1l4wr1x"
+   ],
+   "rang_hex": "#7a5a40",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 130
+   }
+  },
+  {
+   "o": 85,
+   "dekor": "Дуб Фокстрот",
+   "kalit": "дуб фокстрот",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1in0ngw"
+   ],
+   "rang_hex": "#b79a78",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 130
+   }
+  },
+  {
+   "o": 86,
+   "dekor": "Дуб Шерман коньяк коричневый",
+   "kalit": "дуб шерман коньяк коричневый",
+   "tur": [
+    "LDSP",
+    "LMDF"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-4j841f",
+    "ERP-y1bj6m"
+   ],
+   "rang_hex": "#7b5638",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 129
+   }
+  },
+  {
+   "o": 87,
+   "dekor": "Дуб Амберг натуральный",
+   "kalit": "дуб амберг натуральный",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1daif4p"
+   ],
+   "rang_hex": "#c29f72",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 129
+   }
+  },
+  {
+   "o": 88,
+   "dekor": "Дуб Турин",
+   "kalit": "дуб турин",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1c44lq4"
+   ],
+   "rang_hex": "#a27d57",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 128
+   }
+  },
+  {
+   "o": 89,
+   "dekor": "Дуб Галифакс белый",
+   "kalit": "дуб галифакс белый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-nduc2j"
+   ],
+   "rang_hex": "#d8cfc0",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 126
+   }
+  },
+  {
+   "o": 90,
+   "dekor": "Флитвуд белый",
+   "kalit": "флитвуд белый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1k28vw6"
+   ],
+   "rang_hex": "#e4ded3",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 123
+   }
+  },
+  {
+   "o": 91,
+   "dekor": "Аруша",
+   "kalit": "аруша",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1pi1ii9"
+   ],
+   "rang_hex": "#d8cdbe",
+   "guruh": "bej",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 121
+   }
+  },
+  {
+   "o": 92,
+   "dekor": "Черный U190 PE",
+   "kalit": "черный u190",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-12961nc"
+   ],
+   "rang_hex": "#1f1f21",
+   "guruh": "qora",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 121
+   }
+  },
+  {
+   "o": 93,
+   "dekor": "Серый",
+   "kalit": "серый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1134bg7"
+   ],
+   "rang_hex": "#9a9b9c",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 119
+   }
+  },
+  {
+   "o": 94,
+   "dekor": "Ароза Светлая",
+   "kalit": "ароза светлая",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1507zbb"
+   ],
+   "rang_hex": "#d8cbb5",
+   "guruh": "yogoch_och",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 118
+   }
+  },
+  {
+   "o": 95,
+   "dekor": "Белый Снег",
+   "kalit": "белый снег",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1eme0cf",
+    "ERP-v1tcff"
+   ],
+   "rang_hex": "#f8f8f5",
+   "guruh": "oq",
+   "yuza": "matt",
+   "rang_ishonch": "aniq",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 117
+   }
+  },
+  {
+   "o": 96,
+   "dekor": "Флитвуд серая лава",
+   "kalit": "флитвуд серая лава",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1rqx5aa"
+   ],
+   "rang_hex": "#77736c",
+   "guruh": "yogoch_toq",
+   "yuza": "yogoch",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 116
+   }
+  },
+  {
+   "o": 97,
+   "dekor": "Глиняный серый",
+   "kalit": "глиняный серый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-52wceb"
+   ],
+   "rang_hex": "#8a847b",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 115
+   }
+  },
+  {
+   "o": 98,
+   "dekor": "Металлик Файнлайн антрацит",
+   "kalit": "металлик файнлайн антрацит",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-8y0ua2"
+   ],
+   "rang_hex": "#4a4d52",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 115
+   }
+  },
+  {
+   "o": 99,
+   "dekor": "Серый пыльный",
+   "kalit": "серый пыльный",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-1q3tciw"
+   ],
+   "rang_hex": "#9b9993",
+   "guruh": "kulrang",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 113
+   }
+  },
+  {
+   "o": 100,
+   "dekor": "Хромикс белый",
+   "kalit": "хромикс белый",
+   "tur": [
+    "LDSP"
+   ],
+   "qalinlik": [
+    16
+   ],
+   "kodlar": [
+    "ERP-11wstnu"
+   ],
+   "rang_hex": "#eeece6",
+   "guruh": "oq",
+   "yuza": "matt",
+   "rang_ishonch": "taxminiy",
+   "manba": {
+    "sex": 0,
+    "giblab": 0,
+    "bazis": 0,
+    "qoldiq": 110
+   }
+  }
+ ]
+}

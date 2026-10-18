@@ -1,0 +1,203 @@
+import { get, set } from '../../store/index.js';
+import { project } from '../../store/project.js';
+import { S } from '../../store/session.js';
+import { xato, toast } from '../../store/ui.js';
+import { loadSettings } from '../settings/actions.js';
+import { openPending } from '../projects/actions.js';
+import { ishJoyiOch, yangiIshJoyi } from '../editor/ishjoyi/ishjoyi.js';
+import { checkAiStatus } from '../editor/ai/actions.js';
+import { t, til, serverXato } from '../../i18n/index.js';
+import { TELEGRAM } from '../../app/bridge/telegram.js';
+import { telegramUlash } from '../telegram/telegram.js';
+import { marshrutgaQayt } from '../../app/tarix.js';
+
+/* TZ-19 (TZ-09 Q2): kirish — email + parol (server: /api/register, /api/login).
+ * TZ-23 C4: telefon + SMS kod (TZ-07 server, Eskiz) — kirish oynasida; faqat server SMS ishlaganda ko'rinadi (/api/auth/usullar). */
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+let busy = false;
+
+export const setField = (patch) => set('auth', s => ({ f: { ...s.f, ...patch } }));
+
+/** kirgandan keyin: sozlamalar, internetsiz qolgan o'zgarish, keyin saytdan kelgan modul; TZ-30: so'ralgan manzil
+ *  (/loyihalar, /loyiha/5 …); TZ-25 A: oxirgi loyiha ish joyida ochiladi, bo'lmasa — bo'sh ish joyi (standart xona) */
+export async function afterLogin() {
+  await project.load();
+  loadSettings();
+  await S.afterLogin(false).catch(() => {});
+  if (await marshrutgaQayt()) return;
+  if (get().nav.pending) { openPending(); return; }
+  if (S.currentId) { ishJoyiOch(); project.changed('room', true); }
+  else yangiIshJoyi();
+}
+
+/** sahifa ochilganda: saqlangan kirish kaliti tekshiriladi */
+export async function initSession() {
+  await checkAiStatus();
+  if (!S.loggedIn) return;
+  set('auth', { user: S.user });
+  try {
+    const r = await S.api('/api/me');
+    if (r.status === 401 || r.status === 404) { S.logout(true); return; }
+    if (r.ok) set('auth', { user: { ...S.user, ...(await r.json()) } });
+    loadSettings();
+  } catch (_) { /* internet yo'q — kirgan holat saqlanadi */ }
+  const sc = get().nav.screen;
+  if (sc === 'reg' || sc === 'login') afterLogin();
+}
+
+/** saytdan o'tish: #s=login|reg, #mod=MC-KP-02&w=800 (saytdagi "Bu modulni loyihamga qo'shish") */
+export function readHandoff() {
+  let h = (location.hash || '').replace(/^#/, '');
+  if (!h) { try { h = sessionStorage.getItem('s3d-handoff') || ''; } catch (_) { /* yo'q */ } }
+  try { sessionStorage.removeItem('s3d-handoff'); } catch (_) { /* yo'q */ }
+  if (!h) return;
+  const q = new URLSearchParams(h.includes('=') ? h : 's=' + h), s = q.get('s');
+  const nav = {};
+  if (s === 'login' || s === 'reg') nav.screen = s;
+  const mod = q.get('mod'); if (mod) nav.pending = { mod, w: +q.get('w') || 0 };
+  /* shu qurilmada avval kirilgan bo'lsa — kirish oynasi, email tayyor */
+  let last = ''; try { last = localStorage.getItem('s3d-last-email') || ''; } catch (_) { /* yo'q */ }
+  if (last && s === 'reg' && !mod) nav.screen = 'login';
+  if (last) setField({ email: last });
+  set('nav', nav);
+  const sc = get().nav.screen;
+  if (S.loggedIn && (sc === 'reg' || sc === 'login')) afterLogin();
+}
+
+/** "Ro'yxatdan o'tish" / "Kirish" tugmasi */
+export async function submitAuth() {
+  const st = get(), f = st.auth.f, reg = st.nav.screen === 'reg', e = {}, em = f.email.trim();
+  if (reg && !f.name.trim()) e.name = t('kirish.ism_yozing');
+  if (!EMAIL_RE.test(em)) e.email = t('kirish.email_xato');
+  if (reg && f.phone && f.phone.length !== 9) e.phone = t('kirish.telefon_9');
+  if (f.pass.length < 8) e.pass = t('kirish.parol_8');
+  if (Object.keys(e).length) { setField({ err: e, tried: true }); return; }
+  if (busy) return;
+  busy = true;
+  const j = reg ? await S.register({ email: em, password: f.pass, name: f.name.trim(), phone: f.phone ? '998' + f.phone : '', shop: f.shop.trim() })
+    : await S.login(em, f.pass);
+  busy = false;
+  if (!j.ok) {
+    if (j.status === 0) { xato(j.code || 'S3D-NET-101', { modul: 'auth' }); return; }
+    const msg = String(j.error || ''), ko = serverXato(msg, j.code);   // maydon — server matnidan (o'zbekcha), ko'rinadigani — tanlangan tilda (TZ-18)
+    if (j.status === 409) { if (j.code === 'S3D-AUTH-003' || /telefon/i.test(msg)) e.phone = t('kirish.raqam_bor'); else e.email = t('kirish.email_bor'); }
+    else if (j.status === 401) e.pass = t('kirish.parol_xato');
+    else if (/parol/i.test(msg)) e.pass = ko; else if (/telefon/i.test(msg)) e.phone = ko; else if (/ism/i.test(msg)) e.name = ko; else e.email = ko;
+    setField({ err: e, tried: true });
+    return;
+  }
+  try { localStorage.setItem('s3d-last-email', em); } catch (_) { /* kvota */ }
+  setField({ name: (j.user && j.user.name) || f.name, pass: '', err: {} });
+  set('auth', { user: j.user });
+  if (TELEGRAM) await telegramUlash();             // TZ-16: Telegram ichida — saytdagi akkaunt shu Telegram'ga ulanadi
+  if (reg) {
+    await S.afterLogin(true).catch(() => {});
+    if (await marshrutgaQayt()) return;              // TZ-30: kirishdan oldin so'ralgan manzil
+    if (get().nav.pending) { openPending(); return; }
+    yangiIshJoyi();                                  // TZ-25: "Nima yasaymiz" o'rniga — darhol bo'sh ish joyi
+  } else afterLogin();
+}
+
+/* ── TZ-23 C4: telefon + SMS ── */
+/** server qaysi kirish usullarini qo'llaydi (SMS — Eskiz sozlangan bo'lsa) */
+export async function loadUsullar() {
+  try {
+    const r = await S.api('/api/auth/usullar');
+    if (r.ok) { const j = await r.json(); set('auth', { smsBor: !!j.sms, googleId: j.google && j.googleClientId ? j.googleClientId : '' }); }
+  } catch (_) { /* internet yo'q — SMS tugmasi ko'rinmaydi */ }
+}
+export const usulAlmash = (usul) => setField({ usul, err: {}, kod: '', yuborildi: false });
+
+/** "Kod yuborish" (va qayta yuborish) */
+export async function smsYubor() {
+  const f = get().auth.f;
+  if (f.phone.length !== 9) { setField({ err: { phone: t('kirish.telefon_9') }, tried: true }); return; }
+  if (busy) return;
+  busy = true;
+  const j = await S.smsSend('998' + f.phone);
+  busy = false;
+  if (!j.ok) {
+    if (j.status === 0) { xato(j.code || 'S3D-NET-101', { modul: 'auth/sms' }); return; }
+    setField({ err: { phone: serverXato(j.error, j.code) + (j.retry_after ? ' (' + t('kirish.soniya', { n: j.retry_after }) + ')' : '') } });
+    return;
+  }
+  setField({ yuborildi: true, kod: '', err: {}, qayta: Date.now() + 60000 });
+  toast(t('kirish.kod_yuborildi', { tel: '+998 ' + f.phone.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4') }));
+}
+
+/** kod bilan kirish (yangi raqam — akkaunt ochiladi, ism bilan) */
+export async function smsKirish() {
+  const f = get().auth.f, kod = f.kod.replace(/\D/g, '');
+  if (kod.length !== 6) { setField({ err: { kod: t('kirish.kod_6') }, tried: true }); return; }
+  if (busy) return;
+  busy = true;
+  const j = await S.smsVerify('998' + f.phone, kod, f.name.trim());
+  busy = false;
+  if (!j.ok) {
+    if (j.status === 0) { xato(j.code || 'S3D-NET-101', { modul: 'auth/sms' }); return; }
+    setField({ err: { kod: serverXato(j.error, j.code) } });
+    return;
+  }
+  setField({ kod: '', err: {}, yuborildi: false });
+  set('auth', { user: j.user });
+  if (TELEGRAM) await telegramUlash();
+  if (j.yangi) {                                     // birinchi kirish — ro'yxatdagidek: bo'sh ish joyi (TZ-25)
+    await S.afterLogin(true).catch(() => {});
+    if (await marshrutgaQayt()) return;
+    if (get().nav.pending) { openPending(); return; }
+    yangiIshJoyi();
+  } else afterLogin();
+}
+
+/* ── TZ-31: Google bilan kirish (Google Identity Services) ── */
+let gisYuk = null, gisId = '';
+const gisYukla = () => gisYuk || (gisYuk = new Promise((ok, no) => {
+  if (window.google && window.google.accounts) { ok(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://accounts.google.com/gsi/client'; s.async = true;
+  s.onload = () => ok(); s.onerror = () => { gisYuk = null; no(new Error('gsi')); };
+  document.head.appendChild(s);
+}));
+/** Google tugmasini `el` ichiga chizadi (faqat server Google'ni sozlagan bo'lsa chaqiriladi) */
+export async function googleTugma(el, clientId) {
+  try {
+    await gisYukla();
+    const gid = window.google.accounts.id;
+    if (gisId !== clientId) { gid.initialize({ client_id: clientId, callback: (r) => googleKirish(r && r.credential), ux_mode: 'popup' }); gisId = clientId; }
+    const chiz = () => {
+      const w = Math.max(200, Math.min(400, Math.floor((el.clientWidth || 400) - 2)));
+      if (el._gW === w && el._gT === til()) return;
+      el._gW = w; el._gT = til(); el.textContent = '';
+      gid.renderButton(el, { type: 'standard', theme: 'filled_black', size: 'large', shape: 'rectangular', text: 'continue_with', logo_alignment: 'left', width: w, locale: til() === 'uz' ? 'uz' : 'en' });
+    };
+    chiz();
+    if (!el._gRO && typeof ResizeObserver !== 'undefined') { el._gRO = new ResizeObserver(() => chiz()); el._gRO.observe(el); }
+  } catch (_) { xato('S3D-NET-101', { modul: 'auth/google' }); }
+}
+
+/** Google bergan credential bilan kirish — keyingi oqim email kirishdagidek */
+export async function googleKirish(credential) {
+  if (!credential || busy) return;
+  busy = true;
+  const j = await S.google(credential);
+  busy = false;
+  if (!j.ok) {
+    if (j.status === 0) { xato(j.code || 'S3D-NET-101', { modul: 'auth/google' }); return; }
+    setField({ err: { email: serverXato(j.error, j.code) }, tried: true });
+    return;
+  }
+  setField({ err: {}, pass: '' });
+  set('auth', { user: j.user });
+  if (TELEGRAM) await telegramUlash();
+  if (j.yangi) {
+    await S.afterLogin(true).catch(() => {});
+    if (await marshrutgaQayt()) return;
+    if (get().nav.pending) { openPending(); return; }
+    yangiIshJoyi();
+  } else afterLogin();
+}
+
+export function swapAuth() {
+  set('nav', { screen: get().nav.screen === 'reg' ? 'login' : 'reg' });
+  setField({ err: {}, usul: 'email', yuborildi: false, kod: '' });
+}

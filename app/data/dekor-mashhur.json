@@ -1,0 +1,17 @@
+{
+  "_meta": "Sexning haqiqiy buyurtmalarida eng ko'p ishlatilgan dekorlar (GibLab kroy natijalari, 22 buyurtma; 2026-10-16). soni = shu dekor ishlatilgan buyurtmalar soni. nom = ERP plitasidagi tozalangan dekor nomi (web/src/features/editor/catalog/dekor.js dekorNomi). Mijoz ma'lumoti yo'q.",
+  "items": [
+    { "nom": "Белый ПМ", "tur": "HDF", "soni": 10 },
+    { "nom": "Белый гладкий", "tur": "LDSP", "soni": 8 },
+    { "nom": "Серый графит", "tur": "LDSP", "soni": 5 },
+    { "nom": "Кашемир", "tur": "LDSP", "soni": 3 },
+    { "nom": "Дуб Вотан", "tur": "LDSP", "soni": 2 },
+    { "nom": "Белый фасадный PE", "tur": "LDSP", "soni": 2 },
+    { "nom": "Ясень Анкор темный", "tur": "LDSP", "soni": 1 },
+    { "nom": "Дуб Сонома", "tur": "LDSP", "soni": 1 },
+    { "nom": "Стальной Серый", "tur": "LDSP", "soni": 1 },
+    { "nom": "Бежевый", "tur": "LDSP", "soni": 1 },
+    { "nom": "Цемент Светлый", "tur": "LDSP", "soni": 1 },
+    { "nom": "Дуб Орегон", "tur": "LDSP", "soni": 1 }
+  ]
+}

@@ -41,7 +41,7 @@ before(async () => {
   tmp = fs.mkdtempSync(path.join(os.tmpdir(), 's3d-ai-'));
   dbPath = path.join(tmp, 'test.db');
   execFileSync(process.execPath, ['init-db.js'], { cwd: SERVER_DIR, env: { ...process.env, DB_PATH: dbPath, ADMIN_PASSWORD: 'test-admin-parol-3' }, stdio: 'pipe' });
-  const port = 20000 + Math.floor(Math.random() * 20000);
+  const port = 22000 + Math.floor(Math.random() * 1000);
   base = `http://127.0.0.1:${port}`;
   const env = { ...process.env, PORT: String(port), DB_PATH: dbPath, JWT_SECRET: 'ai-test-' + 'q'.repeat(40), NODE_ENV: 'test',
     AI_PROVIDER: 'openai', AI_BASE_URL: `http://127.0.0.1:${mock.address().port}/v1`, AI_API_KEY: 'soxta-kalit', AI_MODEL: 'soxta-model' };
@@ -83,6 +83,16 @@ test('normalizeParsed: o\'ylab topilgan/yaroqsiz qiymatlar tozalanadi', () => {
   assert.deepEqual(p.orders, [{ kind: 'ustki', qty: 50 }]);
   assert.equal(p.unknown[0].length, 100);
   assert.throws(() => normalizeParsed({ room: 'x' }));
+});
+
+test('normalizeParsed: egasi #166 — oshxona maydonlari (aytilmagan bo\'lsa maydon yo\'q)', () => {
+  const Z = { uzunlik_mm: 0, q1_boyi_mm: 0, q1_chuqurligi_mm: 0, q2_boyi_mm: 0, q2_chuqurligi_mm: 0, q3_boyi_mm: 0, q3_chuqurligi_mm: 0, fartuk_mm: 0,
+    tortma_soni: 0, gaz_mm: 0, vytyajka_mm: 0, stol_qalinlik_mm: 0, stol_chuqurligi_mm: 0, ruchkasiz: false, gola: false, haytek: false, tandem_vakuum: false };
+  assert.equal(normalizeParsed(Object.assign({}, SAMPLE, { oshxona: Z })).oshxona, undefined);
+  const o = normalizeParsed(Object.assign({}, SAMPLE, { oshxona: Object.assign({}, Z, { uzunlik_mm: 4500, q1_boyi_mm: 870, q3_boyi_mm: 600, q3_chuqurligi_mm: 560, gola: true, tandem_vakuum: true, stol_qalinlik_mm: 38 }) })).oshxona;
+  assert.equal(o.uzunlik, 4500); assert.equal(o.qavatlar.length, 3); assert.equal(o.qavatlar[2].chuqurligi, 560);
+  assert.equal(o.gola, true); assert.equal(o.tortma.yonaltiruvchi, 'tandem_vakuum'); assert.equal(o.stoleshnitsa.qalinlik, 38);
+  assert.ok(AI_SCHEMA.properties.oshxona && AI_SCHEMA.required.includes('oshxona'));
 });
 
 test('sxema: har obyekt additionalProperties:false va barcha maydon majburiy (structured outputs talabi)', () => {

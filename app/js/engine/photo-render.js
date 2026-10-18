@@ -11,6 +11,17 @@
  *   3. Nolinchi tashqi kutubxona (Three.js WebGL native).
  */
 import * as THREE from 'three';
+import { loadLogo, logoDataUrl } from './logo.js';
+
+/* Bittada logosi (qoidalar 6.3/S4) — Image; yuklanmasa null (faqat matn, xato yo'q) */
+async function logoImg() {
+  try {
+    await loadLogo();
+    const u = logoDataUrl();
+    if (!u || typeof Image === 'undefined') return null;
+    return await new Promise((res) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = u; });
+  } catch (e) { return null; }
+}
 
 /**
  * 1080p Ultra-HD kadrni render qilib yuklab beradi.
@@ -56,6 +67,7 @@ export async function render1080p(sp, opts = {}) {
   // Asosiy 3D tasvirni chizish
   ctx.drawImage(renderer.domElement, 0, 0, width, height);
 
+  const logo = await logoImg();
   // Elegant brending va ma'lumot badge-i
   const badgeW = 380;
   const badgeH = 80;
@@ -72,11 +84,15 @@ export async function render1080p(sp, opts = {}) {
   ctx.fill();
   ctx.stroke();
 
-  // Rangli brend indikatori
-  ctx.fillStyle = '#f59e0b';
-  ctx.beginPath();
-  ctx.arc(badgeX + 30, badgeY + 40, 8, 0, Math.PI * 2);
-  ctx.fill();
+  // Brend belgisi: Bittada logosi (yuklanmasa — rangli nuqta)
+  if (logo) {
+    ctx.drawImage(logo, badgeX + 8, badgeY + 20, 40, 40);
+  } else {
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.arc(badgeX + 30, badgeY + 40, 8, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
   // Matnlar
   ctx.fillStyle = '#ffffff';
@@ -230,7 +246,10 @@ export async function render360Panorama(sp, opts = {}) {
   ctx.save();
   ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
   ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillText('Bittada Smart3D — 360° Virtual Tur', 40, panoH - 40);
+  const logo = await logoImg();
+  let tx = 40;
+  if (logo) { ctx.drawImage(logo, 40, panoH - 76, 48, 48); tx = 100; }
+  ctx.fillText('Bittada Smart3D — 360° Virtual Tur', tx, panoH - 40);
   ctx.restore();
 
   // Tozalash

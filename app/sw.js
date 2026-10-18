@@ -8,7 +8,7 @@
  * SHELL ro'yxati js/app.js importlari va fetch() lari bilan bir xil bo'lishi SHART —
  * yangi modul qo'shilsa shu yerga ham yoziladi va CACHE versiyasi oshiriladi.
  */
-const CACHE = 'smart3d-v16';
+const CACHE = 'smart3d-v19';
 const SHELL = [
   './',
   'index.html',
@@ -39,8 +39,9 @@ const SHELL = [
   'js/engine/rules.js',
   'js/engine/search.js',
   'js/engine/slots.js',
-  'js/engine/standart.js', 'js/auth.js',
+  'js/engine/standart.js', 'js/auth.js', 'js/auth-core.js',
   'js/engine/xlsxexport.js',
+  'js/engine/logo.js',
   /* ma'lumotlar (app.js boot() da yuklanadi) */
   'data/appliances.json',
   'data/fragments-mc.json',

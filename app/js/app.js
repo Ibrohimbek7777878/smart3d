@@ -18,11 +18,14 @@ import { nestProject } from './engine/nesting.js';
 import { buildOBJ, cutlistCSV, smetaCSV, xncCSV, download } from './engine/objexport.js';
 import { buildGLB } from './engine/glbexport.js';
 import { buildXLSX } from './engine/xlsxexport.js';
+import { logoBytes, logoDataUrl } from './engine/logo.js';
 import { buildBPJ } from './engine/bpj.js';
 import { buildProject as buildGlProject } from './engine/giblab.js';
 import { cncBundle, cutGCode } from './engine/cnc.js';
 import { buildSearchIndex, searchMaterial } from './engine/search.js';
 import { applySexStandart } from './engine/standart.js';
+import { sukutErpQollash } from './engine/narxStavka.js';
+import { eskiKodlar } from './engine/kodlar.js';
 import { aiBuild, startVoice, voiceSupported, parseZamer, suggestLayout, USTKI_Z } from './ai.js';
 import { createAuth } from './auth.js';
 import { VRButton } from '../vendor/three/addons/webxr/VRButton.js';
@@ -39,7 +42,7 @@ const state = {
   doc: null,
   catalog: {},          // {code: frag}
   materials: null,      // materials.json
-  materialCode: 'LDSP18',   // korpus (va polka) materiali — slots.korpus
+  materialCode: 'LDSP16',   // korpus (va polka) materiali — slots.korpus (egasi #209: sex standarti 16 mm)
   fasadCode: 'MDF16',       // fasad (eshik, tortma) materiali — slots.fasad
   sheetCatalog: null,   // ERP katalogi (sheet-catalog.json)
   searchIndex: null,    // material ID + fuzzy qidiruv indeksi
@@ -134,7 +137,7 @@ function effectiveMaterials() {
   const mats = JSON.parse(JSON.stringify(state.materials));
   const pm = (mats.panel_materials || []).find(x => x.code === base);
   if (!pm) return state.materials;
-  if (sh.uzs > 0) pm.sheet_price = sh.uzs;
+  if (sh.uzs > 0) { pm.sheet_price = sh.uzs; delete pm.taxminiy; }   // TZ-32 A1: hisob.js bilan bir xil
   if (sh.l > 100 && sh.w > 100) pm.sheets = [[sh.l, sh.w]];
   return mats;
 }
@@ -187,6 +190,8 @@ function doRecalc() {
     const cl = cutlist(fr, p.w, p.d, p.h, mats, { projectSlots: slots, placementSlots: p.slots });
     cl.placementId = p.id;                   // CNC join uchun
     /* F2: moyka kesimi — stoleshnitsa run'ining birinchi segmentiga */
+    /* egasi #162: stoleshnitsa sig'masdan bo'lingan joyga 1 ta styajka (burchak butt-ulanishiga yo'q) */
+    if (p.frg === 'SP-ST-001' && p.styajka > 0) cl.hardware.push({ fragment: fr.code, code: 'STYAJKA-STOL', qty: p.styajka, _auto: true });
     if (mkHole && p.frg === 'SP-ST-001' && p.runIdx === 0 && p.segIdx === 0) {
       cl.holes.push(Object.assign({}, mkHole));
     }
@@ -198,7 +203,7 @@ function doRecalc() {
   const nest = nestProject(allParts, mats, state.nestCfg || {});
 
   /* 5) ishlab chiqarish tannarxi (haqiqiy varaqlar soni bilan) */
-  const prod = productionCost(cutlists, mats, { nestResult: nest, furnituraById: state.furnById, xizmatlar: state.doc.xizmatlar || {} });
+  const prod = productionCost(cutlists, mats, { nestResult: nest, furnituraById: state.furnById, furnituraBoglash: state.furnBoglash, xizmatlar: state.doc.xizmatlar || {} });
 
   /* 6) mijoz kotirovkasi — tannarx × (1 + ustama), modullarga taqsimlangan */
   const priceRes = buildQuote(doc, cutlists, prod, sizeCheck.warnings);
@@ -415,7 +420,7 @@ function renderExCheck(val, doc, cutlists, nest) {
       </div>`;
   }
   /* AUDIT-2026-10-14 §3: stanok fayllari haqiqiy stanokda sinalmagan */
-  html += `<div class="msg warn">⚠️ <b>SINOV:</b> stanok fayllari (DXF, NC, G-code, PTP, Altendorf)
+  html += `<div class="msg warn">⚠️ <b>SINOV:</b> stanok fayllari (DXF, NC, G-code, PTP, kesim rejasi)
     hali sexda sinalmagan — ishlab chiqarishda ishlatmang.</div>`;
   $('#exCheck').innerHTML = html;
 }
@@ -438,7 +443,7 @@ function freshRoom() {
 /* F2: oshxona sozlamalari (persist) — yangi loyiha: stoleshnitsa/sokol o'chirilgan */
 function freshKitchen() {
   return {
-    stoleshnitsa: false, sokol: false,
+    stoleshnitsa: false, stolT: 26, sokol: false,
     dobor: false, doborH: 60,
     karniz: false, karnizH: 60,
     moyka: { on: false, offset: 600, fromBack: 100, size: 500 }
@@ -456,6 +461,7 @@ function viewPlacements() {
 
 function setDoc(doc, opts = {}) {
   state.doc = doc;
+  eskiKodlar(doc);                                   // eski katalog kodlari (texnika SP-T → SP-TX) — yangisiga
   if (!doc.kitchen) doc.kitchen = freshKitchen();   /* F2 */
   state.idSeq = Math.max(state.idSeq,
     1 + doc.placements.reduce((m, p) => Math.max(m, parseInt(String(p.id).replace(/\D/g, ''), 10) || 0), 0));
@@ -574,7 +580,7 @@ function estimateFragment(f) {
   if (estCache.map[f.code] == null) {
     const mats = estCache.mats || (estCache.mats = effectiveMaterials());   // nusxa — faqat kesh bo'sh bo'lsa
     const cl = cutlist(f, f.w, f.d, f.h, mats, { projectSlots: projectSlots() });
-    estCache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: state.furnById, xizmatlar: xz }).clientTotal;
+    estCache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: state.furnById, furnituraBoglash: state.furnBoglash, xizmatlar: xz }).clientTotal;
   }
   return estCache.map[f.code];
 }
@@ -873,9 +879,8 @@ function integrityCheck(needCutlist) {
 function exportOBJ() {
   if (!integrityCheck(false)) return;
   const r = buildOBJ(Object.assign({}, state.doc, { placements: viewPlacements() }), state.catalog);
-  download('smart3d-model.obj', r.obj, 'text/plain');
-  setTimeout(() => download('smart3d-model.mtl', r.mtl, 'text/plain'), 350);
-  toast('OBJ + MTL yuklanmoqda — ' + r.placements.length + ' guruh', 'good');
+  download('smart3d-model.obj', r.obj, 'text/plain');   // egasi #223: bitta .obj fayl (rangli variant yangi saytda: «OBJ + rang (.zip)»)
+  toast('OBJ yuklanmoqda — ' + r.placements.length + ' guruh', 'good');
 }
 function exportGlb() {
   if (!integrityCheck(false)) return;
@@ -1077,9 +1082,11 @@ function printReport() {
   .tot{font-weight:700;font-size:15px;margin-top:8px;text-align:right}
   .stats{display:flex;gap:18px;margin:6px 0} .stats b{font-size:16px}
   footer{margin-top:24px;color:#777;font-size:11px;border-top:1px solid #ccc;padding-top:6px}
-  @media print{body{margin:12mm}}
+  .pgLogo{display:none} .hd{display:flex;align-items:center;gap:10px}
+  @media print{body{margin:12mm}.pgLogo{display:block;position:fixed;top:0;right:0;height:30px;width:30px}}
 </style></head><body>
-<h1>${esc(name)}</h1>
+${logoDataUrl() ? `<img class="pgLogo" src="${logoDataUrl()}" alt="Bittada">` : ''}
+<div class="hd">${logoDataUrl() ? `<img src="${logoDataUrl()}" alt="Bittada" width="44" height="44">` : ''}<h1>${esc(name)}</h1></div>
 <div class="meta">Smart3D hisobot · ${new Date().toLocaleDateString('uz-UZ')} · material: ${esc(state.materialCode)}</div>
 <h2>1. Kotirovka (mijozga)</h2>
 <table><thead><tr><th>Mebel</th><th class=n>Miq.</th><th class=n>Narx</th><th class=n>Summa</th></tr></thead>
@@ -1109,6 +1116,7 @@ function exportXlsx() {
     const res = state._res;
     const name = ($('#projName').textContent.trim() || 'smart3d').replace(/\s+/g, '_');
     const xlsx = buildXLSX({
+      logo: logoBytes(),
       doc: state.doc,
       catalog: state.catalog,
       materials: effectiveMaterials(),
@@ -1225,7 +1233,7 @@ function exportMpr() {
   cncSafe((nest, cls) => cncBundle(nest, cls).mpr, '-homag.mpr', 'text/plain', 'Homag WoodWOP MPR dasturi tayyor');
 }
 function exportAltendorf() {
-  cncSafe((nest, cls) => cncBundle(nest, cls).altendorf, '-altendorf-fazali-kesim.txt', 'text/plain', 'Altendorf fazali kesim xaritasi tayyor');
+  cncSafe((nest, cls) => cncBundle(nest, cls).altendorf, '-kesim-rejasi.txt', 'text/plain', 'Fazali kesim rejasi (matn) tayyor');
 }
 
 /* ═══════════════════ LAYOUT / TABS ═══════════════════ */
@@ -1330,7 +1338,7 @@ function buildProjectPayload() {
 /** Loyiha faylini ilovaga qo'llash (tuzilma tekshirilgan bo'lishi kerak) */
 function applyProjectPayload(p) {
   $('#projName').textContent = p.name || 'Loyiha';
-  state.materialCode = p.material || 'LDSP18';
+  state.materialCode = p.material || 'LDSP16';
   state.fasadCode = p.fasad || 'MDF16';
   state.sheet = p.sheet || null;
   renderMaterials(); renderSheetSel(); renderCatalog();
@@ -1378,7 +1386,7 @@ async function newProject() {
 
 /* ═══════════════════ INIT ═══════════════════ */
 async function boot() {
-  const [frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat] = await Promise.all([
+  const [frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat, furnBoglash] = await Promise.all([
     fetch('data/fragments.json').then(r => r.json()),
     fetch('data/materials.json').then(r => r.json()),
     fetch('data/nesting-defaults.json').then(r => r.json()).catch(() => ({})),
@@ -1388,11 +1396,13 @@ async function boot() {
     fetch('data/appliances.json').then(r => r.json()).catch(() => null),
     fetch('data/fragments-mc.json').then(r => r.json()).catch(() => null),        // MebelCity haqiqiy modullari (TZ-HAQIQIY-MODULLAR A2)
     fetch('data/sex-standartlari.json').then(r => r.json()).catch(() => null),    // sex min/max (A1)
-    fetch('data/furnitura-catalog.json').then(r => r.json()).catch(() => null)    // ERP furnitura, ID → narx (A4)
+    fetch('data/furnitura-catalog.json').then(r => r.json()).catch(() => null),   // ERP furnitura, ID → narx (A4)
+    fetch('data/furnitura-boglash.json').then(r => r.json()).catch(() => null)    // TZ-20: furnitura kodi → ERP ID
   ]);
   /* ERP furnitura ID → {name, uzs, no_price}: tannarx zapchast narxini ID bo'yicha oladi */
   state.furnById = {};
   for (const it of (furnCat && furnCat.items) || []) if (it.id) state.furnById[it.id] = it;
+  state.furnBoglash = (furnBoglash && furnBoglash.links) || {};
   state.catalog = {};
   for (const f of frags) state.catalog[f.code] = f;
   for (const f of (mcFrags && mcFrags.fragments) || []) state.catalog[f.code] = f;
@@ -1408,6 +1418,7 @@ async function boot() {
       default_z: a.z || 0, note: a.note
     };
   }
+  sukutErpQollash(mats);                                          // TZ-32 A1: hisob.js createHisob bilan bir xil
   state.materials = mats;
   state.sheetCatalog = sheetCat;
   state.services = services;
@@ -1423,7 +1434,7 @@ async function boot() {
   } catch (e) { /* buzilgan kesh — defaults bilan davom */ }
   delete state.nestCfg._meta;
   const known = (c) => (mats.panel_materials || []).some(m => m.code === c);
-  if (!known(state.materialCode)) state.materialCode = 'LDSP18';
+  if (!known(state.materialCode)) state.materialCode = 'LDSP16';
   if (!known(state.fasadCode)) state.fasadCode = 'MDF16';
 
   /* sahna */

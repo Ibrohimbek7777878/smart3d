@@ -21,8 +21,12 @@ if (password === 'admin123') { console.error('XATO: standart parol ishlatilmaydi
 if (!fs.existsSync(dbPath)) { console.error(`XATO: baza topilmadi (${dbPath}) — avval npm run init-db`); process.exit(1); }
 
 const db = new Database(dbPath);
-const hash = bcrypt.hashSync(password, 10);
+const hash = bcrypt.hashSync(password, 12);   // TZ-19 X10
 const r = db.prepare("UPDATE users SET password_hash = ?, role = 'admin' WHERE lower(email) = ?").run(hash, email);
+/* TZ-19 X3: parol almashdi — eski kirish kalitlari bekor (ustun server birinchi ishga tushganda qo'shiladi) */
+if (r.changes && db.prepare('PRAGMA table_info(users)').all().some(c => c.name === 'token_version')) {
+  db.prepare('UPDATE users SET token_version = token_version + 1, failed_logins = 0, locked_until = 0 WHERE lower(email) = ?').run(email);
+}
 if (r.changes === 0) {
   db.prepare('INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)').run('Admin', email, hash, 'admin');
   console.log(`Admin yaratildi: ${email}`);

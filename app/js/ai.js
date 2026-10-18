@@ -12,6 +12,9 @@
  */
 
 import { footprint } from './engine/rules.js';
+import { devorChegara } from './engine/devorOraliq.js';
+import { oshxonami, oshxonaSpec, oshxonaTekshir, oshxonaBirlashtir, oshxonaTalablar } from './engine/oshxonaTili.js';
+import { oshxonaQoidalar } from './engine/konstruktor/index.js';
 
 /* ── 1. Sonlar va O'zbek tili lug'ati ── */
 
@@ -19,8 +22,21 @@ const NUM_MAP = {
   'bir': 1, 'bitta': 1, 'ikki': 2, 'ikkita': 2, 'ikkala': 2,
   'uch': 3, 'uchta': 3, "to'rt": 4, "to'rtta": 4, 'to`rt': 4,
   'besh': 5, 'beshta': 5, 'olti': 6, 'oltita': 6, 'yetti': 7, 'yettita': 7,
-  'sakkiz': 8, 'sakkizta': 8, "to'qqiz": 9, "o'n": 10, 'o`n': 10
+  'sakkiz': 8, 'sakkizta': 8, "to'qqiz": 9, "o'n": 10, 'o`n': 10,
+  /* TZ-18: rus va ingliz sonlari (matn va ovoz) */
+  'один': 1, 'одна': 1, 'одну': 1, 'два': 2, 'две': 2, 'три': 3, 'четыре': 4, 'пять': 5,
+  'шесть': 6, 'семь': 7, 'восемь': 8, 'девять': 9, 'десять': 10,
+  'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10
 };
+/* son so'zlari (regex uchun) — o'zbek, rus, ingliz */
+const NUMW = "\\d+|bir|bitta|ikki|ikkita|uch|uchta|to'rt|to'rtta|to`rt|besh|beshta|olti|oltita|yetti|sakkiz|to'qqiz|o'n|o`n" +
+  '|один|одна|одну|два|две|три|четыре|пять|шесть|семь|восемь|девять|десять|one|two|three|four|five|six|seven|eight|nine|ten';
+/* dona birligi; keyin harf kelmasin ("2 tables" — "ta" birlik emas) */
+const DONA = "(?:tadan|tali|ta|donalik|dona|штук[аи]?|шт|pcs|pieces?)(?![a-zа-яё])";
+/* o'lcham birligi (metrga — "ga" qo'shimchasi bilan) */
+const BIRLIK = '(mm|мм|sm|см|cm|meters?|metres?|metr|метр(?:а|ов)?|m|м)(?=ga|га|[^a-zа-яё]|$)';
+const BIRLIK_M = '(?:meters?|metres?|metr|метр(?:а|ов)?|m|м)(?=ga|га|[^a-zа-яё]|$)';
+const birlikMm = (v, u) => /^(mm|мм)$/.test(u) ? v : /^(sm|см|cm)$/.test(u) ? v * 10 : v * 1000;
 
 function parseNum(s) {
   if (s == null) return NaN;
@@ -31,8 +47,9 @@ function parseNum(s) {
 }
 
 /**
- * O'zbek tilidagi erkin zamer va buyurtma matnini tahlil qiladi.
- * Masalan: "3x4 metr oshxona, L shakl, burchakka tumba, gaz plita, tepasiga osma shkaf, xolodilnik"
+ * Erkin zamer va buyurtma matnini tahlil qiladi — o'zbek, rus va ingliz tilida (TZ-18 8-bosqich).
+ * Masalan: "3x4 metr oshxona, L shakl, burchakka tumba, gaz plita, tepasiga osma shkaf, xolodilnik",
+ * "угловая кухня 3.6 на 3 м, мойка, плита, три верхних шкафа", "L-shaped kitchen 3.6m x 3m, sink, 3 upper cabinets".
  */
 /** Ustki (osma) shkaf balandligi poldan, mm — AI ham, katalog ham shuni ishlatadi (TZ-15) */
 export const USTKI_Z = 1450;
@@ -49,53 +66,61 @@ export function parseZamer(text) {
   const orders = [];
 
   /* "3 yarim" → "3.5" (A1) */
-  t = t.replace(/(\d+(?:[.,]\d+)?)\s*yarim/g,
+  t = t.replace(/(\d+(?:[.,]\d+)?)\s*(?:yarim|с\s+половиной|and\s+a\s+half)/g,
     (_, a) => String(parseFloat(String(a).replace(',', '.')) + 0.5));
 
   /* ── 1. Layout turi (U birinchi tekshiriladi — "U shakl, burchakka" matnida
           "burchak" so'zi L ga tegmasligi uchun; "угловая" = L (A1)) ── */
-  if (/u[\s-]*shakl|p[\s-]*shakl|п[\s-]*образн|uch\s*tomon/i.test(t)) {
+  if (/(?<![a-zа-яё])(?:[upпу][\s-]*(?:shakl|образн|shape)|uch\s*tomon)/i.test(t)) {
     room.layoutType = 'U';
-  } else if (/l[\s-]*shakl|burchakli|burchak|углов|г[\s-]*образн/i.test(t)) {
+  } else if (/(?<![a-zа-яё])(?:[lг][\s-]*(?:shakl|образн|shape))|burchakli|burchak|угол|угл|corner/i.test(t)) {
     room.layoutType = 'L';
-  } else if (/orol|orolli|ostrov/i.test(t)) {
+  } else if (/orol|orolli|ostrov|остров|island/i.test(t)) {
     room.layoutType = 'island';
   }
 
   /* ── 2. Xona o'lchamlari ── */
-  // "3x4", "3*4", "3000x4000", kirill "3х4" (A1)
+  // "3x4", "3*4", "3000x4000", kirill "3х4", "3.6m x 3m", "3600 mm x 3000 mm" (A1, TZ-18).
+  // Birlik aytilsa — shu bo'yicha (sm ×10, m ×1000), aytilmasa — ikkalasi 100 dan kichik bo'lsa metr.
   let dimSpan = null;                               // xona o'lchami matndagi o'rni — miqdor emas
-  let m = t.match(/(\d+(?:[.,]\d+)?)\s*[x×*xXхХ]\s*(\d+(?:[.,]\d+)?)/);
+  const olcham = (mt, a, ua, b, ub) => {
+    let w = parseNum(a), d = parseNum(b);
+    const u1 = ua || ub, u2 = ub || ua;
+    if (u1) { w = birlikMm(w, u1); d = birlikMm(d, u2); }
+    else if (w < 100 && d < 100) { w *= 1000; d *= 1000; }
+    room.w = Math.round(w); room.d = Math.round(d); dimSpan = [mt.index, mt.index + mt[0].length];
+  };
+  const SON = '(\\d+(?:[.,]\\d+)?)';
+  let m = t.match(new RegExp(`${SON}\\s*(?:${BIRLIK})?\\s*[x×*хХ]\\s*${SON}\\s*(?:${BIRLIK})?`));
   if (m) {
-    let w = parseNum(m[1]), d = parseNum(m[2]);
-    if (w < 100 && d < 100) { w *= 1000; d *= 1000; }
-    room.w = Math.round(w); room.d = Math.round(d); dimSpan = [m.index, m.index + m[0].length];
-  } else {
-    // "3.5 ga 2.8", "3 ga 4 metr", "3.5 metrga 3 metr", "3 yarim metr ga 3" — separator so'z
-    // bilan; birinchi sondan keyin birlik ham kelishi mumkin (A1)
-    m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:metr|метр|м|m)?\s*(?:га|ga|на)\s*(?:метр(?:ов)?\s*|metr\s*)?(\d+(?:[.,]\d+)?)/);
-    if (m) {
-      let w = parseNum(m[1]), d = parseNum(m[2]);
-      if (w < 100 && d < 100) { w *= 1000; d *= 1000; }
-      room.w = Math.round(w); room.d = Math.round(d); dimSpan = [m.index, m.index + m[0].length];
-    } else {
+    olcham(m, m[1], m[2], m[3], m[4]);
+    /* egasi #183: "3600x2800x2400" — uchinchi son xona balandligi (1800…4500 mm); kartada aytiladi */
+    const h3 = new RegExp(`^\\s*[x×*хХ]\\s*${SON}\\s*(?:${BIRLIK})?`).exec(t.slice(m.index + m[0].length));
+    if (h3) {
+      let h = parseNum(h3[1]);
+      const u = h3[2] || m[4] || m[2];
+      h = u ? birlikMm(h, u) : h < 100 ? h * 1000 : h;
+      if (h >= 1800 && h <= 4500) { room.h = Math.round(h); room.olcham3 = { w: room.w, d: room.d, h: room.h }; dimSpan[1] += h3[0].length; }
+    }
+  }
+  else {
+    // "3.5 ga 2.8", "3 ga 4 metr", "3.5 metrga 3 metr", "3 на 4 метра", "3.6 by 3 m" — separator so'z bilan (A1)
+    m = t.match(new RegExp(`${SON}\\s*(?:${BIRLIK})?\\s*(?:га|ga|на|by)(?![a-zа-яё])\\s*(?:${BIRLIK_M}\\s*)?${SON}\\s*(?:${BIRLIK})?`));
+    if (m) olcham(m, m[1], m[2], m[3], m[4]);
+    else {
       // "3 metr 4 metr", "3m 4m" — ikkala tomonda ham birlik majburiy
-      m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:м|metr|метр)\s*(?:га|на)?\s*(\d+(?:[.,]\d+)?)\s*(?:м|metr|метр)/);
-      if (m) {
-        let w = parseNum(m[1]), d = parseNum(m[2]);
-        if (w < 100 && d < 100) { w *= 1000; d *= 1000; }
-        room.w = Math.round(w); room.d = Math.round(d); dimSpan = [m.index, m.index + m[0].length];
-      }
+      m = t.match(new RegExp(`${SON}\\s*(${BIRLIK_M})\\s*(?:га|на)?\\s*${SON}\\s*(${BIRLIK_M})`));
+      if (m) olcham(m, m[1], m[2], m[3], m[4]);
     }
   }
 
   /* ── 3. Balandlik ──
      Faqat xona kalit so'zlari (balandlik/высота/height/shift) yoki mustaqil "h".
      "shkaf h 2400" — mebel balandligi, xona emas (A1): unknown ga tushadi. */
-  m = t.match(/(?:balandli[kg]\w*|высота|height|shift|h)\s*[=:]?\s*(\d+(?:[.,]\d+)?)/);
+  m = t.match(/(?<![a-zа-яё'`])(?:balandli[kg]\w*|высот[а-яё]*(?:\s+потолк[а-яё]*)?|потол[а-яё]*|ceiling(?:\s+height)?|height|shift|h)\s*[=:]?\s*(\d+(?:[.,]\d+)?)/);
   if (m) {
     const before = t.slice(Math.max(0, m.index - 14), m.index);
-    const isFurniture = /(shkaf|modul|penal|tumba|osma|garderob|eshik|stol|divan|karavot|mebel|korpus|шкаф|шкаф|тумба|стол|мебель|шкафа)\s*$/.test(before);
+    const isFurniture = /(shkaf|modul|penal|tumba|osma|garderob|eshik|stol|divan|karavot|mebel|korpus|шкаф[а-яё]*|тумб[а-яё]*|стол[а-яё]*|мебел[а-яё]*|пенал[а-яё]*|двер[а-яё]*|cabinets?|wardrobe|furniture|units?|modules?|doors?|table)\s*$/.test(before);
     let h = parseNum(m[1]);
     if (h < 100) h *= 1000;
     if (isFurniture) {
@@ -107,7 +132,7 @@ export function parseZamer(text) {
 
   /* ── 4. Teshiklar: Deraza va Eshiklar — birlikga e'tibor (A1):
         "eshik 90 sm" → 900 mm (eski kod 90 000 mm qilardi) ── */
-  const reO = /(deraza|oyna|okno|eshik|dver)\s*[=:]?\s*(\d+(?:[.,]\d+)?)\s*(sm|см|cm|mm|мм|m|metr|метр|м)?/g;
+  const reO = /(deraza|oyna|okno|eshik|dver|окн[оа]|двер[ьи]|windows?|doors?)\s*[=:]?\s*(\d+(?:[.,]\d+)?)\s*(sm|см|cm|mm|мм|m|metr|метр|м)?/g;
   let mm;
   while ((mm = reO.exec(t))) {
     const unit = (mm[3] || '').toLowerCase();
@@ -124,35 +149,36 @@ export function parseZamer(text) {
       wid *= 10;                                   // "90" → 90 sm
     }
     room.openings.push({
-      type: /deraza|oyna|okno/.test(mm[1]) ? 'window' : 'door',
+      type: /deraza|oyna|okno|окн|window/.test(mm[1]) ? 'window' : 'door',
       width: Math.round(wid || 900)
     });
   }
 
   /* ── 5. Mebel zonalari va kalit so'zlari ── */
   const features = {
-    sink: /moyka|rakovina|chanoq|yuvg'ich|мойка/i.test(t),
-    stove: /gaz|plita|pechka|duxovka|варочн|плита/i.test(t),
-    fridge: /xolodilnik|muzlatgich|холодильник/i.test(t),
-    corner: /burchak|угол/i.test(t),
-    upper: /ustki|tepa|osma|navesnoy|навесн/i.test(t),
-    tall: /penal|kolonna|baland shkaf|пенал/i.test(t),
-    wardrobe: /garderob|kupe|shkaf-kupe/i.test(t),
-    island: /orol|ostrov/i.test(t)
+    sink: /moyka|rakovina|chanoq|yuvg'ich|мойк|раковин|\bsink/i.test(t),
+    stove: /gaz|plita|pechka|duxovka|варочн|плит|духовк|stove|\bhob\b|cooktop|cooker|\boven|\bgas\b/i.test(t),
+    fridge: /xolodilnik|muzlatgich|холодильн|fridge|refrigerator/i.test(t),
+    corner: /burchak|угол|угл|corner/i.test(t),
+    upper: /ustki|tepa|osma|navesnoy|навесн|верхн|upper|wall[\s-]*(?:cabinet|unit)s?|hanging/i.test(t),
+    tall: /penal|kolonna|baland shkaf|пенал|колонн|\btall\b|pantry/i.test(t),
+    wardrobe: /garderob|kupe|shkaf-kupe|гардероб|купе|wardrobe|closet/i.test(t),
+    island: /orol|ostrov|остров|island/i.test(t)
   };
   room.features = features;
 
   /* ── 6. Miqdorli buyurtmalar ("3 ta pastki", "4 tadan osma", "4ta") (A1) ── */
-  const reQ = /(\d+|bir|bitta|ikki|ikkita|uch|uchta|to'rt|to`rt|besh|olti|yetti|sakkiz|to'qqiz|o'n|o`n)\s*(?:tadan|tali|ta|donalik|dona|шт|штука)?\s*([a-zа-я'`-]+)/gi;
+  /* son oldidan harf bo'lmasin ("внутри шкафа" — "три" emas, "stone base" — "one" emas) */
+  const reQ = new RegExp(`(?<![a-zа-яё'\`])(${NUMW})\\s*(?:${DONA})?\\s*([a-zа-яё'\`-]+)`, 'gi');
   const KIND_MAP = [
-    [/ustki|osma|tepa|navesnoy|навесн|верхн/, 'ustki'],
-    [/pastki|tumba|нижн/, 'pastki'],
-    [/burchak|углов/, 'burchak'],
-    [/garderob|shkaf|шкаф|купе/, 'shkaf'],
-    [/penal|пенал/, 'shkaf'],
-    [/stol|стол/, 'stol'],
-    [/divan|диван/, 'divan'],
-    [/orol|остров/, 'orol']
+    [/ustki|osma|tepa|navesnoy|навесн|верхн|upper|wall|hanging/, 'ustki'],
+    [/pastki|tumba|нижн|тумб|base|lower|bottom/, 'pastki'],
+    [/burchak|углов|corner/, 'burchak'],
+    [/garderob|shkaf|шкаф|купе|гардероб|wardrobe|closet/, 'shkaf'],
+    [/penal|пенал|tall|pantry/, 'shkaf'],
+    [/stol|стол(?!еш)|table/, 'stol'],
+    [/divan|диван|sofa|couch/, 'divan'],
+    [/orol|остров|island/, 'orol']
   ];
 
   const kindOf = (word) => {
@@ -163,8 +189,7 @@ export function parseZamer(text) {
      Vergulsiz matnda (ovoz) "pastki 4 ta ustki 3 ta" ikki xil o'qilishi mumkin —
      gap "… N ta" bilan tugasa, so'z → son uslubi ishlatilgan: u birinchi o'qiladi.
      Bir son faqat bir marta sanaladi (o'rni bo'yicha). */
-  const NUMW = "\\d+|bir|bitta|ikki|ikkita|uch|uchta|to'rt|to'rtta|to`rt|besh|beshta|olti|oltita|yetti|sakkiz|to'qqiz|o'n|o`n";
-  const reQR = new RegExp(`([a-zа-я'\`-]+)(?:\\s+([a-zа-я'\`-]+))?\\s*[:=-]?\\s*(${NUMW})\\s*(?:tadan|ta|dona|шт)(?![a-zа-я])`, 'gi');
+  const reQR = new RegExp(`([a-zа-яё'\`-]+)(?:\\s+([a-zа-яё'\`-]+))?\\s*[:=-]?\\s*(${NUMW})\\s*${DONA}`, 'gi');
   const usedNums = new Set();
   const inDim = (pos) => dimSpan && pos >= dimSpan[0] && pos < dimSpan[1];   // "4x3 pastki" — 3 miqdor emas
   const readNumFirst = () => {
@@ -184,7 +209,7 @@ export function parseZamer(text) {
       if (kind) { orders.push({ kind, qty: Math.max(1, parseNum(mm[3]) || 1) }); usedNums.add(numPos); }
     }
   };
-  if (new RegExp(`(?:${NUMW})\\s*(?:tadan|ta|dona|шт)\\s*[.!?]*\\s*$`, 'i').test(t)) { readWordFirst(); readNumFirst(); }
+  if (new RegExp(`(?:${NUMW})\\s*${DONA}\\s*[.!?]*\\s*$`, 'i').test(t)) { readWordFirst(); readNumFirst(); }
   else { readNumFirst(); readWordFirst(); }
 
   /* Teshiklarga devor (edge) va geometriya berish — F1: aks holda
@@ -251,7 +276,8 @@ export function suggestLayout(room, catalog = {}, orders = []) {
   const wardrobeFrag = byCode('SP-W-001') || frgs.find(f => f.group === 'garderob');
 
   let idSeq = 1;
-  const margin = 50; // devor chetidan bo'sh joy
+  /* devor chetidan bo'sh joy: devor qalinligining yarmi (50) + DEVOR_ORALIQ — egasi #152: modul devorga tiralmaydi */
+  const margin = devorChegara({ wall_thickness: room.wall_thickness || 100 });
 
   /* Buyurtmadagi miqdor ("pastki 4 ta, ustki 3 ta") — yuqori chegara (A1). Buyurtmada
      son bo'lmasa — avvalgidek devor to'ldiriladi. Burchak va plita tumbasi ham "pastki". */
@@ -471,6 +497,31 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
 
   const room = parsed.room;
   let assumed = false;
+  /* egasi #166: "kuxnya 4500 mm, 1 etaj 870 …" — oshxona spec'i (AI'siz tahlilchi asosiy; til modeli faqat bo'sh maydonlarni to'ldiradi) */
+  let osh = null;
+  if (oshxonami(text)) {
+    const a = oshxonaTekshir(oshxonaSpec(text));
+    const b = parsed.oshxona ? oshxonaTekshir(parsed.oshxona).spec : null;
+    osh = { spec: oshxonaBirlashtir(a.spec, b), tuzatish: a.tuzatish, xona: {} };
+    /* "столешница 38х600" — xona o'lchami emas (xona tomoni kamida 1000 mm, server tekshiruvi bilan bir xil) */
+    if (room.outline && Math.min(room.w, room.d) < 1000) { room.outline = null; room.w = room.d = 0; }
+    const T = devorChegara({ wall_thickness: 100 });
+    const kerak = osh.spec.uzunlik ? osh.spec.uzunlik + 2 * T : 0;   // qator ikki yon devor orasida (devor oralig'i bilan)
+    if (!room.outline && kerak) {
+      room.w = kerak; room.d = room.d || 2800; osh.xona.sukut = true;
+      room.outline = [[0, 0], [room.w, 0], [room.w, room.d], [0, room.d]];
+      assumed = true;
+    } else if (room.outline && kerak && room.outline.length === 4 && Math.max(room.w, room.d) < kerak) {
+      osh.xona.kengaydi = { oldin: Math.max(room.w, room.d), keyin: kerak };
+      const qisqa = Math.min(room.w, room.d) || 2800;
+      room.w = kerak; room.d = qisqa;
+      room.outline = [[0, 0], [room.w, 0], [room.w, room.d], [0, room.d]];
+    }
+    /* qavatlar shiftga sig'masa — xona balandligi oshiriladi (izoh bilan) */
+    const Qo = oshxonaQoidalar(osh.spec, catalog);
+    const tepa = Qo.antresol ? Qo.antresol.z + Qo.antresol.h : Qo.ustki.z + Qo.ustki.h;
+    if (tepa > (room.h || 2700)) { osh.xona.balandlik = { oldin: room.h || 2700, keyin: tepa }; room.h = tepa; }
+  }
   if (!room.outline) {
     /* O'lcham topilmadi — default bilan davom etamiz, lekin "✅ 3600×2800"
        deb da'vo qilmaymiz (A1: "Tushunmasa ham ✅ ko'rsatmasin") */
@@ -480,7 +531,26 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
     room.outline = [[0, 0], [room.w, 0], [room.w, room.d], [0, room.d]];
   }
 
-  const placements = suggestLayout(room, catalog, parsed.orders);
+  /* TZ-22: opts.konstruktor (yangi sayt) — oshxona avtomatik konstruktor (qoidalar, AI'siz) bilan quriladi;
+     variant topilmasa yoki oshxona bo'lmasa — avvalgi suggestLayout */
+  let placements = null, kitchen = null, izohlar = null;
+  const oshxona = /^(L|U|linear)$/.test(room.layoutType || 'linear') && !(parsed.orders || []).some(o => o.kind === 'shkaf');
+  /* egasi #183: talablar (ustkisiz, penal — duxovka/mikroto'lqinli, idish yuvish mashinasi, muzlatgich) — har ikki yo'lda; karta — har qurishda */
+  const tl = oshxonaTalablar(text);
+  let karta = null;
+  if (typeof opts.konstruktor === 'function' && (oshxona || osh)) {
+    const f = room.features || {};
+    const shakl = room.layoutType === 'L' ? 'L' : room.layoutType === 'U' ? 'U' : osh ? 'I' : 'auto';
+    const qosh = { ustki: tl.ustki, penal: tl.penal, posudomoyka: tl.posudomoyka };
+    const talab = osh ? Object.assign({ shakl, oshxona: osh.spec, uzunlik: osh.spec.uzunlik, xolodilnik: !!osh.spec.xolodilnik, plita: osh.spec.gaz.bor ? 'erkin' : false, moyka: osh.spec.moyka !== false }, qosh)
+      : Object.assign({ shakl, xolodilnik: f.fridge !== false, plita: f.stove === false ? false : 'erkin' }, qosh);
+    const v = opts.konstruktor({ outline: room.outline, wall_height: room.h || 2700, openings: room.openings || [] }, talab);
+    if (v) { placements = v.placements; kitchen = v.kitchen; izohlar = v.izohlar; if (osh) { osh.natija = v.oshxona || null; osh.ogoh = v.ogohlantirishlar || []; } }
+    const O = room.outline, uz = (i) => Math.round(Math.hypot(O[(i + 1) % O.length][0] - O[i][0], O[(i + 1) % O.length][1] - O[i][1]));
+    karta = { soraldi: shakl, shakl: v ? v.shakl : null, devorlar: v ? v.devorlar.map(uz) : [], talab: Object.assign({}, tl, { xolodilnik: talab.xolodilnik }),
+      olcham3: room.olcham3 || null, izohlar: v ? v.izohlar : [] };
+  }
+  if (!placements) placements = suggestLayout(room, catalog, parsed.orders);
 
   /* So'ralgan son sig'madi — jim o'tib ketmaydi (A1) */
   const notes = [];
@@ -503,7 +573,7 @@ export async function aiBuild(text, catalog = {}, opts = {}) {
     placements
   };
 
-  return { doc, orders: parsed.orders, unknown: parsed.unknown, notes, source, assumed };
+  return { doc, orders: parsed.orders, unknown: parsed.unknown, notes, source, assumed, kitchen, izohlar, oshxona: osh, karta };
 }
 
 /* ── 4. Ovoz Tizimi (Web Speech API) ── */

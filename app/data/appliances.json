@@ -2,11 +2,11 @@
  "_meta": {
   "desc": "O'rnatma texnika o'lchamlari (F2) — nishon/placeholder o'lchamlari. ERPdan aniq model kelguncha bozordagi standart o'lchamlar.",
   "unit": "mm",
-  "updated": "2026-10-15"
+  "updated": "2026-10-16"
  },
  "appliances": [
   {
-   "code": "SP-T-001",
+   "code": "SP-TX-001",
    "name": "O'rnatma pech (duxovka) 600",
    "w": 600,
    "d": 600,
@@ -15,7 +15,7 @@
    "note": "Nishon 600×600×600, pastki modul ichida"
   },
   {
-   "code": "SP-T-002",
+   "code": "SP-TX-002",
    "name": "O'rnatma posudomoyka 600",
    "w": 600,
    "d": 600,
@@ -24,7 +24,7 @@
    "note": "Standart peshtaxta balandligi ostida"
   },
   {
-   "code": "SP-T-003",
+   "code": "SP-TX-003",
    "name": "Mikroto'lqin (o'rnatma) 600",
    "w": 595,
    "d": 380,
@@ -33,7 +33,7 @@
    "note": "Ustki modul ichida"
   },
   {
-   "code": "SP-T-004",
+   "code": "SP-TX-004",
    "name": "O'rnatma muzlatgich 600",
    "w": 600,
    "d": 600,
@@ -42,7 +42,7 @@
    "note": "Ustun (kolonna) ko'rinishi"
   },
   {
-   "code": "SP-T-005",
+   "code": "SP-TX-005",
    "name": "Plita (ish stoli) 600",
    "w": 600,
    "d": 520,
@@ -51,13 +51,22 @@
    "note": "Stoleshnitsa ustida"
   },
   {
-   "code": "SP-T-006",
+   "code": "SP-TX-006",
    "name": "Chimenee (havalandirish) 600",
    "w": 600,
    "d": 500,
    "h": 400,
    "z": 1500,
    "note": "Plita ustida, devorga osiladi"
+  },
+  {
+   "code": "SP-TX-008",
+   "name": "Gaz plita (erkin turuvchi) 600",
+   "w": 600,
+   "d": 600,
+   "h": 850,
+   "z": 0,
+   "note": "Nishon 600×600×850 — pastki modullar orasida, stoleshnitsa shu joyda uziladi (TZ-22; SP-T-007 — fragments.json dagi 'Uy ish stoli', kod to'qnashmasin)"
   }
  ]
 }

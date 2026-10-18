@@ -316,7 +316,7 @@ try {
 } catch (e) { bad('kroysiz buildProject OTDI: ' + e.message); }
 
 /* ---------- 6) BPJ (K3): material / position / holes / dl=kesim ---------- */
-console.log('\n[6] BPJ K3 — material, position, holes, dl=kesim');
+console.log('\n[6] BPJ K3 — material, position, holes, dl=tayyor (kesim userProps da)');
 const { buildBPJ } = await import(B + 'js/engine/bpj.js');
 const { panelFitsSheet, KERF_DEFAULT: KERF, TRIM_DEFAULT: TRIM } = await import(B + 'js/engine/nesting.js');
 const bpjDoc = { room: { w: 4000, d: 4000, h: 2700 }, placements };
@@ -378,24 +378,30 @@ const bomHoles = bpj.bom.reduce((s, r) => s + (r.holesCount || 0), 0);
 bomHoles === holeTotal ? ok(`bom holesCount (${bomHoles}) = objects (${holeTotal})`)
   : bad(`bom holesCount ${bomHoles} != objects ${holeTotal}`);
 
-/* 6d) dl/dw = KESIM (cutlist bilan mos), finish userProps da saqlangan */
-let mmParts = 0, finishDiff = 0, seenId = 0;
+/* 6d) dl/dw = TAYYOR (geometrik) o'lcham — haqiqiy Bazis eksportidagidek (1.bpj: dl = bbox); kesim userProps.smart3d_kesim da
+ *     (TZ-17: Bazis'ga import qilinganda panel o'z o'lchamida turishi uchun) — ikkalasi cutlist bilan mos */
+let mmParts = 0, mmKesim = 0, kesimDiff = 0;
 for (let i = 0; i < placements.length; i++) {
   const o = bpj.objects.filter(x => x.userProps.smart3d_placement === placements[i].id);
   const cp = cutlists[i].parts;
   if (o.length !== cp.length) { mmParts++; continue; }
   const keyA = o.map(x => x.dimensions.dl + 'x' + x.dimensions.dw + 'x' + x.dimensions.dp).sort().join('|');
-  const keyB = cp.map(x => x.length + 'x' + x.width + 'x' + x.thickness).sort().join('|');
+  const keyB = cp.map(x => Math.round(+x.finish_length || +x.length) + 'x' + Math.round(+x.finish_width || +x.width) + 'x' + x.thickness).sort().join('|');
   if (keyA !== keyB) mmParts++;
+  const kA = o.map(x => x.userProps.smart3d_kesim.dl + 'x' + x.userProps.smart3d_kesim.dw).sort().join('|');
+  const kB = cp.map(x => Math.round(+x.length) + 'x' + Math.round(+x.width)).sort().join('|');
+  if (kA !== kB) mmKesim++;
 }
-mmParts === 0 ? ok('har bir modul: objects dl/dw/dp = cutlist length/width/thickness (kesim)')
-  : bad(`kesim o'lchami mos emas: ${mmParts} modul`);
+mmParts === 0 ? ok('har bir modul: objects dl/dw/dp = cutlist tayyor o\'lcham/qalinlik')
+  : bad(`tayyor o'lcham mos emas: ${mmParts} modul`);
+mmKesim === 0 ? ok('har bir modul: userProps.smart3d_kesim = cutlist kesim o\'lchami')
+  : bad(`kesim o'lchami mos emas: ${mmKesim} modul`);
 for (const x of bpj.objects) {
-  const f = x.userProps.smart3d_finish;
-  if (f && (f.l !== x.dimensions.dl || f.w !== x.dimensions.dw)) finishDiff++;
+  const k = x.userProps.smart3d_kesim;
+  if (k.dl !== x.dimensions.dl || k.dw !== x.dimensions.dw) kesimDiff++;
 }
-finishDiff > 0 ? ok(`tayyor ≠ kesim: ${finishDiff} ta (kromka kesim o'lchamini kichraytirgan)`)
-  : bad('dl hammasi finish — kromka hisoblanmagan');
+kesimDiff > 0 ? ok(`tayyor ≠ kesim: ${kesimDiff} ta (kromka kesim o'lchamini kichraytirgan — smart3d_kesim da)`)
+  : bad('kesim hammasi tayyor bilan bir xil — kromka hisoblanmagan');
 
 /* 6e) config varaq formati — tanlangan format barcha panellar sig'ishi kerak */
 let needL = 0, needW = 0;
@@ -421,7 +427,7 @@ const blockSum = bpj.blocks.reduce((s, b) => s + b.panelCount, 0);
 blockSum === bpj.objects.length ? ok(`blocks panelCount (${blockSum}) = objects (${bpj.objects.length})`)
   : bad(`blocks ${blockSum} != objects ${bpj.objects.length}`);
 const fbRatio = bpj.smart3d.unpositioned / Math.max(1, bpj.objects.length);
-console.log(`     (3D modeldan joy olmagan: ${bpj.smart3d.unpositioned}/${bpj.objects.length} = ${(fbRatio * 100).toFixed(0)}% — shift/toka kabi assembler'da modellashtirilmagan detallar)`);
+console.log(`     (joy olmagan: ${bpj.smart3d.unpositioned}/${bpj.objects.length} = ${(fbRatio * 100).toFixed(0)}% — umumiy modullarning assembler'da modellashtirilmagan detallari; MC — Bazis faylidan)`);
 fbRatio < 0.5 ? ok("positionlar ko'pchiligi 3D modeldan olingan")
   : bad(`3D modeldan juda kam joy olingan: ${(fbRatio * 100).toFixed(0)}%`);
 

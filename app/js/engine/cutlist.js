@@ -12,7 +12,25 @@
 
 import { evalFormula, roundMm } from './expr.js';
 import { resolveSlots } from './slots.js';
+import { chizmaYech } from './chizish.js';
+import { joyQutilar, d6Teshiklar, petlyaSoni } from './d6.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
+import { kromkaXizmat, prisadkaXizmat, raspilXizmat, bazisXizmat, tasdiqMi, ustamaManbasi } from './narxStavka.js';
+import { D6, petlyaSoni as d6PetlyaSoni } from './d6.js';            // TZ-32 B6: SP modul petlyasi (3c)
+
+/** D6 teshiklari prisadka narxi — mavjud stavka bo'yicha (materials.json hole_kinds); qolganlari — 'drill' */
+const D6_STAVKA = { d6_kosa: 'hinge', d6_eksentrik: 'cam' };
+
+/** D6: modul furniturasidagi ruchka teshiklari oralig'i ("Ручка 160 мм" → 160); ruchka yo'q — 0 (teshik qo'yilmaydi) */
+export function ruchkaOraligi(frag) {
+  for (const hw of frag.hardware || []) {
+    const s = (hw.name || '') + ' ' + (hw.code || '');
+    if (!/ручк|ruchka/i.test(s)) continue;
+    const m = /(\d{2,3})\s*(?:мм|mm|_mm)|ruchka_(\d{2,3})/i.exec(s);
+    return m ? +(m[1] || m[2]) : 160;                        // o'lchami yozilmagan — sexdagi eng ko'p (160)
+  }
+  return 0;
+}
 
 /** Orqaga moslik uchun evalExpr (ichkarida xavfsiz evalFormula ishlaydi). */
 export function evalExpr(expr, vars) {
@@ -59,19 +77,12 @@ export function birikmaTeshiklari(frag, vars) {
       for (const t of ts) {
         const hl = { part: tp.part, side: tp.side, x: x0 + tp.sx * t, y: y0 + tp.sy * t, dia: tp.dia, depth: tp.depth, kind: tp.kind };
         if (tp.torets) hl.torets = tp.torets;
+        if (tp.yuza) hl.yuza = tp.yuza;                          // D6: ko'r teshik qaysi yuzada (1 | 2)
         holes.push(hl);
       }
     }
   }
   return { holes, vintSoni };
-}
-
-/* Petlya soni eshik balandligiga qarab (petlya ishlab chiqaruvchilarining umumiy qoidasi) */
-function hingesForDoor(heightMm) {
-  if (heightMm <= 900) return 2;
-  if (heightMm <= 1600) return 3;
-  if (heightMm <= 2000) return 4;
-  return 5;
 }
 
 /**
@@ -94,6 +105,8 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   // Korpus materialining haqiqiy qalinligi t (mm)
   const tKorpus = slotResolver.getThickness('korpus');
   const tFasad = slotResolver.getThickness('fasad');
+  /* TZ-24 A: qo'lda chizilgan modul — detallar shu o'lcham va material qalinligida chizmadan (engine/chizish.js) */
+  if (frag.chizma) frag = chizmaYech(frag, w, d, h, { t: tKorpus, tp: slotResolver.getThickness('polka'), tf: tFasad, to: slotResolver.getThickness('orqa') });
 
   const baseVars = {
     w: +w,
@@ -119,8 +132,10 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
         else slotName = 'korpus';
       }
 
-      const matCode = slotResolver.getMaterialCode(slotName);
-      const th = slotResolver.getThickness(slotName);
+      /* TZ-21: Bazis'dan yuklangan detalda o'z materiali bor (p.material_code) — slotdan emas; bo'lmasa avvalgidek */
+      const ownMat = p.material_code ? (materials.panel_materials || []).find(m => m.code === p.material_code) : null;
+      const matCode = ownMat ? ownMat.code : slotResolver.getMaterialCode(slotName);
+      const th = ownMat && ownMat.thickness != null ? ownMat.thickness : slotResolver.getThickness(slotName);
       const partVars = Object.assign({}, baseVars, { t: th });
 
       // Detal soni: formula yoki raqam ("w > 600 ? 2 : 1")
@@ -325,17 +340,60 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
     }
   }
 
+  /* ── 3c) D6 (engine/d6.js): MC (Bazis) modullarida petlya, planka, polka ushlagich, ruchka — har nusxa o'z joyidan
+   * (chap va o'ng yon devor — ko'zgu: teshik o'sha nusxaga, `ref`). Qo'lda chizilgan modulda — birikmalar ichida (chizish.js). */
+  if (!frag.chizma && !frag.bazis3d && frag.production !== 'none' && (frag.parts || []).some(p => p.joy) && opt.d6 !== false) {
+    try {
+      const qal = {};
+      for (const p of parts) qal[p.code] = p.thickness;
+      const Q = joyQutilar(frag, baseVars, (part) => qal[part.code], { hinge: opt.hinge });
+      const r1 = (v) => Math.round(v * 10) / 10;
+      d6Teshiklar(Q, { ruchka: opt.ruchkasiz ? 0 : ruchkaOraligi(frag) }).forEach((arr, i) => {   // egasi #166: ruchkasiz — teshik yo'q
+        for (const hl of arr) {
+          holes.push(Object.assign({ fragment: frag.code, part: Q[i].code, ref: Q[i].ref }, hl, {
+            x: r1(hl.x - dedOf(Q[i].code, 'F')), y: r1(hl.y - dedOf(Q[i].code, 'L')), qty: 1, nusxa: 1
+          }));
+        }
+      });
+    } catch (err) {
+      errors.push({ code: 'E_BAD_EXPR', message: `${frag.code} D6: ${err.message}` });
+    }
+  } else if (/^SP-/.test(frag.code || '') && !frag.chizma && !frag.bazis3d && frag.production !== 'none' && opt.d6 !== false
+    && !(frag.hardware || []).some(hw => /KUPE|SLID|RAIL|ROLIK/i.test(hw.code || ''))) {
+    /* TZ-32 B6: umumiy (SP, joysiz) modul — eshik petlyasi D6 qoidasi bo'yicha (d6.js: kosa eshik uchidan 105, qirradan 21,5;
+     * vintlari ±24, 6 mm ichkarida; soni eshik bo'yiga qarab). Petlya qirrasi — F (eshik simmetrik); kupe va tortma — yo'q. */
+    const r1 = (v) => Math.round(v * 10) / 10, K = D6.kosa, V3 = D6.kosaVint;
+    for (const p of parts) {
+      if (p.slot !== 'fasad' || !/eshik|door/i.test(p.code) || /tortma|drawer|yashik|gorizontal/i.test(p.code)) continue;
+      const H = p.finish_length, W = p.finish_width;
+      if ((W > 650 && H > 1500) || H < 2 * K.uch) continue;          // kupe (surma) eshik — d6.js kupemi; juda past eshik
+      const n = d6PetlyaSoni(H), ys = Array.from({ length: n }, (_, k) => K.uch + (n > 1 ? k * (H - 2 * K.uch) / (n - 1) : 0));
+      const add = (x, y, dia, depth, kind) => holes.push({ fragment: frag.code, part: p.code, ref: p.ref, side: 'F', yuza: 1,
+        x: r1(x - dedOf(p.code, 'F')), y: r1(y - dedOf(p.code, 'L')), dia, depth, kind, qty: 1, nusxa: 1 });
+      for (const Y of ys) {
+        add(K.chet, Y, K.d, K.dp, 'd6_kosa');
+        for (const s of [-1, 1]) add(K.chet + V3.ichkari, Y + s * V3.oraliq, V3.d, V3.dp, 'd6_vint');
+      }
+    }
+  }
+
+  /* ── 3d) TZ-20: Bazis importi — furnitura/mahkamlagichdan hisoblangan teshiklar (faqat NARX uchun, joylashuvsiz).
+   * part yo'q → stanok eksportchilari (CNC, KDT, GibLab, BPJ) ularni o'tkazib yuboradi. */
+  for (const t of frag.bazisTeshik || []) {
+    holes.push({ fragment: frag.code, part: '', side: '', x: 0, y: 0, dia: t.dia, depth: t.depth, kind: t.kind, qty: Math.max(1, Math.round(+t.qty || 1)), nusxa: 1, tur: t.tur, narx_uchun: true });
+  }
+
   /* ── 4) Furnitura ────────────────────────────────────────────── */
   const nomBom = (s) => String(s || '').replace(/\r/g, ' ').replace(/\s+/g, ' ').trim();
   const hardware = (frag.hardware || []).map(hw => ({
     fragment: frag.code,
     code: hw.code,
-    /* birikma vintlari soni o'lchamga qarab o'zgaradi (Bazis jadvali) */
-    qty: vintSoni[nomBom(hw.name)] != null ? vintSoni[nomBom(hw.name)] : Math.max(1, Math.round(+hw.qty || 1)),
+    /* birikma vintlari soni o'lchamga qarab o'zgaradi (Bazis jadvali); soni yozilmagan — 1 (avvalgidek) */
+    qty: vintSoni[nomBom(hw.name)] != null ? vintSoni[nomBom(hw.name)] : (hw.qty == null || hw.qty === '' ? 1 : Math.max(0, Math.round(+hw.qty || 0))),
     id: hw.id,              // ERP furnitura ID (8 xona) — narx shu bo'yicha (TZ-HAQIQIY-MODULLAR A4)
     name: hw.name,
     unit: hw.unit
-  }));
+  })).filter(hw => hw.qty > 0);   // TZ-32 A3: soni 0 bo'lgan qator narxga (va ro'yxatga) kirmaydi — avval 1 dona bo'lib kirardi
 
   /* ── 4b) Avtomatik furnitura — fragmentda ko'rsatilmagan bo'lsa ──
    * Petlya faqat ochiladigan ESHIKKA (tortma fasadiga emas, kupe eshigiga emas),
@@ -349,12 +407,32 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   const doors = sliding || !autoHw ? [] : fronts.filter(p => !isDrawer(p));
   /* TS-… — eski fragmentlarda petlya shu kod bilan yozilgan (materials.json da nomi
      "Styajka TS-1730" — ziddiyat egasi bilan aniqlanadi); bor bo'lsa ikkinchi marta qo'shilmaydi */
-  if (doors.length && !hardware.some(hw => /TS-|PET|petl|hinge/i.test(hw.code))) {
-    const hingeQty = doors.reduce((s, p) => s + hingesForDoor(Math.max(p.finish_length, p.finish_width)), 0);
+  const petlyaBor = hardware.some(hw => /TS-|PET|petl|hinge/i.test(hw.code));
+  if (doors.length && !petlyaBor) {
+    /* TZ-32 A4: petlya soni — bitta qoida, sex fayllaridan (d6.petlyaSoni: ≤1000 — 2, ≤1600 — 3, ≤2000 — 4, undan katta — 5) */
+    const hingeQty = doors.reduce((s, p) => s + petlyaSoni(Math.max(p.finish_length, p.finish_width)), 0);
     hardware.push({ fragment: frag.code, code: 'PET-4', qty: hingeQty, _auto: true });
   }
-  if (autoHw && fronts.length && !sliding && !hardware.some(hw => /RU-|ruchka|handle/i.test(hw.code))) {
+  /* TZ-32 A5: MC (Bazis) modulining BOM'ida petlya qatori yo'q, lekin D6 eshikka petlya kosasini qo'ygan (3c) — petlya soni = kosalar
+     soni (o'sha qoida). Tortma, kargo va kupe eshigiga D6 kosa qo'ymaydi. Ruchka va boshqa furnitura — BOM'dan (avvalgidek). */
+  if (!autoHw && !sliding && !petlyaBor && !frag.chizma && !frag.bazis3d && (frag.parts || []).some(p => p.joy)) {
+    const kosa = holes.filter(hl => hl.kind === 'd6_kosa').length;
+    if (kosa) hardware.push({ fragment: frag.code, code: 'PET-4', qty: kosa, _auto: true });
+  }
+  if (autoHw && fronts.length && !sliding && !opt.ruchkasiz && !hardware.some(hw => /RU-|ruchka|handle/i.test(hw.code))) {
     hardware.push({ fragment: frag.code, code: 'RU-128', qty: fronts.length, _auto: true });
+  }
+  /* egasi #166 (opt — joylashuvdan): ruchkasiz (Gola) — ruchka qatori yo'q; Tandem vakuum — modulning yo'naltiruvchi/salazka qatorlari
+     o'rniga har tortmaga 1 komplekt (ERP ID bog'lanmagan — narxi "yo'q" deb chiqadi, o'ylab topilmaydi) */
+  if (opt.ruchkasiz) {
+    for (let i = hardware.length - 1; i >= 0; i--) if (/ручк|ruchk|handle|^RU-/i.test((hardware[i].code || '') + ' ' + (hardware[i].name || ''))) hardware.splice(i, 1);
+  }
+  if (opt.yonaltiruvchi === 'tandem_vakuum') {
+    const tortma = parts.filter(p => /fasad_yashika|tortma.*fasad|drawer.*front/i.test(p.code)).length;
+    if (tortma) {
+      for (let i = hardware.length - 1; i >= 0; i--) if (/napravl|salazk|направл|салазк|slide/i.test((hardware[i].code || '') + ' ' + (hardware[i].name || ''))) hardware.splice(i, 1);
+      hardware.push({ fragment: frag.code, code: 'TANDEM-VAKUUM', name: "Tandem vakuum yo'naltiruvchi (komplekt)", qty: tortma, unit: 'komplekt', _auto: true });
+    }
   }
 
   /* ── 5) Statistika ───────────────────────────────────────────── */
@@ -377,18 +455,23 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   };
 }
 
+/** TZ-32 yakuniy (egasi #222 Q2): ustama qo'shiladigan narx guruhlari — plita va furnitura; xizmatlar (raspil, kromka, prisadka, Bazis, ish haqi) ustamasiz */
+const USTAMA_GURUH = new Set(['Plita (Kroy)', 'Plita (Taxminiy)', 'Stoleshnitsa', 'Furnitura']);
+
 /**
  * Butun loyihaning ishlab chiqarish tannarxi va mijoz narxi.
  *
  *   Tannarx = plita (kroydagi HAQIQIY varaqlar) + kromka + furnitura + teshiklar + ish haqi
- *   Mijoz narxi = tannarx × (1 + ustama)            — materials.pricing.markup_pct
+ *   Mijoz narxi = (plita + furnitura) × (1 + ustama) + xizmatlar (ustamasiz, ERP narxi) — materials.pricing.markup_pct (egasi #222 Q2)
  *
  * QOIDA: narxi bazada yo'q narsa 0 so'm bilan hisoblanadi va `missing` ro'yxatiga
  * tushadi — narx HECH QACHON o'ylab topilmaydi (smeta "to'liq emas" deb belgilanadi).
  *
  * @param {Array} cutlists — barcha modullar cutlist natijalari (doc.placements tartibida)
  * @param {Object} materials — materials.json (effektiv: tanlangan ERP varag'i bilan)
- * @param {Object} [opt] — { nestResult, markupPct, areaEstimate, furnituraById, xizmatlar }
+ * @param {Object} [opt] — { nestResult, markupPct, areaEstimate, furnituraById, xizmatlar, stavka }
+ *   stavka: TZ-20 narx stavkalari (server /api/narxlar, engine/narxStavka.js) — raspil, kromka, prisadka, ish haqi, ustama;
+ *     berilmagan (yoki tanlanmagan) joyda materials.json dagi qiymat "taxmin" belgisi bilan. Natijada aniqlik — "Narx aniqligi X%".
  *   xizmatlar: { teshik: true } — usta tanlagan xizmatlar (S3); berilmasa teshik burg'ilash tannarxga kirmaydi
  *   furnituraById: ERP furnitura ID → {name, uzs, no_price} (hw.id bor bo'lsa narx shu yerdan)
  *   areaEstimate: kroysiz taxmin (katalog kartasi uchun) — varaq maydoni ÷ 0.85, butun varaqqa yaxlitlanmaydi
@@ -406,13 +489,18 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   (materials.hardware || []).forEach(m => { hwByCode[m.code] = m; });
   const holeByKind = {};
   (materials.hole_kinds || []).forEach(m => { holeByKind[m.code] = m; });
+  const S = opt.stavka || null;             // TZ-20: narx stavkalari
   const labor = materials.labor || {};
   /* TZ-03 (qoida S3): xizmatni usta o'zi tanlaydi. Teshik burg'ilash (prisadka, moyka kesimi ham)
      faqat opt.xizmatlar.teshik === true bo'lsa tannarxga kiradi; aks holda summasi faqat taklif
      sifatida qaytadi (xizmat_taklif). Ish haqi — sexning doimiy xarajati, avtomatik (egasi qarori). */
   const teshikOn = !!(opt.xizmatlar && opt.xizmatlar.teshik === true);
+  /* ustama: usta o'zi qo'ygan (Sozlamalar) → admin stavkasi (TZ-20) → materials.json */
+  const sUst = S && S.ustama && S.ustama.foiz && S.ustama.foiz.qiymat != null ? S.ustama.foiz : null;
   const markup = opt.markupPct != null ? opt.markupPct
+    : sUst ? sUst.qiymat / 100
     : (materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0.35);
+  const markupManba = opt.markupPct != null ? 'usta' : sUst ? sUst.manba : ustamaManbasi(materials);   // TZ-30: materials.json — egasi tasdiqlagan bo'lsa 'egasi'
 
   const missing = [];
   /* TZ-04: narx manbasi egasi tasdig'i bo'lmasa (price_src "egasi, <sana>" emas) — qator "taxminiy" */
@@ -422,29 +510,51 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   const noteMissing = (group, code, name) => {
     if (!missing.some(m => m.group === group && m.code === code)) missing.push({ group, code, name: name || code });
   };
-  const edgePrice = (code) => {
+  /* kromka stavkasi: tanlangan sex xizmati (lenta bilan, metr) → materials.json (taxmin) */
+  const edgeRate = (code) => {
+    const x = kromkaXizmat(S, code);
+    if (x) return { price: x.qiymat, tasdiq: tasdiqMi(x.manba), manba: x.manba, nom: x.nom };
     const m = edgeByCode[code] || edgeByCode[String(code).replace(/\./g, '')];
-    if (m && m.price_m > 0) return m.price_m;
+    return m && m.price_m > 0 ? { price: m.price_m, tasdiq: tasdiqlangan(m), manba: tasdiqlangan(m) ? 'egasi' : 'taxmin' } : { price: 0, tasdiq: false, manba: 'yoq' };
+  };
+  const edgePrice = (code) => {
+    const r = edgeRate(code);
+    if (r.price > 0) return r.price;
+    const m = edgeByCode[code] || edgeByCode[String(code).replace(/\./g, '')];
     noteMissing('Kromka', code, m && m.name);
     return 0;
   };
   /* ERP furnitura (8 xonali ID) — app.js yuklaydi; ID bor bo'lsa narx FAQAT shu yerdan */
   const furnById = opt.furnituraById || {};
   const hwUnitPrice = (hw) => {
-    if (hw.id) { const f = furnById[hw.id]; return f && f.uzs > 0 && !f.no_price ? f.uzs : 0; }
+    const hid = hw.id || (opt.furnituraBoglash || {})[hw.code];   // TZ-20: kod → ID jadvali (id yozilmagan bo'lsa)
+    if (hid) { const f = furnById[hid]; return f && f.uzs > 0 && !f.no_price ? f.uzs : 0; }
     const m = hwByCode[hw.code];
     return m && m.price > 0 ? m.price : 0;
   };
-  const hwName = (hw) => (hw.id && furnById[hw.id] && furnById[hw.id].name) || (hwByCode[hw.code] || {}).name || hw.name || hw.code;
+  /* TZ-32 E7: ERP'da aniq narxi topilmagan furnitura (materials.furnitura_yashirin.kodlar) smeta va narx ro'yxatidan yashiriladi —
+     "narxsiz" qator bo'lib aniqlikni tushirmaydi. Narx/ID bog'lansa (hwUnitPrice > 0) yashirilmaydi. Yashirilganlar `yashirin` da qaytadi. */
+  const yashirinKod = new Set((materials.furnitura_yashirin && materials.furnitura_yashirin.kodlar) || []);
+  const yashirinMi = (hw) => yashirinKod.has(hw.code) && !(hwUnitPrice(hw) > 0);
+  const yashirinAgg = {};
+  const hwName = (hw) => (furnById[hw.id || (opt.furnituraBoglash || {})[hw.code]] || {}).name || (hwByCode[hw.code] || {}).name || hw.name || hw.code;
   const hwPrice = (hw) => {
     const price = hwUnitPrice(hw);
     if (!(price > 0)) noteMissing('Furnitura', hw.code, hwName(hw));
     return price;
   };
-  const holePrice = (kind) => {
-    const m = holeByKind[kind] || holeByKind.drill;
-    if (m && m.price > 0) return m.price;
-    noteMissing('Xizmatlar', 'hole:' + kind, (holeByKind[kind] && holeByKind[kind].name) || ("Teshik burg'ilash (" + kind + ')'));
+  /* teshik stavkasi: kalit — Bazis turi (konfirmat, petlya, …) yoki teshik turi; tanlangan prisadka xizmati → materials.json (taxmin) */
+  const holeMeta = (kind) => holeByKind[kind] || holeByKind[D6_STAVKA[kind]] || holeByKind.drill;   // D6: petlya kosasi — 'hinge', eksentrik — 'cam' stavkasi (teshik agenti)
+  const holeRate = (key, kind) => {
+    const x = prisadkaXizmat(S, key, kind);
+    if (x) return { price: x.qiymat, tasdiq: tasdiqMi(x.manba), manba: x.manba, nom: x.nom };
+    const m = holeMeta(kind);
+    return m && m.price > 0 ? { price: m.price, tasdiq: tasdiqlangan(m), manba: tasdiqlangan(m) ? 'egasi' : 'taxmin' } : { price: 0, tasdiq: false, manba: 'yoq' };
+  };
+  const holePrice = (key, kind) => {
+    const r = holeRate(key, kind);
+    if (r.price > 0) return r.price;
+    noteMissing('Xizmatlar', 'hole:' + key, (holeByKind[kind] && holeByKind[kind].name) || ("Teshik burg'ilash (" + key + ')'));
     return 0;
   };
   /* Varap maydoni — KROY bilan bir xil format tanlovi (kichik format katta
@@ -477,11 +587,14 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       edgeAgg[key].meters += e.meters;
     }
     for (const hw of cl.hardware || []) {
+      if (yashirinMi(hw)) { const y = yashirinAgg[hw.code] = yashirinAgg[hw.code] || { code: hw.code, qty: 0 }; y.qty += hw.qty; continue; }
       hwAgg[hw.code] = hwAgg[hw.code] || { code: hw.code, qty: 0, id: hw.id, name: hw.name, unit: hw.unit };
       hwAgg[hw.code].qty += hw.qty;
     }
     for (const hl of cl.holes || []) {
-      holeAgg[hl.kind] = (holeAgg[hl.kind] || 0) + (hl.qty || 1) * (hl.nusxa || 1);
+      const key = hl.tur || hl.kind;           // TZ-20: Bazis teshigi turi bo'yicha (konfirmat, polka, ruchka — hammasi 'drill')
+      holeAgg[key] = holeAgg[key] || { qty: 0, kind: hl.kind };
+      holeAgg[key].qty += (hl.qty || 1) * (hl.nusxa || 1);
     }
   }
 
@@ -491,7 +604,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   let sheetCost = 0, totalSheetsCount = 0, totalPanelArea = 0;
   const sheetCostByMat = {};
   const mats = opt.nestResult && opt.nestResult.by_material && !opt.areaEstimate
-    ? Object.keys(opt.nestResult.by_material) : Object.keys(groups);
+    ? Object.keys(opt.nestResult.by_material) : Object.keys(groups).filter(c => !(matByCode[c] && matByCode[c].unit_piece));
   for (const mat of mats) {
     const meta = matByCode[mat] || { name: mat };
     const nm = opt.nestResult && opt.nestResult.by_material && opt.nestResult.by_material[mat];
@@ -518,7 +631,34 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     sheetCost += amount;
     totalSheetsCount += qty;
     sheetCostByMat[mat] = amount;
-    lines.push({ group, code: mat, name, qty, unit: 'varaq', unit_price: unitPrice, amount, no_price: !(unitPrice > 0) });
+    lines.push({ group, code: mat, name, qty, unit: 'varaq', unit_price: unitPrice, amount, no_price: !(unitPrice > 0),
+      util: nm && !opt.areaEstimate && nm.stats ? nm.stats.utilization_pct : null,   // TZ-18: hujjat tilida qayta yig'ish uchun
+      tasdiq: unitPrice > 0 && !meta.taxminiy, manba: unitPrice > 0 ? (meta.taxminiy ? 'taxmin' : 'ERP') : 'yoq' });   // TZ-20: ERP plita narxi
+  }
+
+  /* 1b) TZ-20: raspil — list boshiga, egasi tanlagan stanok stavkasi (tanlanmasa — qator yo'q, ish haqi ichida taxmin) */
+  let raspilCost = 0;
+  const rx = raspilXizmat(S);
+  if (rx && totalSheetsCount > 0) {
+    const nList = Math.round(totalSheetsCount * 100) / 100;
+    raspilCost = Math.round(nList * rx.qiymat);
+    lines.push({ group: 'Raspil', code: 'raspil', name: `Raspil — ${nList} list × ${rx.qiymat}`, qty: nList, unit: 'list',
+      unit_price: rx.qiymat, amount: raspilCost, tasdiq: tasdiqMi(rx.manba), manba: rx.manba, xizmat: rx.nom });
+  }
+
+  /* 1b) Standart stoleshnitsa bo'laklari (egasi #162): har bo'lak = 1 dona 3050/4200 li stoleshnitsa, maydon emas.
+     Narxi — tanlangan ERP stoleshnitsa dekoridan (engine/stoleshnitsa.js: ERP m2 narxi x bo'lak maydoni; egasi #222 Q1). */
+  const stolPieceCost = {};
+  for (const mat of Object.keys(groups).filter(c => matByCode[c] && matByCode[c].unit_piece)) {
+    const meta = matByCode[mat];
+    const qty = groups[mat].length;
+    const unitPrice = meta.sheet_price || 0;
+    if (!(unitPrice > 0)) noteMissing('Stoleshnitsa', mat, meta.name);
+    const amount = qty * unitPrice;
+    sheetCost += amount;
+    stolPieceCost[mat] = unitPrice;
+    lines.push({ group: 'Stoleshnitsa', code: mat, name: meta.name, qty, unit: 'dona', unit_price: unitPrice, amount, no_price: !(unitPrice > 0),
+      tasdiq: unitPrice > 0 && !meta.taxminiy && /^ERP/.test(String(meta.price_src || '')), manba: unitPrice > 0 ? (/^ERP/.test(String(meta.price_src || '')) ? 'ERP' : 'taxmin') : 'yoq' });
   }
 
   /* 2) Kromka */
@@ -529,11 +669,13 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     const amount = Math.round(a.meters * price);
     edgeCost += amount;
     const em = edgeByCode[a.material] || edgeByCode[String(a.material).replace(/\./g, '')];
-    const tx = price > 0 && !tasdiqlangan(em);
+    const er = edgeRate(a.material);
+    const tx = price > 0 && !er.tasdiq;
     lines.push({
       group: 'Kromka', code: a.material,
       name: ((em || {}).name || a.name || a.material) + (tx ? markTaxminiy('Kromka') : ''),
-      qty: Math.round(a.meters * 100) / 100, unit: 'm', unit_price: price, amount, no_price: !(price > 0), taxminiy: tx
+      qty: Math.round(a.meters * 100) / 100, unit: 'm', unit_price: price, amount, no_price: !(price > 0), taxminiy: tx,
+      tasdiq: price > 0 && er.tasdiq, manba: er.manba, xizmat: er.nom
     });
   }
 
@@ -545,19 +687,20 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     const price = hwPrice(a);
     const amount = price * a.qty;
     hwCost += amount;
+    const erp = !!(a.id || (opt.furnituraBoglash || {})[a.code]);   // ERP / do'kon narx ro'yxatidagi narx (TZ-20)
     lines.push({
       group: 'Furnitura', code: a.code, id: a.id, name: hwName(a),
-      qty: a.qty, unit: meta.unit || a.unit || 'dona', unit_price: price, amount, no_price: !(price > 0)
+      qty: a.qty, unit: meta.unit || a.unit || 'dona', unit_price: price, amount, no_price: !(price > 0),
+      tasdiq: price > 0 && (erp || tasdiqlangan(meta)), manba: price > 0 ? (erp ? 'ERP' : tasdiqlangan(meta) ? 'egasi' : 'taxmin') : 'yoq'
     });
   }
 
   /* 4) Teshik burg'ilash — turi bo'yicha (petlya, shkant, kam, oddiy) — faqat usta tanlasa (S3) */
   let holeCost = 0, totalHoles = 0, holeTaklif = 0;
   if (!teshikOn) {
-    for (const kind in holeAgg) {
-      const m = holeByKind[kind] || holeByKind.drill;
-      totalHoles += holeAgg[kind];
-      holeTaklif += holeAgg[kind] * (m && m.price > 0 ? m.price : 0);   // narx yo'q ro'yxatiga yozilmaydi
+    for (const key in holeAgg) {
+      totalHoles += holeAgg[key].qty;
+      holeTaklif += holeAgg[key].qty * holeRate(key, holeAgg[key].kind).price;   // narx yo'q ro'yxatiga yozilmaydi
     }
     if (totalHoles) {
       lines.push({
@@ -567,51 +710,97 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       });
     }
   }
-  for (const kind in (teshikOn ? holeAgg : {})) {
-    const qty = holeAgg[kind];
-    const price = holePrice(kind);
+  for (const key in (teshikOn ? holeAgg : {})) {
+    const { qty, kind } = holeAgg[key];
+    const price = holePrice(key, kind);
     const amount = qty * price;
     holeCost += amount;
     totalHoles += qty;
-    const tx = price > 0 && !tasdiqlangan(holeByKind[kind] || holeByKind.drill);
+    const hr = holeRate(key, kind);
+    const tx = price > 0 && !hr.tasdiq;
     lines.push({
-      group: 'Xizmatlar', code: 'hole:' + kind,
-      name: `${((holeByKind[kind] || holeByKind.drill || {}).name) || "Teshik burg'ilash"} (${qty} dona)` + (tx ? markTaxminiy('Prisadka') : ''),
-      qty, unit: 'dona', unit_price: price, amount, no_price: !(price > 0), taxminiy: tx
+      group: 'Xizmatlar', code: 'hole:' + key, kind,
+      name: `${hr.nom || ((holeMeta(kind) || {}).name) || "Teshik burg'ilash"} (${qty} dona)` + (tx ? markTaxminiy('Prisadka') : ''),
+      qty, unit: 'dona', unit_price: price, amount, no_price: !(price > 0), taxminiy: tx, tasdiq: price > 0 && hr.tasdiq, manba: hr.manba
     });
   }
 
-  /* 5) Sex ish haqi (arralash + yig'ish) — materials.labor (taxminiy stavka) */
-  const pieceLabor = totalParts * (labor.panel_per_piece || 0);
-  const fragLabor = (cutlists || []).length * (labor.per_fragment_min || 0);
+  /* 4b) TZ-32 E3: Bazis loyiha xizmati — detal soniga qarab (onlayn / oflayn); faqat usta narx panelida tanlasa (S3: sukut o'chiq).
+     Qator narxi — stavkalardagi 'bazis' guruhi (ERP Bazis3 / Bazis6). Stavka bo'lmasa taklif summasi 0 va xizmat qo'shilmaydi. */
+  const bTur = opt.xizmatlar && (opt.xizmatlar.bazis === 'onlayn' || opt.xizmatlar.bazis === 'oflayn') ? opt.xizmatlar.bazis : null;
+  const bRate = { onlayn: bazisXizmat(S, 'onlayn'), oflayn: bazisXizmat(S, 'oflayn') };
+  const bazisPerPart = bTur && bRate[bTur] ? bRate[bTur].qiymat : 0;
+  const bazisCost = totalParts * bazisPerPart;
+  if (bazisCost > 0) {
+    lines.push({ group: 'Xizmatlar', code: 'bazis', name: `Bazis loyiha (${bTur === 'onlayn' ? 'onlayn' : 'oflayn'}) — ${totalParts} detal × ${bazisPerPart}`,
+      qty: totalParts, unit: 'detal', unit_price: bazisPerPart, amount: bazisCost, tasdiq: tasdiqMi(bRate[bTur].manba), manba: bRate[bTur].manba, xizmat: bRate[bTur].nom });
+  }
+
+  /* 5) Sex ish haqi (arralash + yig'ish) — TZ-20 stavkasi (detal / modul boshiga, yoqilgan yoki o'chirilgan) → materials.labor (taxmin) */
+  const ih = S && S.ish_haqi ? S.ish_haqi : null;
+  const ihOn = !(ih && ih.yoqilgan && ih.yoqilgan.qiymat === false);
+  const perPiece = ih && ih.detal ? +ih.detal.qiymat || 0 : (labor.panel_per_piece || 0);
+  const perFrag = ih && ih.modul ? +ih.modul.qiymat || 0 : (labor.per_fragment_min || 0);
+  const ihTasdiq = ih ? tasdiqMi((ih.detal || {}).manba) && tasdiqMi((ih.modul || {}).manba) : tasdiqlangan(labor);
+  const pieceLabor = ihOn ? totalParts * perPiece : 0;
+  const fragLabor = ihOn ? (cutlists || []).length * perFrag : 0;
   const laborCost = Math.max(pieceLabor, fragLabor);
-  if (!(labor.panel_per_piece > 0 || labor.per_fragment_min > 0) && totalParts) noteMissing('Ish haqi', 'labor', 'Ish haqi stavkasi');
+  if (ihOn && !(perPiece > 0 || perFrag > 0) && totalParts && !ihTasdiq) noteMissing('Ish haqi', 'labor', 'Ish haqi stavkasi');   // 0 va tasdiqlangan (ERP: xizmat narxiga kiritilgan) — narxsiz emas
   if (laborCost > 0) {
-    const tx = !tasdiqlangan(labor);
+    const tx = !ihTasdiq;
+    /* TZ-32 A6: raspil yoki kromka sex xizmatidan tanlangan bo'lsa — ular alohida qatorda; ish haqi nomida aytilmaydi.
+       Summa (stavka) egasi javobigacha o'zgarmaydi — `sex_xizmati`: shu xizmatlar ish haqi ichida ikkinchi marta bo'lishi mumkin. */
+    const sexX = [raspilCost > 0 ? 'raspil' : null, lines.some(l => l.group === 'Kromka' && l.xizmat) ? 'kromka' : null].filter(Boolean);
+    const ishNom = sexX.length === 2 ? "Sex yig'ish" : sexX[0] === 'raspil' ? "Kromka urish va sex yig'ish" : sexX[0] === 'kromka' ? "Arralash va sex yig'ish"
+      : "Arralash, kromka urish va sex yig'ish";
     lines.push({
       group: 'Ish haqi', code: 'labor',
-      name: `Arralash, kromka urish va sex yig'ish (${totalParts} detal)` + (tx ? markTaxminiy('Ish haqi') : ''),
-      qty: totalParts, unit: 'detal', unit_price: Math.round(laborCost / (totalParts || 1)), amount: laborCost, taxminiy: tx
+      name: `${ishNom} (${totalParts} detal)` + (tx ? markTaxminiy('Ish haqi') : ''),
+      qty: totalParts, unit: 'detal', unit_price: Math.round(laborCost / (totalParts || 1)), amount: laborCost, taxminiy: tx,
+      tasdiq: !tx, manba: tx ? 'taxmin' : ((ih && ih.detal && ih.detal.manba) || 'egasi'), sex_xizmati: sexX
     });
   }
 
   /* Jami */
-  const totalCost = sheetCost + edgeCost + hwCost + holeCost + laborCost;
-  const clientTotal = Math.round(totalCost * (1 + markup));
+  const totalCost = sheetCost + raspilCost + edgeCost + hwCost + holeCost + bazisCost + laborCost;
+  /* TZ-32 yakuniy (egasi #222 Q2): ustama FAQAT plita (stoleshnitsa ham) va furnitura narxiga. Xizmatlar (raspil, kromka, prisadka,
+     Bazis, ish haqi) ERP xizmat narxi bo'yicha — mijoz narxi o'zi bilan teng, ustamasiz ("43 ni o'zi olib ketaversin"). */
+  const ustamaBor = (l) => !l.info && USTAMA_GURUH.has(l.group);
+  const ustamaAsos = sheetCost + hwCost, xizmatSum = raspilCost + edgeCost + holeCost + bazisCost + laborCost;
+  const clientTotal = Math.round(ustamaAsos * (1 + markup)) + xizmatSum;
+  for (const l of lines) l.ustama = ustamaBor(l);   // narx panelida/hujjatda: qaysi qatorga ustama qo'shilgan
+
+  /* TZ-20: "Narx aniqligi X%" — mijoz narxining qancha qismi tasdiqlangan manbadan (ERP plita/furnitura, egasi yoki sex
+     jadvali stavkasi). Ustama tasdiqlanmagan bo'lsa — ustama summasi ham taxmin. Narxi yo'q qator summaga kirmaydi — alohida soni. */
+  const ustTasdiq = markupManba === 'usta' || tasdiqMi(markupManba);
+  const tasdiqUst = lines.reduce((s, l) => s + (l.tasdiq && l.ustama ? l.amount || 0 : 0), 0);      // ustamali qatorlar (plita, furnitura)
+  const tasdiqXizmat = lines.reduce((s, l) => s + (l.tasdiq && !l.info && !l.ustama ? l.amount || 0 : 0), 0);   // xizmatlar — ustamasiz
+  const tasdiqSum = (ustTasdiq ? Math.round(tasdiqUst * (1 + markup)) : tasdiqUst) + tasdiqXizmat;
+  const aniqTaxmin = lines.filter(l => !l.tasdiq && !l.info && l.amount > 0).map(l => ({ group: l.group, code: l.code, name: l.name, amount: l.amount, manba: l.manba || 'taxmin' }));
+  if (!ustTasdiq && clientTotal > totalCost) aniqTaxmin.push({ group: 'Ustama', code: 'ustama', name: 'Ustama ' + Math.round(markup * 1000) / 10 + '%', amount: clientTotal - totalCost, manba: markupManba });
+  /* Narxsiz qator summaga kirmaydi, lekin uning haqiqiy narxi noma'lum — shuning uchun jami "to'liq" emas: narxsiz qator bor
+     ekan aniqlik 100% bo'lmaydi (99% da to'xtaydi) va narxsiz qatorlar soni alohida ko'rsatiladi. */
+  const pctMax = missing.length > 0 ? 99 : 100;
+  const aniqlik = { pct: clientTotal > 0 ? Math.min(pctMax, Math.floor(tasdiqSum / clientTotal * 100 + 1e-9)) : null,
+    tasdiqlangan: tasdiqSum, jami: clientTotal, taxmin: aniqTaxmin, narxsiz: missing.length, ustama_manba: markupManba };
 
   /* Modullar bo'yicha taqsimot (kotirovka satrlari): plita — modul detallari maydoni
      ulushi bo'yicha, ish haqi — detal soni ulushi bo'yicha; qolgani — modulning o'zidan. */
+  const areaTotal = Object.values(areaByMat).reduce((s, a) => s + a, 0);
   const perModule = (cutlists || []).map(cl => {
-    let cost = 0;
+    let cost = 0, xz = 0;   // cost — modul tannarxi; xz — shundan xizmatlar (ustamasiz)
     for (const p of cl.parts || []) {
       const mat = p.material || 'LDSP18';
-      if (areaByMat[mat] > 0) cost += (p.length * p.width) / areaByMat[mat] * (sheetCostByMat[mat] || 0);
+      if (stolPieceCost[mat] != null) cost += stolPieceCost[mat];
+      else if (areaByMat[mat] > 0) cost += (p.length * p.width) / areaByMat[mat] * (sheetCostByMat[mat] || 0);
     }
-    for (const e of cl.edges || []) cost += e.meters * (edgeByCode[e.material] || edgeByCode[String(e.material).replace(/\./g, '')] || {}).price_m || 0;
-    for (const hw of cl.hardware || []) cost += hw.qty * hwUnitPrice(hw);
-    if (teshikOn) for (const hl of cl.holes || []) cost += (hl.qty || 1) * (hl.nusxa || 1) * (((holeByKind[hl.kind] || holeByKind.drill || {}).price) || 0);
-    if (totalParts) cost += laborCost * (cl.parts || []).length / totalParts;
-    return { cost: Math.round(cost), client: Math.round(cost * (1 + markup)) };
+    if (raspilCost && areaTotal > 0) for (const p of cl.parts || []) xz += (p.length * p.width) / areaTotal * raspilCost;   // raspil — maydon ulushi bo'yicha
+    for (const e of cl.edges || []) xz += e.meters * edgeRate(e.material).price;
+    for (const hw of cl.hardware || []) if (!yashirinMi(hw)) cost += hw.qty * hwUnitPrice(hw);
+    if (teshikOn) for (const hl of cl.holes || []) xz += (hl.qty || 1) * (hl.nusxa || 1) * holeRate(hl.tur || hl.kind, hl.kind).price;
+    xz += bazisPerPart * (cl.parts || []).length;
+    if (totalParts) xz += laborCost * (cl.parts || []).length / totalParts;
+    return { cost: Math.round(cost + xz), client: Math.round(cost * (1 + markup) + xz) };
   });
   /* yaxlitlash qoldig'i oxirgi modulga — satrlar yig'indisi jami bilan aynan teng */
   if (perModule.length) {
@@ -629,22 +818,30 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     clientTotal,
     perModule,
     missing,
+    yashirin: Object.values(yashirinAgg),   // TZ-32 E7: narxi topilmagani uchun yashirilgan furnitura (eslatish uchun)
     taxminiy,
-    xizmat_taklif: { teshik: { tanlangan: teshikOn, qty: totalHoles, amount: teshikOn ? holeCost : holeTaklif } },
+    xizmat_taklif: { teshik: { tanlangan: teshikOn, qty: totalHoles, amount: teshikOn ? holeCost : holeTaklif },
+      bazis: { tanlangan: bTur && bRate[bTur] ? bTur : null, qty: totalParts, narxBor: !!(bRate.onlayn && bRate.oflayn),
+        onlayn: bRate.onlayn ? totalParts * bRate.onlayn.qiymat : 0, oflayn: bRate.oflayn ? totalParts * bRate.oflayn.qiymat : 0, amount: bazisCost } },
     sheetCost,
+    raspilCost,
     edgeCost,
     hwCost,
     holeCost,
+    bazisCost,
     laborCost,
+    aniqlik,
     totalWorkshopCost: totalCost,
     suggestedClientPrice: clientTotal,
     margin: 1 + markup,
     markupPct: markup,
     breakdown: {
       sheetCost,
+      raspilCost,
       edgeCost,
       hwCost,
       holeCost,
+      bazisCost,
       laborCost,
       markupAmount: clientTotal - totalCost,
       sheetsCount: totalSheetsCount,
