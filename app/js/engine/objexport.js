@@ -287,14 +287,19 @@ export function buildOBJ(doc, catalog, opt = {}) {
 }
 
 /** Cutlist → CSV (Bazis/SketchUp atribut uchun). */
+/** CSV katagi: ajratgich (;), qo'shtirnoq yoki qator uzilishi bo'lsa — qo'shtirnoqqa olinadi (nom ichidagi ";" ustunlarni surib yubormasin) */
+const csvK = (v) => { const s = v == null ? '' : String(v); return /[;"\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+const csvQator = (r) => r.map(csvK).join(';');
+
 export function cutlistCSV(cutlists) {
   const rows = [['fragment', 'detail', 'length_mm', 'width_mm', 'material']];
   for (const cl of cutlists || []) {
     for (const p of cl.parts || []) {
-      rows.push([cl.fragment, p.code, p.length, p.width, p.material || '']);
+      /* soni (qty) bo'lsa — har dona alohida qator (qty ni e'tiborsiz qoldirish detallarni kam ko'rsatardi) */
+      for (let k = Math.max(1, Math.round(+p.qty || 1)); k > 0; k--) rows.push([cl.fragment, p.code, p.length, p.width, p.material || '']);
     }
   }
-  return rows.map(r => r.join(';')).join('\r\n') + '\r\n';
+  return rows.map(csvQator).join('\r\n') + '\r\n';
 }
 
 /** Smeta → CSV (narx jadvali). */
@@ -305,7 +310,7 @@ export function smetaCSV(lines, total) {
     rows.push([l.group, l.name, l.qty, l.unit, l.unit_price, l.amount]);
   }
   rows.push(['', '', '', '', 'JAMI', total]);
-  return rows.map(r => r.join(';')).join('\r\n') + '\r\n';
+  return rows.map(csvQator).join('\r\n') + '\r\n';
 }
 
 /** XNC CSV — GibLab "Импорт из Excel" uchun detal ro'yxati (kod 1_1). */
@@ -329,7 +334,7 @@ export function xncCSV(cutlists, materials, catalog) {
       idx++;
     }
   }
-  return rows.map(r => r.join(';')).join('\r\n') + '\r\n';
+  return rows.map(csvQator).join('\r\n') + '\r\n';
 }
 
 /* TZ-16: muqobil yuklash (Telegram Mini App — fayl bot chatiga yuboriladi); null — oddiy brauzer yuklab olishi */

@@ -142,6 +142,22 @@ export function nestDXF(nest) {
     pair(40, Math.round(r * 100) / 100);
   };
 
+  /* sarlavha: AutoCAD/LibreCAD o'lchamni millimetr deb o'qisin ($INSUNITS=4; usiz fayl "birliksiz" ochiladi) va qatlamlar
+     jadvalda e'lon qilingan bo'lsin (rang bilan) — oldin faqat ENTITIES bo'limi bor edi */
+  const QATLAM = [['SHEET', 7], ['TRIM', 8], ['PART', 3], ['HOLES', 1], ['CUTOUT', 5]];
+  pair(0, 'SECTION'); pair(2, 'HEADER');
+  pair(9, '$ACADVER'); pair(1, 'AC1009');
+  pair(9, '$INSUNITS'); pair(70, 4);
+  pair(9, '$MEASUREMENT'); pair(70, 1);
+  pair(0, 'ENDSEC');
+  pair(0, 'SECTION'); pair(2, 'TABLES');
+  pair(0, 'TABLE'); pair(2, 'LTYPE'); pair(70, 1);
+  pair(0, 'LTYPE'); pair(2, 'CONTINUOUS'); pair(70, 0); pair(3, 'Solid line'); pair(72, 65); pair(73, 0); pair(40, 0);
+  pair(0, 'ENDTAB');
+  pair(0, 'TABLE'); pair(2, 'LAYER'); pair(70, QATLAM.length);
+  for (const [nom, rang] of QATLAM) { pair(0, 'LAYER'); pair(2, nom); pair(70, 0); pair(62, rang); pair(6, 'CONTINUOUS'); }
+  pair(0, 'ENDTAB');
+  pair(0, 'ENDSEC');
   pair(0, 'SECTION'); pair(2, 'ENTITIES');
 
   const sheetsData = collectSheetHoles(nest, nest._cutlists || []);
@@ -262,7 +278,7 @@ export function drillNC(nest, cutlists) {
 /* ── 3) PTP CSV ──────────────────────────────────────────────────────────── */
 export function ptpCSV(nest, cutlists) {
   const sheetsData = collectSheetHoles(nest, cutlists);
-  const head = 'Varaq;Material;Detal;Ref;X(mm);Y(mm);Eni;Boy;Aylangan;Teshik;Kromka';
+  const head = 'Varaq;Material;Detal;Ref;X(mm);Y(mm);Boy;Eni;Aylangan;Teshik;Material (detal)';
   const rows = [];
   for (const sd of sheetsData) {
     for (const p of sd.sheet.parts || []) {
@@ -341,7 +357,9 @@ export function cutGCode(nest, cutlists, opts) {
         for (const h of sheetHoles) {
           const hDepth = Math.abs(h.depth || 13);
           L.push('G0 Z' + safeZ + ';');
-          L.push('G0 X' + h.x.toFixed(2) + ' Y' + h.y.toFixed(2) + ';');
+          /* teshik Y — Y-yuqoriga (Excellon/DXF konvensiyasi), kontur esa varaq Y-pastga (nesting p.y): bitta dasturda
+             bir xil bo'lsin — aks holda teshiklar detalga nisbatan ko'zguda tushadi */
+          L.push('G0 X' + h.x.toFixed(2) + ' Y' + (sheet.width - h.y).toFixed(2) + ';');
           L.push('G1 Z-' + hDepth.toFixed(2) + ' F' + plunge + ';');
           L.push('G0 Z' + safeZ + ';');
         }

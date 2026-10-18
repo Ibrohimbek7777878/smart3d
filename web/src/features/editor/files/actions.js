@@ -8,6 +8,7 @@ import { t } from '../../../i18n/index.js';
 function ctx(opt) {
   const st = get(), p = st.project;
   return { opt, sel: st.editor && st.editor.sel, doc: project.doc, H: project.H, res: project.res, name: p.name, matCode: p.matCode, fasadCode: p.fasadCode, sheet: p.sheet,
+    payload: () => project.payload(),   // «Loyiha fayli» — saqlanadigan loyiha bilan bir xil (polka/orqa/stol materiali, mijoz, ERP materiallar)
     nestCfg: project.H ? project.nestCfg() : {}, sp: scene.sahna && scene.sahna.sp, toast, logo: st.settings.sets.logo,
     fail: (e, nom) => xato('S3D-EXP-101', { matn: t('fayllar.yaratilmadi', { nom: nom || t('fayllar.fayl'), s: (e && e.message) || e }), modul: 'editor/files', err: e }),
     xatoK: (code, e) => xato(code, { modul: 'editor/eksport', err: e }) };   // TZ-33: o'z kodi bilan (S3D-EXP-102…104)
