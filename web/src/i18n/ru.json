@@ -701,6 +701,8 @@
  "mebel.qism_orqa": "Задняя стенка",
  "mebel.qism_polka": "Полка",
  "mebel.qism_stol": "Столешница",
+ "mebel.stol_qoldiq": "остаток {n} м²",
+ "mebel.stol_sukut": "по умолчанию",
  "mebel.rang_bej": "Бежевый",
  "mebel.rang_boshqa": "Цвет не определён",
  "mebel.rang_hammasi": "Все",

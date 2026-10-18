@@ -16,6 +16,7 @@ import { buildSearchIndex } from '../../../app/js/engine/search.js';
 import * as PriceMod from '../../../app/js/engine/price.js';
 import { asosiyIndeks } from '../../../app/js/engine/dekorAsosiy.js';
 import { sukutErpQollash } from '../../../app/js/engine/narxStavka.js';
+import { stolKitchen, stolMaterialQollash } from '../../../app/js/engine/stoleshnitsa.js';
 
 /* price.js — UMD. Brauzerda (dev, eski sayt sahifasi) o'zi globalThis.SpPrice ga yoziladi; Vite build'i esa
    uni CommonJS deb o'qiydi (module.exports shoxobchasi) — u holda modulning default eksporti. Ikkalasi ham bir xil API. */
@@ -27,6 +28,7 @@ export const DATA_FILES = {
   sheetCat: 'sheet-catalog.json', matIdx: 'materials-index.json', services: 'services.json',
   appliances: 'appliances.json', mcFrags: 'fragments-mc.json', sexStd: 'sex-standartlari.json',
   furnCat: 'furnitura-catalog.json',
+  stolErp: 'stoleshnitsa-erp.json',                               // TZ-32 yakuniy: stoleshnitsa dekorlari — har biri o'z ERP narxi (egasi #222 Q1)
   dekorMashhur: 'dekor-mashhur.json',                             // #151: sexda eng ko'p ishlatiladigan dekorlar (material varag'ining boshi)
   dekorAsosiy: 'dekor-asosiy.json',                               // #182: Asosiy 100 dekor — namuna rangi bilan (3D va plitka)
   rasmlar: 'rasmlar.json',                                        // material va furnitura rasmlari (yo'llar; bo'lmasa — rang/oddiy ko'rinish)
@@ -48,7 +50,7 @@ export async function loadData(read = (n) => fetch('/data/' + n).then(r => r.jso
 
 /** Katalog va ma'lumotlar — eski boot() dagi yig'ish bilan bir xil. */
 export function createHisob(data) {
-  const { frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat, dekorMashhur, dekorAsosiy, furnBoglash, nomlarRu, nomlarEn, rasmlar } = data;
+  const { frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat, stolErp, dekorMashhur, dekorAsosiy, furnBoglash, nomlarRu, nomlarEn, rasmlar } = data;
   const furnById = {};
   for (const it of (furnCat && furnCat.items) || []) if (it.id) furnById[it.id] = it;
   const furnituraBoglash = (furnBoglash && furnBoglash.links) || {};
@@ -72,7 +74,7 @@ export function createHisob(data) {
   delete nestDefaults._meta;
 
   const H = {
-    catalog, materials: mats, sheetCatalog: sheetCat, dekorMashhur, dekorAsosiy: asosiyIndeks(dekorAsosiy), rasmlar: rasmlar || null, services, sexStd, furnById, furnituraBoglash, searchIndex, nestDefaults,
+    catalog, materials: mats, sheetCatalog: sheetCat, stolErp, dekorMashhur, dekorAsosiy: asosiyIndeks(dekorAsosiy), rasmlar: rasmlar || null, services, sexStd, furnById, furnituraBoglash, searchIndex, nestDefaults,
     nomlar: { ru: nomlarRu || null, en: nomlarEn || null },     // TZ-18: modul/material nomi tanlangan tilda (L.modulNomi)
 
     /** Serverdagi sex standartlari (admin o'zgartiradi, TZ-14) — eski applyStandards bilan bir xil */
@@ -97,14 +99,16 @@ export function createHisob(data) {
     /** F2: foydalanuvchi placements + synthetic oshxona elementlari (auto, persist emas). */
     viewPlacements(doc) {
       const user = (doc && doc.placements) || [];
+      H.stolK = doc && doc.kitchen;                               // effectiveMaterials shu oshxona dekorining narxini qo'llaydi
       if (!catalog || !doc || !doc.kitchen) return user;
-      try { return user.concat(deriveKitchen(doc, catalog)); }
+      try { return user.concat(deriveKitchen(Object.assign({}, doc, { kitchen: stolKitchen(doc.kitchen, stolErp) }), catalog)); }
       catch (e) { console.warn('deriveKitchen:', e); return user; }
     },
 
     /** Tanlangan real mahsulot bo'yicha materiallar nusxasi: haqiqiy narx + varaq o'lchami. */
     effectiveMaterials(sheet) {
       const sh = sheet;
+      if (mats) stolMaterialQollash(mats, stolErp, H.stolK);   // tanlangan stoleshnitsa dekori: narx/nom/uzunlik (ERP m2 narxi x bo'lak maydoni)
       if (!sh || !mats) return mats;
       const base = baseForSheet(sh);
       const m2 = JSON.parse(JSON.stringify(mats));
@@ -119,6 +123,7 @@ export function createHisob(data) {
      *  opt: { materialCode, fasadCode, orqaCode, stolCode, sheet, nestCfg, markupPct } → { priceRes, val, cutlists, prod, nest, placements } */
     recalc(doc, opt = {}) {
       const prices = buildPrices(catalog);
+      H.stolK = doc.kitchen;
       const m = H.effectiveMaterials(opt.sheet || null);
       /* 1) o'lcham ogohlantirishlari (katalog min/max) */
       const sizeCheck = SpPrice().calc(doc, prices, {});

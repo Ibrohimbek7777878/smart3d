@@ -42,7 +42,7 @@ ok(`tasdiqlangan plita narxi ERP katalogida aynan bor (${tasdiq.map(m => m.code)
 ok(`faylda yo'q narx — "taxminiy", "yoq — faylda topilmadi" (${taxmin.map(m => m.code).join(', ')})`, taxmin.every(m => !katalogda(m) && /^yoq/.test(m.price_src)));
 ok('sukut LDSP16 va MDF16 — taxminiy; LDSP18, HDF3 — manbali (SKU/nom bilan)', pm(mats, 'LDSP16').taxminiy && pm(mats, 'MDF16').taxminiy
   && !pm(mats, 'LDSP18').taxminiy && pm(mats, 'LDSP18').sku === 'W1000 ST19' && !pm(mats, 'HDF3').taxminiy && !!pm(mats, 'HDF3').sku_nom);
-ok('stoleshnitsa — avvalgidek narxsiz (price_src yoq)', mats.panel_materials.filter(m => m.unit_piece).every(m => m.sheet_price === 0 && m.price_src === 'yoq'));
+ok('stoleshnitsa — narxi ERP dekordan (TZ-32 yakuniy Q1); ERP\'da bo\'lmagan STOL26-4200 narxsiz', mats.panel_materials.filter(m => m.unit_piece).every(m => (m.sheet_price > 0 && m.price_src === 'ERP 2026-10-18') || (m.sheet_price === 0 && /^yoq/.test(m.price_src))));
 /* hisobda */
 const shkaf = mc.find(f => f.code === 'MC-KU-04');
 const clK = cutlist(shkaf, shkaf.w, shkaf.d, shkaf.h, mats, { projectSlots: SLOTS });

@@ -196,7 +196,7 @@ xx = 50;
 for (const [c, w] of [['MC-KU-04', 600], ['MC-KU-07', 600], ['MC-KU-03', 300]]) { docT.placements.push({ id: 'u' + docT.placements.length, frg: c, x: xx, y: 50, z: 1450, w, d: cat[c].d, h: cat[c].h, rot: 0 }); xx += w; }
 const rw = Hh.recalc(docT, { materialCode: 'LDSP16', fasadCode: 'LDSP16' });
 ok(`skript = web hisob: mijoz ${natija.mijoz}, narxsiz ${natija.narxsiz}`, natija.mijoz === rw.prod.clientTotal && natija.tannarx === rw.prod.totalCost && natija.narxsiz === rw.prod.missing.length);
-ok('stoleshnitsa (STOL26-3050) narxsiz — LDSP listidan narxlanmaydi', natija.narxsizlar.includes('STOL26-3050') && natija.aniqlik <= 99);
+ok('stoleshnitsa (STOL26-3050) — narxi ERP dekordan (narxsiz emas), LDSP listidan narxlanmaydi', !natija.narxsizlar.includes('STOL26-3050') && rw.prod.lines.some(l => l.code === 'STOL26-3050' && l.manba === 'ERP' && l.unit_price > 0));
 
 console.log(`\n=== ${fails ? 'XATO' : 'HAMMASI OK'} (${n - fails} pass, ${fails} fail) ===`);
 process.exit(fails ? 1 : 0);

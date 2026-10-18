@@ -4,7 +4,7 @@
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 FAIL=0
-for t in verify verify_ai verify_f1 verify_f2 verify_glb verify_util_export verify_mc verify_narx verify_narx_stavka verify_narx_halol verify_narx_erp verify_xizmat verify_teshik verify_hisob verify_material verify_mat100 verify_promptlar verify_geometriya verify_devor verify_konstruksiya verify_d6 verify_chizish verify_stanok verify_tortma verify_til verify_konstruktor verify_bazis verify_bazis_teshik verify_raskroy_sex verify_surish verify_stol verify_oshxona verify_bekor verify_teshik3d verify_ai_katalog verify_modul85 verify_vr verify_skp verify_b3d_yoz verify_rasm verify_logo bpj_check bpj_import_mock; do
+for t in verify verify_ai verify_f1 verify_f2 verify_glb verify_util_export verify_mc verify_narx verify_narx_stavka verify_narx_halol verify_narx_erp verify_xizmat verify_teshik verify_hisob verify_material verify_mat100 verify_promptlar verify_geometriya verify_devor verify_konstruksiya verify_d6 verify_chizish verify_stanok verify_tortma verify_til verify_konstruktor verify_bazis verify_bazis_teshik verify_raskroy_sex verify_surish verify_stol verify_stol_erp verify_oshxona verify_bekor verify_teshik3d verify_ai_katalog verify_modul85 verify_vr verify_skp verify_b3d_yoz verify_rasm verify_logo bpj_check bpj_import_mock; do
   printf '%-22s ' "$t:"
   ARG=""; [ "$t" = verify_til ] && ARG="--qatiy"   # TZ-18: rus/ingliz lug'ati to'liq (2026-10-16)
   if out=$(node "$HERE/$t.mjs" $ARG 2>&1); then

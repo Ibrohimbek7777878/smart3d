@@ -29,7 +29,13 @@ export const STYAJKA_KOD = 'STYAJKA-STOL';
 export const stolQalinlik = (k) => (k && STOL_QALINLIK.includes(+k.stolT)) ? +k.stolT : STOL_SUKUT_QALINLIK;
 export const stolKod = (t, std) => 'STOL' + t + '-' + std;
 /** Kesim uzunligi uchun eng kichik mos standart (3050 | 4200); sig'masa — null */
-export const stdUzunlik = (len) => STOL_UZUNLIK.find(u => len <= u) || null;
+/** uz — tanlangan ERP dekorining mavjud uzunliklari (o'sish tartibida; berilmasa — standart 3050/4200) */
+export const stdUzunlik = (len, uz) => (uz || STOL_UZUNLIK).find(u => len <= u) || null;
+/** doc.kitchen.stolUz (tanlangan ERP stoleshnitsa dekorining uzunliklari) — to'g'ri bo'lsa shu, aks holda standart */
+export const stolUzunliklar = (k) => {
+  const a = k && Array.isArray(k.stolUz) ? k.stolUz.map(Number).filter(n => n >= 500 && n <= 6000) : [];
+  return a.length ? [...new Set(a)].sort((x, y) => x - y) : STOL_UZUNLIK;
+};
 
 /**
  * Stoleshnitsa qatori (len mm) → bo'laklar [{s0, len, std}].
@@ -37,12 +43,13 @@ export const stdUzunlik = (len) => STOL_UZUNLIK.find(u => len <= u) || null;
  * masofalar) har bo'lak ≤ 4200 bo'lib bo'linadi: avval standart varaqlar jami soni (3050 < 4200) eng oz variant,
  * teng bo'lsa bo'laklar farqi eng kichigi. Chegara bo'lmasa/yetmasa — teng bo'laklar.
  */
-export function stolBolaklar(len, cuts) {
-  const MAXL = STOL_UZUNLIK[STOL_UZUNLIK.length - 1];
-  if (len <= MAXL) return [{ s0: 0, len, std: stdUzunlik(len) }];
+export function stolBolaklar(len, cuts, uz) {
+  uz = uz || STOL_UZUNLIK;
+  const MAXL = uz[uz.length - 1];
+  if (len <= MAXL) return [{ s0: 0, len, std: stdUzunlik(len, uz) }];
   const pts = [0, ...(cuts || []).map(c => Math.round(c)).filter(c => c > 50 && c < len - 50).sort((a, b) => a - b).filter((c, i, a) => i === 0 || c !== a[i - 1]), len];
   const n = pts.length;
-  const cost = (a, b) => { const u = stdUzunlik(b - a); return u == null ? Infinity : u; };
+  const cost = (a, b) => { const u = stdUzunlik(b - a, uz); return u == null ? Infinity : u; };
   /* dp[i] = {c: umumiy standart uzunlik, k: bo'lak soni, mx: eng uzun bo'lak, prev} */
   const dp = new Array(n).fill(null);
   dp[0] = { c: 0, k: 0, mx: 0, prev: -1 };
@@ -57,11 +64,11 @@ export function stolBolaklar(len, cuts) {
   if (dp[n - 1]) {
     const out = [];
     for (let i = n - 1; i > 0; i = dp[i].prev) out.unshift({ s0: pts[dp[i].prev], len: pts[i] - pts[dp[i].prev] });
-    return out.map(o => Object.assign(o, { std: stdUzunlik(o.len) }));
+    return out.map(o => Object.assign(o, { std: stdUzunlik(o.len, uz) }));
   }
   /* modul chegarasi yo'q: teng bo'laklar */
   const m = Math.ceil(len / MAXL), each = Math.ceil(len / m / 10) * 10, out = [];
-  for (let i = 0, s0 = 0; i < m; i++) { const L = i === m - 1 ? len - s0 : each; out.push({ s0, len: L, std: stdUzunlik(L) }); s0 += L; }
+  for (let i = 0, s0 = 0; i < m; i++) { const L = i === m - 1 ? len - s0 : each; out.push({ s0, len: L, std: stdUzunlik(L, uz) }); s0 += L; }
   return out;
 }
 
@@ -266,7 +273,7 @@ export function deriveKitchen(doc, catalog) {
       const isVr = run.axis === 'v', c0 = isVr ? rc.y0 : rc.x0;
       const cuts = (run.members || []).map(m => { const f = footprint(m); return (isVr ? f.y1 : f.x1) - c0; });
       const stolT = stolQalinlik(k);
-      const ctSegs = stolBolaklar(isVr ? rc.y1 - rc.y0 : rc.x1 - rc.x0, cuts);
+      const ctSegs = stolBolaklar(isVr ? rc.y1 - rc.y0 : rc.x1 - rc.x0, cuts, stolUzunliklar(k));
       ctSegs.forEach((seg, segIdx) => {
         const mk = (runIdx === 0 && segIdx === 0 && k.moyka && k.moyka.on)
           ? { offset: Math.max(0, +k.moyka.offset || 0), fromBack: Math.max(0, +k.moyka.fromBack || 0),

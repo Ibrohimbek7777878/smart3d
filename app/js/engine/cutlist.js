@@ -644,7 +644,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   }
 
   /* 1b) Standart stoleshnitsa bo'laklari (egasi #162): har bo'lak = 1 dona 3050/4200 li stoleshnitsa, maydon emas.
-     Narxi ro'yxatlarda yo'q — materials.json da narxsiz (price_src 'yoq'); egasi bergach to'ldiriladi. */
+     Narxi — tanlangan ERP stoleshnitsa dekoridan (engine/stoleshnitsa.js: ERP m2 narxi x bo'lak maydoni; egasi #222 Q1). */
   const stolPieceCost = {};
   for (const mat of Object.keys(groups).filter(c => matByCode[c] && matByCode[c].unit_piece)) {
     const meta = matByCode[mat];
@@ -654,7 +654,8 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     const amount = qty * unitPrice;
     sheetCost += amount;
     stolPieceCost[mat] = unitPrice;
-    lines.push({ group: 'Stoleshnitsa', code: mat, name: meta.name, qty, unit: 'dona', unit_price: unitPrice, amount, no_price: !(unitPrice > 0) });
+    lines.push({ group: 'Stoleshnitsa', code: mat, name: meta.name, qty, unit: 'dona', unit_price: unitPrice, amount, no_price: !(unitPrice > 0),
+      tasdiq: unitPrice > 0 && !meta.taxminiy && /^ERP/.test(String(meta.price_src || '')), manba: unitPrice > 0 ? (/^ERP/.test(String(meta.price_src || '')) ? 'ERP' : 'taxmin') : 'yoq' });
   }
 
   /* 2) Kromka */
