@@ -416,6 +416,7 @@
  "hujjat.t_baza": "Data not loaded",
  "hujjat.t_bosh": "The project is empty — add furniture",
  "hujjat.t_bpj": "BPJ ready — {n} panels — TEST: not verified in Bazis",
+ "hujjat.t_b3d": "Bazis (.b3d) ready — {m} modules, {d} parts, {f} fittings — TEST: not checked in Bazis",
  "hujjat.t_cutlist": "Calculate the estimate first (cut list is empty)",
  "hujjat.t_dxf": "DXF ready — cutting layout",
  "hujjat.t_excel": "Excel estimate ready (5 sections)",
@@ -1259,6 +1260,8 @@
  "xato.S3D-EXP-102": "SketchUp (.skp) file was not created",
  "xato.S3D-EXP-103": "SketchUp export did not load — check your connection and try again",
  "xato.S3D-EXP-104": "SketchUp Pro (.dae) file was not created",
+ "xato.S3D-EXP-105": "Bazis (.b3d) file was not created",
+ "xato.S3D-EXP-106": "Bazis (.b3d) export did not load — check your connection and try again",
  "xato.S3D-JS-101": "Unexpected error",
  "xato.S3D-JS-102": "Unexpected error (process)",
  "xato.S3D-KONS-101": "Automatic layout: room walls not detected",
@@ -1371,5 +1374,12 @@
  "bpj.q2": "In the script, press «BPJ Import» and choose the .bpj file downloaded here.",
  "bpj.q3": "When the model appears: Файл → «Сохранить как…» → .b3d.",
  "bpj.sinov": "TEST — not yet checked in real Bazis. The file contains the boards (parts, holes, edging); the hardware list is not included yet, and there is no room.",
- "bpj.yuklab": "Download (.bpj)"
+ "bpj.yuklab": "Download (.bpj)",
+ "b3d.sarlavha": "Bazis (.b3d) — instructions",
+ "b3d.kirish": "Smart3D gives the project as a ready Bazis-Mebelshchik file (.b3d) — 3 steps:",
+ "b3d.q1": "Download the file (button below) and open Bazis-Mebelshchik.",
+ "b3d.q2": "File → “Open” — pick the downloaded .b3d file.",
+ "b3d.q3": "Compare modules, panel count, sizes and material with the Smart3D list. If it will not open or differs — send the error code and the file.",
+ "b3d.sinov": "TEST — the file is checked inside Smart3D (reading it back gives the same panel count, sizes, material and position), but opening it in real Bazis has not been tried yet. The file has modules, board parts (size, position, material, edge band) and a fittings list; no drill holes and no 3D fitting shapes.",
+ "b3d.yuklab": "Download (.b3d)"
 }

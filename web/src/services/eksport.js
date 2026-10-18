@@ -301,5 +301,36 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
       download(fname(c) + '.bpj', JSON.stringify(b, null, 2), 'application/json');
       c.toast(t('hujjat.t_bpj', { n: b.meta.totalPanels }));
     });
+  },
+  /** TZ-33 B2: Bazis .b3d — Smart3D yozadi (engine/bazis/b3dYoz.js). SINOV: yozilgan fayl bizning o'quvchida teng chiqadi (tests/verify_b3d_yoz.mjs),
+   *  haqiqiy Bazis'da ochilishi tekshirilmagan. Panel joyi — BPJ dagi (TZ-17), furnitura — SketchUp modelidagi (eksportModeli) ro'yxat. */
+  async b3d(c) {
+    if (!ok(c, false)) return;
+    const kod = (code, e) => (c.xatoK ? c.xatoK(code, e) : failed(c, e, t('xato.' + code)));
+    let M;
+    try {
+      M = await Promise.all([import('../../../app/js/engine/bazis/b3dYoz.js'), import('../features/editor/eksport/model.js'), import('pako')]);
+    } catch (e) { kod('S3D-EXP-106', e); return; }
+    try {
+      const doc = view(c), cl = (c.res && c.res.cutlists) || [];
+      const bpj = buildBPJ(doc, c.H.catalog, c.H.materials, { modelName: c.name || 'Smart3D', materialCode: c.matCode, cutlists: cl });
+      if (!bpj.blocks.length) { c.toast(t('hujjat.t_bosh')); return; }
+      const model = M[1].eksportModeli(doc, c.H, cl, { nom: {
+        modul: (f) => modulNomi(c.H, f), material: (code, asl) => materialNomi(c.H, code, asl),
+        qatlam: [t('skp.q_korpus'), t('skp.q_fasad'), t('skp.q_orqa'), t('skp.q_furnitura')],
+        furn: { petlya: t('skp.f_petlya'), polka: t('skp.f_polka'), ruchka: t('skp.f_ruchka'), napr: t('skp.f_napr'), oyoq: t('skp.f_oyoq'), shtanga: t('skp.f_shtanga') } } });
+      const furnitura = (k) => {
+        const fu = bpj.furnitures[k], m = fu && model.modullar.find(x => x.id === fu.userProps.smart3d_id);
+        if (!m) return [];
+        const sanoq = new Map();
+        for (const f of m.furnitura) sanoq.set(f.nom, (sanoq.get(f.nom) || 0) + 1);
+        for (const j of m.joysiz) sanoq.set(j.nom, (sanoq.get(j.nom) || 0) + j.soni);
+        return [...sanoq].map(([nom, soni]) => ({ nom, soni }));
+      };
+      const L = M[0].bpjdanLoyiha(bpj, furnitura);
+      const bytes = M[0].b3dYoz(L, { deflate: (a) => M[2].deflate(a) });
+      download(fname(c) + '.b3d', new Blob([bytes], { type: 'application/octet-stream' }), 'application/octet-stream');
+      c.toast(t('hujjat.t_b3d', { m: L.modullar.length, d: L.modullar.reduce((a, m) => a + m.panellar.length, 0), f: L.modullar.reduce((a, m) => a + m.furnitura.reduce((x, f) => x + f.soni, 0), 0) }));
+    } catch (e) { kod('S3D-EXP-105', e); }
   }
 };
