@@ -9,7 +9,7 @@
 **Qoida:** server sozlamalarini (nginx, systemd, PM2) admin qo'yadi. Bu hujjat faqat namuna beradi. Boshqa xizmatlarga tegilmaydi — Smart3D o'z porti, o'z jarayoni va o'z bazasida ishlaydi.
 
 ## 1. Talablar
-- Node.js 20+.
+- Node.js 22+ (better-sqlite3 13 talabi: `engines.node >=22`; Node 20 da `better-sqlite3` ishga tushganda xotira xatosi beradi — Docker sinovida tasdiqlandi). CI da 24.
 - `better-sqlite3` qurish uchun: `python3`, `make`, `g++`.
 - Bo'sh port, masalan `3070` — admin tanlaydi.
 
@@ -27,7 +27,7 @@ cd ../web && NODE_ENV=development npm ci --include=dev && NODE_ENV=development n
 - Muhitda `NODE_ENV=production` global o'rnatilgan bo'lsa, oddiy `npm ci` dev paketlarni (vite) o'rnatmaydi — build yiqiladi. Shuning uchun `NODE_ENV=development` ... `--include=dev`.
 - **Kerakli papkalar:** `server/`, `web/` (build natijasi `web/dist/`), `app/` (ma'lumot va eski sayt).
 - **Kerak emas va serverga qo'yilmaydi:** `data1/`, `Smart3D_malumot/`, `Smart3D_toplam*/`, narx fayllari (`*.xlsx`, `NARX.pdf`) — ular ommaviy repoda ham yo'q (`.gitignore`).
-- Node.js: CI da 24, Docker da 20 — 20+ ishlaydi.
+- Node.js: 22 yoki yuqori (CI va Docker — 24).
 
 **Manzillar (TZ-09 Q7, TZ-30).** Server `web/dist` ni o'zi ko'radi va manzillarga o'zi javob beradi (`server/routes/sahifalar.js`):
 - `/` — bosh sahifa;

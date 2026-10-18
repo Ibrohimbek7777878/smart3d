@@ -11,7 +11,7 @@ Namuna qiymatlar: papka `/srv/smart3d`, muhit fayli `/etc/smart3d.env`, baza `/v
 
 | # | Shart | Tekshirish buyrug'i | Kutilgan natija |
 |---|---|---|---|
-| 1 | Node.js 20+ va git bor | `node -v && git --version` | `v20…` yoki yuqori |
+| 1 | Node.js 22+ (CI: 24) va git bor — `better-sqlite3` 13 Node 20 da ishlamaydi | `node -v && git --version` | `v22…` yoki yuqori |
 | 2 | Muhit fayli bor, sirlar to'g'ri | `sudo test -r /etc/smart3d.env && echo bor` | `bor` |
 | 3 | `JWT_SECRET` 32+ belgi (qiymatni **ko'rsatmasdan**) | `sudo sh -c '. /etc/smart3d.env; echo ${#JWT_SECRET}'` | `32` yoki ko'p |
 | 4 | `NODE_ENV=production`, `TRUST_PROXY=1`, `DB_PATH` berilgan | `sudo grep -E '^(NODE_ENV\|TRUST_PROXY\|DB_PATH)=' /etc/smart3d.env` | 3 qator |
