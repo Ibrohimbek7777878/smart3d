@@ -529,6 +529,11 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     const m = hwByCode[hw.code];
     return m && m.price > 0 ? m.price : 0;
   };
+  /* TZ-32 E7: ERP'da aniq narxi topilmagan furnitura (materials.furnitura_yashirin.kodlar) smeta va narx ro'yxatidan yashiriladi —
+     "narxsiz" qator bo'lib aniqlikni tushirmaydi. Narx/ID bog'lansa (hwUnitPrice > 0) yashirilmaydi. Yashirilganlar `yashirin` da qaytadi. */
+  const yashirinKod = new Set((materials.furnitura_yashirin && materials.furnitura_yashirin.kodlar) || []);
+  const yashirinMi = (hw) => yashirinKod.has(hw.code) && !(hwUnitPrice(hw) > 0);
+  const yashirinAgg = {};
   const hwName = (hw) => (furnById[hw.id || (opt.furnituraBoglash || {})[hw.code]] || {}).name || (hwByCode[hw.code] || {}).name || hw.name || hw.code;
   const hwPrice = (hw) => {
     const price = hwUnitPrice(hw);
@@ -579,6 +584,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       edgeAgg[key].meters += e.meters;
     }
     for (const hw of cl.hardware || []) {
+      if (yashirinMi(hw)) { const y = yashirinAgg[hw.code] = yashirinAgg[hw.code] || { code: hw.code, qty: 0 }; y.qty += hw.qty; continue; }
       hwAgg[hw.code] = hwAgg[hw.code] || { code: hw.code, qty: 0, id: hw.id, name: hw.name, unit: hw.unit };
       hwAgg[hw.code].qty += hw.qty;
     }
@@ -780,7 +786,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     }
     if (raspilCost && areaTotal > 0) for (const p of cl.parts || []) cost += (p.length * p.width) / areaTotal * raspilCost;   // raspil — maydon ulushi bo'yicha
     for (const e of cl.edges || []) cost += e.meters * edgeRate(e.material).price;
-    for (const hw of cl.hardware || []) cost += hw.qty * hwUnitPrice(hw);
+    for (const hw of cl.hardware || []) if (!yashirinMi(hw)) cost += hw.qty * hwUnitPrice(hw);
     if (teshikOn) for (const hl of cl.holes || []) cost += (hl.qty || 1) * (hl.nusxa || 1) * holeRate(hl.tur || hl.kind, hl.kind).price;
     cost += bazisPerPart * (cl.parts || []).length;
     if (totalParts) cost += laborCost * (cl.parts || []).length / totalParts;
@@ -802,6 +808,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     clientTotal,
     perModule,
     missing,
+    yashirin: Object.values(yashirinAgg),   // TZ-32 E7: narxi topilmagani uchun yashirilgan furnitura (eslatish uchun)
     taxminiy,
     xizmat_taklif: { teshik: { tanlangan: teshikOn, qty: totalHoles, amount: teshikOn ? holeCost : holeTaklif },
       bazis: { tanlangan: bTur && bRate[bTur] ? bTur : null, qty: totalParts, narxBor: !!(bRate.onlayn && bRate.oflayn),
