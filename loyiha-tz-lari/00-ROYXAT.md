@@ -50,6 +50,7 @@
 | 33 | [SketchUp (.skp) va Bazis eksport](33-sketchup-va-b3d-eksport.md) | TAKLIF (egasi #198, #200) — .skp Free va Pro uchun (`openskp`), .dae zaxira, BPJ → Bazis | egasi: "boshla"; o'zimizning .b3d yozuvchi — hozirmi yoki BPJ sinovidan keyin |
 | 34 | [Production'ni yangi versiyaga o'tkazish va git orqali yangilash](34-production-yangilash.md) | **8-band BAJARILDI** (`yangilash.sh`, dizayn 00cbbd9); serverga o'tkazish — TASDIQ KUTILMOQDA (smart3d-51) | egasi: tarmoq (dizayn/main), kim bajaradi (admin yoki Claude'ga yozish ruxsati), vaqt; admin: zaxira, .env/baza ko'chirish, servis |
 | 35 | [Yotoqxona garnituri (klassik) va AI matnni bo'laklarga ajratish](35-yotoqxona-garnituri-va-ai-matn.md) | **BAJARILDI** 2026-10-18 (`dizayn` faf5392, CI yashil) — krovat/komod-trimo/klassik 3D, garnitur 5 modul, tushunilmaganlar kartada | egasi: yumshoq oyoq, kupe o'rniga klassik shkaf, ramkali ko'zgu, push narxi, trimo o'lchami |
+| 36 | [Qolgan ishlar va productionga tayyorlash](36-qolgan-ishlar-va-production.md) | **BAJARILMOQDA** 2026-10-18 (agent/prod, agent/narxbuyurtma) — serverga egasi qo'lda o'tkazadi | egasi: stanok formatlari, yo'q modullar, narxsiz furnitura, haqiqiy sinovlar |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.
