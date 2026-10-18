@@ -35,6 +35,16 @@ export const KOEF = {
   shkant_eksentrikli: 1     // "IKSENTRIK SHKANTLI" (1005) — eksentrik shkanti, 1 ta shkant teshigi
 };
 
+/**
+ * TZ-36 K1: ERP PRISADKA HISOBI (narx uchun) — jismoniy teshik sonidan farq qiladi. Dalil: 12 ta haqiqiy ERP buyurtmasi (3770, 3808,
+ * 3936, 3877, 3888, 4034, 4250, 3812, 3832, 3860, 3926, 3978), Bazis fayli bilan solishtirildi:
+ *  - «ПРИСАДКА ЕВРО» miqdori = Bazis «Евро 51мм Алкан» mahkamlagich soni (12/12 buyurtmada aynan); yuza va qirra teshigi bitta ЕВРО
+ *    juftligi — qirra alohida sanalmaydi (cutlist.js: ЕВРО juftligi). Shuning uchun konfirmat_yuza narx soni = mahkamlagich soni (1,0).
+ *  - «ПРИСАДКА МЕТКА»: ERP jismoniy belgidan kam yozadi (ERP/biz mediana 0,37; oralig'i 0…0,92) — 0,4.
+ *  - ruchka: ERP 1 ta/dona, teshik 2 ta — cutlist.js narx uchun /2 qiladi (bu yerda emas).
+ * Jismoniy son (qty) o'zgarmaydi: KDT stanok fayllari bilan tekshirilgan (tests/verify_bazis_teshik.mjs). */
+export const ERP_HISOB = { konfirmat_yuza: 1, belgi: 0.4 };
+
 /** Furnitura nomi → tur (yoki null). Tartib muhim. */
 export function teshikTuri(nom) {
   const l = String(nom || '').toLowerCase();
@@ -76,7 +86,12 @@ export function bazisTeshiklar(objects) {
   const out = [];
   for (const [tur, v] of Object.entries(q)) {
     const qty = Math.round(v);
-    if (qty > 0) out.push({ tur, kind: TESHIK_TURI[tur].kind, qty, dia: TESHIK_TURI[tur].dia, depth: TESHIK_TURI[tur].depth, nom: TESHIK_TURI[tur].nom });
+    if (qty > 0) {
+      const it = { tur, kind: TESHIK_TURI[tur].kind, qty, dia: TESHIK_TURI[tur].dia, depth: TESHIK_TURI[tur].depth, nom: TESHIK_TURI[tur].nom };
+      /* narxQty — ERP prisadka hisobi (ERP_HISOB): konfirmat_yuza — mahkamlagich soni, belgi — 0,4 */
+      if (ERP_HISOB[tur] != null) it.narxQty = Math.round(tur === 'konfirmat_yuza' ? n.konfirmat * ERP_HISOB[tur] : v * ERP_HISOB[tur]);
+      out.push(it);
+    }
   }
   return out;
 }
