@@ -690,9 +690,10 @@
   }
  ],
  "labor": {
-  "panel_per_piece": 12000,
-  "per_fragment_min": 40000,
-  "note": "Kesim + yig'ish ish haqi (taxminiy)"
+  "panel_per_piece": 0,
+  "per_fragment_min": 0,
+  "price_src": "egasi, 2026-10-18",
+  "note": "ERP: ish haqi xizmat narxiga kiritilgan (sex tannarxi) — alohida detal/modul ish haqi ERP'da yo'q (egasi #222 Q3: «ERP'da qanday yozilgan, shu bo'yicha ishlaymiz»). Avvalgi taxmin: 12 000 so'm/detal, 40 000 so'm/modul — olib tashlandi."
  },
  "sheet_sizes_default": [
   2800,

@@ -29,7 +29,7 @@ ok('narxli teshik qatori yo\'q, faqat "tanlanmagan" ma\'lumot qatori (0 so\'m)',
 ok('taklif summasi ko\'rsatiladi', off.xizmat_taklif.teshik.tanlangan === false && off.xizmat_taklif.teshik.amount > 0 && off.xizmat_taklif.teshik.qty > 0,
   JSON.stringify(off.xizmat_taklif));
 ok('moyka kesimi "narx yo\'q" ro\'yxatiga tushmaydi (tanlanmagan)', !off.missing.some(m => m.code === 'hole:cutout'));
-ok('ish haqi avtomatik (egasi qarori)', off.laborCost > 0 && off.lines.some(l => l.group === 'Ish haqi'));
+ok('ish haqi: ERP xizmat narxiga kiritilgan — alohida qator yo\'q, 0 (egasi #222 Q3)', off.laborCost === 0 && !off.lines.some(l => l.group === 'Ish haqi') && !off.missing.some(m => m.group === 'Ish haqi'));
 
 console.log('\n[2] Usta tanlasa');
 ok('teshik tannarxga kiradi = standartdagi taklif summasi', on.holeCost === off.xizmat_taklif.teshik.amount && on.holeCost > 0, `${on.holeCost} vs ${off.xizmat_taklif.teshik.amount}`);

@@ -119,7 +119,7 @@ console.log('\n[3] Narx aniqligi');
 ok(`hozirgi (stavkasiz): ${p0.aniqlik.pct}% (${p0.aniqlik.taxmin.length} taxmin qator, ${p0.aniqlik.narxsiz} narxsiz)`, p0.aniqlik.pct > 0 && p0.aniqlik.pct < 100 && !p0.aniqlik.taxmin.some(t => t.group === 'Ustama'));
 /* TZ-30 (egasi #181, 2026-10-17): ustama 35% — egasi tasdiqladi (materials.json pricing.price_src "egasi, 2026-10-17") */
 ok('sukut ustama — 35%, manba "egasi", sana 2026-10-17 (server boshlang\'ich hujjati va stavkasiz hisob)', s0.ustama.foiz.qiymat === 35 && s0.ustama.foiz.manba === 'egasi'
-  && s0.ustama.foiz.sana === '2026-10-17' && p0.aniqlik.ustama_manba === 'egasi' && pS.aniqlik.ustama_manba === 'egasi' && s0.ish_haqi.detal.manba === 'taxmin');
+  && s0.ustama.foiz.sana === '2026-10-17' && p0.aniqlik.ustama_manba === 'egasi' && pS.aniqlik.ustama_manba === 'egasi' && s0.ish_haqi.detal.manba === 'egasi' && s0.ish_haqi.detal.qiymat === 0 && s0.ish_haqi.modul.qiymat === 0);   // Q3: ish haqi ERP xizmat narxida, sukut 0 (egasi #222)
 const matsT = Object.assign({}, mats, { pricing: { markup_pct: 0.35 } });   // price_src yo'q — avvalgidek "taxmin"
 ok('price_src "egasi…" bo\'lmasa — ustama "taxmin" (avvalgidek)', narxSukut(matsT).ustama.foiz.manba === 'taxmin'
   && productionCost(cls, matsT, OPT).aniqlik.taxmin.some(t => t.group === 'Ustama') && productionCost(cls, matsT, OPT).clientTotal === p0.clientTotal);

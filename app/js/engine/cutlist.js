@@ -745,7 +745,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   const pieceLabor = ihOn ? totalParts * perPiece : 0;
   const fragLabor = ihOn ? (cutlists || []).length * perFrag : 0;
   const laborCost = Math.max(pieceLabor, fragLabor);
-  if (ihOn && !(perPiece > 0 || perFrag > 0) && totalParts) noteMissing('Ish haqi', 'labor', 'Ish haqi stavkasi');
+  if (ihOn && !(perPiece > 0 || perFrag > 0) && totalParts && !ihTasdiq) noteMissing('Ish haqi', 'labor', 'Ish haqi stavkasi');   // 0 va tasdiqlangan (ERP: xizmat narxiga kiritilgan) — narxsiz emas
   if (laborCost > 0) {
     const tx = !ihTasdiq;
     /* TZ-32 A6: raspil yoki kromka sex xizmatidan tanlangan bo'lsa — ular alohida qatorda; ish haqi nomida aytilmaydi.

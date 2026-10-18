@@ -66,5 +66,17 @@ ok('ustama 35% → 20%: faqat plita+furnitura qismi o\'zgaradi, xizmatlar bir xi
 const ustamaSum = p35.clientTotal - p35.totalCost;
 ok(`ustama summasi (${ustamaSum}) = (plita+furnitura) × 35% — butun tannarxning 35% idan kam`, ustamaSum === Math.round((p35.sheetCost + p35.hwCost) * 1.35) - (p35.sheetCost + p35.hwCost) && ustamaSum < p35.totalCost * 0.35);
 
+console.log('\n[Q3] ish haqi — ERP xizmat narxiga kiritilgan (sex tannarxi), alohida qator 0');
+ok('boshlang\'ich hujjat: ish haqi detal/modul = 0, manba "egasi" (ERP), yoqilgan', s0.ish_haqi.detal.qiymat === 0 && s0.ish_haqi.modul.qiymat === 0 && s0.ish_haqi.detal.manba === 'egasi' && s0.ish_haqi.modul.manba === 'egasi');
+ok('materials.json labor = 0 (12 000/40 000 taxmin olib tashlangan)', mats.labor.panel_per_piece === 0 && mats.labor.per_fragment_min === 0 && /ERP: ish haqi xizmat narxiga kiritilgan/.test(mats.labor.note));
+const p0 = hisob(s0);
+ok('ish haqi summasi 0, "Ish haqi" qatori yo\'q, narxsiz ro\'yxatida yo\'q', p0.laborCost === 0 && !p0.lines.some(l => l.group === 'Ish haqi') && !p0.missing.some(m => m.group === 'Ish haqi'));
+ok('aniqlik: ish haqi "taxmin" ro\'yxatida emas', !p0.aniqlik.taxmin.some(t => t.group === 'Ish haqi') && !p0.taxminiy.includes('Ish haqi'));
+const pNo = productionCost(cls, mats, OPT);   // stavkasiz hisob (materials.labor)
+ok('stavkasiz hisob ham ish haqisiz va narxsiz emas', pNo.laborCost === 0 && !pNo.missing.some(m => m.group === 'Ish haqi'));
+const pIh = hisob(qolla(s0, { ish_haqi: { detal: 5000 } }));
+ok('usta/admin keyin o\'zgartira oladi: detal 5 000 → ish haqi qatori paydo bo\'ladi, ustamasiz', pIh.laborCost > 0 && pIh.lines.some(l => l.group === 'Ish haqi' && l.ustama === false)
+  && pIh.clientTotal === Math.round((pIh.sheetCost + pIh.hwCost) * (1 + pIh.markupPct)) + pIh.raspilCost + pIh.edgeCost + pIh.holeCost + pIh.bazisCost + pIh.laborCost);
+
 console.log(fails ? `=== XATO (${n - fails} pass, ${fails} fail) ===` : `=== HAMMASI OK (${n} pass, 0 fail) ===`);
 process.exit(fails ? 1 : 0);

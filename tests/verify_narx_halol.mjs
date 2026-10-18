@@ -132,7 +132,8 @@ ok('MC-KU-04: petlya qatori narxda (ERP bog\'lanishi — tasdiqlangan)', petL.qt
 console.log('\n[A6] Ish haqi qatori nomi');
 const R = (q) => ({ nom: 'Raspil (test)', guruh: 'raspil', qiymat: q, birlik: 'list', manba: 'sex jadvali', sana: '2026-07-03' });
 const K = { nom: 'Kromka (test)', guruh: 'kromka', qiymat: 3000, birlik: 'm', manba: 'sex jadvali', sana: '2026-07-03' };
-const s0 = narxSukut(matsBosh);
+/* ish haqi nomi mexanizmi: stavka qo'lda berilsa (TZ-32 yakuniy Q3: sukut 0, qator yo'q) */
+const s0 = narxQollash(narxSukut(matsBosh), { ish_haqi: { detal: 12000, modul: 40000 } }).next;
 const sR = narxQollash(s0, { xizmatlar: { R1: R(18000), K1: K }, tanlov: { raspil: 'R1' } }).next;
 const sK = narxQollash(s0, { xizmatlar: { R1: R(18000), K1: K }, tanlov: { kromka: { _sukut: 'K1' } } }).next;
 const sRK = narxQollash(sR, { tanlov: { kromka: { _sukut: 'K1' } } }).next;
