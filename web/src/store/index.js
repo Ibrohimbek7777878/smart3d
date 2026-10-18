@@ -16,7 +16,8 @@ export const store = createStore({
   ui: { toast: '', toastCode: '', cf: null, vq: null, tilMenu: null },
   data: { ready: false, err: '' },
   onb: { kind: 'kitchen', room: { w: 5000, d: 4000, h: 2700 } },          // egasi #152: standart xona 5 × 4 m (ishjoyi STANDART_XONA bilan bir xil)
-  project: { name: t('umumiy.yangi_loyiha'), client: '', matCode: 'LDSP18', polkaCode: 'LDSP16', fasadCode: 'MDF16', orqaCode: null, stolCode: null, sheet: null, docV: 0, dv: 0 },
+  project: { name: t('umumiy.yangi_loyiha'), client: '', matCode: 'LDSP16', polkaCode: 'LDSP16',   /* egasi #209: korpus sukuti — LDSP 16 mm (sex standarti, avval LDSP18) */
+    fasadCode: 'MDF16', orqaCode: null, stolCode: null, sheet: null, docV: 0, dv: 0 },
   editor: { step: 2, done: { 1: true }, tip: 3, view: '3d', spin: false, sel: null, part: null, raw: {}, warn: {},
     cat: 'all', q: '', rk: 0, miss: false, vrOk: false, sceneOn: false, sceneErr: false, sceneV: 0 },
   ai: { open: false, text: '', mic: false, tab: 'matn', kat: 'oshxona', tanlangan: null, qiymat: {}, shablonlar: null, shNom: '' },

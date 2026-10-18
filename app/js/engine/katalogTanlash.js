@@ -23,7 +23,7 @@ const MAXSUS = [
   { re: /moyka|мойк|sink/i, soz: /moyk|rakovin|chanoq|мойк|раковин|sink/ },
   { re: /gluxoy|burchak|углов|corner/i, soz: /burchak|gluxoy|углов|угол|corner/ },
   { re: /duxov/i, soz: /duxov|духов|oven/ },
-  { re: /vityach|vityajk|vytyajk|вытяж/i, soz: /vit[iy]?ch|vit[iy]?yaj|vytyaj|вытяж|hood/ },
+  { re: /vityach|vityajk|vytyajk|вытяж/i, soz: /vit[iy]+a?ch|vit[iy]?yaj|vytyaj|вытяж|hood/ },
   { re: /kargo|cargo/i, soz: /kargo|карго|cargo|butilk|бутыл/ },
   { re: /sushilk|quritgich/i, soz: /sushilk|сушилк|quritgich|idish/ },
   { re: /aventos|ko'tarilma/i, soz: /aventos|ko'taril|подъ[её]мн|lift/ },
@@ -91,7 +91,8 @@ export function katalogdanTop(spec, soralgan, catalog, matn = '') {
       const qator = { k, soraldi: v, min: min || null, max: max || null, natija: w };
       /* chegarasi yozilmagan o'lcham — erkin, lekin asl o'lchamidan uzoqlashgani jarima (chegarasi bor mos modul afzal) va kartada asl o'lcham */
       if (!min && !max && Math.abs(v - +f[o]) > 0.5) { qator.asl = +f[o]; ball += Math.abs(v - +f[o]) / 25; }
-      if (w === v) mos.push(qator); else { mosEmas.push(qator); ball += Math.abs(w - v) / 10; if (Math.abs(w - v) > 0.2 * v) yetishmaydi.push(qator); }
+      if (w === v) { mos.push(qator); ball += Math.abs(w - +f[o]) / 1000; }   // teng ball: o'z o'lchami so'ralganga yaqin modul (chegarasi bor modullar orasida ham)
+      else { mosEmas.push(qator); ball += Math.abs(w - v) / 10; if (Math.abs(w - v) > 0.2 * v) yetishmaydi.push(qator); }
     }
     for (const k of ['eshik', 'tortma', 'polka']) {
       const v = ich[k];
@@ -109,6 +110,128 @@ export function katalogdanTop(spec, soralgan, catalog, matn = '') {
     if (b.kupe !== kupeSoralgan) { mosEmas.push({ k: 'kupe', soraldi: kupeSoralgan ? 1 : 0, modulda: b.kupe ? 1 : 0 }); ball += 20; }
     const natija = { topildi: !yetishmaydi.length, frg: f.code, nom: f.name, olcham, mos, mosEmas, yetishmaydi, ball, nomzodlar: nomzod.length };
     /* afzal: topilgani (yetishmaydisi yo'q), keyin ball kichigi; teng bo'lsa — kod tartibi (har safar bir xil natija) */
+    if (!eng || (natija.topildi && !eng.topildi) || (natija.topildi === eng.topildi && (ball < eng.ball - 1e-9 || (Math.abs(ball - eng.ball) < 1e-9 && f.code < eng.frg)))) eng = natija;
+  }
+  return eng;
+}
+
+/* ══ egasi #209 (14): "130 ta tayyor moduldan AI barchasidan terib bersin" — bitta modul turi bo'yicha tanlash ══
+ * Avval faqat shkaf/pastki/ustki/tumba/javon (konstruksiya tili) tanlanardi; stol, krovat, divan, stul, hammom, TV, dahliz, penal,
+ * burchak, antresol, eshik, deraza, texnika … matnidan "tanilmadi" chiqardi. Endi har katalog moduliga tur beriladi (modulTuri) va
+ * nom/tur/o'lcham bo'yicha tanlanadi (buyumdanTop). Katalogda yo'q tur — topilmadi (kartada "bajarilmadi"); modul o'ylab chizilmaydi. */
+
+/** katalog moduli → buyum turi (null — AI bitta modul sifatida tanlamaydi) */
+export function modulTuri(f) {
+  if (!f) return null;
+  const n = String(f.name || '').toLowerCase(), c = f.category, g = String(f.group || '');
+  if (c === 'appliance') return 'texnika';
+  if (c === 'bed') return g === 'komod' ? 'komod' : 'krovat';
+  if (c === 'wardrobe') return /kupe|sliding/.test(n) ? 'kupe' : /poyabzal/.test(n) ? 'poyabzal' : 'garderob';
+  if (c === 'coat_hanger') return 'ilgich';
+  if (c === 'shelf') return g === 'tv' ? 'tv' : g === 'vitirina' ? 'vitrina' : 'javon';
+  if (c === 'sofa') return 'divan';
+  if (c === 'chair') return 'stul';
+  if (c === 'desk') return /parta/i.test(n) || g === 'bolalar' ? 'parta' : 'stol';
+  if (c === 'table') return 'stol';
+  if (c === 'vanity') return 'rakovina';
+  if (c === 'mirror_cabinet') return 'kozgu';
+  if (c === 'bathroom') return 'hammom';
+  if (c === 'door') return 'eshik';
+  if (c === 'window') return 'deraza';
+  if (c === 'countertop') return 'stoleshnitsa';
+  if (c === 'filler') return 'dobor';
+  if (c === 'mobile_pedestal') return 'tumba';
+  if (g === 'kuxnya-antresol' || g === 'entresol') return 'antresol';
+  if (g === 'peshxona') return 'peshxona';
+  if (c === 'tall_cabinet' || g === 'kuxnya-kolonna' || g === 'kuxnya-muz' || /^tall\b/.test(n)) return 'penal';
+  if (c === 'wall_corner' || g === 'kuxnya-burchak') return 'burchak';
+  if (g === 'kuxnya-orol') return 'orol';
+  if (g === 'kuxnya-deraza') return 'derazaosti';
+  if (g === 'kuxnya-pec') return 'pech';
+  if (c === 'drawer_base' || c === 'cargo_base') return 'tumba';
+  if (g === 'kuxnya-pastki') return 'pastki';
+  if (g === 'kuxnya-ustki' || c === 'wall_cabinet') return 'ustki';
+  return null;
+}
+/** so'ralgan tur → qaysi modul turlaridan tanlanadi ("garderob" — kupe va poyabzal shkafi ham, "stol" — ish va ovqat stollari …) */
+const TUR_KENG = {
+  garderob: ['garderob', 'kupe', 'poyabzal'], kupe: ['kupe'], hammom: ['hammom', 'rakovina', 'kozgu'], rakovina: ['rakovina', 'hammom'], kozgu: ['kozgu', 'hammom'],
+  divan: ['divan'], stul: ['stul'], kreslo: ['divan', 'stul'], stol: ['stol'], yozuv: ['stol'], krovat: ['krovat', 'komod'], tumba: ['tumba', 'komod'], komod: ['komod', 'tumba'],
+  javon: ['javon', 'vitrina', 'tv'], pastki: ['pastki', 'tumba'], ustki: ['ustki', 'antresol']
+};
+const IKKILAMCHI = /boshka|toshqin|yon dobor|dobor|sokol|karniz|ichki javon/i;   // asosiy modul emas (qo'shimcha) — nomi so'ralmasa tanlanmaydi
+const SOZ_TOZA = (s) => String(s || '').toLowerCase().replace(/[ʻʼ’‘`´']/g, '').replace(/[^a-zа-яё0-9]+/g, ' ').trim();
+const tokenlar = (s) => SOZ_TOZA(s).split(' ').filter(w => w.length >= 3 && (!/^\d+$/.test(w) || /^0\d\d$/.test(w)) &&   // 001, 002 … — modul raqami ("shkaf 002")
+   !['uchun', 'bilan', 'mc', 'sp', 'kishilik', 'kishi', 'ega'].includes(w));
+const mosSoz = (a, b) => a === b || (a.length >= 4 && b.length >= 4 && a.slice(0, 4) === b.slice(0, 4));
+
+/** matndagi o'lchamlar: "1400x700x750", "2.2 m", "160 sm", "180", "1200 mm" → {eni, chuqurligi, boyi} (mm; 0 — aytilmagan).
+ *  Soni bor so'zlar ("3 eshik", "4 polka", "2 tortma", "3 kishilik") o'lcham emas. */
+export function olchamOl(matn) {
+  const s = String(matn || '').toLowerCase().replace(/[ʻʼ’‘`´]/g, "'").replace(/(\d),(\d)/g, '$1.$2');
+  /* birliksiz: 10 dan kichik — metr; ko'paytmada (AxBxC) qolgani — mm; yolg'iz son 250 gacha — sm ("krovat 160", "divan 200"), undan katta — mm */
+  const mm = (v, b, kopaytma) => { const x = +v; if (/^(mm|мм)/.test(b || '')) return Math.round(x); if (/^(sm|см|cm)/.test(b || '')) return Math.round(x * 10); if (/^(m|м)/.test(b || '')) return Math.round(x * 1000); return x < 10 ? Math.round(x * 1000) : kopaytma || x > 250 ? Math.round(x) : Math.round(x * 10); };
+  const U = "(mm|мм|sm|см|cm|m(?![a-z])|м(?![а-яё]))?";
+  const k = new RegExp("(\\d+(?:\\.\\d+)?)\\s*" + U + "\\s*[x×х*]\\s*(\\d+(?:\\.\\d+)?)\\s*" + U + "(?:\\s*[x×х*]\\s*(\\d+(?:\\.\\d+)?)\\s*" + U + ")?").exec(s);
+  if (k) {
+    const u = k[2] || k[4] || k[6] || '';
+    return { eni: mm(k[1], k[2] || u, 1), chuqurligi: mm(k[3], k[4] || u, 1), boyi: k[5] ? mm(k[5], k[6] || u, 1) : 0 };
+  }
+  const re = new RegExp("(?<![\\d.x×])(\\d+(?:\\.\\d+)?)\\s*" + U + "(?![\\d.])(?!\\s*(?:ta\\b|ta(?=[a-z])|kishi|eshik|polka|tortma|etaj|qavat|fasad|yash|qanot|tok|chexol|dver|ящик|полк|шт))", 'g');
+  let m;
+  while ((m = re.exec(s))) {
+    if (m[2] === '' && /\bstandart|\b№/.test(s.slice(Math.max(0, m.index - 3), m.index))) continue;
+    const v = mm(m[1], m[2]);
+    if (v >= 100 && v <= 12000) return { eni: v, chuqurligi: 0, boyi: 0 };
+  }
+  return { eni: 0, chuqurligi: 0, boyi: 0 };
+}
+
+/** matndagi ichki tarkib soni: "2 fasad", "3 eshik", "2 tortma", "4 polka" (aytilmagan — null) */
+function sonlarOl(matn) {
+  const s = String(matn || '').toLowerCase().replace(/[ʻʼ’‘`´]/g, "'"), out = { eshik: null, tortma: null, polka: null };
+  const re = { eshik: /(\d+)\s*(?:ta\s*)?(?:fasad|eshik|qanot|дверц|двер)/, tortma: /(\d+)\s*(?:ta\s*)?(?:tortma|yash|ящик)/, polka: /(\d+)\s*(?:ta\s*)?(?:polka|полк)/ };
+  for (const k of Object.keys(re)) { const m = re[k].exec(s); if (m) out[k] = +m[1]; }
+  return out;
+}
+
+/**
+ * Bitta modul — tur bo'yicha: nom (so'zlar), o'lcham, ichki belgilar. Qaytaradi katalogdanTop bilan bir xil shakl.
+ * @param {string|string[]} turlar — buyum turi(lari) (aiTur.buyum)
+ * @param {string} matn
+ * @param {object} catalog
+ */
+export function buyumdanTop(turlar, matn, catalog) {
+  const ts = [].concat(turlar), ruxsat = new Set(ts.flatMap(t => TUR_KENG[t] || [t]));
+  const nomzod = Object.values(catalog || {}).filter(f => f && ruxsat.has(modulTuri(f)) && !f.chizma && !Array.isArray(f.bazis3d) && !/^CH-/.test(f.code));
+  if (!nomzod.length) return { topildi: false, yetishmaydi: [{ k: 'tur', tur: ts[0] }], nomzodlar: 0 };
+  const q = tokenlar(matn), sor = olchamOl(matn);
+  let eng = null;
+  for (const f of nomzod) {
+    const nomT = tokenlar(String(f.name || '').replace(/\(.*?\)/g, ' ')), qavsT = tokenlar((String(f.name || '').match(/\((.*?)\)/g) || []).join(' '));
+    const moslar = nomT.filter(w => q.some(x => mosSoz(x, w))), qMos = qavsT.filter(w => q.some(x => mosSoz(x, w)));
+    let ball = -3 * moslar.length - qMos.length + 0.4 * (nomT.length - moslar.length);
+    if (ts.includes(modulTuri(f))) ball -= 2;                                                  // so'ralgan turning o'zi (alias emas) afzal
+    if (IKKILAMCHI.test(f.name || '') && !moslar.some(w => IKKILAMCHI.test(w))) ball += 6;      // qo'shimcha modul: nomi aytilmasa — asosiy modul afzal
+    const mos = [], mosEmas = [], yetishmaydi = [], olcham = {};
+    for (const [o, k] of OLCH) {
+      const v = +sor[k] || 0, min = +f['min_' + o] || 0, max = +f['max_' + o] || 0;
+      if (!v) { olcham[o] = +f[o]; continue; }
+      const w = Math.max(min || v, Math.min(max || v, v));
+      olcham[o] = w;
+      const qator = { k, soraldi: v, min: min || null, max: max || null, natija: w };
+      if (!min && !max && Math.abs(v - +f[o]) > 0.5) { qator.asl = +f[o]; ball += Math.abs(v - +f[o]) / 25; }
+      if (w === v) { mos.push(qator); ball += Math.abs(w - +f[o]) / 100; }   // chegarada bo'lsa ham: o'z o'lchami so'ralganga yaqin modul afzal
+      else { mosEmas.push(qator); ball += Math.abs(w - v) / 10; if (Math.abs(w - v) > 0.2 * v) yetishmaydi.push(qator); }
+    }
+    /* ichki tarkib (eshik/fasad, tortma, polka soni) — matnda aytilgan bo'lsa (modulBelgilari, katalogdanTop bilan bir xil qoida) */
+    const bel = modulBelgilari(f), ich = sonlarOl(matn);
+    for (const k of ['eshik', 'tortma', 'polka']) {
+      if (ich[k] == null || (ich[k] > 0 && !bel[k])) continue;      // modulda bu belgi detal nomidan ko'rinmasa (komod "4 chexolli") — jarima emas
+      const qator = { k, soraldi: ich[k], modulda: bel[k] };
+      if (ich[k] === bel[k]) mos.push(qator); else { mosEmas.push(qator); ball += Math.abs(ich[k] - bel[k]) * (k === 'polka' ? 1 : 4); }   // yumshoq: nom so'zi (−3) ustun, son farqi ikkinchi darajali (qismlar nomi har modulda har xil yozilgan)
+    }
+    const natija = { topildi: !yetishmaydi.length, frg: f.code, nom: f.name, olcham, mos, mosEmas, yetishmaydi, ball, nomzodlar: nomzod.length };
     if (!eng || (natija.topildi && !eng.topildi) || (natija.topildi === eng.topildi && (ball < eng.ball - 1e-9 || (Math.abs(ball - eng.ball) < 1e-9 && f.code < eng.frg)))) eng = natija;
   }
   return eng;

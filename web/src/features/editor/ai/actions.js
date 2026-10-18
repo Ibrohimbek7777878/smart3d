@@ -112,9 +112,9 @@ export function matnniQur() {
   /* egasi #183: avval turi — xona (shablon), oshxona, bitta modul yoki tanilmagan (qurilmaydi) */
   const yo = aiTur(text);
   if (yo.tur === 'nomalum') { tushunmadim(text); return; }
-  if (yo.tur !== 'modul' || !konstruksiyami(text)) { buildFromText(); return; }
+  if (yo.tur !== 'modul' || (!yo.buyum && !konstruksiyami(text))) { buildFromText(); return; }
   set('ai', { open: false, mic: false });
-  aiKonstruksiya(text, aiOn)
+  aiKonstruksiya(text, aiOn, yo.buyum ? { buyum: yo.buyum } : {})
     .then(r => { if (r === 'xona') buildFromText(); })   // egasi #168: 'katalog' — tayyor modul qo'yildi, 'yoq' — xabar va "Baribir chizish"
     .catch(e => xato('S3D-AI-101', { matn: t('ai.xato', { s: e.message }), modul: 'editor/ai', err: e }));
 }

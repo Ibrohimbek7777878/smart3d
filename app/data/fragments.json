@@ -3287,7 +3287,7 @@
     "qty": 1,
     "len": "w-200",
     "width": "d-200",
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [],
@@ -3319,7 +3319,7 @@
     "qty": 1,
     "len": "w-200",
     "width": "d-200",
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [],
@@ -3351,7 +3351,7 @@
     "qty": 1,
     "len": "w-200",
     "width": "d-200",
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [],
@@ -3395,14 +3395,14 @@
     "qty": 4,
     "len": "h-40",
     "width": 60,
-    "material": "LDSP18"
+    "material": "LDSP16"
    },
    {
     "code": "qator",
     "qty": 2,
     "len": "w-160",
     "width": 100,
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [
@@ -3508,14 +3508,14 @@
     "qty": 4,
     "len": "h-40",
     "width": 60,
-    "material": "LDSP18"
+    "material": "LDSP16"
    },
    {
     "code": "qator",
     "qty": 2,
     "len": "w-160",
     "width": 100,
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [
@@ -3621,14 +3621,14 @@
     "qty": 4,
     "len": "h-40",
     "width": 60,
-    "material": "LDSP18"
+    "material": "LDSP16"
    },
    {
     "code": "qator",
     "qty": 2,
     "len": "w-160",
     "width": 100,
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [
@@ -3730,14 +3730,14 @@
     "qty": 4,
     "len": "h-40",
     "width": 60,
-    "material": "LDSP18"
+    "material": "LDSP16"
    },
    {
     "code": "qator",
     "qty": 2,
     "len": "w-160",
     "width": 100,
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [
@@ -3832,7 +3832,7 @@
     "qty": 1,
     "len": "w-200",
     "width": "d-200",
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [],
@@ -3868,7 +3868,7 @@
     "qty": 1,
     "len": "w-200",
     "width": "d-200",
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [],
@@ -3908,7 +3908,7 @@
     "qty": 1,
     "len": "w-200",
     "width": "d-200",
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [],
@@ -3940,7 +3940,7 @@
     "qty": 1,
     "len": "w-200",
     "width": "h-200",
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [],
@@ -3982,7 +3982,7 @@
     "qty": 4,
     "len": "w - 2*t_korpus",
     "width": "d-10",
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [
@@ -4118,14 +4118,14 @@
     "qty": 4,
     "len": "h",
     "width": 58,
-    "material": "LDSP18"
+    "material": "LDSP16"
    },
    {
     "code": "tokcha",
     "qty": 1,
     "len": "w-116",
     "width": 58,
-    "material": "LDSP18"
+    "material": "LDSP16"
    }
   ],
   "edge": [
@@ -9825,10 +9825,10 @@
   "stretch_axis": "xy",
   "price_mode": "unit",
   "price": 2850000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -9959,10 +9959,10 @@
   "stretch_axis": "xy",
   "price_mode": "unit",
   "price": 4200000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -10093,10 +10093,10 @@
   "stretch_axis": "xy",
   "price_mode": "unit",
   "price": 1950000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -10361,10 +10361,10 @@
   "stretch_axis": "y",
   "price_mode": "unit",
   "price": 1650000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -10735,10 +10735,10 @@
   "stretch_axis": "y",
   "price_mode": "unit",
   "price": 1750000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -10978,10 +10978,10 @@
   "stretch_axis": "xy",
   "price_mode": "unit",
   "price": 820000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -11316,10 +11316,10 @@
   "stretch_axis": "xy",
   "price_mode": "unit",
   "price": 980000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -11640,10 +11640,10 @@
   "stretch_axis": "y",
   "price_mode": "unit",
   "price": 460000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -11934,10 +11934,10 @@
   "stretch_axis": "xy",
   "price_mode": "unit",
   "price": 590000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -12168,10 +12168,10 @@
   "stretch_axis": "xy",
   "price_mode": "unit",
   "price": 780000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -12418,10 +12418,10 @@
   "stretch_axis": "y",
   "price_mode": "unit",
   "price": 680000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -12667,10 +12667,10 @@
   "stretch_axis": "xy",
   "price_mode": "unit",
   "price": 1350000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -12810,10 +12810,10 @@
   "stretch_axis": "y",
   "price_mode": "unit",
   "price": 540000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",
@@ -13060,10 +13060,10 @@
   "stretch_axis": "xy",
   "price_mode": "unit",
   "price": 420000,
-  "material_code": "LDSP18",
+  "material_code": "LDSP16",
   "production": "panel",
   "slots": {
-   "korpus": "LDSP18",
+   "korpus": "LDSP16",
    "fasad": "MDF16",
    "orqa": "HDF3",
    "kromka_korpus": "PVC04",

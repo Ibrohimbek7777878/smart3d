@@ -169,7 +169,8 @@ ok('AI javobi: material tozalanadi, qalinlik chegarada, ekssentrik — o\'zi (iz
   const t1 = tan('тумба 600, 4 ящика'), t2 = tan('pastki shkaf 800 3 tortma'), t3 = tan('javon 800x300x1800');
   ok('tumba 600, 4 ящика → SP-K-022 (3 tortma, eni 600 — mos; tortma 4/3 — mos emas)', t1.topildi && t1.frg === 'SP-K-022' && t1.olcham.w === 600 && t1.mosEmas.some(x => x.k === 'tortma' && x.soraldi === 4 && x.modulda === 3), J(t1));
   ok('pastki 800, 3 tortma → SP-K-022 eni 800 (400–900 chegarasida)', t2.topildi && t2.frg === 'SP-K-022' && t2.olcham.w === 800 && !t2.mosEmas.length, J(t2));
-  ok('javon 800x300x1800 → SP-SH-001 (hammasi mos)', t3.topildi && t3.frg === 'SP-SH-001' && !t3.mosEmas.length, J(t3));
+  /* egasi #209 (14): teng ballda o'z o'lchami so'ralganga yaqin modul afzal — SP-SH-005 «Ochiq javon» aynan 800x300x1800 (avval kod tartibida SP-SH-001, 900x300x1800) */
+  ok('javon 800x300x1800 → SP-SH-005 (hammasi mos, o\'z o\'lchami aynan shu)', t3.topildi && t3.frg === 'SP-SH-005' && !t3.mosEmas.length, J(t3));
   const y = tan('komod 6 tortma');
   ok('komod 6 tortma — katalogda mos modul yo\'q (eng yaqinida 3 tortma) — chizilmaydi', !y.topildi && y.yetishmaydi.some(x => x.k === 'tortma' && x.soraldi === 6 && x.modulda === 3), J(y));
   const ch = tan('pastki shkaf 1000 3 tortma');

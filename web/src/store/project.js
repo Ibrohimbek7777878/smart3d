@@ -141,7 +141,7 @@ export const project = {
     tarix.tozala();                                // boshqa loyiha ochildi — bekor qilish tarixi bo'sh
     if (!this.doc.kitchen) this.doc.kitchen = L.freshKitchen();
     this.bazisUla();
-    set('project', { client: p.client || (meta && meta.client) || '', name: p.name || t('umumiy.loyiha'), matCode: p.material || 'LDSP18', fasadCode: p.fasad || 'MDF16', polkaCode: p.polka || null, orqaCode: p.orqa || null, stolCode: p.stol || null, sheet: p.sheet || null });   // polka yo'q (eski loyiha) — korpus bilan bir xil, narxi o'zgarmaydi
+    set('project', { client: p.client || (meta && meta.client) || '', name: p.name || t('umumiy.loyiha'), matCode: p.material || 'LDSP16', fasadCode: p.fasad || 'MDF16', polkaCode: p.polka || null, orqaCode: p.orqa || null, stolCode: p.stol || null, sheet: p.sheet || null });   // polka yo'q (eski loyiha) — korpus bilan bir xil, narxi o'zgarmaydi
     set('editor', { sel: null, part: null, warn: {} });
     this.changed('room', true);
   }

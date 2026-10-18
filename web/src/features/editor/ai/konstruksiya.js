@@ -3,7 +3,7 @@ import { project } from '../../../store/project.js';
 import { S } from '../../../store/session.js';
 import { toast, openSheet } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
-import { katalogdanTop } from '../../../../../app/js/engine/katalogTanlash.js';
+import { katalogdanTop, buyumdanTop } from '../../../../../app/js/engine/katalogTanlash.js';
 import { report } from '../../../shared/lib/jurnal.js';
 import { matndanSpec, specTekshir, specdanChizma, specXulosa, plitaTop } from '../../../../../app/js/engine/konstruksiyaTili.js';
 import { yangiModul } from '../chizish/chizish.js';
@@ -79,14 +79,16 @@ export function baribirChiz(matn, aiOn, olib) {
  *  o.chiz — foydalanuvchi "Baribir chizish" ni bosdi: avvalgidek yangi modul chiziladi */
 export async function aiKonstruksiya(matn, aiOn, o = {}) {
   if (!project.H) return 'xona';
-  const ai = await serverdan(matn, aiOn);
+  /* egasi #209 (14): bitta mebel turi (stol, krovat, divan, stul, hammom, TV, penal, eshik, texnika …) — o.buyum (aiTur): tur bo'yicha katalogdan,
+     konstruksiya tili ham, serverdagi AI ham kerak emas (modul o'ylab chizilmaydi) */
+  const ai = o.buyum ? null : await serverdan(matn, aiOn);
   if (ai && ai.xona) return 'xona';
   /* AI javobi serverda tekshirilgan — saytda yana bir bor (bir xil qoida); AI'siz — tahlilchi */
   const xom = ai ? ai.spec : matndanSpec(matn);
   const n = specTekshir(xom);
-  if (n.xona) return 'xona';
+  if (n.xona && !o.buyum) return 'xona';
   if (!o.chiz) {
-    const tan = katalogdanTop(n.spec, xom, project.H.catalog, matn);
+    const tan = o.buyum ? buyumdanTop(o.buyum, matn, project.H.catalog) : katalogdanTop(n.spec, xom, project.H.catalog, matn);
     const kim = ai ? t('kons.kim_ai') : t('kons.kim_aisiz');
     if (tan && tan.topildi) {
       const fr = project.H.catalog[tan.frg];

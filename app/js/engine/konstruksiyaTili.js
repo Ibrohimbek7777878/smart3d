@@ -233,7 +233,7 @@ const KW = {
 const ICH = {
   polka: /(\d+)\s*(?:ta(?:dan)?\s*)?(?:teng\s+|равн[а-яё]*\s+|одинаков[а-яё]*\s+|equal\s+)?(?:polka|пол(?:к|ок)|shel)|(?:polka|пол(?:к|ок)[^\s\d:,.;]*|shel[^\s\d:,.;]*)\s*(\d+)/,
   tortma: /(\d+)\s*(?:ta\s*)?(?:tortma|yashik|ящик|выдвиж|drawer)|(?:tortma[^\s\d:,.;]*|ящик[^\s\d:,.;]*|drawer[^\s\d:,.;]*)\s*(\d+)/,
-  eshik: /(\d+)\s*(?:ta\s*)?(?:eshik|дверц|двер|створ|door)|(?:eshik[^\s\d:,.;]*|двер[^\s\d:,.;]*|door[^\s\d:,.;]*)\s*(\d+)/,
+  eshik: /(\d+)\s*(?:ta\s*)?(?:eshik(?!siz)|дверц|двер|створ|door)|(?:eshik(?!siz)[^\s\d:,.;]*|двер[^\s\d:,.;]*|door[^\s\d:,.;]*)\s*(\d+)/,   // "eshiksiz 3 tortma" — 3 eshik emas
   shtanga: /shtang|vishil|veshil|ilgich|iladigan|iluvchi|osiladigan|veshal|штанг|вешал|плечик|(?<![a-z])rod(?![a-z])|hanging|rail/,
   eshiksiz: /eshiksiz|ochiq\b|без двер|открыт|no doors?|open\b/
 };
@@ -250,7 +250,7 @@ export function konstruksiyami(matn) {
 }
 
 /* o'lcham birligi: mm oldin ("1200mm" — metr emas), metr — og'zaki xatolar bilan ("metr", "mtr", "1mterlik") */
-const BIRLIK = "(mm|мм|sm|см|cm|m[a-z']*|м[а-яё]*)";
+const BIRLIK = "(mm|мм|sm|см|cm|m(?:e?t[a-z']*)?(?![a-z'])|м(?:етр[а-яё]*|тр)?(?![а-яё]))";   // "moyka"/"мойка" birlik emas (600 moyka — 600 mm)
 /** matndagi o'lcham: "1.2 m", "120 sm", "1200 mm", "1200" → mm */
 function mm(v, birlik) {
   const x = +String(v).replace(',', '.');

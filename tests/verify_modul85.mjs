@@ -112,7 +112,11 @@ export function tekshir(f0) {
       if (out) x('OLCHAM', `${k}=${f[k]} sex oralig'idan tashqari (${t[k].min}–${t[k].max}) — ${dims.includes(k) ? "standart qo'llanadi, sukut tashqarida" : 'standart_olchamlar dan chiqarilgan'}`, !dims.includes(k));
     }
   }
-  if (qutimi(f)) x('OLCHAM', 'korpus 18 mm (sexda 16) — 8-savol', true);
+  /* 8-savol yopildi (egasi #209: "16 ga o'tkaz") — sukut slotlarda korpus va polka detali 16 mm (sex standarti, MC Bazis modullari) */
+  if (f.production === 'panel') {
+    const qalin = [...new Set(cutlist(f, f.w, f.d, f.h, mats, {}).parts.filter(p => p.slot === 'korpus' || p.slot === 'polka').map(p => p.thickness))];
+    if (qalin.some(t => t !== 16)) x('OLCHAM', `korpus/polka ${qalin.join('/')} mm — sex standarti 16 mm (egasi #209)`);
+  }
   /* FURN */
   const QS = QUTI_SHABLON.has(f.code);                                                         // 7-savol: qayta chiziladi yoki yashiriladi
   const hw = f.hardware || [];
