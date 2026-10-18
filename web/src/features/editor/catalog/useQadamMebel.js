@@ -1,6 +1,6 @@
-import { useSlice, set } from '../../../store/index.js';
+import { useSlice, set, get } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
-import { toast } from '../../../store/ui.js';
+import { toast, xato } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
 import { baseForSheet, slotForBase } from '../../../services/hisob.js';
 import { raqam } from '../../../shared/lib/format.js';
@@ -9,7 +9,22 @@ import { openMaterial } from './material.js';
 import { t } from '../../../i18n/index.js';
 
 /* TZ-19: ② Mebel — haqiqiy katalog (qidiruv, toifa), material chiplari, modul qo'shish. Narx — taxmin (hisob dvigateli). */
+/* egasi #239–#241: almashtirish rejimi (ModulKarta → "Almashtirish") — katalogdan bosilgan modul tanlangan modul o'rniga qo'yiladi,
+ * eskisi chetga suriladi (services/loyiha.js almashtir); bitta bekor qilish qadami */
+function almashtirModul(fr, eskiId) {
+  const E = project.pl(eskiId), r = L.almashtir(project.doc, eskiId, fr, project.fr(E));
+  set('editor', { almash: null });
+  if (!r) { xato('S3D-ALM-101', { modul: 'editor/catalog/almashtir' }); return; }
+  project.tarix.belgi('almashtirish');
+  set('editor', { sel: r.yangi.id });
+  project.changed('items');
+  const kod = { kod: fr.code };
+  toast(r.ogoh === 'eski_qoldi' ? t('sahna.almash_eski_qoldi', kod) : r.ogoh === 'yangi_yaqin' ? t('sahna.almash_yangi_yaqin', kod) : t('sahna.almashtirildi', kod));
+}
+
 function addModule(fr) {
+  const eskiId = get().editor.almash;
+  if (eskiId && project.pl(eskiId)) { almashtirModul(fr, eskiId); return; }
   const p = L.addPlacement(project.doc, fr);
   set('editor', { sel: p.id });
   project.changed('items');
@@ -44,6 +59,7 @@ export function useQadamMebel() {
     cats: cats.map(c => ({ label: t('mebel.kat_' + c[0]), bg: ed.cat === c[0] ? 'var(--acc)' : 'var(--sfc)', c: ed.cat === c[0] ? 'var(--ink)' : 'var(--txt)', pick: () => set('editor', { cat: c[0] }) })),
     mats: [['mebel.korpus', 'matCode'], ['mebel.fasad', 'fasadCode']].map(([k, key]) => ({ k: t(k), v: matLabel(key), cycle: () => openMaterial(key) })),
     catalog, catEmpty: !catalog.length,
+    almash: ed.almash && project.pl(ed.almash) ? { nom: L.joyNomi(H, project.pl(ed.almash), project.fr(project.pl(ed.almash))), bekor: () => set('editor', { almash: null }) } : null,
     bazis: !!(doc && doc.bazis)                                  // TZ-21: Bazis hisobotini qayta ochish
   };
 }

@@ -9,6 +9,7 @@ import { cutlist, productionCost } from '../../../app/js/engine/cutlist.js';
 import { USTKI_Z } from '../../../app/js/ai.js';
 import { OYNA_SUKUT_Z } from '../../../app/js/engine/deraza3d.js';
 import { devordanSur, devorChegara, yangiModulJoyi } from '../../../app/js/engine/devorOraliq.js';
+import { almashtirishJoyi } from '../../../app/js/engine/almashtir.js';
 import { projectSlots } from './hisob.js';
 import { searchMaterial } from '../../../app/js/engine/search.js';
 import { til } from '../i18n/index.js';
@@ -152,6 +153,24 @@ export function duplicatePlacement(doc, id) {
   const i = doc.placements.indexOf(src);
   doc.placements.splice(i + 1, 0, c);
   return c;
+}
+
+/** Modulni almashtirish (egasi #239–#241): YANGI modul eskisining joyiga (burilish va devorga bog'lanish saqlanadi), ESKI modul esa
+ *  ustma-ust tushmasdan eng yaqin bo'sh joyga suriladi (o'chirilmaydi). Hujjat faqat joy topilsa o'zgaradi.
+ *  eskiFrag — eski modul katalog yozuvi (balandlik turi: pol/ustki/oyna — bir xil tur bo'lsa eski z saqlanadi).
+ *  @returns {null | { yangi: placement, eski: placement, eskiJoyi, ogoh }} null — hech qayerga sig'madi (hujjat o'zgarmaydi) */
+export function almashtir(doc, eskiId, frag, eskiFrag) {
+  const E = doc.placements.find(x => x.id === eskiId && !x.auto);
+  if (!E || !frag) return null;
+  const tur = (f) => (f && f.category === 'window') ? 'oyna' : (f && isUstki(f)) ? 'ustki' : 'pol';
+  const z0 = frag.default_z != null ? +frag.default_z : (frag.category === 'window' ? OYNA_SUKUT_Z : isUstki(frag) ? USTKI_Z : 0);
+  const z = eskiFrag && tur(eskiFrag) === tur(frag) ? (+E.z || 0) : z0;
+  const j = almashtirishJoyi(doc.room, doc.placements, E.id, { w: frag.w, d: frag.d, h: frag.h, z }, { erkin: maydonRejim(doc) === 'erkin' });
+  if (!j) return null;
+  const p = { id: nextId(doc), frg: frag.code, name: frag.name, x: j.yangi.x, y: j.yangi.y, z, w: frag.w, d: frag.d, h: frag.h, rot: j.yangi.rot, qty: 1 };
+  if (j.eski) { E.x = j.eski.x; E.y = j.eski.y; E.rot = j.eski.rot; }
+  doc.placements.splice(doc.placements.indexOf(E) + 1, 0, p);
+  return { yangi: p, eski: E, eskiJoyi: j.eskiJoyi, ogoh: j.ogoh };
 }
 
 /** Eski clampSize: katalog chegarasiga keltirish (o'zgargan kalitlar) */

@@ -76,6 +76,8 @@ export function duplicate() {
   const c = L.duplicatePlacement(project.doc, p.id);
   set('editor', { sel: c.id }); project.changed('items'); toast(t('sahna.nusxa_qoshildi'));
 }
+/** "Almashtirish" (egasi #239–#241): katalogni ochadi; unda tanlangan modul tanlangan modul o'rniga qo'yiladi (catalog/useQadamMebel.js) */
+export function almashBosh() { const p = selected(); if (p) set('editor', { almash: p.id, step: 2, cat: 'all', q: '' }); }
 export function askDelete() {
   const p = selected(); if (!p) return;
   confirm({ title: t('sahna.ochirish_sarlavha'), text: t('sahna.ochirish_matn', { kod: p.frg, nom: L.joyNomi(project.H, p, project.fr(p)) }), ok: t('umumiy.ochirish'), danger: true,

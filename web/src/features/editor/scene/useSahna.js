@@ -13,6 +13,7 @@ import * as A from './actions.js';
 import { t } from '../../../i18n/index.js';
 import * as L from '../../../services/loyiha.js';
 import { openMaterial } from '../catalog/material.js';
+import { useRejim } from '../oddiy/rejim.js';
 import { openSheet } from '../../../store/ui.js';
 import { tahrirla } from '../chizish/chizish.js';
 import { belgiGuruh } from '../../../services/belgi3d.js';
@@ -75,7 +76,7 @@ export function useMaslahat() {
 /** tanlangan modul kartasi: o'lcham (chegarasi bilan), surish, burish, nusxa, o'chirish, eshiklar, "Ichini ko'rish";
  *  TZ-23 E: "Material" — faqat shu modul uchun (o'zida tanlangan bo'lsa — nomi) */
 export function useModulKarta() {
-  const ed = useSlice('editor');
+  const ed = useSlice('editor'), rj = useRejim();
   useSlice('project');
   const sm = project.pl(ed.sel), smF = project.fr(sm), it = scene.sahna && scene.sahna.items;
   if (!sm || !smF || ed.part) return { show: false };
@@ -117,6 +118,7 @@ export function useModulKarta() {
     sm: { openLabel: (smOpen ? t('umumiy.yopish') : t('sahna.ochish')) + (smF.category === 'drawer_base' ? t('sahna.tortmalar') : t('sahna.eshiklar')), canIns, noIns: !canIns,
       name: L.joyNomi(project.H, sm, smF), code: sm.frg, warn: ed.warn[sm.id] || '', hasWarn: !!ed.warn[sm.id],
       rows: [dimRow('w', t('sahna.eni')), dimRow('d', t('sahna.chuqurligi')), dimRow('h', t('sahna.boyi'))] },
+    almash: rj.oddiy ? null : A.almashBosh,
     moveL: () => A.moveBy(-50), moveR: () => A.moveBy(50), rotate: A.rotate, dup: A.duplicate, askDel: A.askDelete,
     toggleModOpen: () => A.toggleOpen(sm.id), openInside: A.openInside,
     /* #182: Bazis modulining detallari o'z materialida (BZM-…) — modul slotini hisob ham, 3D ham e'tiborsiz qoldiradi ("Tanlandi" o'zgarib,

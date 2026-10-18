@@ -26,6 +26,15 @@ export default function QadamMebel() {
           {v.catCount}
         </span>
       </div>
+      {/* egasi #239–#241: almashtirish rejimi — katalogdan bosilgan modul tanlangan modul o'rniga qo'yiladi */}
+      {v.almash ? <div data-almash-rejim="" style={{ padding: '12px 14px', borderRadius: '14px', background: 'rgba(255,122,69,.14)', border: '1px solid var(--acc)', display: 'flex', alignItems: 'center', gap: '10px', flex: '0 0 auto' }}>
+        <Ikon n="almashtirish" size={20} gap={0} />
+        <span style={{ flex: '1', minWidth: '0', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <span style={{ fontWeight: '800', fontSize: '14px' }}>{t('mebel.almash_sarlavha', { nom: v.almash.nom })}</span>
+          <span style={{ fontSize: '12px', color: 'var(--mut)' }}>{t('mebel.almash_matn')}</span>
+        </span>
+        <button onClick={v.almash.bekor} data-almash-bekor="" style={{ ...btnGhost, height: '36px', flex: '0 0 auto' }}>{t('mebel.almash_bekor')}</button>
+      </div> : null}
       {/* TZ-22 (dizaynda yo'q — egasi skrinshot bilan tasdiqlaydi): avtomatik konstruksiya */}
       <button onClick={openKonstruktor} data-konstruktor style={{ ...btnGhost, height: '48px', flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
         <Ikon n="konstruktor" size={18} gap={0} />{t('konstruktor.tugma')}

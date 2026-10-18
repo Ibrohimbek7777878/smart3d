@@ -12,6 +12,6 @@ export function goStep(n) {
 
 /** tanlash (null — tanlovni olib tashlash); detal kartasi yopiladi */
 export function select(id) {
-  set('editor', { sel: id || null, raw: {}, part: null });
+  set('editor', { sel: id || null, raw: {}, part: null, almash: null });   // almashtirish rejimi tanlov o'zgarsa tugaydi
   if (scene.sahna) { scene.sahna.select(id || null); scene.sahna.items.setFocus(null); }
 }
