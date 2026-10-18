@@ -5,6 +5,12 @@
 import { readFileSync } from 'node:fs';
 /* furnitura katalogi soni — fayldan (ERP + do'kon narx ro'yxati, scripts/narx_pdf_import.py) */
 const KATALOG_SONI = JSON.parse(readFileSync(new URL('../../app/data/furnitura-catalog.json', import.meta.url), 'utf8')).items.filter(i => i.uzs > 0).length;   // #151: narxsizlar katalogda ko'rinmaydi
+/* furnitura zapchast rasmi: rasmi bor va narxli birinchi katalog yozuvi (app/data/rasmlar.json) */
+const RASMLI = (() => {
+  const r = JSON.parse(readFileSync(new URL('../../app/data/rasmlar.json', import.meta.url), 'utf8')).furnitura;
+  const it = JSON.parse(readFileSync(new URL('../../app/data/furnitura-catalog.json', import.meta.url), 'utf8')).items.find(i => r[i.id] && i.uzs > 0);
+  return it ? { id: it.id, sku: it.sku } : null;
+})();
 
 export default async function run(page) {
   const R = {};
@@ -68,6 +74,10 @@ async function asosiy(page, R) {
   R.katalogTab = await M(() => (document.querySelector('[data-furnitura-tab]') || {}).innerText || '');
   await page.locator('[data-varaq="furnitura"] input').fill('петля'); await page.waitForTimeout(400);
   R.qidiruvPetlya = await M(() => [...document.querySelectorAll('[data-furnitura-katalog] > div')].map(d => d.innerText).filter(s => /петл/i.test(s)).length);
+  await page.locator('[data-varaq="furnitura"] input').fill(RASMLI.sku); await page.waitForTimeout(700);
+  R.rasm = await M(() => ({ n: document.querySelectorAll('[data-furnitura-katalog] img[data-furnitura-rasm]').length, loaded: [...document.querySelectorAll('[data-furnitura-katalog] img[data-furnitura-rasm]')].every(i => i.complete && i.naturalWidth > 0),
+    lazy: [...document.querySelectorAll('[data-furnitura-katalog] img')].every(i => i.loading === 'lazy') }));
+  await page.screenshot({ path: `${OUT}/qoldiq-furnitura-rasm.png` });
   await page.locator('[data-varaq="furnitura"] input').fill(''); await page.waitForTimeout(200);
   await page.locator('[data-furnitura-toifa] button').nth(1).click(); await page.waitForTimeout(300);
   R.toifa = await M(() => { const b = [...document.querySelectorAll('[data-furnitura-toifa] button')][1].innerText; const r = [...document.querySelectorAll('[data-furnitura-katalog] > div')].map(d => d.innerText).filter(s => !/ko'rsatildi/.test(s)); return { b, n: r.length, hammasi: r.filter(s => s.includes(b)).length }; });
@@ -112,7 +122,7 @@ async function asosiy(page, R) {
 
   R.errs = errs;
   R.ok = R.bosh && R.qoshildi.length === 1 && /900 × 400 × 16/.test(R.qoshildi[0]) && R.qidiruvYoq === 0 && R.qidiruv === 1 && R.xatoOlcham &&
-    R.joylar >= 2 && R.furnLoyiha.n > 1 && /Furnitura jami/.test(R.furnLoyiha.matn) && R.katalogTab.includes('Katalog (' + KATALOG_SONI + ')') && R.qidiruvPetlya > 0 && R.toifa.n > 0 && R.toifa.n === R.toifa.hammasi &&
+    R.joylar >= 2 && R.furnLoyiha.n > 1 && /Furnitura jami/.test(R.furnLoyiha.matn) && R.katalogTab.includes('Katalog (' + KATALOG_SONI + ')') && R.qidiruvPetlya > 0 && R.rasm.n >= 1 && R.rasm.loaded && R.rasm.lazy && R.toifa.n > 0 && R.toifa.n === R.toifa.hammasi &&
     (R.nestQoldiq === 0 || (R.omborgaTugma === 1 && R.omborgaToast && R.ombor === 1 + R.nestQoldiq)) &&
     R.giblabBazis && /^<\?xml version="1.0" encoding="windows-1251"\?><project importBMV="1.84">/.test(R.giblabBazis.bosh) && R.giblabBazis.mc && R.giblabBazis.xnc > 0 &&
     R.kdt && R.kdt.zip && R.kdt.fayllar > 5 && R.kdt.kdtFormat && R.omborKeyin === R.ombor - 1 && R.ishlatilgan === 1 &&

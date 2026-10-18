@@ -29,6 +29,7 @@ export const DATA_FILES = {
   furnCat: 'furnitura-catalog.json',
   dekorMashhur: 'dekor-mashhur.json',                             // #151: sexda eng ko'p ishlatiladigan dekorlar (material varag'ining boshi)
   dekorAsosiy: 'dekor-asosiy.json',                               // #182: Asosiy 100 dekor — namuna rangi bilan (3D va plitka)
+  rasmlar: 'rasmlar.json',                                        // material va furnitura rasmlari (yo'llar; bo'lmasa — rang/oddiy ko'rinish)
   furnBoglash: 'furnitura-boglash.json',                          // TZ-20: furnitura kodi → ERP ID
   nomlarRu: 'nomlar.ru.json', nomlarEn: 'nomlar.en.json'          // TZ-18: modul va material nomlari (rus, ingliz)
 };
@@ -47,7 +48,7 @@ export async function loadData(read = (n) => fetch('/data/' + n).then(r => r.jso
 
 /** Katalog va ma'lumotlar — eski boot() dagi yig'ish bilan bir xil. */
 export function createHisob(data) {
-  const { frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat, dekorMashhur, dekorAsosiy, furnBoglash, nomlarRu, nomlarEn } = data;
+  const { frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat, dekorMashhur, dekorAsosiy, furnBoglash, nomlarRu, nomlarEn, rasmlar } = data;
   const furnById = {};
   for (const it of (furnCat && furnCat.items) || []) if (it.id) furnById[it.id] = it;
   const furnituraBoglash = (furnBoglash && furnBoglash.links) || {};
@@ -71,7 +72,7 @@ export function createHisob(data) {
   delete nestDefaults._meta;
 
   const H = {
-    catalog, materials: mats, sheetCatalog: sheetCat, dekorMashhur, dekorAsosiy: asosiyIndeks(dekorAsosiy), services, sexStd, furnById, furnituraBoglash, searchIndex, nestDefaults,
+    catalog, materials: mats, sheetCatalog: sheetCat, dekorMashhur, dekorAsosiy: asosiyIndeks(dekorAsosiy), rasmlar: rasmlar || null, services, sexStd, furnById, furnituraBoglash, searchIndex, nestDefaults,
     nomlar: { ru: nomlarRu || null, en: nomlarEn || null },     // TZ-18: modul/material nomi tanlangan tilda (L.modulNomi)
 
     /** Serverdagi sex standartlari (admin o'zgartiradi, TZ-14) — eski applyStandards bilan bir xil */

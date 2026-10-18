@@ -18,8 +18,8 @@ function smart3dData() {
     configureServer(server) {
       server.middlewares.use('/data', (req, res, next) => {
         const f = path.join(DATA, decodeURIComponent((req.url || '').split('?')[0]));
-        if (!f.startsWith(DATA + path.sep) || !f.endsWith('.json') || !fs.existsSync(f)) return next();
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        if (!f.startsWith(DATA + path.sep) || !/\.(json|webp)$/.test(f) || !fs.existsSync(f)) return next();
+        res.setHeader('Content-Type', f.endsWith('.webp') ? 'image/webp' : 'application/json; charset=utf-8');
         fs.createReadStream(f).pipe(res);
       });
     },
@@ -27,6 +27,7 @@ function smart3dData() {
       const out = path.join(opts.dir, 'data');
       fs.mkdirSync(out, { recursive: true });
       for (const n of fs.readdirSync(DATA)) if (n.endsWith('.json')) fs.copyFileSync(path.join(DATA, n), path.join(out, n));
+      fs.cpSync(path.join(DATA, 'rasm'), path.join(out, 'rasm'), { recursive: true });   // furnitura/material rasmlari (rasmlar.json yo'llari)
     }
   };
 }
@@ -90,7 +91,7 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,woff2,json,png,svg,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,woff2,json,png,svg,webp,webmanifest}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         /* TZ-30: ekran manzillari (/loyihalar, /loyiha/5 …) internetsiz ham ochiladi — keshdagi app.html; "/", /eski/, /api — tegilmaydi */
         navigateFallback: 'app.html',

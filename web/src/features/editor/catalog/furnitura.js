@@ -10,6 +10,9 @@ import { t } from '../../../i18n/index.js';
 const MAX = 100;
 const nr = (s) => String(s || '').toLowerCase().replace(/ё/g, 'е');
 
+/** furnitura zapchasti rasmi (rasmlar.json.furnitura: katalog id → yo'l); yo'q bo'lsa — null (hozirgi ko'rinish) */
+const rasmYol = (H, id) => { const y = H && H.rasmlar && H.rasmlar.furnitura && H.rasmlar.furnitura[id]; return y ? '/' + y : null; };
+
 export function openFurnitura() { openSheet('furnitura', { q: '', cat: null, tab: 'loyiha' }); }
 
 export function useFurnituraVaraq() {
@@ -21,7 +24,7 @@ export function useFurnituraVaraq() {
   /* loyihada: hisobdagi "Furnitura" satrlari */
   const lines = ((project.res && project.res.prod && project.res.prod.lines) || []).filter(l => l.group === 'Furnitura');
   const loyiha = lines.map(l => ({ name: l.name || l.code, sub: [l.id ? 'ID ' + l.id : l.code, l.qty + ' ' + (l.unit && l.unit !== 'dona' ? l.unit : t('hujjat.u_dona'))].join(' · '),
-    price: l.no_price ? t('mebel.narx_yoq') : raqam(l.amount) + ' ' + t('umumiy.som'), yoq: !!l.no_price }));
+    price: l.no_price ? t('mebel.narx_yoq') : raqam(l.amount) + ' ' + t('umumiy.som'), yoq: !!l.no_price, rasm: rasmYol(H, l.id) }));
   const jami = lines.reduce((a, l) => a + (l.amount || 0), 0);
 
   /* katalog: toifalar (ko'pidan kamiga) va qidiruv */
@@ -43,7 +46,7 @@ export function useFurnituraVaraq() {
     q: q.q || '', onQ: ev => patchSheet({ q: ev.target.value }),
     toifalar: [{ label: t('mebel.rang_hammasi'), on: !q.cat, pick: () => patchSheet({ cat: null }) }]
       .concat(toifalar.slice(0, 14).map(c => ({ label: c, on: q.cat === c, pick: () => patchSheet({ cat: q.cat === c ? null : c }) }))),
-    katalog: pool.map(it => ({ name: it.name, sub: [it.sku, it.cat, 'ID ' + it.id].filter(Boolean).join(' · '), price: narx(it.uzs), yoq: !(it.uzs > 0) })),
+    katalog: pool.map(it => ({ name: it.name, sub: [it.sku, it.cat, 'ID ' + it.id].filter(Boolean).join(' · '), price: narx(it.uzs), yoq: !(it.uzs > 0), rasm: rasmYol(H, it.id) })),
     soni: topildi > MAX ? t('mebel.plita_soni', { n: MAX, jami: topildi }) : null
   };
 }
