@@ -675,3 +675,35 @@ bu prompt lekin natija oddiy 2ta shkaf qilb berdi nega bundya bold kosntruskiay 
 250. loyhan qaysi qismlar atayyor boyag xatolik togirlandimi konstruksiyan toliq yopildim bizda bor 130ta modul asosida chizb berish kere
 
 251. ha udna 50xil promtpt ayorlab qoy shu assodia qilinsin
+
+252. (Anthropic API kaliti berildi — [KALIT YASHIRILDI]; curl namunasi) api key ulab qoy bizga konsturksiya qilb berish kere
+
+253. tayor promtplar ham bolsin  hozir umumiy loyhan nechi fozi toliq bold va prodctuionga tayor edi
+
+254. nimalar qold loyhada chal bolb qolgan stanok fayllar togir ishlaybdimi va narx togir chiqyabdimi
+
+255. qolgan ishlar boyicha tz yozb ol va loyhan productionga tayorlash kere tez
+
+256. narx masaln eng muhim hozir konstruksiyaga aini uladik u hal end narxni tolqi togirlashimiz kere va yana qaysi ishalr qolgan boshqa claude ham ishlayb unda agentlar ham bor e keyin token kam qold shunga etibor ber kamro token ishlat
+
+257. (skrinshot: landing sahifa pastki qismi, "aloqa — egasi beradi") aloqa egaisga bitttadani qoy
+
+258. qara konstruksiya qilsihga bita standart tanlab olsang boladim shunday qilsak eng kop ishlatialdina satdnart osha boyicha ishlasa va undan tashqari 50ta tayor promtpar ham bolsin
+1.menimcha bir juftnik bols akere
+2.samorezni kilosiga sotilad
+3.uni bilmadim izlab kormaidngmi
+4.yoq korinmasin va 35 fozi  usluga ham korinmasin umumiy anrx chiqisn va menga admin panelni linkn ebr u yerdan barhca ishlarn kod yozmasdan togirlay olay shunday idela va universla panel qilb ber va uni sub domen bilan chiqar smart.bittada.uz/admin bolsin url havolas
+
+259. qara furnituradag zapchastlar  biz sanab chiqan edik yani mix 1kilosda nechta dona bolad shuni aktat erpiga krtignamz end sen shu qismalrn katta erpidan izlab kor
+
+260. hoy tugatgach kod yozma boshqa vazifa bor senga token kam qoldi
+
+261. (skrinshot: sayt bosh sahifasi pastki qismida "O'zbekcha" til tanlash) ey bu yerda pastki qismda qolib ketgan til ozgarish funksiyansn olbi tahsla
+
+262. end menga korgazma uchun slayd qilb ber rasmlar bilan ideal bolsin qandya muomoga qanday eychim beryabmiz hammasi ahqida qisqacha slayd qilb ber pdf kornishda ber slaydni
+
+263. (skrinshot: smart.bittada.uz/admin — 404 "Sahifa topilmadi") qara admin panel ishlamad
+
+264. boshla unda
+
+265. (2 skrinshot: slayd 5 va 6, PDF ko'rinishda) qara bu yerda korsatilgan duxofka va rangli xaladelnik bizda yoqku hamda teshiklarigacha aniq korsatidgan qismlarimiz ham hali tayor emas nega kod yozma shuntir bormi tayormi nech fozi bolgan qancha ish qolgan
