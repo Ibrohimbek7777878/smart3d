@@ -197,17 +197,30 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
     const pr = c.res.priceRes;
     download('smart3d-smeta.csv', smetaCSV(pr.lines.map(l => ({ group: 'Mebel', name: l.name, qty: l.qty, unit: 'dona', unit_price: l.unit_price, amount: l.amount })), pr.total), 'text/csv');
   },
-  obj(c) {
-    if (!ok(c, false)) return;
-    /* faqat tanlangan modul (c.opt.id — AI yangi qurgan modul, yoki editor.sel); tanlanmagan — butun loyiha */
+  /** egasi #223: «OBJ» — BITTA .obj fayl (mtllib yo'q; material nomlari usemtl/o guruhlarida qoladi, rang yo'q).
+   *  Rangli variant — objRang: .zip ichida .obj + .mtl. Faqat tanlangan modul (c.opt.id yoki editor.sel); tanlanmagan — butun loyiha. */
+  _objAsos(c, mtllib) {
     const id = c.opt && c.opt.id != null ? c.opt.id : c.sel;
     const pl = id != null ? c.doc.placements.find(p => p.id === id) : null;
     const nom = pl ? '-' + String((c.doc.chizmalar && c.doc.chizmalar[pl.frg] && c.doc.chizmalar[pl.frg].nom) || (c.H.catalog[pl.frg] && c.H.catalog[pl.frg].name) || pl.frg).trim().replace(/[^\p{L}\p{N}]+/gu, '_').replace(/^_|_$/g, '') : '';
-    const r = buildOBJ(view(c), c.H.catalog, pl ? { only: pl.id } : {});
-    const fn = pl ? fname(c) + nom : 'smart3d-model';
-    download(fn + '.obj', r.obj.replace('mtllib smart3d.mtl', 'mtllib ' + fn + '.mtl'), 'text/plain');
-    setTimeout(() => download(fn + '.mtl', r.mtl, 'text/plain'), 350);
+    const r = buildOBJ(view(c), c.H.catalog, Object.assign(pl ? { only: pl.id } : {}, mtllib ? { mtllib: true } : {}));
+    return { r, fn: pl ? fname(c) + nom : 'smart3d-model' };
+  },
+  obj(c) {
+    if (!ok(c, false)) return;
+    const { r, fn } = this._objAsos(c, false);
+    download(fn + '.obj', r.obj, 'model/obj');
     c.toast(t('hujjat.t_obj', { n: r.placements.length }));
+  },
+  objRang(c) {
+    if (!ok(c, false)) return;
+    safe(c, () => {
+      const { r, fn } = this._objAsos(c, true), zip = new SimpleZip();
+      zip.addFile(fn + '.obj', r.obj.replace('mtllib smart3d.mtl', 'mtllib ' + fn + '.mtl'));
+      zip.addFile(fn + '.mtl', r.mtl);
+      download(fn + '-rang.zip', new Blob([zip.generate()], { type: 'application/zip' }), 'application/zip');
+      c.toast(t('hujjat.t_obj_rang', { n: r.placements.length }));
+    });
   },
   /* TZ-33 A: SketchUp (.skp — Free va Pro) va SketchUp Pro zaxirasi (.dae, COLLADA 1.4.1): xonasiz — plita va furnitura.
      Fayl brauzerda yasaladi; yozuvchi (openskp) faqat shu tugma bosilganda yuklanadi (alohida bo'lak). Tanlangan modul bo'lsa — faqat u. */
@@ -269,7 +282,9 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
   gcode(c) { this._cnc(c, (n, cl) => cutGCode(n, cl, { toolDia: 6.0, addTabs: true }), '-kesim.nc', 'text/plain', t('hujjat.t_gcode')); },
   ptp(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).ptp, '-ptp.csv', 'text/csv', t('hujjat.t_ptp')); },
   nc(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).nc, '-teshik.nc', 'text/plain', t('hujjat.t_nc')); },
-  altendorf(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).altendorf, '-altendorf-fazali-kesim.txt', 'text/plain', t('hujjat.t_alt')); },
+  /* egasi #223: «Altendorf» tugmasi endi .txt bermaydi — .gibcut yopiq (shifrlangan) format, uni GibLab yozadi (yo'riqnoma: AltendorfYoriq).
+     Matnli fazali kesim rejasi — alohida «Kesim rejasi (matn)», stanok nomisiz fayl nomi bilan. */
+  kesimReja(c) { this._cnc(c, (n, cl) => cncBundle(n, cl).altendorf, '-kesim-rejasi.txt', 'text/plain', t('hujjat.t_alt')); },
   /* TZ-11: sexdagi zanjir — Bazis eksportidek GibLab .project (GibLab kesimni o'zi optimallashtiradi, arra fayllarini o'zi
      chiqaradi) va KDT prisadka fayllari (ZIP). 30 ta haqiqiy buyurtmada tekshirilgan; texnolog sinovigacha — SINOV, faqat admin. */
   _stanok(c) {

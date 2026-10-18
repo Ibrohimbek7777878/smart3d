@@ -648,7 +648,7 @@ export function altendorfPhasedCuts(nest) {
   const plan = altendorfPlan(nest);
   const L = [];
   L.push('================================================================================');
-  L.push("       ALTENDORF FORMATLI ARRALASH STANOGI UCHUN FAZALI KESIM QO'LLANMASI       ");
+  L.push("            FORMATLI ARRA UCHUN FAZALI KESIM REJASI (MATNLI QO'LLANMA)            ");   // egasi #223: stanok fayli emas — .gibcut ni GibLab yozadi
   L.push('================================================================================');
   L.push(`Sana: ${new Date().toLocaleDateString('uz-UZ')} · Arra kerf: 4 mm`);
 
