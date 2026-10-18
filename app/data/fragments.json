@@ -187,6 +187,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -509,6 +516,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -611,6 +625,13 @@
    {
     "code": "GD-04",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 8,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "production": "panel",
@@ -977,6 +998,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 24,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -1120,6 +1148,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -1440,6 +1475,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 8,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -1554,6 +1596,13 @@
    {
     "code": "NOG-90",
     "qty": 8
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 20,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "production": "panel",
@@ -1745,6 +1794,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 20,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -1935,6 +1991,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 24,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -2089,6 +2152,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -2279,6 +2349,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -2646,6 +2723,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -3615,6 +3699,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -3794,6 +3885,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -3973,6 +4071,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -4173,6 +4278,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 16,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -4477,6 +4589,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 8,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -4670,6 +4789,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 12,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -4897,6 +5023,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 16,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -5158,6 +5291,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 20,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -5344,6 +5484,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 8,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -5510,6 +5657,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 12,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -6196,6 +6350,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -6369,6 +6530,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 16,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -6569,6 +6737,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 16,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -6715,6 +6890,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 16,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -7587,6 +7769,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 8,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -7780,6 +7969,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 12,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -8425,6 +8621,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -8723,6 +8926,13 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 20,
+    "unit": "dona",
+    "id": "90002019"
    }
   ],
   "station_source": "shablon"
@@ -8846,6 +9056,13 @@
    {
     "code": "CONFIRMAT",
     "qty": 24
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 16,
+    "unit": "dona",
+    "id": "90002019"
    }
   ]
  },
@@ -8968,6 +9185,13 @@
    {
     "code": "CONFIRMAT",
     "qty": 36
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 24,
+    "unit": "dona",
+    "id": "90002019"
    }
   ]
  },
@@ -9901,6 +10125,13 @@
    {
     "code": "RUCHKA-128",
     "qty": 2
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 4,
+    "unit": "dona",
+    "id": "90002019"
    }
   ]
  },
@@ -10573,6 +10804,13 @@
    {
     "code": "NAVES-REG",
     "qty": 2
+   },
+   {
+    "code": "POLKADERJATEL",
+    "name": "Полкодержатель штифтовой белый",
+    "qty": 8,
+    "unit": "dona",
+    "id": "90002019"
    }
   ]
  },
