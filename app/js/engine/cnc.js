@@ -357,7 +357,9 @@ export function cutGCode(nest, cutlists, opts) {
         for (const h of sheetHoles) {
           const hDepth = Math.abs(h.depth || 13);
           L.push('G0 Z' + safeZ + ';');
-          L.push('G0 X' + h.x.toFixed(2) + ' Y' + h.y.toFixed(2) + ';');
+          /* teshik Y — Y-yuqoriga (Excellon/DXF konvensiyasi), kontur esa varaq Y-pastga (nesting p.y): bitta dasturda
+             bir xil bo'lsin — aks holda teshiklar detalga nisbatan ko'zguda tushadi */
+          L.push('G0 X' + h.x.toFixed(2) + ' Y' + (sheet.width - h.y).toFixed(2) + ';');
           L.push('G1 Z-' + hDepth.toFixed(2) + ' F' + plunge + ';');
           L.push('G0 Z' + safeZ + ';');
         }
