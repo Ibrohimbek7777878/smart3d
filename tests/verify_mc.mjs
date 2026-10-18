@@ -56,7 +56,10 @@ for (const f of mc) {
   const want = f.manba.bazis_panel - f.manba.stoleshnitsa_chiqarildi;
   if (cl.parts.length !== want) cntBad.push(`${f.code}: ${cl.parts.length}≠${want}`);
   const hwSum = (arr) => arr.reduce((s, x) => s + (+x.qty || 0), 0);
-  if (hwSum(cl.hardware) !== hwSum(f.hardware)) hwBad.push(`${f.code}: ${hwSum(cl.hardware)}≠${hwSum(f.hardware)}`);
+  /* TZ-32 A5: BOM'da petlya qatori yo'q, eshigi bor modulga cutlist faqat PET-4 qo'shadi (soni = D6 kosalari) — qolgani BOM bilan bir xil */
+  const avto = cl.hardware.filter(x => x._auto), kosa = cl.holes.filter(x => x.kind === 'd6_kosa').length;
+  if (hwSum(cl.hardware.filter(x => !x._auto)) !== hwSum(f.hardware) || avto.some(x => x.code !== 'PET-4' || x.qty !== kosa))
+    hwBad.push(`${f.code}: ${hwSum(cl.hardware)}≠${hwSum(f.hardware)} (+${avto.map(x => x.code + ':' + x.qty).join(',')}, kosa ${kosa})`);
   if (f.manba.bom_kromka_m > 0) edgeRep.push([f.code, Math.round(cl.edges.reduce((s, e) => s + e.meters, 0) * 10) / 10, f.manba.bom_kromka_m]);
   /* tayyor (kromkasiz) o'lcham maydoni, Bazis materiali bo'yicha */
   const bzMat = Object.fromEntries(f.parts.map(q => [q.code, q.bazis_material]));
@@ -82,7 +85,7 @@ ok('detallar soni Bazis bilan bir xil (38 modul)', cntBad.length === 0, cntBad.s
     qty('MC-KP-10', 'Фасад ящика') === 3 && catalog['MC-KR-01'].manba.bazis_panel === 26 && catalog['MC-KP-06'].manba.bazis_panel === 8,
     `${qty('MC-KP-10', 'Фасад ящика')} / ${catalog['MC-KR-01'].manba.bazis_panel} / ${catalog['MC-KP-06'].manba.bazis_panel}`);
 }
-ok('furnitura soni Bazis BOM bilan bir xil (cutlist qo\'shmaydi/tushirmaydi)', hwBad.length === 0, hwBad.slice(0, 4).join(' | '));
+ok('furnitura soni Bazis BOM bilan bir xil (cutlist faqat yo\'q petlyani qo\'shadi — TZ-32 A5)', hwBad.length === 0, hwBad.slice(0, 4).join(' | '));
 ok('har material maydoni = Bazis panel o\'lchamlari ±0.5% (38 modul)', zagBad.length === 0, zagBad.slice(0, 4).join(' | '));
 console.log(`      kromka (ma'lumot): qoida bo'yicha vs Bazis BOM, ${edgeRep.length} modulda Bazis kromkasi bor — ` +
   edgeRep.slice(0, 5).map(([c, a, b]) => `${c} ${a}/${b} m`).join(' · '));

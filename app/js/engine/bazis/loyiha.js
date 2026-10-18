@@ -305,7 +305,7 @@ export function materiallarniQosh(materials, mat) {
     if (pl.some(x => x.code === m.code)) continue;
     const a = pl.find(x => x.code === m.asos) || pl[0] || {};
     pl.push({ code: m.code, name: m.name, thickness: m.thickness, factor: a.factor, sheet_price: a.sheet_price,
-      sheets: m.varaq ? [m.varaq] : (a.sheets || [[2800, 2070]]), src: 'Bazis — ' + (a.code || '?') + ' narxi (taxminiy)', bazis: true });
+      sheets: m.varaq ? [m.varaq] : (a.sheets || [[2800, 2070]]), src: 'Bazis — ' + (a.code || '?') + ' narxi (taxminiy)', taxminiy: true, bazis: true });   // TZ-32 A1: boshqa plitaning narxi — tasdiqlangan emas
     n++;
   }
   for (const e of (mat && mat.edge) || []) {
