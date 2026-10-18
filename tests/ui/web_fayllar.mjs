@@ -59,8 +59,10 @@ async function asosiy(page, R) {
   await click(/^Fayllar$/); await page.waitForTimeout(800);
   R.objTugma = await M(() => [...document.querySelectorAll('[data-panel] button')].map(b => b.textContent.trim()).filter(x => /^OBJ/.test(x)));
   R.objModul = R.tanlandi ? await objOqi('OBJ — tanlangan modul') : null;
+  /* #233 (egasi): modul tanlangan bo'lsa HAM "butun loyiha" butun xonani va barcha modullarni beradi */
+  R.objButunTanlanganda = R.tanlandi ? await objOqi('OBJ — butun loyiha') : null;
   R.objOk = R.objButun.xona && R.objButun.modullar >= 1 && R.tanlandi && !!R.objModul && !R.objModul.xona && R.objModul.modullar === 1 &&
-    /\.obj$/.test(R.objModul.nom) && R.objModul.nom !== 'smart3d-model.obj' && R.objModul.mtl === undefined && R.objButun.mtl === undefined && R.objTugma.join() === 'OBJ — tanlangan modul,OBJ + rang (.zip: .obj + .mtl)';   // egasi #223: bitta .obj (mtllib yo'q); rangli variant — .zip
+    /\.obj$/.test(R.objModul.nom) && R.objModul.nom !== 'smart3d-model.obj' && R.objModul.mtl === undefined && R.objButun.mtl === undefined && R.objTugma.join() === 'OBJ — butun loyiha,OBJ + rang (.zip: .obj + .mtl),OBJ — tanlangan modul' && !!R.objButunTanlanganda && R.objButunTanlanganda.xona && R.objButunTanlanganda.modullar === R.objButun.modullar;   // egasi #223: bitta .obj (mtllib yo'q); rangli variant — .zip
   R.fayllar = {};
   for (const l of ['Excel smeta', 'Detallar (CSV)', 'Loyiha fayli', 'Smeta (CSV)', 'Teshiklar (JSON)', 'GLB (3D/AR)', 'GibLab', 'DXF', 'G-code', 'PTP', 'NC', 'XNC', 'Kesim rejasi (matn)', 'Rasm']) {
     R.fayllar[l] = await yukla(l);

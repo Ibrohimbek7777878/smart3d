@@ -24,8 +24,10 @@ export function useQadamFayllar() {
   const groups = [
     { title: t('fayllar.mijozga'), col: 'var(--cyan)', sub: t('fayllar.logo_bilan'), mainLabel: t('fayllar.hisobot'), mainIkon: 'chop', main: 'hisobot', more: [[t('fayllar.rasm'), 'rasm', 'rasm'], ['360°', 'panorama', 'aylanish'], ['GLB (3D/AR)', 'glb']] },
     { title: t('fayllar.sexga'), col: 'var(--lav)', sub: t('fayllar.sexga_sub', { d: NS.panel_count || 0, v: NS.total_sheets || 0 }), mainLabel: t('fayllar.excel'), mainIkon: 'excel', main: 'excel',
-      more: [[t('fayllar.detallar_csv'), 'cutlist'], [t('fayllar.loyiha_fayli'), 'loyiha'], [t('fayllar.smeta_csv'), 'smetaCsv'], [modul ? t('fayllar.obj_modul') : t('fayllar.obj_loyiha'), 'obj'], [t('fayllar.obj_rang'), 'objRang'],
-        [modul ? t('fayllar.skp_modul') : t('fayllar.skp_loyiha'), 'skp'], [modul ? t('fayllar.dae_modul') : t('fayllar.dae_loyiha'), 'dae'], [t('fayllar.teshiklar_json'), 'teshiklar']] },
+      more: [[t('fayllar.detallar_csv'), 'cutlist'], [t('fayllar.loyiha_fayli'), 'loyiha'], [t('fayllar.smeta_csv'), 'smetaCsv'], [t('fayllar.obj_loyiha'), 'objButun'], [t('fayllar.obj_rang'), 'objRangButun'],
+        [t('fayllar.skp_loyiha'), 'skpButun'], [t('fayllar.dae_loyiha'), 'daeButun'],
+        ...(modul ? [[t('fayllar.obj_modul'), 'obj'], [t('fayllar.skp_modul'), 'skp'], [t('fayllar.dae_modul'), 'dae']] : []),   // #233: butun loyiha doim; tanlangan modul — qo'shimcha
+        [t('fayllar.teshiklar_json'), 'teshiklar']] },
     { title: t('fayllar.stanokka'), col: 'var(--acct)', sub: t('fayllar.dastursiz'), mainLabel: 'GibLab', main: 'giblab',
       more: [['DXF', 'dxf'], ['G-code', 'gcode'], [t('fayllar.tez_orada', { nom: 'Biesse' }), null], [t('fayllar.tez_orada', { nom: 'Homag' }), null], ['PTP', 'ptp'], ['NC', 'nc'], ['XNC', 'xnc'], [t('fayllar.altendorf_giblab'), 'altendorf', null, () => openSheet('altendorfYoriq', {})],   // egasi #223: .gibcut ni GibLab yozadi (yopiq format) — yo'riqnoma + GibLab .project
         [t('fayllar.kesim_reja'), 'kesimReja'],   // matnli fazali kesim rejasi — stanok nomisiz

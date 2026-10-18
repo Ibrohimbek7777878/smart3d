@@ -203,7 +203,7 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
   /** egasi #223: «OBJ» — BITTA .obj fayl (mtllib yo'q; material nomlari usemtl/o guruhlarida qoladi, rang yo'q).
    *  Rangli variant — objRang: .zip ichida .obj + .mtl. Faqat tanlangan modul (c.opt.id yoki editor.sel); tanlanmagan — butun loyiha. */
   _objAsos(c, mtllib) {
-    const id = c.opt && c.opt.id != null ? c.opt.id : c.sel;
+    const id = c.opt && c.opt.butun ? null : c.opt && c.opt.id != null ? c.opt.id : c.sel;   // #233: opt.butun — tanlangan modulga qaramay butun loyiha
     const pl = id != null ? c.doc.placements.find(p => p.id === id) : null;
     const nom = pl ? '-' + String((c.doc.chizmalar && c.doc.chizmalar[pl.frg] && c.doc.chizmalar[pl.frg].nom) || (c.H.catalog[pl.frg] && c.H.catalog[pl.frg].name) || pl.frg).trim().replace(/[^\p{L}\p{N}]+/gu, '_').replace(/^_|_$/g, '') : '';
     const r = buildOBJ(view(c), c.H.catalog, Object.assign(pl ? { only: pl.id } : {}, mtllib ? { mtllib: true } : {}));
@@ -229,6 +229,12 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
      Fayl brauzerda yasaladi; yozuvchi (openskp) faqat shu tugma bosilganda yuklanadi (alohida bo'lak). Tanlangan modul bo'lsa — faqat u. */
   skp(c) { return this._sketchup(c, 'skp'); },
   dae(c) { return this._sketchup(c, 'dae'); },
+  /** #233 (egasi): modul tanlangan bo'lsa ham BUTUN loyihani chiqarish — alohida amallar (opt.butun) */
+  _butun(c) { const d = Object.create(c); d.opt = Object.assign({}, c.opt, { butun: true }); return d; },
+  objButun(c) { return this.obj(this._butun(c)); },
+  objRangButun(c) { return this.objRang(this._butun(c)); },
+  skpButun(c) { return this.skp(this._butun(c)); },
+  daeButun(c) { return this.dae(this._butun(c)); },
   async _sketchup(c, tur) {
     if (!ok(c, false)) return;
     const kod = (code, e) => (c.xatoK ? c.xatoK(code, e) : failed(c, e, t('xato.' + code)));
@@ -237,7 +243,7 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
       M = await Promise.all([import('../features/editor/eksport/model.js'), tur === 'skp' ? import('../features/editor/eksport/skp.js') : import('../features/editor/eksport/dae.js')]);
     } catch (e) { kod('S3D-EXP-103', e); return; }
     try {
-      const id = c.opt && c.opt.id != null ? c.opt.id : c.sel;
+      const id = c.opt && c.opt.butun ? null : c.opt && c.opt.id != null ? c.opt.id : c.sel;
       const pl = id != null ? c.doc.placements.find(p => p.id === id) : null;
       const model = M[0].eksportModeli(view(c), c.H, (c.res && c.res.cutlists) || [], { only: pl ? pl.id : null, nom: {
         modul: (f) => modulNomi(c.H, f), material: (code, asl) => materialNomi(c.H, code, asl),
