@@ -133,3 +133,56 @@ test('admin: xizmat + tanlov + ish haqi + ustama → saqlanadi, tarix (kim, eski
   assert.equal(g2.tanlov.raspil, null);
   assert.ok((await (await api('/api/narxlar/tarix', { token: T })).json()).some(x => x.kalit === 'tanlov.raspil' && x.eski === '780236019999' && x.yangi === null));
 });
+
+test('TZ-36 P7: sukut stavkalarga qaytarish — faqat admin; eski ish haqi (12 000 / 40 000) 0 ga qaytadi, tarixga yoziladi', async () => {
+  const T = await admin();
+  /* serverda admin avval saqlagan eski qiymatlar (yangilashdan keyin ham bazada qoladi) */
+  assert.equal((await api('/api/narxlar', { method: 'PUT', token: T, body: { ish_haqi: { detal: 12000, modul: 40000 } } })).status, 200);
+  assert.equal((await (await api('/api/narxlar')).json()).ish_haqi.modul.qiymat, 40000);
+  /* ruxsat: tokensiz 401, usta 403 — hech narsa o'zgarmaydi */
+  assert.equal((await api('/api/narxlar/sukut', { method: 'POST', body: { qamrov: 'ish_haqi' } })).status, 401);
+  const U = await usta('998991110778');
+  const rU = await api('/api/narxlar/sukut', { method: 'POST', token: U.token, body: { qamrov: 'ish_haqi' } });
+  assert.equal(rU.status, 403);
+  assert.equal((await (await api('/api/narxlar')).json()).ish_haqi.detal.qiymat, 12000);
+  /* noto'g'ri qamrov */
+  for (const q of [undefined, '', 'boshqa', 'xizmatlar']) {
+    const r = await api('/api/narxlar/sukut', { method: 'POST', token: T, body: q === undefined ? {} : { qamrov: q } });
+    assert.equal(r.status, 400);
+    assert.equal((await r.json()).code, 'S3D-NARX-001');
+  }
+  /* ish haqi qaytadi; ustama (35 -> 30 test o'zgartirgan) tegilmaydi */
+  const oldin = await (await api('/api/narxlar')).json();
+  const r = await api('/api/narxlar/sukut', { method: 'POST', token: T, body: { qamrov: 'ish_haqi' } });
+  assert.equal(r.status, 200);
+  assert.equal((await r.json()).ozgarish, 3, 'yoqilgan + detal + modul');
+  const g = await (await api('/api/narxlar')).json();
+  assert.equal(g.ish_haqi.detal.qiymat, 0);
+  assert.equal(g.ish_haqi.modul.qiymat, 0);
+  assert.equal(g.ish_haqi.detal.manba, 'egasi');
+  assert.equal(g.ish_haqi.yoqilgan.qiymat, true);
+  assert.deepEqual(g.ustama, oldin.ustama, 'ustama tegilmadi');
+  const tarix = await (await api('/api/narxlar/tarix', { token: T })).json();
+  const t = tarix.find(x => x.kalit === 'ish_haqi.modul' && x.yangi && x.yangi.qiymat === 0);
+  assert.equal(t.eski.qiymat, 40000);
+  assert.ok(t.kim);
+  /* qayta bosish — o'zgarish yo'q, tarix ko'paymaydi */
+  const n = tarix.length;
+  assert.equal((await (await api('/api/narxlar/sukut', { method: 'POST', token: T, body: { qamrov: 'ish_haqi' } })).json()).ozgarish, 0);
+  assert.equal((await (await api('/api/narxlar/tarix', { token: T })).json()).length, n);
+});
+
+test('TZ-36 P7: qamrov "hammasi" — xizmat, tanlov, ustama ham boshlang\'ich holatga qaytadi', async () => {
+  const T = await admin();
+  assert.equal((await api('/api/narxlar', { method: 'PUT', token: T, body: { xizmatlar: RASPIL } })).status, 200);
+  assert.equal((await api('/api/narxlar', { method: 'PUT', token: T, body: { tanlov: { raspil: '780236019999' }, ustama: { foiz: 50 } } })).status, 200);
+  const r = await api('/api/narxlar/sukut', { method: 'POST', token: T, body: { qamrov: 'hammasi' } });
+  assert.equal(r.status, 200);
+  assert.ok((await r.json()).ozgarish >= 3);
+  const g = await (await api('/api/narxlar')).json();
+  assert.deepEqual(g.xizmatlar, BOSH);
+  assert.equal(g.tanlov.raspil, '7802360156');
+  assert.equal(g.ustama.foiz.qiymat, 35);
+  assert.equal(g.ustama.foiz.manba, 'egasi');
+  assert.equal(g.ish_haqi.modul.qiymat, 0);
+});

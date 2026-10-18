@@ -117,6 +117,17 @@ async function asosiy(page, R) {
   R.tel = await M(() => { const r = document.querySelector('[data-set="narxlar"]').getBoundingClientRect(); return { sigadi: r.left >= 0 && r.right <= innerWidth + 1, hScroll: document.documentElement.scrollWidth > innerWidth + 1 }; });
   await page.locator('[data-set="narxlar"]').screenshot({ path: `${OUT}/narxlar-390.png` });
 
+  /* 6) TZ-36 P7: admin "Ish haqini sukutga qaytarish" — eski saqlangan 12 000 / 40 000 → 0 ("egasi"), ustama tegilmaydi; tarixga yoziladi */
+  const sb = await M(() => fetch('/api/narxlar').then(r => r.json()));
+  R.sukutOldin = { detal: sb.ish_haqi.detal.qiymat, modul: sb.ish_haqi.modul.qiymat };
+  await page.locator('[data-narx-sukut="ish_haqi"]').scrollIntoViewIfNeeded();
+  await page.locator('[data-narx-sukut="ish_haqi"]').click(); await page.waitForTimeout(400);
+  R.sukutDialog = await M(() => (document.querySelector('[role="dialog"]') || {}).innerText || '');
+  await page.locator('[role="dialog"] button').last().click(); await page.waitForTimeout(1500);
+  const sk = await M(() => fetch('/api/narxlar').then(r => r.json()));
+  R.sukutKeyin = { detal: sk.ish_haqi.detal.qiymat, modul: sk.ish_haqi.modul.qiymat, manba: sk.ish_haqi.detal.manba, ustama: sk.ustama.foiz.qiymat };
+  R.sukutTugmalar = await M(() => document.querySelectorAll('[data-narx-sukut]').length);
+
   /* jadvalRaspil: 6 sukut raspil qatori (ERP Holzma 1–3, Altendorf 1–3; TZ-32 E) + 2 ta test qatori */
   R.errs = errs;
   R.ok = R.boshlangich.taxmin > 0 && R.boshlangich.jadval &&
@@ -125,5 +136,7 @@ async function asosiy(page, R) {
     R.ishHaqi.detal === 'egasi' && R.ishHaqi.modul === 'egasi' && R.ishHaqi.ustama === 'egasi' &&
     R.jadvalRaspil === 8 && R.tarix >= 6 &&
     R.prod.pct > 0 && R.prod.raspil > 0 && R.aniqTugma.includes('Narx aniqligi ' + R.prod.pct + '%') && R.raspilQator && R.aniqRoyxat.length > 0 &&
+    R.sukutOldin.detal === 12000 && R.sukutOldin.modul === 40000 && /sukut/i.test(R.sukutDialog) &&
+    R.sukutKeyin.detal === 0 && R.sukutKeyin.modul === 0 && R.sukutKeyin.manba === 'egasi' && R.sukutKeyin.ustama === 35 && R.sukutTugmalar === 2 &&
     R.toliqEmasYoq && R.tel.sigadi && !R.tel.hScroll && errs.length === 0;
 }
