@@ -3545,7 +3545,15 @@
   "price": 1250000,
   "material_code": "UPHOLSTERY",
   "production": "upholstery",
-  "parts": [],
+  "parts": [
+   {
+    "code": "karkas",
+    "qty": 1,
+    "len": "w-200",
+    "width": "d-200",
+    "material": "LDSP18"
+   }
+  ],
   "edge": [],
   "holes": [],
   "hardware": [
@@ -3554,7 +3562,8 @@
     "qty": 1
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "izoh": "TZ-32 B5: detal yo'q edi — boshqa yumshoq mebel modullaridagi (SP-S-001/002, SP-C-001/002, SP-BD-001) karkas shabloni (w−200 × d−200); haqiqiy kreslo chizmasi emas"
  },
  {
   "code": "SP-S-004",
@@ -9448,7 +9457,7 @@
   "d": 900,
   "h": 800,
   "min_w": 1800,
-  "max_w": 2800,
+  "max_w": 2780,
   "stretch_axis": "xy",
   "price_mode": "unit",
   "price": 1650000,
@@ -9562,7 +9571,8 @@
     "qty": 4
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "izoh": "TZ-32 B5: max_w 2800 → 2780 — ust/past/orqa detali (eni = w) varaqqa sig'sin (2800 × 2070, chetidan 10 mm)"
  },
  {
   "code": "SP-C-003",
@@ -11503,7 +11513,7 @@
   "h": 720,
   "min_w": 400,
   "max_w": 900,
-  "min_d": 500,
+  "min_d": 550,
   "max_d": 650,
   "stretch_axis": "xy",
   "price_mode": "unit",
@@ -11827,7 +11837,8 @@
     "teshiklar": [],
     "zapchast_soni": true
    }
-  ]
+  ],
+  "izoh": "TZ-32 B5: min_d 500 → 550 — tortma yoni 500 mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − 50, MC-KP-03/04/09/10/11)"
  },
  {
   "code": "SP-K-023",
@@ -11839,7 +11850,7 @@
   "h": 720,
   "min_w": 600,
   "max_w": 1200,
-  "min_d": 500,
+  "min_d": 550,
   "max_d": 650,
   "stretch_axis": "xy",
   "price_mode": "unit",
@@ -12149,7 +12160,8 @@
     "teshiklar": [],
     "zapchast_soni": true
    }
-  ]
+  ],
+  "izoh": "TZ-32 B5: min_d 500 → 550 — tortma yoni 500 mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − 50, MC-KP-03/04/09/10/11)"
  },
  {
   "code": "SP-K-024",
@@ -13329,7 +13341,7 @@
   "h": 550,
   "min_w": 400,
   "max_w": 500,
-  "min_d": 400,
+  "min_d": 450,
   "max_d": 550,
   "stretch_axis": "y",
   "price_mode": "unit",
@@ -13566,7 +13578,8 @@
     "teshiklar": [],
     "zapchast_soni": true
    }
-  ]
+  ],
+  "izoh": "TZ-32 B5: min_d 400 → 450 — tortma yoni 400 mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − 50, MC-KP-03/04/09/10/11)"
  },
  {
   "code": "SP-D-002",
@@ -13653,7 +13666,7 @@
   "h": 500,
   "min_w": 600,
   "max_w": 1200,
-  "min_d": 400,
+  "min_d": 450,
   "max_d": 550,
   "stretch_axis": "x",
   "price_mode": "unit",
@@ -13932,7 +13945,8 @@
     "teshiklar": [],
     "zapchast_soni": true
    }
-  ]
+  ],
+  "izoh": "TZ-32 B5: min_d 400 → 450 — tortma yoni 400 mm chuqurlikka sig'sin (MC/Bazis: tortma yoni = d − 50, MC-KP-03/04/09/10/11)"
  },
  {
   "code": "SP-H-011",
@@ -14347,7 +14361,7 @@
   "max_w": 150,
   "min_d": 16,
   "max_d": 700,
-  "min_h": 100,
+  "min_h": 600,
   "max_h": 2700,
   "stretch_axis": "xyz",
   "price_mode": "unit",
@@ -14376,7 +14390,7 @@
    }
   ],
   "holes": [],
-  "izoh": "TZ-22: devor/burchak yonidagi planka — eshik va tutqich ochilishi uchun (eni 40–100 mm, taklif; texnolog tasdiqlaydi)"
+  "izoh": "TZ-22: devor/burchak yonidagi planka — eshik va tutqich ochilishi uchun (eni 40–100 mm, taklif; texnolog tasdiqlaydi) | TZ-32 B5: min_h 100 → 600 — detal 'h − 100' 0 bo'lmasin; pastki qator bo'yi sexda 600–880 (sex-standartlari.json oshxona_pastki)"
  },
  {
   "code": "SP-ST-006",
