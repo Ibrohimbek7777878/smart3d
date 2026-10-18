@@ -548,4 +548,126 @@ buni togirla va vr qismin ham togirlab chiq 85ta modulin togirlab chiq va narx a
 
 204. https://mebelcity.bittada.uz/ bu saytn link va login [LOGIN YASHIRILDI] parol[PAROL YASHIRILDI] kirasan va bundan lsit soniga hisoblash kere bizni dasturimiz materilani  va prisadka uslugani ham korib chiq va kochir va qoshimchasiga bazis uslugalarni ham korib chiq va ol
 
+205. umumiy loyhan nechi fozi bold va nimalr qoldi bizga eng muhimlar hozir  konstruksiya qilish tayor modularni razmer va narx aniq chiqarb berish  stanoklarimiz uchun kereli fayllarni kerlei formatda chiqarb berish loyhan productionga tayorlash va bu ish soatda 16:00 gacha bolish kere bizda deyarli hammasi tayor bolb qoldi shundyami
+
 206. end qara olgan malumotlaring boshqa claude ham biladimi yani ikkalaing gaplashib ishlashing kere va deadline 16:00 gacha loyha tayyor bolish kere senga sayt link va login paroln berdim uni boshqa claudega ham ber u ham  oziga kereli datalarin olsin va ishn boshlashlaring kere shuni iloj bormi
+
+207. men ruxsat beraman nima kere bolsa olaver saytni link va login parol kere bolsa beraman  boshqa claude ham bor login parol
+
+208. hoz mendan senga yana nimalar kere toliq ayt
+
+209. 1.bu hozir qandya hoaltda shuni aytda hozir qaysi brida turbd main da trusin hammasi asosiyda qara commit va push qilishdan oldin xatolarni togirlab keyin otkaz
+2.sen har doim tohtovsiz ishlab turish kere keyin registerni email va ism bilan otadigan qil google email bilan otish tugams bolsin va google butonni bolsin  
+3.vaqt har doim doimiy restart berb tur ochib qolmasin osilib ham qolmasin 
+4.uni bilmayman ozing kirb kor login va paroln berdm kecha kere bolsa yana berman 
+5.prisadka teshiklar aniq bolish kere va rnaglar ha aniq bolsin had amaterila tanlagan daosha materilan rams bolish kere va furniturada ham zapchastlarni rasm bolsin 
+6.ish haqin boya bergan katta erpidan ol meblecity.bittada.uz  dan ol izlab kor 
+7.ha bu hozma raspl homza rasin uslugalari 
+8.chizganinga detalni soniga qarba hisoblanad  online 3mingdan oflayn 6mingdan 
+9.menimcha shu bolad va yana bir izlanb kor dunyodan izlab kor
+10.ha togri bolish kere kromka metrga hisoblanad 
+11.buni ham katta erpidan izlab kor chiqad bolish kere hamma narx va datlar boyicha katta erpidan izlab korasan 
+12.ularn royxatga qoshma olib tashla keyin eslatb turasan
+13.bizda 130ta tayyor modul osha moduldan ai bizga terib berish kere bolad barchasidan terb bersin 
+14.16ga otakz
+15.ha boshla
+16.hozir qilinsin ikkalais ham ketma ket qilinsin 
+17.ozing qilaver 
+18.ha qilaver kop vaqt ketb qolmasin 
+19.yo bu kere emas hoz google orqali qilinsin
+20.ha qilaver buni hamqosh
+21.barhca stanoklar uchun faylarimiz tayyormi ozi 
+22.ha sen fayln ber va saytan ham olsam boladimi
+23.ha oldin saytn tugatamiz ungacha faqa tkirb korishnga ruxsat beraman 
+24.hoz beramna qolganlarin qilb turaver 
+25.hozircha tursin
+26.yoq
+
+210. faqat sonet modelida ishlasin qolgan agetalr esa vazifaga qarab maxmimal sonnet modeligahca kotarilsin opusga otilmasin
+
+211. faqat sonet modelida ishlasin qolgan agetalr esa vazifaga qarab maxmimal sonnet modeligahca kotarilsin opusga otilmasin
+
+212. serverga yoz mayli lekin buzib yokida xatolik bolb qolmasin etibor ber shu qismalrga keyin ai kosntruksiya qila oladim hzir yozsam menga qilb berish kere
+
+213. Google Client ID: console.cloud.google.com → Credentials → OAuth client ID (Web), "Authorized JavaScript origins" ga https://smart.bittada.uz yozing va chiqqan ID'ni yuboring. ozing ola olasanmi ruxsat beraman
+erpdan izlab kor va ishlab chiqaruvchi saytlardna olib kor
+
+214. nega narx aniqlig 68foizdan 58 foziga tushib qold
+
+215. (4 ta vosita o'rnatish ro'yxati: Ponytail — kod siqish va refaktor; OmniRoute — model fallback va ko'p provayderli yo'naltirish; Graphify — kod bazasi bilimlar grafi va AST indekslash (kontekst tokenini tejash); agent-skills (Addy Osmani) — /spec /plan /build /test /ship) shularn ornatib ol va boshqa claude ham qoshimcha ganetlar ham kamro token bilan sifalti ish qilsin bir xil fayllarn qyata qayta oqimasin
+
+216. 1.https://console.cloud.google.com/apis/credentials?project=my-sayt-512006&supportedpurview=project   ichida bormi bolsa ol
+2.ha mualiflik bizda qolsin boshqanik emas 
+3.bularni roantsak token sarfi v aish sfiat yaxshilanadimi
+
+217. (skrinshot: Google Cloud "Create OAuth client ID" — Web application, nom "My sayt", Authorized JavaScript origins bo'sh) hoz nima ilay aytb tur
+
+218. Google Client ID berildi (...apps.googleusercontent.com; ochiq qiymat, maxfiy emas)
+
+219. 2.kere emas orntama 1.hoz izlayabman topib tashlab yuboramn uni qaysi qismga qoymoqchisan va qara tiln ozgartish funksiyas pastka tushib qolgna shuni tepaga kotarb qoy
+
+220. /home/ibrohim/Downloads/Telegram Desktop/photo_2026-08-29_12-56-14-removebg-preview.png  shu yerda turbd logo
+
+221. bularni qaytadna ber shunarli qilb va bu datalrin katta erpidan topa olamaidngmi
+
+222. keyin serverga teginma hammasin toliq tugt va loclahsotda meng natijan krosatasan song ozim qolda qilaman serverga
+
+223. togir stoleshnitsada bita narx bolmaydi materilaga qarb farq qilad shu boyicha oalver va anrxln ham qoyaver 
+2.43 ni ozin olbi ketaversin 
+1.erpida qandya yozilgan ish haqi shu boyicha ishlaymiz bu bizn katta erp va hammas shunda bolad ozgaritradigna qismlarn yana aytman  keyin serverga teginma hammasin toliq tugt va loclahsotda meng natijan krosatasan song ozim qolda qilaman serverga
+
+224. servern run qilb brauzerda ochib ber
+
+225. (4 ta skrinshot: lokal 37831 — Furnitura oynasi rasmlarsiz; Fayllar: OBJ bosganda .obj va .mtl ikkita fayl; Altendorf bosganda .txt) qara furnituradagi detlarin rasmin interndan izlab topib qoy 
+fayllardai formati togir ishlayabdimi obj bosganimda nega mtl chiqarb beraybd ham mtl ha obj formatda berish kere 4 rasmda aletndorfn bosganmda txt fyal chiqarb berayabd nega fayl format toigrlanmadi  shularn togirla va qolganlarin ham hoz test qilb koraman
+
+226. (lokal sinovda, skrinshot: Furnitura oynasi, Katalog 2791 ta, ko'pida rasm yo'q) furnituradagi detallarning rasmini internetdan izlab topib qo'y
+
+227. narx aniqlign korsatish ozi keremi   hozrhca tursin kechka ishn tugatgahc keyin yo olib tashlaymiz yokida turad 
+mobile versiyan hali kormadi
+shartnoma kere emas
+
+228. .skp fayl ishlad aniq tiniq bazisdan otgandya ochild .skp fayl otdin end undan keying fayllarni togirlab chiqish kere
+
+229. (2 ta skrinshot: lokal kirish oynasi; Google tugmasi bosilganda "Access blocked: Authorization Error — origin_mismatch") google orqali kirsh tugmasiga dizyan qosh saytga mos
+
+230. (skrinshot: kirish oynasidagi 3D shkaf yuqoridan ochiq ko'rinadi) qara bu detalni ustin yopib qoyish kere ochiq bolmaydiku shkaf
+
+231. (2 skrinshot 13:58 va 14:09: loyiha "Ustki shkafsiz oshxona" — muzlatgich qora quti, eshiksiz) qara bu yerda haladelnik va duxofka hamda gaz pliatlar yoq qora bolb qoglan va eshiklar yoq uni ham togirlash kere eshikalr ochilsin rang har xil bolisn har bir detaln rang va materilan ozgartsh bolsin da ragvina bolsin
+
+232. obj,mtl fayllarda muomo bor shuni togirla buun boshli oshxonani emas bita modulin chiqarb ebrayabd faylni ochganda
+
+233. hoz nimalar bold va nimalar qold
+
+234. (skrinshot 14:14: 3D oshxona pastki qismida shtrixlangan miltillash) qara pastki qismda hali ham pirpirash bor xira bolb qolayabd
+
+235. (skrinshot: 3D xona, modullar; surilganda ba'zi qismlari joyida qolib ketgan) qara nega detalrn joyin siljitsam detaln joyida bazi bir qismlar qolib ketayabd
+
+236. keyin qara oyna umuman yoq oyna tnaladim lekin taxta chiqayabd oshani ham oynani bosganda realni oyna chiqish kere va detallarni 360 ayalntrish va istalgan joyga old orqa chap ong burib yo tepaga yo pastda qilb joylashtrsh ham bolsin
+
+237. (skrinshot: brauzer varag'i "Smart3D — ilova") qanaqa ilova  olib tashla
+
+238. e sahifalrga api rul nima bold tugatildimi
+
+239. (skrinshot 14:44: "Yotoqxona" tayyor shabloni — karavot katta quti, spalni) qara yotoqxona mebel yaxsh chiqmagan va spalni garnitur va boshqa lari ham yoq keyin yangi modul ga alamshtriganda eski  modul avatmatik chekkaga surilish kere va ualrni  hammasin avatmik xonaga yokida 2xonali uyga solib berish kere shunday anrsa qoshsak boladim yokida ish kop bolb ketadimi shuni shuntirb ber
+
+240. ikkalain ham bugun qil va tugasin
+
+241. (skrinshot: Furnitura oynasi, Katalog 2791 ta) qara bu yerda  zpachastlarni ai ni ozi topib qoyadi shundyami va shu kabi materilani ha qoiz tanlab qoayd va bu narsa hozir realni ishlayabdimi
+
+242. spalniy garnitur, classic model spalniy razmeri 1800x2100 mm material ldsp, bosh va oyoq qismida yumshoq detallari bor, shkafi 2400x2300mm 3 qismdan iborat o'rtadagi qismi kiyim ilish uchun 2 ta chekkasi polkalar, trimosi tortmali tepasida oyna bor ruchkasiz push mexanizmda, umuniy rangi kashemir
+bu prompt lekin natija oddiy 2ta shkaf qilb berdi nega bundya bold kosntruskiay qismi ishlmayabd hlai toliq korib chiq va sababin ayt kod yozmay tur
+
+243. hozir menda api key yoq nima qilsak bunday muomon hal qila olamiz ozing sonnet modeling ulab qoya olamzmi
+
+244. (skrinshot: claude.ai chatidagi spalniy garnitur rasmi — klassik ramkali shkaf, yumshoq boshli krovat, ko'zguli trimo) bu natija shundya bolish kere edi hozircha qodialrin togirlab yoizlgan anrsan chzib bersin keiyn hozir bita modul chizish bor nima qilsak hozrigiday muomoalrga yechim qila olamiz
+
+245. spalniy garnitur, classic model, spalniy razmeri 1800x2100 mm ldsp, bosh va oyoq qismida yumshoq detallari, shkafi 2400x2300 mm 3 qismdan (o'rtada kiyim ilish, 2 chekkasi polka), trimosi tortmali tepasida oyna, ruchkasiz push mexanizmda, umumiy rangi kashemir (egasi #242–#244, boshqa chat orqali; maqsad rasm: claude.ai chat, klassik garnitur)
+
+246. ozi qara kosntruksiay qilish yani butun boshli spalniy garnitur chizish va  butun boshli yoqotxona yokdia oshxona kuxniya mbelin qilish butun boshli kosntruksiya qilish funksiya tubi bormi bor borlsa shuni togirla
+
+247. (skrinshot: Modul chizish paneli, bitta shkaf) qara bu eyrda topa olmadim men osha funksiyan hozir toigrlab ber hammasin yani umumiy kosntrsuiya qilish byoicha qodialar va tizimn ozi togirlab bersin
+
+248. qara hozir prompt yozsak bizdag bor 130ta moduldan olib chizb berad shundaymi shuni narsa hozir qoshib tayor ishlaydigan qilb ber
+
+249. (skrinshot: lokal saytda L shakldagi to'liq oshxona 3D) prompt yozgan konstruksiya uchun huddi shunday qilb umumiy chizb berish kere  ha tasdiqlayman boshla
