@@ -62,6 +62,12 @@ function soralganTarkib(spec, xom = {}) {
   return { eshik: eshikAytildi ? eshik : null, eshikBor: !!xom.eshikBor, tortma, polka, shtanga };
 }
 
+/** shkaf bo'limlari soni: 1 + vertikal peregorodkalar (katalog detal kodlari: peregorodka, urta_bok, sr_bok = o'rta yon) — TZ-35 B1 "3 qismdan" dalili.
+ *  Faqat shu detallar sanaladi: SP-G-011 (peregorodka ×2) = 3, SP-G-010 = 2, MC-SH-02 (sr_bok ×2) = 3, SP-W-006/007 = 1 (3–4 qanot, lekin bitta bo'lim) */
+export function modulBolimSoni(f) {
+  return 1 + yig((f && f.parts) || [], /^(peregorodka|urta_bok|sr_bok)(?:_\d+)?$/i);
+}
+
 const OLCH = [['w', 'eni'], ['d', 'chuqurligi'], ['h', 'boyi']];
 
 /**
@@ -104,6 +110,11 @@ export function katalogdanTop(spec, soralgan, catalog, matn = '') {
         /* hal qiluvchi farq: tortma so'raldi — modulda yo'q yoki soni 1 tadan ko'p farq qiladi; eshik so'raldi — modulda yo'q */
         if ((k === 'tortma' && v > 0 && (!b.tortma || Math.abs(v - b.tortma) > 1)) || (k === 'eshik' && v > 0 && !b.eshik)) yetishmaydi.push(qator);
       }
+    }
+    /* TZ-35 B1: «N qismdan» — bo'limlar soni (peregorodka) yaqini afzal; farqi «mos emas» (topilmadi emas) */
+    if (+sor.bolimSoni >= 2) {
+      const bs = modulBolimSoni(f), qator = { k: 'bolim', soraldi: +sor.bolimSoni, modulda: bs };
+      if (bs === +sor.bolimSoni) mos.push(qator); else { mosEmas.push(qator); ball += Math.abs(bs - sor.bolimSoni) * 15; }
     }
     if (ich.eshikBor && ich.eshik == null) { const qator = { k: 'eshik', soraldi: '≥1', modulda: b.eshik }; if (b.eshik > 0) mos.push(Object.assign(qator, { soraldi: b.eshik })); else { mosEmas.push(qator); yetishmaydi.push(qator); ball += 200; } }
     if (ich.shtanga) { const qator = { k: 'shtanga', soraldi: 1, modulda: b.shtanga ? 1 : 0 }; if (b.shtanga) mos.push(qator); else { mosEmas.push(qator); yetishmaydi.push(qator); ball += 200; } }

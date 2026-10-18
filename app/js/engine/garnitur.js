@@ -16,21 +16,24 @@
  * bog'lanadi ("krovat 1800×2100" va "shkaf 2400×2300" — birinchi son hammasiga olinmaydi); xona aytilmasa — garnitur sig'adigan eng kichik;
  * aytilgan xona kichik bo'lsa — kengaytiriladi va kartada aytiladi. Joylash: karavot orqa devorda markazda (bosh tomoni devorga),
  * shkaf chap devor bo'ylab, trimo old devorda markazda, oyna trimo ustida; ustma-ust 0, devordan DEVOR_ORALIQ.
+ * Shkaf tanlovi (katalogTanlash.katalogdanTop; mezon ustuvorligi, dalil — katalog detallari): 1) o'lcham modul min/max ichida; 2) «N qanotli/eshikli» — eshik soni teng
+ * (SP-W-006 = 3 qanot); 3) shtanga so'ralsa — modulda shtanga furnitura (kupe SP-G-010/011, MC-SH-01/05, SP-G-012); 4) «N qismdan» — bo'limlar soni = 1 + peregorodka/urta_bok/sr_bok
+ * (modulBolimSoni: SP-G-011 = 3, SP-G-010 = 2, MC-SH-02 = 3, SP-W-0xx = 1); 5) kupe aytilmagan — oddiy eshikli afzal. Mos modul yo'q — «qisman» qator (shkaf_qism / shkaf_kupe).
  * Modullarga yoziladigan maydonlar (3D shakllar o'qiydi — agent/mebel3d): uslub:'klassik', push:true (ruchkasiz), yumshoq:{bosh,oyoq},
  * kozgu:true (devordagi oyna paneli), karniz/tsokol:true, dekor:{nom,qalinlik} (butun garnitur rangi).
  */
 import { toplamJoyla } from './promptlar.js';
 import { footprint } from './rules.js';
 import { devorChegara } from './devorOraliq.js';
-import { buyumlar, modulTuri } from './aiTur.js';
-import { katalogdanTop, buyumdanTop, olchamOl, modulBelgilari } from './katalogTanlash.js';
+import { buyumlar, modulTuri, xonaOlchamAjrat } from './aiTur.js';
+import { katalogdanTop, buyumdanTop, olchamOl, modulBelgilari, modulBolimSoni } from './katalogTanlash.js';
 import { specTekshir, plitaTop } from './konstruksiyaTili.js';
 
 const tayyorla = (m) => String(m || '').toLowerCase().replace(/[ʻʼ’‘`´]/g, "'").replace(/(\d),(\d)/g, '$1.$2').replace(/(\d)\s*[×х*]\s*(?=\d)/g, '$1x').replace(/\s+/g, ' ').trim();
 
 /* ── buyum so'zlari (uz / ru / en). "spalniy razmeri" — yotoq o'lchami: karavot nazarda tutilgan ── */
 const BOSH = [
-  ['krovat', /krovat[a-z']*|karavot[a-z']*|kravat[a-z']*|karovat[a-z']*|кроват[а-яё]*|(?<![a-z])beds?(?![a-z])|(?:spalni|yotoq)[a-z']*\s*razmer[a-z']*|спальн[а-яё]*\s*размер[а-яё]*|размер[а-яё]*\s*спальн[а-яё]*|sleeping\s*size|bed\s*size/],
+  ['krovat', /krovat[a-z']*|karavot[a-z']*|karavat[a-z']*|karyola[a-z']*|kravat[a-z']*|karovat[a-z']*|кроват[а-яё]*|карават[а-яё]*|каравот[а-яё]*|(?<![a-z])beds?(?![a-z])|(?:spalni|yotoq)[a-z']*\s*razmer[a-z']*|спальн[а-яё]*\s*размер[а-яё]*|размер[а-яё]*\s*спальн[а-яё]*|sleeping\s*size|bed\s*size/],
   ['trimo', /trimo[a-z']*|trumo[a-z']*|трюмо|dressing\s*table|vanity\s*table|туалетн[а-яё]*\s+столик/],
   ['shkaf', /shkaf[a-z']*|garderob[a-z']*|шкаф[а-яё]*|гардероб[а-яё]*|wardrobe|closet/],
   ['oyna', /ko'zgu[a-z']*|kozgu[a-z']*|(?<![a-z])oyna[a-z']*|зеркал[а-яё]*|mirror/],
@@ -56,9 +59,9 @@ const UMUMIY = /umumiy|общ[а-яё]*|overall|general|(?:classic|klassik|кл�
 const TANISH = new RegExp("(?<![a-zа-яё'])(?:" + [
   'spalni[a-z\']*', 'yotoq[a-z\']*', 'razmer[a-z\']*', 'model[a-z\']*', 'detal[a-z\']*', 'qism[a-z\']*', 'tepa[a-z\']*', 'ust[a-z\']*', 'yuqori[a-z\']*', 'mexanizm[a-z\']*', 'umumiy', 'rang[a-z\']*',
   'o\'rta[a-z\']*', 'chekka[a-z\']*', 'chet[a-z\']*', 'yon[a-z\']*', 'tortma[a-z\']*', 'kiyim', 'ilish', 'ilgich', 'shtanga', 'polka[a-z\']*', 'eshik[a-z\']*', 'fasad[a-z\']*', 'korpus[a-z\']*',
-  'ldsp', 'mm', 'sm', 'metr', 'bosh', 'oyoq', 'garnitur[a-z\']*', 'bo\'lim[a-z\']*', 'chap[a-z\']*', 'o\'ng[a-z\']*', 'pastki', 'ostida', 'qanot[a-z\']*', 'ochiq', 'yopiq', 'ikki', 'uch', 'bitta', 'ta',
-  'мебель', 'комплект', 'гарнитур[а-яё]*', 'центр[а-яё]*', 'спальн[а-яё]*', 'размер[а-яё]*', 'деталь', 'детали', 'часть', 'частях', 'частей', 'сверху', 'механизм[а-яё]*', 'общ[а-яё]*', 'цвет[а-яё]*', 'середин[а-яё]*', 'краям?[а-яё]*', 'полк[а-яё]*', 'ящик[а-яё]*', 'вешалк[а-яё]*', 'штанг[а-яё]*', 'одежд[а-яё]*', 'дверц[а-яё]*', 'двер[а-яё]*', 'головн[а-яё]*', 'ножн[а-яё]*', 'мягк[а-яё]*', 'классическ[а-яё]*', 'классик[а-яё]*', 'лдсп', 'без', 'ручек', 'пуш', 'для', 'из', 'на', 'над', 'при', 'три', 'две', 'два', 'одна', 'один',
-  'both', 'bedroom', 'bed', 'room', 'set', 'size', 'part', 'parts', 'section', 'sections', 'soft', 'details', 'detail', 'head', 'foot', 'end', 'ends', 'middle', 'edges', 'shelf', 'shelves', 'hanging', 'rail', 'drawers', 'drawer', 'mirror', 'top', 'above', 'handle[a-z]*', 'overall', 'color', 'colour', 'classic', 'model', 'push', 'mechanism', 'with', 'and', 'the', 'for', 'of', 'in', 'on', 'two', 'three', 'one', 'wardrobe', 'closet', 'dressing', 'table', 'chipboard', 'upholstered', 'sleeping', 'width', 'length'
+  'material[a-z\']*', 'bor', 'iborat', 'umu[nm]iy', 'mebel[a-z\']*', 'yumshoq[a-z\']*', 'tortmali', 'ruchkasiz', 'klassik[a-z\']*', 'bilan', 'va', 'ham', 'hamda', 'ldsp', 'mm', 'sm', 'metr', 'bosh', 'oyoq', 'garnitur[a-z\']*', 'bo\'lim[a-z\']*', 'chap[a-z\']*', 'o\'ng[a-z\']*', 'pastki', 'ostida', 'qanot[a-z\']*', 'ochiq', 'yopiq', 'ikki', 'uch', 'bitta', 'ta',
+  'материал[а-яё]*', 'есть', 'состоит', 'состоящ[а-яё]*', 'мебель', 'комплект', 'гарнитур[а-яё]*', 'центр[а-яё]*', 'спальн[а-яё]*', 'размер[а-яё]*', 'деталь', 'детали', 'часть', 'частях', 'частей', 'сверху', 'механизм[а-яё]*', 'общ[а-яё]*', 'цвет[а-яё]*', 'середин[а-яё]*', 'краям?[а-яё]*', 'полк[а-яё]*', 'ящик[а-яё]*', 'вешалк[а-яё]*', 'штанг[а-яё]*', 'одежд[а-яё]*', 'дверц[а-яё]*', 'двер[а-яё]*', 'головн[а-яё]*', 'ножн[а-яё]*', 'мягк[а-яё]*', 'классическ[а-яё]*', 'классик[а-яё]*', 'лдсп', 'без', 'ручек', 'пуш', 'для', 'из', 'на', 'над', 'при', 'три', 'две', 'два', 'одна', 'один',
+  'has', 'have', 'consists', 'consisting', 'material', 'upholstery', 'both', 'bedroom', 'bed', 'room', 'set', 'size', 'part', 'parts', 'section', 'sections', 'soft', 'details', 'detail', 'head', 'foot', 'end', 'ends', 'middle', 'edges', 'shelf', 'shelves', 'hanging', 'rail', 'drawers', 'drawer', 'mirror', 'top', 'above', 'handle[a-z]*', 'overall', 'color', 'colour', 'classic', 'model', 'push', 'mechanism', 'with', 'and', 'the', 'for', 'of', 'in', 'on', 'two', 'three', 'one', 'wardrobe', 'closet', 'dressing', 'table', 'chipboard', 'upholstered', 'sleeping', 'width', 'length'
 ].join('|') + ")(?![a-zа-яё'])", 'g');
 /* gapni bezovchi so'zlar (iltimos, menga …) — ro'yxatga tushmaydi */
 const GAP_SOZ = /^(?:va|ham|hamda|bilan|uchun|iltimos|menga|kerak|qilib|qilish|bering|ber|qil|bo'lsin|bo'lsa|boladi|bo'ladi|dan|dagi|da|ga|ni|ning|и|а|но|или|пожалуйста|мне|нужн[а-яё]*|сделай[а-яё]*|нужен|нужна|с|со|and|or|please|make|need|me|a|an|to|of|is|are|be)$/;
@@ -98,6 +101,16 @@ function olchamBogla(b, tur) {
   return ol;
 }
 
+/** «3 qanotli», «3 eshikli», «uch qanot», «3-door» → eshik soni (0 — aytilmagan). «3 qismdan» (bo'lim) eshik EMAS */
+function eshikSoni(b) {
+  const so = { bitta: 1, ikki: 2, uch: 3, "to'rt": 4, besh: 5, одна: 1, две: 2, два: 2, три: 3, четыре: 4, one: 1, two: 2, three: 3, four: 4, five: 5 };
+  const E = "(?:qanotli|qanot|eshikli|eshik|fasadli|fasad|створчат[а-яё]*|дверн[а-яё]*|дверц[а-яё]*|двер[а-яё]*|doors?|leaf|leaves)";
+  const m = new RegExp("(\\d+)\\s*-?\\s*(?:ta\\s*)?" + E).exec(b) || new RegExp("(?:^|[^a-zа-яё'])(" + Object.keys(so).join('|') + ")\\s*-?\\s*" + E).exec(b);
+  if (!m) return 0;
+  const v = /^\d+$/.test(m[1]) ? +m[1] : so[m[1]];
+  return v >= 1 && v <= 8 ? v : 0;
+}
+
 /** shkaf bo'lagi: "3 qismdan (o'rtada kiyim ilish, 2 chekkasi polka)" → { n, bolimlar: [{ shtanga, polka }], polkaSoni } */
 function shkafTarkib(b) {
   const qismM = /(\d+)\s*(?:ta\s*)?(?:qism|bo'lim|секци|част|section|part)/.exec(b);
@@ -105,14 +118,24 @@ function shkafTarkib(b) {
   const qismS = !qismM && new RegExp("(?:^|\\s)(" + Object.keys(sonSoz).join('|') + ")\\s*(?:ta\\s*)?(?:qism|bo'lim|секци|част|section|part)").exec(b);
   let n = qismM ? +qismM[1] : qismS ? sonSoz[qismS[1]] : 0;
   const bo = [];
-  const parts = (b.match(/\(([^)]*)\)/g) || []).map(x => x.slice(1, -1)).join(',').split(/[,;]| va | и | and /).map(x => x.trim()).filter(Boolean);
   const shtanga = /shtang|kiyim\s*il|ilgich|iladigan|veshal|вешал|штанг|одежд|hanging|rail/, polka = /polka|полк|shel(?:f|ves)/;
   const orta = /o'?rta|середин|центр|middle|center|centre/, chet = /chekka|chet|yon(?:lar|ida)?|ikki\s*tomon|края|краям|крайн|sides?|edges?|ends?/;
-  const rol = [];
-  for (const p of parts) {
-    const t = shtanga.test(p) ? 'shtanga' : polka.test(p) ? 'polka' : null;
-    const j = orta.test(p) ? 'orta' : chet.test(p) ? 'chet' : /chap|слева|left/.test(p) ? 'chap' : /o'ng|справа|right/.test(p) ? 'ong' : null;
-    if (t) rol.push({ t, j, p });
+  const chap = /chap|слева|left/, ong = /o'ng|справа|right/;
+  /* tarkib («o'rtada kiyim ilish, 2 chekkasi polka» — qavs ichida ham, qavssiz: «o'rtadagi qismi kiyim ilish uchun 2 ta chekkasi polkalar» ham):
+   * matn tartibi bo'yicha hodisalar (turi: shtanga/polka, joyi: o'rta/chekka/chap/o'ng) juftlanadi — joy turdan oldin ham, keyin ham kelishi mumkin (en: «rail in the middle») */
+  const ev = [];
+  const hodisa = new RegExp([shtanga, polka, orta, chet, chap, ong].map(r => '(' + r.source + ')').join('|'), 'g');
+  for (const m of b.replace(/\d+\s*x\s*\d+(?:\s*x\s*\d+)?\s*(?:mm|мм)?/g, ' ').matchAll(hodisa)) {
+    const i = [1, 2, 3, 4, 5, 6].find(k => m[k] != null);
+    const e = i <= 2 ? { t: i === 1 ? 'shtanga' : 'polka' } : { j: ['orta', 'chet', 'chap', 'ong'][i - 3] };
+    const so = ev[ev.length - 1];
+    if (so && ((e.t && so.t === e.t) || (e.j && so.j === e.j))) continue;      // "штанга для одежды" — bitta hodisa
+    ev.push(e);
+  }
+  const rol = []; let kT = null, kJ = null;
+  for (const e of ev) {
+    if (e.t) { if (kJ) { rol.push({ t: e.t, j: kJ, p: '' }); kJ = null; } else kT = e.t; }
+    else { if (kT) { rol.push({ t: kT, j: e.j, p: '' }); kT = null; } else kJ = e.j; }
   }
   if (!n && rol.some(r => r.j === 'orta') && rol.some(r => r.j === 'chet')) n = 3;
   if (n >= 2 && n <= 8) {
@@ -157,14 +180,23 @@ export function garnituraReja(matn, catalog, o = {}) {
   const bolaklar = bolaklarga(s);
   const yutilgan = [];                                 // har bo'lak tanildimi (jim tashlash tekshiruvi)
   let oxirgi = null;
-  for (const b of bolaklar) {
+  for (let b of bolaklar) {
+    /* TZ-35 A: buyum va xona bir bo'lakda ("krovat 1800x2100 va shkaf 2400x2300 xona 4x5") — faqat «xona» so'zi yonidagi o'lcham xonaniki, qolgani buyumniki */
+    if (boshlar(b).length) {
+      const aj = xonaOlchamAjrat(b);
+      if (aj.xona.length) { xonaMatn.push(...aj.xona); b = aj.qolgan; }
+    }
     if (/(?<![a-z])xona(?![a-z])|комнат|(?<![a-z])room(?![a-z])/.test(b) && /\d/.test(b) && !/yotoq\s*xona|bed\s*room|bedroom|спальн/.test(b.replace(/\d.*/, ''))) { xonaMatn.push(b); yutilgan.push(b); continue; }
     const hs = boshlar(b);
     if (hs.length) {
+      const bosh = hs.map((h, k) => {
+        if (k === 0) return 0;
+        /* «krovat 1800x2100 va 3 qanotli garderob 2400x2300»: ikkinchi buyumning sifati («3 qanotli») ajratkichdan (va/и/and/+) keyin — o'z buyumiga */
+        const oraliq = b.slice(hs[k - 1].i, h.i), sep = [...oraliq.matchAll(/(?:^|\s)(?:va|и|and|hamda)\s+|\s*\+\s*/g)].pop();
+        return sep ? hs[k - 1].i + sep.index + sep[0].length : h.i;
+      });
       hs.forEach((h, k) => {
-        const bosh = k === 0 ? 0 : h.i, oxir = k + 1 < hs.length ? hs[k + 1].i : b.length;
-        const seg = b.slice(bosh, oxir);
-        const p = { tur: h.tur, matn: seg };
+        const p = { tur: h.tur, matn: b.slice(bosh[k], k + 1 < hs.length ? bosh[k + 1] : b.length) };
         pieces.push(p); oxirgi = p;
       });
       /* birinchi buyumdan oldingi so'zlar ("spalniy razmeri" dan oldin) — shu bo'lak kontekstida */
@@ -231,10 +263,10 @@ export function garnituraReja(matn, catalog, o = {}) {
     }
     if (p.tur === 'shkaf') {
       const tk = shkafTarkib(p.matn);
-      const raw = { tur: 'shkaf', nom: '', eni: ol.eni, chuqurligi: ol.chuqurligi, boyi: ol.boyi, tag: 'auto', qopqoq: 'auto', tushunilmadi: [],
+      const raw = { tur: 'shkaf', nom: '', eni: ol.eni, chuqurligi: ol.chuqurligi, boyi: ol.boyi, tag: 'auto', qopqoq: 'auto', tushunilmadi: [], eshikJami: eshikSoni(p.matn), bolimSoni: tk.n,
         bolimlar: tk.bolimlar.length ? tk.bolimlar.map(b => ({ polka: b.polka ? 1 : 0, shtanga: b.shtanga, eshik: -1 })) : [] };
       const sp = specTekshir(raw);
-      sp.spec.bolimlar.forEach((b, i) => { b.eshik = -1; b.polka = tk.polkaSoni && tk.bolimlar.length ? Math.round(tk.polkaSoni / tk.bolimlar.filter(x => x.polka).length) * (tk.bolimlar[i] && tk.bolimlar[i].polka ? 1 : 0) : 0; if (!tk.bolimlar[i] || !tk.bolimlar[i].shtanga) b.shtanga = !!(tk.bolimlar[i] && tk.bolimlar[i].shtanga); });
+      sp.spec.bolimlar.forEach((b, i) => { b.eshik = -1; b.polka = tk.polkaSoni && tk.bolimlar.some(x => x.polka) ? Math.round(tk.polkaSoni / tk.bolimlar.filter(x => x.polka).length) * (tk.bolimlar[i] && tk.bolimlar[i].polka ? 1 : 0) : 0; if (!tk.bolimlar[i] || !tk.bolimlar[i].shtanga) b.shtanga = !!(tk.bolimlar[i] && tk.bolimlar[i].shtanga); });
       /* so'ralgan yagona matn: kupe aytilmagan; "klassik" ochiladigan eshik */
       const tan = katalogdanTop(sp.spec, raw, catalog, p.matn);
       if (!tan || !tan.topildi) {
@@ -247,7 +279,9 @@ export function garnituraReja(matn, catalog, o = {}) {
       for (const x of tan.mosEmas) if (/^(eni|chuqurligi|boyi)$/.test(x.k)) q('olcham_chegara', { b: 'shkaf', o: x.k, v: x.soraldi, a: x.min || '—', c: x.max || '—', m: x.natija }, 'qisman');
       if (!ol.chuqurligi) q('olcham_chuq_sukut', { b: 'shkaf', d: tan.olcham.d }, 'sukut');
       const bel = modulBelgilari(f);
-      if (tk.n) q('shkaf_qism', { n: tk.n, e: bel.eshik, p: bel.polka }, 'bajarildi');
+      /* «3 qismdan» = 3 BO'LIM (vertikal peregorodkalar bilan ajratilgan), eshik soni emas: modulning bo'limlar soni katalog detallaridan (modulBolimSoni) */
+      if (tk.n) q('shkaf_qism', { n: tk.n, m: modulBolimSoni(f), e: bel.eshik, p: bel.polka }, modulBolimSoni(f) === tk.n ? 'bajarildi' : 'qisman');
+      if (raw.eshikJami && bel.eshik !== raw.eshikJami) q('shkaf_eshik_farq', { n: raw.eshikJami, m: bel.eshik }, 'qisman');
       if (tk.rol.some(r => r.t === 'shtanga')) q(bel.shtanga ? 'shkaf_shtanga_bor' : 'shkaf_shtanga_yoq', {}, bel.shtanga ? 'bajarildi' : 'bajarilmadi');
       if (tk.rol.some(r => r.t === 'polka')) q('shkaf_polka', { n: bel.polka }, 'bajarildi');
       if (bel.kupe) q('shkaf_kupe', { frg: tan.frg }, 'qisman');

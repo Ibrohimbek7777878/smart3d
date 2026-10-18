@@ -84,7 +84,11 @@ async function asosiy(page, R) {
       kartaBor: !!kartaEl, xona: [bb.x1 - bb.x0, bb.y1 - bb.y0, d.room && d.room.wall_height],
       narx: a.res && a.res.priceRes ? a.res.priceRes.total : null,
       aniqlik: (a.res && a.res.priceRes && (a.res.priceRes.aniqlik || a.res.priceRes.accuracy || a.res.priceRes.exact)) || null,
-      rang: JSON.stringify(d.materials || d.material || (d.kitchen && d.kitchen.material) || null).slice(0, 120),
+      /* rang hujjatda: doc.erpMat (ERP plita nomlari), placements[].slots (korpus/polka/fasad → ERP-kod) va placements[].dekor (engine: {nom, korpus, fasad}) */
+      rang: JSON.stringify({ erpMat: Object.values(d.erpMat || {}).map(m => m.name), slotli: pl.filter(p => p.slots && (p.slots.korpus || p.slots.fasad)).length, dekor: [...new Set(pl.filter(p => p.dekor).map(p => p.dekor.nom + '|' + p.dekor.korpus))] }).slice(0, 300),
+      rangMaydon: { erpMat: Object.keys(d.erpMat || {}).length, slotli: pl.filter(p => p.slots && (p.slots.korpus || p.slots.fasad)).length, dekorli: pl.filter(p => p.dekor).length },
+      erpMatNomlar: Object.values(d.erpMat || {}).map(m => m.name),
+      kat: pl.map(p => { const f = cat[p.frg] || {}; return (f.category || '') + '/' + (f.group || ''); }),
       turlar: pl.map(p => (p.frg || '') + '/' + (p.tur || p.kind || '')).slice(0, 40)
     };
   });
@@ -103,14 +107,18 @@ async function asosiy(page, R) {
       const sabab = [];
       if (o.modul < 1) sabab.push('0 modul');
       if (o.katalogdaYoq.length) sabab.push('katalogda yo\'q: ' + o.katalogdaYoq.join(','));
+      if (nom === 'krovatGarderob' && (o.modul !== 2 || !/SP-BD-004/.test(o.frgs.join()))) sabab.push('krovat+garderob 2 modul emas: ' + o.frgs.join());
+      if (nom === 'garnitur' && o.tush.some(x => /material|iborat|umuniy|\bbor\b/i.test(x))) sabab.push('to\'xtov so\'z tushunilmadi: ' + o.tush.join(' | '));
       if (o.sigmagan.length) sabab.push('xonaga sig\'madi: ' + o.sigmagan.join(','));
       if (o.kesishish.length) sabab.push('kesishish: ' + o.kesishish.slice(0, 4).join(','));
       if (nom === 'garnitur') {
-        const f = o.frgs.concat(o.chiz).join(' ').toLowerCase();
-        const krovat = /krovat|karavot|bed|yotoq|kr-|spalni/.test(f), shkaf = /shkaf|wardrobe|garderob|sh-|kup/.test(f), trimo = /trimo|trumo|komod|tumba|tortma|dresser/.test(f);
+        /* katalog kategoriyasi bo'yicha (kod nomida «krovat» yo'q: SP-BD-004 = bed/kir-yotoq, SP-G-011 = wardrobe, SP-BD-005 = bed/komod) */
+        const krovat = o.kat.some(k => /^bed\/(?!komod)/.test(k) && !/boshka/.test(k)), shkaf = o.kat.some(k => /^wardrobe\//.test(k)), trimo = o.kat.some(k => /^bed\/komod/.test(k));
         r.garnitur3 = { krovat, shkaf, trimo };
         if (o.modul < 3 || !(krovat && shkaf && trimo)) sabab.push(`krovat+shkaf+trimo 3 modul emas (krovat=${krovat} shkaf=${shkaf} trimo=${trimo}, modul=${o.modul})`);
-        if (!/kashemir|cashmere/i.test(o.rang + JSON.stringify(o.turlar))) r.kashemirKuzatilmadi = true;
+        /* TZ-35 B2: umumiy rang kashemir — doc.erpMat da «Кашемир» plitasi, har modulning slots'ida va p.dekor'da */
+        r.rangMaydon = o.rangMaydon;
+        if (!o.erpMatNomlar.some(n => /кашемир|kashemir|cashmere/i.test(n)) || o.rangMaydon.slotli < o.modul - 2 || o.rangMaydon.dekorli < 1) { r.kashemirKuzatilmadi = true; sabab.push('kashemir hujjatda emas: ' + JSON.stringify(o.rangMaydon)); }
       }
       r.holat = sabab.length ? 'KAMCHILIK: ' + sabab.join('; ') : 'OK';
       await page.keyboard.press('Escape'); await page.waitForTimeout(500);
