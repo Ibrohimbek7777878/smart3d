@@ -13,7 +13,7 @@ import { garnituraReja } from '../../../../../app/js/engine/garnitur.js';
 import { erpQosh } from '../../../services/erpMaterial.js';
 import { aiTur, shablonReja, XONA_SHABLON } from '../../../../../app/js/engine/aiTur.js';
 import { promptLoyiha } from '../../../../../app/js/engine/promptlar.js';
-import KUTUBXONA from '../../../../../app/data/promptlar.json';
+import { parametrli } from './kutubxona.js';
 import { t, til } from '../../../i18n/index.js';
 
 /* TZ-19 (TZ-12): AI — server til modeli (kirgan va serverda yoqilgan bo'lsa) yoki qoidali tahlilchi (ai.js), ovoz — brauzer. */
@@ -40,14 +40,14 @@ async function aiParse(text) {
 /** egasi #183: tanilmagan so'rov — hech narsa qurilmaydi, karta: "Tushunmadim" + tayyor variantlar */
 function tushunmadim(text) {
   set('ai', { open: false, mic: false });
-  openSheet('aioshxona', { sarlavha: 'ai.tur_yoq_sarlavha', qatorlar: nomalumQatorlar(text, KUTUBXONA.promptlar) });
+  openSheet('aioshxona', { sarlavha: 'ai.tur_yoq_sarlavha', qatorlar: nomalumQatorlar(text, parametrli()) });
   toast(t('ai.tur_yoq_toast'));
 }
 
 /** egasi #183: xona turi (yotoqxona, mehmonxona, dahliz, garderob …) — tayyor shablon matndagi raqamlar bilan, faqat katalog modullari */
 function shablondanQur(text, yo) {
   const H = project.H;
-  const p = yo.shablon === 'xona' ? XONA_SHABLON : KUTUBXONA.promptlar.find(x => x.id === yo.shablon);
+  const p = yo.shablon === 'xona' ? XONA_SHABLON : parametrli().find(x => x.id === yo.shablon);
   if (!H || !p) { tushunmadim(text); return; }
   const rj = shablonReja(text, p, H.catalog);
   const r = promptLoyiha(rj.prompt, rj.kirish, H.catalog);

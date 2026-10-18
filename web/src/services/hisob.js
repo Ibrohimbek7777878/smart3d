@@ -39,13 +39,25 @@ const REQUIRED = new Set(['frags', 'mats']);   // eski boot(): qolganlari .catch
 
 /** Ma'lumotni yuklash. read(nom) → Promise<obyekt>; standart — fetch('/data/' + nom): absolyut yo'l — chuqur manzilda
  *  (/loyiha/5) ham sayt ildizidan (TZ-30) */
-export async function loadData(read = (n) => fetch('/data/' + n).then(r => r.json())) {
+export async function loadData(read, api) {
+  /* TZ-37: brauzerda (read berilmagan) admin panel ma'lumoti serverdan: furnitura bog'lash (+ koeffitsient) va standart konstruksiya.
+     Server yo'q yoki xato — jim: furnitura — statik data/furnitura-boglash.json, standart — qattiq sukutlar. Sinovda (read berilgan) — faqat fayllar. */
+  if (!read) {
+    read = (n) => fetch('/data/' + n).then(r => r.json());
+    api = api || ((yol) => fetch(yol).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }));
+  }
   const keys = Object.keys(DATA_FILES);
   const vals = await Promise.all(keys.map(k => {
     const p = read(DATA_FILES[k]);
     return REQUIRED.has(k) ? p : p.catch(() => (k === 'nestDef' ? {} : null));
   }));
-  return Object.fromEntries(keys.map((k, i) => [k, vals[i]]));
+  const out = Object.fromEntries(keys.map((k, i) => [k, vals[i]]));
+  if (api) {
+    const [fb, st] = await Promise.all([api('/api/furnitura-boglash').catch(() => null), api('/api/standart').catch(() => null)]);
+    if (fb && fb.links && typeof fb.links === 'object') out.furnBoglash = { links: Object.assign({}, (out.furnBoglash && out.furnBoglash.links) || {}, fb.links), koef: fb.koef || {} };
+    if (st && typeof st === 'object' && !st.error) out.standart = st;
+  }
+  return out;
 }
 
 /** Katalog va ma'lumotlar — eski boot() dagi yig'ish bilan bir xil. */
@@ -54,6 +66,7 @@ export function createHisob(data) {
   const furnById = {};
   for (const it of (furnCat && furnCat.items) || []) if (it.id) furnById[it.id] = it;
   const furnituraBoglash = (furnBoglash && furnBoglash.links) || {};
+  const furnituraKoef = (furnBoglash && furnBoglash.koef) || {};          // TZ-37: admin koeffitsienti (kod → koef; yo'q = 1)
   sukutErpQollash(mats);                                          // TZ-32 A1: egasi bog'lagan sukut plita → ERP narxi (bo'lmasa o'zgarmaydi)
   const catalog = {};
   for (const f of frags) catalog[f.code] = f;
@@ -74,7 +87,7 @@ export function createHisob(data) {
   delete nestDefaults._meta;
 
   const H = {
-    catalog, materials: mats, sheetCatalog: sheetCat, stolErp, dekorMashhur, dekorAsosiy: asosiyIndeks(dekorAsosiy), rasmlar: rasmlar || null, services, sexStd, furnById, furnituraBoglash, searchIndex, nestDefaults,
+    catalog, materials: mats, sheetCatalog: sheetCat, stolErp, dekorMashhur, dekorAsosiy: asosiyIndeks(dekorAsosiy), rasmlar: rasmlar || null, services, sexStd, furnById, furnituraBoglash, furnituraKoef, standart: data.standart || null, searchIndex, nestDefaults,
     nomlar: { ru: nomlarRu || null, en: nomlarEn || null },     // TZ-18: modul/material nomi tanlangan tilda (L.modulNomi)
 
     /** Serverdagi sex standartlari (admin o'zgartiradi, TZ-14) — eski applyStandards bilan bir xil */
@@ -158,7 +171,7 @@ export function createHisob(data) {
       const nest = nestProject(allParts, m, opt.nestCfg || nestDefaults);
       /* 5) ishlab chiqarish tannarxi (haqiqiy varaqlar soni bilan) */
       /* TZ-09: usta ustamasi (Sozlamalar) — berilmasa materials.json standarti (eski sayt bilan bir xil) */
-      const prod = productionCost(cutlists, m, Object.assign({ nestResult: nest, furnituraById: furnById, furnituraBoglash, xizmatlar: doc.xizmatlar || {}, stavka: H.narxlar },
+      const prod = productionCost(cutlists, m, Object.assign({ nestResult: nest, furnituraById: furnById, furnituraBoglash, furnituraKoef, xizmatlar: doc.xizmatlar || {}, stavka: H.narxlar },
         opt.markupPct != null ? { markupPct: opt.markupPct } : {}));
       /* 6) mijoz kotirovkasi — tannarx × (1 + ustama), modullarga taqsimlangan */
       const priceRes = buildQuote(placements, catalog, cutlists, prod, sizeCheck.warnings);

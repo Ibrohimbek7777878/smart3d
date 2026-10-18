@@ -1,0 +1,676 @@
+{
+ "_meta": {
+  "nima": "Tayyor so'rovlar dastlabki to'plami (matn — AI qatoriga aynan yoziladi). Yaratuvchi: scripts/promptlar_seed.mjs; server uni bir marta bazaga (promptlar_admin) qo'shadi.",
+  "manba": "tests/ui/web_qabul50.mjs (qabul sinovidan o'tganlar)",
+  "chiqarilgan": [
+   "tumba 500 2 tortma",
+   "krovat va 2 tumba",
+   "antresol bilan kupe shkaf",
+   "bar peshtaxta aylana",
+   "salom qalaysan",
+   "3 4"
+  ]
+ },
+ "promptlar": [
+  {
+   "id": "qabul-01",
+   "kat": "oshxona",
+   "nom": {
+    "uz": "To'g'ri oshxona, 3 metr",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "oshxona 3 metr to'g'ri",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1010
+  },
+  {
+   "id": "qabul-02",
+   "kat": "oshxona",
+   "nom": {
+    "uz": "L shaklli oshxona 3x4, muzlatgich chapda",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "oshxona L shakl 3x4 xolodilnik chapda",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1020
+  },
+  {
+   "id": "qabul-03",
+   "kat": "oshxona",
+   "nom": {
+    "uz": "U shaklli oshxona 4x4",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "oshxona U shakl 4x4",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1030
+  },
+  {
+   "id": "qabul-04",
+   "kat": "oshxona",
+   "nom": {
+    "uz": "Orolli oshxona 3x4",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "oshxona 3x4 orol bilan",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1040
+  },
+  {
+   "id": "qabul-05",
+   "kat": "oshxona",
+   "nom": {
+    "uz": "Kichik oshxona, 2 metr",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "kichik oshxona 2 metr",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1050
+  },
+  {
+   "id": "qabul-06",
+   "kat": "oshxona",
+   "nom": {
+    "uz": "Ustki shkafsiz oshxona",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "oshxona 3 metr ustki shkafsiz",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1060
+  },
+  {
+   "id": "qabul-07",
+   "kat": "oshxona",
+   "nom": {
+    "uz": "Oshxona, stoleshnitsa 38 mm",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "oshxona 3 metr stoleshnitsa 38 mm",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1070
+  },
+  {
+   "id": "qabul-08",
+   "kat": "oshxona",
+   "nom": {
+    "uz": "Gaz plita va vytyajkali oshxona",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "oshxona 3 metr gaz plita va vytyajka bilan",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1080
+  },
+  {
+   "id": "qabul-09",
+   "kat": "oshxona",
+   "nom": {
+    "uz": "L oshxona 3x3, moyka burchakda",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "oshxona L shakl 3x3 moyka burchakda",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1090
+  },
+  {
+   "id": "qabul-10",
+   "kat": "oshxona",
+   "nom": {
+    "uz": "To'liq oshxona 5x4, texnika bilan",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "to'liq oshxona 5x4 pastki va ustki shkaflar, texnika bilan",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1100
+  },
+  {
+   "id": "qabul-11",
+   "kat": "yotoqxona",
+   "nom": {
+    "uz": "Yotoqxona 4x5",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "yotoqxona 4x5",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1110
+  },
+  {
+   "id": "qabul-12",
+   "kat": "yotoqxona",
+   "nom": {
+    "uz": "Bir kishilik yotoqxona 3x4",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "yotoqxona 3x4 bir kishilik",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1120
+  },
+  {
+   "id": "qabul-13",
+   "kat": "mehmonxona",
+   "nom": {
+    "uz": "Mehmonxona 4x6",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "mehmonxona 4x6",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1130
+  },
+  {
+   "id": "qabul-14",
+   "kat": "mehmonxona",
+   "nom": {
+    "uz": "Mehmonxona, TV zona",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "mehmonxona TV zona",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1140
+  },
+  {
+   "id": "qabul-15",
+   "kat": "bolalar",
+   "nom": {
+    "uz": "Bolalar xonasi 3x3",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "bolalar xonasi 3x3",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1150
+  },
+  {
+   "id": "qabul-16",
+   "kat": "garderob",
+   "nom": {
+    "uz": "Garderob xona 2x3",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "garderob xona 2x3",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1160
+  },
+  {
+   "id": "qabul-17",
+   "kat": "hammom",
+   "nom": {
+    "uz": "Vannaxona 2x3",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "vannaxona 2x3",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1170
+  },
+  {
+   "id": "qabul-18",
+   "kat": "ofis",
+   "nom": {
+    "uz": "Ofis 4x4",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "ofis 4x4",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1180
+  },
+  {
+   "id": "qabul-19",
+   "kat": "dahliz",
+   "nom": {
+    "uz": "Dahliz 2x3, prixojka",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "dahliz 2x3 prixojka",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1190
+  },
+  {
+   "id": "qabul-20",
+   "kat": "yotoqxona",
+   "nom": {
+    "uz": "Katta yotoqxona 5x5",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "yotoqxona 5x5 katta",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1200
+  },
+  {
+   "id": "qabul-21",
+   "kat": "garderob",
+   "nom": {
+    "uz": "Shkaf 1200x600x2200, 2 eshik",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "shkaf 1200x600x2200 2 eshik",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1210
+  },
+  {
+   "id": "qabul-22",
+   "kat": "garderob",
+   "nom": {
+    "uz": "Shkaf 1800x600x2400, 3 eshik",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "shkaf 1800x600x2400 3 eshik",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1220
+  },
+  {
+   "id": "qabul-23",
+   "kat": "garderob",
+   "nom": {
+    "uz": "Pastki shkaf 800, 3 tortma",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "pastki shkaf 800 3 tortma",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1230
+  },
+  {
+   "id": "qabul-24",
+   "kat": "garderob",
+   "nom": {
+    "uz": "Ustki shkaf 600x350x700",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "ustki shkaf 600x350x700",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1240
+  },
+  {
+   "id": "qabul-25",
+   "kat": "ofis",
+   "nom": {
+    "uz": "Javon 1600x300x1800, 5 polka",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "javon 1600x300x1800 5 polka",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1250
+  },
+  {
+   "id": "qabul-26",
+   "kat": "garderob",
+   "nom": {
+    "uz": "Garderob 2000, ikki qanotli",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "garderob 2000 ikki qanotli",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1260
+  },
+  {
+   "id": "qabul-27",
+   "kat": "ofis",
+   "nom": {
+    "uz": "Stol 1400x700",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "stol 1400x700",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1270
+  },
+  {
+   "id": "qabul-28",
+   "kat": "ofis",
+   "nom": {
+    "uz": "Ish stoli 1200",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "ish stoli 1200",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1280
+  },
+  {
+   "id": "qabul-29",
+   "kat": "dahliz",
+   "nom": {
+    "uz": "Poyabzal shkafi",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "poyabzal shkafi",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1290
+  },
+  {
+   "id": "qabul-30",
+   "kat": "yotoqxona",
+   "nom": {
+    "uz": "Spalniy garnitur: krovat, 3 qismli shkaf, trimo",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "spalniy garnitur, classic model spalniy razmeri 1800x2100 mm material ldsp, bosh va oyoq qismida yumshoq detallari bor, shkafi 2400x2300mm 3 qismdan iborat o'rtadagi qismi kiyim ilish uchun 2 ta chekkasi polkalar, trimosi tortmali tepasida oyna bor ruchkasiz push mexanizmda, umuniy rangi kashemir",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1300
+  },
+  {
+   "id": "qabul-31",
+   "kat": "yotoqxona",
+   "nom": {
+    "uz": "Karavot 1600x2000 va 2 eshikli garderob",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "karavot 1600x2000 va 2 eshikli garderob",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1310
+  },
+  {
+   "id": "qabul-32",
+   "kat": "mehmonxona",
+   "nom": {
+    "uz": "Divan 2 metr va stol",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "divan 2 metr va stol",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1320
+  },
+  {
+   "id": "qabul-33",
+   "kat": "mehmonxona",
+   "nom": {
+    "uz": "Stol va 4 stul",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "stol va 4 stul",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1330
+  },
+  {
+   "id": "qabul-34",
+   "kat": "yotoqxona",
+   "nom": {
+    "uz": "Garderob 2400 va komod 1200",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "garderob 2400 va komod 1200",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1340
+  },
+  {
+   "id": "qabul-35",
+   "kat": "mehmonxona",
+   "nom": {
+    "uz": "Mehmonxona garniturı: TV tumba, vitrina, divan",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "mehmonxona garniturı: TV tumba, vitrina, divan",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1350
+  },
+  {
+   "id": "qabul-36",
+   "kat": "bolalar",
+   "nom": {
+    "uz": "Bolalar garnituri: krovat, stol, shkaf",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "bolalar garnituri: krovat, stol, shkaf",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1360
+  },
+  {
+   "id": "qabul-37",
+   "kat": "ofis",
+   "nom": {
+    "uz": "Ofis: stol, shkaf, javon",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "ofis: stol, shkaf, javon",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1370
+  },
+  {
+   "id": "qabul-38",
+   "kat": "ofis",
+   "nom": {
+    "uz": "Kabinet: stol va kitob javoni",
+    "ru": "",
+    "en": ""
+   },
+   "matn": {
+    "uz": "kabinet: stol va kitob javoni",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1380
+  },
+  {
+   "id": "qabul-39",
+   "kat": "oshxona",
+   "nom": {
+    "uz": "Oshxona 3x4 (ruscha so'rov)",
+    "ru": "Кухня 3 на 4",
+    "en": "Kitchen 3 by 4 (Russian prompt)"
+   },
+   "matn": {
+    "uz": "кухня 3 на 4",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1390
+  },
+  {
+   "id": "qabul-40",
+   "kat": "yotoqxona",
+   "nom": {
+    "uz": "Yotoqxona 4x5 (ruscha so'rov)",
+    "ru": "Спальня 4x5",
+    "en": "Bedroom 4x5 (Russian prompt)"
+   },
+   "matn": {
+    "uz": "спальня 4x5",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1400
+  },
+  {
+   "id": "qabul-41",
+   "kat": "garderob",
+   "nom": {
+    "uz": "Shkaf 2 metr, 3 eshik (ruscha so'rov)",
+    "ru": "Шкаф 2 метра, 3 двери",
+    "en": "Wardrobe 2 m, 3 doors (Russian prompt)"
+   },
+   "matn": {
+    "uz": "шкаф 2 метра 3 двери",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1410
+  },
+  {
+   "id": "qabul-42",
+   "kat": "mehmonxona",
+   "nom": {
+    "uz": "Mehmonxona TV zonali (ruscha so'rov)",
+    "ru": "Гостиная с ТВ зоной",
+    "en": "Living room with TV zone (Russian prompt)"
+   },
+   "matn": {
+    "uz": "гостиная с ТВ зоной",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1420
+  },
+  {
+   "id": "qabul-43",
+   "kat": "oshxona",
+   "nom": {
+    "uz": "L oshxona 3x4 (inglizcha so'rov)",
+    "ru": "Г-образная кухня 3x4 (английский запрос)",
+    "en": "Kitchen 3x4 L-shape"
+   },
+   "matn": {
+    "uz": "kitchen 3x4 L-shape",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1430
+  },
+  {
+   "id": "qabul-44",
+   "kat": "garderob",
+   "nom": {
+    "uz": "Shkaf 2000, 3 eshik (inglizcha so'rov)",
+    "ru": "Шкаф 2000, 3 двери (английский запрос)",
+    "en": "Wardrobe 2000 with 3 doors"
+   },
+   "matn": {
+    "uz": "wardrobe 2000 with 3 doors",
+    "ru": "",
+    "en": ""
+   },
+   "tartib": 1440
+  }
+ ]
+}

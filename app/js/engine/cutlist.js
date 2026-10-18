@@ -552,9 +552,12 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   const furnById = opt.furnituraById || {};
   const hwUnitPrice = (hw) => {
     const hid = hw.id || (opt.furnituraBoglash || {})[hw.code];   // TZ-20: kod → ID jadvali (id yozilmagan bo'lsa)
-    if (hid) { const f = furnById[hid]; return f && f.uzs > 0 && !f.no_price ? f.uzs : 0; }
+    /* TZ-37: admin koeffitsienti (furnituraKoef: kod → 0<x≤1000; yo'q = 1) — narx = katalog narxi × koef */
+    const kf = +(opt.furnituraKoef || {})[hw.code];
+    const koef = kf > 0 && Number.isFinite(kf) ? kf : 1;
+    if (hid) { const f = furnById[hid]; return f && f.uzs > 0 && !f.no_price ? f.uzs * koef : 0; }
     const m = hwByCode[hw.code];
-    return m && m.price > 0 ? m.price : 0;
+    return m && m.price > 0 ? m.price * koef : 0;
   };
   /* TZ-32 E7: ERP'da aniq narxi topilmagan furnitura (materials.furnitura_yashirin.kodlar) smeta va narx ro'yxatidan yashiriladi —
      "narxsiz" qator bo'lib aniqlikni tushirmaydi. Narx/ID bog'lansa (hwUnitPrice > 0) yashirilmaydi. Yashirilganlar `yashirin` da qaytadi. */

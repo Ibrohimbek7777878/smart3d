@@ -25,7 +25,7 @@ function ishchida(buf, fayl) {
     const tm = setTimeout(() => { w.terminate(); resolve({ xato: 'S3D-BAZIS-105' }); }, VAQT);
     w.onmessage = (e) => { clearTimeout(tm); w.terminate(); resolve(e.data || { xato: 'S3D-BAZIS-103' }); };
     w.onerror = (e) => { clearTimeout(tm); w.terminate(); resolve({ xato: 'S3D-BAZIS-103', xabar: String((e && e.message) || 'worker') }); };
-    w.postMessage({ bytes: buf, fayl }, [buf]);
+    w.postMessage({ bytes: buf, fayl, furnituraBoglash: (project.H && project.H.furnituraBoglash) || {} }, [buf]);   // TZ-37: birlashgan kod → ERP ID jadvali
   });
 }
 

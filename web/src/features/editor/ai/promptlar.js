@@ -6,13 +6,12 @@ import { toast, confirm, xato } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
 import { promptLoyiha, qiymatlar, KATEGORIYALAR } from '../../../../../app/js/engine/promptlar.js';
 import { konstruksiya } from '../../../../../app/js/engine/konstruktor/index.js';
-import KUTUBXONA from '../../../../../app/data/promptlar.json';
+import { hammasi, parametrli, yukla } from './kutubxona.js';
 import { t, til, serverXato } from '../../../i18n/index.js';
 import { runAI } from './actions.js';
 
 /* TZ-24 B: tayyor so'rovlar (kutubxona, AI'siz — engine/promptlar.js) va shaxsiy shablonlar (server: /api/shablonlar).
  * Shablon: "prompt" — tayyor so'rov va uning raqamlari yoki o'z matningiz; "loyiha" — joriy xona va modullar. */
-const P = KUTUBXONA.promptlar;
 const yozuv = (o) => (o && (o[til()] || o.uz)) || '';
 
 /** joriy loyiha bo'sh bo'lmasa — avval tasdiq (AI'dagi "Qurish" kabi) */
@@ -74,7 +73,7 @@ async function saqla(tur, data) {
 }
 /** joriy tanlov: tayyor so'rov (raqamlari bilan) yoki AI matni */
 export function promptSaqla() {
-  const ai = get().ai, p = P.find(x => x.id === ai.tanlangan);
+  const ai = get().ai, p = parametrli().find(x => x.id === ai.tanlangan);
   if (p) return saqla('prompt', { promptId: p.id, qiymatlar: qiymatlar(p, ai.qiymat || {}) });
   if (ai.text.trim()) return saqla('prompt', { matn: ai.text.trim().slice(0, 2000) });
   toast(t('tayyor.saqlash_yoq'));
@@ -101,7 +100,7 @@ export function shablonOch(sh) {
     });
     return;
   }
-  const p = d.promptId && P.find(x => x.id === d.promptId);
+  const p = d.promptId && parametrli().find(x => x.id === d.promptId);
   if (p) { promptQur(p, d.qiymatlar || {}); return; }
   if (d.matn) { set('ai', { text: d.matn, tab: 'matn' }); almashtir(() => runAI()); }
 }
@@ -114,17 +113,19 @@ export function useTayyor() {
   const ai = useSlice('ai'), auth = useSlice('auth');
   useSlice('data');
   const tab = ai.tab || 'matn';
+  useEffect(() => { yukla().then(() => set('ai', { kutV: Date.now() })); }, []);   // TZ-37: kutubxona serverdan (zaxira — statik)
   useEffect(() => { if (tab === 'shablon') loadShablonlar(); }, [tab, auth.user && auth.user.id]);   // eslint-disable-line react-hooks/exhaustive-deps
   const kat = ai.kat || 'oshxona';
-  const p = P.find(x => x.id === ai.tanlangan) || null;
+  const p = parametrli().find(x => x.id === ai.tanlangan) || null;
   const q = p ? qiymatlar(p, ai.qiymat || {}) : {};
   return {
     tab,
     tablar: [['matn', t('tayyor.tab_matn')], ['tayyor', t('tayyor.tab_tayyor')]].concat(auth.user ? [['shablon', t('tayyor.tab_shablon')]] : [])
       .map(([k, label]) => ({ label, on: tab === k, pick: () => set('ai', { tab: k }) })),
     kategoriyalar: KATEGORIYALAR.map(k => ({ label: t('tayyor.kat_' + k), on: kat === k, pick: () => set('ai', { kat: k, tanlangan: null, qiymat: {} }) })),
-    promptlar: P.filter(x => x.kat === kat).map(x => ({ id: x.id, nom: yozuv(x.nom), izoh: yozuv(x.izoh), on: x.id === ai.tanlangan,
-      pick: () => set('ai', { tanlangan: x.id === ai.tanlangan ? null : x.id, qiymat: {} }) })),
+    promptlar: hammasi().filter(x => x.kat === kat).map(x => x.usul
+      ? { id: x.id, nom: yozuv(x.nom), izoh: yozuv(x.izoh), on: x.id === ai.tanlangan, pick: () => set('ai', { tanlangan: x.id === ai.tanlangan ? null : x.id, qiymat: {} }) }
+      : { id: x.id, nom: yozuv(x.nom), izoh: yozuv(x.matn), on: false, pick: () => set('ai', { text: yozuv(x.matn), tab: 'matn', tanlangan: null }) }),   // matnli: AI qatoriga yoziladi (usta ko'radi va "Qurish"ni bosadi)
     forma: p ? {
       maydonlar: p.maydon.map(m => ({ k: m.k, label: t('tayyor.m_' + m.k) + ' (' + m.min + '–' + m.max + ' ' + t('umumiy.mm') + ')',
         val: (ai.qiymat || {})[m.k] ?? q[m.k], on: ev => set('ai', s => ({ qiymat: { ...(s.qiymat || {}), [m.k]: ev.target.value } })) })),

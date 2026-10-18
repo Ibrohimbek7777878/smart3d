@@ -95,3 +95,55 @@ export function mcModullar(db, appDir) {
     f.material_code || 'LDSP16', f.production || 'panel', JSON.stringify(f)); })();
   console.log(`MebelCity modullari bazaga qo'shildi: ${mc.length} ta`);
 }
+
+/** TZ-37: admin panel jadvallari (idempotent — mavjud bazaga ham qo'shiladi): furnitura bog'lash (fayl ustiga baza), tayyor promptlar, tarix. */
+export function adminSxema(db) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS furn_boglash (
+      kod TEXT PRIMARY KEY,
+      erp_id TEXT NOT NULL,
+      koef REAL NOT NULL DEFAULT 1,
+      izoh TEXT NOT NULL DEFAULT '',
+      updated_by INTEGER,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS promptlar_admin (
+      id TEXT PRIMARY KEY,
+      kat TEXT NOT NULL DEFAULT '',
+      nom_uz TEXT NOT NULL DEFAULT '', nom_ru TEXT NOT NULL DEFAULT '', nom_en TEXT NOT NULL DEFAULT '',
+      matn_uz TEXT NOT NULL DEFAULT '', matn_ru TEXT NOT NULL DEFAULT '', matn_en TEXT NOT NULL DEFAULT '',
+      tartib INTEGER NOT NULL DEFAULT 0,
+      faol INTEGER NOT NULL DEFAULT 1,
+      updated_by INTEGER,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS admin_audit (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER,
+      bolim TEXT NOT NULL,
+      kalit TEXT NOT NULL,
+      eski TEXT,
+      yangi TEXT,
+      qaytarilgan INTEGER NOT NULL DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS idx_admin_audit_bolim ON admin_audit(bolim, id);
+  `);
+}
+
+/** Tayyor so'rovlarning dastlabki to'plami (app/data/promptlar-matn.json — scripts/promptlar_seed.mjs yaratadi): bazada hali
+ *  hech qachon qo'shilmagan bo'lsa — bir marta (settings.promptlar_seed_v1). Admin o'chirsa — qaytib kelmaydi. → qo'shilgan soni */
+export function promptlarSeed(db, appDir) {
+  if (db.prepare("SELECT 1 FROM settings WHERE key = 'promptlar_seed_v1'").get()) return 0;
+  const f = path.join(appDir, 'data/promptlar-matn.json');
+  if (!fs.existsSync(f)) return 0;
+  const list = JSON.parse(fs.readFileSync(f, 'utf8')).promptlar || [];
+  const ins = db.prepare(`INSERT OR IGNORE INTO promptlar_admin (id, kat, nom_uz, nom_ru, nom_en, matn_uz, matn_ru, matn_en, tartib, faol)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`);
+  let n = 0;
+  db.transaction(() => {
+    for (const p of list) n += ins.run(p.id, p.kat, p.nom.uz, p.nom.ru || '', p.nom.en || '', p.matn.uz, p.matn.ru || '', p.matn.en || '', p.tartib).changes;
+    db.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('promptlar_seed_v1', ?, CURRENT_TIMESTAMP)").run(String(n));
+  })();
+  return n;
+}
