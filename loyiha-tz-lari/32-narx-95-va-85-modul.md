@@ -134,7 +134,7 @@ Boshqa chatning TZ-31 fayllariga tegilmaydi: `scene.js`, `sahna.js`, `auth*`.
 1. **Ish haqi** (95% shu javobga bog'liq): detal va modul boshiga stavka qancha? Yoki ish haqi narxga kirmaydimi? Raspil va kromka sex xizmatidan olinadi — ish haqi faqat yig'ish uchunmi?
 2. **Sukut plita:** korpus uchun sexda eng ko'p ishlatiladigan "ЛДСП Ультрадекор Белый гладкий 16 мм" (ERP 309 184; 8 buyurtmada 30 list) bo'lsinmi? Fasad (MDF 16) uchun qaysi ERP mahsulot?
 3. **Sex xizmati sukut tanlovi:**
-   - raspil — Altendorf 1, 18 000 / list;
+   - raspil — ERP xizmatlarida (2026-10-18, boshqa chat o'qidi) list boshiga Holzma 1/2/3 = 25 000 / 43 000 / 48 000 va Altendorf 1/2/3 = 18 000 / 33 000 / 38 000. Boshqa chat ERP'dagi haqiqiy buyurtmada "Распила Holzma 2" (43 000) ishlatilganini aytdi. Sukut Holzma 2 bo'lsinmi? 1/2/3 darajalar nimani bildiradi?
    - kromka — korpus "ПВХ 19/0,4" 3 000 / m, fasad "ПВХ 19/2" 4 900 / m;
    - prisadka — sex jadvalidan.
    Rozimisiz?
