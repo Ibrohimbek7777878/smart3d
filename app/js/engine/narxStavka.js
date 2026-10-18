@@ -218,7 +218,7 @@ export const raspilXizmat = (S) => (S && S.tanlov ? xz(S, S.tanlov.raspil) : nul
 
 /* ─────────── TZ-32 A1: sukut plita → ERP mahsuloti (materials.json sukut_erp) ─────────── */
 /**
- * materials.sukut_erp: { <panel kodi>: null | { sku, nom, uzs, manba, sana } } — egasi tanlagan ERP mahsuloti (2-savol).
+ * materials.sukut_erp: { <panel kodi>: null | { sku, nom, uzs, manba, sana, l?, w? } } — egasi tanlagan ERP mahsuloti (2-savol).
  * Bog'langan plitaning narxi va manbasi shu yerdan, "taxminiy" belgisi tushadi. null yoki to'liq bo'lmagan yozuv — o'zgarmaydi
  * (narx o'ylab topilmaydi). Hisob yuklanganda bir marta chaqiriladi (web/src/services/hisob.js createHisob, app.js boot).
  * @returns {number} bog'langan plitalar soni
@@ -236,6 +236,8 @@ export function sukutErpQollash(materials) {
     pm.price_src = String(v.manba || 'ERP').slice(0, 40) + ', ' + v.sana;
     if (v.sku) pm.sku = String(v.sku).slice(0, 60);
     if (v.nom) pm.sku_nom = String(v.nom).slice(0, 200);
+    /* varaq formati — narx shu mahsulotning formati uchun (masalan ERP 4,575 = 2500×1830); aks holda narx noto'g'ri varaqqa tushadi */
+    if (Number(v.l) > 100 && Number(v.w) > 100) pm.sheets = [[Number(v.l), Number(v.w)]];
     delete pm.taxminiy;
     n++;
   }

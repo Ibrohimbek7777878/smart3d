@@ -279,7 +279,17 @@
  "sukut_erp": {
   "_izoh": "TZ-32 A1: sukut plita → ERP mahsuloti (egasi tanlaydi, 2-savol). null — bog'lanmagan (narx yuqoridagi panel_materials dan). Bog'lash: {\"sku\": \"…\", \"nom\": \"…\", \"uzs\": <ERP narxi>, \"manba\": \"ERP\", \"sana\": \"YYYY-MM-DD\"} — hisob yuklanganda shu plitaning sheet_price, price_src va sku shu yerdan olinadi, \"taxminiy\" belgisi tushadi (engine/narxStavka.js sukutErpQollash).",
   "LDSP18": null,
-  "LDSP16": null,
+  "LDSP16": {
+   "sku": "0101 SM",
+   "nom": "ЛДСП Ультрадекор 4,575 Белый фасадный SM (гладкий) 16мм",
+   "uzs": 298295,
+   "l": 2500,
+   "w": 1830,
+   "manba": "ERP",
+   "sana": "2026-10-18",
+   "erp_id": 10756,
+   "izoh": "Egasi roziligi (2026-10-18): korpus uchun Ультрадекор Белый гладкий 16мм. ERP /api/v2/products: yagona Ultradekor 'Белый гладкий' 16мm; narx — display_price_uzs (list 380 000 — mijozga sotuv narxi). Varaq 2500×1830 — narx shu format uchun."
+  },
   "MDF16": null,
   "HDF3": null
  },
