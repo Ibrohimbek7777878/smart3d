@@ -27,7 +27,7 @@ async function asosiy(page, R) {
   await M(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('s3d-til', 'uz'); });
   await page.reload(); await page.waitForTimeout(1500);
   await fill('Jasur', 'B3d Usta'); await fill('jasur@', 'b3d' + Date.now() + '@test.uz');
-  const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
+  const tel = page.locator('input[inputmode=numeric]').first(); if (await tel.count()) { await tel.click(); await tel.type('9' + String(Date.now()).slice(-8)); }   // #209: telefon maydoni ro'yxatda yashirin
   await fill('kamida 8', 'parol12345');
   await click(/^Ro'yxatdan o'tish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });
   await page.locator('[data-tez="kitchen"]').click(); await page.waitForTimeout(800);
