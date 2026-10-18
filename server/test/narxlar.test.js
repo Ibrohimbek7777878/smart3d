@@ -45,7 +45,7 @@ const admin = async () => (await (await api('/api/login', { method: 'POST', body
 let BOSH = null;   // TZ-32 E: boshlang'ich xizmatlar — ERP sukut stavkalari (materials.json sukut_narx)
 const RASPIL = { '780236019999': { nom: 'Услуга Распила Altendorf 1', guruh: 'raspil', qiymat: 18000, birlik: 'list', manba: 'sex jadvali', sana: '2026-07-03' } };
 
-test('boshlang\'ich holat: hamma o\'qiydi, ish haqi — "taxmin", ustama 35% — "egasi" (materials.json, TZ-30)', async () => {
+test('boshlang\'ich holat: hamma o\'qiydi, ish haqi — 0 "egasi" (ERP: xizmat narxiga kiritilgan, #222 Q3), ustama 35% — "egasi" (materials.json, TZ-30)', async () => {
   const r = await api('/api/narxlar');
   assert.equal(r.status, 200);
   const g = await r.json();
@@ -53,8 +53,9 @@ test('boshlang\'ich holat: hamma o\'qiydi, ish haqi — "taxmin", ustama 35% —
   assert.ok(Object.keys(BOSH).length >= 18 && Object.values(BOSH).every(r => r.manba === 'sex jadvali' && r.sana && r.qiymat > 0), 'sukut — ERP xizmatlari, manbali');
   assert.equal(g.tanlov.raspil, '7802360156', 'sukut raspil — Holzma 2');
   assert.deepEqual(g.tanlov.bazis, { onlayn: '03', oflayn: '04' });
-  assert.equal(g.ish_haqi.detal.manba, 'taxmin');
-  assert.equal(g.ish_haqi.detal.qiymat, 12000);
+  assert.equal(g.ish_haqi.detal.manba, 'egasi');   // TZ-32 yakuniy Q3: ish haqi ERP xizmat narxiga kiritilgan — stavka 0, tasdiqlangan
+  assert.equal(g.ish_haqi.detal.qiymat, 0);
+  assert.equal(g.ish_haqi.modul.qiymat, 0);
   assert.equal(g.ustama.foiz.qiymat, 35);
   assert.equal(g.ustama.foiz.manba, 'egasi');   // TZ-30: egasi tasdiqladi (#181, pricing.price_src "egasi, 2026-10-17")
   assert.equal(g.ustama.foiz.sana, '2026-10-17');
@@ -102,7 +103,7 @@ test('admin: xizmat + tanlov + ish haqi + ustama → saqlanadi, tarix (kim, eski
   const T = await admin();
   let r = await api('/api/narxlar', { method: 'PUT', token: T, body: { xizmatlar: RASPIL } });
   assert.equal(r.status, 200);
-  r = await api('/api/narxlar', { method: 'PUT', token: T, body: { tanlov: { raspil: '780236019999' }, ish_haqi: { yoqilgan: false, detal: '0' }, ustama: { foiz: 30 } } });
+  r = await api('/api/narxlar', { method: 'PUT', token: T, body: { tanlov: { raspil: '780236019999' }, ish_haqi: { yoqilgan: false, detal: '5000' }, ustama: { foiz: 30 } } });
   assert.equal(r.status, 200);
   const j = await r.json();
   assert.equal(j.ozgarish, 4);
@@ -111,9 +112,9 @@ test('admin: xizmat + tanlov + ish haqi + ustama → saqlanadi, tarix (kim, eski
   assert.equal(g.xizmatlar['780236019999'].manba, 'sex jadvali');
   assert.equal(g.xizmatlar['780236019999'].sana, '2026-07-03');
   assert.equal(g.ish_haqi.yoqilgan.qiymat, false);
-  assert.equal(g.ish_haqi.detal.qiymat, 0);
+  assert.equal(g.ish_haqi.detal.qiymat, 5000);
   assert.equal(g.ish_haqi.detal.manba, 'egasi');
-  assert.equal(g.ish_haqi.modul.manba, 'taxmin', 'tegilmagan qator o\'zgarmadi');
+  assert.equal(g.ish_haqi.modul.qiymat, 0, 'tegilmagan qator o\'zgarmadi');
   assert.equal(g.ustama.foiz.qiymat, 30);
   assert.ok(g._meta.ozgartirildi);
   /* bir xil qiymat — o'zgarish yo'q, tarix ko'paymaydi */
