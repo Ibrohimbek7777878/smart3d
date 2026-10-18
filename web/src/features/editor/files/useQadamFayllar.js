@@ -29,6 +29,7 @@ export function useQadamFayllar() {
     { title: t('fayllar.stanokka'), col: 'var(--acct)', sub: t('fayllar.dastursiz'), mainLabel: 'GibLab', main: 'giblab',
       more: [['DXF', 'dxf'], ['G-code', 'gcode'], [t('fayllar.tez_orada', { nom: 'Biesse' }), null], [t('fayllar.tez_orada', { nom: 'Homag' }), null], ['PTP', 'ptp'], ['NC', 'nc'], ['XNC', 'xnc'], ['Altendorf', 'altendorf'],
         [t('fayllar.sinov', { nom: 'Bazis (.bpj)' }), 'bpj', null, () => openSheet('bpjYoriq', {})],   // TZ-33 B1: avval yo'riqnoma
+        [t('fayllar.sinov', { nom: 'Bazis (.b3d)' }), 'b3d', null, () => openSheet('b3dYoriq', {})],   // TZ-33 B2: .b3d yozuvchi — SINOV
         /* TZ-11: Bazis eksportidek GibLab .project va KDT prisadka — texnolog sinovigacha faqat admin, SINOV */
         ...(admin ? [[t('fayllar.sinov', { nom: 'GibLab (Bazis)' }), 'giblabBazis'], [t('fayllar.sinov', { nom: 'KDT prisadka' }), 'kdt']] : [])]
         .filter(([, k]) => !k || !stanoklar || !STANOK.some(x => x[0] === k) || stanoklar.includes(k)) }];

@@ -416,6 +416,7 @@
  "hujjat.t_baza": "Bazalar yuklanmagan",
  "hujjat.t_bosh": "Loyiha bo'sh — mebel qo'ying",
  "hujjat.t_bpj": "BPJ tayyor — {n} panel — SINOV: Bazis'da tekshirilmagan",
+ "hujjat.t_b3d": "Bazis (.b3d) tayyor — {m} modul, {d} detal, {f} furnitura — SINOV: Bazis'da tekshirilmagan",
  "hujjat.t_cutlist": "Avval smeta hisoblansin (cutlist bo'sh)",
  "hujjat.t_dxf": "DXF tayyor — raskroy",
  "hujjat.t_excel": "Excel smeta tayyor (5 ta bo'lim)",
@@ -1290,5 +1291,12 @@
  "bpj.q2": "Skriptda «BPJ Import» tugmasini bosing va shu yerdan yuklab olingan .bpj faylni tanlang.",
  "bpj.q3": "Model chiqqach: Файл → «Сохранить как…» → .b3d.",
  "bpj.sinov": "SINOV — haqiqiy Bazis'da hali tekshirilmagan. Faylda plita bor (detallar, teshiklar, kromka); furnitura ro'yxati hozircha kirmaydi, xona — yo'q.",
- "bpj.yuklab": "Yuklab olish (.bpj)"
+ "bpj.yuklab": "Yuklab olish (.bpj)",
+ "b3d.sarlavha": "Bazis (.b3d) — yo'riqnoma",
+ "b3d.kirish": "Smart3D loyihani Bazis-Mebelshchik faylining o'zi (.b3d) qilib beradi — 3 qadam:",
+ "b3d.q1": "Faylni yuklab oling (pastdagi tugma) va Bazis-Mebelshchik'ni oching.",
+ "b3d.q2": "Файл → «Открыть» — yuklab olingan .b3d faylni tanlang.",
+ "b3d.q3": "Modul, panel soni, o'lcham va materialni Smart3D ro'yxati bilan solishtiring. Ochilmasa yoki farq bo'lsa — xato kodi va faylni yuboring.",
+ "b3d.sinov": "SINOV — fayl Smart3D'da tekshirilgan (yozilgan fayl o'qilganda panel soni, o'lcham, material va joy aynan chiqadi), lekin haqiqiy Bazis'da ochilishi hali sinalmagan. Faylda: modullar, plita (o'lcham, joy, material, kromka) va furnitura ro'yxati; teshiklar va furnitura 3D shakli yo'q.",
+ "b3d.yuklab": "Yuklab olish (.b3d)"
 }

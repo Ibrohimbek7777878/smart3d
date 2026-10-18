@@ -70,6 +70,9 @@ export const XATOLAR = {
   'S3D-EXP-102': { matn: 'SketchUp (.skp) fayli yaratilmadi' },
   'S3D-EXP-103': { matn: 'SketchUp eksporti yuklanmadi — internetni tekshirib, qayta urinib ko\'ring' },
   'S3D-EXP-104': { matn: 'SketchUp Pro (.dae) fayli yaratilmadi' },
+  /* TZ-33 B2: Bazis .b3d yozuvchi (SINOV) */
+  'S3D-EXP-105': { matn: 'Bazis (.b3d) fayli yaratilmadi' },
+  'S3D-EXP-106': { matn: 'Bazis (.b3d) eksporti yuklanmadi — internetni tekshirib, qayta urinib ko\'ring' },
   'S3D-SCENE-101': { matn: '3D sahna ochilmadi' },
   'S3D-SCENE-102': { matn: '3D ko\'rinish ochilmadi' },
   'S3D-AI-101': { matn: 'AI xato' },
