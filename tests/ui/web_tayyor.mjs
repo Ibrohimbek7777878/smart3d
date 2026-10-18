@@ -100,7 +100,7 @@ async function asosiy(page, R) {
   R.errs = errs;
   R.ok = R.tablar.length === 3 && R.kategoriyalar === 8 && R.oshxona.includes('oshxona-l') && R.oshxona.includes('oshxona-u') &&
     R.oshxonaL.n > 10 && R.oshxonaL.w === 3800 && R.oshxonaL.d === 3200 && R.oshxonaShakl && R.narx > 0 && /Burchakli/.test(R.oshxonaL.nom) &&
-    R.tasdiq && R.yotoqxona.n === 3 && R.yotoqxona.frg.includes('MC-KR-04') &&
-    R.shablonlar.length === 2 && R.promptdan.w === 3300 && R.promptdan.n > 5 && R.loyihadan.n === 3 && R.loyihadan.frg.includes('MC-KR-04') &&
+    R.tasdiq && R.yotoqxona.n === 5 && R.yotoqxona.frg.includes('MC-KR-04') &&
+    R.shablonlar.length === 2 && R.promptdan.w === 3300 && R.promptdan.n > 5 && R.loyihadan.n === 5 && R.loyihadan.frg.includes('MC-KR-04') &&
     R.qoldi === 1 && R.tel.sigadi && !R.tel.hScroll && errs.length === 0;
 }

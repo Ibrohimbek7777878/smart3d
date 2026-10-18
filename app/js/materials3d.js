@@ -9,6 +9,7 @@
 import { getModulePanels } from './engine/assembler.js';
 import { derazaYasa, DERAZA_KATEGORIYA } from './engine/deraza3d.js';
 import { texnikaMesh, texnikaTuri } from './texnika3d.js';
+import { mebelMesh, mebelTuri, klassikRelyef, klassikKarniz } from './mebel3d.js';
 
 /** Kategoriya → rang (yumshoq, ko'z uchun qulay). */
 export const CATEGORY_COLOR = {
@@ -47,11 +48,15 @@ const SEL_COLOR = 0xd97706; // tanlanganlik sarg'ish-oltin
 export function makeItemMesh(THREE, frag, w, d, h, opts = {}) {
   /* egasi #232: o'rnatma texnika (faqat 3D ko'rinish, yangi sayt) — oddiy primitivlardan haqiqiyroq shakl, eshiklari ochiladi */
   if (opts.theme && frag && frag.category === 'appliance' && texnikaTuri(frag.code)) return texnikaMesh(THREE, frag, w, d, h, { rang: opts.texnikaRang, hinge: opts.hinge });
+  /* egasi #239–#241: yotoqxona / yumshoq mebel (krovat, divan, kreslo, komod …) — yopiq quti emas, haqiqiy shakl (faqat 3D ko'rinish) */
+  if (opts.theme && frag && mebelTuri(frag.code)) return mebelMesh(THREE, frag, w, d, h, { theme: opts.theme, rang: opts.rang, klassik: opts.klassik, garnituRang: opts.garnituRang, push: opts.push });
   const group = new THREE.Group();
   /* TZ-09 Q5: yangi sayt (mavzu) — tortmalar ham (faqat 3D; eski sayt va eksportlar — avvalgidek) */
   /* TZ-22: yangi sayt — eshik soni/eni Bazis detallaridan, bitta eshik petlyasi — joylashuvdan (opts.hinge) */
-  const asm = getModulePanels(frag, w, d, h, opts.theme ? Object.assign({}, opts, { tortma: true, eshiklar: true }) : opts);
-  if (opts.theme) return themedMesh(THREE, frag, w, d, h, asm, opts.theme, group, opts.rang);
+  /* garnitur (TZ-35): umumiy rang (kashemir) — korpus va fasad bitta rangda; push — ruchkasiz (faqat 3D: kesim/narx p.ruchkasiz bilan, bu bayroq ularga ta'sir qilmaydi) */
+  const rang3d = opts.theme && opts.garnituRang ? Object.assign({ korpus: { rang: opts.garnituRang }, fasad: { rang: opts.garnituRang } }, opts.rang) : opts.rang;
+  const asm = getModulePanels(frag, w, d, h, opts.theme ? Object.assign({}, opts, { tortma: true, eshiklar: true }, opts.push ? { ruchkasiz: true } : {}) : opts);
+  if (opts.theme) return themedMesh(THREE, frag, w, d, h, asm, opts.theme, group, rang3d, !!opts.klassik);
 
   // Ranglar
   const carcassColor = (frag && CATEGORY_COLOR[frag.category]) || 0xd9c9a8;
@@ -173,7 +178,7 @@ export function itemMaterial(THREE, category, selected = false) {
  * theme: { mat(kind) → Material, ustki(frag) → bool, glass(frag) → bool, rangMat(r) → Material }
  * rang (TZ-23 E): { korpus, polka, fasad, orqa, stol } — tanlangan material dekori ({ rang, yogoch }, engine/rang.js);
  * yo'q qism — dizayndagi standart ko'rinish. */
-function themedMesh(THREE, frag, w, d, h, asm, theme, group, rang) {
+function themedMesh(THREE, frag, w, d, h, asm, theme, group, rang, klassik) {
   const ustki = theme.ustki ? theme.ustki(frag) : false;
   const glass = theme.glass ? theme.glass(frag) : false;
   const code = frag ? frag.code : '';
@@ -237,6 +242,7 @@ function themedMesh(THREE, frag, w, d, h, asm, theme, group, rang) {
       mesh.position.set(p.x, p.y, p.z);
       mesh.userData.mover = p.id;
       grp.add(mesh);
+      if (klassik) klassikRelyef(THREE, mesh, mats.fasad, p.w, p.d, p.h);
       if (p.handle) {
         const hm = new THREE.Mesh(new THREE.BoxGeometry(p.handle.w, p.handle.d, p.handle.h), mats.handle);
         hm.position.set(p.handle.x, p.handle.y, p.handle.z);
@@ -273,7 +279,9 @@ function themedMesh(THREE, frag, w, d, h, asm, theme, group, rang) {
       }
     }
     parent.add(mesh);
+    if (klassik && p.isDoor) klassikRelyef(THREE, mesh, mats.fasad, p.w, p.d, p.h);
   }
+  if (klassik && frag && (frag.category === 'wardrobe' || /cabinet|tall/.test(frag.category))) klassikKarniz(THREE, group, mats.korpus, w, d, h);
   for (const f of asm.furn || []) group.add(furnMesh(THREE, f, mats.handle));   // TZ-23 A5: Bazis oyoq va ruchkalari
   group.userData = {
     kind: 'item', code, name: frag ? frag.name : '', category: frag ? frag.category : 'other',

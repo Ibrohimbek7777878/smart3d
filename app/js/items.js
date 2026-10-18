@@ -77,7 +77,7 @@ export function createItems(sp, opts = {}) {
       if (!frag) return;
       const w = +p.w || +frag.w, d = +p.d || +frag.d, h = +p.h || +frag.h;
       const rot = ((+p.rot || 0) % 360 + 360) % 360;
-      const mesh = makeItemMesh(THREE, frag, w, d, h, TH ? { theme: TH, hinge: p.hinge, rang: p._rang, texnikaRang: p.texnikaRang, ruchkasiz: !!p.ruchkasiz } : { ruchkasiz: !!p.ruchkasiz });   // egasi #166: Gola — ruchkasiz   // TZ-23 E: tanlangan material dekori
+      const mesh = makeItemMesh(THREE, frag, w, d, h, TH ? { theme: TH, hinge: p.hinge, rang: p._rang, texnikaRang: p.texnikaRang, ruchkasiz: !!p.ruchkasiz, klassik: !!p.klassik, garnituRang: p.garnituRang, push: !!p.push } : { ruchkasiz: !!p.ruchkasiz });   // egasi #166: Gola — ruchkasiz   // TZ-23 E: tanlangan material dekori
 
       // Agar oddiy mesh bo'lsa geometriyani siljitadi (Group allaqachon markazlashgan)
       if (mesh.geometry && mesh.geometry.translate) {
