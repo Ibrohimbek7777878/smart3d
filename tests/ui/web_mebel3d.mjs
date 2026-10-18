@@ -41,8 +41,8 @@ async function asosiy(page, R) {
     for (const m of items) { if (id && m.userData.id !== id) continue; m.updateMatrixWorld(true);
       m.traverse(o => { if (o.isMesh && o.geometry && !(o.userData && o.userData.kind === 'hitBox')) { o.geometry.computeBoundingBox(); const b = o.geometry.boundingBox;
         for (const x of [b.min.x, b.max.x]) for (const y of [b.min.y, b.max.y]) for (const z of [b.min.z, b.max.z]) { const p = new V3(x, y, z).applyMatrix4(o.matrixWorld); min = [Math.min(min[0], p.x), Math.min(min[1], p.y), Math.min(min[2], p.z)]; max = [Math.max(max[0], p.x), Math.max(max[1], p.y), Math.max(max[2], p.z)]; } } }); }
-    const c = [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2, (min[2] + max[2]) / 2], r = Math.max(max[0] - min[0], max[1] - min[1], max[2] - min[2]);
-    S.sp.camera.position.set(c[0] + dx * r, c[1] + dy * r, c[2] + dz * r);
+    const c = [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2, (min[2] + max[2]) / 2], r = 1;   // dx/dy/dz — mm (jahon o'qlarida)
+    S.sp.camera.position.set(c[0] + dx, c[1] + dy, c[2] + dz);
     S.ctl.orbit.target.set(c[0], c[1], c[2]); S.ctl.orbit.update(); S.sp._invalidate();
     return { c, r };
   }, a);
@@ -70,17 +70,19 @@ async function asosiy(page, R) {
 
   /* 2) 3D shakllar */
   R.karavot = await tahlil('MC-KR-04'); R.komod = await tahlil('SP-BD-005'); R.garderob = await tahlil('SP-W-006');
-  R.formalar = R.karavot && R.karavot.n > 15 && R.karavot.ranglar > 4 && R.karavot.tur === 'krovat' && R.komod.n > 10 && R.komod.tur === 'komod' && R.komod.harakat.length === 4;
+  R.formalar = R.karavot && R.karavot.n > 15 && R.karavot.ranglar > 4 && R.karavot.tur === 'krovat' && R.komod.n > 10 && R.komod.tur === 'komod' && R.komod.harakat.length === 6;
 
   /* xona umumiy ko'rinishi va karavot, komod yaqin */
   await M(() => window.__app.sahna.items.select(null));
-  await kamera([null, 0.15, 0.95, 0.75]); await shot('1-xona');
-  await kamera([R.karavot.id, 0.35, 1.15, 0.65]); await shot('2-karavot');
-  await kamera([R.karavot.id, -0.9, 0.55, 0.45]); await shot('2b-karavot-yon');
+  await kamera([null, 300, 4200, 4200]); await shot('1-xona');
+  await kamera([R.karavot.id, 800, 4300, 2300]); await shot('2-karavot');
+  await kamera([R.karavot.id, 2900, 2200, 1500]); await shot('2b-karavot-yon');
   await M((id) => { const it = window.__app.sahna.items; it.setOpen(it.moverKeys(id), true); }, R.komod.id);
   await page.waitForTimeout(1500);
-  await kamera([R.komod.id, 0.9, 0.9, 0.5]); await shot('3-komod-ochiq');
+  await kamera([R.komod.id, -1600, -1500, 1000]); await shot('3-komod-ochiq');
+  await kamera([R.garderob.id, 3400, -1800, 1700]); await shot('3b-shkaf');
   R.tortmaOchildi = await M((id) => { const m = window.__app.sahna.items.meshes.find(x => x.userData.id === id); return (m.userData.movers || []).every(v => v.obj.position.y > 100); }, R.komod.id);
+  await M((id) => { const it = window.__app.sahna.items; it.setOpen(it.moverKeys(id), false); }, R.komod.id);
   await M((id) => { const it = window.__app.sahna.items; it.setOpen(it.moverKeys(id), false); }, R.komod.id);
 
   /* 3) mehmonxona: divan */
@@ -93,13 +95,13 @@ async function asosiy(page, R) {
   R.divan = await tahlil('SP-S-006');
   R.divanOk = !!R.divan && R.divan.n > 10 && R.divan.ranglar > 2 && R.divan.tur === 'divan';
   await M(() => window.__app.sahna.items.select(null));
-  await kamera([R.divan.id, 0.2, -1.1, 0.6]); await shot('4-divan');
-  await kamera([null, 0.15, 0.95, 0.75]); await shot('5-mehmonxona');
+  await kamera([R.divan.id, 900, -3900, 1900]); await shot('4-divan');
+  await kamera([null, 300, 4200, 4200]); await shot('5-mehmonxona');
 
   /* 4) telefon 390 */
   await page.setViewportSize({ width: 390, height: 844 }); await page.waitForTimeout(1200);
   R.tel = await M(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }));
-  await kamera([null, 0.15, 0.95, 0.75]); await shot('6-telefon-390');
+  await kamera([null, 300, 4200, 4200]); await shot('6-telefon-390');
   await page.setViewportSize({ width: 1440, height: 900 });
 
   R.errs = errs;
