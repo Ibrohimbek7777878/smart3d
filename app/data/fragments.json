@@ -560,6 +560,12 @@
     "qty": 4,
     "unit": "dona",
     "id": "90002019"
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
   "station_source": "shablon",
@@ -570,6 +576,128 @@
   "standart_izoh": [
    "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi",
    "h=450 sex oralig'idan (460–1140) tashqarida — o'z chegarasi qoldi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
   ]
  },
  {
@@ -1255,9 +1383,137 @@
     "qty": 4,
     "unit": "dona",
     "id": "90002019"
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
-  "station_source": "shablon"
+  "station_source": "shablon",
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
+  ]
  },
  {
   "code": "SP-K-008",
@@ -1390,6 +1646,12 @@
    {
     "code": "NOG-90",
     "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
   "station_source": "shablon",
@@ -1400,6 +1662,128 @@
   ],
   "standart_izoh": [
    "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
   ]
  },
  {
@@ -2351,6 +2735,12 @@
     "qty": 4,
     "unit": "dona",
     "id": "90002019"
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
   "station_source": "shablon",
@@ -2358,6 +2748,128 @@
   "standart_olchamlar": [
    "d",
    "h"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
   ]
  },
  {
@@ -10226,6 +10738,12 @@
    {
     "code": "TRUBA-OVAL",
     "qty": 1
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
   "standart": "shkaf",
@@ -10234,6 +10752,128 @@
   ],
   "standart_izoh": [
    "d: tortma yoni 450 mm — d ≥ 500 (MC: yon = d − 50), sex min 350 bilan to'qnashadi — o'z chegarasi qoldi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
   ]
  },
  {
@@ -10354,12 +10994,260 @@
    {
     "code": "NOG-100",
     "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 16,
+    "unit": "dona"
    }
   ],
   "standart": "oshxona_penal",
   "standart_olchamlar": [
    "d",
    "h"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — texnika_polka × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d - 20",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — texnika_polka × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d - 20",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — texnika_polka × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d - 20",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — texnika_polka × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d - 20",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
   ]
  },
  {
@@ -10469,12 +11357,140 @@
    {
     "code": "NOG-100",
     "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
   "standart": "oshxona_penal",
   "standart_olchamlar": [
    "d",
    "h"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — ust × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — past × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
   ]
  },
  {
@@ -10614,6 +11630,12 @@
    {
     "code": "NOG-100",
     "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
   "standart": "oshxona_pastki_2e",
@@ -10623,6 +11645,188 @@
   "standart_izoh": [
    "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi",
    "d: tortma yoni 500 mm — d ≥ 550 (MC: yon = d − 50), sex min 450 bilan to'qnashadi — o'z chegarasi qoldi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
   ]
  },
  {
@@ -10748,6 +11952,12 @@
    {
     "code": "NOG-100",
     "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
   "standart": "oshxona_pastki_2e",
@@ -10757,6 +11967,188 @@
   "standart_izoh": [
    "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi",
    "d: tortma yoni 500 mm — d ≥ 550 (MC: yon = d − 50), sex min 450 bilan to'qnashadi — o'z chegarasi qoldi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "100",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
   ]
  },
  {
@@ -10852,6 +12244,12 @@
    {
     "code": "NOG-100",
     "qty": 4
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
   "standart": "oshxona_pastki_1e",
@@ -10861,6 +12259,188 @@
   ],
   "standart_izoh": [
    "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
   ]
  },
  {
@@ -10960,6 +12540,12 @@
    {
     "code": "RUCHKA-128",
     "qty": 2
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
   "standart": "oshxona_ustki_2e",
@@ -10967,6 +12553,128 @@
    "w",
    "d",
    "h"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
   ]
  },
  {
@@ -11080,6 +12788,12 @@
     "qty": 4,
     "unit": "dona",
     "id": "90002019"
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
    }
   ],
   "standart": "oshxona_ustki_2e",
@@ -11089,6 +12803,128 @@
   ],
   "standart_izoh": [
    "w: eshiksiz modul (tortma/ochiq) — sex eni eshik enidan hisoblangan, qo'llanmadi"
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   }
   ]
  },
  {
@@ -11209,6 +13045,134 @@
    {
     "code": "RUCHKA-128",
     "qty": 1
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
+   }
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub_l × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "600 - 2 * t",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub_l × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "600 - 2 * t",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq_l × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "600 - 2 * t",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq_l × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "600 - 2 * t",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
    }
   ]
  },
@@ -11473,6 +13437,134 @@
    {
     "code": "RUCHKA-128",
     "qty": 3
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
+   }
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
    }
   ]
  },
@@ -11651,6 +13743,194 @@
    {
     "code": "NAVES-CAMAR",
     "qty": 2
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 8,
+    "unit": "dona"
+   }
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga_tepa × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga_tepa × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga_tepa × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tsarga_tepa × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "80",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
    }
   ]
  },
@@ -11765,6 +14045,134 @@
     "qty": 8,
     "unit": "dona",
     "id": "90002019"
+   },
+   {
+    "code": "CONFIRMAT",
+    "name": "Konfirmat 7×50",
+    "qty": 4,
+    "unit": "dona"
+   }
+  ],
+  "birikmalar": [
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — qopqoq × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
+   },
+   {
+    "tur": "evrovint",
+    "nom": "Konfirmat 7×50 — tub × yon devor",
+    "zapchast": "Konfirmat 7×50",
+    "L": "d",
+    "qoida": {
+     "S": 60,
+     "P": 32,
+     "jadval": [
+      [
+       150,
+       1
+      ],
+      [
+       600,
+       2
+      ],
+      [
+       1200,
+       3
+      ],
+      [
+       2400,
+       4
+      ]
+     ]
+    },
+    "teshiklar": [],
+    "zapchast_soni": true
    }
   ]
  },
