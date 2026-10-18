@@ -13,7 +13,7 @@
 import { evalFormula, roundMm } from './expr.js';
 import { resolveSlots } from './slots.js';
 import { chizmaYech } from './chizish.js';
-import { joyQutilar, d6Teshiklar } from './d6.js';
+import { joyQutilar, d6Teshiklar, petlyaSoni } from './d6.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
 import { kromkaXizmat, prisadkaXizmat, raspilXizmat, tasdiqMi, ustamaManbasi } from './narxStavka.js';
 
@@ -82,14 +82,6 @@ export function birikmaTeshiklari(frag, vars) {
     }
   }
   return { holes, vintSoni };
-}
-
-/* Petlya soni eshik balandligiga qarab (petlya ishlab chiqaruvchilarining umumiy qoidasi) */
-function hingesForDoor(heightMm) {
-  if (heightMm <= 900) return 2;
-  if (heightMm <= 1600) return 3;
-  if (heightMm <= 2000) return 4;
-  return 5;
 }
 
 /**
@@ -378,12 +370,12 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   const hardware = (frag.hardware || []).map(hw => ({
     fragment: frag.code,
     code: hw.code,
-    /* birikma vintlari soni o'lchamga qarab o'zgaradi (Bazis jadvali) */
-    qty: vintSoni[nomBom(hw.name)] != null ? vintSoni[nomBom(hw.name)] : Math.max(1, Math.round(+hw.qty || 1)),
+    /* birikma vintlari soni o'lchamga qarab o'zgaradi (Bazis jadvali); soni yozilmagan — 1 (avvalgidek) */
+    qty: vintSoni[nomBom(hw.name)] != null ? vintSoni[nomBom(hw.name)] : (hw.qty == null || hw.qty === '' ? 1 : Math.max(0, Math.round(+hw.qty || 0))),
     id: hw.id,              // ERP furnitura ID (8 xona) — narx shu bo'yicha (TZ-HAQIQIY-MODULLAR A4)
     name: hw.name,
     unit: hw.unit
-  }));
+  })).filter(hw => hw.qty > 0);   // TZ-32 A3: soni 0 bo'lgan qator narxga (va ro'yxatga) kirmaydi — avval 1 dona bo'lib kirardi
 
   /* ── 4b) Avtomatik furnitura — fragmentda ko'rsatilmagan bo'lsa ──
    * Petlya faqat ochiladigan ESHIKKA (tortma fasadiga emas, kupe eshigiga emas),
@@ -397,9 +389,17 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   const doors = sliding || !autoHw ? [] : fronts.filter(p => !isDrawer(p));
   /* TS-… — eski fragmentlarda petlya shu kod bilan yozilgan (materials.json da nomi
      "Styajka TS-1730" — ziddiyat egasi bilan aniqlanadi); bor bo'lsa ikkinchi marta qo'shilmaydi */
-  if (doors.length && !hardware.some(hw => /TS-|PET|petl|hinge/i.test(hw.code))) {
-    const hingeQty = doors.reduce((s, p) => s + hingesForDoor(Math.max(p.finish_length, p.finish_width)), 0);
+  const petlyaBor = hardware.some(hw => /TS-|PET|petl|hinge/i.test(hw.code));
+  if (doors.length && !petlyaBor) {
+    /* TZ-32 A4: petlya soni — bitta qoida, sex fayllaridan (d6.petlyaSoni: ≤1000 — 2, ≤1600 — 3, ≤2000 — 4, undan katta — 5) */
+    const hingeQty = doors.reduce((s, p) => s + petlyaSoni(Math.max(p.finish_length, p.finish_width)), 0);
     hardware.push({ fragment: frag.code, code: 'PET-4', qty: hingeQty, _auto: true });
+  }
+  /* TZ-32 A5: MC (Bazis) modulining BOM'ida petlya qatori yo'q, lekin D6 eshikka petlya kosasini qo'ygan (3c) — petlya soni = kosalar
+     soni (o'sha qoida). Tortma, kargo va kupe eshigiga D6 kosa qo'ymaydi. Ruchka va boshqa furnitura — BOM'dan (avvalgidek). */
+  if (!autoHw && !sliding && !petlyaBor && !frag.chizma && !frag.bazis3d && (frag.parts || []).some(p => p.joy)) {
+    const kosa = holes.filter(hl => hl.kind === 'd6_kosa').length;
+    if (kosa) hardware.push({ fragment: frag.code, code: 'PET-4', qty: kosa, _auto: true });
   }
   if (autoHw && fronts.length && !sliding && !opt.ruchkasiz && !hardware.some(hw => /RU-|ruchka|handle/i.test(hw.code))) {
     hardware.push({ fragment: frag.code, code: 'RU-128', qty: fronts.length, _auto: true });
@@ -709,11 +709,16 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   if (ihOn && !(perPiece > 0 || perFrag > 0) && totalParts) noteMissing('Ish haqi', 'labor', 'Ish haqi stavkasi');
   if (laborCost > 0) {
     const tx = !ihTasdiq;
+    /* TZ-32 A6: raspil yoki kromka sex xizmatidan tanlangan bo'lsa — ular alohida qatorda; ish haqi nomida aytilmaydi.
+       Summa (stavka) egasi javobigacha o'zgarmaydi — `sex_xizmati`: shu xizmatlar ish haqi ichida ikkinchi marta bo'lishi mumkin. */
+    const sexX = [raspilCost > 0 ? 'raspil' : null, lines.some(l => l.group === 'Kromka' && l.xizmat) ? 'kromka' : null].filter(Boolean);
+    const ishNom = sexX.length === 2 ? "Sex yig'ish" : sexX[0] === 'raspil' ? "Kromka urish va sex yig'ish" : sexX[0] === 'kromka' ? "Arralash va sex yig'ish"
+      : "Arralash, kromka urish va sex yig'ish";
     lines.push({
       group: 'Ish haqi', code: 'labor',
-      name: `Arralash, kromka urish va sex yig'ish (${totalParts} detal)` + (tx ? markTaxminiy('Ish haqi') : ''),
+      name: `${ishNom} (${totalParts} detal)` + (tx ? markTaxminiy('Ish haqi') : ''),
       qty: totalParts, unit: 'detal', unit_price: Math.round(laborCost / (totalParts || 1)), amount: laborCost, taxminiy: tx,
-      tasdiq: !tx, manba: tx ? 'taxmin' : ((ih && ih.detal && ih.detal.manba) || 'egasi')
+      tasdiq: !tx, manba: tx ? 'taxmin' : ((ih && ih.detal && ih.detal.manba) || 'egasi'), sex_xizmati: sexX
     });
   }
 

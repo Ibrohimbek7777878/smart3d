@@ -13,7 +13,7 @@ import { cutlist, productionCost } from '../app/js/engine/cutlist.js';
 import { nestProject } from '../app/js/engine/nesting.js';
 import { deriveKitchen } from '../app/js/engine/kitchen.js';
 import { applySexStandart } from '../app/js/engine/standart.js';
-import { narxSukut, narxQollash, narxXatoMi, xizmatJadvalOqish, xizmatFarq } from '../app/js/engine/narxStavka.js';
+import { narxSukut, narxQollash, narxXatoMi, xizmatJadvalOqish, xizmatFarq, sukutErpQollash } from '../app/js/engine/narxStavka.js';
 import { xlsxOqish } from '../app/js/engine/xlsxOqish.js';
 
 const J = (p) => JSON.parse(readFileSync(fileURLToPath(new URL('../app/data/' + p, import.meta.url)), 'utf8'));
@@ -119,20 +119,26 @@ ok('sukut ustama — 35%, manba "egasi", sana 2026-10-17 (server boshlang\'ich h
 const matsT = Object.assign({}, mats, { pricing: { markup_pct: 0.35 } });   // price_src yo'q — avvalgidek "taxmin"
 ok('price_src "egasi…" bo\'lmasa — ustama "taxmin" (avvalgidek)', narxSukut(matsT).ustama.foiz.manba === 'taxmin'
   && productionCost(cls, matsT, OPT).aniqlik.taxmin.some(t => t.group === 'Ustama') && productionCost(cls, matsT, OPT).clientTotal === p0.clientTotal);
-/* hammasi tasdiqlangan: furnituraning narxi ERP'dan, kromka/raspil — sex jadvali, ish haqi va ustama — egasi */
+/* hammasi tasdiqlangan: plita — ERP mahsulotiga bog'langan (TZ-32 A1: LDSP16 narxi faylda yo'q — "taxmin"; sukut_erp orqali
+   bog'lanadi — bu yerda TEST yozuvi, narx o'sha, egasi tanlovi emas), furnitura — ERP, kromka/raspil — sex jadvali, ish haqi va ustama — egasi */
+const matsE = JSON.parse(JSON.stringify(mats));
+matsE.sukut_erp = { LDSP16: { sku: 'TEST', nom: 'test plita', uzs: 499600, manba: 'ERP', sana: '2026-10-18' } };
+ok('sukut_erp: LDSP16 bog\'landi — "taxminiy" tushdi, manba ERP', sukutErpQollash(matsE) === 1 && !matsE.panel_materials.find(m => m.code === 'LDSP16').taxminiy
+  && matsE.panel_materials.find(m => m.code === 'LDSP16').price_src === 'ERP, 2026-10-18');
 const toza = cls.map(cl => Object.assign({}, cl, { hardware: [] }));
 const Sall = qolla(S, { ish_haqi: { detal: 12000, modul: 40000 }, ustama: { foiz: 35 } });
-const pA = productionCost(toza, mats, Object.assign({}, OPT, { stavka: Sall }));
+const pA = productionCost(toza, matsE, Object.assign({}, OPT, { stavka: Sall }));
+ok('bog\'lanmagan LDSP16 — plita "taxmin" (TZ-32 A1, aniqlik halol)', productionCost(toza, mats, Object.assign({}, OPT, { stavka: Sall })).aniqlik.taxmin.some(t => /^Plita/.test(t.group) && t.code === 'LDSP16'));
 ok(`hammasi tasdiqlangan → 100% (${pA.aniqlik.pct}%)`, pA.aniqlik.pct === 100 && pA.aniqlik.taxmin.length === 0 && pA.aniqlik.tasdiqlangan === pA.clientTotal, JSON.stringify(pA.aniqlik.taxmin.slice(0, 3)));
 const narxsizQator = toza.map(cl => Object.assign({}, cl, { hardware: [{ code: 'YOQ-FURNITURA-X', qty: 1, name: 'Narxsiz furnitura' }] }));
-const pN = productionCost(narxsizQator, mats, Object.assign({}, OPT, { stavka: Sall }));
+const pN = productionCost(narxsizQator, matsE, Object.assign({}, OPT, { stavka: Sall }));
 ok(`narxsiz qator bor → aniqlik 100% emas (${pN.aniqlik.pct}%), soni ko'rsatiladi (${pN.aniqlik.narxsiz})`, pN.aniqlik.narxsiz > 0 && pN.aniqlik.pct === 99 && pA.aniqlik.pct === 100);
-const pB = productionCost(toza, mats, Object.assign({}, OPT, { stavka: qolla(Sall, { ish_haqi: { detal: 12000 } }) }));
+const pB = productionCost(toza, matsE, Object.assign({}, OPT, { stavka: qolla(Sall, { ish_haqi: { detal: 12000 } }) }));
 const Sm = JSON.parse(JSON.stringify(Sall)); Sm.ish_haqi.modul.manba = 'taxmin';
-const pM = productionCost(toza, mats, Object.assign({}, OPT, { stavka: Sm }));
+const pM = productionCost(toza, matsE, Object.assign({}, OPT, { stavka: Sm }));
 ok(`ish haqi taxmin bo'lsa — 100% dan kam (${pM.aniqlik.pct}%), ro'yxatda "Ish haqi"`, pM.aniqlik.pct < 100 && pM.aniqlik.taxmin.some(t => t.group === 'Ish haqi') && pB.aniqlik.pct === 100);
 const Sx = JSON.parse(JSON.stringify(Sall)); Sx.ustama.foiz.manba = 'taxmin';
-const pX = productionCost(toza, mats, Object.assign({}, OPT, { stavka: Sx }));
+const pX = productionCost(toza, matsE, Object.assign({}, OPT, { stavka: Sx }));
 ok(`ustama taxmin — ustama summasi taxmin (${pX.aniqlik.pct}% ≈ 100/1,35)`, pX.aniqlik.pct === Math.floor(pX.totalCost / pX.clientTotal * 100 + 1e-9) && pX.aniqlik.taxmin.some(t => t.group === 'Ustama'));
 
 console.log('\n[4] Tekshiruv (server)');

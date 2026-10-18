@@ -191,19 +191,53 @@ export function kromkaXizmat(S, code) {
   const k = String(code).replace(/\./g, ''), m = S.tanlov.kromka || {};
   return xz(S, m[k]) || xz(S, m[code]) || xz(S, m._sukut);
 }
-/** D6 teshigi (d6.js) → egasi tanlashi mumkin bo'lgan umumiy qatorlar (o'zining qatori bo'lmasa shular).
+/** D6 teshigi (d6.js) va MC birikma teshigi → egasi tanlashi mumkin bo'lgan umumiy qatorlar (o'zining qatori bo'lmasa shular).
  *  d6_kosa — petlya (Bazis 'petlya' yoki modul 'hinge'); d6_eksentrik — eksentrik (Bazis 'eksentrik' yoki modul 'cam').
  *  d6_eks_qirra va d6_eks_bolt ataylab YO'Q: eksentrik birikmasi 3 teshikdan iborat (korpus d6_eksentrik + qirra + bolt),
  *  sex "ПРИСАДКА ЭКСЦЕНТРИК" xizmati birikma uchun — uni 3 marta sanamaslik uchun umumiy "cam" stavkasi faqat d6_eksentrik
- *  (birikma boshiga 1 ta) ga o'tadi; qirra/bolt faqat egasi aniq tanlagan bo'lsa narxlanadi (aks holda eskicha — oddiy teshik). */
-const D6_UMUMIY = { d6_kosa: ['petlya', 'hinge'], d6_eksentrik: ['eksentrik', 'cam'] };
+ *  (birikma boshiga 1 ta) ga o'tadi; qirra/bolt faqat egasi aniq tanlagan bo'lsa narxlanadi (aks holda eskicha — oddiy teshik).
+ *  TZ-32 A2: MC birikmasi — evrovint (yuzadan Ø7) → konfirmat_yuza, evrovint_torets (qirradan Ø4,5) → konfirmat_qirra; D6 polka
+ *  ushlagich → polka, ruchka → ruchka. d6_vint (kosa vintlari Ø3×2), d6_planka (planka Ø3×3), d6_napr (yo'naltiruvchi Ø3×2,5) →
+ *  belgi: KDT statistikasida Ø3 × 2…3 — "belgi / burama nuqtasi (petlya plankasi)", sex jadvalida "ПРИСАДКА МЕТКА 3-2,5";
+ *  Bazis importi (bazis/teshik.js) ham petlya kosasi va plankasi vintlarini 'belgi' deb sanaydi. */
+export const TESHIK_UMUMIY = {
+  d6_kosa: ['petlya', 'hinge'], d6_eksentrik: ['eksentrik', 'cam'],
+  evrovint: ['konfirmat_yuza'], evrovint_torets: ['konfirmat_qirra'], d6_polka: ['polka'], d6_ruchka: ['ruchka'],
+  d6_vint: ['belgi'], d6_planka: ['belgi'], d6_napr: ['belgi']
+};
 /** teshik kaliti (Bazis turi yoki turi) → prisadka xizmati */
 export function prisadkaXizmat(S, key, kind) {
   if (!S || !S.tanlov) return null;
   const m = S.tanlov.prisadka || {};
   const toqri = xz(S, m[key]) || (kind && kind !== key ? xz(S, m[kind]) : null);
   if (toqri) return toqri;
-  for (const k of [key, kind]) for (const u of D6_UMUMIY[k] || []) { const x = xz(S, m[u]); if (x) return x; }
+  for (const k of [key, kind]) for (const u of TESHIK_UMUMIY[k] || []) { const x = xz(S, m[u]); if (x) return x; }
   return null;
 }
 export const raspilXizmat = (S) => (S && S.tanlov ? xz(S, S.tanlov.raspil) : null);
+
+/* ─────────── TZ-32 A1: sukut plita → ERP mahsuloti (materials.json sukut_erp) ─────────── */
+/**
+ * materials.sukut_erp: { <panel kodi>: null | { sku, nom, uzs, manba, sana } } — egasi tanlagan ERP mahsuloti (2-savol).
+ * Bog'langan plitaning narxi va manbasi shu yerdan, "taxminiy" belgisi tushadi. null yoki to'liq bo'lmagan yozuv — o'zgarmaydi
+ * (narx o'ylab topilmaydi). Hisob yuklanganda bir marta chaqiriladi (web/src/services/hisob.js createHisob, app.js boot).
+ * @returns {number} bog'langan plitalar soni
+ */
+export function sukutErpQollash(materials) {
+  const se = materials && materials.sukut_erp;
+  if (!se || typeof se !== 'object') return 0;
+  let n = 0;
+  for (const [code, v] of Object.entries(se)) {
+    if (code[0] === '_' || !v || typeof v !== 'object') continue;
+    const uzs = Number(v.uzs);
+    const pm = (materials.panel_materials || []).find(m => m.code === code);
+    if (!pm || !(uzs > 0) || uzs > 1e8 || !SANA_RE.test(String(v.sana || ''))) continue;
+    pm.sheet_price = Math.round(uzs * 100) / 100;
+    pm.price_src = String(v.manba || 'ERP').slice(0, 40) + ', ' + v.sana;
+    if (v.sku) pm.sku = String(v.sku).slice(0, 60);
+    if (v.nom) pm.sku_nom = String(v.nom).slice(0, 200);
+    delete pm.taxminiy;
+    n++;
+  }
+  return n;
+}

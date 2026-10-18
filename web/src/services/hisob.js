@@ -15,6 +15,7 @@ import { applySexStandart } from '../../../app/js/engine/standart.js';
 import { buildSearchIndex } from '../../../app/js/engine/search.js';
 import * as PriceMod from '../../../app/js/engine/price.js';
 import { asosiyIndeks } from '../../../app/js/engine/dekorAsosiy.js';
+import { sukutErpQollash } from '../../../app/js/engine/narxStavka.js';
 
 /* price.js — UMD. Brauzerda (dev, eski sayt sahifasi) o'zi globalThis.SpPrice ga yoziladi; Vite build'i esa
    uni CommonJS deb o'qiydi (module.exports shoxobchasi) — u holda modulning default eksporti. Ikkalasi ham bir xil API. */
@@ -50,6 +51,7 @@ export function createHisob(data) {
   const furnById = {};
   for (const it of (furnCat && furnCat.items) || []) if (it.id) furnById[it.id] = it;
   const furnituraBoglash = (furnBoglash && furnBoglash.links) || {};
+  sukutErpQollash(mats);                                          // TZ-32 A1: egasi bog'lagan sukut plita → ERP narxi (bo'lmasa o'zgarmaydi)
   const catalog = {};
   for (const f of frags) catalog[f.code] = f;
   for (const f of (mcFrags && mcFrags.fragments) || []) catalog[f.code] = f;
@@ -107,7 +109,7 @@ export function createHisob(data) {
       const m2 = JSON.parse(JSON.stringify(mats));
       const pm = (m2.panel_materials || []).find(x => x.code === base);
       if (!pm) return mats;
-      if (sh.uzs > 0) pm.sheet_price = sh.uzs;
+      if (sh.uzs > 0) { pm.sheet_price = sh.uzs; delete pm.taxminiy; }   // TZ-32 A1: tanlangan ERP mahsulotining narxi — tasdiqlangan
       if (sh.l > 100 && sh.w > 100) pm.sheets = [[sh.l, sh.w]];
       return m2;
     },

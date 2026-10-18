@@ -23,6 +23,7 @@ import { buildProject as buildGlProject } from './engine/giblab.js';
 import { cncBundle, cutGCode } from './engine/cnc.js';
 import { buildSearchIndex, searchMaterial } from './engine/search.js';
 import { applySexStandart } from './engine/standart.js';
+import { sukutErpQollash } from './engine/narxStavka.js';
 import { eskiKodlar } from './engine/kodlar.js';
 import { aiBuild, startVoice, voiceSupported, parseZamer, suggestLayout, USTKI_Z } from './ai.js';
 import { createAuth } from './auth.js';
@@ -135,7 +136,7 @@ function effectiveMaterials() {
   const mats = JSON.parse(JSON.stringify(state.materials));
   const pm = (mats.panel_materials || []).find(x => x.code === base);
   if (!pm) return state.materials;
-  if (sh.uzs > 0) pm.sheet_price = sh.uzs;
+  if (sh.uzs > 0) { pm.sheet_price = sh.uzs; delete pm.taxminiy; }   // TZ-32 A1: hisob.js bilan bir xil
   if (sh.l > 100 && sh.w > 100) pm.sheets = [[sh.l, sh.w]];
   return mats;
 }
@@ -1414,6 +1415,7 @@ async function boot() {
       default_z: a.z || 0, note: a.note
     };
   }
+  sukutErpQollash(mats);                                          // TZ-32 A1: hisob.js createHisob bilan bir xil
   state.materials = mats;
   state.sheetCatalog = sheetCat;
   state.services = services;

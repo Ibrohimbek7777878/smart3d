@@ -41,7 +41,11 @@ function hujjatTili(c) {
       if (/^Plita/.test(l.group)) return materialNomi(c.H, l.code, asl(l.code)) + ' ' + (l.util != null ? t('hujjat.plita_q', { n: l.qty, p: l.util }) : t('hujjat.plita_taxmin', { n: l.qty }));
       if (l.group === 'Kromka') return materialNomi(c.H, l.code, asl(l.code)) + tx(l);
       if (l.group === 'Xizmatlar') return (l.code === 'hole:tanlanmagan' ? t('hujjat.teshik_tanlanmagan', { n: l.qty }) : t('hujjat.teshik_q', { n: l.qty })) + tx(l);
-      if (l.group === 'Ish haqi') return t('hujjat.ish_haqi_q', { n: l.qty }) + tx(l);
+      if (l.group === 'Ish haqi') {   // TZ-32 A6: sex xizmatidan tanlangan raspil/kromka — nomda aytilmaydi (dvigatel bilan bir xil)
+        const sx = l.sex_xizmati || [], r = sx.includes('raspil'), k = sx.includes('kromka');
+        return (r && k ? t('hujjat.ish_haqi_yigish', { n: l.qty }) : r ? t('hujjat.ish_haqi_kromka', { n: l.qty })
+          : k ? t('hujjat.ish_haqi_arralash', { n: l.qty }) : t('hujjat.ish_haqi_q', { n: l.qty })) + tx(l);
+      }
       if (l.group === 'Raspil') return t('narx.raspil') + ' — ' + t('narx.raspil_q', { n: l.qty, s: l.unit_price });   // TZ-20
       return l.name;
     },
