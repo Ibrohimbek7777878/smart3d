@@ -27,7 +27,7 @@ const { Pool } = pg;
 /* ═══════════════════ CONFIG ═══════════════════ */
 const config = {
   port: process.env.PORT || 3000,
-  jwtSecret: process.env.JWT_SECRET || 'smart3d-secret-2026',
+  jwtSecret: process.env.JWT_SECRET,
   databaseUrl: process.env.DATABASE_URL || 'postgres://localhost:5432/smart3d',
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
   corsOrigins: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:8811'],

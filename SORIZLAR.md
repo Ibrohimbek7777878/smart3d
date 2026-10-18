@@ -170,7 +170,7 @@ bular barcha ai suniy intleket uchun qoidalar va bularga amal qilishing shart
 
 ## 2026-10-15
 
-53. /home/ibrohim/Desktop/bittada sunpin/Smart3D/data1  bu yerga 2ta fayl qoshdim modulniy va narxlar degan shularni ham korib chiq lekin ehtiyot bol opencode hali ham ishlayabdi
+53. Smart3D/data1  bu yerga 2ta fayl qoshdim modulniy va narxlar degan shularni ham korib chiq lekin ehtiyot bol opencode hali ham ishlayabdi
 
 54. end bularni ham loyhaga qoshish va realni ishlatish kere ozi loyhan shunib oldingmi va bularni qoshgach bita kuxniya chizb natijan chiqarishimiz kere hammasin tatbilab  va narxlar zpachatstlar materila bazadagi mahsulotlarnga id qoyish orqali muomon hal qilish kere
 
@@ -186,7 +186,7 @@ Qaysi bri kere hoz
 
 59. hozir opencode qolgan ishlarn tugat toliq ishlaydigan bolsin hammasi  opencode hozir tohtadi ishn boshla
 
-60. /home/ibrohim/Desktop/bittada sunpin/Smart3D/Smart3D_malumot   shu fayln kor
+60. Smart3D/Smart3D_malumot   shu fayln kor
 
 61. olchamlarni tasdiqlayman lekin ozgarishtirsh ham bolsin olchamlarni keyinchalik va 2chi savoling dark yokida light uni korib chiqamz tz yoz va ishn boshla
 
@@ -230,7 +230,7 @@ bularn keyinroq qilamzi hozir bita konstruksiya qila olamzmi ozi
 
 79. loyhan bilasan toliq nimalar qila olishn ham bilasan shundaymi toliq tnaishb chiqdingmi oyha bilan
 
-80. qara /home/ibrohim/Desktop/bittada sunpin/Smart3D/frontend  bu yerda loyhan frontend qism uchun claude designda qilingan dizyan bor va yana bir nechata fayllar ham bor korib toliq tanishb chiq hozir boshqa chatda ham claude ishlayabd unga tegib ketma  knstruksiyan qila olamizmi hozir va loyhan realn prodcutionga 2kunda chiqara olamzmi
+80. qara Smart3D/frontend  bu yerda loyhan frontend qism uchun claude designda qilingan dizyan bor va yana bir nechata fayllar ham bor korib toliq tanishb chiq hozir boshqa chatda ham claude ishlayabd unga tegib ketma  knstruksiyan qila olamizmi hozir va loyhan realn prodcutionga 2kunda chiqara olamzmi
 
 81. end dizaynga teginmaymiz yani dizyan buzmagan holda loyhamizga moslahstriamiz logo ga ham teginma  kirsh paroln olib tashlaymiz va orngia sms qoyamiz yokida emal bilan krish qilamiz va bir nechta dizaynda yoq sahifalarin qoshib ketamiz shunday qilska yaxshimi yokida
 sen hozir menga yana bir md fayl berasan va osha fyan claude desiganga beraman va ozi togirlab berad  qay bir yaxsh va sifatli tez bolad

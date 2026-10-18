@@ -201,7 +201,7 @@ npm start         # http://localhost:3000
 - `GET/POST /api/orders`
 - `WS /ws` — real-time narx yangilanishi
 
-**Admin:** `admin@smart3d.uz` / `admin123`
+**Admin:** `ADMIN_EMAIL` (sukut `admin@smart3d.uz`); parol — faqat `ADMIN_PASSWORD` dan (`npm run init-db` / `npm run admin-password`), kodda sukut parol yo'q
 
 ---
 

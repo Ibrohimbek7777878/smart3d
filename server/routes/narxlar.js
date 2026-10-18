@@ -38,6 +38,40 @@ export default function narxlarRouter({ db, jurnal, auth, adminOnly }) {
     jurnal.info({ code: 'S3D-NARX-100', rid: req.rid, uid: req.user.id, msg: `narx stavkalari: ${q.ozgarish.length} o'zgarish` });
     res.json({ ok: true, ozgarish: q.ozgarish.length, narxlar: q.next });
   });
+  /** TZ-36 P7: sukut stavkalarga qaytarish (admin). Serverda admin avval saqlagan eski qiymat (masalan ish haqi) bazada qoladi —
+   *  yangilashdan keyin shu endpoint uni materials.json dagi sukutga (ish haqi 0, "egasi" manbasi) qaytaradi.
+   *  qamrov: 'ish_haqi' | 'ustama' | 'hammasi' (xizmatlar + tanlov + ish haqi + ustama). Har o'zgarish narx_history ga (kim, eski → yangi). */
+  const QAMROV = { ish_haqi: ['ish_haqi'], ustama: ['ustama'], hammasi: ['xizmatlar', 'tanlov', 'ish_haqi', 'ustama'] };
+  const yassi = (doc, bolimlar) => {
+    const o = {};
+    for (const b of bolimlar) {
+      const v = (doc && doc[b]) || {};
+      if (b === 'tanlov') { o['tanlov.raspil'] = v.raspil || null; for (const g of ['kromka', 'prisadka', 'bazis']) for (const [k, kod] of Object.entries(v[g] || {})) o[`tanlov.${g}.${k}`] = kod; }
+      else for (const [k, x] of Object.entries(v)) o[`${b}.${k}`] = x;
+    }
+    return o;
+  };
+  r.post('/api/narxlar/sukut', auth, adminOnly, (req, res) => {
+    const qamrov = String((req.body || {}).qamrov || '');
+    if (!QAMROV[qamrov]) return fail(res, 'S3D-NARX-001', "qamrov: ish_haqi, ustama yoki hammasi bo'lishi kerak");
+    const cur = narxCurrent();
+    const sukut = narxSukut(readJsonData('materials.json'));
+    const next = JSON.parse(JSON.stringify(cur));
+    for (const b of QAMROV[qamrov]) next[b] = JSON.parse(JSON.stringify(sukut[b]));
+    const a = yassi(cur, QAMROV[qamrov]), b = yassi(next, QAMROV[qamrov]);
+    const ozgarish = [...new Set([...Object.keys(a), ...Object.keys(b)])]
+      .filter(k => JSON.stringify(a[k] === undefined ? null : a[k]) !== JSON.stringify(b[k] === undefined ? null : b[k]))
+      .map(k => ({ kalit: k, eski: a[k] === undefined ? null : a[k], yangi: b[k] === undefined ? null : b[k] }));
+    if (!ozgarish.length) return res.json({ ok: true, ozgarish: 0, narxlar: cur });
+    next._meta = { ozgartirildi: `admin #${req.user.id}, ${new Date().toISOString().slice(0, 16).replace('T', ' ')} (sukutga qaytarildi: ${qamrov})` };
+    db.transaction(() => {
+      db.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('narx_stavkalari', ?, CURRENT_TIMESTAMP)").run(JSON.stringify(next));
+      const ins = db.prepare('INSERT INTO narx_history (user_id, kalit, eski, yangi) VALUES (?, ?, ?, ?)');
+      for (const o of ozgarish) ins.run(req.user.id, o.kalit, JSON.stringify(o.eski), JSON.stringify(o.yangi));
+    })();
+    jurnal.info({ code: 'S3D-NARX-101', rid: req.rid, uid: req.user.id, msg: `narx stavkalari sukutga qaytarildi (${qamrov}): ${ozgarish.length} o'zgarish` });
+    res.json({ ok: true, ozgarish: ozgarish.length, narxlar: next });
+  });
   /** o'zgarish tarixi (admin): oxirgi yozuvlar, yangisi birinchi */
   r.get('/api/narxlar/tarix', auth, adminOnly, (req, res) => {
     const limit = Math.min(num(req.query.limit, 'limit', { min: 1, max: 1e6 }) || 200, 1000);

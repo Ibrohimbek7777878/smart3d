@@ -16,7 +16,7 @@ Parametrlar (env yoki flag; flag env'dan ustun):
   --env-file    / ENV_FILE     muhit fayli, masalan /etc/smart3d.env          [majburiy]
   --db-path     / DB_PATH      SQLite baza fayli                              [majburiy]
   --backup-dir  / BACKUP_DIR   zaxira papkasi                                 [majburiy]
-  --branch      / BRANCH       git shoxi                                      [sukut: dizayn]
+  --branch      / BRANCH       git shoxi                                      [sukut: main]
   --test-port   / TEST_PORT    sinov porti                                    [sukut: 3999]
   --service-cmd / SERVICE_CMD  qayta ishga tushirish buyrug'i (pm2 reload smart3d | systemctl restart smart3d)
                                [--restart uchun majburiy]
@@ -42,7 +42,7 @@ while [ $# -gt 0 ]; do
 done
 
 APP_DIR="${APP_DIR:-}"; ENV_FILE="${ENV_FILE:-}"; DB_PATH="${DB_PATH:-}"; BACKUP_DIR="${BACKUP_DIR:-}"
-BRANCH="${BRANCH:-dizayn}"; TEST_PORT="${TEST_PORT:-3999}"; SERVICE_CMD="${SERVICE_CMD:-}"; PROD_URL="${PROD_URL:-}"
+BRANCH="${BRANCH:-main}"; TEST_PORT="${TEST_PORT:-3999}"; SERVICE_CMD="${SERVICE_CMD:-}"; PROD_URL="${PROD_URL:-}"
 
 yoq=""
 for v in APP_DIR ENV_FILE DB_PATH BACKUP_DIR; do [ -n "${!v}" ] || yoq="$yoq $v"; done
@@ -77,6 +77,7 @@ xato() {
     echo "Orqaga qaytish:" >&2
     echo "  cd $APP_DIR && git checkout $ESKI && (cd server && npm ci --omit=dev) && (cd web && NODE_ENV=development npm ci --include=dev && npx vite build)" >&2
   fi
+  echo "Baza kerak bo'lsa (kod emas, ma'lumot buzilganda): servisni to'xtating, eng yangi nusxani tiklang — DEPLOY.md, 'Orqaga qaytarish'." >&2
   echo "Zaxira nusxalar: $BACKUP_DIR" >&2
   exit "$kod"
 }
@@ -147,9 +148,19 @@ for yol in / /app.html /loyihalar; do
   if [ "$kod" != 200 ]; then echo "$yol -> HTTP $kod (200 kutilgan)" >&2; false; fi
   echo "  $yol: 200"
 done
+# TZ-36 P7: bazada admin avval saqlagan narx stavkalari yangi kod bilan ham qoladi (ish haqi sukuti 0). Nusxa bazadagi qiymat 0 emas bo'lsa — ogohlantirish.
+NARX_OGOH="$(curl -sf "http://127.0.0.1:$TEST_PORT/api/narxlar" 2>/dev/null | node -e '
+  let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const n=JSON.parse(s).ish_haqi||{};
+  const d=n.detal&&n.detal.qiymat,m=n.modul&&n.modul.qiymat; if((d||0)>0||(m||0)>0) console.log("detal="+d+" so\x27m, modul="+m+" so\x27m");}catch(e){}})' 2>/dev/null || true)"
 kill "$TEST_PID" 2>/dev/null || true; wait "$TEST_PID" 2>/dev/null || true; TEST_PID=""
 rm -rf "$TMPD"; TMPD=""
 echo "Sinov o'tdi, vaqtinchalik nusxa o'chirildi."
+if [ -n "$NARX_OGOH" ]; then
+  echo "" >&2
+  echo "OGOHLANTIRISH: bazada eski saqlangan ish haqi stavkasi bor ($NARX_OGOH). Yangi kod uni o'zgartirmaydi." >&2
+  echo "  Egasi roziligi bilan: admin sifatida Sozlamalar -> Narxlar -> \"Ish haqini sukutga qaytarish\" (sukut: 0, tarixga yoziladi)." >&2
+  echo "  Qo'lda (DEPLOY.md, 'Eski narx stavkalari') — API: POST /api/narxlar/sukut {\"qamrov\":\"ish_haqi\"}." >&2
+fi
 
 # ---- 6. Qayta ishga tushirish -------------------------------------------
 if [ "$RESTART" != 1 ]; then
@@ -174,4 +185,6 @@ if [ -n "$PROD_URL" ]; then
 else
   echo "PROD_URL berilmagan — production tekshiruvini qo'lda qiling: curl <manzil>/api/health"
 fi
-echo "Yangilash tugadi: $YANGI"
+echo "Yangilash tugadi: $YANGI (oldingi: $ESKI)"
+echo "Tekshiruv:       bash server/tekshiruv.sh ${PROD_URL:-<production manzili>}"
+echo "Orqaga qaytish:  DEPLOY.md, 'Orqaga qaytarish' (git checkout $ESKI)"

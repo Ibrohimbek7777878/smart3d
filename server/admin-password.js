@@ -1,7 +1,7 @@
 /* Smart3D — admin parolini o'rnatish yoki almashtirish (mavjud bazada).
  *
  *   ADMIN_PASSWORD='kamida-8-belgi' npm run admin-password            # admin@smart3d.uz
- *   ADMIN_PASSWORD='…' ADMIN_EMAIL='boss@sex.uz' npm run admin-password
+ *   ADMIN_PASSWORD='…' ADMIN_EMAIL='admin@example.com' npm run admin-password
  *
  * Admin bo'lmasa — yaratadi. Parol konsolga chiqmaydi.
  */
