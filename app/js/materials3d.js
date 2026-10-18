@@ -9,6 +9,7 @@
 import { getModulePanels } from './engine/assembler.js';
 import { derazaYasa, DERAZA_KATEGORIYA } from './engine/deraza3d.js';
 import { texnikaMesh, texnikaTuri } from './texnika3d.js';
+import { mebelMesh, mebelTuri } from './mebel3d.js';
 
 /** Kategoriya → rang (yumshoq, ko'z uchun qulay). */
 export const CATEGORY_COLOR = {
@@ -47,6 +48,8 @@ const SEL_COLOR = 0xd97706; // tanlanganlik sarg'ish-oltin
 export function makeItemMesh(THREE, frag, w, d, h, opts = {}) {
   /* egasi #232: o'rnatma texnika (faqat 3D ko'rinish, yangi sayt) — oddiy primitivlardan haqiqiyroq shakl, eshiklari ochiladi */
   if (opts.theme && frag && frag.category === 'appliance' && texnikaTuri(frag.code)) return texnikaMesh(THREE, frag, w, d, h, { rang: opts.texnikaRang, hinge: opts.hinge });
+  /* egasi #239–#241: yotoqxona / yumshoq mebel (krovat, divan, kreslo, komod …) — yopiq quti emas, haqiqiy shakl (faqat 3D ko'rinish) */
+  if (opts.theme && frag && mebelTuri(frag.code)) return mebelMesh(THREE, frag, w, d, h, { theme: opts.theme, rang: opts.rang });
   const group = new THREE.Group();
   /* TZ-09 Q5: yangi sayt (mavzu) — tortmalar ham (faqat 3D; eski sayt va eksportlar — avvalgidek) */
   /* TZ-22: yangi sayt — eshik soni/eni Bazis detallaridan, bitta eshik petlyasi — joylashuvdan (opts.hinge) */
