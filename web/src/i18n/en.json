@@ -1614,5 +1614,8 @@
  "admin.qaytarish": "Revert",
  "admin.tarix_qaytar_sarlavha": "Revert this change?",
  "admin.tarix_qaytar_matn": "{bolim} · {kalit}: the old value will be restored.",
- "admin.tarix_qaytarildi": "Reverted"
+ "admin.tarix_qaytarildi": "Reverted",
+ "admin.admin_emas": "This section is for admins only",
+ "admin.admin_emas_izoh": "You are signed in as a regular user. Sign in with an admin account to open the admin panel.",
+ "admin.admin_bilan_kirish": "Sign in as admin"
 }

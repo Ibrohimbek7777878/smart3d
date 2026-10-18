@@ -1614,5 +1614,8 @@
  "admin.qaytarish": "Откатить",
  "admin.tarix_qaytar_sarlavha": "Откатить изменение?",
  "admin.tarix_qaytar_matn": "{bolim} · {kalit}: будет восстановлено старое значение.",
- "admin.tarix_qaytarildi": "Откат выполнен"
+ "admin.tarix_qaytarildi": "Откат выполнен",
+ "admin.admin_emas": "Этот раздел только для администратора",
+ "admin.admin_emas_izoh": "Вы вошли как обычный пользователь. Войдите в админ-панель с аккаунтом администратора.",
+ "admin.admin_bilan_kirish": "Войти как администратор"
 }

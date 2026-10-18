@@ -4,6 +4,9 @@ import Ikon from '../../shared/ui/Ikon.jsx';
 import XatoChegarasi from '../../shared/ui/XatoChegarasi.jsx';
 import { iconBtn } from '../../shared/ui/styles.js';
 import Narxlar from '../settings/Narxlar.jsx';
+import { S } from '../../store/session.js';
+import { set } from '../../store/index.js';
+import { btnPrimary, btnGhost } from '../../shared/ui/styles.js';
 import { useAdmin } from './useAdmin.js';
 import { BOLIMLAR, BOLIM_IKON } from './actions.js';
 import Furnitura from './Furnitura.jsx';
@@ -18,7 +21,18 @@ const BOLIM = { narxlar: Narxlar, furnitura: Furnitura, promptlar: Promptlar, st
 
 export default function AdminQobiq() {
   const a = useAdmin();
-  React.useEffect(() => { if (a.holat === 'yoq') window.location.replace('/404.html'); }, [a.holat]);   // mavjud 404 sahifasi (CSP iframe'ga yo'l bermaydi)
+  /* egasi #261: kirgan, lekin admin emas — oddiy 404 o'rniga tushuntirish (qaysi akkaunt bilan kirgani va admin bilan qayta kirish) */
+  if (a.holat === 'yoq') return (
+    <div data-admin-emas="" style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '24px' }}>
+      <div style={{ maxWidth: '460px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <h1 style={{ margin: '0', fontSize: '28px', fontWeight: '800' }}>{t('admin.admin_emas')}</h1>
+        <p style={{ margin: '0', color: 'var(--mut)' }}>{t('admin.admin_emas_izoh')}</p>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button data-admin-chiqish="" onClick={() => { S.logout(false); set('nav', { screen: 'login' }); }} style={btnPrimary}>{t('admin.admin_bilan_kirish')}</button>
+          <button onClick={a.back} style={btnGhost}>{t('admin.ilovaga_qaytish')}</button>
+        </div>
+      </div>
+    </div>);
   if (a.holat !== 'admin') return <div style={{ minHeight: '100vh' }} data-admin-yuk="" />;
   const Bolim = BOLIM[a.bolim];
   return (
