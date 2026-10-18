@@ -7,6 +7,7 @@
 import { footprint, roomBBox } from '../../../app/js/engine/rules.js';
 import { cutlist, productionCost } from '../../../app/js/engine/cutlist.js';
 import { USTKI_Z } from '../../../app/js/ai.js';
+import { OYNA_SUKUT_Z } from '../../../app/js/engine/deraza3d.js';
 import { devordanSur, devorChegara, yangiModulJoyi } from '../../../app/js/engine/devorOraliq.js';
 import { projectSlots } from './hisob.js';
 import { searchMaterial } from '../../../app/js/engine/search.js';
@@ -72,7 +73,7 @@ export const cheklovXonasi = (doc) => (maydonRejim(doc) === 'erkin' ? { outline:
 export function addPlacement(doc, frag, o = {}) {
   if (!o.qator) {
     const ustki0 = isUstki(frag);
-    const z = frag.default_z != null ? +frag.default_z : (ustki0 ? USTKI_Z : 0);
+    const z = frag.default_z != null ? +frag.default_z : (frag.category === 'window' ? OYNA_SUKUT_Z : ustki0 ? USTKI_Z : 0);   // egasi #236: oyna — pol'dan 900
     const p = { id: nextId(doc), frg: frag.code, name: frag.name, x: 0, y: 0, z, w: frag.w, d: frag.d, h: frag.h, rot: 0, qty: 1 };
     const j = yangiModulJoyi(doc.room, doc.placements, p, { erkin: maydonRejim(doc) === 'erkin' });
     p.x = j.x; p.y = j.y;
@@ -82,7 +83,7 @@ export function addPlacement(doc, frag, o = {}) {
   const bb = roomBBox(doc.room.outline);
   const id = nextId(doc);
   const ustki = isUstki(frag);
-  const z0 = frag.default_z != null ? +frag.default_z : (ustki ? USTKI_Z : 0);
+  const z0 = frag.default_z != null ? +frag.default_z : (frag.category === 'window' ? OYNA_SUKUT_Z : ustki ? USTKI_Z : 0);
   const zKesishadi = (p) => { const pz = +p.z || 0; return pz < z0 + (+frag.h || 0) && z0 < pz + (+p.h || 0); };
   const row = doc.placements.filter(p => footprint(p).y0 < 300 + bb.minY && zKesishadi(p))
     .sort((a, b) => footprint(a).x0 - footprint(b).x0);
@@ -293,4 +294,21 @@ export function plitaRoyxati(H, q, materialCode) {
   }
   return items.map(s => ({ s, idx: all.findIndex(x => (x.sku && x.sku === s.sku && x.name === s.name) || (x.name === s.name && x.type === s.type)) }))
     .filter(x => x.idx >= 0);
+}
+
+/* egasi #236: joylashtirish — qaraydigan tomon, erkin burchak, balandlik. Markaz joyida qoladi. */
+export const TOMON_ROT = { old: 0, orqa: 180, chap: 90, ong: 270 };
+export function setRot(p, deg) {
+  const [c, s] = cs(p.rot);
+  const cx = p.x + (c * p.w - s * p.d) / 2, cy = p.y + (s * p.w + c * p.d) / 2;
+  p.rot = ((Math.round(+deg || 0) % 360) + 360) % 360;
+  const [c2, s2] = cs(p.rot);
+  p.x = Math.round(cx - (c2 * p.w - s2 * p.d) / 2); p.y = Math.round(cy - (s2 * p.w + c2 * p.d) / 2);
+  return p.rot;
+}
+/** Balandlik (p.z, mm): 0..xona balandligi − modul balandligi; → qo'llangan z */
+export function setZ(p, z, xonaH) {
+  const maks = Math.max(0, Math.round((+xonaH || 2700) - (+p.h || 0)));
+  p.z = Math.min(maks, Math.max(0, Math.round(+z || 0)));
+  return p.z;
 }

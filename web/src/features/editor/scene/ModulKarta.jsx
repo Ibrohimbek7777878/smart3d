@@ -63,6 +63,24 @@ export default function ModulKarta() {
           <Ikon n="ochirish" size={18} gap={0} />
         </button>
       </div>
+      {/* egasi #236: joylashtirish — qaraydigan tomon, erkin burchak, balandlik */}
+      <div data-joylash="" style={{"display":"flex","flexDirection":"column","gap":"8px"}}>
+        <span style={{"fontSize":"14px","fontWeight":"700","color":"var(--mut)"}}>{t('sahna.qaraydigan_tomon')}</span>
+        <div style={{"display":"flex","gap":"6px","flexWrap":"wrap"}}>
+          {v.plc.tomonlar.map(b => (<button key={b.k} data-tomon={b.k} aria-pressed={b.on} onClick={b.go} style={{"height":"44px","padding":"0 12px","borderRadius":"14px","border":"1px solid "+(b.on?"var(--acc)":"var(--line)"),"background":b.on?"var(--acc)":"var(--sfc2)","color":b.on?"var(--ink)":"var(--txt)","fontWeight":"800","fontSize":"14px","cursor":"pointer"}}>{b.label}</button>))}
+        </div>
+        <div style={{"display":"flex","alignItems":"center","gap":"8px"}}>
+          <span style={{"flex":"1","fontSize":"14px","fontWeight":"700","color":"var(--mut)"}}><Ikon n="burish" size={16} />{t('sahna.burchak')}</span>
+          <input type="number" data-rot-input="" min="0" max="359" value={v.plc.rotVal} onChange={v.plc.rotInput} onBlur={v.plc.rotCommit} onKeyDown={v.plc.key} aria-label={t('sahna.burchak')} style={{"width":"76px","height":"40px","borderRadius":"12px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","fontWeight":"800","textAlign":"center","fontVariantNumeric":"tabular-nums","outline":"none"}} />
+        </div>
+        <div style={{"display":"flex","alignItems":"center","gap":"8px"}}>
+          <span style={{"flex":"1","fontSize":"14px","fontWeight":"700","color":"var(--mut)"}}>{t('sahna.balandlik')}</span>
+          <input type="number" data-z-input="" min="0" max={v.plc.zMax} value={v.plc.zVal} onChange={v.plc.zInput} onBlur={v.plc.zCommit} onKeyDown={v.plc.key} aria-label={t('sahna.balandlik')} style={{"width":"76px","height":"40px","borderRadius":"12px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","fontWeight":"800","textAlign":"center","fontVariantNumeric":"tabular-nums","outline":"none"}} />
+        </div>
+        <div style={{"display":"flex","gap":"6px","flexWrap":"wrap"}}>
+          {v.plc.zTez.map(b => (<button key={b.k} data-z-tez={b.k} aria-pressed={b.on} onClick={b.go} style={{"height":"44px","padding":"0 12px","borderRadius":"14px","border":"1px solid "+(b.on?"var(--acc)":"var(--line)"),"background":b.on?"var(--acc)":"var(--sfc2)","color":b.on?"var(--ink)":"var(--txt)","fontWeight":"800","fontSize":"14px","cursor":"pointer"}}>{b.label}</button>))}
+        </div>
+      </div>
       <button onClick={v.toggleModOpen} style={{"height":"48px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
         <Ikon n="eshik" /><span className="sc-interp">{v.sm?.openLabel}</span>
       </button>
