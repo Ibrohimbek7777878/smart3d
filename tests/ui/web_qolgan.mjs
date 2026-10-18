@@ -39,7 +39,7 @@ async function asosiy(page, R) {
   await click(/^Narx$/); await page.waitForTimeout(600);
   await page.locator('input[placeholder="Mijoz ismi"]').fill('Aziza Karimova');
   const hole0 = await M(() => window.__app.res.prod.holeCost);
-  await page.locator('[data-xizmat] button').click(); await page.waitForTimeout(1000);
+  await page.locator('[data-xizmat] button').first().click(); await page.waitForTimeout(1000);
   R.prisadka = { oldin: hole0, keyin: await M(() => window.__app.res.prod.holeCost), tanlandi: await M(() => !!(window.__app.doc.xizmatlar || {}).teshik) };
   await page.screenshot({ path: `${OUT}/qolgan-1440-narx.png` });
   await page.waitForTimeout(3000);                                     // avtomatik saqlash (2 s)
