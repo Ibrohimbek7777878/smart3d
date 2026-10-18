@@ -69,12 +69,12 @@ export async function submitAuth() {
   const st = get(), f = st.auth.f, reg = st.nav.screen === 'reg', e = {}, em = f.email.trim();
   if (reg && !f.name.trim()) e.name = t('kirish.ism_yozing');
   if (!EMAIL_RE.test(em)) e.email = t('kirish.email_xato');
-  if (reg && f.phone.length !== 9) e.phone = t('kirish.telefon_9');
+  if (reg && f.phone && f.phone.length !== 9) e.phone = t('kirish.telefon_9');
   if (f.pass.length < 8) e.pass = t('kirish.parol_8');
   if (Object.keys(e).length) { setField({ err: e, tried: true }); return; }
   if (busy) return;
   busy = true;
-  const j = reg ? await S.register({ email: em, password: f.pass, name: f.name.trim(), phone: '998' + f.phone, shop: f.shop.trim() })
+  const j = reg ? await S.register({ email: em, password: f.pass, name: f.name.trim(), phone: f.phone ? '998' + f.phone : '', shop: f.shop.trim() })
     : await S.login(em, f.pass);
   busy = false;
   if (!j.ok) {
@@ -165,7 +165,7 @@ export async function googleTugma(el, clientId) {
     const gid = window.google.accounts.id;
     if (gisId !== clientId) { gid.initialize({ client_id: clientId, callback: (r) => googleKirish(r && r.credential), ux_mode: 'popup' }); gisId = clientId; }
     el.textContent = '';
-    gid.renderButton(el, { type: 'standard', theme: 'filled_black', size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'left', width: Math.min(360, el.clientWidth || 360), locale: til() });
+    gid.renderButton(el, { type: 'standard', theme: 'filled_black', size: 'large', shape: 'pill', text: 'continue_with', logo_alignment: 'left', width: Math.min(360, el.clientWidth || 360), locale: til() });
   } catch (_) { xato('S3D-NET-101', { modul: 'auth/google' }); }
 }
 

@@ -33,7 +33,7 @@ async function asosiy(page, R) {
 
   /* ro'yxat → muharrir: 3D sahna, 4 qadam */
   await fill('Jasur', 'Himoya Usta'); await fill('jasur@', 'himoya' + Date.now() + '@test.uz');
-  const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
+  const tel = page.locator('input[inputmode=numeric]').first(); if (await tel.count()) { await tel.click(); await tel.type('9' + String(Date.now()).slice(-8)); }   // #209: telefon maydoni ro'yxatda yo'q
   await fill('kamida 8', 'parol12345');
   await click(/^Ro'yxatdan o'tish$/); await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 });   // TZ-25: darhol ish joyi
   R.kalitJSdaYoq = await M(() => localStorage.getItem('smart3d.token') === null && !document.cookie.includes('s3d_sess'));

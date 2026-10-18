@@ -114,7 +114,7 @@ async function asosiy(page, R) {
     await olch(til, 'royxat');
     await page.locator(`input[placeholder="${L['kirish.jasur_aliyev']}"]`).fill('Ekran ' + til);
     await page.locator(`input[placeholder="${L['kirish.jasur_mail_uz']}"]`).fill('ekran' + til + Date.now() + '@test.uz');
-    const tel = page.locator('input[inputmode=numeric]').first(); await tel.click(); await tel.type('9' + String(Date.now()).slice(-8));
+    const tel = page.locator('input[inputmode=numeric]').first(); if (await tel.count()) { await tel.click(); await tel.type('9' + String(Date.now()).slice(-8)); }   // #209: telefon maydoni ro'yxatda yo'q
     await page.locator(`input[placeholder="${L['kirish.kamida_8_belgi']}"]`).fill('parol12345');
     await tugma(L['kirish.royxat']).last().click();
     if (!(await page.locator('[data-ishjoyi]').waitFor({ timeout: 15000 }).then(() => true, () => false))) throw new Error(til + ': ro\'yxatdan keyin ish joyi ochilmadi');
