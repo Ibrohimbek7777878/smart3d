@@ -86,7 +86,7 @@ Restart=on-failure
 WantedBy=multi-user.target
 ```
 - **Bitta jarayon.** SQLite, so'rov cheklovlari va SMS hisoblagichlari xotirada — klaster rejimi ishlatilmaydi.
-- **Docker** (muqobil): repo ildizidan `docker build -f server/Dockerfile -t smart3d .` (ikki bosqich: sayt build, so'ng server; `.dockerignore` maxfiy va katta fayllarni konteynerga olmaydi). Ishga tushirish: `docker run -p 3000:3000 -e JWT_SECRET=<…> -e ADMIN_PASSWORD=<…> -v smart3d-data:/data smart3d`.
+- **Docker** (muqobil): repo ildizidan `docker build -f server/Dockerfile -t smart3d .` (uch bosqich: sayt build, bog'liqliklar, ishchi rasm; Node 24, `node` foydalanuvchisi; sinovdan o'tgan: rasm quriladi va `tekshiruv.sh` 24/24 ✅; `.dockerignore` maxfiy va katta fayllarni konteynerga olmaydi). Ishga tushirish: `docker run -p 3000:3000 -e JWT_SECRET=<…> -e ADMIN_PASSWORD=<…> -v smart3d-data:/data smart3d`.
 
 ## 6. nginx (namuna, admin qo'yadi)
 Tayyor namuna — repoda **`server/nginx.conf`** (serverda tahrirlanmaydi; admin uni nusxalab `conf.d` ga qo'yadi, `server_name` va port ni o'zgartiradi, `nginx -t` bilan tekshiradi). Qoidalari:

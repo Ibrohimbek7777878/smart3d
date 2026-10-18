@@ -1,0 +1,20 @@
+# Docker konteksti (repo ildizi) — maxfiy, katta va keraksiz narsa konteynerga tushmasin
+.git
+**/node_modules
+web/dist
+tests
+frontend
+loyiha-tz-lari
+data1
+Smart3D_malumot
+Smart3D_toplam*
+*.xlsx
+*.pdf
+**/.env
+**/.env.*
+!**/.env.example
+**/*.db
+**/*.db-wal
+**/*.db-shm
+**/*.sqlite*
+server/backups
