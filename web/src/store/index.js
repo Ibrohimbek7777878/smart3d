@@ -19,7 +19,7 @@ export const store = createStore({
   project: { name: t('umumiy.yangi_loyiha'), client: '', matCode: 'LDSP16', polkaCode: 'LDSP16',   /* egasi #209: korpus sukuti — LDSP 16 mm (sex standarti, avval LDSP18) */
     fasadCode: 'MDF16', orqaCode: null, stolCode: null, sheet: null, docV: 0, dv: 0 },
   editor: { step: 2, done: { 1: true }, tip: 3, view: '3d', spin: false, sel: null, part: null, raw: {}, warn: {},
-    cat: 'all', q: '', rk: 0, miss: false, vrOk: false, sceneOn: false, sceneErr: false, sceneV: 0 },
+    cat: 'all', q: '', almash: null, rk: 0, miss: false, vrOk: false, sceneOn: false, sceneErr: false, sceneV: 0 },
   ai: { open: false, text: '', mic: false, tab: 'matn', kat: 'oshxona', tanlangan: null, qiymat: {}, shablonlar: null, shNom: '' },
   ins: { id: null, ex: 0, color: 1, auto: false },
   projects: { list: null, q: '', aloqa: true },              // aloqa — ro'yxat serverdan olindimi (TZ-27)

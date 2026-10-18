@@ -84,6 +84,10 @@ export default function ModulKarta() {
       <button onClick={v.toggleModOpen} style={{"height":"48px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
         <Ikon n="eshik" /><span className="sc-interp">{v.sm?.openLabel}</span>
       </button>
+      {/* egasi #239–#241: boshqa modulga almashtirish — yangisi shu joyga, eskisi chetga suriladi */}
+      {v.almash ? <button onClick={v.almash} data-almashtir="" style={{"height":"48px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
+        <Ikon n="almashtirish" /><span className="sc-interp">{t('sahna.almashtirish')}</span>
+      </button> : null}
       {/* TZ-24 A: qo'lda chizilgan modul — chizmani tahrirlash */}
       {v.chizma ? <button onClick={v.chizma} data-chizma-tahrir="" style={{"height":"48px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>
         <Ikon n="tahrir" /><span className="sc-interp">{t('chizish.tahrirlash')}</span>

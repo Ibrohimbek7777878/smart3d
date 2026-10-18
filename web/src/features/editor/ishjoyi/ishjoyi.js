@@ -44,7 +44,7 @@ export function panel(n) {
   if (get().chizish.ochiq) set('chizish', { ochiq: false });
   set('editor', s => ({ step: n, done: { ...s.done, ...(n > 1 ? { [n - 1]: true } : null) } }));
 }
-export const panelYop = () => { set('editor', { step: 0 }); if (get().chizish.ochiq) set('chizish', { ochiq: false }); };
+export const panelYop = () => { set('editor', { step: 0, almash: null }); if (get().chizish.ochiq) set('chizish', { ochiq: false }); };
 
 /** "Tez boshlash" (loyiha bo'sh bo'lganda, matn qatori ustida): oshxona — joriy xonaga avtomatik konstruktor (TZ-22) */
 export function tezOshxona() {
