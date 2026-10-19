@@ -13,6 +13,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_DIR = path.join(__dirname, '..');
 let tmp, proc, base, mock, reply = 'ok';
 const seen = [];
+/* TZ-40: qoidali tahlilchi tushunsa Claude chaqirilmaydi; mexanikani sinash uchun matn "murakkab" (240 belgidan uzun) qilinadi */
+const UZUN = (t) => t + ' — ' + 'qo\'shimcha izoh, '.repeat(15) + 'oxiri';
 const OUT = { room: { w_mm: 4200, d_mm: 3100, h_mm: 0, layout: 'linear', openings: [] },
   features: { sink: true, stove: false, fridge: false, corner: false, upper: false, tall: false, wardrobe: false, island: false },
   orders: [{ kind: 'pastki', qty: 3 }], unknown: [] };
@@ -39,7 +41,7 @@ before(async () => {
   const port = 20000 + Math.floor(Math.random() * 1000);
   base = `http://127.0.0.1:${port}`;
   const env = { ...process.env, PORT: String(port), DB_PATH: db, JWT_SECRET: 'aia-test-' + 'w'.repeat(40), NODE_ENV: 'test',
-    AI_PROVIDER: 'anthropic', AI_API_KEY: 'soxta-claude-kalit', ANTHROPIC_BASE_URL: `http://127.0.0.1:${mock.address().port}` };
+    AI_PROMPT_CACHE: '1', AI_PROVIDER: 'anthropic', AI_API_KEY: 'soxta-claude-kalit', ANTHROPIC_BASE_URL: `http://127.0.0.1:${mock.address().port}` };
   for (const k of ['ESKIZ_EMAIL', 'ESKIZ_PASSWORD', 'AI_MODEL', 'AI_BASE_URL', 'ANTHROPIC_AUTH_TOKEN']) delete env[k];
   proc = spawn(process.execPath, ['index.js'], { cwd: SERVER_DIR, env });
   await new Promise((resolve, reject) => {
@@ -60,7 +62,7 @@ test('Claude: standart model claude-opus-5-5, tuzilgan JSON, effort low, server-
   assert.deepEqual(await (await api('/api/ai/status')).json(), { enabled: true, provider: 'anthropic', model: 'claude-opus-5-5' });
   const s = await (await api('/api/auth/sms/send', { method: 'POST', body: { phone: '998977770001' } })).json();
   const { token } = await (await api('/api/auth/sms/verify', { method: 'POST', body: { phone: '998977770001', code: s.dev_code } })).json();
-  const r = await api('/api/ai/parse', { method: 'POST', token, body: { text: '4.2 ga 3.1 oshxona, moyka, 3 ta pastki' } });
+  const r = await api('/api/ai/parse', { method: 'POST', token, body: { text: UZUN('4.2 ga 3.1 oshxona, moyka, 3 ta pastki') } });
   assert.equal(r.status, 200);
   const j = await r.json();
   assert.equal(j.engine, 'anthropic:claude-opus-5-5');
@@ -74,13 +76,15 @@ test('Claude: standart model claude-opus-5-5, tuzilgan JSON, effort low, server-
   assert.equal(q.body.output_config.effort, 'low');
   assert.equal(q.body.output_config.format.type, 'json_schema');
   assert.equal(q.body.thinking, undefined);                 // Opus 5.5: thinking parametri yuborilmaydi
-  assert.equal(q.body.messages[0].content, '4.2 ga 3.1 oshxona, moyka, 3 ta pastki');
+  assert.equal(q.body.messages[0].content, UZUN('4.2 ga 3.1 oshxona, moyka, 3 ta pastki'));
+  assert.equal(q.body.max_tokens, 1000);                    // TZ-40: 4000 → 1000 (yetmasa bir marta 4000)
+  assert.deepEqual(q.body.system[0].cache_control, { type: 'ephemeral' });   // tizim ko'rsatmasi keshlanadi
 });
 
 test('Claude rad etsa (refusal) — 502, sayt qoidali tahlilchiga qaytadi', async () => {
   reply = 'refusal';
   const s = await (await api('/api/auth/sms/send', { method: 'POST', body: { phone: '998977770002' } })).json();
   const { token } = await (await api('/api/auth/sms/verify', { method: 'POST', body: { phone: '998977770002', code: s.dev_code } })).json();
-  assert.equal((await api('/api/ai/parse', { method: 'POST', token, body: { text: 'oshxona' } })).status, 502);
+  assert.equal((await api('/api/ai/parse', { method: 'POST', token, body: { text: UZUN('oshxona') } })).status, 502);
   reply = 'ok';
 });

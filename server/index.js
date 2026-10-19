@@ -26,7 +26,8 @@ import { createJurnal } from './jurnal.js';
 import { securityHeaders, inlineScriptHashes, TG_ILOVA } from './himoya.js';
 import { loadConfig, APP_DIR, WEB_DIST } from './lib/config.js';
 import { openDb } from './lib/db.js';
-import { yadroSxema, mcModullar, adminSxema, promptlarSeed } from './lib/sxema.js';
+import { yadroSxema, mcModullar, adminSxema, promptlarSeed, aiSxema } from './lib/sxema.js';
+import { aiTejash } from './lib/ai-tejash.js';
 import { createAuth, zaifAdminTekshir } from './lib/auth.js';
 import { rateLimit } from './lib/limit.js';
 import { fail, xatoIshlovchi } from './lib/xato.js';
@@ -61,7 +62,12 @@ const jurnal = createJurnal(db);
 yadroSxema(db);
 mcModullar(db, APP_DIR);
 adminSxema(db);
+aiSxema(db);                                  // TZ-40: ai_kesh, ai_sarf, promptlar_admin.spec_*
 promptlarSeed(db, APP_DIR);
+const tejash = aiTejash({ db, jurnal });      // TZ-40: AI token tejash (tayyor → kesh → qoida → Claude)
+tejash.royxatToldir();                        // tayyor promptlarga tuzilma (qoida bilan, bepul; mavjud tuzilma o'zgarmaydi)
+tejash.keshTozala();
+setInterval(() => tejash.keshTozala(), 6 * 3600 * 1000).unref();
 zaifAdminTekshir(db, cfg.PROD);
 
 /* ── Express ── */
@@ -70,7 +76,7 @@ app.disable('x-powered-by');
 const server = http.createServer(app);
 const efir = narxEfiri({ server, app, allowed: cfg.ALLOWED_ORIGINS });          // WebSocket /ws — real-time narx
 const kirish = createAuth({ db, cfg });
-const ctx = { db, jurnal, cfg, ...kirish, broadcastPrice: efir.broadcastPrice };
+const ctx = { db, jurnal, cfg, tejash, ...kirish, broadcastPrice: efir.broadcastPrice };
 const apiLimiter = rateLimit({ windowMs: 60 * 1000, max: 300 });                // TZ-19 X5: hamma /api — 300 / daqiqa / IP
 
 app.use(sorovJurnali(jurnal));

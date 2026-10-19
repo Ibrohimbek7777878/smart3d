@@ -131,6 +131,53 @@ export function adminSxema(db) {
   `);
 }
 
+/** TZ-40: AI token tejash jadvallari (idempotent; faqat yangi jadval/ustun — mavjud ma'lumot o'zgarmaydi):
+ *  promptlar_admin.spec_* — tayyor promptning oldindan hosil qilingan va tekshirilgan tuzilmasi (AI'siz taqdim etiladi);
+ *  ai_kesh — erkin matn natijasi (30 kun); ai_sarf — har AI yo'li so'rovi (manba: tayyor | kesh | qoida | claude) va token. */
+export function aiSxema(db) {
+  addColumn(db, 'promptlar_admin', 'spec_json', "TEXT NOT NULL DEFAULT ''");      // { v, tur, kons, parse } (lib/ai-tejash.js)
+  addColumn(db, 'promptlar_admin', 'spec_manba', "TEXT NOT NULL DEFAULT ''");     // qoida | claude
+  addColumn(db, 'promptlar_admin', 'spec_sana', "TEXT NOT NULL DEFAULT ''");      // tekshiruv sanasi (UTC, ISO)
+  addColumn(db, 'promptlar_admin', 'spec_versiya', 'INTEGER NOT NULL DEFAULT 0'); // tahlil qoidalari versiyasi
+  addColumn(db, 'promptlar_admin', 'spec_hash', "TEXT NOT NULL DEFAULT ''");      // tuzilma hosil qilingan matnlar (uz|ru|en) belgisi
+  addColumn(db, 'promptlar_admin', 'spec_tasdiq', 'INTEGER NOT NULL DEFAULT 0');  // admin ko'rib tasdiqladi (Claude tuzilmasi — faqat shundan keyin ishlatiladi)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS ai_kesh (
+      kalit TEXT PRIMARY KEY,
+      yol TEXT NOT NULL,
+      til TEXT NOT NULL DEFAULT '',
+      model TEXT NOT NULL DEFAULT '',
+      versiya INTEGER NOT NULL DEFAULT 0,
+      natija_json TEXT NOT NULL,
+      engine TEXT NOT NULL DEFAULT '',
+      kirish INTEGER NOT NULL DEFAULT 0,
+      chiqish INTEGER NOT NULL DEFAULT 0,
+      yaratildi INTEGER NOT NULL,
+      muddat INTEGER NOT NULL,
+      urilgan INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE INDEX IF NOT EXISTS idx_ai_kesh_muddat ON ai_kesh(muddat);
+    CREATE TABLE IF NOT EXISTS ai_sarf (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      sana TEXT NOT NULL,
+      vaqt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      user_id INTEGER,
+      yol TEXT NOT NULL DEFAULT '',
+      manba TEXT NOT NULL,
+      model TEXT NOT NULL DEFAULT '',
+      kirish INTEGER NOT NULL DEFAULT 0,
+      chiqish INTEGER NOT NULL DEFAULT 0,
+      kesh_yozildi INTEGER NOT NULL DEFAULT 0,
+      kesh_oqildi INTEGER NOT NULL DEFAULT 0,
+      tejaldi INTEGER NOT NULL DEFAULT 0,
+      ok INTEGER NOT NULL DEFAULT 1,
+      sabab TEXT NOT NULL DEFAULT ''
+    );
+    CREATE INDEX IF NOT EXISTS idx_ai_sarf_sana ON ai_sarf(sana, manba);
+    CREATE INDEX IF NOT EXISTS idx_ai_sarf_user ON ai_sarf(user_id, sana);
+  `);
+}
+
 /** Tayyor so'rovlarning dastlabki to'plami (app/data/promptlar-matn.json — scripts/promptlar_seed.mjs yaratadi): bazada hali
  *  hech qachon qo'shilmagan bo'lsa — bir marta (settings.promptlar_seed_v1). Admin o'chirsa — qaytib kelmaydi. → qo'shilgan soni */
 export function promptlarSeed(db, appDir) {

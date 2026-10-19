@@ -10,6 +10,9 @@
  *   AI_MODEL      model nomi. anthropic standarti: claude-opus-5-5. gemini/openai — majburiy
  *   AI_BASE_URL   openai uchun (standart https://api.openai.com/v1), masalan http://localhost:11434/v1 (Ollama)
  *   AI_TIMEOUT_MS standart 30000
+ *   AI_MAX_TOKENS   javob chegarasi (TZ-40): sukut — parse 1000, konstruksiya 1500 (eski qiymat 4000; yetmasa bir marta 4000 bilan qayta so'raladi)
+ *   AI_PROMPT_CACHE tizim ko'rsatmasini keshlash (Anthropic prompt caching): 0 — hech qachon; 1 — doim; sukut (auto) — chaqiruvchi hal qiladi
+ *                   (lib/ai-tejash.js: yaqinda Claude chaqirilgan yoki soatiga >= 3 chaqiruv bo'lsagina — yozish narxi o'zini oqlaydi)
  */
 import Anthropic from '@anthropic-ai/sdk';
 import { TIL_IZOH, TURLAR, specTekshir } from '../app/js/engine/konstruksiyaTili.js';
@@ -86,25 +89,44 @@ export function aiConfig() {
 
 const TIMEOUT = () => Number(process.env.AI_TIMEOUT_MS) || 30000;
 
-/* ── Claude (rasmiy SDK) ── */
+/* ── Claude (rasmiy SDK) ──
+ * max_tokens: javob faqat JSON (kichik); 4000 behuda katta edi (TZ-40). Yetmasa (stop_reason: max_tokens) — bir marta 4000 bilan qayta.
+ * Prompt caching: tizim ko'rsatmasi (har safar bir xil) cache_control bilan — kesh urilsa kirish tokeni arzon (usage.cache_read_input_tokens). */
+const MAX_TOKENS_ESKI = 4000;
+const maxTokensOl = (sukut) => { const n = Number(process.env.AI_MAX_TOKENS); return Number.isFinite(n) && n >= 200 ? Math.floor(n) : sukut; };
+const keshYoqilgan = (talab) => { const v = process.env.AI_PROMPT_CACHE; return v === '0' ? false : v === '1' ? true : talab !== false; };
+const sarf = (kirish, chiqish, yozildi = 0, oqildi = 0) => ({ kirish: kirish | 0, chiqish: chiqish | 0, kesh_yozildi: yozildi | 0, kesh_oqildi: oqildi | 0 });
 let anthropicClient = null;
-async function viaAnthropic(text, model, system = SYSTEM, schema = AI_SCHEMA, effort = 'low') {
+async function viaAnthropic(text, model, system = SYSTEM, schema = AI_SCHEMA, effort = 'low', maxTokens = MAX_TOKENS_ESKI, keshTalab = true) {
   anthropicClient = anthropicClient || new Anthropic({ apiKey: process.env.AI_API_KEY || process.env.ANTHROPIC_API_KEY, timeout: TIMEOUT(), maxRetries: 2 });
   const gen5 = /^claude-(opus|sonnet|haiku|fable)-5/.test(model);
   const withFallback = /^claude-(opus-5|opus-5-5|fable-5|fable-5-1|sonnet-5-5)$/.test(model);   // server-side fallback qo'llaydigan modellar
-  const params = {
-    model, max_tokens: 4000, system,
-    messages: [{ role: 'user', content: text }],
-    output_config: { format: { type: 'json_schema', schema }, ...(gen5 ? { effort } : {}) }
+  const jami = sarf(0, 0);
+  const bir = async (cap) => {
+    const params = {
+      model, max_tokens: cap,
+      system: keshYoqilgan(keshTalab) ? [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }] : system,
+      messages: [{ role: 'user', content: text }],
+      output_config: { format: { type: 'json_schema', schema }, ...(gen5 ? { effort } : {}) }
+    };
+    const res = withFallback
+      ? await anthropicClient.beta.messages.create({ ...params, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' })
+      : await anthropicClient.messages.create(params);
+    const u = res.usage || {};
+    jami.kirish += u.input_tokens | 0; jami.chiqish += u.output_tokens | 0;
+    jami.kesh_yozildi += u.cache_creation_input_tokens | 0; jami.kesh_oqildi += u.cache_read_input_tokens | 0;
+    return res;
   };
-  const res = withFallback
-    ? await anthropicClient.beta.messages.create({ ...params, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' })
-    : await anthropicClient.messages.create(params);
-  if (res.stop_reason === 'refusal') throw new Error('AI so\'rovni rad etdi');
-  if (res.stop_reason === 'max_tokens') throw new Error('AI javobi to\'liq emas');
+  let res = await bir(maxTokens);
+  if (res.stop_reason === 'max_tokens' && maxTokens < MAX_TOKENS_ESKI) res = await bir(MAX_TOKENS_ESKI);   // kam kelgan — bir marta eski chegara bilan
+  const xato = (m) => Object.assign(new Error(m), { sarf: jami });   // xatoda ham ketgan token hisobga olinadi
+  if (res.stop_reason === 'refusal') throw xato('AI so\'rovni rad etdi');
+  if (res.stop_reason === 'max_tokens') throw xato('AI javobi to\'liq emas');
   const block = res.content.find(b => b.type === 'text');
-  if (!block) throw new Error('AI matn qaytarmadi');
-  return JSON.parse(block.text);
+  if (!block) throw xato('AI matn qaytarmadi');
+  let json;
+  try { json = JSON.parse(block.text); } catch (e) { throw xato('AI javobi JSON emas'); }
+  return { json, sarf: jami };
 }
 
 async function postJson(url, body, headers) {
@@ -128,7 +150,8 @@ async function viaGemini(text, model, system = SYSTEM, schema = AI_SCHEMA) {
   }, { 'x-goog-api-key': process.env.AI_API_KEY });
   const out = j && j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts;
   if (!out || !out[0] || typeof out[0].text !== 'string') throw new Error('Gemini javobi bo\'sh');
-  return JSON.parse(out[0].text);
+  const u = j.usageMetadata || {};
+  return { json: JSON.parse(out[0].text), sarf: sarf(u.promptTokenCount, u.candidatesTokenCount) };
 }
 
 /* ── OpenAI'ga mos API (OpenAI, DeepSeek, Ollama, OpenRouter…) ── */
@@ -141,17 +164,22 @@ async function viaOpenAI(text, model, system = SYSTEM, schema = AI_SCHEMA) {
   }, process.env.AI_API_KEY ? { authorization: 'Bearer ' + process.env.AI_API_KEY } : {});
   const c = j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
   if (typeof c !== 'string') throw new Error('AI javobi bo\'sh');
-  return JSON.parse(c);
+  const u = j.usage || {};
+  return { json: JSON.parse(c), sarf: sarf(u.prompt_tokens, u.completion_tokens) };
 }
 
-/** text → { room, orders, unknown } (parseZamer shakli). Xato bo'lsa — Error (sayt qoidali tahlilchiga qaytadi) */
-export async function llmParse(text) {
+/** Ko'rsatma versiyasi — KESH KALITIGA kiradi: tizim ko'rsatmasi yoki sxema o'zgarsa oshiring (eski keshlar o'z-o'zidan ishlamay qoladi) */
+export const KORSATMA_V = 1;
+export const PARSE_MAX_TOKENS = 1000, KONS_MAX_TOKENS = 1500;
+
+/** text → { room, orders, unknown } (parseZamer shakli). Xato bo'lsa — Error (sayt qoidali tahlilchiga qaytadi). sarf — token hisobi */
+export async function llmParse(text, o = {}) {
   const cfg = aiConfig();
   if (!cfg.enabled) throw new Error('AI sozlanmagan');
-  const raw = cfg.provider === 'anthropic' ? await viaAnthropic(text, cfg.model)
+  const { json, sarf: s } = cfg.provider === 'anthropic' ? await viaAnthropic(text, cfg.model, SYSTEM, AI_SCHEMA, 'low', maxTokensOl(PARSE_MAX_TOKENS), o.kesh)
     : cfg.provider === 'gemini' ? await viaGemini(text, cfg.model)
       : await viaOpenAI(text, cfg.model);
-  return { parsed: normalizeParsed(raw), engine: `${cfg.provider}:${cfg.model}` };
+  return { parsed: normalizeParsed(json), engine: `${cfg.provider}:${cfg.model}`, sarf: s };
 }
 
 /* ═══ TZ-26: AI konstruksiya — usta matni → konstruksiya tili (app/js/engine/konstruksiyaTili.js) ═══
@@ -177,12 +205,12 @@ ${TIL_IZOH}
 Faqat JSON qaytaring.`;
 
 /** text → { natija: { spec, tuzatish, tushunilmadi } | { xona: true }, engine }. AI javobi tuzilmasi noto'g'ri bo'lsa — Error */
-export async function llmKonstruksiya(text) {
+export async function llmKonstruksiya(text, o = {}) {
   const cfg = aiConfig();
   if (!cfg.enabled) throw new Error('AI sozlanmagan');
-  const raw = cfg.provider === 'anthropic' ? await viaAnthropic(text, cfg.model, KONS_SYSTEM, KONS_SCHEMA, 'medium')
+  const { json: raw, sarf: s } = cfg.provider === 'anthropic' ? await viaAnthropic(text, cfg.model, KONS_SYSTEM, KONS_SCHEMA, 'medium', maxTokensOl(KONS_MAX_TOKENS), o.kesh)
     : cfg.provider === 'gemini' ? await viaGemini(text, cfg.model, KONS_SYSTEM, KONS_SCHEMA)
       : await viaOpenAI(text, cfg.model, KONS_SYSTEM, KONS_SCHEMA);
   if (!raw || typeof raw !== 'object' || ![...TURLAR, 'xona'].includes(raw.tur)) throw new Error('AI javobi tuzilmasi noto\'g\'ri');
-  return { natija: specTekshir(raw), engine: `${cfg.provider}:${cfg.model}` };
+  return { natija: specTekshir(raw), engine: `${cfg.provider}:${cfg.model}`, sarf: s };
 }
