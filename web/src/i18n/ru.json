@@ -1635,5 +1635,11 @@
  "zapchast.tur_napr": "Направляющая",
  "zapchast.tur_konfirmat": "Конфирмат",
  "zapchast.tur_eksentrik": "Эксцентрик",
- "zapchast.tur_oyoq": "Ножка"
+ "zapchast.tur_oyoq": "Ножка",
+ "zapchast.xabar": "Фурнитура: показано {n} шт.",
+ "zapchast.joyi_yoq_izoh": "У этого модуля нет координат отверстий — место не показывается, в цену входит",
+ "zapchast.royxat_och": "Список",
+ "zapchast.royxat_yop": "Список",
+ "zapchast.turlar": "Виды — включить / выключить в 3D",
+ "zapchast.kadr": "Ближе"
 }

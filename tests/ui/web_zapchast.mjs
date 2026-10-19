@@ -3,7 +3,11 @@
  *   ro'yxatdagi (ochilgan) belgi qatorlari soni = 3D dagi zapchast belgilari soni; ro'yxat jami soni va summasi = narx paneli furniturasi
  *   (hisob: prod.breakdown.hwCount, prod.hwCost); qator bosilsa 3D da shu zapchast ajraladi; 3D da zapchastga bosilsa ro'yxatda shu qator
  *   ajraladi; qayta bosilganda yashirinadi; detal kartasida "Zapchast: N ta (…)" va ichini ko'rish; telefon o'lchamida panel ekranda.
- * Skrinshotlar: tests/ui/out/web/zapchast-*.png. Ishlatish: bash tests/ui/web.sh zapchast */
+ * TZ-39 (egasi #276): yuqori asboblar qatorida yozuvli "Zapchastlar" tugmasi (yon paneldagi bilan bir holat); yoqilganda avto-kadrlash (modul katta,
+ *   panellar yopmagan joyda), ekran o'lchamidagi rangli belgilar (>= 14 px) + rang izohi (tur bo'yicha yoqish/o'chirish), ro'yxat paneli 3D maydonining
+ *   30% idan kamini yopadi, qisqa xabar; telefonda ro'yxat yig'ilgan. Skrinshotlar: tests/ui/out/web/zapchast-*.png. Ishlatish: bash tests/ui/web.sh zapchast */
+import { readFileSync } from 'node:fs';
+const LUGAT = ['zapchast.xabar', 'zapchast.joyi_yoq_izoh', 'zapchast.royxat_och', 'zapchast.turlar', 'zapchast.kadr', 'korinish.zapchastlar', 'zapchast.tur_petlya', 'zapchast.tur_oyoq'];
 export default async function run(page) {
   const R = {};
   try { await asosiy(page, R); } catch (e) {
@@ -56,12 +60,40 @@ async function asosiy(page, R) {
   await page.screenshot({ path: `${OUT}/zapchast-1-oldin.png` });
 
   /* 2) bitta tugma — zapchast aniq joyida, teshik/kromka yo'q, ro'yxat ochiladi */
-  await page.locator('[data-korinish="zapchast"]').click(); await page.waitForTimeout(900);
+  R.asbobTugma = await page.locator('[data-zap-tool]').evaluate(el => ({ matn: el.innerText.trim(), bosiladi: el.getBoundingClientRect().height >= 40 })).catch(() => null);
+  await page.locator('[data-zap-tool]').click(); await page.waitForTimeout(150);
+  R.xabar = await M(() => /Zapchastlar: \d+ ta ko'rsatildi/.test(document.body.innerText));
+  await page.waitForTimeout(1300);   // avto-kadrlash tugasin (520 ms)
   R.panel = await page.locator('[data-zap-panel]').count();
+  R.ikkiTugma = { asbob: await page.locator('[data-zap-tool]').getAttribute('aria-pressed'), yon: await page.locator('[data-korinish="zapchast"]').getAttribute('aria-pressed') };
+  R.kartaYopiq = (await page.locator('[data-modul-karta]').count()) === 0;
   const z1 = await zs();
   R.son3d = z1.jami; R.turlar = z1.tur;
   R.teshikKo = await korinadiTur(id, 'teshik'); R.kromkaKo = await korinadiTur(id, 'kromka'); R.zapKo = await korinadiTur(id, 'zapchast');
   R.pressed = await page.locator('[data-korinish="zapchast"]').getAttribute('aria-pressed');
+  /* TZ-39: kadrlash, belgi o'lchami, ro'yxat paneli 3D ni yopmasligi */
+  R.kadr = await M(() => {
+    const id = window.__app.state.sel;   // kadrlangan — tanlangan modul (qo'shilgan; shablondagi MC-KP-02 emas)
+    const s = window.__app.sahna, cv = s.sp.renderer.domElement.getBoundingClientRect(), z = s.zapchastSoni();
+    const pan = document.querySelector('[data-zap-panel]').getBoundingClientRect();
+    const keys = z.keys.filter(k => k.startsWith(id + ':')), pts = keys.map(k => s.zapchastEkran(k)).filter(Boolean);
+    const sig = pts.filter(p => p.x > cv.left + 4 && p.x < cv.right - 4 && p.y > cv.top + 72 && p.y < cv.bottom - 4 && !(p.x > pan.left && p.x < pan.right && p.y > pan.top && p.y < pan.bottom)).length;
+    const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+    const m = s.items.meshes.find(x => x.userData.id === id), g = m.userData.belgi3d, nuq = g.children.filter(c => c.userData.belgi3d === 'zapchast_nuqta');
+    const cam = s.sp.cam3d.position.distanceTo(s.ctl.orbit.target);
+    return { belgi: pts.length, ko: sig, kenglik: Math.round(Math.max(...xs) - Math.min(...xs)), balandlik: Math.round(Math.max(...ys) - Math.min(...ys)), masofa: Math.round(cam),
+      nuqtaPx: nuq.length ? Math.min(...nuq.map(c => c.material.userData.px)) : 0, nuqtaSoni: nuq.reduce((a, c) => a + c.geometry.getAttribute('position').count, 0), turKatlam: nuq.length,
+      panelulushi: +((pan.width * pan.height) / (cv.width * cv.height)).toFixed(3) };
+  });
+  /* rang izohi: tur chiplari; bosilsa shu tur 3D dan yo'qoladi, qayta bosilsa qaytadi */
+  R.legend = await page.locator('[data-zap-tur]').count();
+  const j0 = (await zs()).jami;
+  await page.locator('[data-zap-tur="petlya"]').click(); await page.waitForTimeout(300);
+  const z2 = await zs(), tp = await page.locator('[data-zap-tur="petlya"]').getAttribute('aria-pressed');
+  R.turOchdi = { pressed: tp, son: z2.jami, petlya: z2.tur.petlya || 0, tanlov: await M(() => !!window.__app.sahna.zapchastTop && window.__app.sahna.korinish.holat.zapTurlar.petlya === false) };
+  await page.screenshot({ path: `${OUT}/zapchast-2b-tursiz.png` });
+  await page.locator('[data-zap-tur="petlya"]').click(); await page.waitForTimeout(300);
+  R.turQaytdi = (await zs()).jami === j0;
   await page.screenshot({ path: `${OUT}/zapchast-2-yoq.png` });
 
   /* 3) ro'yxat: ochilgan belgi qatorlari soni = 3D belgilar soni; jami son va summa = narx paneli (hisob) */
@@ -75,6 +107,10 @@ async function asosiy(page, R) {
   const mm = /(\d+)\s*dona\s*·\s*([\d\s]+)\s*so'm/.exec(jamiMatn.replace(/ /g, ' '));
   R.jami = { matn: jamiMatn, narx, mos: !!mm && +mm[1] === narx.n && +mm[2].replace(/\s/g, '') === narx.s };
   R.satrMos = qn >= narx.satr;
+  /* koordinatasiz (SP) zapchast: tushunarli izoh (3 tilda lug'atda bor); bunday qator bo'lsa — matni to'g'ri */
+  R.joyiYoq = await M(() => { const q = [...document.querySelectorAll('[data-zap-belgi-soni]')].map(x => x.innerText).filter(x => /koordinata/.test(x)); return { n: q.length }; });
+  R.lugat = {};
+  for (const til of ['uz', 'ru', 'en']) { const L = JSON.parse(readFileSync(new URL('../../web/src/i18n/' + til + '.json', import.meta.url), 'utf8')); R.lugat[til] = LUGAT.every(k => L[k] && L[k] !== k); }
   await page.screenshot({ path: `${OUT}/zapchast-3-royxat.png` });
 
   /* 4) ro'yxat qatoriga bosish — 3D da shu zapchast ajraladi */
@@ -143,29 +179,41 @@ async function asosiy(page, R) {
   }
   const yop = page.locator('[aria-label="Yopish"]').first(); if (await yop.count()) await yop.click().catch(() => {});
   await page.waitForTimeout(300);
-  if (!(await click(/Ichini ko'rish →/))) { const m = nuqtalar[0]; if (m) { await page.mouse.click(m.x, m.y); await page.waitForTimeout(400); } await click(/Ichini ko'rish →/); }
+  if (!(await page.getByText(/Ichini ko'rish →/).count())) { await M((id) => window.__app.sahna.select(id), id); await page.waitForTimeout(500); }   // karta yopilganda tanlov ham bo'shaydi — modul qayta tanlanadi
+  await click(/Ichini ko'rish →/);
   await page.waitForTimeout(3600);
   R.ichki = await M(() => /Petlya|petlya/.test(document.body.innerText));
   await page.screenshot({ path: `${OUT}/zapchast-8-ichki.png` });
   await M(() => { const b = [...document.querySelectorAll('button[aria-label="Yopish"]')].find(x => x.closest('[style*="z-index: 70"]')); if (b) b.click(); });
   await page.waitForTimeout(500);
 
-  /* 8) telefon o'lchami: tugma va panel ekranda, bir-biri ustiga tushmaydi */
+  /* 8) telefon o'lchami: ko'rinish panelidagi tugma ekranda (modul kartasi tanlanganda asboblar qatorini yopadi); ro'yxat sukut yig'ilgan (past varaq), bosilsa ochiladi, tugma bilan ustma-ust tushmaydi */
   await page.setViewportSize({ width: 390, height: 844 }); await page.waitForTimeout(1200);
   const tg = page.locator('[data-korinish="zapchast"]');
   R.mobTugma = await tg.count();
   if (R.mobTugma) {
-    await tg.click(); await page.waitForTimeout(900);
-    R.mob = await M(() => { const p = document.querySelector('[data-zap-panel]'); if (!p) return null; const r = p.getBoundingClientRect(); const b = document.querySelector('[data-korinish="zapchast"]').getBoundingClientRect();
-      return { l: Math.round(r.left), r: Math.round(r.right), t: Math.round(r.top), b: Math.round(r.bottom), w: innerWidth, h: innerHeight, tugmaKo: b.right <= innerWidth && b.left >= 0 && b.bottom <= innerHeight, ustma: !(r.right <= b.left || r.left >= b.right || r.bottom <= b.top || r.top >= b.bottom) }; });
+    await tg.click(); await page.waitForTimeout(1400);
+    const olch = () => M(() => { const p = document.querySelector('[data-zap-panel]'); if (!p) return null; const r = p.getBoundingClientRect(); const b = document.querySelector('[data-korinish="zapchast"]').getBoundingClientRect();
+      return { l: Math.round(r.left), r: Math.round(r.right), t: Math.round(r.top), b: Math.round(r.bottom), w: innerWidth, h: innerHeight, yig: p.getAttribute('data-zap-yig'), qatorKo: [...document.querySelectorAll('[data-zap-qator]')].filter(x => x.offsetParent !== null).length,
+        tugmaKo: b.right <= innerWidth && b.left >= 0 && b.bottom <= innerHeight, ustma: !(r.right <= b.left || r.left >= b.right || r.bottom <= b.top || r.top >= b.bottom) }; });
+    R.mob = await olch();
     await page.screenshot({ path: `${OUT}/zapchast-9-mobil.png` });
-    await page.locator('[data-zap-yop]').click(); await page.waitForTimeout(300);   // telefonda panel tugmani yopib turadi — o'z X tugmasi
+    await page.locator('[data-zap-royxat-tugma]').click(); await page.waitForTimeout(400);
+    R.mobOchiq = await olch();
+    await page.screenshot({ path: `${OUT}/zapchast-9b-mobil-royxat.png` });
+    await page.locator('[data-zap-yop]').click(); await page.waitForTimeout(300);
     R.mobYopildi = (await page.locator('[data-zap-panel]').count()) === 0 && (await zs()).jami === 0;
   }
 
   R.errs = errs;
   const jm = R.jami || {};
   R.ok = !!(R.qoshildi && R.tugma === 1 && R.oldin === 0 && R.panelOldin === 0
+    && R.asbobTugma && /Zapchastlar/.test(R.asbobTugma.matn) && R.asbobTugma.bosiladi && R.xabar && R.kartaYopiq
+    && R.ikkiTugma.asbob === 'true' && R.ikkiTugma.yon === 'true'
+    && R.kadr && R.kadr.ko >= 0.9 * R.kadr.belgi && R.kadr.belgi >= 10 && R.kadr.kenglik >= 280 && R.kadr.balandlik >= 280 && R.kadr.masofa < 3500
+    && R.kadr.nuqtaPx >= 14 && R.kadr.nuqtaSoni >= R.kadr.belgi && R.kadr.panelulushi < 0.3
+    && R.lugat.uz && R.lugat.ru && R.lugat.en
+    && R.legend >= 3 && R.turOchdi.pressed === 'false' && R.turOchdi.petlya === 0 && R.turOchdi.son < j0 && R.turOchdi.tanlov && R.turQaytdi
     && R.panel === 1 && R.son3d > 0 && R.pressed === 'true' && R.teshikKo === false && R.kromkaKo === false && R.zapKo === true
     && (R.turlar.petlya > 0 && R.turlar.konfirmat > 0 && R.turlar.ruchka > 0)
     && R.royxatBelgi === R.son3d && jm.mos && R.satrMos
@@ -174,5 +222,6 @@ async function asosiy(page, R) {
     && R.yopildi.panel === 0 && R.yopildi.son === 0 && R.yopildi.pressed === 'false'
     && R.karta && /\d+ ta/.test(R.karta.matn) && R.ichki
     && R.mobTugma === 1 && R.mobYopildi && R.mob && R.mob.l >= 0 && R.mob.r <= R.mob.w && R.mob.b <= R.mob.h && R.mob.tugmaKo && !R.mob.ustma
+    && R.mob.yig === 'yigilgan' && R.mob.qatorKo === 0 && R.mob.b - R.mob.t <= 260 && R.mobOchiq && R.mobOchiq.yig === 'ochiq' && R.mobOchiq.qatorKo > 0 && R.mobOchiq.b <= R.mobOchiq.h
     && errs.length === 0);
 }

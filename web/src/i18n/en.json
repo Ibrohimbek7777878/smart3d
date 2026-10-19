@@ -1635,5 +1635,11 @@
  "zapchast.tur_napr": "Drawer slide",
  "zapchast.tur_konfirmat": "Confirmat screw",
  "zapchast.tur_eksentrik": "Cam fitting",
- "zapchast.tur_oyoq": "Leg"
+ "zapchast.tur_oyoq": "Leg",
+ "zapchast.xabar": "Hardware: {n} shown",
+ "zapchast.joyi_yoq_izoh": "This module has no hole coordinates — position is not shown, it is included in the price",
+ "zapchast.royxat_och": "List",
+ "zapchast.royxat_yop": "List",
+ "zapchast.turlar": "Types — show / hide in 3D",
+ "zapchast.kadr": "Closer"
 }
