@@ -1,6 +1,6 @@
 # TZ-38 — Zapchastlar (furnitura) 3D da ko'rinsin: detal kartasi, "Ichini ko'rish", rentgen
 
-**Sana:** 2026-10-19 · **Navbat:** 38 · **Holat:** TAKLIF — egasining "boshla"si kutilmoqda (asos: egasi #273, skrinshot: "Tortma fasadi" detal kartasida teshik va karkas ko'rinadi, zapchast yo'q)
+**Sana:** 2026-10-19 · **Navbat:** 38 · **Holat:** BOSHLANDI 2026-10-19 11:01 (egasi #274: "ishni boshla, ruxsat beraman"; asos: egasi #273, #274, skrinshot: "Tortma fasadi" detal kartasida teshik va karkas ko'rinadi, zapchast yo'q)
 **Koordinator:** smart3d-51 chati.
 
 ## Sabab (kodda tekshirilgan, 2026-10-19)
@@ -17,6 +17,13 @@
 4. **Yoqish/o'chirish:** mavjud "Belgilar" tugmalarida zapchast alohida (egasi #167) — shu qoladi.
 5. **Haqiqiy shakllar (ixtiyoriy, 2-bosqich):** ruchka va petlya uchun oddiy 3D shakl (belgi o'rniga) — egasi qaror qiladi.
 6. Testlar: zapchasti bor modulda detal kartasi va ichini ko'rishda `zapchast > 0`; zapchastsiz detalda 0; ranglar `RANG` dan.
+
+## Egasi #274 qo'shimchasi (majburiy)
+Maqsad ko'rinish — `Smart3D_malumot/Smart3D-korgazma-slayd.pdf` 6-slayd ("Teshik, kromka, furnitura — rentgenda"), lekin **undan ham aniqroq**:
+- **Bitta tugma** ("Zapchastlar") ko'rinish panelida: bosilganda modulning barcha zapchasti (petlya, polka ushlagich, ruchka, relsa, oyoq, konfirmat va h.k.) **aniq joyida** chiziladi (teshik koordinatasi bo'yicha, mm aniqlikda). Qayta bosilsa yashiriladi.
+- **Ro'yxat ko'rinishi:** shu tugma bilan yonida ro'yxat paneli ochiladi: zapchast nomi (ERP/Bazis kodi), miqdori, qaysi detalga tegishli, joyi (mm), narxi (narx yo'q bo'lsa — belgi). Ro'yxatdagi qatorga bosilsa 3D da shu zapchast ajralib ko'rinadi (va aksincha: 3D da zapchastga bosilsa — ro'yxatda shu qator).
+- Ro'yxat narx panelidagi furnitura bilan **mos** bo'lishi shart (jami son/narx farq qilmasin).
+- Mobil va kompyuterda ishlaydi; dizayn tokenlari, Ikon (emoji yo'q), lug'at uz/ru/en.
 
 ## Tegadigan fayllar
 `web/src/features/editor/scene/useSahna.js`, `web/src/features/editor/inside/useIchiniKorish.js`, `web/src/services/belgi3d.js`, `app/js/engine/teshik3d.js`, lug'atlar (uz, ru, en), `tests/ui/*`.

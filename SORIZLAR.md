@@ -725,3 +725,5 @@ bu prompt lekin natija oddiy 2ta shkaf qilb berdi nega bundya bold kosntruskiay 
 273. hoz bu loyhan tan narx qancha baholanadi va oylik obuna asosida sotadigan bolsak qancha narx qoygan maqul va nimaga qarba narx qoyamiz shuni har tarfdan korib raqobatchilarn tkeshirgan holda ular nimaga qarb narx qoyad va biz nima qilsak ulardan otib ketamiz va men mijozlarga qanday hook bilan  boshlashim kere sozni va menda vaqt kam bolad u yerda bita gap bilan ozimni loyhaga ulab qoyishm kere bolad
 
 273. (skrinshot: 3D da "Tortma fasadi" detali, teshiklar va karkas ko'rinyapti; narx panelida "1 ta zapchastning narxi bazada yo'q") qara bu yerda teshiklar va karkaz holatda chiqayabd end nimaga zapchastlar chiqmayabd shuni ham qosh
+
+274. (skrinshot: slayd 6 "Teshik, kromka, furnitura — rentgenda") huddi shundya korinish bundna ham zor aniq va bita tugma bilan zapchastlarni aniq joylashvun va royxaitn korish ham bolsin  ishn boshla ruxsat beraman
