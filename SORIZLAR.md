@@ -727,3 +727,9 @@ bu prompt lekin natija oddiy 2ta shkaf qilb berdi nega bundya bold kosntruskiay 
 273. (skrinshot: 3D da "Tortma fasadi" detali, teshiklar va karkas ko'rinyapti; narx panelida "1 ta zapchastning narxi bazada yo'q") qara bu yerda teshiklar va karkaz holatda chiqayabd end nimaga zapchastlar chiqmayabd shuni ham qosh
 
 274. (skrinshot: slayd 6 "Teshik, kromka, furnitura — rentgenda") huddi shundya korinish bundna ham zor aniq va bita tugma bilan zapchastlarni aniq joylashvun va royxaitn korish ham bolsin  ishn boshla ruxsat beraman
+
+275. (3 skrinshot slayd 9, 10, 11) qara bu yerda shunarsz va bizni sirizm ochib qoygan yani biz qayerdna olganmiz va hozir nima asosida ishlayd tizm shu narsan butun slayd boyicha yshirsh kere eng glavniy muhim joylarn korsin bold  va qolgan sahiflarin ham sozlarin yozilishlarin togirlab ber
+
+275. (skrinshot: localhost, "Orqa devor (HDF)" detal kartasida Teshiklar va Zapchast "–") qara hali ham chiqmad qayeridir qolib ketganmi va vr qismi ham togrimi va toliq ishlaydimi hozir loyhan serverga qoyganman va u ish holatiga tayormi
+
+276. (skrinshot: P shaklli oshxona, "Chap fasad eshik" kartasida Zapchast 3 ta bor, lekin 3D da ko'rinmaydi) qara hali ham yoq tz larni tasdiqlayman qaysi bri maqul bolsa oshani qil boshla
