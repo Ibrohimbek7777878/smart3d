@@ -83,6 +83,8 @@ export function modeldanLoyiha(model, o = {}) {
   const moduls = [];
   for (const m of (model && model.modullar) || []) {
     const frag = catalog[m.kod] || null, cl = clById.get(m.id) || null;
+    /* texnika (muzlatkich, plita …) — kesim ro'yxatida detal yo'q, ishlab chiqarilmaydi: Bazis'ga panel bo'lib yozilmaydi (BPJ ham shunday o'tkazib yuborardi) */
+    if (cl && !(cl.parts && cl.parts.length)) { ogoh.push(m.kod + ': kesim detali yo\'q (texnika) — o\'tkazib yuborildi'); continue; }
     const [w, d, h] = m.olcham, [ox, oy, oz] = m.t;
     const rad = (m.rot || 0) * Math.PI / 180, cs = Math.round(Math.cos(rad) * 1e12) / 1e12, sn = Math.round(Math.sin(rad) * 1e12) / 1e12;
     const dunyo = (l) => [ox + l[0] * cs - l[1] * sn, oy + l[0] * sn + l[1] * cs, oz + l[2]];                  // modul burchagidan → dunyo
@@ -94,6 +96,7 @@ export function modeldanLoyiha(model, o = {}) {
     const panellar = [];
     const karkas = karkasYig(m, defs);
     for (const D of karkas || m.detallar || []) {
+      if (Math.min(...D.s) < 2) continue;      // 3D dagi belgi (masalan stol oyog'i 50×50×1 mm) — detal emas
       let def = D._def || (D.ref ? byRef.get(D.ref) : null);
       if (def) band.add(def);
       if (!def) {      /* ref yo'q (3D panel) — o'lchami ±1 mm teng bo'sh kesim detali */

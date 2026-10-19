@@ -219,6 +219,20 @@ console.log('\n[4] Yotoqxona → eksportModeli → modeldanLoyiha → b3dYoz →
   ok(`furnitura joyi eksportModeli bilan teng (±0,5 mm): ${fn - fx}/${fn}`, fn > 0 && fx === 0);
   /* i) b3d.js (tekis o'quvchi) ham o'qiydi */
   ok('b3d.js (tekis o\'quvchi) ham o\'qiydi — panel soni teng', parseBazisB3D(bytes, { inflate }).objects.filter(o => o.modelCode === PANEL_CODE).length === L.modullar.reduce((a, m) => a + m.panellar.length, 0));
+  { /* oshxona (MC + SP, texnika, stoleshnitsa): b3d panel soni = kesim ro'yxati detallari (texnika va 3D dagi 1 mm stol oyoqlari panel bo'lmaydi), joy hamma panelda teng */
+    const rect = (W, D) => [[0, 0], [W, 0], [W, D], [0, D]];
+    const v = konstruksiya({ outline: rect(3600, 3000), utilities: [{ type: 'pipe', wall: 0, offset: 1500, z: 500 }] }, { shakl: 'L' }, H.catalog).variantlar[0];
+    const doc2 = { room: { outline: rect(3600, 3000) }, placements: v.placements.map((p, i) => Object.assign({ id: i + 1 }, p)), kitchen: v.kitchen };
+    const res2 = H.recalc(doc2, { materialCode: 'LDSP16', fasadCode: 'MDF16' });
+    const view2 = Object.assign({}, doc2, { placements: H.viewPlacements(doc2) });
+    const model2 = eksportModeli(view2, H, res2.cutlists);
+    const L2 = modeldanLoyiha(model2, { catalog: H.catalog, materials: H.materials, cutlists: res2.cutlists });
+    const bom = res2.cutlists.reduce((a, cl) => a + cl.parts.reduce((x, p) => x + (+p.qty || 1), 0), 0);
+    const n2 = L2.modullar.reduce((a, m) => a + m.panellar.length, 0), tx = model2.modullar.filter(m => (res2.cutlists.find(c => c.placementId === m.id) || { parts: [1] }).parts.length === 0).length;
+    ok(`oshxona (${model2.modullar.length} modul, ${tx} texnika): b3d panel soni = kesim ro'yxati (${n2} = ${bom}); texnika panel emas`, n2 === bom && L2.modullar.length === model2.modullar.length - tx && tx > 0);
+    const d2 = daraxt(b3dYoz(L2, { deflate }), { inflate }), P2 = d2.objects.filter(o => o.modelCode === PANEL_CODE);
+    ok('oshxona: faylni o\'quvchi shuncha panelni o\'qiydi, qalinlik ≥ 3 mm (belgi-oyoqlar yo\'q)', P2.length === n2 && P2.every(o => o.thickness >= 3));
+  }
   if (process.env.B3D_NAMUNA) { (await import('node:fs')).writeFileSync(process.env.B3D_NAMUNA, bytes); console.log('     namuna fayl:', process.env.B3D_NAMUNA, bytes.length, 'bayt'); }
 }
 
