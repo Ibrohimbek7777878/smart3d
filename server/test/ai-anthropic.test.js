@@ -27,7 +27,7 @@ before(async () => {
       seen.push({ url: req.url, headers: req.headers, body: JSON.parse(body || '{}') });
       res.setHeader('content-type', 'application/json');
       res.end(JSON.stringify({
-        id: 'msg_test', type: 'message', role: 'assistant', model: 'claude-opus-5-5',
+        id: 'msg_test', type: 'message', role: 'assistant', model: 'claude-sonnet-5-5',
         content: reply === 'refusal' ? [] : [{ type: 'text', text: JSON.stringify(OUT) }],
         stop_reason: reply === 'refusal' ? 'refusal' : 'end_turn', stop_sequence: null,
         usage: { input_tokens: 10, output_tokens: 10 }
@@ -58,20 +58,20 @@ const api = (p, { method = 'GET', body, token } = {}) => fetch(base + p, {
   body: body ? JSON.stringify(body) : undefined
 });
 
-test('Claude: standart model claude-opus-5-5, tuzilgan JSON, effort low, server-side fallback', async () => {
-  assert.deepEqual(await (await api('/api/ai/status')).json(), { enabled: true, provider: 'anthropic', model: 'claude-opus-5-5' });
+test('Claude: standart model claude-sonnet-5-5, tuzilgan JSON, effort low, server-side fallback', async () => {
+  assert.deepEqual(await (await api('/api/ai/status')).json(), { enabled: true, provider: 'anthropic', model: 'claude-sonnet-5-5' });
   const s = await (await api('/api/auth/sms/send', { method: 'POST', body: { phone: '998977770001' } })).json();
   const { token } = await (await api('/api/auth/sms/verify', { method: 'POST', body: { phone: '998977770001', code: s.dev_code } })).json();
   const r = await api('/api/ai/parse', { method: 'POST', token, body: { text: UZUN('4.2 ga 3.1 oshxona, moyka, 3 ta pastki') } });
   assert.equal(r.status, 200);
   const j = await r.json();
-  assert.equal(j.engine, 'anthropic:claude-opus-5-5');
+  assert.equal(j.engine, 'anthropic:claude-sonnet-5-5');
   assert.equal(j.parsed.room.w, 4200);
   const q = seen[seen.length - 1];
   assert.match(q.url, /^\/v1\/messages/);
   assert.equal(q.headers['x-api-key'], 'soxta-claude-kalit');
   assert.match(q.headers['anthropic-beta'] || '', /server-side-fallback-2026-07-01/);
-  assert.equal(q.body.model, 'claude-opus-5-5');
+  assert.equal(q.body.model, 'claude-sonnet-5-5');
   assert.equal(q.body.fallbacks, 'default');
   assert.equal(q.body.output_config.effort, 'low');
   assert.equal(q.body.output_config.format.type, 'json_schema');

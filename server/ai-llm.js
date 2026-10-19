@@ -7,7 +7,7 @@
  * Muhit (faqat serverda, gitga kirmaydi):
  *   AI_PROVIDER   anthropic | gemini | openai   (openai — OpenAI'ga mos istalgan API: OpenAI, DeepSeek, Ollama, OpenRouter…)
  *   AI_API_KEY    provayder kaliti (anthropic uchun yo'q bo'lsa — ANTHROPIC_API_KEY)
- *   AI_MODEL      model nomi. anthropic standarti: claude-opus-5-5. gemini/openai — majburiy
+ *   AI_MODEL      model nomi. anthropic standarti: claude-sonnet-5-5. gemini/openai — majburiy
  *   AI_BASE_URL   openai uchun (standart https://api.openai.com/v1), masalan http://localhost:11434/v1 (Ollama)
  *   AI_TIMEOUT_MS standart 30000
  *   AI_MAX_TOKENS   javob chegarasi (TZ-40): sukut — parse 1000, konstruksiya 1500 (eski qiymat 4000; yetmasa bir marta 4000 bilan qayta so'raladi)
@@ -80,7 +80,7 @@ export function normalizeParsed(j) {
 
 export function aiConfig() {
   const provider = (process.env.AI_PROVIDER || '').toLowerCase();
-  const model = process.env.AI_MODEL || (provider === 'anthropic' ? 'claude-opus-5-5' : '');
+  const model = process.env.AI_MODEL || (provider === 'anthropic' ? 'claude-sonnet-5-5' : '');
   const key = process.env.AI_API_KEY || (provider === 'anthropic' ? process.env.ANTHROPIC_API_KEY : '');
   const keyless = provider === 'openai' && /localhost|127\.0\.0\.1/.test(process.env.AI_BASE_URL || '');   // mahalliy Ollama
   const enabled = ['anthropic', 'gemini', 'openai'].includes(provider) && !!model && (!!key || keyless);

@@ -71,7 +71,7 @@ before(async () => {
       seen.push({ url: req.url, headers: req.headers, body: JSON.parse(body || '{}') });
       res.setHeader('content-type', 'application/json');
       if (/\/messages/.test(req.url)) {
-        res.end(JSON.stringify({ id: 'msg_k', type: 'message', role: 'assistant', model: 'claude-opus-5-5', content: [{ type: 'text', text: kontent() }],
+        res.end(JSON.stringify({ id: 'msg_k', type: 'message', role: 'assistant', model: 'claude-sonnet-5-5', content: [{ type: 'text', text: kontent() }],
           stop_reason: 'end_turn', stop_sequence: null, usage: { input_tokens: 10, output_tokens: 10 } }));
       } else res.end(JSON.stringify({ choices: [{ message: { role: 'assistant', content: kontent() } }] }));
     });
@@ -129,7 +129,7 @@ test('Claude: tuzilgan JSON (konstruksiya sxemasi), effort medium', async () => 
   const token = await login(claude, '998977771002');
   const r = await api(claude, '/api/ai/konstruksiya', { method: 'POST', token, body: { text: UZUN('shkaf 1200, 2 eshik') } });
   assert.equal(r.status, 200);
-  assert.equal((await r.json()).engine, 'anthropic:claude-opus-5-5');
+  assert.equal((await r.json()).engine, 'anthropic:claude-sonnet-5-5');
   const q = seen[seen.length - 1];
   assert.match(q.url, /^\/v1\/messages/);
   assert.equal(q.body.output_config.format.type, 'json_schema');
