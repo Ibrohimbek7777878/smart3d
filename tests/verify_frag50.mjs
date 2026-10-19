@@ -21,6 +21,7 @@ const { cutlist } = await import('../app/js/engine/cutlist.js');
 const { joyPanellar } = await import('../app/js/engine/joy.js');
 const { applySexStandart } = await import('../app/js/engine/standart.js');
 const { teshik3d } = await import('../app/js/engine/teshik3d.js');
+const { getModulePanels } = await import('../app/js/engine/assembler.js');
 const { loadData, createHisob } = await import('../web/src/services/hisob.js');
 
 let pass = 0, fail = 0;
@@ -157,6 +158,16 @@ console.log('\n[5] 3D joylashuv va zapchast belgilari (D6)');
     if (hwN > 0 && !(z && z.length > 0)) zp.push(f.code + ': zapchast belgisi yo\'q');
   }
   ok('teshik3d: vintdan boshqa furnitura (polkaderjatel, ruchka, yo\'naltiruvchi, oyoq) bor har modulda zapchast belgilari chiziladi (D6), xatosiz', zp.length === 0, zp.slice(0, 3).join(' | '));
+  /* sahna (assembler): tortmali modulda tortma fasadlari soni = tortma soni; ochiq (eshiksiz) modulda eshik yo'q */
+  const asmBad = [];
+  for (const f of F) {
+    const n = (f.parts.find(p => p.code === 'fasad_yashika') || {}).qty || 0;
+    const a = getModulePanels(f, f.w, f.d, f.h, { tortma: true, eshiklar: true });
+    const tf = a.panels.filter(p => p.name === 'Tortma fasadi').length, ek = a.panels.filter(p => p.name === 'Fasad eshik').length;
+    if (n && tf !== n) asmBad.push(`${f.code}: tortma fasadi ${tf}/${n}`);
+    if (!f.parts.some(p => p.slot === 'fasad') && ek) asmBad.push(`${f.code}: eshiksiz modulda eshik chizilgan`);
+  }
+  ok('sahna (assembler): tortma fasadlari soni modul tortmalariga teng, eshiksiz modulda eshik chizilmaydi', asmBad.length === 0, asmBad.slice(0, 4).join(' | '));
   const pk = F.find(f => /3 tortma salazka/.test(f.name));
   const cl = cutlist(pk, pk.w, pk.d, pk.h, D.mats, { projectSlots: SLOTS });
   const t3 = teshik3d(pk, pk.w, pk.d, pk.h, cl, {});
