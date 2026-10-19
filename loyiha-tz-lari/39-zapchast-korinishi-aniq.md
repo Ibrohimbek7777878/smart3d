@@ -1,6 +1,6 @@
 # TZ-39 — Zapchast ko'rinishi slayddagidek aniq va topish oson bo'lsin
 
-**Sana:** 2026-10-19 · **Navbat:** 39 · **Holat:** BOSHLANDI 2026-10-19 12:05 (egasi #276: "hali ham yo'q… TZlarni tasdiqlayman, maqul bo'lganini qil, boshla")
+**Sana:** 2026-10-19 · **Navbat:** 39 · **Holat:** BAJARILDI 2026-10-19 13:37 (`main` 087d0e3; agent 3b76cf7; testlar yashil). Qoldi: telefonda modul kartasi asboblar qatorini yopadi; kompyuterda zapchast rejimida modul kartasi yashiriladi (egasi tasdiqlashi kerak). Boshlangan 12:05 (egasi #276: "hali ham yo'q… TZlarni tasdiqlayman, maqul bo'lganini qil, boshla")
 **Asos:** TZ-38 texnik jihatdan ishlaydi (testlar yashil, `web_zapchast`), lekin egasi ekranda ko'rmayapti (#275, #276). Sabab (agent tekshirgan skrinshotlar bo'yicha):
 1. Tugma — yozuvsiz tishli g'ildirak belgisi, vertikal panel ichida; topilmaydi.
 2. Yoqilganda kamera joyida qoladi: belgilar mayda, modulning bir burchagida, panellar orqasida; ro'yxat paneli 3D oynaning o'rtasini yopadi.
