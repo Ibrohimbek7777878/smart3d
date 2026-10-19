@@ -442,7 +442,7 @@ def main():
         idx += 1
         _r, uz, ru, en, *_x = KORPUS[kkey]
         uz, ru, en = OCHIQ.get(kkey, (uz, ru, en)) if tur == "p" else (uz, ru, en)
-        if tur in ("p", "s") and "Ochiq" not in uz:          # 'ochiq' so'zi: 3D da eshiksiz (assembler isDoorless), AI qidiruvi
+        if tur in ("p", "s") and "ochiq" not in uz.lower():          # 'ochiq' so'zi: 3D da eshiksiz (assembler isDoorless), AI qidiruvi
             uz, ru, en = uz + " ochiq", ru + " открытый", en + " open"
         tbl = {"t": TORTMA, "p": POLKA, "s": STOYKA}[tur]
         _rr, iuz, iru, ien = tbl[ik]
