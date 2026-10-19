@@ -34,7 +34,7 @@ export function korinishBoshla() {
   if (!s) return;
   const bazis = !!(project.doc && project.doc.bazis);
   const k = Object.assign({ fon: null, chizish: bazis ? 'qirrali' : 'boyalgan', rentgen: false, xona: !bazis, belgilar: { teshik: true, kromka: true, zapchast: true } }, oqi() || {},
-    { kamera: 'orbit', fasadsiz: false, olchash: false, zapchast: false, zapTanla: null });   // TZ-38: "Zapchastlar" har ochilishda o'chiq
+    { kamera: 'orbit', fasadsiz: false, olchash: false, zapchast: false, zapTanla: null, zapTurlar: {} });   // TZ-38: "Zapchastlar" har ochilishda o'chiq
   set('korinish', { ...k, menyu: false, olcham: null });
   s.korinish.onOlcham(mm => set('korinish', { olcham: mm }));
   s.korinish.set(erkinMaydon() ? { ...k, xona: false } : k);

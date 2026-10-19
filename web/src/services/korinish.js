@@ -31,7 +31,7 @@ export function createKorinish(sahna, host) {
   const opts = {};
   const el = sp.renderer.domElement;
   const holat = { kamera: 'orbit', fon: null, chizish: 'boyalgan', rentgen: false, xona: true, fasadsiz: false, olchash: false,
-    zapchast: false, zapTanla: null,    // TZ-38: "Zapchastlar" tugmasi (panellar shaffof, faqat zapchast) va ajratilgan zapchast kaliti (joy:tartib)
+    zapchast: false, zapTanla: null, zapTurlar: {},    // TZ-39: zapTurlar — o'chirilgan turlar { tur: false }; TZ-38: "Zapchastlar" tugmasi (panellar shaffof, faqat zapchast) va ajratilgan zapchast kaliti (joy:tartib)
     belgilar: { teshik: true, kromka: true, zapchast: true } };   // egasi #167: rentgenda teshik / kromka / zapchast belgilari
   const qirraMat = new THREE.LineBasicMaterial({ color: 0x15191e, transparent: true, opacity: 0.9 });
   const olchashMat = new THREE.LineBasicMaterial({ color: 0xff7a45, depthTest: false, transparent: true });
@@ -223,6 +223,46 @@ export function createKorinish(sahna, host) {
     const masofa = Math.max(800, r / Math.sin(fov / 2) * 1.08);
     const dir = new THREE.Vector3(d[0], d[1], d[2]).normalize();
     oting(c.clone().addScaledVector(dir, masofa), c);
+  }
+  /** TZ-39: modul(lar) qutisi (mm, dunyo) — ids bo'sh bo'lsa hamma modullar; faqat mebel qismlari (belgi, qirra, urilish qutisi hisobga olinmaydi) */
+  function modulQutisi(ids) {
+    const b = new THREE.Box3(), t = new THREE.Box3();
+    for (const m of sp.groups.items.children) {
+      const u = m.userData;
+      if (!u || u.id == null || (ids && !ids.includes(u.id))) continue;
+      m.updateMatrixWorld(true);
+      m.traverse(o => {
+        if (!o.isMesh || o.isInstancedMesh || !o.geometry || (o.userData && (o.userData.kind === 'hitBox' || o.userData.olchash || o.userData.qirra || o.userData.belgi3d))) return;
+        if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+        t.copy(o.geometry.boundingBox).applyMatrix4(o.matrixWorld);
+        b.union(t);
+      });
+    }
+    return b;
+  }
+  /** TZ-39: kamera modulga yaqin: modul (yoki hamma modullar) ekranning bo'sh qismiga sig'adi, belgilar mayda qolmaydi.
+   *  bosh — { x0, x1, y0, y1 } client koordinatada bo'sh joy (yo'q bo'lsa — butun oyna); mod — tanlangan modul meshi (yo'nalish uning old tomonidan) */
+  function kadrla(ids, bosh, mod) {
+    if (sp.mode !== '3d') return false;
+    const b = modulQutisi(ids);
+    if (b.isEmpty()) return false;
+    if (holat.kamera === 'yurish') kamera('orbit');
+    const cam = sp.cam3d, r = el.getBoundingClientRect();
+    const c = b.getCenter(new THREE.Vector3()), rad = Math.max(300, b.getSize(new THREE.Vector3()).length() / 2);
+    const rot = mod ? mod.rotation.z : 0, cs = Math.cos(rot), sn = Math.sin(rot);
+    const d0 = ids ? [0.4, 0.8, 0.55] : YONALISH.izo;                      // tanlangan modul: old tomondan, biroz yuqoridan; hamma modul: izometriya
+    const dir = new THREE.Vector3(d0[0] * cs - d0[1] * sn, d0[0] * sn + d0[1] * cs, d0[2]).normalize();
+    const fb = bosh || { x0: r.left, x1: r.right, y0: r.top, y1: r.bottom };
+    const fw = Math.max(120, fb.x1 - fb.x0), fh = Math.max(120, fb.y1 - fb.y0);
+    const tf = Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2);
+    const dist = Math.max(orbit.minDistance, Math.min(orbit.maxDistance, r.height * rad * 1.1 / (tf * Math.min(fw, fh))), rad * 1.25);
+    const dx = (fb.x0 + fb.x1) / 2 - (r.left + r.right) / 2, dy = (fb.y0 + fb.y1) / 2 - (r.top + r.bottom) / 2;   // modul markazi ekranda shu qadar siljisin
+    const pos = c.clone().addScaledVector(dir, dist);
+    const fwd = c.clone().sub(pos).normalize(), right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 0, 1)).normalize();
+    const up = new THREE.Vector3().crossVectors(right, fwd).normalize(), wpp = 2 * dist * tf / r.height;
+    const shift = right.multiplyScalar(-dx * wpp).addScaledVector(up, dy * wpp);
+    oting(pos.add(shift), c.clone().add(shift), 520);
+    return true;
   }
   function zoom(k) {
     if (sp.mode !== '3d' || holat.kamera === 'yurish') return;
@@ -458,13 +498,14 @@ export function createKorinish(sahna, host) {
       if ('rentgen' in p) holat.rentgen = !!p.rentgen;
       if ('zapchast' in p) holat.zapchast = !!p.zapchast;
       if ('zapTanla' in p) holat.zapTanla = p.zapTanla || null;
+      if (p.zapTurlar) holat.zapTurlar = Object.assign({}, p.zapTurlar);
       if ('xona' in p) holat.xona = !!p.xona;
       if ('fasadsiz' in p) holat.fasadsiz = !!p.fasadsiz;
       if ('olchash' in p) { holat.olchash = !!p.olchash; if (!holat.olchash) olchashTozala(); }
       if (p.belgilar) holat.belgilar = Object.assign({}, holat.belgilar, p.belgilar);
       qollash();
     },
-    qollash, yonalish, zoom, toliqEkran,
+    qollash, yonalish, zoom, toliqEkran, kadrla,
     /** #153: devorsiz ko'rinishda maydon faolmi; maydon() — modul surilganda chegarani moslash; maydonQuti — joriy chegara */
     maydonFaol, maydon, get maydonQuti() { return maydonB; },
     onOlcham(fn) { opts.onOlcham = fn; },

@@ -2,13 +2,15 @@ import React from 'react';
 import { t } from '../../../i18n/index.js';
 import Ikon from '../../../shared/ui/Ikon.jsx';
 import { useModulKarta } from './useSahna.js';
+import { useSlice } from '../../../store/index.js';
 
 /* TZ-19: tanlangan modul kartasi — JSX va stillar tasdiqlangan dizayndan; qiymatlar useModulKarta() dan. */
 export default function ModulKarta() {
   const v = useModulKarta();
-  if (!v.show) return null;
+  const zapOn = !!useSlice('korinish').zapchast;
+  if (!v.show || zapOn) return null;                      // TZ-39: "Zapchastlar" ko'rinishida karta 3D ni yopmasin (o'chirilsa — qaytadi)
   return (
-    <div style={{"position":"absolute","left":"12px","bottom":"12px","zIndex":"4","width":"min(350px,calc(100% - 84px))","maxHeight":"calc(100% - 80px)","overflow":"auto","background":"rgba(23,50,57,.96)","backdropFilter":"blur(12px)","WebkitBackdropFilter":"blur(12px)","border":"1px solid var(--line)","borderRadius":"22px","padding":"16px","display":"flex","flexDirection":"column","gap":"12px","boxShadow":"0 20px 50px rgba(0,0,0,.4)"}}>
+    <div data-modul-karta="" style={{"position":"absolute","left":"12px","bottom":"12px","zIndex":"4","width":"min(350px,calc(100% - 84px))","maxHeight":"calc(100% - 80px)","overflow":"auto","background":"rgba(23,50,57,.96)","backdropFilter":"blur(12px)","WebkitBackdropFilter":"blur(12px)","border":"1px solid var(--line)","borderRadius":"22px","padding":"16px","display":"flex","flexDirection":"column","gap":"12px","boxShadow":"0 20px 50px rgba(0,0,0,.4)"}}>
       <div style={{"display":"flex","justifyContent":"space-between","alignItems":"flex-start","gap":"8px"}}>
         <div style={{"display":"flex","flexDirection":"column","gap":"4px","minWidth":"0"}}>
           <span style={{"fontSize":"17px","fontWeight":"800","lineHeight":"1.2"}}>

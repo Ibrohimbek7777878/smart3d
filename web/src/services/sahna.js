@@ -164,11 +164,11 @@ export function createSahna(host, o) {
         let dat = null;
         try { dat = o.getTeshik ? o.getTeshik(m.userData.id) : null; } catch (_) { dat = null; }
         if (!dat) continue;
-        g = belgiGuruh(THREE, dat);
+        g = belgiGuruh(THREE, dat, { marker: true, px: sp.renderer.getPixelRatio() });   // TZ-39: ekran o'lchamidagi rangli belgilar
         m.add(g); m.userData.belgi3d = g;
       }
       g.visible = true;
-      belgiQism(g, holat.belgilar, { rentgen: !!holat.rentgen, zapchast: !!holat.zapchast });
+      belgiQism(g, holat.belgilar, { rentgen: !!holat.rentgen, zapchast: !!holat.zapchast, zapTurlar: holat.zapTurlar });
       belgiTanla(THREE, g, holat.zapchast && tJoy === m.userData.id ? tI : null);
     }
   }
@@ -189,13 +189,12 @@ export function createSahna(host, o) {
     },
     /** TZ-38: ko'rinib turgan zapchast belgilari soni (tur bo'yicha) — testlar; items: [{ key, tur }] */
     zapchastSoni() {
-      const tur = {}, keys = [];
+      const tur = {}, keys = [], yashirin = korinish.holat.zapTurlar || {};
       for (const m of items.meshes) {
         const g = m.userData.belgi3d;
         if (!g || !g.visible || !m.visible) continue;
-        const c = g.children.find(x => x.userData && x.userData.belgi3d === 'zapchast') || g.children.find(x => x.userData && x.userData.belgi3d === 'zapchast_q');
-        if (!c || !c.visible) continue;
-        for (const x of g.userData.zapNuqta || []) { tur[x.tur] = (tur[x.tur] || 0) + 1; keys.push(m.userData.id + ':' + x.i); }
+        if (!g.children.some(x => x.visible && x.userData && (x.userData.belgi3d === 'zapchast' || x.userData.belgi3d === 'zapchast_q'))) continue;
+        for (const x of g.userData.zapNuqta || []) { if (yashirin[x.tur] === false) continue; tur[x.tur] = (tur[x.tur] || 0) + 1; keys.push(m.userData.id + ':' + x.i); }
       }
       return { jami: keys.length, tur, keys };
     },
@@ -207,7 +206,9 @@ export function createSahna(host, o) {
         const g = m.userData.belgi3d;
         if (!g || !g.visible || !m.visible) continue;
         m.updateWorldMatrix(true, false);
+        const yashirin = korinish.holat.zapTurlar || {};
         for (const x of g.userData.zapNuqta || []) {
+          if (yashirin[x.tur] === false) continue;                       // TZ-39: o'chirilgan tur bosilmaydi
           v.copy(x.c).applyMatrix4(g.matrixWorld).project(cam);
           if (v.z > 1 || v.z < -1) continue;
           const d = Math.hypot(r.left + (v.x + 1) / 2 * r.width - cx, r.top + (1 - v.y) / 2 * r.height - cy);
@@ -222,6 +223,12 @@ export function createSahna(host, o) {
       if (!x) return null;
       const r = sp.renderer.domElement.getBoundingClientRect(), v = x.c.clone().applyMatrix4(g.matrixWorld).project(sp.camera);
       return { x: r.left + (v.x + 1) / 2 * r.width, y: r.top + (1 - v.y) / 2 * r.height };
+    },
+    /** TZ-39: "Zapchastlar" yoqilganda avto-kadrlash — tanlangan modul (yo'q bo'lsa — hamma modullar) to'liq ko'rinadi;
+     *  bosh: { x0, x1, y0, y1 } — ekranda bo'sh (panel va kartalar yopmagan) joy, client koordinatada */
+    zapchastKadr(bosh) {
+      const id = items.getSelected();
+      return korinish.kadrla(id != null ? [id] : null, bosh, id != null ? items.meshes.find(x => x.userData.id === id) : null);
     },
     select(id) { if (items.getSelected() !== id) items.select(id); },
     setMode(m) { if (sp.mode !== m) { sp.setMode(m); ctl.updateButtons(); } },

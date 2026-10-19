@@ -1570,5 +1570,11 @@
  "zapchast.tur_napr": "Yo'naltiruvchi",
  "zapchast.tur_konfirmat": "Konfirmat",
  "zapchast.tur_eksentrik": "Ekssentrik",
- "zapchast.tur_oyoq": "Oyoq"
+ "zapchast.tur_oyoq": "Oyoq",
+ "zapchast.xabar": "Zapchastlar: {n} ta ko'rsatildi",
+ "zapchast.joyi_yoq_izoh": "Bu modulda teshik koordinatasi yo'q — joyi ko'rsatilmaydi, narxga kiradi",
+ "zapchast.royxat_och": "Ro'yxat",
+ "zapchast.royxat_yop": "Ro'yxat",
+ "zapchast.turlar": "Turlar — 3D da yoqish / o'chirish",
+ "zapchast.kadr": "Yaqinroq"
 }
