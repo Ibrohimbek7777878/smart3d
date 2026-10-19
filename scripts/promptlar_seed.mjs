@@ -3,7 +3,9 @@
  * tashqari; katalogda yo'q "tumba" — 2 ta). Mavjud app/data/promptlar.json dagi 13 ta (parametrli) o'z joyida qoladi.
  * Natija: app/data/promptlar-matn.json (server ishga tushganda bir marta bazaga qo'shiladi — lib/sxema.js promptlarSeed).
  * Ishlatish:  node scripts/promptlar_seed.mjs            — faylni qayta yaratadi, jami sonni chiqaradi
- *             node scripts/promptlar_seed.mjs --db X.db  — shu bazaga ham (idempotent: bir marta) qo'shadi */
+ *             node scripts/promptlar_seed.mjs --db X.db  — shu bazaga ham (idempotent: bir marta) qo'shadi
+ * TZ-40: --db bilan har promptga AI tuzilmasi (promptlar_admin.spec_json) ham bepul hosil qilinadi — qoidali tahlilchi, Claude chaqirilmaydi;
+ * mavjud tuzilma o'zgarmaydi (faqat bo'sh yoki eski qoida versiyasidagilar). Server ham ishga tushganda shuni qiladi. */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -78,9 +80,11 @@ console.log(`promptlar-matn.json: ${prompts.length} ta (+ promptlar.json: ${fayl
 const di = process.argv.indexOf('--db');
 if (di > 0) {
   const { openDb } = await import('../server/lib/db.js');
-  const { adminSxema, promptlarSeed } = await import('../server/lib/sxema.js');
+  const { adminSxema, aiSxema, promptlarSeed } = await import('../server/lib/sxema.js');
+  const { aiTejash } = await import('../server/lib/ai-tejash.js');
   const db = openDb(process.argv[di + 1]);
   db.exec("CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, org_id TEXT, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP)");
-  adminSxema(db);
+  adminSxema(db); aiSxema(db);
   console.log(`bazaga qo'shildi: ${promptlarSeed(db, path.join(ROOT, 'app'))} ta`);
+  console.log(`AI tuzilmasi hosil qilindi (qoida, bepul): ${aiTejash({ db, claude: {}, yoqilgan: () => false }).royxatToldir()} ta`);
 }

@@ -18,6 +18,9 @@ const SERVER_DIR = path.join(__dirname, '..');
 let tmp, proc, base, mock, dbPath, mockMode = 'ok';
 const seen = [];
 
+/* TZ-40: qoidali tahlilchi tushunsa Claude chaqirilmaydi; provayder mexanikasini sinash uchun matn "murakkab" (240 belgidan uzun) qilinadi */
+const UZUN = (t) => t + ' — ' + 'qo\'shimcha izoh, '.repeat(15) + 'oxiri';
+
 const SAMPLE = {
   room: { w_mm: 3600, d_mm: 3000, h_mm: 2700, layout: 'L', openings: [{ type: 'window', width_mm: 1200 }] },
   features: { sink: true, stove: true, fridge: false, corner: true, upper: true, tall: false, wardrobe: false, island: false },
@@ -116,7 +119,7 @@ test('parse: tokensiz 401; kirgan usta — AI javobi tekshirilib qaytadi, jurnal
   assert.equal((await api('/api/ai/parse', { method: 'POST', body: { text: 'oshxona' } })).status, 401);
   const token = await login('998935550001');
   mockMode = 'ok';
-  const r = await api('/api/ai/parse', { method: 'POST', token, body: { text: 'oshxona 3.6 ga 3, burchakli, 4 ta pastki 3 ta osma, deraza 1.2' } });
+  const r = await api('/api/ai/parse', { method: 'POST', token, body: { text: UZUN('oshxona 3.6 ga 3, burchakli, 4 ta pastki 3 ta osma, deraza 1.2') } });
   assert.equal(r.status, 200);
   const j = await r.json();
   assert.equal(j.engine, 'openai:soxta-model');
@@ -137,7 +140,7 @@ test('parse: AI buzuq javob bersa — 502 (sayt qoidali tahlilchiga qaytadi), ju
   const token = await login('998935550002');
   for (const mode of ['bad', 'shape']) {
     mockMode = mode;
-    const r = await api('/api/ai/parse', { method: 'POST', token, body: { text: 'oshxona' } });
+    const r = await api('/api/ai/parse', { method: 'POST', token, body: { text: UZUN('oshxona') + mode } });
     assert.equal(r.status, 502, mode);
   }
   mockMode = 'ok';

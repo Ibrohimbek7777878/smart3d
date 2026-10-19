@@ -14,7 +14,7 @@ import { erpQosh } from '../../../services/erpMaterial.js';
 import { aiTur, shablonReja, XONA_SHABLON } from '../../../../../app/js/engine/aiTur.js';
 import { promptLoyiha } from '../../../../../app/js/engine/promptlar.js';
 import { parametrli } from './kutubxona.js';
-import { t, til } from '../../../i18n/index.js';
+import { t, til, serverXato } from '../../../i18n/index.js';
 
 /* TZ-19 (TZ-12): AI — server til modeli (kirgan va serverda yoqilgan bo'lsa) yoki qoidali tahlilchi (ai.js), ovoz — brauzer. */
 export const AI_EX = ['ai.misol1', 'ai.misol2', 'ai.misol3', 'ai.misol4'];   // AI ham uch tilni tushunadi (TZ-18 8-bosqich); misol4 — TZ-26 (bitta modul)
@@ -33,7 +33,9 @@ async function aiParse(text) {
   try {
     const r = await S.api('/api/ai/parse', { method: 'POST', body: { text } });
     if (!r.ok) return null;
-    return (await r.json()).parsed || null;
+    const j = await r.json();
+    if (j.ogohlantirish) toast(serverXato(j.ogohlantirish.error, j.ogohlantirish.code), j.ogohlantirish.code);   // TZ-40: AI limiti tugagan — sababi aytiladi
+    return j.parsed || null;
   } catch (_) { return null; }
 }
 

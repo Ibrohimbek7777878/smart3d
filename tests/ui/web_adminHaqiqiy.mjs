@@ -35,6 +35,18 @@ async function asosiy(page, R) {
   }
   await page.goto(orgn() + '/admin/promptlar'); await page.waitForTimeout(2500);
   R.promptSoni = await M(() => (document.body.innerText.match(/yotoqxona|oshxona|mehmonxona|bolalar|garderob/gi) || []).length);
+  /* TZ-40: "AI sarfi" kartasi (haqiqiy server): bloklar, byudjet; tayyor promptlarda tuzilma belgisi (qoida); 390 px da gorizontal skroll yo'q */
+  R.aiSarf = await M(() => {
+    const k = document.querySelector('[data-ai-sarf-karta]');
+    return !!k && /AI sarfi/.test(k.innerText) && ['bugun-sorov', 'oy-sorov', 'token', 'ulush', 'prompt-kesh', 'byudjet'].every(b => !!k.querySelector(`[data-ai-sarf="${b}"]`))
+      && !!k.querySelector('[role=progressbar]');
+  });
+  R.specBelgi = await M(() => document.querySelectorAll('[data-prompt-spec]').length > 20 && /Tuzilma: qoida/.test(document.body.innerText));
+  await page.screenshot({ path: `${OUT}/adminHaqiqiy-prompt-1440.png` });
+  await page.setViewportSize({ width: 390, height: 844 }); await page.waitForTimeout(600);
+  R.aiSarf390 = await M(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
+  await page.screenshot({ path: `${OUT}/adminHaqiqiy-prompt-390.png` });
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(orgn() + '/admin/furnitura'); await page.waitForTimeout(2500);
   R.furnNarxsiz = await M(() => /Narxsiz furnitura/.test(document.body.innerText));
 
@@ -49,5 +61,5 @@ async function asosiy(page, R) {
 
   R.xatolar = errs.length;
   R.ok = R.adminYol === '/admin' && R.qobiq && ['Furnitura', 'Tayyor promptlar', 'Standart', 'Tarix'].every(k => R['b_' + k].yol.startsWith('/admin/') && R['b_' + k].matn > 200)
-    && R.promptSoni >= 20 && R.furnNarxsiz && R.oddiy404 && !errs.length;
+    && R.promptSoni >= 20 && R.aiSarf && R.specBelgi && R.aiSarf390 && R.furnNarxsiz && R.oddiy404 && !errs.length;
 }

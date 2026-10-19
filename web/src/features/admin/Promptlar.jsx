@@ -3,6 +3,7 @@ import { t } from '../../i18n/index.js';
 import Varaq from '../../shared/ui/Varaq.jsx';
 import Ikon from '../../shared/ui/Ikon.jsx';
 import { usePromptlar } from './usePromptlar.js';
+import AiSarf from './AiSarf.jsx';
 import { karta, sarlavha, izoh, tugma, ghost, xavfli, maydon, lbl, belgi } from './stil.js';
 
 /* TZ-37 (d): tayyor so'rovlar — xona turi (guruh) bo'yicha; qo'shish, tahrir, o'chirish, faol, tartib, uz/ru/en matnlar */
@@ -37,6 +38,7 @@ export default function Promptlar() {
   if (!p.r) return <section style={karta}><span style={izoh}>{t('admin.yuklanmoqda')}</span></section>;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', minWidth: '0' }} data-admin-bolim="promptlar">
+      <AiSarf />
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={izoh}>{t('admin.prompt_izoh', { n: p.r.length })}</span>
         <button onClick={p.yangi} data-prompt="qosh" style={tugma}><Ikon n="qosh" size={18} />{t('admin.prompt_qosh')}</button>
@@ -51,6 +53,14 @@ export default function Promptlar() {
                 <span style={belgi(!!q.faol)}>{q.faol ? t('admin.faol') : t('admin.nofaol')}</span>
               </span>
               <span style={{ ...izoh, overflowWrap: 'anywhere' }}>{q.matn_uz}</span>
+              {q.manba === 'baza' ? (
+                <span data-prompt-spec={q.id} style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
+                  <span style={belgi(!!q.spec && (q.spec_manba === 'qoida' || !!q.spec_tasdiq))}>
+                    {!q.spec ? t('admin.spec_yoq') : q.spec_manba === 'claude' ? (q.spec_tasdiq ? t('admin.spec_claude_ok') : t('admin.spec_claude_kut')) : t('admin.spec_qoida')}
+                  </span>
+                  {q.spec && q.spec_manba === 'claude' && !q.spec_tasdiq ? <button onClick={() => p.tasdiq(q)} data-prompt-tasdiq={q.id} style={ghost}>{t('admin.spec_tasdiqla')}</button> : null}
+                  {q.spec ? <button onClick={() => p.specKor(q)} data-prompt-spec-kor={q.id} style={ghost}>{t('admin.spec_kor')}</button> : null}
+                </span>) : null}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
                 <button onClick={() => p.surish(g, i, -1)} disabled={i === 0} aria-label={t('admin.yuqoriga')} data-prompt-yuqori={q.id} style={ghost}><Ikon n="tepa" size={16} gap={0} /></button>
                 <button onClick={() => p.surish(g, i, 1)} disabled={i === g.list.length - 1} aria-label={t('admin.pastga')} data-prompt-past={q.id} style={ghost}><Ikon n="past" size={16} gap={0} /></button>
@@ -62,6 +72,10 @@ export default function Promptlar() {
             </div>))}
         </section>))}
       {p.x ? <Forma p={p} /> : null}
+      {p.spec ? (
+        <Varaq title={t('admin.spec_sarlavha', { id: p.spec.id })} kind="admin-prompt-spec" onClose={() => p.setSpec(null)}>
+          <pre data-prompt-spec-json="" style={{ margin: '0', overflow: 'auto', minHeight: '0', fontSize: '12px', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{JSON.stringify(p.spec.spec, null, 1)}</pre>
+        </Varaq>) : null}
     </div>
   );
 }

@@ -113,11 +113,12 @@ Kalit faqat `/etc/smart3d.env` da turadi; chatga, kodga va gitga yozilmaydi. Kal
    ```bash
    AI_PROVIDER=anthropic
    ANTHROPIC_API_KEY=<kalit>
-   # AI_MODEL=claude-opus-5-5     # standart; arzonroq: claude-sonnet-5-5 yoki claude-haiku-5-5
+   # AI_MODEL=claude-sonnet-5-5     # standart (egasi qarori: Opus ishlatilmaydi); arzonroq: claude-haiku-5-5
    ```
 3. Serverni qayta ishga tushiring (admin), keyin tekshiring: `curl -s https://smart3d.bittada.uz/api/ai/status` → `{"enabled":true,"provider":"anthropic",…}`.
 4. Ishlatish: ish joyidagi matn qatoriga bitta mebel konstruksiyasini yozing (masalan "shkaf 1200x600x2200, chapda shtanga, o'ngda 4 polka, 2 eshik") — Claude uni konstruksiya tiliga o'giradi, tizim tekshirib chizadi; xona yoki oshxona matni — avvalgidek.
 5. Har so'rov `ai_log` jadvaliga yoziladi (matn, natija, xato). Kalitni olib tashlansa — AI'siz tahlilchiga qaytadi.
+- Token tejash (TZ-40): Claude faqat oxirgi chora (tayyor prompt → kesh → qoidali tahlilchi → Claude). `AI_OYLIK_TOKEN` (oylik byudjet, sukut 2000000; tugasa qoidali tahlilchi, sayt to'xtamaydi), `AI_KUNLIK_SOROV` (foydalanuvchi/kun, sukut 30), `AI_KESH_KUN` (30), `AI_MAX_TOKENS`, `AI_PROMPT_CACHE` — `server/.env.example`. Sarf: admin panel → Tayyor promptlar → "AI sarfi".
 - Boshqa provayder: `AI_PROVIDER=gemini` yoki `openai` (+ `AI_MODEL`, `AI_API_KEY`, `AI_BASE_URL`) — ikkala AI yo'li (xona va konstruksiya) bir xil ishlaydi.
 
 ### Telegram bot (TZ-16) — admin sozlaydi

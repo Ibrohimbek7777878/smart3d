@@ -18,7 +18,7 @@ const js = (v) => { try { return JSON.parse(v); } catch (_) { return null; } };
 const obj = (b) => (b && typeof b === 'object' && !Array.isArray(b) ? b : {});
 const PROMPT_USTUN = ['id', 'kat', 'nom_uz', 'nom_ru', 'nom_en', 'matn_uz', 'matn_ru', 'matn_en', 'tartib', 'faol'];
 
-export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyToken }) {
+export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyToken, tejash }) {
   const r = express.Router();
 
   /* ── umumiy ── */
@@ -161,10 +161,12 @@ export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyTo
     const m = new Map();
     faylPromptlar().forEach((p, i) => m.set(p.id, { id: p.id, kat: p.kat, nom_uz: p.nom.uz || '', nom_ru: p.nom.ru || '', nom_en: p.nom.en || '',
       matn_uz: (p.izoh && p.izoh.uz) || '', matn_ru: (p.izoh && p.izoh.ru) || '', matn_en: (p.izoh && p.izoh.en) || '', tartib: (i + 1) * 10, faol: 1, manba: 'fayl' }));
-    for (const b of db.prepare('SELECT * FROM promptlar_admin').all()) m.set(b.id, { ...pick(b), manba: 'baza' });
+    for (const b of db.prepare('SELECT * FROM promptlar_admin').all()) m.set(b.id, { ...pick(b), manba: 'baza', ...specMeta(b) });
     return [...m.values()].sort((a, b) => a.tartib - b.tartib || a.id.localeCompare(b.id));
   }
   const pick = (b) => Object.fromEntries(PROMPT_USTUN.map(k => [k, b[k]]));
+  /** TZ-40: tayyor promptning AI tuzilmasi holati (tuzilmaning o'zi — GET /api/admin/promptlar/:id/spec) */
+  const specMeta = (b) => ({ spec: !!b.spec_json, spec_manba: b.spec_manba || '', spec_sana: b.spec_sana || '', spec_tasdiq: !!b.spec_tasdiq });
   /** kirish tekshiruvi: asos — mavjud qator (PUT: qisman yangilash) */
   function promptMaydon(b, asos, { yangi }) {
     const o = { ...asos };
@@ -216,7 +218,7 @@ export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyTo
     res.set('Cache-Control', 'no-cache').json({ promptlar: out });
   });
   r.get('/api/admin/promptlar', guard, (req, res) => res.set('Cache-Control', 'no-store').json(promptRoyxat()));
-  r.post('/api/admin/promptlar', guard, himoya((req, res) => {
+  r.post('/api/admin/promptlar', guard, himoya(async (req, res) => {
     const b = obj(req.body);
     const mavjud = promptRoyxat();
     let id = b.id;
@@ -229,9 +231,10 @@ export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyTo
     const tartib = mavjud.reduce((a, x) => Math.max(a, x.tartib), 0) + 10;
     const o = promptMaydon(b, { id, kat: '', nom_uz: '', nom_ru: '', nom_en: '', matn_uz: '', matn_ru: '', matn_en: '', tartib, faol: 1 }, { yangi: true });
     db.transaction(() => { bazaYoz.run({ ...o, by: req.user.id }); yoz(req, 'promptlar', id, null, pick(o)); })();
-    res.status(201).json({ ok: true, prompt: { ...pick(o), manba: 'baza' } });
+    const sp = await tejash.promptSpec(id, { userId: req.user.id });          // TZ-40: tuzilma bir marta (qoidali; qoldiq bo'lsa — Claude bir marta)
+    res.status(201).json({ ok: true, prompt: { ...pick(o), manba: 'baza', ...specMeta(bazaPrompt(id)) }, spec: sp });
   }));
-  r.put('/api/admin/promptlar/:id', guard, himoya((req, res) => {
+  r.put('/api/admin/promptlar/:id', guard, himoya(async (req, res) => {
     const id = req.params.id;
     const hozir = ID_RE.test(id) ? promptRoyxat().find(x => x.id === id) : null;
     if (!hozir) return fail(res, 'S3D-ADM-004');
@@ -239,8 +242,34 @@ export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyTo
     o.id = id;
     const eski = bazaPrompt(id);
     db.transaction(() => { bazaYoz.run({ ...o, by: req.user.id }); yoz(req, 'promptlar', id, eski && pick(eski), pick(o)); })();
-    res.json({ ok: true, prompt: { ...pick(o), manba: 'baza' } });
+    const sp = await tejash.promptSpec(id, { userId: req.user.id });          // matn o'zgargan bo'lsagina hosil qilinadi
+    res.json({ ok: true, prompt: { ...pick(o), manba: 'baza', ...specMeta(bazaPrompt(id)) }, spec: sp });
   }));
+  /** tayyor promptning saqlangan tuzilmasi (admin ko'radi) */
+  r.get('/api/admin/promptlar/:id/spec', guard, himoya((req, res) => {
+    const b = ID_RE.test(req.params.id) ? bazaPrompt(req.params.id) : null;
+    if (!b) return fail(res, 'S3D-ADM-004');
+    if (!b.spec_json) return fail(res, 'S3D-ADM-010');
+    res.set('Cache-Control', 'no-store').json({ id: b.id, ...specMeta(b), spec: js(b.spec_json) });
+  }));
+  /** tuzilmani qayta hosil qilish (qoidali; claude: true bo'lsa va qoldiq bo'lsa — Claude bir marta) */
+  r.post('/api/admin/promptlar/:id/spec-qayta', guard, himoya(async (req, res) => {
+    const id = req.params.id;
+    if (!ID_RE.test(id) || !bazaPrompt(id)) return fail(res, 'S3D-ADM-004');
+    const sp = await tejash.promptSpec(id, { force: true, claude: obj(req.body).claude === true, userId: req.user.id });
+    jurnal.info({ code: 'S3D-ADM-100', rid: req.rid, uid: req.user.id, msg: `admin: promptlar ${id} tuzilmasi qayta hosil qilindi (${sp && sp.manba})` });
+    res.json({ ok: true, ...specMeta(bazaPrompt(id)), spec: sp });
+  }));
+  /** admin tuzilmani ko'rdi va tasdiqladi (Claude hosil qilgan tuzilma shundan keyin foydalanuvchilarga beriladi) */
+  r.post('/api/admin/promptlar/:id/spec-tasdiq', guard, himoya((req, res) => {
+    const id = req.params.id;
+    if (!ID_RE.test(id) || !bazaPrompt(id)) return fail(res, 'S3D-ADM-004');
+    if (!tejash.tasdiqla(id, obj(req.body).tasdiq === false ? 0 : 1)) return fail(res, 'S3D-ADM-010');
+    jurnal.info({ code: 'S3D-ADM-100', rid: req.rid, uid: req.user.id, msg: `admin: promptlar ${id} tuzilmasi ${obj(req.body).tasdiq === false ? 'tasdig\'i olindi' : 'tasdiqlandi'}` });
+    res.json({ ok: true, ...specMeta(bazaPrompt(id)) });
+  }));
+  /** AI sarfi kartasi: bugun/oy so'rovlar, token, kesh va tayyor ulushi, byudjet qoldig'i */
+  r.get('/api/admin/ai-sarf', guard, himoya((req, res) => res.set('Cache-Control', 'no-store').json(tejash.statistika())));
   r.delete('/api/admin/promptlar/:id', guard, himoya((req, res) => {
     const id = req.params.id;
     const eski = ID_RE.test(id) ? bazaPrompt(id) : null;
@@ -286,7 +315,7 @@ export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyTo
       qaytarilgan: !!x.qaytarilgan, vaqt: x.created_at, kim: x.kim || x.email || ('#' + x.user_id) })));
   }));
   /** shu o'zgarishni eski qiymatga qaytaradi (eski yo'q edi — o'chiradi). Qaytarish ham yangi audit yozuvi; bir yozuv bir marta qaytariladi. */
-  r.post('/api/admin/qaytar/:auditId', guard, himoya((req, res) => {
+  r.post('/api/admin/qaytar/:auditId', guard, himoya(async (req, res) => {
     const id = Number(req.params.auditId);
     const a = Number.isInteger(id) && id > 0 ? db.prepare('SELECT * FROM admin_audit WHERE id = ?').get(id) : null;
     if (!a) return fail(res, 'S3D-ADM-006');
@@ -312,6 +341,7 @@ export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyTo
       db.prepare('UPDATE admin_audit SET qaytarilgan = 1 WHERE id = ?').run(id);
       yoz(req, a.bolim, a.kalit, hozir, eski);
     })();
+    if (a.bolim === 'promptlar' && bazaPrompt(a.kalit)) await tejash.promptSpec(a.kalit, { claude: false, userId: req.user.id });   // matn qaytdi — tuzilma ham (bepul)
     res.json({ ok: true, qaytarildi: id, bolim: a.bolim, kalit: a.kalit });
   }));
 

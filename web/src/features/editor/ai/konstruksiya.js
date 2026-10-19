@@ -9,7 +9,7 @@ import { matndanSpec, specTekshir, specdanChizma, specXulosa, plitaTop } from '.
 import { yangiModul } from '../chizish/chizish.js';
 import { erpQosh } from '../../../services/erpMaterial.js';
 import { faylYukla } from '../files/actions.js';
-import { t } from '../../../i18n/index.js';
+import { t, serverXato } from '../../../i18n/index.js';
 
 /* TZ-26: AI konstruksiya — usta matni → konstruksiya tili → ideal chizma (engine/konstruksiyaTili.js → engine/chizish.js).
  *   1) serverda AI (Claude) ulangan va usta kirgan bo'lsa — /api/ai/konstruksiya (AI tilga o'giradi, server tekshiradi);
@@ -23,6 +23,8 @@ async function serverdan(matn, aiOn) {
     const r = await S.api('/api/ai/konstruksiya', { method: 'POST', body: { text: matn } });
     if (!r.ok) return null;                                     // 503 (ulanmagan), 502 (javob yo'q) — AI'siz tahlilchi
     const j = await r.json();
+    /* TZ-40: AI limiti tugagan (S3D-AI-004/005) — server qoidali natija qaytaradi, foydalanuvchiga sababi aytiladi */
+    if (j && j.ogohlantirish) toast(serverXato(j.ogohlantirish.error, j.ogohlantirish.code), j.ogohlantirish.code);
     return j && (j.xona || j.spec) ? j : null;
   } catch (e) { report('S3D-AI-101', { modul: 'ai/konstruksiya', err: e }); return null; }
 }
@@ -84,12 +86,14 @@ export async function aiKonstruksiya(matn, aiOn, o = {}) {
   const ai = o.buyum ? null : await serverdan(matn, aiOn);
   if (ai && ai.xona) return 'xona';
   /* AI javobi serverda tekshirilgan — saytda yana bir bor (bir xil qoida); AI'siz — tahlilchi */
+  /* TZ-40: server tayyor tuzilma yoki qoida natijasini qaytarsa ("AI tushundi" deyilmaydi) — faqat Claude (yoki uning keshi) AI hisoblanadi */
+  const aiMi = !!ai && (ai.manba === 'claude' || ai.manba === 'kesh' || !ai.manba);
   const xom = ai ? ai.spec : matndanSpec(matn);
   const n = specTekshir(xom, project.H.standart);   // TZ-37: aytilmagan qiymatlar — admin standarti (yo'q bo'lsa — qattiq sukut)
   if (n.xona && !o.buyum) return 'xona';
   if (!o.chiz) {
     const tan = o.buyum ? buyumdanTop(o.buyum, matn, project.H.catalog) : katalogdanTop(n.spec, xom, project.H.catalog, matn);
-    const kim = ai ? t('kons.kim_ai') : t('kons.kim_aisiz');
+    const kim = aiMi ? t('kons.kim_ai') : t('kons.kim_aisiz');
     if (tan && tan.topildi) {
       const fr = project.H.catalog[tan.frg];
       project.tarix.belgi('ai');                                   // bekor qilish: AI modul — bitta qadam
@@ -134,8 +138,8 @@ export async function aiKonstruksiya(matn, aiOn, o = {}) {
   if (f.ruchka > 0) furn.push(t('kons.f_ruchka', { n: f.ruchka }));
   if (sp.orqa === 'yergacha') furn.push(t('kons.f_orqa_yer'));
   const qoshimcha = M.bor.concat(furn.length ? [t('kons.furnitura', { s: furn.join(', ') })] : []);
-  set('chizish', { izoh: { kim: ai ? t('kons.kim_ai') : t('kons.kim_aisiz'), xulosa, tuzatish: [...new Set(tuzatish.map(TUZ))], tushunilmadi, qoshimcha, yoq: M.yoq } });
-  toast(t('kons.qurildi', { kim: ai ? t('kons.kim_ai') : t('kons.kim_aisiz'), nom }) + (tuzatish.length ? ' · ' + t('kons.tuzatildi', { n: tuzatish.length }) : '')
+  set('chizish', { izoh: { kim: aiMi ? t('kons.kim_ai') : t('kons.kim_aisiz'), xulosa, tuzatish: [...new Set(tuzatish.map(TUZ))], tushunilmadi, qoshimcha, yoq: M.yoq } });
+  toast(t('kons.qurildi', { kim: aiMi ? t('kons.kim_ai') : t('kons.kim_aisiz'), nom }) + (tuzatish.length ? ' · ' + t('kons.tuzatildi', { n: tuzatish.length }) : '')
     + (M.yoq.length ? ' · ' + M.yoq.join(' · ') : ''));
   /* "obj formatda yubor" — qurilgach OBJ darhol yuklanadi (savolsiz) */
   if (sp.eksport === 'obj') faylYukla('obj', { id: p.id });

@@ -49,7 +49,7 @@
 
 ## Natija (2026-10-15)
 - **`server/ai-llm.js`** — provayderga bog'liq emas. Uch xil ulanish:
-  - **Claude** — rasmiy `@anthropic-ai/sdk` (0.131.0, aniq versiya — kamida 2 hafta oldin chiqqan); standart model `claude-opus-5-5`, `effort: low`, tuzilgan JSON (`output_config.format`), rad etishda server tomonidagi zaxira (`fallbacks: "default"`);
+  - **Claude** — rasmiy `@anthropic-ai/sdk` (0.131.0, aniq versiya — kamida 2 hafta oldin chiqqan); standart model `claude-sonnet-5-5` (egasi qarori 2026-10-18; avval Opus edi), `effort: low`, tuzilgan JSON (`output_config.format`), rad etishda server tomonidagi zaxira (`fallbacks: "default"`);
   - **Gemini** — REST, `responseMimeType: application/json`;
   - **OpenAI'ga mos** — OpenAI, DeepSeek, Ollama, OpenRouter: `response_format: json_object`.
 

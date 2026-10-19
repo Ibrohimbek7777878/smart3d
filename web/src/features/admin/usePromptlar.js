@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { confirm, toast } from '../../store/ui.js';
-import { t } from '../../i18n/index.js';
+import { t, xatoMatni } from '../../i18n/index.js';
 import { adm, royxatOl } from './actions.js';
 
 /* tayyor promptlar (TZ-37 p.2): GET/POST /api/admin/promptlar, PUT/DELETE /api/admin/promptlar/:id.
@@ -14,6 +14,7 @@ export function usePromptlar() {
   const [r, setR] = useState(null);
   const [x, setX] = useState(null);                 // tahrir/qo'shish formasi (id bo'lsa — tahrir)
   const [band, setBand] = useState(false);
+  const [spec, setSpec] = useState(null);          // TZ-40: tayyor promptning saqlangan tuzilmasi (ko'rish)
   const yukla = useCallback(async () => {
     const a = await adm(YOL);
     setR(a.ok ? royxatOl(a.j).slice().sort((p, q) => (p.tartib || 0) - (q.tartib || 0)) : []);
@@ -33,7 +34,11 @@ export function usePromptlar() {
     const tartib = x.id ? x.tartib : ((r || []).reduce((m, p) => Math.max(m, p.tartib || 0), 0) + 1);
     const a = await adm(x.id ? YOL + '/' + encodeURIComponent(x.id) : YOL, { method: x.id ? 'PUT' : 'POST', body: tanasi({ ...x, kat: x.kat.trim(), tartib }) });
     setBand(false);
-    if (a.ok) { toast(t('admin.saqlandi')); setX(null); yukla(); }
+    if (a.ok) {
+      toast(t('admin.saqlandi')); setX(null); yukla();
+      const og = a.j && a.j.spec && a.j.spec.ogohlantirish;                 // TZ-40: tuzilma AI bilan hosil bo'lmadi / byudjet tugagan — qoida saqlandi
+      if (og) toast(xatoMatni(og), og);
+    }
   };
   const faol = async (p) => { const a = await adm(YOL + '/' + encodeURIComponent(p.id), { method: 'PUT', body: tanasi({ ...p, faol: p.faol ? 0 : 1 }) }); if (a.ok) yukla(); };
   /** tartib: shu guruhdagi qo'shni bilan tartib raqamlari almashtiriladi */
@@ -48,6 +53,10 @@ export function usePromptlar() {
   const ochir = (p) => confirm({ title: t('admin.prompt_ochir_sarlavha'), text: t('admin.prompt_ochir_matn', { nom: p.nom_uz }), ok: t('umumiy.ochirish'), danger: true,
     yes: async () => { const a = await adm(YOL + '/' + encodeURIComponent(p.id), { method: 'DELETE' }); if (a.ok) { toast(t('admin.prompt_ochirildi')); yukla(); } } });
 
-  return { r, guruhlar, turlar, x, setX, band, saqla, faol, surish, ochir, yangi: () => setX({ ...BOSH }),
+  /** TZ-40: tuzilmani ko'rish va tasdiqlash (Claude hosil qilgan tuzilma tasdiqdan keyin foydalanuvchilarga beriladi) */
+  const specKor = async (p) => { const a = await adm(YOL + '/' + encodeURIComponent(p.id) + '/spec'); if (a.ok) setSpec(a.j); };
+  const tasdiq = async (p) => { const a = await adm(YOL + '/' + encodeURIComponent(p.id) + '/spec-tasdiq', { method: 'POST', body: {} }); if (a.ok) { toast(t('admin.spec_tasdiqlandi')); yukla(); } };
+
+  return { spec, setSpec, specKor, tasdiq, r, guruhlar, turlar, x, setX, band, saqla, faol, surish, ochir, yangi: () => setX({ ...BOSH }),
     on: (k) => (ev) => setX(v => ({ ...v, [k]: ev.target.value })) };
 }

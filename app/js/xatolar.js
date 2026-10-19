@@ -55,6 +55,11 @@ export const XATOLAR = {
   'S3D-AI-001': { http: 503, matn: 'AI sozlanmagan — qoidali tahlilchi ishlaydi' },
   'S3D-AI-002': { http: 502, matn: 'AI javob bermadi — qoidali tahlilchi ishlaydi' },
   'S3D-AI-003': { http: 501, matn: 'Server ovoz tanish (STT) hali ulanmagan — brauzer ovozidan foydalaning' },
+  /* TZ-40: AI sarfi nazorati — ogohlantirishlar (javob 200, qoidali tahlilchi natijasi bilan; sayt to'xtamaydi) */
+  'S3D-AI-004': { http: 429, matn: 'AI oylik limiti tugadi — qoidali tahlilchi ishlaydi' },
+  'S3D-AI-005': { http: 429, matn: 'AI kunlik limitingiz tugadi — qoidali tahlilchi ishlaydi, ertaga AI qayta ishlaydi' },
+  'S3D-AI-006': { http: 502, matn: 'Tayyor so\'rov tuzilmasi AI bilan hosil bo\'lmadi — qoidali tuzilma saqlandi' },
+  'S3D-ADM-010': { http: 409, matn: 'Tayyor so\'rovning tuzilmasi hali yo\'q' },
   'S3D-VAL-001': { http: 400, matn: 'Kiritilgan qiymat noto\'g\'ri' },
   'S3D-VAL-002': { http: 400, matn: 'JSON noto\'g\'ri' },
   'S3D-VAL-003': { http: 413, matn: 'So\'rov juda katta' },

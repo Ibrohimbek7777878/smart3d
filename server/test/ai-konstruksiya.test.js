@@ -17,6 +17,9 @@ import { KONS_SCHEMA } from '../ai-llm.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_DIR = path.join(__dirname, '..');
 const serverlar = [], seen = [];
+/* TZ-40: qoidali tahlilchi tushunsa Claude chaqirilmaydi; provayder mexanikasini sinash uchun matn "murakkab" (240 belgidan uzun) qilinadi */
+const UZUN = (t) => t + ' — ' + 'qo\'shimcha izoh, '.repeat(15) + 'oxiri';
+
 let mock, tmp, javob = 'ok';
 
 const AI_JAVOB = {
@@ -68,7 +71,7 @@ before(async () => {
       seen.push({ url: req.url, headers: req.headers, body: JSON.parse(body || '{}') });
       res.setHeader('content-type', 'application/json');
       if (/\/messages/.test(req.url)) {
-        res.end(JSON.stringify({ id: 'msg_k', type: 'message', role: 'assistant', model: 'claude-opus-5-5', content: [{ type: 'text', text: kontent() }],
+        res.end(JSON.stringify({ id: 'msg_k', type: 'message', role: 'assistant', model: 'claude-sonnet-5-5', content: [{ type: 'text', text: kontent() }],
           stop_reason: 'end_turn', stop_sequence: null, usage: { input_tokens: 10, output_tokens: 10 } }));
       } else res.end(JSON.stringify({ choices: [{ message: { role: 'assistant', content: kontent() } }] }));
     });
@@ -76,7 +79,7 @@ before(async () => {
   await new Promise(r => mock.listen(0, '127.0.0.1', r));
   const mp = mock.address().port;
   openai = await serverOch({ AI_PROVIDER: 'openai', AI_BASE_URL: `http://127.0.0.1:${mp}/v1`, AI_API_KEY: 'soxta-kalit', AI_MODEL: 'soxta-model' });
-  claude = await serverOch({ AI_PROVIDER: 'anthropic', AI_API_KEY: 'soxta-claude-kalit', ANTHROPIC_BASE_URL: `http://127.0.0.1:${mp}` });
+  claude = await serverOch({ AI_PROMPT_CACHE: '1', AI_PROVIDER: 'anthropic', AI_API_KEY: 'soxta-claude-kalit', ANTHROPIC_BASE_URL: `http://127.0.0.1:${mp}` });
   yoq = await serverOch({});
 });
 after(() => { serverlar.forEach(s => s.proc.kill()); mock && mock.close(); if (tmp) fs.rmSync(tmp, { recursive: true, force: true }); });
@@ -96,7 +99,7 @@ test('sxema: tur ro\'yxati xona bilan, bo\'limlar va qatlamlar, hamma maydon maj
 test('OpenAI\'ga mos: ko\'rsatma va sxema yuboriladi; javob tekshiriladi va to\'g\'rilanadi; jurnalga yoziladi', async () => {
   javob = 'ok';
   const token = await login(openai, '998977771001');
-  const r = await api(openai, '/api/ai/konstruksiya', { method: 'POST', token, body: { text: 'garderob 5 metr, chapda shtanga, o\'ngda 4 polka' } });
+  const r = await api(openai, '/api/ai/konstruksiya', { method: 'POST', token, body: { text: UZUN('garderob 5 metr, chapda shtanga, o\'ngda 4 polka') } });
   assert.equal(r.status, 200);
   const j = await r.json();
   assert.equal(j.engine, 'openai:soxta-model');
@@ -114,7 +117,7 @@ test('OpenAI\'ga mos: ko\'rsatma va sxema yuboriladi; javob tekshiriladi va to\'
   assert.match(q.body.messages[0].content, /konstruksiya tiliga/);
   assert.match(q.body.messages[0].content, /PASTDAN YUQORIGA/);
   assert.match(q.body.messages[0].content, /"bolimlar"/);          // sxema ko'rsatmada
-  assert.equal(q.body.messages[1].content, 'garderob 5 metr, chapda shtanga, o\'ngda 4 polka');
+  assert.equal(q.body.messages[1].content, UZUN('garderob 5 metr, chapda shtanga, o\'ngda 4 polka'));
   const db = new Database(openai.db, { readonly: true });
   const log = db.prepare("SELECT engine, ok FROM ai_log ORDER BY id DESC LIMIT 1").get();
   db.close();
@@ -124,28 +127,30 @@ test('OpenAI\'ga mos: ko\'rsatma va sxema yuboriladi; javob tekshiriladi va to\'
 test('Claude: tuzilgan JSON (konstruksiya sxemasi), effort medium', async () => {
   javob = 'ok';
   const token = await login(claude, '998977771002');
-  const r = await api(claude, '/api/ai/konstruksiya', { method: 'POST', token, body: { text: 'shkaf 1200, 2 eshik' } });
+  const r = await api(claude, '/api/ai/konstruksiya', { method: 'POST', token, body: { text: UZUN('shkaf 1200, 2 eshik') } });
   assert.equal(r.status, 200);
-  assert.equal((await r.json()).engine, 'anthropic:claude-opus-5-5');
+  assert.equal((await r.json()).engine, 'anthropic:claude-sonnet-5-5');
   const q = seen[seen.length - 1];
   assert.match(q.url, /^\/v1\/messages/);
   assert.equal(q.body.output_config.format.type, 'json_schema');
   assert.deepEqual(q.body.output_config.format.schema.properties.tur.enum, KONS_SCHEMA.properties.tur.enum);
   assert.equal(q.body.output_config.effort, 'medium');
-  assert.match(q.body.system, /konstruksiya tiliga/);
+  assert.match(q.body.system[0].text, /konstruksiya tiliga/);          // TZ-40: tizim ko'rsatmasi keshlanadi (prompt caching)
+  assert.deepEqual(q.body.system[0].cache_control, { type: 'ephemeral' });
+  assert.equal(q.body.max_tokens, 1500);
 });
 
 test('"xona" — konstruksiya emas; noto\'g\'ri javob — 502; login kerak; AI ulanmagan — 503', async () => {
   const token = await login(openai, '998977771003');
   javob = 'xona';
-  const x = await (await api(openai, '/api/ai/konstruksiya', { method: 'POST', token, body: { text: 'oshxona 3x4 m' } })).json();
+  const x = await (await api(openai, '/api/ai/konstruksiya', { method: 'POST', token, body: { text: UZUN('oshxona 3x4 m') } })).json();
   assert.equal(x.xona, true);
   javob = 'buzuq';
-  const b = await api(openai, '/api/ai/konstruksiya', { method: 'POST', token, body: { text: 'shkaf' } });
+  const b = await api(openai, '/api/ai/konstruksiya', { method: 'POST', token, body: { text: UZUN('shkaf') } });
   assert.equal(b.status, 502);
   assert.equal((await b.json()).code, 'S3D-AI-002');
   javob = 'matn';
-  assert.equal((await api(openai, '/api/ai/konstruksiya', { method: 'POST', token, body: { text: 'shkaf' } })).status, 502);
+  assert.equal((await api(openai, '/api/ai/konstruksiya', { method: 'POST', token, body: { text: UZUN('shkaf') } })).status, 502);
   javob = 'ok';
   assert.equal((await api(openai, '/api/ai/konstruksiya', { method: 'POST', body: { text: 'shkaf' } })).status, 401);
   assert.equal((await api(openai, '/api/ai/konstruksiya', { method: 'POST', token, body: { text: '' } })).status, 400);
