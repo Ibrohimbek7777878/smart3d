@@ -30,3 +30,8 @@ NARX.pdf
 *.pem
 *.key
 .bsq_sinov/
+
+# katta fayllar ildizda (zip, video) — repoga kirmaydi
+/*.zip
+/*.mp4
+/*.fr3d
