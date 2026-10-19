@@ -1,6 +1,6 @@
 # TZ-38 — Zapchastlar (furnitura) 3D da ko'rinsin: detal kartasi, "Ichini ko'rish", rentgen
 
-**Sana:** 2026-10-19 · **Navbat:** 38 · **Holat:** BOSHLANDI 2026-10-19 11:01 (egasi #274: "ishni boshla, ruxsat beraman"; asos: egasi #273, #274, skrinshot: "Tortma fasadi" detal kartasida teshik va karkas ko'rinadi, zapchast yo'q)
+**Sana:** 2026-10-19 · **Navbat:** 38 · **Holat:** BAJARILDI 2026-10-19 11:42 (`main` 2881e26; agent 7d913be; testlar yashil). Qoldi: haqiqiy 3D shakllar (2-bosqich), oyoq joyi taxminiy. Boshlangan 11:01 (egasi #274: "ishni boshla, ruxsat beraman"; asos: egasi #273, #274, skrinshot: "Tortma fasadi" detal kartasida teshik va karkas ko'rinadi, zapchast yo'q)
 **Koordinator:** smart3d-51 chati.
 **Bajarilishi (agent/zapchast, 2026-10-19):** detal kartasi va "Ichini ko'rish" — zapchast haqiqiy ma'lumot bilan (`tk.zap`); zapchast turlari: petlya, polka ushlagich, ruchka, yo'naltiruvchi + konfirmat (yuza evrovint teshigi), ekssentrik (d6_eksentrik), oyoq (BOM da nojka 4 dona — taxminiy joy); ko'rinish panelida bitta "Zapchastlar" tugmasi (panellar shaffof, faqat zapchast) va ro'yxat paneli (`services/zapchast.js`: qator soni/narxi narx paneli furniturasi bilan bir manba, 3D joyi — teshiklardan); qator ↔ 3D belgi ikki tomonlama ajratish. Testlar: `tests/verify_teshik3d.mjs` (6-bo'lim), `tests/ui/web_zapchast.mjs`.
 
