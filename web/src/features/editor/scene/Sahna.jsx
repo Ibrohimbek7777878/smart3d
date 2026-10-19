@@ -6,6 +6,7 @@ import Maslahat from './Maslahat.jsx';
 import ModulKarta from './ModulKarta.jsx';
 import DetalKarta from './DetalKarta.jsx';
 import KorinishPanel from './KorinishPanel.jsx';
+import ZapchastPanel from './ZapchastPanel.jsx';
 import { useTor } from '../../../shared/lib/useTor.js';
 import ChizmaQatlam from '../ishjoyi/ChizmaQatlam.jsx';
 import TeshikPalitra from '../ishjoyi/TeshikPalitra.jsx';
@@ -58,6 +59,7 @@ export default function Sahna() {
         </>) : null}
       </div>
       <KorinishPanel tel={tor} />
+      <ZapchastPanel tel={tor} />{/* TZ-38: zapchast ro'yxati — "Zapchastlar" tugmasi bilan */}
       <Maslahat />
       <ModulKarta />
       <DetalKarta />

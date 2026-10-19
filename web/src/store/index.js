@@ -34,7 +34,7 @@ export const store = createStore({
   /* Oddiy rejim (mijoz): tanlov — 'oddiy' | 'usta' | null (sukut qoida), panel — ochiq qadam 0..4 (features/editor/oddiy) */
   rejim: { tanlov: (() => { try { const v = localStorage.getItem('s3d-rejim'); return v === 'oddiy' || v === 'usta' ? v : null; } catch (_) { return null; } })(), panel: undefined },
   ishjoyi: { asbob: 'tanlash', nuqtalar: [], teshikTur: null, tahrir: null, tanlov: null, menyu: false },
-  korinish: { kamera: 'orbit', fon: null, chizish: 'boyalgan', rentgen: false, xona: true, fasadsiz: false, olchash: false, menyu: false, olcham: null },
+  korinish: { kamera: 'orbit', fon: null, chizish: 'boyalgan', rentgen: false, xona: true, fasadsiz: false, olchash: false, menyu: false, olcham: null, zapchast: false, zapTanla: null },
   settings: { sets: { markup_pct: null, stanoklar: null, logo: null, til: null }, markupIn: null, nestIn: null, stdIn: null, xq: '', xatolar: null, qoldiqlar: null, qHolat: 'available', qQ: '', qForm: null }
 });
 

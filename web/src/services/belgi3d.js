@@ -10,7 +10,7 @@ const och = (T, hex, k) => new T.Color(hex).lerp(new T.Color(0xffffff), k);
 /**
  * @param T — three.js nomlar fazosi
  * @param {Object} dat — teshik3d() natijasi (yoki uning bir detalga tegishli qismi)
- * @param {Object} [o] — { xf: nuqta → [x, y, z], xd: yo'nalish → [x, y, z], k: mm → sahna birligi, minD: eng kichik ko'rinish diametri (mm),
+ * @param {Object} [o] — { xf: nuqta → [x, y, z], xd: yo'nalish → [x, y, z], k: mm → sahna birligi, minD: eng kichik ko'rinish diametri (mm), minZ: zapchast ingichka qismlari (vint, pin) eng kichik diametri (mm),
  *   minKromka: kromka tasmasining eng kichik qalinligi (mm) — kichik oynada (detal kartasi) ko'rinsin, chiqish: teshik yuzadan
  *   chiqib turishi (mm; shaffof bo'lmagan detalda — kattaroq) }
  * @returns {Group} — userData.son: { teshik, kromka, zapchast } (instansiyalar soni)
@@ -72,48 +72,92 @@ export function belgiGuruh(T, dat, o = {}) {
     });
     son.kromka = ks.length;
   }
-  /* zapchast — soddalashtirilgan belgi: petlya (kosa ustida disk + yelka), polka ushlagich (pin), ruchka (planka), yo'naltiruvchi (relsa) */
+  /* zapchast — belgi: petlya (kosa ustida disk + yelka), polka ushlagich (pin), ruchka (planka), yo'naltiruvchi (relsa);
+     TZ-38: konfirmat (kallak + vint), ekssentrik (kosa), oyoq (tik silindr). Har belgi — aniq koordinatada (mm, modul lokal).
+     userData.zapNuqta: [{ i, c, r }] — har belgi markazi (sahna birligida) va radiusi: bosib tanlash va ajratib ko'rsatish uchun */
   const zs = dat.zapchast || [];
+  const nuqtalar = [];
   if (zs.length) {
-    const silindr = zs.filter(z => z.tur === 'petlya' || z.tur === 'polka'), quti = zs.filter(z => z.tur === 'ruchka' || z.tur === 'napr' || z.tur === 'petlya');
-    if (silindr.length) {
-      const mesh = qatlam(new T.CylinderGeometry(0.5, 0.5, 1, 18), silindr.length, 'zapchast');
-      silindr.forEach((z, i) => {
-        const n = V(xd(z.n)).normalize(), p = V(xf(z.p));
-        if (z.tur === 'petlya') qoy(mesh, i, p.addScaledVector(n, -2 * k), n, [40 * k, 4 * k, 40 * k], R('petlya', 0.45));
-        else qoy(mesh, i, p.addScaledVector(n, -6 * k), n, [6 * k, 12 * k, 6 * k], R('polka', 0.45));
-      });
+    const mz = (v, kk = 1) => Math.max(v, (o.minZ || 0) * kk);     // kichik oynada (detal kartasi) ingichka qismlar (vint, pin) ham ko'rinsin
+    const sil = [], quti = [];                                     // { c, n, s, rang, ikkinchi }
+    zs.forEach((z, zi) => {
+      const idx = z.i != null ? z.i : zi;
+      const n = z.n ? V(xd(z.n)).normalize() : null;
+      let c, r = 30;
+      if (z.tur === 'petlya') {
+        const p = V(xf(z.p));
+        sil.push({ c: p.clone().addScaledVector(n, -2 * k), n, s: [40 * k, 4 * k, 40 * k], rang: R('petlya', 0.45) });
+        /* yelka: kosadan eshik petlya qirrasi tomonga (x), korpus ichida */
+        const yon = V(xd([z.yelka || 1, 0, 0])), pp = p.clone().addScaledVector(n, -8 * k);
+        quti.push({ c: pp.addScaledVector(yon.clone().normalize(), 26 * k), n: yon, s: [10 * k, 52 * k, 10 * k], rang: R('petlya', 0.45), ikkinchi: n });
+        c = p.clone().addScaledVector(n, -4 * k); r = 40;
+      } else if (z.tur === 'polka') {
+        const p = V(xf(z.p));
+        sil.push({ c: p.clone().addScaledVector(n, -6 * k), n, s: [mz(6, .8) * k, 12 * k, mz(6, .8) * k], rang: R('polka', 0.45) });
+        c = p.clone().addScaledVector(n, -6 * k); r = 20;
+      } else if (z.tur === 'konfirmat') {
+        const p = V(xf(z.p)), uz = (z.uz || 50);
+        sil.push({ c: p.clone().addScaledVector(n, -0.5 * k), n, s: [mz(11, 1.5) * k, 3 * k, mz(11, 1.5) * k], rang: R('konfirmat', 0.5) });                 // kallak
+        sil.push({ c: p.clone().addScaledVector(n, (uz / 2) * k), n, s: [mz(8) * k, uz * k, mz(8) * k], rang: R('konfirmat', 0.45) });             // vint
+        c = p.clone().addScaledVector(n, (uz / 2) * k); r = 16;
+      } else if (z.tur === 'eksentrik') {
+        const p = V(xf(z.p));
+        sil.push({ c: p.clone().addScaledVector(n, 5.5 * k), n, s: [mz(17, 1.4) * k, 13 * k, mz(17, 1.4) * k], rang: R('eksentrik', 0.4) });
+        c = p.clone().addScaledVector(n, 5 * k); r = 22;
+      } else if (z.tur === 'oyoq') {
+        const p = V(xf(z.p)), uz = z.uz || 100;
+        sil.push({ c: p.clone().addScaledVector(n, -(uz / 2) * k), n, s: [36 * k, uz * k, 36 * k], rang: R('oyoq', 0.15) });
+        c = p.clone().addScaledVector(n, -(uz / 2) * k); r = 40;
+      } else {                                                      // ruchka | napr
+        const a = V(xf(z.a)), b = V(xf(z.b)), yon = b.clone().sub(a);
+        if (yon.lengthSq() < 1e-12) yon.copy(V(xd([0, 1, 0])));
+        const L = yon.length() + (z.tur === 'ruchka' ? 24 * k : 60 * k);
+        const m = a.clone().add(b).multiplyScalar(0.5);
+        if (z.tur === 'ruchka') quti.push({ c: m.clone().addScaledVector(n, 26 * k), n: yon, s: [12 * k, L, 12 * k], rang: R('ruchka', 0.45), ikkinchi: n });
+        else quti.push({ c: m.clone().addScaledVector(n, -7 * k), n: yon, s: [35 * k, L, 12 * k], rang: R('napr', 0.45), ikkinchi: n });
+        c = z.tur === 'ruchka' ? m.clone().addScaledVector(n, 26 * k) : m.clone().addScaledVector(n, -7 * k); r = Math.max(30, L / (2 * k) * 0.5);
+      }
+      nuqtalar.push({ i: idx, tur: z.tur, c, r: r * k });
+    });
+    if (sil.length) {
+      const mesh = qatlam(new T.CylinderGeometry(0.5, 0.5, 1, 18), sil.length, 'zapchast');
+      sil.forEach((x, i) => qoy(mesh, i, x.c, x.n, x.s, x.rang));
     }
     if (quti.length) {
       const mesh = qatlam(new T.BoxGeometry(1, 1, 1), quti.length, 'zapchast_q');
-      quti.forEach((z, i) => {
-        const n = V(xd(z.n)).normalize();
-        if (z.tur === 'petlya') {
-          /* yelka: kosadan eshik petlya qirrasi tomonga (x), korpus ichida */
-          const p = V(xf(z.p)).addScaledVector(n, -8 * k), yon = V(xd([z.yelka || 1, 0, 0]));
-          qoy(mesh, i, p.addScaledVector(yon.clone().normalize(), 26 * k), yon, [10 * k, 52 * k, 10 * k], R('petlya', 0.45), n);
-        } else {
-          const a = V(xf(z.a)), b = V(xf(z.b)), yon = b.clone().sub(a);
-          if (yon.lengthSq() < 1e-12) yon.copy(V(xd([0, 1, 0])));
-          const L = yon.length() + (z.tur === 'ruchka' ? 24 * k : 60 * k);
-          const m = a.clone().add(b).multiplyScalar(0.5);
-          if (z.tur === 'ruchka') qoy(mesh, i, m.addScaledVector(n, 26 * k), yon, [12 * k, L, 12 * k], R('ruchka', 0.45), n);
-          else qoy(mesh, i, m.addScaledVector(n, -7 * k), yon, [35 * k, L, 12 * k], R('napr', 0.45), n);
-        }
-      });
+      quti.forEach((x, i) => qoy(mesh, i, x.c, x.n, x.s, x.rang, x.ikkinchi));
     }
     son.zapchast = zs.length;
   }
-  for (const c of g.children) { c.instanceMatrix.needsUpdate = true; if (c.instanceColor) c.instanceColor.needsUpdate = true; }
+  g.userData.zapNuqta = nuqtalar;
+  for (const c of g.children) { if (!c.isInstancedMesh) continue; c.instanceMatrix.needsUpdate = true; if (c.instanceColor) c.instanceColor.needsUpdate = true; }
   return g;
 }
 
-/** qism ko'rinishi (menyu tanlovi) */
-export function belgiQism(g, qism = {}) {
+/** qism ko'rinishi: qism — menyu tanlovi { teshik, kromka, zapchast }; rejim — { rentgen, zapchast } (TZ-38: "Zapchastlar" tugmasi —
+ *  rentgensiz ham faqat zapchastni ko'rsatadi; teshik va kromka faqat rentgenda) */
+export function belgiQism(g, qism = {}, rejim = {}) {
+  const rentgen = rejim.rentgen !== false;
   for (const c of g.children) {
     const nom = c.userData && c.userData.belgi3d;
-    c.visible = nom === 'teshik' ? qism.teshik !== false : nom === 'kromka' ? qism.kromka !== false : qism.zapchast !== false;
+    if (nom === 'tanla') continue;                       // ajratib ko'rsatish — belgiTanla boshqaradi
+    c.visible = nom === 'teshik' ? rentgen && qism.teshik !== false : nom === 'kromka' ? rentgen && qism.kromka !== false
+      : (rejim.zapchast === true || (rentgen && qism.zapchast !== false));
   }
+}
+
+/** TZ-38: bitta zapchastni (tartib raqami `i`) ajratib ko'rsatish — markazida yorqin shar; i == null — olib tashlash */
+export function belgiTanla(T, g, i) {
+  if (!g) return;
+  let h = g.children.find(c => c.userData && c.userData.belgi3d === 'tanla');
+  const nuq = i == null ? null : (g.userData.zapNuqta || []).find(x => x.i === i);
+  if (!nuq) { if (h) h.visible = false; return; }
+  if (!h) {
+    h = new T.Mesh(new T.SphereGeometry(1, 20, 14), new T.MeshBasicMaterial({ color: 0xFF7A45, transparent: true, opacity: 0.55, depthTest: false, depthWrite: false, toneMapped: false }));
+    h.userData = { belgi3d: 'tanla' }; h.name = 'zapchast_tanla'; h.raycast = () => {}; h.renderOrder = 999; h.frustumCulled = false;
+    g.add(h);
+  }
+  h.position.copy(nuq.c); h.scale.setScalar(nuq.r * 1.25); h.visible = true;
 }
 
 /** xotirani bo'shatish */

@@ -3,6 +3,7 @@ import { useSlice } from '../../../store/index.js';
 import { t } from '../../../i18n/index.js';
 import Ikon from '../../../shared/ui/Ikon.jsx';
 import { FONLAR, korinishOzgar, menyuOchYop, menyuYop, yonalish, zoom, toliqEkran, erkinMaydon, belgiOzgar } from './korinish.js';
+import { zapchastOchYop } from './zapchast.js';
 import { RANG } from '../../../../../app/js/engine/teshik3d.js';
 
 /* TZ-23 (dizaynda yo'q — namuna: egasi bergan Bazis-Cloud skrinshotlari; dizayn uslubida: --sfc, --line, 14px burchak).
@@ -48,6 +49,7 @@ export default function KorinishPanel({ tel }) {
         </>) : null}
         <span style={{ height: '1px', background: 'var(--line)', margin: '3px 6px' }}></span>
         <Tugma ik="olchash" label={t('korinish.olchash')} on={k.olchash} onClick={tanla({ olchash: !k.olchash })} data="olchash" />
+        <Tugma ik="zapchast" label={t('korinish.zapchastlar')} on={k.zapchast} onClick={zapchastOchYop} data="zapchast" />{/* TZ-38 (egasi #274): bitta tugma — zapchast aniq joyida + ro'yxat */}
         <Tugma ik="qatlam" label={t('korinish.menyu')} on={k.menyu} onClick={menyuOchYop} data="menyu" />
       </div>
       {k.olchash || k.kamera === 'yurish' ? (

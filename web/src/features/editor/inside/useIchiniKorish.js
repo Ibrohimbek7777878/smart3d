@@ -7,6 +7,8 @@ import { belgiGuruh } from '../../../services/belgi3d.js';
 import { t, tr } from '../../../i18n/index.js';
 import * as L from '../../../services/loyiha.js';
 
+const DIZAYN_HW = new Set(['petlya', 'polka', 'ruchka', 'napr']);
+
 /* TZ-19: "Ichini ko'rish" (Q6) — dizayn ko'rinishi; panellar — assembler.js, son — kesim ro'yxati. Faqat MebelCity modullari. */
 function specOf(id) {
   const p = project.pl(id), frag = p && project.H && project.H.catalog[p.frg];
@@ -26,9 +28,10 @@ function insViewer(spec) {
     /* egasi #167: har detal guruhida uning teshiklari va kromkasi (sochilganda detal bilan birga yuradi; dizayn o'qlari, metr);
        WebGL'siz (SVG) — yo'q (InstancedMesh SVG da chizilmaydi), zapchast belgilari (dizayn hw) — bor */
     spec.parts.forEach((p, i) => {
-      if (v.svg || !p.tk || !b.groups[i] || (!p.tk.tesh.length && !p.tk.krom.length)) return;
-      b.groups[i].add(belgiGuruh(T, { teshiklar: p.tk.tesh, kromkalar: p.tk.krom, zapchast: [] },
-        { xf: (a) => [a[0] / 1000, a[2] / 1000, a[1] / 1000], xd: (a) => [a[0], a[2], a[1]], k: 0.001, minD: 6, minKromka: 2, chiqish: 2.5 }));
+      const zap = (p.tk && p.tk.zap || []).filter(z => !DIZAYN_HW.has(z.tur));   // TZ-38: petlya, polka, ruchka, relsa — dizayn belgisi (hw) bor; qolgani — konfirmat, ekssentrik, oyoq
+      if (v.svg || !p.tk || !b.groups[i] || (!p.tk.tesh.length && !p.tk.krom.length && !zap.length)) return;
+      b.groups[i].add(belgiGuruh(T, { teshiklar: p.tk.tesh, kromkalar: p.tk.krom, zapchast: zap },
+        { xf: (a) => [a[0] / 1000, a[2] / 1000, a[1] / 1000], xd: (a) => [a[0], a[2], a[1]], k: 0.001, minD: 6, minZ: 5, minKromka: 2, chiqish: 2.5 }));
     });
     const a = { color: 1, explode: 0, hw: 0, count: 1 }, t0 = performance.now();
     v.onTick = (dt) => {

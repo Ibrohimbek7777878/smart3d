@@ -10,7 +10,9 @@
  *   L/R — uzunlik uchlari, F/B — bo'ylama qirralar, qalinlik o'rtasida.
  * Bazis o'qlari → Smart3D modul lokal (markazlangan, joy.js): x = W/2 − X, y = Z − D/2, z = Y − H/2.
  * Kromka — cutlist edges (detal kodi, tomonlar F/B/L/R, qalinlik): har nusxaning o'sha qirrasi bo'ylab ingichka tasma.
- * Zapchast belgisi — teshiklardan: petlya (kosa joyida), polka ushlagich, ruchka (juft teshik orasida), yo'naltiruvchi (qator). */
+ * Zapchast belgisi — teshiklardan: petlya (kosa joyida), polka ushlagich, ruchka (juft teshik orasida), yo'naltiruvchi (qator);
+ * TZ-38: konfirmat (yuza evrovint teshigi — vint shu teshikda), ekssentrik (d6_eksentrik kosasi), oyoq (kesim ro'yxatida "nojka" 4 dona
+ * bo'lsa — pastki detal burchaklarida; joyi taxminiy: burchakdan 50 mm, `taxminiy: true`). Har belgi: tur, p (mm), n, code/ref (detal), i (tartib raqami). */
 import { joyQutilar, yuzaRaqami } from './d6.js';
 import { chizmaYech } from './chizish.js';
 import { EDGE_DEDUCT_MIN_MM } from './cutlist.js';
@@ -24,8 +26,10 @@ export const TESHIK_TUR = {
   d6_eksentrik: 'eksentrik', d6_eks_qirra: 'eksentrik', d6_eks_bolt: 'eksentrik'
 };
 export const TURLAR = ['konfirmat', 'petlya', 'polka', 'ruchka', 'eksentrik', 'napr', 'boshqa'];
+/** TZ-38: zapchast belgisi turlari (3D da chiziladi): oldingi to'rttasi + konfirmat, ekssentrik, oyoq */
+export const ZAPCHAST_TURLAR = ['petlya', 'polka', 'ruchka', 'napr', 'konfirmat', 'eksentrik', 'oyoq'];
 /** bitta palitra (dizayn tokenlari: --acc #FF7A45, --cyan #5FE1C4 va ular bilan uyg'un ranglar) */
-export const RANG = { konfirmat: 0xFFC247, petlya: 0x5FE1C4, polka: 0x7AA2FF, ruchka: 0xFF7A45, eksentrik: 0xC58BFF, napr: 0x5ED36A, boshqa: 0xE6E9EE, kromka: 0xFF5C8A, zapchast: 0xD9DEE4 };
+export const RANG = { konfirmat: 0xFFC247, petlya: 0x5FE1C4, polka: 0x7AA2FF, ruchka: 0xFF7A45, eksentrik: 0xC58BFF, napr: 0x5ED36A, boshqa: 0xE6E9EE, kromka: 0xFF5C8A, zapchast: 0xD9DEE4, oyoq: 0xC9B27C };
 export const teshikTuri = (kind) => TESHIK_TUR[kind] || 'boshqa';
 
 const fMaxMi = (q) => !(q.rol === 'eshik' || q.rol === 'tortma_fasad');
@@ -139,6 +143,8 @@ export function teshik3d(frag, w, d, h, cl, o = {}) {
     /* petlya yelkasi — kosadan eshikning yaqin (petlya) qirrasi tomonga */
     if (t.kind === 'd6_kosa') out.zapchast.push({ tur: 'petlya', p: t.p, n: t.n, yelka: qRef[t.ref] && t.p[0] < qRef[t.ref].c[0] ? -1 : 1, code: t.code, ref: t.ref });
     else if (t.kind === 'd6_polka') out.zapchast.push({ tur: 'polka', p: t.p, n: t.n, code: t.code, ref: t.ref });
+    else if (t.kind === 'evrovint') out.zapchast.push({ tur: 'konfirmat', p: t.p, n: t.n, uz: KONFIRMAT_UZ, code: t.code, ref: t.ref });
+    else if (t.kind === 'd6_eksentrik') out.zapchast.push({ tur: 'eksentrik', p: t.p, n: t.n, code: t.code, ref: t.ref });
     else if (t.kind === 'd6_ruchka' || t.kind === 'd6_napr') (juft[t.kind + '|' + t.ref] = juft[t.kind + '|' + t.ref] || []).push(t);
   }
   for (const [k, ts] of Object.entries(juft)) {
@@ -159,7 +165,56 @@ export function teshik3d(frag, w, d, h, cl, o = {}) {
       }
     }
   }
+  /* oyoq: BOM da "nojka" 4 dona — pastki (eng past, keng gorizontal) detalning 4 burchagida, pastga qarab. Joyi taxminiy (Bazis bu nuqtani bermaydi) */
+  const oyoqQty = (cl.hardware || []).filter(x => OYOQ_RE.test((x.code || '') + ' ' + (x.name || ''))).reduce((a, x) => a + (+x.qty || 0), 0);
+  if (oyoqQty === 4) {
+    let past = null;
+    for (const q of out.qutilar) {
+      if (q.s[2] > 40 || q.s[0] < w * 0.5 || q.s[1] < d * 0.4) continue;
+      if (!past || q.c[2] - q.s[2] / 2 < past.c[2] - past.s[2] / 2) past = q;
+    }
+    if (past) {
+      const zt = r1(past.c[2] - past.s[2] / 2), ix = Math.min(OYOQ_CHETDAN, past.s[0] / 4), iy = Math.min(OYOQ_CHETDAN, past.s[1] / 4);
+      for (const sx of [-1, 1]) for (const sy of [-1, 1]) {
+        out.zapchast.push({ tur: 'oyoq', p: [r1(past.c[0] + sx * (past.s[0] / 2 - ix)), r1(past.c[1] + sy * (past.s[1] / 2 - iy)), zt], n: [0, 0, 1], uz: OYOQ_UZ, taxminiy: true, code: past.code, ref: past.ref });
+      }
+    }
+  }
+  out.zapchast.forEach((z, i) => { z.i = i; });
   return out;
+}
+
+/* TZ-38: konfirmat vinti uzunligi (BOM "Евро 51 мм"), oyoq balandligi (BOM "ножка 100 мм") va burchakdan oraliq — mm */
+const KONFIRMAT_UZ = 50, OYOQ_UZ = 100, OYOQ_CHETDAN = 50;
+const OYOQ_RE = /nojk|ножк|noga|\blegs?\b/i;
+
+/** TZ-38: BOM qatori (kesim ro'yxati `hardware`: code, name) → 3D zapchast turi; 3D da joyi bo'lmagan (aksessuar, vint, shkant) — null.
+ *  Petlya tarkibidagi chashka va montaj plankasi alohida belgilanmaydi (belgi — petlyaning o'zi). */
+export function bomTuri(hw) {
+  const s = ((hw && hw.code) || '') + ' ' + ((hw && hw.name) || '');
+  if (/^(bz-)?(chashk|montaj|planka|samorez|shkant)/i.test((hw && hw.code) || '') || /^(чашк|монтаж|планк|саморез|шкант)/i.test((hw && hw.name) || '')) return null;
+  if (OYOQ_RE.test(s)) return 'oyoq';
+  if (/ekstsentr|ekssentr|eksentr|эксцентр/i.test(s)) return 'eksentrik';
+  if (/petl|петл|hinge|^PET-/i.test(s)) return 'petlya';
+  if (/evro|евро|konfirmat|конфирмат|evrovint/i.test(s)) return 'konfirmat';
+  if (/polkoder|полкодерж|polka/i.test(s)) return 'polka';
+  if (/ruchk|ручк|handle|^RU-/i.test(s)) return 'ruchka';
+  if (/napravl|направл|salazk|салазк|tandem|sharikov|релс|relsa/i.test(s)) return 'napr';
+  return null;
+}
+
+/**
+ * TZ-38: bitta joylashuv uchun BOM qatorlari ↔ 3D belgilar. Har tur belgilari shu turdagi BIRINCHI BOM qatoriga bog'lanadi (qolgan qatorlar —
+ * masalan chashka, ikkinchi yo'naltiruvchi qatori — belgisiz); mos BOM qatori yo'q belgilar `bomsiz` da (narx panelida shu zapchast qatori yo'q).
+ * @param {Object} cl — kesim ro'yxati (hardware), dat — teshik3d() natijasi, korinadi(hw) — narx panelida ko'rinadigan qatorlar (yashirinlar emas)
+ * @returns {{ qatorlar: [{ code, hw, tur, belgilar: [zapchast] }], bomsiz: [zapchast] }}
+ */
+export function zapchastBom(cl, dat, korinadi) {
+  const qatorlar = (cl.hardware || []).filter(hw => !korinadi || korinadi(hw)).map(hw => ({ code: hw.code, hw, tur: bomTuri(hw), belgilar: [] }));
+  const bomsiz = [], birinchi = {};
+  for (const q of qatorlar) if (q.tur && !birinchi[q.tur]) birinchi[q.tur] = q;
+  for (const z of (dat && dat.zapchast) || []) (birinchi[z.tur] ? birinchi[z.tur].belgilar : bomsiz).push(z);
+  return { qatorlar, bomsiz };
 }
 
 /** kesim ro'yxatidagi joyli teshiklar soni (test va detal kartasi uchun — 3D dan mustaqil hisob): har teshik × nusxa */

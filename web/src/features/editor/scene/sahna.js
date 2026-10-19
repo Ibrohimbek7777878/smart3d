@@ -5,6 +5,7 @@ import { cheklovXonasi } from '../../../services/loyiha.js';
 import { joyRanglari } from '../../../services/erpMaterial.js';
 import { surishCheklov } from '../../../../../app/js/engine/devorOraliq.js';
 import { teshikJoy } from '../../../services/ichki.js';
+import { zapchastBosildi } from './zapchast.js';
 
 /* TZ-19: muharrir 3D sahnasi — bizning zamer tizimi (services/sahna.js, qoida S6) dizayn ko'rinishida.
  * Bitta nusxa: muharrir ochilganda yaratiladi (mount), yopilganda tozalanadi (unmount). 3D da o'zgargan holat
@@ -44,6 +45,7 @@ export async function mountSahna(host, onTap, alive = () => true) {
     onRotate: (id, rot, x, y) => { const p = project.pl(id); if (p) { p.rot = rot; p.x = x; p.y = y; project.scheduleRecalc(); autoYangila(); } },
     onRotateEnd: () => project.changed('items'),
     onTap,
+    onZapchast: zapchastBosildi,                            // TZ-38: 3D da zapchastga bosildi — ro'yxatda shu qator
     getTeshik: (id) => teshikJoy(project.H, project.res, id, project.pl(id))   // egasi #167: rentgen belgilari — kesim ro'yxatidan
   });
   scene.sahna = sahna;
