@@ -711,3 +711,15 @@ bu prompt lekin natija oddiy 2ta shkaf qilb berdi nega bundya bold kosntruskiay 
 266. admin panel ishladm krib yaan 404 ga otvord
 
 267. githubga psu qilb qoy
+
+268. qara hozir biz ulagan api key  yozilgan prmptin olib ozimzida bor 130ta modul asosida chizb berad shundyami  faqat javob ebr kod yozma
+
+269. qara shu yozilgan promptlarni ham ai shunadigan tilda ai ga yetkazib berish kere bolad  token sarfi va api keyn ishlashg umumiy claudeni tokenlar sarfiga etibor bergan holda va oylangna holda bolish kere yana qyasi qismlar qold ish chala bolgan shularni royxatin ber kod yozma lekin
+
+270. nega umumiy anrx erp buyurtmalaridan baland chiqaybdi oshan solishtrb chiq nega bir xil chiqmayabd tekshir token sarfiga etibor ber; katalogda yoq modullarni senga umumiy 600+ modullar bazasin tashaganman oshadan eng kop ishlatiladigan modullarin tnalab ularga max/min qoyib chiq degan edim va undagi max/min lari jahon standartlar asosida qoy degan edim javob ber kod yozma
+
+271. /home/ibrohim/Downloads/Telegram Desktop/modulniy    bu fayln korib chiq ichida yoqmi modullari
+
+272. hoz bizda prise list bormi
+
+273. hoz bu loyhan tan narx qancha baholanadi va oylik obuna asosida sotadigan bolsak qancha narx qoygan maqul va nimaga qarba narx qoyamiz shuni har tarfdan korib raqobatchilarn tkeshirgan holda ular nimaga qarb narx qoyad va biz nima qilsak ulardan otib ketamiz va men mijozlarga qanday hook bilan  boshlashim kere sozni va menda vaqt kam bolad u yerda bita gap bilan ozimni loyhaga ulab qoyishm kere bolad
