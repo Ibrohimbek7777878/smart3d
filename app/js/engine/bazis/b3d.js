@@ -123,7 +123,7 @@ function contourPolygon(els,segs){segs=segs||10;const pts=[];
       for(let k=0;k<segs;k++){const a=a1+(a2-a1)*k/segs;pts.push([cx+rr*Math.cos(a),cy+rr*Math.sin(a)]);}}}
   return pts;}
 function polyArea(els){const poly=contourPolygon(els);let a=0;const N=poly.length;for(let i=0;i<N;i++){const j=(i+1)%N;a+=poly[i][0]*poly[j][1]-poly[j][0]*poly[i][1];}return Math.abs(a)/2;}
-function contourBBox(els){const poly=contourPolygon(els);let mnx=1e18,mny=1e18,mxx=-1e18,mxy=-1e18;for(const p of poly){if(p[0]<mnx)mnx=p[0];if(p[0]>mxx)mxx=p[0];if(p[1]<mny)mny=p[1];if(p[1]>mxy)mxy=p[1];}return {dl:mxx-mnx,dw:mxy-mny};}
+function contourBBox(els){const poly=contourPolygon(els);let mnx=1e18,mny=1e18,mxx=-1e18,mxy=-1e18;for(const p of poly){if(p[0]<mnx)mnx=p[0];if(p[0]>mxx)mxx=p[0];if(p[1]<mny)mny=p[1];if(p[1]>mxy)mxy=p[1];}return {dl:mxx-mnx,dw:mxy-mny,x0:mnx,y0:mny};}
 function elemLen(el){if(el.type==='line')return Math.hypot(el.p2[0]-el.p1[0],el.p2[1]-el.p1[1]);const cx=el.center[0],cy=el.center[1],rr=Math.hypot(el.p1[0]-cx,el.p1[1]-cy);const a1=Math.atan2(el.p1[1]-cy,el.p1[0]-cx),a2=Math.atan2(el.p2[1]-cy,el.p2[0]-cx);return rr*Math.abs(a2-a1);}
 
 /* ---------- transform: 7 ketma-ket double (oxirgi 4 norm=1 kvaternion) ---------- */
