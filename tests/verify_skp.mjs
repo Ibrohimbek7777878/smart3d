@@ -51,7 +51,8 @@ for (const id of [1, 2, 3, 4]) {
 }
 ok(`model: ${M[5].kod} (joy formulasi yo'q) — 3D panellar (OBJ manbasi): ${M[5].detallar.length} detal, ruchka ${M[5].furnitura.length}`, M[5].manba === '3d' && M[5].detallar.length > 3 && M[5].furnitura.every(f => f.tur === 'ruchka'));
 {
-  const z = teshik3d(F('MC-KP-02'), 600, 450, 708, clOf(1), {}).zapchast;
+  /* TZ-38: konfirmat, ekssentrik, oyoq belgilari faqat 3D ko'rinishda (eksportga kirmaydi) — eksport turlari: petlya, polka, ruchka, napr */
+  const z = teshik3d(F('MC-KP-02'), 600, 450, 708, clOf(1), {}).zapchast.filter(x => ['petlya', 'polka', 'ruchka', 'napr'].includes(x.tur));
   const tur = (m, t) => m.furnitura.filter(f => f.tur === t).length;
   ok(`model: MC-KP-02 furnitura = 3D zapchast belgilari (${z.length}): petlya ${tur(M[1], 'petlya')}, polka ${tur(M[1], 'polka')}, ruchka ${tur(M[1], 'ruchka')}`,
     M[1].furnitura.length === z.length && tur(M[1], 'petlya') === 4 && tur(M[1], 'polka') === 4 && tur(M[1], 'ruchka') === 2);

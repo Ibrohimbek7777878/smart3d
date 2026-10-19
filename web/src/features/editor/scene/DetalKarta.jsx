@@ -54,6 +54,13 @@ export default function DetalKarta() {
         <span style={{"fontWeight":"700"}} data-detal-teshik="">
           <span className="sc-interp">{v.pt?.teshik}</span>
         </span>
+        {/* TZ-38: shu detalga tegishli zapchast (petlya, ruchka, konfirmat …) — kartadagi mini-3D da aniq joyida */}
+        <span style={{"color":"var(--mut)"}}>
+          {t('sahna.zapchast')}
+        </span>
+        <span style={{"fontWeight":"700"}} data-detal-zapchast="">
+          <span className="sc-interp">{v.pt?.zapchast}</span>
+        </span>
       </div>
       {v.pt?.isMov ? (<>
         <button onClick={v.togglePartOpen} style={{"height":"44px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"15px","cursor":"pointer"}}>

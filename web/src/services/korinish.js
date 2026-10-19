@@ -31,6 +31,7 @@ export function createKorinish(sahna, host) {
   const opts = {};
   const el = sp.renderer.domElement;
   const holat = { kamera: 'orbit', fon: null, chizish: 'boyalgan', rentgen: false, xona: true, fasadsiz: false, olchash: false,
+    zapchast: false, zapTanla: null,    // TZ-38: "Zapchastlar" tugmasi (panellar shaffof, faqat zapchast) va ajratilgan zapchast kaliti (joy:tartib)
     belgilar: { teshik: true, kromka: true, zapchast: true } };   // egasi #167: rentgenda teshik / kromka / zapchast belgilari
   const qirraMat = new THREE.LineBasicMaterial({ color: 0x15191e, transparent: true, opacity: 0.9 });
   const olchashMat = new THREE.LineBasicMaterial({ color: 0xff7a45, depthTest: false, transparent: true });
@@ -69,7 +70,7 @@ export function createKorinish(sahna, host) {
     });
   }
   function materiallar() {
-    const karkas = holat.chizish === 'karkas', rentgen = holat.rentgen;
+    const karkas = holat.chizish === 'karkas', rentgen = holat.rentgen || holat.zapchast;   // TZ-38: zapchast ko'rinishi ham panellarni shaffof qiladi
     const seen = new Set();
     meshlar(o => {
       const mats = Array.isArray(o.material) ? o.material : [o.material];
@@ -169,7 +170,7 @@ export function createKorinish(sahna, host) {
   }
   /** hammasi — joriy holat bo'yicha (mebel qayta qurilganda ham chaqiriladi) */
   function qollash() {
-    qirralar(holat.chizish === 'qirrali' || holat.chizish === 'karkas' || holat.rentgen);
+    qirralar(holat.chizish === 'qirrali' || holat.chizish === 'karkas' || holat.rentgen || holat.zapchast);
     materiallar();
     effekt(holat.chizish === 'effekt');
     xonaFasad();
@@ -455,6 +456,8 @@ export function createKorinish(sahna, host) {
       if ('fon' in p) holat.fon = p.fon;
       if (p.chizish) holat.chizish = p.chizish;
       if ('rentgen' in p) holat.rentgen = !!p.rentgen;
+      if ('zapchast' in p) holat.zapchast = !!p.zapchast;
+      if ('zapTanla' in p) holat.zapTanla = p.zapTanla || null;
       if ('xona' in p) holat.xona = !!p.xona;
       if ('fasadsiz' in p) holat.fasadsiz = !!p.fasadsiz;
       if ('olchash' in p) { holat.olchash = !!p.olchash; if (!holat.olchash) olchashTozala(); }

@@ -27,6 +27,13 @@ function teshikMatn(tk) {
   if (!n) return t('sahna.teshik_yoq');
   return t('sahna.teshik_soni', { n }) + ' (' + tk.turlar.map(([k, c]) => t('teshik.' + k) + ' ' + c).join(', ') + ')';
 }
+/* TZ-38: shu detalga tegishli zapchast (soni, tur bo'yicha) */
+function zapchastMatn(tk) {
+  if (!tk) return '—';
+  const n = (tk.zap || []).length;
+  if (!n) return t('sahna.teshik_yoq');
+  return t('sahna.teshik_soni', { n }) + ' (' + (tk.zapTurlar || []).map(([k, c]) => t('zapchast.tur_' + k) + ' ' + c).join(', ') + ')';
+}
 function kromkaMatn(tk) {
   if (!tk) return '—';
   if (!tk.edges.length) return t('sahna.kromka_yoq');
@@ -137,8 +144,9 @@ function miniViewer(P) {
     const g = new T.Group(); g.add(new T.Mesh(geo, mt), new T.LineSegments(new T.EdgesGeometry(geo), new T.LineBasicMaterial({ color: 0xFF7A45 }))); v.root.add(g);
     /* egasi #167: shu detalning teshiklari va kromkasi (dizayn o'qlari: x, y — bo'yi, z — chuqurligi; metr), kichik oynada ko'rinsin — kattaroq;
        WebGL'siz (SVG) ko'rinishda yo'q — InstancedMesh SVG da chizilmaydi */
-    if (P.tk && !v.svg) g.add(belgiGuruh(T, { teshiklar: P.tk.tesh, kromkalar: P.tk.krom, zapchast: [] },
-      { xf: (a) => [a[0] / 1000, a[2] / 1000, a[1] / 1000], xd: (a) => [a[0], a[2], a[1]], k: 0.001, minD: 16, minKromka: 6, chiqish: 4 }));
+    if (P.tk && !v.svg) g.add(belgiGuruh(T, { teshiklar: P.tk.tesh, kromkalar: P.tk.krom, zapchast: P.tk.zap || [] },   // TZ-38: shu detalning zapchasti (aniq joyida)
+      
+      { xf: (a) => [a[0] / 1000, a[2] / 1000, a[1] / 1000], xd: (a) => [a[0], a[2], a[1]], k: 0.001, minD: 16, minZ: 14, minKromka: 6, chiqish: 4 }));
     v.target.set(0, 0, 0); v.dist = Math.max(...s) * 2.5 + .12;
     const tn = s.indexOf(Math.min(...s)); v.phi = tn === 1 ? .9 : .32; v.theta = tn === 0 ? 1.05 : -.5; v.auto = true;
     const an = (x, y, z) => { const q = new T.Object3D(); q.position.set(x, y, z); g.add(q); return q; };
@@ -154,6 +162,6 @@ export function useDetalKarta() {
   const [miniHost, miniOv] = useViewer(!!P, P ? miniViewer(P) : null, [P && P.id]);
   return {
     hasPart: !!P, closePart: A.closePart, miniHost, miniOv, togglePartOpen: A.togglePartOpen,
-    pt: P ? { name: tr(P.name), dim: P.dim + ' ' + t('umumiy.mm'), mat: P.mat, edge: P.tk ? kromkaMatn(P.tk) : P.edge, teshik: teshikMatn(P.tk), code: P.code, isMov: !!P.key, movLabel: it && P.key && it.isOpen(P.key) ? t('umumiy.yopish') : t('sahna.ochish') } : {}
+    pt: P ? { name: tr(P.name), dim: P.dim + ' ' + t('umumiy.mm'), mat: P.mat, edge: P.tk ? kromkaMatn(P.tk) : P.edge, teshik: teshikMatn(P.tk), zapchast: zapchastMatn(P.tk), code: P.code, isMov: !!P.key, movLabel: it && P.key && it.isOpen(P.key) ? t('umumiy.yopish') : t('sahna.ochish') } : {}
   };
 }

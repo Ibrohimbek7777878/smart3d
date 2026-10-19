@@ -11,7 +11,7 @@ import { s3Mats } from '../shared/design3d/engine.js';
 import { isUstki } from './loyiha.js';
 import { createKorinish } from './korinish.js';
 import { createVR } from './vr.js';
-import { belgiGuruh, belgiQism, belgiTozala } from './belgi3d.js';
+import { belgiGuruh, belgiQism, belgiTozala, belgiTanla } from './belgi3d.js';
 
 export const DIZAYN_RANG = {
   bg: 0x0C1C22, wall3D: 0x22424A, wallSide: 0x1C3940, floor: 0x14292F,
@@ -93,7 +93,7 @@ export function dizaynMavzu() {
 }
 
 /** Sahna: host — dizayndagi roomHost div. o: { catalog, getPlacements, getRoom (eshik burchaklari, TZ-22), onSelect, onDrag, onDragEnd,
- *  cheklov (surish qoidalari, #151), onRotate, onRotateEnd, onTap, getTeshik (egasi #167: joy id → teshik3d() natijasi | null) } */
+ *  cheklov (surish qoidalari, #151), onRotate, onRotateEnd, onTap, getTeshik (egasi #167: joy id → teshik3d() natijasi | null), onZapchast (TZ-38: 3D da zapchastga bosildi — kalit) } */
 /* #182: yog'och teksturasi — dekor rangi asos, tola chiziqlari shu rangdan to'qroq (engine.js s3WoodTex uslubi); rang bo'yicha kesh */
 const YOGOCH_TEX = new Map();
 /* material rasmi → tekstura (sRGB, takrorlanadi); URL bo'yicha kesh. Yuklanmasa (404) — tekstura bo'sh, material oq emas: rang saqlanadi */
@@ -122,6 +122,9 @@ function yogochTex(rang) {
   return t;
 }
 
+/** zapchast kaliti "joyId:tartib" → [joyId, tartib] */
+const zapKalit = (k) => { const s = String(k || ''), j = s.lastIndexOf(':'); return j < 0 ? [null, null] : [s.slice(0, j), +s.slice(j + 1)]; };
+
 export function createSahna(host, o) {
   const theme = dizaynMavzu();
   const sp = createScene(host, { mode: '3d', theme, insetTop: 72 });   // 72 px — dizayndagi toolbar
@@ -135,12 +138,25 @@ export function createSahna(host, o) {
     onSelect: o.onSelect, onDragEnd: o.onDragEnd, cheklov: o.cheklov, onRotate: o.onRotate, onRotateEnd: o.onRotateEnd, onTap: o.onTap
   });
   korinish = createKorinish({ sp, ctl }, host);           // TZ-23: kamera, yo'nalish, chizish rejimlari, o'lchash
+  /* TZ-38: "Zapchastlar" ko'rinishida zapchast belgisiga bosish — modul tanlanmaydi, ro'yxatda shu qator ajraladi. Ekranga eng yaqin belgi
+     (barmoq uchun 28 px, sichqoncha uchun 20 px) — InstancedMesh raycast o'chiq (belgilar tanlash va surishga xalaqit bermasin) */
+  let zTap = null;
+  const zDown = (e) => { zTap = e.isPrimary && e.button === 0 ? { x: e.clientX, y: e.clientY } : null; };
+  const zUp = (e) => {
+    const t0 = zTap; zTap = null;
+    if (!t0 || !korinish.holat.zapchast || !o.onZapchast || Math.hypot(e.clientX - t0.x, e.clientY - t0.y) >= 6) return;
+    const key = api.zapchastTop(e.clientX, e.clientY, e.pointerType === 'mouse' ? 20 : 28);
+    if (key) { e.stopImmediatePropagation(); o.onZapchast(key); }
+  };
+  sp.renderer.domElement.addEventListener('pointerdown', zDown, true);
+  sp.renderer.domElement.addEventListener('pointerup', zUp, true);
   /* TZ-31 B: VR — sessiya vaqtida ildiz mm→m, Z→Y; pult bilan tanlash/eshik/teleport (services/vr.js) */
   const vr = createVR(sp, { onTap: o.onTap, getItems: () => items, ctl, setLabels: (on) => { sp.labelRenderer.domElement.style.display = on ? '' : 'none'; } });
   /* egasi #167: rentgenda teshik, kromka va zapchast belgilari — har modul guruhining bolasi (surilsa, burilsa — birga);
      oddiy ko'rinishda yashirin. Modul qayta qurilsa (items.setPlacements) belgi ham u bilan tozalanadi va kerak bo'lsa qayta quriladi */
   function belgilar(holat) {
-    const on = !!holat.rentgen;
+    const on = !!holat.rentgen || !!holat.zapchast;     // TZ-38: "Zapchastlar" tugmasi rentgensiz ham belgi qatlamini yoqadi (faqat zapchast)
+    const [tJoy, tI] = zapKalit(holat.zapTanla);
     for (const m of items.meshes) {
       let g = m.userData.belgi3d;
       if (!on) { if (g) g.visible = false; continue; }
@@ -152,7 +168,8 @@ export function createSahna(host, o) {
         m.add(g); m.userData.belgi3d = g;
       }
       g.visible = true;
-      belgiQism(g, holat.belgilar);
+      belgiQism(g, holat.belgilar, { rentgen: !!holat.rentgen, zapchast: !!holat.zapchast });
+      belgiTanla(THREE, g, holat.zapchast && tJoy === m.userData.id ? tI : null);
     }
   }
   korinish.onQatlam(belgilar);
@@ -170,6 +187,42 @@ export function createSahna(host, o) {
       const m = items.meshes.find(x => x.userData.id === id), g = m && m.userData.belgi3d;
       return g ? Object.assign({ korinadi: g.visible }, g.userData.son) : null;
     },
+    /** TZ-38: ko'rinib turgan zapchast belgilari soni (tur bo'yicha) — testlar; items: [{ key, tur }] */
+    zapchastSoni() {
+      const tur = {}, keys = [];
+      for (const m of items.meshes) {
+        const g = m.userData.belgi3d;
+        if (!g || !g.visible || !m.visible) continue;
+        const c = g.children.find(x => x.userData && x.userData.belgi3d === 'zapchast') || g.children.find(x => x.userData && x.userData.belgi3d === 'zapchast_q');
+        if (!c || !c.visible) continue;
+        for (const x of g.userData.zapNuqta || []) { tur[x.tur] = (tur[x.tur] || 0) + 1; keys.push(m.userData.id + ':' + x.i); }
+      }
+      return { jami: keys.length, tur, keys };
+    },
+    /** TZ-38: ekrandagi nuqta (clientX, clientY) ga eng yaqin ko'rinadigan zapchast kaliti ("joyId:tartib") yoki null; px — qamrov radiusi */
+    zapchastTop(cx, cy, px = 24) {
+      const cam = sp.camera, r = sp.renderer.domElement.getBoundingClientRect(), v = new THREE.Vector3();
+      let eng = null, engD = px;
+      for (const m of items.meshes) {
+        const g = m.userData.belgi3d;
+        if (!g || !g.visible || !m.visible) continue;
+        m.updateWorldMatrix(true, false);
+        for (const x of g.userData.zapNuqta || []) {
+          v.copy(x.c).applyMatrix4(g.matrixWorld).project(cam);
+          if (v.z > 1 || v.z < -1) continue;
+          const d = Math.hypot(r.left + (v.x + 1) / 2 * r.width - cx, r.top + (1 - v.y) / 2 * r.height - cy);
+          if (d < engD) { engD = d; eng = m.userData.id + ':' + x.i; }
+        }
+      }
+      return eng;
+    },
+    /** TZ-38: zapchastning ekrandagi o'rni (testlar): { x, y } yoki null */
+    zapchastEkran(key) {
+      const [id, i] = zapKalit(key), m = items.meshes.find(x => x.userData.id === id), g = m && m.userData.belgi3d, x = g && (g.userData.zapNuqta || []).find(q => q.i === i);
+      if (!x) return null;
+      const r = sp.renderer.domElement.getBoundingClientRect(), v = x.c.clone().applyMatrix4(g.matrixWorld).project(sp.camera);
+      return { x: r.left + (v.x + 1) / 2 * r.width, y: r.top + (1 - v.y) / 2 * r.height };
+    },
     select(id) { if (items.getSelected() !== id) items.select(id); },
     setMode(m) { if (sp.mode !== m) { sp.setMode(m); ctl.updateButtons(); } },
     /** ⌖ Markazga — dizayndagi boshlang'ich ko'rinish */
@@ -181,7 +234,7 @@ export function createSahna(host, o) {
     },
     /** 🔄 — avto-aylanish (dizayn: 0.5 rad/s) */
     spin(on) { ctl.orbit.autoRotate = !!on; ctl.orbit.autoRotateSpeed = 0.5 * 60 / (2 * Math.PI); if (on) sp._startLoop(); },
-    dispose() { vr.dispose(); korinish.dispose(); items.dispose(); ctl.dispose(); sp.dispose(); }
+    dispose() { sp.renderer.domElement.removeEventListener('pointerdown', zDown, true); sp.renderer.domElement.removeEventListener('pointerup', zUp, true); vr.dispose(); korinish.dispose(); items.dispose(); ctl.dispose(); sp.dispose(); }
   };
   return api;
 }
