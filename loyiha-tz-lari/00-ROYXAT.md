@@ -54,8 +54,8 @@
 | 37 | [Universal admin panel (`/admin`)](37-admin-panel.md) | **1-FAZA BAJARILDI** 2026-10-18 (`main`) — narxlar, furnitura bog'lash, promptlar, standart; 2–3-fazalar kutilmoqda | egasi: 2-faza "boshla"si; samorez 1 kg dagi dona soni |
 | 38 | [Zapchastlar 3D da ko'rinsin (detal kartasi, ichini ko'rish, rentgen)](38-zapchast-3d-korinishi.md) | **BAJARILDI** 2026-10-19 (`main` 2881e26) — "Zapchastlar" tugmasi, ro'yxat paneli, detal kartasi, ichini ko'rish | egasi: haqiqiy 3D shakl (2-bosqich) kerakmi; oyoq joyi taxminiy |
 | 39 | [Zapchast ko'rinishi slayddagidek aniq (tugma, kadrlash, belgilar)](39-zapchast-korinishi-aniq.md) | BOSHLANDI 2026-10-19 (agent/zapchast2) | egasi: tekshiruv |
-| 40 | [Tayyor promptlar tuzilma bo'lib saqlansin, AI token nazorati](40-ai-token-tejash.md) | BOSHLANDI 2026-10-19 (agent/token) | egasi: byudjet limiti |
-| 41 | [Modullar max/min: jahon standarti va sex jadvali (tahlil)](41-modul-minmax-standart-jadvali.md) | BOSHLANDI 2026-10-19 (agent/standart) | egasi: jadvalni tasdiqlash; 600+ baza yo'li |
+| 40 | [Tayyor promptlar tuzilma bo'lib saqlansin, AI token nazorati](40-ai-token-tejash.md) | **BAJARILDI** 2026-10-19 (`main`) — tayyor prompt 0 token, kesh, sarf nazorati, admin "AI sarfi" | egasi: kunlik (30) va oylik (2 000 000 token) chegara sonlari |
+| 41 | [Modullar max/min: jahon standarti va sex jadvali (tahlil)](41-modul-minmax-standart-jadvali.md) | **TAHLIL BAJARILDI** 2026-10-19 (41-natija-modul-minmax.md) | egasi: 5 savol (ustki chuqurlik, krovat uzunligi, parta, sokl, yo'q modullar) |
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.

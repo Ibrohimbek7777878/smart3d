@@ -1,6 +1,6 @@
 # TZ-40 — Tayyor promptlar AI tilida oldindan saqlansin va AI token sarfi nazoratda bo'lsin
 
-**Sana:** 2026-10-19 · **Navbat:** 40 · **Holat:** BOSHLANDI 2026-10-19 12:05 (egasi #269: "promptlarni AI tushunadigan tilda yetkazish, token sarfi va API kalit ishlashi o'ylangan holda"; #276 "boshla")
+**Sana:** 2026-10-19 · **Navbat:** 40 · **Holat:** BAJARILDI 2026-10-19 12:30 (`main`; agent f1cfabc + model tuzatish 5cbe654; server 129/129). Qoldi: kunlik/oylik chegara sonlarini egasi tanlaydi; productionda `AI_MODEL=claude-sonnet-5-5`. Boshlangan 12:05 (egasi #269: "promptlarni AI tushunadigan tilda yetkazish, token sarfi va API kalit ishlashi o'ylangan holda"; #276 "boshla")
 **Asos:** hozir har tayyor so'rov va har matn Claude'ga ketadi (max_tokens 4000, kesh yo'q, tizim ko'rsatmasi har safar, faqat 60 so'rov/soat/IP chegarasi). 57 ta tayyor prompt allaqachon sinalgan.
 
 ## Bajariladigan ishlar (server + admin panel; narx/kesim/chizma mantig'i o'zgarmaydi)
