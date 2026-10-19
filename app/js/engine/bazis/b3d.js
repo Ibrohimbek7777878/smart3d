@@ -127,7 +127,7 @@ function contourBBox(els){const poly=contourPolygon(els);let mnx=1e18,mny=1e18,m
 function elemLen(el){if(el.type==='line')return Math.hypot(el.p2[0]-el.p1[0],el.p2[1]-el.p1[1]);const cx=el.center[0],cy=el.center[1],rr=Math.hypot(el.p1[0]-cx,el.p1[1]-cy);const a1=Math.atan2(el.p1[1]-cy,el.p1[0]-cx),a2=Math.atan2(el.p2[1]-cy,el.p2[0]-cx);return rr*Math.abs(a2-a1);}
 
 /* ---------- transform: 7 ketma-ket double (oxirgi 4 norm=1 kvaternion) ---------- */
-function findQuatRun(seg){let run=[];for(const it of seg){if(it.type==='d'){run.push(it.val);if(run.length>=7){const d=run.slice(-7);const nq=d[3]*d[3]+d[4]*d[4]+d[5]*d[5]+d[6]*d[6];if(Math.abs(nq-1)<0.02&&Math.max(Math.abs(d[0]),Math.abs(d[1]),Math.abs(d[2]))<1e6)return{pos:[d[0],d[1],d[2]],quat:[d[3],d[4],d[5],d[6]]};}}else run=[];}return null;}
+function findQuatRun(seg){let run=[];for(let i=0;i<seg.length;i++){const it=seg[i];if(it.type==='d'){run.push(it.val);if(run.length>=7){const d=run.slice(-7);const nq=d[3]*d[3]+d[4]*d[4]+d[5]*d[5]+d[6]*d[6];if(Math.abs(nq-1)<0.02&&Math.max(Math.abs(d[0]),Math.abs(d[1]),Math.abs(d[2]))<1e6)return{pos:[d[0],d[1],d[2]],quat:[d[3],d[4],d[5],d[6]],end:i+1};}}else run=[];}return null;}
 
 /* ---------- obyektlarni yig'ish (universal, nomga bog'liq emas) ---------- */
 function assemble(stream){
@@ -137,15 +137,15 @@ function assemble(stream){
   const headers=[];for(let k=0;k<stream.length;k++){const it=stream[k];if(it.type==='i32'&&it.name===marker)headers.push(k);}
   const objs=[];
   for(let hi=0;hi<headers.length;hi++){const k=headers[hi],code=stream[k].val,end=(hi+1<headers.length)?headers[hi+1]:stream.length;const seg=stream.slice(k,end);
-    if(code!==PANEL_CODE){const rec={modelCode:code};const nv=seg.find(it=>it.type==='str'&&it.val.trim());if(nv)rec.name=nv.val.trim();const tr=findQuatRun(seg);if(tr)rec.tf=tr;objs.push(rec);continue;}
-    const rec={modelCode:PANEL_CODE};const butts=[],contours=[];let curB=null,afterMat=false,matFallback=null;const tr=findQuatRun(seg);if(tr)rec.tf=tr;
-    for(const it of seg){
+    if(code!==PANEL_CODE){const rec={modelCode:code};const nv=seg.find(it=>it.type==='str'&&it.val.trim());if(nv)rec.name=nv.val.trim();const tr=findQuatRun(seg);if(tr){delete tr.end;rec.tf=tr;}objs.push(rec);continue;}
+    const rec={modelCode:PANEL_CODE};const butts=[],contours=[];let curB=null,afterMat=false,matFallback=null;const tr=findQuatRun(seg);const trEnd=tr?tr.end:0;if(tr){delete tr.end;rec.tf=tr;}
+    for(let si=0;si<seg.length;si++){const it=seg[si];
       if(it.type==='str'){const vs=it.val.trim();if(!vs)continue;const low=vs.toLowerCase();
         if(low.indexOf('кромка')>=0){if(curB&&curB.thickness!==undefined&&curB.edgeIndex!==undefined&&curB.butt_name===undefined){curB.butt_name=vs;curB=null;}else{curB={name:vs};butts.push(curB);}continue;}
         if(MATKEYS.test(vs)){if(!rec.material){rec.material=vs;afterMat=true;}continue;}
         if(matFallback===null&&isMaterialLike(vs))matFallback=vs;
         if(!rec.name&&vs.length>1&&!/^[\d.,\s]+$/.test(vs))rec.name=vs;}
-      else if(it.type==='d'){if(curB&&curB.thickness===undefined&&it.val>0&&it.val<=20)curB.thickness=it.val;else if(afterMat&&rec.thickness===undefined&&it.val>=1&&it.val<=100){rec.thickness=it.val;afterMat=false;}}
+      else if(it.type==='d'){if(curB&&curB.thickness===undefined&&it.val>0&&it.val<=20)curB.thickness=it.val;else if(afterMat&&rec.thickness===undefined&&it.val>=1&&it.val<=100&&si>=trEnd){rec.thickness=it.val;afterMat=false;}}
       else if(it.type==='i8'){if(curB&&curB.thickness!==undefined&&curB.edgeIndex===undefined&&it.val<=7)curB.edgeIndex=it.val;}
       else if(it.type==='blob'){const els=decodeContour(it.val);if(els)contours.push(els);}}
     if(!rec.material&&matFallback){rec.material=matFallback;const mm=matFallback.match(/(\d+)\s*мм/);if(mm&&rec.thickness===undefined){const tv=+mm[1];if(tv>=1&&tv<=100)rec.thickness=tv;}}
