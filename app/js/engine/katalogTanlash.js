@@ -28,6 +28,13 @@ const MAXSUS = [
   { re: /sushilk|quritgich/i, soz: /sushilk|сушилк|quritgich|idish/ },
   { re: /aventos|ko'tarilma/i, soz: /aventos|ko'taril|подъ[её]мн|lift/ },
   { re: /poyabzal/i, soz: /poyabzal|oyoq kiyim|обув|shoe/ },
+  /* TZ-37 (full base.zip): korpus, gola, tandem, sokolli, abmanka, stoyka, oyoqli modullar — odatiy so'rovda emas, so'ralganda */
+  { re: /korpus|abmanka/i, soz: /korpus|abmanka|корпус|carcass|ichki|tashqi/ },
+  { re: /gola|гола/i, soz: /gola|гола/ },
+  { re: /tandem|тандем/i, soz: /tandem|тандем/ },
+  { re: /sokol(?:li)?\b|цоколь/i, soz: /sokol|цоколь|plinth/ },
+  { re: /stoyka|стойк/i, soz: /stoyka|стойк|ustun|divider/ },
+  { re: /oyoqli/i, soz: /oyoq|ножк|legs/ },
   { re: /tandir/i, soz: /tandir/ },
   { re: /^tall|pufog/i, soz: /tall|baland|пенал|penal|kolonna|pufog/ }
 ];
@@ -68,6 +75,9 @@ export function modulBolimSoni(f) {
   return 1 + yig((f && f.parts) || [], /^(peregorodka|urta_bok|sr_bok)(?:_\d+)?$/i);
 }
 
+/** teng ballda tartib: avval qo'lda sozlangan (SP-, MC-KP…), full base.zip dan kelgan MC-FB-… — oxirida (TZ-37: yangi modullar eskisini siqib chiqarmasin) */
+const kodSira = (c) => (/^MC-FB-/.test(c) ? '~' : '') + c;
+
 const OLCH = [['w', 'eni'], ['d', 'chuqurligi'], ['h', 'boyi']];
 
 /**
@@ -88,7 +98,7 @@ export function katalogdanTop(spec, soralgan, catalog, matn = '') {
   for (const f of nomzod) {
     const b = modulBelgilari(f), mos = [], mosEmas = [], yetishmaydi = [], olcham = {};
     let ball = 0;
-    if (MAXSUS.some(m => m.re.test(String(f.name || '')) && m.soz.test(String(matn).toLowerCase()))) ball -= 25;   // so'ralgan maxsus modul (moyka …) afzal
+    ball -= 25 * MAXSUS.filter(m => m.re.test(String(f.name || '')) && m.soz.test(String(matn).toLowerCase())).length;   // so'ralgan maxsus modul (moyka, gola, tandem …) afzal — har mos so'z uchun
     for (const [o, k] of OLCH) {
       const v = +sor[k] || 0, min = +f['min_' + o] || 0, max = +f['max_' + o] || 0;
       if (!v) { olcham[o] = +f[o]; continue; }
@@ -121,7 +131,7 @@ export function katalogdanTop(spec, soralgan, catalog, matn = '') {
     if (b.kupe !== kupeSoralgan) { mosEmas.push({ k: 'kupe', soraldi: kupeSoralgan ? 1 : 0, modulda: b.kupe ? 1 : 0 }); ball += 20; }
     const natija = { topildi: !yetishmaydi.length, frg: f.code, nom: f.name, olcham, mos, mosEmas, yetishmaydi, ball, nomzodlar: nomzod.length };
     /* afzal: topilgani (yetishmaydisi yo'q), keyin ball kichigi; teng bo'lsa — kod tartibi (har safar bir xil natija) */
-    if (!eng || (natija.topildi && !eng.topildi) || (natija.topildi === eng.topildi && (ball < eng.ball - 1e-9 || (Math.abs(ball - eng.ball) < 1e-9 && f.code < eng.frg)))) eng = natija;
+    if (!eng || (natija.topildi && !eng.topildi) || (natija.topildi === eng.topildi && (ball < eng.ball - 1e-9 || (Math.abs(ball - eng.ball) < 1e-9 && kodSira(f.code) < kodSira(eng.frg))))) eng = natija;
   }
   return eng;
 }
@@ -243,7 +253,7 @@ export function buyumdanTop(turlar, matn, catalog) {
       if (ich[k] === bel[k]) mos.push(qator); else { mosEmas.push(qator); ball += Math.abs(ich[k] - bel[k]) * (k === 'polka' ? 1 : 4); }   // yumshoq: nom so'zi (−3) ustun, son farqi ikkinchi darajali (qismlar nomi har modulda har xil yozilgan)
     }
     const natija = { topildi: !yetishmaydi.length, frg: f.code, nom: f.name, olcham, mos, mosEmas, yetishmaydi, ball, nomzodlar: nomzod.length };
-    if (!eng || (natija.topildi && !eng.topildi) || (natija.topildi === eng.topildi && (ball < eng.ball - 1e-9 || (Math.abs(ball - eng.ball) < 1e-9 && f.code < eng.frg)))) eng = natija;
+    if (!eng || (natija.topildi && !eng.topildi) || (natija.topildi === eng.topildi && (ball < eng.ball - 1e-9 || (Math.abs(ball - eng.ball) < 1e-9 && kodSira(f.code) < kodSira(eng.frg))))) eng = natija;
   }
   return eng;
 }

@@ -158,7 +158,7 @@ const tekshirImport = (nom, bpj, imp) => {
 
 /* ══ 1) MC modullari — asl Bazis fayli bilan ══ */
 console.log('\n[1] MC modullari (standart o\'lcham) — import natijasi asl Bazis fayli bilan');
-const MC = Object.values(H.catalog).filter(f => /^MC-/.test(f.code)).sort((a, b) => a.code.localeCompare(b.code));
+const MC = Object.values(H.catalog).filter(f => /^MC-(?!FB-)/.test(f.code)).sort((a, b) => a.code.localeCompare(b.code));
 if (!DATA1) console.log('  · data1 yo\'q — asl fayl bilan solishtirish o\'tkazib yuborildi');
 let mcPanel = 0, mcMos = 0, mcRotOk = 0;
 const mcXato = [];

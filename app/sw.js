@@ -8,7 +8,7 @@
  * SHELL ro'yxati js/app.js importlari va fetch() lari bilan bir xil bo'lishi SHART —
  * yangi modul qo'shilsa shu yerga ham yoziladi va CACHE versiyasi oshiriladi.
  */
-const CACHE = 'smart3d-v19';
+const CACHE = 'smart3d-v20';
 const SHELL = [
   './',
   'index.html',
@@ -45,6 +45,7 @@ const SHELL = [
   /* ma'lumotlar (app.js boot() da yuklanadi) */
   'data/appliances.json',
   'data/fragments-mc.json',
+  'data/fragments-fr.json',
   'data/furnitura-catalog.json',
   'data/sex-standartlari.json',
   'data/fragments.json',

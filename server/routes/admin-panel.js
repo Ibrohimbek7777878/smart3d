@@ -74,7 +74,7 @@ export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyTo
   const modulFurnKodlari = () => {
     if (!fragKodlar) {
       fragKodlar = new Map();
-      for (const f of ['fragments.json', 'fragments-mc.json']) {
+      for (const f of ['fragments.json', 'fragments-mc.json', 'fragments-fr.json']) {
         const d = readJsonData(f);
         for (const x of (Array.isArray(d) ? d : (d && d.fragments) || [])) for (const h of x.hardware || []) if (h && h.code) fragKodlar.set(h.code, h.id || null);
       }

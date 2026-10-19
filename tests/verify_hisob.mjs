@@ -13,7 +13,7 @@ let pass = 0, fail = 0;
 const ok = (name, cond, info = '') => { if (cond) { pass++; console.log('  ✓', name); } else { fail++; console.log('  ✗', name, info); } };
 
 const H = createHisob(await loadData(n => Promise.resolve(JSON.parse(readFileSync(DATA + n, 'utf8')))));
-ok('katalog: 130 modul (85 umumiy — 7 stol va 2 yon dobor bilan, 38 MC, 7 texnika nishoni SP-TX-…; kod to\'qnashuvi yo\'q)', Object.keys(H.catalog).length === 130, Object.keys(H.catalog).length);
+ok('katalog: 191 modul (85 umumiy — 7 stol va 2 yon dobor bilan, 38 MC, 61 MC-FB (TZ-37 full base), 7 texnika nishoni SP-TX-…; kod to\'qnashuvi yo\'q)', Object.keys(H.catalog).length === 191, Object.keys(H.catalog).length);
 {
   /* 2026-10-16: texnika kodlari stollar bilan to'qnashardi — texnika SP-TX-…, eski loyihalar ochilganda ko'chadi */
   const { eskiKodlar } = await import('../app/js/engine/kodlar.js');
