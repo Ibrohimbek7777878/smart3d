@@ -15,6 +15,7 @@ import { applySexStandart } from '../../../app/js/engine/standart.js';
 import { buildSearchIndex } from '../../../app/js/engine/search.js';
 import * as PriceMod from '../../../app/js/engine/price.js';
 import { asosiyIndeks } from '../../../app/js/engine/dekorAsosiy.js';
+import { materiallarQollash } from '../../../app/js/engine/adminQatlam.js';
 import { sukutErpQollash } from '../../../app/js/engine/narxStavka.js';
 import { stolKitchen, stolMaterialQollash } from '../../../app/js/engine/stoleshnitsa.js';
 
@@ -56,6 +57,9 @@ export async function loadData(read, api) {
     const [fb, st] = await Promise.all([api('/api/furnitura-boglash').catch(() => null), api('/api/standart').catch(() => null)]);
     if (fb && fb.links && typeof fb.links === 'object') out.furnBoglash = { links: Object.assign({}, (out.furnBoglash && out.furnBoglash.links) || {}, fb.links), koef: fb.koef || {} };
     if (st && typeof st === 'object' && !st.error) out.standart = st;
+    /* TZ-37 (2-faza): admin "Materiallar" (Asosiy 100: rang, rasm, varaq narxi) — fayl ustiga; server yo'q yoki xato — jim (fayldagi qiymatlar) */
+    const mv = await api('/api/materiallar').catch(() => null);
+    if (mv) materiallarQollash(out, mv);
   }
   return out;
 }

@@ -2,19 +2,16 @@ import { baseForSheet } from './hisob.js';
 import { dekorRang } from '../../../app/js/engine/rang.js';
 import { asosiyRang, dekorKalit } from '../../../app/js/engine/dekorAsosiy.js';
 import { dekorNomi } from '../features/editor/catalog/dekor.js';
+import { erpKod } from '../../../app/js/engine/erpKod.js';
 
 /* TZ-23 E: ERP plitasi (1281 ta, materials-index.json) — alohida material kodi (ERP-…) bo'lib hisobga qo'shiladi:
  * har qism (korpus, fasad, orqa, stoleshnitsa) va har modul o'z dekorida bo'ladi, raskroy har dekorni alohida listda
  * hisoblaydi (sexdagidek). Narx — ERP'dagi narx; ERP'da narx yo'q bo'lsa — asos materialning narxi ("taxminiy" belgisi,
  * qoida 4.3 — o'ylab topilmaydi). Loyihada tanlangan plitalar doc.erpMat da saqlanadi — loyiha qayta ochilganda tiklanadi. */
 
-/** ERP plitasining material kodi — barqaror (nom | SKU | qalinlik xeshi; katalogda ID yo'q, SKU takrorlanishi mumkin) */
-export function erpKod(sh) {
-  const str = String(sh.name || '') + '|' + String(sh.sku || '') + '|' + String(sh.th || '');
-  let h = 0x811c9dc5;
-  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
-  return 'ERP-' + h.toString(36);
-}
+/** ERP plitasining material kodi — barqaror (nom | SKU | qalinlik xeshi; katalogda ID yo'q, SKU takrorlanishi mumkin).
+ *  Funksiya app/js/engine/erpKod.js da (server admin "Materiallar" ham shuni ishlatadi) */
+export { erpKod };
 
 /** ERP plitasi → materials.json panel_materials shaklidagi yozuv */
 export function erpMaterial(sh, mats) {

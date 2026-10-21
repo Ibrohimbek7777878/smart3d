@@ -10,6 +10,7 @@ import { btnPrimary, btnGhost } from '../../shared/ui/styles.js';
 import { useAdmin } from './useAdmin.js';
 import { BOLIMLAR, BOLIM_IKON } from './actions.js';
 import Furnitura from './Furnitura.jsx';
+import Materiallar from './Materiallar.jsx';
 import Promptlar from './Promptlar.jsx';
 import Standart from './Standart.jsx';
 import Tarix from './Tarix.jsx';
@@ -17,7 +18,7 @@ import { ghost, chipU } from './stil.js';
 
 /* TZ-37 (a): admin panel qobig'i — sarlavha (logo, "Ilovaga qaytish", til), chap menyu / telefonda tepada tablar.
  * Admin bo'lmasa — mavjud 404 sahifasiga (web/404.html) o'tkaziladi (replace: orqaga bosilsa qaytib kelmaydi; dublikat yo'q). */
-const BOLIM = { narxlar: Narxlar, furnitura: Furnitura, promptlar: Promptlar, standart: Standart, tarix: Tarix };
+const BOLIM = { narxlar: Narxlar, furnitura: Furnitura, materiallar: Materiallar, promptlar: Promptlar, standart: Standart, tarix: Tarix };
 
 export default function AdminQobiq() {
   const a = useAdmin();

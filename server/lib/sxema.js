@@ -194,3 +194,33 @@ export function promptlarSeed(db, appDir) {
   })();
   return n;
 }
+
+/** TZ-37 (2-faza): admin panel — materiallar (Asosiy 100: rang, rasm, varaq narxi).
+ *  Idempotent (mavjud bazaga ham qo'shiladi; mavjud ma'lumot o'zgarmaydi). Fayllar (app/data/*.json) O'ZGARMAYDI: admin o'zgartirishi shu
+ *  jadvallarda, fayl ustiga qo'yiladi (baza ustun); qator o'chirilsa — fayldagi qiymatga qaytadi ("sukutga qaytarish").
+ *  NULL maydon = shu qiymat fayldagidek. */
+export function adminSxema2(db) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS mat_admin (
+      kalit TEXT PRIMARY KEY,
+      rang_hex TEXT,
+      updated_by INTEGER,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS mat_rasm (
+      kalit TEXT PRIMARY KEY,
+      mime TEXT NOT NULL,
+      hajm INTEGER NOT NULL,
+      sha TEXT NOT NULL DEFAULT '',
+      data BLOB NOT NULL,
+      updated_by INTEGER,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS mat_narx (
+      kod TEXT PRIMARY KEY,
+      uzs INTEGER NOT NULL,
+      updated_by INTEGER,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+}
