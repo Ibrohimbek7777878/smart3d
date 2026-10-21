@@ -1386,7 +1386,7 @@ async function newProject() {
 
 /* ═══════════════════ INIT ═══════════════════ */
 async function boot() {
-  const [frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat, furnBoglash] = await Promise.all([
+  const [frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat, furnBoglash, frFrags] = await Promise.all([
     fetch('data/fragments.json').then(r => r.json()),
     fetch('data/materials.json').then(r => r.json()),
     fetch('data/nesting-defaults.json').then(r => r.json()).catch(() => ({})),
@@ -1397,7 +1397,8 @@ async function boot() {
     fetch('data/fragments-mc.json').then(r => r.json()).catch(() => null),        // MebelCity haqiqiy modullari (TZ-HAQIQIY-MODULLAR A2)
     fetch('data/sex-standartlari.json').then(r => r.json()).catch(() => null),    // sex min/max (A1)
     fetch('data/furnitura-catalog.json').then(r => r.json()).catch(() => null),   // ERP furnitura, ID → narx (A4)
-    fetch('data/furnitura-boglash.json').then(r => r.json()).catch(() => null)    // TZ-20: furnitura kodi → ERP ID
+    fetch('data/furnitura-boglash.json').then(r => r.json()).catch(() => null),   // TZ-20: furnitura kodi → ERP ID
+    fetch('data/fragments-fr.json').then(r => r.json()).catch(() => null)         // TZ-37: full base.zip dan 50+ tayyor modul (MC-FB-…)
   ]);
   /* ERP furnitura ID → {name, uzs, no_price}: tannarx zapchast narxini ID bo'yicha oladi */
   state.furnById = {};
@@ -1406,6 +1407,7 @@ async function boot() {
   state.catalog = {};
   for (const f of frags) state.catalog[f.code] = f;
   for (const f of (mcFrags && mcFrags.fragments) || []) state.catalog[f.code] = f;
+  for (const f of (frFrags && frFrags.fragments) || []) state.catalog[f.code] = f;
   state.sexStd = sexStd;
   for (const f of Object.values(state.catalog)) applySexStandart(f, sexStd);
   /* F2: o'rnatma texnika — nishon (bo'sh korpusli) katalog yozuvlari */

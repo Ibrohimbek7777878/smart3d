@@ -125,8 +125,8 @@ const toza = (s, n = 200) => String(s == null ? '' : s).replace(/[\u0000-\u0008\
 
 /* ───────────── yozuvchi ───────────── */
 /**
- * @typedef {Object} B3dPanel  { nom, dl, dw, dp, material, kromka: [{ elem, nom, qalinlik }], pos: [x,y,z], oq: [[ax],[ay],[az]], kontur?: [[x1,y1,x2,y2]...] }
- * @typedef {Object} B3dModul  { nom, panellar: B3dPanel[], furnitura: [{ nom, soni }] }
+ * @typedef {Object} B3dPanel  { nom, dl, dw, dp, material, kromka: [{ elem, nom, qalinlik }], pos: [x,y,z], oq: [[ax],[ay],[az]], kontur?: [[x1,y1,x2,y2]...] }  — pos/oq GLOBAL
+ * @typedef {Object} B3dModul  { nom, panellar: B3dPanel[], furnitura: [{ nom, soni, pos?: [x,y,z] (global), oq?: [[ax],[ay],[az]] }] }
  * @param {{ nom: string, modullar: B3dModul[] }} loyiha
  * @param {{ deflate?: (Uint8Array) => Uint8Array }} [opts]
  * @returns {Uint8Array} .b3d baytlari
@@ -147,7 +147,6 @@ export function b3dYoz(loyiha, opts = {}) {
   const modulTugunlari = [];
   for (const m of loyiha.modullar) {
     const bb = { mn: [Infinity, Infinity, Infinity], mx: [-Infinity, -Infinity, -Infinity] };
-    const panelTugun = [];
     for (const p of m.panellar || []) {
       const dl = +p.dl, dw = +p.dw, dp = +p.dp;
       if (!(dl > 0 && dw > 0 && dp > 0)) throw new Error('B3D-YOZ: panel o\'lchami noto\'g\'ri: ' + toza(p.nom));
@@ -156,26 +155,33 @@ export function b3dYoz(loyiha, opts = {}) {
         const q = [0, 1, 2].map(i => pos[i] + a * oq[0][i] + b * oq[1][i] + c * oq[2][i]);
         sig(q, bb);
       }
+    }
+    /* modul guruhi — gabarit burchagida (haqiqiy fayllardagidek: guruh Trans = siljish, burilishsiz); ichidagi panel va furnitura joyi
+       guruhga nisbatan. Kirishdagi pos/oq — GLOBAL (daraxt.js o'qiganda aynan shu global qaytadi). */
+    const lo = bb.mn[0] === Infinity ? [0, 0, 0] : bb.mn, hi = bb.mx[0] === -Infinity ? [0, 0, 0] : bb.mx;
+    const nis = (g) => [g[0] - lo[0], g[1] - lo[1], g[2] - lo[2]];
+    const panelTugun = [];
+    for (const p of m.panellar || []) {
+      const dl = +p.dl, dw = +p.dw, dp = +p.dp, oq = p.oq, pos = p.pos;
       const kontur = p.kontur && p.kontur.length ? p.kontur : [[0, 0, dl, 0], [dl, 0, dl, dw], [dl, dw, 0, dw], [0, dw, 0, 0]];
       const butts = (p.kromka || []).map(k => {
         const nom = /кромка/i.test(k.nom || '') ? toza(k.nom) : 'Кромка ' + toza(k.nom || '');
         return S('Butt', [T('Mat', nom), D('Thick', +k.qalinlik || 1), I('Elem', k.elem | 0), T('Sign', nom), D('Overhung', 0), D('Allowance', 1), B('Clip', false)]);
       });
       panelTugun.push(S('Obj', [I32('Type', PANEL_CODE), T('Name', toza(p.nom) || 'detal'), I('ID', id()), I32('Color', 4934475),
-        trans(pos, oqdanKvaternion(oq)), T('Mat', toza(p.material)), D('Thick', dp), I('TexDir', 1), BL('Contour', konturBlob(kontur)),
+        trans(nis(pos), oqdanKvaternion(oq)), T('Mat', toza(p.material)), D('Thick', dp), I('TexDir', 1), BL('Contour', konturBlob(kontur)),
         ...(butts.length ? [S('Butts', butts)] : [])]));
     }
     const furnTugun = [];
     for (const f of m.furnitura || []) {
       const nom = toza(f.nom, 160); if (!nom) continue;
       const fid = fastId(nom);
-      for (let k = 0; k < Math.max(1, Math.round(+f.soni || 1)); k++) furnTugun.push(S('Obj', [I32('Type', 3001), T('Name', nom), I('ID', id()), I32('Color', 16744448), trans(f.pos || (bb.mn[0] === Infinity ? [0, 0, 0] : bb.mn), BIRLIK_Q), I32('FastID', fid), I('SalonType', 0)]));
+      for (let k = 0; k < Math.max(1, Math.round(+f.soni || 1)); k++) furnTugun.push(S('Obj', [I32('Type', 3001), T('Name', nom), I('ID', id()), I32('Color', 16744448), trans(nis(f.pos || lo), f.oq ? oqdanKvaternion(f.oq) : BIRLIK_Q), I32('FastID', fid), I('SalonType', 0)]));
     }
-    const lo = bb.mn[0] === Infinity ? [0, 0, 0] : bb.mn, hi = bb.mx[0] === -Infinity ? [0, 0, 0] : bb.mx;
     sig(lo, { mn, mx }); sig(hi, { mn, mx });
-    const ramka = S('Obj', [I32('Type', 1001), T('Name', 'Габаритная рамка'), I('ID', id()), B('Vis', true), I32('Color', 15780518), trans(lo, BIRLIK_Q),
+    const ramka = S('Obj', [I32('Type', 1001), T('Name', 'Габаритная рамка'), I('ID', id()), B('Vis', true), I32('Color', 15780518), trans([0, 0, 0], BIRLIK_Q),
       D('Width', hi[0] - lo[0]), D('Height', hi[1] - lo[1]), D('Depth', hi[2] - lo[2]), D('GridSize', 0), D('LDistance', 200), I('DatumMode', 6)]);
-    modulTugunlari.push(S('Obj', [I32('Type', 1005), T('Name', toza(m.nom) || 'modul'), I('ID', id()), trans([0, 0, 0], BIRLIK_Q), I('DatumMode', 6), D('JointLength', 0), B('Symmetrize', false),
+    modulTugunlari.push(S('Obj', [I32('Type', 1005), T('Name', toza(m.nom) || 'modul'), I('ID', id()), trans(lo, BIRLIK_Q), I('DatumMode', 6), D('JointLength', 0), B('Symmetrize', false),
       S('Objs', [ramka, ...panelTugun, ...furnTugun])]));
   }
   if (mn[0] === Infinity) { mn = [0, 0, 0]; mx = [0, 0, 0]; }

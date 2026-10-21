@@ -22,6 +22,7 @@ const std = J('sex-standartlari.json');
 const cat = {};
 for (const f of J('fragments.json')) cat[f.code] = f;
 for (const f of J('fragments-mc.json').fragments) cat[f.code] = f;
+for (const f of J('fragments-fr.json').fragments) cat[f.code] = f;       // TZ-37: full base.zip modullari (MC-FB-…)
 for (const f of Object.values(cat)) applySexStandart(f, std);
 for (const a of J('appliances.json').appliances) cat[a.code] = { code: a.code, name: a.name, category: 'appliance', group: 'texnika', w: a.w, d: a.d, h: a.h, min_w: 200, max_w: 1200, production: 'none', parts: [], holes: [], hardware: [], edge: [] };
 const P = J('promptlar.json').promptlar;
@@ -128,7 +129,7 @@ ok('buyumlar: "ikki tumba" — 2', S(buyumlar('yotoqxona: krovat 1600, ikki tumb
 ok('natija har safar bir xil', S(shablon(SORA[7], 'yotoqxona').r) === S(shablon(SORA[7], 'yotoqxona').r));
 
 /* ══ egasi #209 (14): "130 ta tayyor moduldan AI barchasidan terib bersin" — qamrov ══
- * N = katalogdagi hamma tayyor modul: SP-… (85) + MC-… (38) + o'rnatma texnika SP-TX-… (7) = 130.
+ * N = katalogdagi hamma tayyor modul: SP-… (85) + MC-… (38) + MC-FB-… (TZ-37, full base.zip) + o'rnatma texnika SP-TX-… (7).
  * "AI ishlata oladigan" = shu modulning O'Z belgilari (tur so'zi, o'lchami, eshik/tortma/polka soni, nomidagi maxsus so'z) bilan
  * yozilgan oddiy so'rov AI orqali aynan shu modulni tanlaydi. Belgilari bir xil modullar ajratilmaydi — "juft" deb ro'yxatlanadi
  * (ikkinchisi ham uchraydi, lekin boshqa modul bilan bir xil so'rovga to'g'ri keladi). Hech narsa o'ylab topilmaydi. */
@@ -139,6 +140,10 @@ function sorov(f) {
   const sozlar = (String(f.name || '').match(MAXSUS_SOZ) || []);
   const tarkib = (b.eshik ? ` ${b.eshik} eshik` : ' eshiksiz') + (b.tortma ? ` ${b.tortma} tortma` : '') + (b.polka ? ` ${b.polka} polka` : '');
   if (k === 'penal' && /^SP-K-006$/.test(f.code)) return `${NOM_SOZ(f)} ${ol}`;
+  if (/^MC-FB-/.test(f.code)) {                                                                // TZ-37: full base — turi + maxsus so'z (korpus/gola/tandem/sokolli/stoyka …) + o'lcham + tarkib
+    const so = (String(f.name).match(/abmanka|ichki|tashqi|oyoqli|gola|tandem|sokolli|sokol|stoyka|vityachka/gi) || []).join(' ').toLowerCase();
+    return `${f.group === 'kuxnya-ustki' ? 'ustki' : 'pastki'} shkaf ${so} ${ol}${tarkib}`;
+  }
   if (/^kuxnya-(pastki|ustki)$/.test(f.group) && !/^SP-ST/.test(f.code)) return `${f.group === 'kuxnya-pastki' ? 'pastki' : 'ustki'} shkaf ${sozlar.join(' ')} ${ol}${tarkib}`;
   if (/^MC-(SH|KR)/.test(f.code)) return `${k === 'krovat' ? 'krovat spalni' : 'garderob shkaf'} ${(String(f.name).match(/\d{3}/) || ['000'])[0]} ${ol}`;
   if (k === 'parta') return `parta ${NOM_SOZ(f).replace(/парта/i, '')} ${ol}`;
@@ -158,8 +163,8 @@ const tanla = (m) => { const yo = aiTur(m); if (yo.tur !== 'modul') return { tur
   console.log(`  AI ishlata oladigan tayyor modullar: ${oks} / ${hammasi.length}` + (juft.length ? ` (+${juft.length} ta belgilari bir xil juft, alohida tanlanmaydi: ${juft.map(n => n.code + '≡' + n.got).join(', ')})` : ''));
   if (process.env.KATALOG_TOLIQ) console.log(natija.filter(n => !n.ok).map(n => `    ${n.code} [${n.q}] → ${n.got || n.tur}`).join('\n'));
   if (yoq.length) console.log(`  tanilmay qolganlar (${yoq.length}): ${yoq.map(n => n.code).join(', ')}`);
-  ok('qamrov: 130 modulning kamida 127 tasi AI orqali o\'z belgilari bilan tanlanadi (oldin: 26 — bitta modul yo\'li, 53 — barcha yo\'l)', oks >= 127, `${oks}/${hammasi.length}: ${yoq.concat(juft).map(n => n.code + '[' + n.q + ']→' + (n.got || n.tur)).join('; ')}`);
-  ok('qamrov: N = 85 SP + 38 MC + 7 texnika = 130', hammasi.length === 130 && hammasi.filter(f => /^SP-TX/.test(f.code)).length === 7);
+  ok('qamrov: katalogdagi tayyor modullarning kamida 165 tasi (oldin 130 dan 127; TZ-37: +61 MC-FB, korpus-faqat variantlar bir-biridan ajralmaydi) AI orqali o\'z belgilari bilan tanlanadi', oks >= 165, `${oks}/${hammasi.length}: ${yoq.concat(juft).map(n => n.code + '[' + n.q + ']→' + (n.got || n.tur)).join('; ')}`);
+  ok('qamrov: N = 85 SP + 38 MC + 61 MC-FB (TZ-37) + 7 texnika = 191', hammasi.length === 191 && hammasi.filter(f => /^SP-TX/.test(f.code)).length === 7 && hammasi.filter(f => /^MC-FB-/.test(f.code)).length === 61);
 }
 
 /* har modul turi uchun oddiy so'rov → tanlangan kod (nom/tur/o'lcham bo'yicha; xona so'zi ham, 3 o'lcham ham yo'q) */

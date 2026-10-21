@@ -26,7 +26,7 @@ const SpPrice = () => globalThis.SpPrice || (PriceMod && (PriceMod.default || Pr
 export const DATA_FILES = {
   frags: 'fragments.json', mats: 'materials.json', nestDef: 'nesting-defaults.json',
   sheetCat: 'sheet-catalog.json', matIdx: 'materials-index.json', services: 'services.json',
-  appliances: 'appliances.json', mcFrags: 'fragments-mc.json', sexStd: 'sex-standartlari.json',
+  appliances: 'appliances.json', mcFrags: 'fragments-mc.json', frFrags: 'fragments-fr.json', sexStd: 'sex-standartlari.json',
   furnCat: 'furnitura-catalog.json',
   stolErp: 'stoleshnitsa-erp.json',                               // TZ-32 yakuniy: stoleshnitsa dekorlari — har biri o'z ERP narxi (egasi #222 Q1)
   dekorMashhur: 'dekor-mashhur.json',                             // #151: sexda eng ko'p ishlatiladigan dekorlar (material varag'ining boshi)
@@ -62,7 +62,7 @@ export async function loadData(read, api) {
 
 /** Katalog va ma'lumotlar — eski boot() dagi yig'ish bilan bir xil. */
 export function createHisob(data) {
-  const { frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, sexStd, furnCat, stolErp, dekorMashhur, dekorAsosiy, furnBoglash, nomlarRu, nomlarEn, rasmlar } = data;
+  const { frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, frFrags, sexStd, furnCat, stolErp, dekorMashhur, dekorAsosiy, furnBoglash, nomlarRu, nomlarEn, rasmlar } = data;
   const furnById = {};
   for (const it of (furnCat && furnCat.items) || []) if (it.id) furnById[it.id] = it;
   const furnituraBoglash = (furnBoglash && furnBoglash.links) || {};
@@ -71,6 +71,7 @@ export function createHisob(data) {
   const catalog = {};
   for (const f of frags) catalog[f.code] = f;
   for (const f of (mcFrags && mcFrags.fragments) || []) catalog[f.code] = f;
+  for (const f of (frFrags && frFrags.fragments) || []) catalog[f.code] = f;      // TZ-37: full base.zip modullari (MC-FB-…)
   for (const f of Object.values(catalog)) applySexStandart(f, sexStd);
   /* F2: o'rnatma texnika — nishon (bo'sh korpusli) katalog yozuvlari */
   for (const a of (appliances && appliances.appliances) || []) {

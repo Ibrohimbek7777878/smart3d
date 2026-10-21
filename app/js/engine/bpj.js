@@ -49,7 +49,7 @@ const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a
  * Qalinlik o'qi — o'lchami th ga eng yaqin; dl o'qi — qolgan ikkitasidan dl ga mosi. F qirra (y=0) — chuqurlik o'qi
  * bo'lsa old tomonda (lokal +y), aks holda pastda/chapda. Natija: { o: origin, x, y, z: birlik o'qlar }.
  */
-function panelRamka(C, Dm, dl, dw, th) {
+export function panelRamka(C, Dm, dl, dw, th) {
   const ti = [0, 1, 2].sort((i, j) => Math.abs(Dm[i] - th) - Math.abs(Dm[j] - th) || Dm[i] - Dm[j])[0];
   const [i1, i2] = [0, 1, 2].filter(i => i !== ti);
   const li = (Math.abs(Dm[i1] - dl) + Math.abs(Dm[i2] - dw) <= Math.abs(Dm[i2] - dl) + Math.abs(Dm[i1] - dw)) ? i1 : i2;
@@ -77,17 +77,7 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
                   { name: curCode, thickness: 16 };
   const matName = matMeta.name;   // "MDF 16mm" — materials.json da allaqachon qalinlik bilan
   const thickness = matMeta.thickness || 16;
-  /* kromka nomlari — materials.json edge_materials dan (kod normalizatsiya bilan) */
-  const edgeNames = {};
-  for (const em of materials.edge_materials || []) {
-    edgeNames[String(em.code)] = em.name;
-    edgeNames[String(em.code).replace(/\./g, '')] = em.name;  // PVC0.4 → PVC04
-  }
-  edgeNames['PVC04'] = 'Кромка 0,4';
-  edgeNames['PVC0.4'] = 'Кромка 0,4';
-  edgeNames['PVC2'] = 'Кромка 2';
-  edgeNames['REHAU2'] = 'Кромка Rehau 2';
-  edgeNames['PROF-AL'] = 'Профиль алюминиевый';
+  const edgeNames = edgeNomlari(materials);   // kromka nomlari — materials.json edge_materials dan
 
   /* material kod → meta (cutlist material maydonlari uchun) */
   const matByCode = {};
@@ -190,21 +180,7 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
 
         /* butts — kesim ro'yxati kromkasi (MC detallari ham — ularda kromka detalning o'zida), bo'lmasa fragment.edge;
          * uzunlik = panelning o'z qirrasi (dl/dw) */
-        const butts = [];
-        for (const e of def.edges || frag.edge || []) {
-          if (e.code !== def.code) continue;
-          for (const side of e.sides || []) {
-            const ei = SIDE_TO_ELEM[side];
-            if (ei == null) continue;
-            butts.push({
-              elemIndex: ei,
-              material: edgeNames[e.material] || e.name || e.material,
-              thickness: +(e.thickness || 2),
-              width: -1,
-              length: (ei === 0 || ei === 2) ? dl : dw
-            });
-          }
-        }
+        const butts = defButts(def, frag, dl, dw, edgeNames);
         for (const b of butts) {
           const key = b.material + '@' + b.thickness;
           const ea = edgeAgg[key] = edgeAgg[key] || {
@@ -449,6 +425,42 @@ export function buildBPJ(doc, catalog, materials, opts = {}) {
 
 /* ── Yordamchilar ─────────────────────────────────────────────── */
 
+/** kromka nomlari — materials.json edge_materials dan (kod normalizatsiya bilan) */
+export function edgeNomlari(materials) {
+  const edgeNames = {};
+  for (const em of (materials && materials.edge_materials) || []) {
+    edgeNames[String(em.code)] = em.name;
+    edgeNames[String(em.code).replace(/\./g, '')] = em.name;  // PVC0.4 → PVC04
+  }
+  edgeNames['PVC04'] = 'Кромка 0,4';
+  edgeNames['PVC0.4'] = 'Кромка 0,4';
+  edgeNames['PVC2'] = 'Кромка 2';
+  edgeNames['REHAU2'] = 'Кромка Rehau 2';
+  edgeNames['PROF-AL'] = 'Профиль алюминиевый';
+  return edgeNames;
+}
+
+/** detal kromkasi (kesim ro'yxati tomonlari F/R/B/L → elemIndex 0..3; uzunlik — panelning o'z qirrasi). Panel ramkasi panelRamka() bo'yicha. */
+export function defButts(def, frag, dl, dw, edgeNames) {
+  const butts = [];
+  for (const e of def.edges || (frag && frag.edge) || []) {
+    if (e.code !== def.code) continue;
+    for (const side of e.sides || []) {
+      const ei = SIDE_TO_ELEM[side];
+      if (ei == null) continue;
+      butts.push({
+        elemIndex: ei,
+        material: edgeNames[e.material] || e.name || e.material,
+        thickness: +(e.thickness || 2),
+        width: -1,
+        length: (ei === 0 || ei === 2) ? dl : dw
+      });
+    }
+  }
+  return butts;
+}
+
+
 function WOOD_MAT(frag) { return /^(LDSP|MDF|HDF|OSB)/.test(frag.material_code || ''); }
 
 function buttsStr(butts) {
@@ -459,7 +471,7 @@ function buttsStr(butts) {
  * cutlist → panel ta'riflari (detal bitta-bitta, qty allaqachon kengaytirilgan).
  * Material/qalinlik — DETAL darajasida (slotResolver natijasi).
  */
-function defsFromCutlist(cl, matByCode, fallbackMat, fallbackTh, frag) {
+export function defsFromCutlist(cl, matByCode, fallbackMat, fallbackTh, frag) {
   const nomOf = partNomi(frag);
   const countByCode = {};
   for (const p of cl.parts || []) countByCode[p.code] = (countByCode[p.code] || 0) + 1;
@@ -545,7 +557,7 @@ function defsFromFormulas(frag, w, d, h, matByCode, matName, fallbackTh) {
 }
 
 /** detal kodi → Bazis'dagi nomi (MC: "Боковина ящика левая"), bo'lmasa — kod (BOM va obyekt nomi bir xil bo'lsin) */
-function partNomi(frag) {
+export function partNomi(frag) {
   const m = {};
   for (const pt of (frag && frag.parts) || []) m[pt.code] = pt.nom || pt.name || pt.code;
   return (code) => m[code] || code;

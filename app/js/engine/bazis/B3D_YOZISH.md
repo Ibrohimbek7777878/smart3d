@@ -60,5 +60,22 @@ Yozuvchi eng sodda ("Bazis 15", bayt 9 = `0F`) shaklni yozadi — yangi Bazis es
 - Yozadi: modul (1005) → gabarit ramka + panellar (o'lcham, joy, material, kromka) + furnitura (3001 + `FurnList`).
 - Yozmaydi: teshiklar/pazlar (`Cuts`, `Holes` — panelda), furnitura 3D shakli (faqat quti ta'rifi), animatsiya, `Undo` tarixi, material kutubxonasi
   (`Mat` — matn, Bazis o'zining kutubxonasidagi nom bilan solishtiradi), `HardwareKey` = 0 (litsenziya kaliti yo'q).
-- Furnitura joyi — modul burchagi (o'rni noma'lum bo'lsa); ro'yxat va soni to'g'ri.
+- Furnitura joyi — 3D dagi zapchast belgilari (SketchUp eksportidagi joy va burilish); joyi noma'lum furnitura (MC oyoqchasi) — modul burchagida; ro'yxat va soni to'g'ri.
+
+## 7. Panel joyining manbasi (2026-10-19: «chizilgan spalniy va Bazis'da ochilgan natija bir xil emas» tuzatishi)
+- **Bitta manba**: SketchUp eksportidagi model (`web/src/features/editor/eksport/model.js` `eksportModeli`) → `modelLoyiha.js` `modeldanLoyiha` → `b3dYoz`.
+  Oldin panel joyi BPJ dan olinardi; u MC modullarda 3D bilan 0,0 mm bir xil edi (joy formulalari), lekin umumiy (SP) modullarda kesim detallarini
+  3D panellarga taxminiy moslar edi (`takePanel`, bo'lmasa «navbat»; shuningdek eshiklar/tortmasiz 3D) — garderob eshiklari korpusdan chiqib, polkalar tarqab ketardi.
+- O'qlar (haqiqiy BPJ bilan 77/77 panel aynan, `loyiha.js` bilan bir xil): **Bazis X = OFF − x, Y = z (bo'yi), Z = y (chuqurlik)** — burilish, ko'zgu emas (det = +1);
+  OFF — barcha X ≥ 0 bo'lishi uchun butun son. Birlik — mm.
+- Panel `Trans`: pos = kontur (0,0) burchagi va qalinlikning boshlanish yuzi; AxisX — dl, AxisY — dw, AxisZ — qalinlik (o'ng qo'l; kvaternion — ustunlar = o'qlar).
+  Ramka `bpj.js panelRamka` bilan: kromka `elemIndex` (0 — oldi/pastki, 1 — o'ng, 2 — yuqori, 3 — chap) BPJ dagidek.
+- Modul guruhi (1005): `Trans` = panellar gabaritining burchagi (burilishsiz), ichidagi panel va furnitura `Trans`i guruhga nisbatan (haqiqiy fayllardagidek:
+  `korpus 1` guruhi siljish bilan, panel — nisbiy). Modullar xonadagi joyida (modul p.x/y/z/rot).
+- Detal ma'lumoti (nom, material, kromka) — kesim ro'yxati detalidan (`ref`, bo'lmasa o'lchami ±1 mm); 3D panelga mos kesim detali bo'lmasa — modeldagi nom/material, kromkasiz.
+- 3D da butun modul bitta massiv quti bo'lib chizilgan, kesim ro'yxatida esa standart karkas detallari (yon×2, ust, past, orqa, shift*, eshik*) bo'lgan modullar
+  (komod, kir yotoq, toshqin, divan quti …) massiv quti emas — yig'ilgan karkas bo'lib yoziladi (tashqi gabarit 3D dagi quti bilan bir xil).
+- Yozilmaydi: texnika (kesim detali yo'q), 3D dagi belgi-detallar (< 2 mm, masalan stol oyog'i 50×50×1).
+- Tekshiruv: `tests/verify_b3d_yoz.mjs` [4] — Yotoqxona va oshxona (har panel AABB = eksportModeli ±0,5 mm, yig'ilgan korpus, eshiklar old tekisligida, modullar ustma-ust emas),
+  [3] — sex fayllari: o'qish → yozish → o'qish, har panel global AABB aynan (±0,5 mm). Bazis'da ochish — egasi (`Smart3D_malumot/sinov-fayllar/`).
 - Noma'lumlar (Bazis'da sinab ko'rilmagan): `HardwareKey` = 0 qabul qilinishi, `TexDir`, `DatumMode` ma'nolari, FurnList ta'rifi minimal bo'lishi.

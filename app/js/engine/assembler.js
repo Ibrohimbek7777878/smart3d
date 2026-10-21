@@ -29,7 +29,7 @@ const ESHIK_RE = /двер|eshik/i;
 
 /** fasad qatorlari (yuqoridan pastga): tortmalar va eshik qatori, balandligi — detal formulasidan */
 function fasadQatorlari(frag, w, d, h, t, tall) {
-  const vars = { w, d, h, t };
+  const vars = { w, d, h, t, t_korpus: t };   // TZ-37: fasad detali formulasida t_korpus (bo'shliq korpus qalinligidan) bo'lishi mumkin
   const num = (e) => { try { const v = evalFormula(String(e), vars); return v > 0 ? v : 0; } catch (err) { return 0; } };
   const drawers = [];
   let door = 0;
@@ -56,7 +56,7 @@ function fasadQatorlari(frag, w, d, h, t, tall) {
  *  hingeSide / opts.hinge: 'left' — petlya lokal −x chetida (xonadan qaraganda o'ng chet), 'right' — lokal +x chetida. */
 export function eshikTuzilmasi(frag, w, d, h, t = 16) {
   const parts = (frag && frag.parts) || [];
-  const vars = { w, d, h, t };
+  const vars = { w, d, h, t, t_korpus: t };
   const num = (e) => { try { const v = evalFormula(String(e), vars); return v > 0 ? v : 0; } catch (err) { return 0; } };
   const nm = (p) => (p.nom || p.name || '') + ' ' + (p.code || '');
   const ds = parts.filter(p => p.slot === 'fasad' && ESHIK_RE.test(nm(p)) && !TORTMA_RE.test(nm(p)));

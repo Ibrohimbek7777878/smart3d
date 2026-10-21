@@ -81,19 +81,21 @@ export function yadroSxema(db) {
   catch (e) { console.warn('DIQQAT: telefon noyob indeksi yaratilmadi (bazada takror raqam bor):', e.message); }
 }
 
-/** MebelCity modullari (app/data/fragments-mc.json) — bazada bo'lmasa bir marta qo'shiladi */
+/** MebelCity modullari (app/data/fragments-mc.json va fragments-fr.json — TZ-37 full base) — bazada bo'lmasa bir marta qo'shiladi */
 export function mcModullar(db, appDir) {
-  const has = db.prepare("SELECT COUNT(*) AS n FROM fragments WHERE code LIKE 'MC-%'").get().n;
-  const mcPath = path.join(appDir, 'data/fragments-mc.json');
-  if (has || !fs.existsSync(mcPath)) return;
   const ins = db.prepare(`INSERT OR REPLACE INTO fragments
     (code, name, category, grp, w, d, h, min_w, max_w, min_d, max_d, stretch_axis, price_mode, price, material_code, production, data_json)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
-  const mc = JSON.parse(fs.readFileSync(mcPath, 'utf8')).fragments || [];
-  db.transaction(() => { for (const f of mc) ins.run(f.code, f.name, f.category || '', f.group || '', f.w || 0, f.d || 0, f.h || 0,
-    f.min_w || 0, f.max_w || 0, f.min_d || 0, f.max_d || 0, f.stretch_axis || 'xy', f.price_mode || 'unit', f.price || 0,
-    f.material_code || 'LDSP16', f.production || 'panel', JSON.stringify(f)); })();
-  console.log(`MebelCity modullari bazaga qo'shildi: ${mc.length} ta`);
+  for (const [fayl, belgi, nom] of [['fragments-mc.json', 'MC-%', 'MebelCity'], ['fragments-fr.json', 'MC-FB-%', 'full base']]) {
+    const has = db.prepare('SELECT COUNT(*) AS n FROM fragments WHERE code LIKE ?').get(belgi).n;
+    const mcPath = path.join(appDir, 'data', fayl);
+    if (has || !fs.existsSync(mcPath)) continue;
+    const mc = JSON.parse(fs.readFileSync(mcPath, 'utf8')).fragments || [];
+    db.transaction(() => { for (const f of mc) ins.run(f.code, f.name, f.category || '', f.group || '', f.w || 0, f.d || 0, f.h || 0,
+      f.min_w || 0, f.max_w || 0, f.min_d || 0, f.max_d || 0, f.stretch_axis || 'xy', f.price_mode || 'unit', f.price || 0,
+      f.material_code || 'LDSP16', f.production || 'panel', JSON.stringify(f)); })();
+    console.log(`${nom} modullari bazaga qo'shildi: ${mc.length} ta`);
+  }
 }
 
 /** TZ-37: admin panel jadvallari (idempotent — mavjud bazaga ham qo'shiladi): furnitura bog'lash (fayl ustiga baza), tayyor promptlar, tarix. */
