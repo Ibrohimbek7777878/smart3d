@@ -472,6 +472,7 @@
  "hujjat.t_cutlist": "Avval smeta hisoblansin (cutlist bo'sh)",
  "hujjat.t_dxf": "DXF tayyor — raskroy",
  "hujjat.t_excel": "Excel smeta tayyor (5 ta bo'lim)",
+ "hujjat.t_rover": "Rover CNC dasturi tayyor: {v} ta list, {d} ta detal",
  "hujjat.t_gcode": "G-code (ISO) tayyor",
  "hujjat.t_giblab": "GibLab tayyor — {o} operatsiya, {p}/{d} detal, {v} varaq",
  "hujjat.t_giblab_bazis": "GibLab (Bazis uslubi) tayyor — {d} xil detal, {s} dona",

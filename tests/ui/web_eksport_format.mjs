@@ -73,6 +73,8 @@ async function asosiy(page, R) {
     ['Altendorf — GibLab orqali', '[data-altendorf-yukla]', /\.project$/, (b) => /^<\?xml/.test(matn(b))],
     [/Bazis \(\.bpj\)/, '[data-bpj-yukla]', /\.bpj$/, (b) => { const j = json(b); return !!j && !!j.meta && Array.isArray(j.blocks); }],
     [/Bazis \(\.b3d\)/, '[data-b3d-yukla]', /\.b3d$/, (b) => String.fromCharCode(...b.subarray(0, 4)) === 'BZ85'],
+    [/Rover CNC \(\.ncc\)/, null, /-rover-ncc\.zip$/, (b) => { const z = zipNomlar(b) || []; return z.length > 0 && z.every(x => /\.ncc$/.test(x)); }],
+    [/Rover CNC \(\.tap\)/, null, /-rover-tap\.zip$/, (b) => { const z = zipNomlar(b) || []; return z.length > 0 && z.every(x => /\.tap$/.test(x)); }],
     ['GLB (3D/AR)', null, /\.glb$/, (b) => String.fromCharCode(...b.subarray(0, 4)) === 'glTF'],
     [/^Rasm/, null, /\.png$/, (b) => b[0] === 0x89 && String.fromCharCode(...b.subarray(1, 4)) === 'PNG', 60000],
     [/^360°/, null, /\.jpe?g$/, (b) => b[0] === 0xff && b[1] === 0xd8, 60000]
