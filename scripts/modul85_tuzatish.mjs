@@ -18,7 +18,15 @@
  *       (avtomatik petlya/ruchka qo'shilmaydi; Tez oshxonada dobor uchun 8 ta ortiqcha petlya edi).
  *   B6  petlya teshigi — eski 'hinge' yozuvlari (eshik o'rtasida, bir joyda bir nechta) olib tashlanadi; joyi va soni endi
  *       cutlist.js da D6 qoidasi bo'yicha (d6.js: kosa eshik uchidan 105 mm, qirradan 21,5 mm; sex fayllari, 534 eshik).
- * Egasi javobini kutayotganlar (TS-1730, korpus 16 mm, 12 quti-shablon, K-004/BD-005 nomi, narxsiz kodlar) — tegilmaydi.
+ *   T1  konfirmat teshik joyi (TZ-32 B5) — B4 birikmalari (teshiklar: []) sex qoidasi bilan to'ldiriladi: yuza detalda Ø7 o'tuvchi
+ *       teshik (birikuvchi panel qalinligi o'rtasida, chetdan t/2), torets detalda Ø4,5 × 35; joylari birikish chizig'i bo'ylab Bazis
+ *       qoidasi (chetdan 60, qadam 32; cutlist bazisQoida). Qoida va diametrlar engine/chizish.js birikmalar() dan — u sex modullari
+ *       (MC-KP-01/02, MC-KU-07) bilan teshikma-teshik tekshirilgan. Faqat joyi aniq birikmalar: yon devor × yuqori/pastki panel
+ *       (ust, qopqoq / past, tub), chuqurligi bo'yicha to'liq (d). Tsarga, texnika polkasi, burchak va g'ildirakli tumba — joyi
+ *       (balandligi, old/orqa) manbada yo'q: teshiksiz qoladi (verify_modul85 da "joyi noaniq"). Shu modullarda eski shablon
+ *       teshiklari (yon/ust/past drill Ø5 @64,64 ×2–8, dowel Ø8 @64,96 — bir koordinatada bir necha teshik, mahkamlagich ro'yxatida
+ *       shkant yo'q) faqat TO'LIQ to'ldirilgan modulda olib tashlanadi.
+ * Egasi javobini kutayotganlar (TS-1730, 12 quti-shablon, K-004/BD-005 nomi, narxsiz kodlar, GD-04 vintli modullar) — tegilmaydi.
  *
  * Ishlatish: node scripts/modul85_tuzatish.mjs --qadam B1 [--yoz]
  */
@@ -66,6 +74,50 @@ function sexTuri(f) {
 }
 const AUTO_YOQ = new Set(['SP-ST-005', 'SP-ST-006', 'SP-K-022', 'SP-K-023', 'SP-K-024']);   // B8: yon dobor, tortmali, kargo
 const TORTMA_ZAZOR = 50;                                             // MC-KP-03/04/09/10/11: Боковина ящика = d − 50
+
+/** T1: B4 birikmalari uchun teshik joyi. @returns { toldi: to'ldirilgan birikma soni, jami: birikmalar soni, qoldi: [sabab] } yoki { xato } */
+function teshikJoyi(f) {
+  const T = 16;                                                      // korpus (V1, egasi #209) — faqat shakl tekshiruvi; formulalarda t_korpus
+  const v = { w: f.w, d: f.d, h: f.h, t: T, t_korpus: T, t_fasad: T };
+  const ev = (e) => evalFormula(String(e), v);
+  const P = (c) => f.parts.find(p => p.code === c);
+  const yon = P('yon');
+  if (!yon || sonOf(yon, f) !== 2 || String(yon.width).trim() !== 'd') return { xato: "yon devor (2 ta, eni d) topilmadi" };
+  const YUQORI = /^(ust|qopqoq)$/, PAST = /^(past|tub)$/;
+  const shakl = {};                                                  // H kodi → 'through' (eni w) | 'between' (eni w − 2t)
+  for (const p of f.parts) {
+    if (!YUQORI.test(p.code) && !PAST.test(p.code)) continue;
+    const L = ev(p.len);
+    shakl[p.code] = Math.abs(L - f.w) < 0.5 ? 'through' : Math.abs(L - (f.w - 2 * T)) < 0.5 ? 'between' : null;
+  }
+  const yuqTh = Object.keys(shakl).some(c => YUQORI.test(c) && shakl[c] === 'through'), pastTh = Object.keys(shakl).some(c => PAST.test(c) && shakl[c] === 'through');
+  const kutil = f.h - (yuqTh ? T : 0) - (pastTh ? T : 0);
+  if (Math.abs(ev(yon.len) - kutil) > 0.5) return { xato: `yon uzunligi ${ev(yon.len)} ≠ ${kutil} (panellar joyi mos emas)` };
+  const qoldi = [], sana = {};
+  const qirra = { dia: 7, depth: 16, kind: 'evrovint' }, torets = { dia: 4.5, depth: 35, kind: 'evrovint_torets' };
+  let toldi = 0, jami = 0;
+  for (const b of f.birikmalar) {
+    const m = /— (\S+) × yon devor$/.exec(b.nom || '');
+    if (!m) continue;
+    const code = m[1], H = P(code);
+    jami++;
+    const i = sana[code] = (sana[code] || 0); sana[code]++;          // shu panel uchun nechanchi birikma: juft — L uchi, toq — R uchi
+    if ((b.teshiklar || []).length) continue;                        // idempotent
+    if (!H || !shakl[code] || String(H.width).trim() !== 'd' || String(b.L).trim() !== 'd' || sonOf(H, f) !== 1) { qoldi.push(`${code}: joyi aniq emas (eni/balandligi/soni)`); continue; }
+    const yuqori = YUQORI.test(code), Hl = `(${H.len})`, Yl = `(${yon.len})`;
+    const h = [];
+    if (shakl[code] === 'between') {                                 // H yon devorlar orasida: yuza teshigi yonda (ikkala nusxa), torets teshigi H uchlarida
+      if (i % 2 === 0) h.push({ part: 'yon', side: 'B', x0: '0', sx: 1, y0: yuqori ? `${Yl} - t_korpus/2` : 't_korpus/2', sy: 0, ...qirra });
+      h.push({ part: code, side: 'T', torets: i % 2 === 0 ? 'L' : 'R', x0: '0', sx: 1, y0: i % 2 === 0 ? '0' : Hl, sy: 0, ...torets });
+    } else {                                                         // H butun eni bo'ylab: yuza teshigi H da (ikki uchida), torets teshigi yon uchida
+      h.push({ part: code, side: 'B', x0: '0', sx: 1, y0: i % 2 === 0 ? 't_korpus/2' : `${Hl} - t_korpus/2`, sy: 0, ...qirra });
+      if (i % 2 === 0) h.push({ part: 'yon', side: 'T', torets: yuqori ? 'R' : 'L', x0: '0', sx: 1, y0: yuqori ? Yl : '0', sy: 0, ...torets });
+    }
+    b.teshiklar = h;
+    toldi++;
+  }
+  return { toldi, jami, qoldi };
+}
 
 for (const f of frags) {
   if (!/^SP-/.test(f.code)) continue;
@@ -187,6 +239,21 @@ for (const f of frags) {
     const n = f.holes.length;
     f.holes = f.holes.filter(h => h.kind !== 'hinge');
     yoz('B6', f.code, `${n - f.holes.length} ta eski petlya yozuvi olib tashlandi (D6 qoidasi cutlist da)`);
+  }
+  /* ── T1: konfirmat teshik joyi ── */
+  if (QADAM.has('T1') && (f.birikmalar || []).length && !QUTI_SHABLON.has(f.code)) {
+    const r = teshikJoyi(f);
+    if (r.xato) yoz('T1', f.code, `o'tkazib yuborildi — ${r.xato}`);
+    else {
+      let olib = '';
+      const hammasi = f.birikmalar.every(b => (b.teshiklar || []).length);
+      const placeholder = (f.holes || []).filter(h => h.kind === 'drill' || h.kind === 'dowel');
+      if (hammasi && placeholder.length && !(f.hardware || []).some(h => /GD-04|SH-01|M8-60|UGOLOK/i.test(h.code || ''))) {
+        f.holes = f.holes.filter(h => h.kind !== 'drill' && h.kind !== 'dowel');
+        olib = `; eski shablon teshiklari (${placeholder.length} yozuv, bir koordinatada ${placeholder.reduce((s, h) => s + (+h.qty || 1), 0)} teshik) olib tashlandi`;
+      }
+      yoz('T1', f.code, `${r.toldi}/${r.jami} birikmaga teshik joyi${r.qoldi.length ? ' — qoldi: ' + [...new Set(r.qoldi)].join('; ') : ''}${olib}`);
+    }
   }
   /* ── B8: eshigi yo'q, lekin fasad detali bor modul (yon dobor, tortma, kargo) — cutlist avtomatik petlya/ruchka qo'shmasin:
    *  furnitura ro'yxati to'liq (auto_hardware: false — Bazis/MC modullaridagidek). Dobor — planka (petlya ham, ruchka ham yo'q);
