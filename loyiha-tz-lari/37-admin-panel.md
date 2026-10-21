@@ -1,6 +1,6 @@
 # TZ-37 — Universal admin panel (`smart.bittada.uz/admin`) va standart konstruksiya
 
-**Sana:** 2026-10-18 · **Navbat:** 37 · **Holat:** 1-FAZA BAJARILDI 2026-10-18 (`main` f42a318; backend 43161a5, frontend 02b9475; admin API real serverda tekshirildi). Qoldi: 2–3-fazalar (materiallar, modullar katalogi, foydalanuvchilar, tizim). Asos — 1-faza (egasi #254, #257 "boshla unda"; asos: #254: "admin panel linkini ber, kod yozmasdan hamma narsani tuzata olay; ideal va universal; smart.bittada.uz/admin")
+**Sana:** 2026-10-18 · **Navbat:** 37 · **Holat:** 1-FAZA BAJARILDI 2026-10-18 (`main` f42a318; backend 43161a5, frontend 02b9475; admin API real serverda tekshirildi). **2-FAZA BAJARILDI 2026-10-21** (tarmoq `agent/admin2`, `main`'ga hali o'tkazilmagan — koordinator birlashtiradi): 3 Materiallar, 4 Modullar katalogi, 7 Foydalanuvchilar/loyihalar/buyurtmalar. Qoldi: 3-faza (tizim, ERP sinxron, tarix/qaytarish kengaytmasi). Asos — 1-faza (egasi #254, #257 "boshla unda"; asos: #254: "admin panel linkini ber, kod yozmasdan hamma narsani tuzata olay; ideal va universal; smart.bittada.uz/admin")
 **Koordinator:** smart3d-51 chati.
 
 ## Maqsad
@@ -27,8 +27,8 @@ Egasi (admin) koddan va fayllardan foydalanmay, brauzerdagi bitta panelda narx, 
 
 ## Fazalar
 - **1-faza (birinchi navbat):** `/admin` qobig'i + 1 Narxlar (mavjud sahifa ko'chadi) + 2 Furnitura bog'lash (koeffitsient bilan) + 5 Tayyor promptlar + 6 Standart konstruksiya.
-- **2-faza:** 3 Materiallar, 4 Modullar katalogi, 7 Foydalanuvchilar/buyurtmalar.
-- **3-faza:** 8 Tizim, ERP sinxronlash, o'zgarishlar tarixi va orqaga qaytarish.
+- **2-faza (BAJARILDI 2026-10-21):** 3 Materiallar, 4 Modullar katalogi, 7 Foydalanuvchilar/buyurtmalar — pastdagi "2-faza natijasi" va "API shartnomasi (2-faza)".
+- **3-faza (kutilmoqda):** 8 Tizim, ERP sinxronlash, o'zgarishlar tarixi va orqaga qaytarish.
 
 ## Tegadigan fayllar
 `server/routes/*` (yangi `admin-*.js`), `server/lib/sxema.js` (jadvallar), `server/routes/sahifalar.js` (`/admin`), `web/src/features/admin/*` (yangi), `web/src/app` (sahifa tanlash), `app/js/engine/cutlist.js` (koeffitsient), `app/data/furnitura-boglash.json` (bazaga ko'chadi, fayl zaxira bo'lib qoladi), lug'atlar (uz, ru, en), testlar.
@@ -58,3 +58,29 @@ Hamma `/api/admin/*` — faqat `role=admin` (aks holda 404 `S3D-AUTH-006`), yozu
 4. **Narxlar:** mavjud `/api/narxlar` (TZ-20/36) o'zgarmaydi; panel shu API'ni ishlatadi.
 5. **Audit:** `GET /api/admin/audit?bolim=&limit=` → so'nggi o'zgarishlar; `POST /api/admin/qaytar/:auditId` — shu o'zgarishni eski qiymatga qaytaradi.
 6. **Sahifa:** server `/admin` va `/admin/(narxlar|furnitura|promptlar|standart|tarix)` ni ilova sahifasiga yo'naltiradi (ILOVA_YOLI); frontend (`web/src/features/admin/*`, lug'at uz/ru/en) `/api/me` orqali admin ekanini tekshiradi, admin bo'lmasa — mavjud 404 ko'rinishi. Dizayn: mavjud dizayn tokenlari/komponentlari (Varaq, Toggle, tugmalar), emoji yo'q, Ikon.
+
+---
+
+## 2-faza natijasi (2026-10-21, `agent/admin2`)
+Umumiy qoida (1-fazadagidek): fayllar (`app/data/*.json`) **o'zgarmaydi**; admin qiymati bazada, brauzer ochiq GET'dan olib fayl ustiga qo'yadi (`app/js/engine/adminQatlam.js`, `web/src/services/hisob.js loadData/createHisob`) — **baza ustun**; admin qatorni o'chirsa ("Fayldagiga qaytarish") fayldagi qiymat qaytadi. Server yo'q/xato bo'lsa — jim, fayldagi qiymatlar. O'zgarish ilovada sahifa qayta ochilganda ko'rinadi. Hamma yozuv `admin_audit` ga (kim, qachon, eski → yangi), "Tarix" bo'limidan qaytariladi.
+
+| Bo'lim | Nima qilinadi | Hisobga ta'siri |
+|---|---|---|
+| **3 Materiallar** ("Asosiy 100", `dekor-asosiy.json`) | **rang** (#rrggbb; admin bergan rang "aniq" hisoblanadi), **rasm** (PNG/JPEG/WebP, 600 KB gacha, bazada; 3D va plitkada rang o'rniga), **varaq narxi** (har ERP varag'i uchun, so'm/varaq, 1…50 000 000) | rang/rasm — 3D va plitka (bir manba); **narx — HISOBGA to'g'ridan-to'g'ri** (tanlangan ERP plitasining `sheet_price`, raskroy list narxi) |
+| **4 Modullar katalogi** (`fragments*.json` + texnika: 130 modul; dizayn tarmog'i qo'shilgach 191 — kod fayl ro'yxatini o'zi oladi) | **nom** (uz/ru/en), **ko'rinish** (yashirish), **o'lcham chegarasi** (eni/chuqurligi/bo'yi min–max, butun mm 1…20000), **narx rejimi** (unit/m2/mm) | yashirish — faqat tanlash ro'yxatida va AI/konstruktor tanlovida (`H.korinadiKatalog`); ochiq loyihalar, 3D va narx **o'zgarmaydi** (qoida 2.7). Chegara — `clampSize`, ogohlantirish, AI. **Narx rejimi** hozirgi narxga ta'sir qilmaydi (narx detal+furnituradan; `price_mode` faqat eski `price.js` o'lcham ogohlantirishlarida) — UI shuni aytadi |
+| **7 Foydalanuvchilar / loyihalar / buyurtmalar** | ro'yxat + qidirish (ism, email, telefon raqamlari, sex, #id) + holat/rol filtri + sahifalash; foydalanuvchi tafsiloti (loyiha va buyurtmalari); **bloklash/ochish** (sabab bilan); loyihalar va buyurtmalar umumiy ro'yxati (hujjatsiz) | bloklangan: parol/SMS/Google/Telegram bilan kira olmaydi (`S3D-AUTH-021`), ochiq kaliti yaroqsiz (401 — sayt chiqaradi); ma'lumoti saqlanadi. Telefon ekranda `+998 XX XXX XX XX` |
+
+**Ustunlik (modul chegarasi):** modulga admin chegarasi > sex standarti (TZ-14, `engine/standart.js`, server o'zgartirsa ham) > fayl. **Cheklovlar (ataylab):** o'rnatma texnika uchun faqat nom va ko'rinish; yuklangan rasm almashtirilsa eskisini qaytarib bo'lmaydi (faqat yangi qo'shilganni olib tashlash), rang/narx/katalog/bloklash — qaytariladi; adminni va o'zini bloklab bo'lmaydi (`S3D-ADM-017`).
+
+### API shartnomasi (2-faza)
+Hamma `/api/admin/*` — `role=admin` (aks holda 404 `S3D-AUTH-006`), yozuvchi so'rov CSRF (Origin) dan o'tadi, har yozuv `admin_audit` ga. Jadvallar: `mat_admin`, `mat_rasm`, `mat_narx`, `katalog_admin`, `users.bloklangan/blok_sabab/blok_vaqt` (`server/lib/sxema.js adminSxema2`).
+1. **Materiallar** (`server/routes/admin-materiallar.js`): ochiq `GET /api/materiallar` → `{dekor:{kalit:{rang_hex?, rasm?}}, narx:{ERP-kod: uzs}}`; ochiq `GET /api/materiallar/rasm/:kalit` (rasm baytlari, ETag, nosniff); `GET /api/admin/materiallar` → `{dekorlar:[{kalit, dekor, rang, rang_fayl, rang_manba, rasm, variantlar:[{kod, nom, narx, narx_fayl, narx_manba}], tahrir}]}`; `PUT|DELETE /api/admin/materiallar/dekor/:kalit` `{rang_hex}`; `PUT|DELETE …/dekor/:kalit/rasm` `{data: base64}`; `PUT|DELETE /api/admin/materiallar/narx/:kod` `{uzs}`. Xatolar: `S3D-ADM-011` (topilmadi), `-012` (rang/narx), `-013` (rasm), `-016` (qaytariladigan narsa yo'q).
+2. **Katalog** (`admin-katalog.js`): ochiq `GET /api/katalog` → `{modullar:{kod:{nom_uz?, nom_ru?, nom_en?, yashirin?, min_w…max_h?, price_mode?}}}`; `GET /api/admin/katalog` → `{modullar:[{kod, nom_fayl, nom:{uz,ru,en}, yashirin, chegara, chegara_fayl, chegara_baza, narx_rejim, narx_rejim_fayl, texnika, tahrir}]}`; `PUT /api/admin/katalog/:kod` (qisman; `null` — shu maydon fayldagidek), `DELETE` (butunlay faylga). Xatolar: `S3D-ADM-014` (modul yo'q), `-015` (qiymat noto'g'ri).
+3. **Foydalanuvchilar** (`admin-foydalanuvchilar.js`): `GET /api/admin/foydalanuvchilar?q=&rol=&holat=&limit=&offset=` → `{jami, items, limit, offset}`; `GET …/:id` (+ `loyihalar_royxat`, `buyurtmalar_royxat`); `PUT …/:id/blok` `{bloklangan, sabab}`; `GET /api/admin/loyihalar?q=&user=&arxiv=`; `GET /api/admin/buyurtmalar?q=&holat=`. Xatolar: `S3D-ADM-017` (bloklab bo'lmaydi), `S3D-AUTH-007` (topilmadi), `S3D-AUTH-021` (bloklangan kirish).
+4. **Audit/qaytarish:** `bolim` = `materiallar` (kalit `dekor:|rasm:|narx:`), `katalog` (kalit = modul kodi), `foydalanuvchilar` (kalit = id); `POST /api/admin/qaytar/:auditId` (qaytaruvchilar `admin-panel.js` registri orqali).
+5. **Sahifa:** `/admin/(materiallar|katalog|foydalanuvchilar)` (server `ILOVA_YOLI`, `web/src/app/marshrutlar.js`), `web/src/features/admin/{Materiallar,Katalog,Foydalanuvchilar}.jsx`, lug'at uz/ru/en.
+
+**Testlar:** `server/test/admin-faza2.test.js`; `tests/verify_admin_qatlam.mjs` (qatlam, hisobga ta'sir, ustunlik, AI tanlovi); `tests/ui/web_admin2Haqiqiy.mjs` (haqiqiy server: yuklash, bloklash, ilovadagi ta'sir, 3 til, 390 px).
+
+**Egasi qarori kerak:** (1) "narx rejimi" hisobga ta'sir qilsinmi (hozir faqat eski ogohlantirish) — yoki bo'limdan olib tashlansinmi; (2) bloklash adminni qamramaydi — admin akkauntini ham bloklash kerakmi; (3) rasm almashtirilganda eskisini saqlab qaytarish kerakmi (hozir yo'q — baza hajmi); (4) o'rnatma texnika (7 ta) uchun o'lcham chegarasi kerakmi.
+
