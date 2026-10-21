@@ -1735,5 +1735,16 @@
  "admin.tz_zaxira_papka_yoq": "Zaxira papkasi topilmadi.",
  "admin.tz_zaxira_soni": "Nusxalar soni",
  "admin.tz_zaxira_papka": "Papka",
- "admin.tz_zaxira_izoh": "Kunlik zaxira kutiladi: {soat} soatdan eski nusxa «eskirgan» hisoblanadi. Nusxani server (cron) oladi, panel uni yaratmaydi."
+ "admin.tz_zaxira_izoh": "Kunlik zaxira kutiladi: {soat} soatdan eski nusxa «eskirgan» hisoblanadi. Nusxani server (cron) oladi, panel uni yaratmaydi.",
+ "admin.tarix_kim": "Kim",
+ "admin.tarix_dan": "Sanadan",
+ "admin.tarix_gacha": "Sanagacha",
+ "admin.tarix_holat": "Holat",
+ "admin.tarix_h_faol": "Faol",
+ "admin.tarix_h_qaytarilgan": "Qaytarilgan",
+ "admin.tarix_qidir_ph": "Kalit bo'yicha qidirish (masalan: ustama, furnitura kodi)",
+ "admin.tarix_tozala": "Filtrni tozalash",
+ "admin.tarix_jami": "Jami: {n}",
+ "admin.tarix_yana": "Yana {n} ta",
+ "admin.tarix_farq_yana": "…yana {n} ta maydon"
 }

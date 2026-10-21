@@ -1839,5 +1839,16 @@
  "admin.tz_zaxira_papka_yoq": "Папка резервных копий не найдена.",
  "admin.tz_zaxira_soni": "Количество копий",
  "admin.tz_zaxira_papka": "Папка",
- "admin.tz_zaxira_izoh": "Ожидается ежедневная копия: старше {soat} ч считается «устаревшей». Копию делает сервер (cron), панель её не создаёт."
+ "admin.tz_zaxira_izoh": "Ожидается ежедневная копия: старше {soat} ч считается «устаревшей». Копию делает сервер (cron), панель её не создаёт.",
+ "admin.tarix_kim": "Кто",
+ "admin.tarix_dan": "С даты",
+ "admin.tarix_gacha": "По дату",
+ "admin.tarix_holat": "Статус",
+ "admin.tarix_h_faol": "Действует",
+ "admin.tarix_h_qaytarilgan": "Откачено",
+ "admin.tarix_qidir_ph": "Поиск по ключу (например: наценка, код фурнитуры)",
+ "admin.tarix_tozala": "Сбросить фильтр",
+ "admin.tarix_jami": "Всего: {n}",
+ "admin.tarix_yana": "Ещё {n}",
+ "admin.tarix_farq_yana": "…ещё полей: {n}"
 }

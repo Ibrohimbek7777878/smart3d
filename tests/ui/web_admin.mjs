@@ -66,7 +66,8 @@ async function asosiy(page, R) {
     if (p === '/api/admin/promptlar' && m === 'POST') return json(route, { id: 9, ...body });
     if (p.startsWith('/api/admin/promptlar/')) return json(route, { ok: true });
     if (p === '/api/admin/standart') return json(route, m === 'GET' ? std : body);
-    if (p === '/api/admin/audit') return json(route, [{ id: 7, bolim: 'narxlar', kalit: 'raspil', kim: 'admin@test.uz', vaqt: Date.now(), eski: '1000', yangi: '2000' }]);
+    if (p === '/api/admin/tarix') return json(route, { jami: 1, limit: 50, offset: 0, bolimlar: [{ bolim: 'furnitura', soni: 1 }], kimlar: [{ id: 1, nom: 'admin@test.uz', soni: 1 }],
+      items: [{ id: 'a7', manba: 'audit', bolim: 'furnitura', kalit: 'raspil', kim: 'admin@test.uz', kim_id: 1, vaqt: new Date().toISOString().slice(0, 19).replace('T', ' '), eski: '1000', yangi: '2000', qaytarilgan: false, qaytariladi: true }] });
     if (p.startsWith('/api/admin/qaytar/')) return json(route, { ok: true });
     return json(route, { error: 'yo\'q' }, 404);
   });
@@ -131,8 +132,8 @@ async function asosiy(page, R) {
   R.sukutKorpus = await page.locator('[data-f="korpus-nom"]').inputValue() === 'LDSP' && await page.locator('[data-f="oyoq-h"]').inputValue() === '100';
 
   /* 6) tarix */
-  await page.locator('[data-admin-tab="tarix"]').click(); await kut('[data-tarix-qator="7"]');
-  await page.locator('[data-tarix-qaytar="7"]').click(); await page.getByRole('dialog').getByRole('button', { name: /Qaytarish/ }).click(); await page.waitForTimeout(700);
+  await page.locator('[data-admin-tab="tarix"]').click(); await kut('[data-tarix-qator="a7"]');
+  await page.locator('[data-tarix-qaytar="a7"]').click(); await page.getByRole('dialog').getByRole('button', { name: /Qaytarish/ }).click(); await page.waitForTimeout(700);
   R.qaytarPost = !!oxirgi('POST', /qaytar\/7$/);
 
   /* 390 px: gorizontal skroll 0 (har bo'lim) + skrinshot */

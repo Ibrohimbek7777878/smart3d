@@ -1839,5 +1839,16 @@
  "admin.tz_zaxira_papka_yoq": "The backup folder was not found.",
  "admin.tz_zaxira_soni": "Number of copies",
  "admin.tz_zaxira_papka": "Folder",
- "admin.tz_zaxira_izoh": "A daily backup is expected: a copy older than {soat} h is “outdated”. The server (cron) makes the copy; the panel does not create it."
+ "admin.tz_zaxira_izoh": "A daily backup is expected: a copy older than {soat} h is “outdated”. The server (cron) makes the copy; the panel does not create it.",
+ "admin.tarix_kim": "Who",
+ "admin.tarix_dan": "From date",
+ "admin.tarix_gacha": "To date",
+ "admin.tarix_holat": "Status",
+ "admin.tarix_h_faol": "Active",
+ "admin.tarix_h_qaytarilgan": "Reverted",
+ "admin.tarix_qidir_ph": "Search by key (e.g. markup, hardware code)",
+ "admin.tarix_tozala": "Clear filters",
+ "admin.tarix_jami": "Total: {n}",
+ "admin.tarix_yana": "{n} more",
+ "admin.tarix_farq_yana": "…{n} more fields"
 }

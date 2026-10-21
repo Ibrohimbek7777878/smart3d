@@ -15,6 +15,7 @@ import adminMateriallar from './admin-materiallar.js';
 import adminKatalog from './admin-katalog.js';
 import adminFoydalanuvchilar from './admin-foydalanuvchilar.js';
 import adminTizim from './admin-tizim.js';
+import adminTarix from './admin-tarix.js';
 
 const KOD_RE = /^[A-Za-z0-9][A-Za-z0-9_.\-]{0,79}$/;
 const ID_RE = /^[a-z0-9][a-z0-9_-]{1,59}$/;
@@ -355,7 +356,7 @@ export default function adminPanelRouter(ctx) {
   /* ═══════════ 2-FAZA: materiallar, modullar katalogi, foydalanuvchilar — o'z fayllarida; umumiy yordamchilar shu yerdan ═══════════ */
   const yordam = { guard, yoz, matn, himoya, Kirish, qaytaruvchilar };
   /* 3-faza: tizim (8), tarix kengaytmasi, ERP sinxronlash */
-  for (const f of [adminMateriallar, adminKatalog, adminFoydalanuvchilar, adminTizim]) r.use(f(ctx, yordam));
+  for (const f of [adminMateriallar, adminKatalog, adminFoydalanuvchilar, adminTizim, adminTarix]) r.use(f(ctx, yordam));
 
   return r;
 }

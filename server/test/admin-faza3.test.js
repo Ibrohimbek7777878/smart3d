@@ -180,3 +180,165 @@ test('tizim: zaxira holati — yo\'q → yaxshi (yangi nusxa) → eskirgan (36 s
   assert.equal(z.holat, 'yaxshi'); assert.equal(z.oxirgi.fayl, 'smart3d-2026-10-21-03-00-00.db'); assert.ok(z.oxirgi.yosh_soat >= 2.9 && z.oxirgi.yosh_soat < 3.5);
   assert.equal(z.soni, 8);
 });
+
+/* ═══════════════════ O'ZGARISHLAR TARIXI (kengaytma) ═══════════════════ */
+const kun = (n) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
+const XIZMAT = (qiymat = 21000) => ({ nom: 'Sinov raspili', guruh: 'raspil', qiymat, birlik: 'list', kategoriya: 'Услуги Распила', manba: 'egasi' });
+const tarix = async (X, q = '') => (await (await X.A('/api/admin/tarix' + q)).json());
+const narxHujjat = async (X) => (await (await X.api('/api/narxlar')).json());
+
+test('tarix: admin bo\'lmasa 404 S3D-AUTH-006; boshida bo\'sh', async () => {
+  const X = S.A;
+  for (const [m, p] of [['GET', '/api/admin/tarix'], ['POST', '/api/admin/narx-qaytar/1']]) for (const token of [undefined, X.ustaA.token]) {
+    const r = await X.api(p, { method: m, token, body: m === 'POST' ? {} : undefined });
+    assert.equal(r.status, 404, `${m} ${p}`); assert.equal((await r.json()).code, 'S3D-AUTH-006');
+  }
+  const j = await tarix(X);
+  assert.deepEqual([j.jami, j.items.length, j.limit, j.offset, j.bolimlar.length, j.kimlar.length], [0, 0, 50, 0, 0, 0]);
+});
+
+const TOK = {};      // admin tokenlari (1, 2) va id lari
+test('tarix: har bo\'limdan o\'zgarish bitta ro\'yxatda (audit + narxlar); kim va bo\'lim hisoblari; yangisi birinchi', async () => {
+  const X = S.A, [t1, t2] = X.adminlar;
+  TOK.t1 = t1; TOK.t2 = t2;
+  const put = (p, token, body, method = 'PUT') => X.api(p, { method, token, body });
+  assert.equal((await put('/api/narxlar', t1, { xizmatlar: { X1: XIZMAT() } })).status, 200);
+  assert.equal((await put('/api/narxlar', t1, { tanlov: { raspil: 'X1' }, ustama: { foiz: 40 } })).status, 200);
+  const furnId = J('furnitura-catalog.json').items.find(x => x.id).id;
+  assert.equal((await put('/api/admin/furnitura-boglash/TARIX-1', t2, { erp_id: furnId, koef: 0.5, izoh: 'sinov' })).status, 200);
+  assert.equal((await put('/api/admin/standart', t1, { ...(await (await X.api('/api/standart')).json()), oyoqBalandlik: 120 })).status, 200);
+  assert.equal((await put('/api/admin/katalog/SP-K-001', t2, { yashirin: true })).status, 200);
+  assert.equal((await put('/api/admin/promptlar', t1, { kat: 'oshxona', nom_uz: 'Tarix sinovi', matn_uz: 'oshxona 3 metr' }, 'POST')).status, 201);
+  const j = await tarix(X);
+  assert.equal(j.jami, 7, 'narxlar: xizmatlar.X1, tanlov.raspil, ustama.foiz; audit: furnitura, standart, katalog, promptlar');
+  assert.equal(j.items.length, 7);
+  assert.deepEqual(j.bolimlar, [{ bolim: 'furnitura', soni: 1 }, { bolim: 'katalog', soni: 1 }, { bolim: 'narxlar', soni: 3 }, { bolim: 'promptlar', soni: 1 }, { bolim: 'standart', soni: 1 }]);
+  const t0 = j.items.map(x => x.vaqt);
+  assert.deepEqual(t0, [...t0].sort().reverse(), 'yangisi birinchi (vaqt kamayib boradi)');
+  const nx = j.items.filter(x => x.manba === 'narx');
+  assert.equal(nx.length, 3); assert.ok(nx.every(x => /^n\d+$/.test(x.id) && x.bolim === 'narxlar' && x.qaytariladi === true && x.qaytarilgan === false));
+  const ust = nx.find(x => x.kalit === 'ustama.foiz');
+  assert.equal(ust.eski.qiymat, 35); assert.equal(ust.yangi.qiymat, 40);
+  const fu = j.items.find(x => x.bolim === 'furnitura');
+  assert.deepEqual([fu.kalit, fu.eski, fu.yangi.koef, fu.manba, fu.qaytariladi], ['TARIX-1', null, 0.5, 'audit', true]);
+  assert.equal(j.kimlar.length, 2); TOK.id1 = j.kimlar[0].id; TOK.id2 = fu.kim_id;
+  assert.deepEqual(j.kimlar.map(k => k.soni), [5, 2], 'birinchi admin: narxlar 3 + standart + promptlar; ikkinchi: furnitura + katalog (ko\'pi birinchi)');
+  assert.ok(j.kimlar.every(k => k.nom && k.id > 0));
+  assert.ok(j.items.every(x => Date.parse(x.vaqt.replace(' ', 'T') + 'Z') > Date.now() - 60000 && x.kim));
+});
+
+test('tarix: filtr — bo\'lim, kim, sana oralig\'i, holat, kalit bo\'yicha qidiruv', async () => {
+  const X = S.A;
+  const kalitlar = (j) => j.items.map(x => x.bolim + ':' + x.kalit).sort();
+  assert.deepEqual((await tarix(X, '?bolim=narxlar')).items.map(x => x.kalit).sort(), ['tanlov.raspil', 'ustama.foiz', 'xizmatlar.X1']);
+  assert.equal((await tarix(X, '?bolim=standart')).jami, 1);
+  assert.equal((await tarix(X, '?bolim=yoq_bolim')).jami, 0);
+  const k2 = await tarix(X, '?kim=' + TOK.id2);
+  assert.equal(k2.jami, 2); assert.deepEqual(kalitlar(k2), ['furnitura:TARIX-1', 'katalog:SP-K-001']);
+  assert.equal((await tarix(X, `?kim=${TOK.id1}&bolim=narxlar`)).jami, 3);
+  assert.equal((await tarix(X, `?kim=${TOK.id2}&bolim=narxlar`)).jami, 0);
+  assert.equal((await tarix(X, '?kim=999999')).jami, 0);
+  assert.equal((await tarix(X, `?dan=${kun(-1)}&gacha=${kun(1)}`)).jami, 7);
+  assert.equal((await tarix(X, `?dan=${kun(0)}&gacha=${kun(0)}`)).jami, 7, 'ikkala chegara ham kiradi (UTC)');
+  assert.equal((await tarix(X, `?dan=${kun(1)}`)).jami, 0); assert.equal((await tarix(X, `?gacha=${kun(-1)}`)).jami, 0);
+  assert.equal((await tarix(X, '?holat=faol')).jami, 7); assert.equal((await tarix(X, '?holat=qaytarilgan')).jami, 0);
+  assert.deepEqual(kalitlar(await tarix(X, '?q=raspil')), ['narxlar:tanlov.raspil'], 'kalit ichida qidiruv (katta-kichik harf farqsiz)');
+  assert.equal((await tarix(X, '?q=RASPIL')).jami, 1);
+  assert.equal((await tarix(X, '?q=X1')).jami, 1); assert.equal((await tarix(X, '?q=%25')).jami, 0, '% oddiy belgi sifatida'); assert.equal((await tarix(X, '?q=_')).jami, 0);
+  const birga = await tarix(X, `?bolim=narxlar&q=ustama&kim=${TOK.id1}&dan=${kun(-1)}`);
+  assert.deepEqual(kalitlar(birga), ['narxlar:ustama.foiz']);
+  /* bo'limlar hisobi — bo'lim filtrini hisobga olmaydi (chiplar uchun), qolgan filtrlarni oladi */
+  const b = await tarix(X, `?bolim=narxlar&kim=${TOK.id2}`);
+  assert.equal(b.jami, 0); assert.deepEqual(b.bolimlar.map(x => x.bolim), ['furnitura', 'katalog']);
+});
+
+test('tarix: sahifalash — limit/offset, jami o\'zgarmaydi, sahifalar birlashsa to\'liq ro\'yxat', async () => {
+  const X = S.A;
+  const hammasi = (await tarix(X, '?limit=200')).items.map(x => x.id);
+  assert.equal(hammasi.length, 7);
+  const s1 = await tarix(X, '?limit=3'), s2 = await tarix(X, '?limit=3&offset=3'), s3 = await tarix(X, '?limit=3&offset=6'), s4 = await tarix(X, '?limit=3&offset=9');
+  assert.deepEqual([s1.items.length, s2.items.length, s3.items.length, s4.items.length], [3, 3, 1, 0]);
+  assert.ok([s1, s2, s3, s4].every(s => s.jami === 7) && s2.offset === 3 && s2.limit === 3);
+  assert.deepEqual([...s1.items, ...s2.items, ...s3.items].map(x => x.id), hammasi);
+  assert.equal(new Set(hammasi).size, 7, 'takror yo\'q');
+});
+
+test('tarix: noto\'g\'ri parametr — 400 S3D-ADM-001', async () => {
+  const X = S.A;
+  for (const q of ['?limit=0', '?limit=201', '?limit=abc', '?offset=-1', '?kim=abc', '?kim=0x1', '?dan=2026-13-01', '?dan=2026-02-30', '?dan=26-1-1', `?dan=${kun(2)}&gacha=${kun(-2)}`,
+    '?holat=x', '?bolim=A;DROP', '?bolim=' + 'a'.repeat(31), '?q=' + 'a'.repeat(101), '?q[]=1', '?dan[]=2026-01-01']) {
+    const r = await X.A('/api/admin/tarix' + q);
+    assert.equal(r.status, 400, q); assert.equal((await r.json()).code, 'S3D-ADM-001', q);
+  }
+});
+
+test('narxlarni qaytarish: ustama — eski qiymat AYNAN tiklanadi (manba va sana ham), qaytarish tarixga yoziladi, ikkinchi marta — 409', async () => {
+  const X = S.A, t = TOK.t2;
+  const ust = (await tarix(X, '?q=ustama')).items[0];
+  assert.equal(ust.qaytariladi, true);
+  const r = await X.api('/api/admin/narx-qaytar/' + ust.id.slice(1), { method: 'POST', token: t, body: {} });
+  assert.equal(r.status, 200); assert.deepEqual(await r.json(), { ok: true, qaytarildi: ust.id, bolim: 'narxlar', kalit: 'ustama.foiz' });
+  assert.deepEqual((await narxHujjat(X)).ustama.foiz, ust.eski, 'qiymat, manba va sana avvalgidek');
+  const j = await tarix(X, '?q=ustama');
+  assert.equal(j.jami, 2);
+  assert.equal(j.items.find(x => x.id === ust.id).qaytarilgan, true); assert.equal(j.items.find(x => x.id === ust.id).qaytariladi, false);
+  const yangi = j.items.find(x => x.id !== ust.id);
+  assert.deepEqual([yangi.eski.qiymat, yangi.yangi.qiymat, yangi.kim_id], [40, 35, TOK.id2], 'qaytarish: kim, eski → yangi');
+  assert.equal((await tarix(X, '?holat=qaytarilgan')).jami, 1);
+  const q2 = await X.api('/api/admin/narx-qaytar/' + ust.id.slice(1), { method: 'POST', token: t, body: {} });
+  assert.equal(q2.status, 409); assert.equal((await q2.json()).code, 'S3D-ADM-007');
+  /* qaytarishni ham qaytarish mumkin */
+  assert.equal((await X.api('/api/admin/narx-qaytar/' + yangi.id.slice(1), { method: 'POST', token: t, body: {} })).status, 200);
+  assert.equal((await narxHujjat(X)).ustama.foiz.qiymat, 40);
+  assert.equal((await X.api('/api/admin/narx-qaytar/' + (await tarix(X, '?q=ustama&holat=faol')).items[0].id.slice(1), { method: 'POST', token: t, body: {} })).status, 200);
+  assert.equal((await narxHujjat(X)).ustama.foiz.qiymat, 35);
+});
+
+test('narxlarni qaytarish: xizmat va tanlov — bog\'liq tozalash; noma\'lum va noto\'g\'ri id', async () => {
+  const X = S.A, t = TOK.t1;
+  const bosh = (await narxHujjat(X)).tanlov.raspil;
+  assert.equal(bosh, 'X1', 'oldingi testdan: raspil X1 ga o\'tgan');
+  /* xizmat X1 qo'shilishini qaytarish: unga bog'langan tanlov (raspil) ham bo'shaydi (yangi tarix yozuvi bilan) */
+  const x1 = (await tarix(X, '?q=xizmatlar.X1&holat=faol')).items.find(x => x.eski === null);
+  const r = await X.api('/api/admin/narx-qaytar/' + x1.id.slice(1), { method: 'POST', token: t, body: {} });
+  assert.equal(r.status, 200);
+  const h = await narxHujjat(X);
+  assert.equal(h.xizmatlar.X1, undefined); assert.equal(h.tanlov.raspil, null, 'o\'chirilgan xizmatga bog\'langan tanlov tozalandi');
+  const yoz = await tarix(X, '?bolim=narxlar&holat=faol&limit=10');
+  assert.ok(yoz.items.some(x => x.kalit === 'tanlov.raspil' && x.eski === 'X1' && x.yangi === null), 'tozalash ham tarixda');
+  /* tanlovni qaytarish: tanlov.raspil eski qiymati ('7802360156' — Holzma 2) tiklanadi */
+  const tn = (await tarix(X, '?q=tanlov.raspil&holat=faol')).items.find(x => x.eski === '7802360156' && x.yangi === 'X1');
+  assert.equal((await X.api('/api/admin/narx-qaytar/' + tn.id.slice(1), { method: 'POST', token: t, body: {} })).status, 200);
+  assert.equal((await narxHujjat(X)).tanlov.raspil, '7802360156');
+  for (const id of ['99999', 'abc', '-1', '1e3', '0']) {
+    const q = await X.api('/api/admin/narx-qaytar/' + id, { method: 'POST', token: t, body: {} });
+    assert.equal(q.status, 404, id); assert.equal((await q.json()).code, 'S3D-ADM-006');
+  }
+  /* shaklsiz kalit (narx_history ga qo'lda yozilgan) — qaytarib bo'lmaydi (409), hujjat o'zgarmaydi */
+  const db = X.sql(); const id = Number(db.prepare("INSERT INTO narx_history (user_id, kalit, eski, yangi) VALUES (1, 'noma.lum', '1', '2')").run().lastInsertRowid); db.close();
+  const asl = JSON.stringify(await narxHujjat(X));
+  const q = await X.api('/api/admin/narx-qaytar/' + id, { method: 'POST', token: t, body: {} });
+  assert.equal(q.status, 409); assert.equal((await q.json()).code, 'S3D-ADM-007'); assert.equal(JSON.stringify(await narxHujjat(X)), asl);
+  assert.equal((await tarix(X, '?q=noma.lum')).items[0].qaytariladi, false, 'ro\'yxat ham "qaytarib bo\'lmaydi" deydi');
+});
+
+test('har bir "qaytariladi" yozuv haqiqatan qaytariladi (audit — /api/admin/qaytar, narxlar — /api/admin/narx-qaytar); qaytarilganlar belgilanadi', async () => {
+  const X = S.A;
+  const fa = (await tarix(X, '?holat=faol&limit=200')).items.filter(x => x.qaytariladi);
+  assert.ok(fa.length >= 4, 'furnitura, standart, katalog, promptlar bor: ' + fa.length);
+  const bolimlar = new Set(fa.map(x => x.bolim));
+  for (const b of ['furnitura', 'standart', 'katalog', 'promptlar']) assert.ok(bolimlar.has(b), b);
+  let n = 0;
+  for (const x of fa) {                                                    // yangidan eskiga
+    const id = x.id.slice(1);
+    const r = await X.A(x.manba === 'audit' ? '/api/admin/qaytar/' + id : '/api/admin/narx-qaytar/' + id, { method: 'POST', body: {} });
+    assert.equal(r.status, 200, x.id + ' ' + x.bolim + ':' + x.kalit); n++;
+  }
+  assert.ok(n >= 4);
+  const j = await tarix(X, '?limit=200');
+  for (const x of fa) assert.equal(j.items.find(y => y.id === x.id).qaytarilgan, true, x.id);
+  assert.equal(j.items.filter(x => x.qaytarilgan).length, (await tarix(X, '?holat=qaytarilgan')).jami);
+  /* furnitura va katalog haqiqatan tiklandi */
+  assert.equal((await (await X.A('/api/admin/furnitura-boglash')).json()).links.some(l => l.kod === 'TARIX-1'), false);
+  assert.deepEqual((await (await X.api('/api/katalog')).json()).modullar, {});
+});
