@@ -3,9 +3,9 @@ import { S } from '../../store/session.js';
 import { toast, xato } from '../../store/ui.js';
 import { t, serverXato } from '../../i18n/index.js';
 
-/* TZ-37 (1-faza; 2-faza: materiallar, katalog): admin panel — server /api/admin/* (faqat role=admin). Bo'limlar: manzil /admin/<bolim> (app/marshrutlar.js). */
-export const BOLIMLAR = ['narxlar', 'furnitura', 'materiallar', 'katalog', 'promptlar', 'standart', 'tarix'];
-export const BOLIM_IKON = { narxlar: 'narx', furnitura: 'furnitura', materiallar: 'material', katalog: 'mebel', promptlar: 'ai', standart: 'konstruktor', tarix: 'qayta' };
+/* TZ-37 (1-faza; 2-faza: materiallar, katalog, foydalanuvchilar): admin panel — server /api/admin/* (faqat role=admin). Bo'limlar: manzil /admin/<bolim> (app/marshrutlar.js). */
+export const BOLIMLAR = ['narxlar', 'furnitura', 'materiallar', 'katalog', 'promptlar', 'standart', 'foydalanuvchilar', 'tarix'];
+export const BOLIM_IKON = { narxlar: 'narx', furnitura: 'furnitura', materiallar: 'material', katalog: 'mebel', promptlar: 'ai', standart: 'konstruktor', foydalanuvchilar: 'foydalanuvchilar', tarix: 'qayta' };
 
 export const adminMi = (u) => !!u && u.role === 'admin';
 

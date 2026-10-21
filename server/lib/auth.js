@@ -28,7 +28,8 @@ export function createAuth({ db, cfg }) {
   const COOKIE_MS = msOf(JWT_EXPIRES);
   const cookieOpts = { httpOnly: true, secure: PROD, sameSite: 'strict', path: '/' };
   const isRevoked = db.prepare('SELECT 1 FROM revoked_tokens WHERE jti = ?');
-  const userTv = db.prepare('SELECT token_version FROM users WHERE id = ?');
+  const isBlocked = db.prepare('SELECT 1 FROM users WHERE id = ? AND bloklangan = 1');
+  const userTv = db.prepare('SELECT token_version, bloklangan FROM users WHERE id = ?');
 
   function readToken(req) {
     const h = req.headers.authorization || '';
@@ -42,6 +43,7 @@ export function createAuth({ db, cfg }) {
       if (p.jti && isRevoked.get(p.jti)) return null;
       const u = userTv.get(p.id);
       if (!u || (u.token_version || 0) !== (p.tv || 0)) return null;
+      if (u.bloklangan) return null;                // TZ-37 (2-faza): admin blokladi — ochiq kalit yaroqsiz (401: sayt chiqaradi); qayta kirishda S3D-AUTH-021
       return p;
     } catch (e) { return null; }
   }
@@ -65,6 +67,7 @@ export function createAuth({ db, cfg }) {
     JWT_SECRET, { expiresIn: JWT_EXPIRES, algorithm: 'HS256' });
   /** kirish javobi: kalit cookie'ga yoziladi; yangi sayt (sessiya: 'cookie') kalitni javobda olmaydi — JS uni hech qachon ko'rmaydi */
   function sendSession(req, res, u, body, { cookie = true } = {}) {
+    if (isBlocked.get(u.id)) return fail(res, 'S3D-AUTH-021');   // TZ-37 (2-faza): hamma kirish yo'llari (parol, SMS, Google, Telegram) shu yerdan o'tadi
     const token = signToken(u);
     if (cookie) res.cookie(SESS, token, { ...cookieOpts, maxAge: COOKIE_MS });
     res.json(cookie && req.body && req.body.sessiya === 'cookie' ? body : { token, ...body });

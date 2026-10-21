@@ -1,4 +1,4 @@
-/* TZ-37 (1-faza; 2-faza: 7 bo'lim tabi): admin panel sahifalari — API SHARTNOMA shaklida soxtalashtiriladi (page.route; backend alohida qurilmoqda).
+/* TZ-37 (1-faza; 2-faza: 8 bo'lim tabi): admin panel sahifalari — API SHARTNOMA shaklida soxtalashtiriladi (page.route; backend alohida qurilmoqda).
  * Tekshiriladi: admin bo'lmagan → 404 ko'rinishi; admin → 5 bo'lim; furnitura PUT/DELETE tanasi; promptlar POST/PUT;
  * standart PUT; tarix qaytarish POST; 390 px da gorizontal skroll 0; uz/ru/en. Ishlatish: bash tests/ui/web.sh admin */
 export default async function run(page) {
@@ -155,7 +155,7 @@ async function asosiy(page, R) {
   }
   R.xatolarYoq = !errs.length; if (errs.length) R.errs = errs.slice(0, 3);
 
-  R.ok = R.adminHavolaUstada && R.yoq404 && R.yoq404Matn && R.yoqTabYoq && R.tablar === 7 && R.manzil === '/admin' && R.narxlarBolim && R.bolim_furnitura && R.bolim_promptlar &&
+  R.ok = R.adminHavolaUstada && R.yoq404 && R.yoq404Matn && R.yoqTabYoq && R.tablar === 8 && R.manzil === '/admin' && R.narxlarBolim && R.bolim_furnitura && R.bolim_promptlar &&
     R.bolim_standart && R.bolim_tarix && R.manzil_tarix === '/admin/tarix' && R.narxsizTepada && R.katalogTopdi && R.erpTanlandi && R.tushuntirish && R.putTana && R.deleteYuborildi &&
     R.faylQatorOchirYoq && R.guruhlar === 2 && R.postTana && R.tartibPut && R.faolPut && R.sinash && R.promptDelete && R.standartPut && R.sukutKorpus && R.qaytarPost &&
     Object.values(R.skroll390).every(Boolean) && Object.values(R.til).every(Boolean) && R.xatolarYoq;

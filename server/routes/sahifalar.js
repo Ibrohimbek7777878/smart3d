@@ -11,7 +11,7 @@ const noCache = (f) => /\.(html|webmanifest)$/.test(f) || /[\/](sw|registerSW)\.
  * manzildan tanlaydi: /kirish, /royxat, /loyihalar, /loyiha/yangi, /loyiha/<raqam>, /sozlamalar, /sozlamalar/narxlar, /buyurtmalar, /tg
  * (oxirida "/" bo'lsa ham). Faqat shu ro'yxat: boshqa yo'l — 404 (hamma narsani app.html ga burish yo'q).
  * Bu yo'llar /app.html bilan bir xil sarlavha oladi (bir xil hujjat; Telegram ichida qayta yuklansa ham ishlaydi) — index.js, himoya.js. */
-export const ILOVA_YOLI = /^\/(kirish|royxat|loyihalar|loyiha\/(yangi|\d{1,15})|sozlamalar(\/narxlar)?|buyurtmalar|admin(\/(narxlar|furnitura|materiallar|katalog|promptlar|standart|tarix))?|tg)\/?$/;
+export const ILOVA_YOLI = /^\/(kirish|royxat|loyihalar|loyiha\/(yangi|\d{1,15})|sozlamalar(\/narxlar)?|buyurtmalar|admin(\/(narxlar|furnitura|materiallar|katalog|promptlar|standart|foydalanuvchilar|tarix))?|tg)\/?$/;
 
 /** → { statik: router (fayllar va ilova manzillari), topilmadi: middleware, hasWeb } */
 export function sahifalar({ webDist, eski }) {
