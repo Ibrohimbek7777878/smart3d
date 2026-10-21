@@ -90,6 +90,6 @@ async function asosiy(page, R) {
   await shot('7-eshiklar');
 
   R.errs = errs;
-  R.ok = R.sahna && R.namunaNarxEmas && R.recalcXato === 'ok' && /\d/.test(R.narx1 || '') && R.katalog === '130' &&   // TZ-22: +2 yon dobor; 2026-10-16: +6 stol (texnika kodi SP-TX ga ko'chdi)
+  R.ok = R.sahna && R.namunaNarxEmas && R.recalcXato === 'ok' && /\d/.test(R.narx1 || '') && R.katalog === '191' &&   // TZ-22: +2 yon dobor; 2026-10-16: +6 stol (texnika kodi SP-TX ga ko'chdi); TZ-37 full base: +61 MC-FB (130 → 191)
     R.qoshildi && R.nusxa && !!R.narxBosqich.raskroy && !!R.tekshiruv && errs.length === 0;
 }
