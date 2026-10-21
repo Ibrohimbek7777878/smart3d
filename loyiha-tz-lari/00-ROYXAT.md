@@ -1,6 +1,6 @@
 # Loyiha TZ'lari — ro'yxat va navbat
 
-**Yangilandi:** 2026-10-17
+**Yangilandi:** 2026-10-21
 
 ## Qanday ishlaydi
 - Har ish uchun alohida TZ shu papkada. Bajarish **navbat bilan**.
@@ -47,15 +47,18 @@
 | 30 | [Sahifa manzillari, server modullari, ustama 35%, Asosiy 100 material, AI katalogdan](30-manzillar-server-ai-katalog.md) | **BAJARILDI** 2026-10-17 (jamoa, `dizayn` ae9c5f1) — testchi O'TDI, AI 14/14 so'rov | egasi: stoleshnitsa narxlari, `server/src` o'chirish, git tarixi, production joylash |
 | 31 | [Google bilan kirish va VR (shlemda)](31-google-kirish-va-vr.md) | **BAJARILDI** 2026-10-18 (jamoa smart3d-51, `dizayn` 139209b) — testchi O'TDI | admin: `GOOGLE_CLIENT_ID` (Google Cloud OAuth); egasi: haqiqiy shlemda sinov |
 | 32 | [Narx aniqligi 95%, stoleshnitsa narxi, 85 umumiy modul](32-narx-95-va-85-modul.md) | egasisiz bandlar (A1–A6, B1–B7) **BAJARILDI** 2026-10-21 (`agent/narx32`) — aniqlik 4/5 loyihada 99%, 5 umumiy modul 91%; 85 modul 8 tur bo'yicha testda | egasi: TS-1730, NOG-90 va 18 narxsiz furnitura, 12 quti-modul, K-004/BD-005 nomi, GD-04 vintli modullar mahkamlagichi |
-| 33 | [SketchUp (.skp) va Bazis eksport](33-sketchup-va-b3d-eksport.md) | TAKLIF (egasi #198, #200) — .skp Free va Pro uchun (`openskp`), .dae zaxira, BPJ → Bazis | egasi: "boshla"; o'zimizning .b3d yozuvchi — hozirmi yoki BPJ sinovidan keyin |
+| 33 | [SketchUp (.skp) va Bazis eksport](33-sketchup-va-b3d-eksport.md) | **BAJARILDI** (kod `main`'da): .skp, .dae (openskp 1.3.0), .obj, Bazis .bpj va .b3d yozuvchi; fayl tuzilmasi mustaqil o'quvchilar bilan tekshirilgan — **haqiqiy dasturda ochilishi tekshirilmagan** (SINOV) | egasi: .skp ni SketchUp Free/Pro'da, .b3d/.bpj ni Bazis'da ochib ko'rish ([TZ-42](42-fayl-formatlari.md)) |
 | 34 | [Production'ni yangi versiyaga o'tkazish va git orqali yangilash](34-production-yangilash.md) | **8-band BAJARILDI** (`yangilash.sh`, dizayn 00cbbd9); serverga o'tkazish — TASDIQ KUTILMOQDA (smart3d-51) | egasi: tarmoq (dizayn/main), kim bajaradi (admin yoki Claude'ga yozish ruxsati), vaqt; admin: zaxira, .env/baza ko'chirish, servis |
 | 35 | [Yotoqxona garnituri (klassik) va AI matnni bo'laklarga ajratish](35-yotoqxona-garnituri-va-ai-matn.md) | **BAJARILDI** 2026-10-18 (`dizayn` faf5392, CI yashil) — krovat/komod-trimo/klassik 3D, garnitur 5 modul, tushunilmaganlar kartada | egasi: yumshoq oyoq, kupe o'rniga klassik shkaf, ramkali ko'zgu, push narxi, trimo o'lchami |
-| 36 | [Qolgan ishlar va productionga tayyorlash](36-qolgan-ishlar-va-production.md) | **BAJARILMOQDA** 2026-10-18 (agent/prod, agent/narxbuyurtma) — serverga egasi qo'lda o'tkazadi | egasi: stanok formatlari, yo'q modullar, narxsiz furnitura, haqiqiy sinovlar |
+| 36 | [Qolgan ishlar va productionga tayyorlash](36-qolgan-ishlar-va-production.md) | **P1–P10 BAJARILDI** (`main` f42a318: nginx, Dockerfile, DEPLOY.md, `.env.example`, `tekshiruv.sh`, `PRODUCTION-RO'YXAT.md`); serverga egasi qo'lda o'tkazadi | egasi: stanok formatlari, yo'q modullar, narxsiz furnitura, haqiqiy sinovlar |
 | 37 | [Universal admin panel (`/admin`)](37-admin-panel.md) | **1-FAZA BAJARILDI** 2026-10-18 (`main`) — narxlar, furnitura bog'lash, promptlar, standart; 2–3-fazalar kutilmoqda | egasi: 2-faza "boshla"si; samorez 1 kg dagi dona soni |
 | 38 | [Zapchastlar 3D da ko'rinsin (detal kartasi, ichini ko'rish, rentgen)](38-zapchast-3d-korinishi.md) | **BAJARILDI** 2026-10-19 (`main` 2881e26) — "Zapchastlar" tugmasi, ro'yxat paneli, detal kartasi, ichini ko'rish | egasi: haqiqiy 3D shakl (2-bosqich) kerakmi; oyoq joyi taxminiy |
 | 39 | [Zapchast ko'rinishi slayddagidek aniq (tugma, kadrlash, belgilar)](39-zapchast-korinishi-aniq.md) | **BAJARILDI** 2026-10-19 (`main` 087d0e3) — yozuvli tugma, kadrlash, rangli belgilar, legend, tor panel | egasi: modul kartasi yashirilishi dizayndan chetga chiqadimi |
 | 40 | [Tayyor promptlar tuzilma bo'lib saqlansin, AI token nazorati](40-ai-token-tejash.md) | **BAJARILDI** 2026-10-19 (`main`) — tayyor prompt 0 token, kesh, sarf nazorati, admin "AI sarfi" | egasi: kunlik (30) va oylik (2 000 000 token) chegara sonlari |
 | 41 | [Modullar max/min: jahon standarti va sex jadvali (tahlil)](41-modul-minmax-standart-jadvali.md) | **TAHLIL BAJARILDI** 2026-10-19 (41-natija-modul-minmax.md) | egasi: 5 savol (ustki chuqurlik, krovat uzunligi, parta, sokl, yo'q modullar) |
+| 42 | [Fayl formatlari: sexdagi haqiqiy fayllarga moslash](42-fayl-formatlari.md) | **1-BOSQICH BAJARILDI** 2026-10-21 (`main` aa1f8b6) — Rover .ncc/.tap sex fayllari shaklida, teshiklar JSON to'liq (186) | egasi/texnolog: Rover'da 1 detal, Bazis'da .b3d/.bpj, SketchUp, GibLab'da haqiqiy sinov |
+
+> Eslatma: raqam takrorlangan — **37** (admin panel va `37-fragmentlar-50.md` — full base 61 modul) va **41** (`41-modul-minmax-standart-jadvali.md` va `41-natija-modul-minmax.md` — tahlil va natija). Fayl nomlari o'zgartirilmadi (commit xabarlari va havolalar buzilmasin).
 
 **Navbat sababi:**
 - **01** — stanokka noto'g'ri fayl ketishining oldini oladi.
