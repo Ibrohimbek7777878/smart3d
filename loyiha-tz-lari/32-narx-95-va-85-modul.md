@@ -1,6 +1,6 @@
 # TZ-32 — Narx aniqligi 95%, stoleshnitsa narxi, 85 umumiy modul
 
-**Sana:** 2026-10-18 · **Navbat:** 32 · **Holat:** TAKLIF — egasining javobi va "boshla" kutilmoqda
+**Sana:** 2026-10-18 · **Navbat:** 32 · **Holat:** egasisiz bandlar (A1–A6, B1–B7) **BAJARILDI** 2026-10-21 (`agent/narx32`; asosiy qismi 2026-10-18…20 da `main` ga kirgan) — egasi javobi kutayotganlar 6-bo'limda
 **Asos:** egasi #194 ("narx aniqligini 95% ga ko'tar; stoleshnitsa narxi mening fayllarimda yo'qmi; 85 modulni to'g'irla; narx aniq bo'lsin").
 **VR** — TZ-31 da (boshqa chat, egasi #196–197). Bu TZ VR'ga tegmaydi.
 
@@ -150,3 +150,22 @@ Boshqa chatning TZ-31 fayllariga tegilmaydi: `scene.js`, `sahna.js`, `auth*`.
 - Foiz avval pasayadi (43–51%), chunki narxi faylda yo'q plita endi tasdiqlangan deb hisoblanmaydi.
 - 2–3-savollarga javob kelsa — 74–94%.
 - 1-savolga ham javob kelsa — 95% dan yuqori.
+
+## 6. Natija (2026-10-21, agent/narx32) — egasisiz bandlar
+
+| Band | Holat | Dalil |
+|---|---|---|
+| A1 sukut plita manbasi | bor edi | e6e9035 (price_src, "taxminiy"), e31a72f/86fd744 (LDSP16 = ERP 10807, MDF16 = ERP 11578, HDF3 = ERP); `verify_narx_halol`, `verify_narx_erp` |
+| A2 teshik turi → sex qatori | bor edi | e6e9035 `TESHIK_UMUMIY` (evrovint, evrovint_torets, d6_polka, d6_ruchka, d6_vint, d6_planka, d6_napr); 11 ta teshik kalitidan 10 tasi sex qatoriga bog'langan, `drill` (eski shablon) — sex qatori yo'q |
+| A3 soni 0 qator narxga kirmaydi | bor edi | e6e9035, `cutlist.js` `.filter(hw => hw.qty > 0)` |
+| A4 petlya soni bitta qoida | bor edi | e6e9035: hamma yo'l `d6.petlyaSoni` (cutlist 4b, SP D6, MC, chizish.js) |
+| A5/A6 ish haqi faqat yig'ish uchun | bor edi | e6e9035 (nom, `sex_xizmati`), c29ae98 (egasi #223: ERP'dagidek — ish haqi qatori yo'q); ikki marta hisob yo'q |
+| B1 polkaderjatel | bor edi | 6bcdc6b (ERP 90002019), `verify_modul85` FURN |
+| B2 kromka | bor edi | 7a8034e, `verify_modul85` KROMKA |
+| B3 `standart` | bor edi (30 modul) | db7516d; TZ "31" — 31-chisi aniqlanmadi (nomzod SP-K-012 deraza osti, SP-W-008 poyabzal shkafi: tur qoidasi egasi/texnologdan) |
+| B4 konfirmat | bor edi | 62ca3e0 (MC jadvali: chetdan 60, qadam 32) |
+| B5 teshiklar | **qisman edi → bajarildi** | petlya D6 — 1496cdc; konfirmat teshik joyi — e7e67d3 (14 modul, sex generatori bilan teshikma-teshik bir xil); GD-04 vintli 56 modulda eski shablon teshiklar qoldi (mahkamlagich turi egasidan) |
+| B6 xato modullar | bor edi | 7d02211, b6c7a5c |
+| B7 `verify_modul85.mjs` | bor edi → kengaytirildi | a63a01b; e7e67d3: KONF va NARX turlari (jami 8 tur) |
+
+**Hali egasi javobini kutadi:** TS-1730 → petlya (31 modul), NOG-90 va 18 narxsiz furnitura kodi ERP bog'lanishi (63 modulda narx taxmin), 12 quti-shablon modul, K-004/BD-005 nomlari, GD-04 vintli modullarda mahkamlagich turi (konfirmat/vint), tsarga/texnika polkasi/burchak/g'ildirakli tumba konfirmat joyi (texnolog).

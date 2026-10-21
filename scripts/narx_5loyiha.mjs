@@ -72,7 +72,8 @@ function hisobla(doc, rejim) {
   return {
     aniqlik: p.aniqlik.pct, mijoz: p.clientTotal, tannarx: p.totalCost, narxsiz: p.missing.length,
     xatolar: r.cutlists.reduce((s, c) => s + c.errors.length, 0),
-    taxmin: p.aniqlik.taxmin.map(t => `${t.group}:${t.code}=${t.amount}`).join(' | ')
+    taxmin: p.aniqlik.taxmin.map(t => `${t.group}:${t.code}=${t.amount}`).join(' | '),
+    narxsizlar: p.missing.map(m => `${m.group}:${m.code}`).join(' | ')
   };
 }
 
@@ -83,4 +84,6 @@ else {
   for (const n of natija) console.log(n.nom.padEnd(34) + String(n.modul).padEnd(7) + (n.sukut.aniqlik + '%').padEnd(16) + String(n.sukut.mijoz).padEnd(14) + String(n.sukut.tannarx).padEnd(10) + String(n.sukut.narxsiz).padEnd(9) + String(n.sukut.xatolar).padEnd(7) + n.faylsiz.aniqlik + '%');
   console.log('\nTaxmin (tasdiqlanmagan) qatorlar — sukut stavkada:');
   for (const n of natija) console.log('  ' + n.nom + ': ' + (n.sukut.taxmin || '—'));
+  console.log('\nNarxsiz qatorlar (narxi bazada yo\'q — summaga kirmaydi, aniqlik 99% da to\'xtaydi):');
+  for (const n of natija) console.log('  ' + n.nom + ': ' + (n.sukut.narxsizlar || '—'));
 }
