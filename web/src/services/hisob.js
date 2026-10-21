@@ -15,7 +15,7 @@ import { applySexStandart } from '../../../app/js/engine/standart.js';
 import { buildSearchIndex } from '../../../app/js/engine/search.js';
 import * as PriceMod from '../../../app/js/engine/price.js';
 import { asosiyIndeks } from '../../../app/js/engine/dekorAsosiy.js';
-import { materiallarQollash } from '../../../app/js/engine/adminQatlam.js';
+import { materiallarQollash, katalogNomlar, katalogQollash, yashirinKodlar, korinadiKatalog } from '../../../app/js/engine/adminQatlam.js';
 import { sukutErpQollash } from '../../../app/js/engine/narxStavka.js';
 import { stolKitchen, stolMaterialQollash } from '../../../app/js/engine/stoleshnitsa.js';
 
@@ -57,9 +57,11 @@ export async function loadData(read, api) {
     const [fb, st] = await Promise.all([api('/api/furnitura-boglash').catch(() => null), api('/api/standart').catch(() => null)]);
     if (fb && fb.links && typeof fb.links === 'object') out.furnBoglash = { links: Object.assign({}, (out.furnBoglash && out.furnBoglash.links) || {}, fb.links), koef: fb.koef || {} };
     if (st && typeof st === 'object' && !st.error) out.standart = st;
-    /* TZ-37 (2-faza): admin "Materiallar" (Asosiy 100: rang, rasm, varaq narxi) — fayl ustiga; server yo'q yoki xato — jim (fayldagi qiymatlar) */
-    const mv = await api('/api/materiallar').catch(() => null);
+    /* TZ-37 (2-faza): admin "Materiallar" (Asosiy 100: rang, rasm, varaq narxi) va "Modullar katalogi" (nom, yashirish, chegara, narx rejimi) — fayl ustiga;
+       server yo'q yoki xato — jim (fayldagi qiymatlar). Narx/rang/rasm shu yerda, chegara va yashirish — createHisob'da (katalog yig'ilgach) */
+    const [mv, kv] = await Promise.all([api('/api/materiallar').catch(() => null), api('/api/katalog').catch(() => null)]);
     if (mv) materiallarQollash(out, mv);
+    if (kv && kv.modullar) { out.katalogAdmin = kv; katalogNomlar(out, kv); }
   }
   return out;
 }
@@ -86,6 +88,7 @@ export function createHisob(data) {
       default_z: a.z || 0, note: a.note
     };
   }
+  katalogQollash(catalog, data.katalogAdmin);                     // TZ-37 (2-faza): admin chegarasi va narx rejimi (sex standartidan ustun)
   const searchIndex = matIdx && matIdx.items ? buildSearchIndex(matIdx.items) : null;
   const nestDefaults = Object.assign({}, nestDef);
   delete nestDefaults._meta;
@@ -182,6 +185,10 @@ export function createHisob(data) {
       return { priceRes, val, cutlists, prod, nest, placements, materials: m };
     }
   };
+  /* TZ-37 (2-faza): o'zbekcha modul nomi (admin), yashirilgan modullar va tanlash/AI uchun katalog (yashirinlarsiz; yashirin yo'q — H.catalog'ning o'zi) */
+  if (data.nomlarUz) H.nomlar.uz = data.nomlarUz;
+  H.yashirin = yashirinKodlar(data.katalogAdmin);
+  Object.defineProperty(H, 'korinadiKatalog', { get: () => korinadiKatalog(H.catalog, H.yashirin) });
   return H;
 }
 

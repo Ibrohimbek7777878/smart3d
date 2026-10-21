@@ -39,7 +39,7 @@ export function useQadamMebel() {
   const H = project.H, doc = project.doc;
   const cats = L.DIZAYN_KATEGORIYA, curCat = cats.find(c => c[0] === ed.cat) || cats[0];
   const ql = ed.q.trim().toLowerCase();
-  const allFr = H ? Object.values(H.catalog).filter(fr => fr.category !== 'bazis') : [];   // TZ-21: yuklangan Bazis loyihasi — modul emas
+  const allFr = H ? Object.values(H.korinadiKatalog).filter(fr => fr.category !== 'bazis') : [];   // TZ-21: yuklangan Bazis loyihasi — modul emas
   const catalog = allFr.filter(fr => curCat[2](fr) && (!ql || (fr.name + ' ' + fr.code + ' ' + L.modulNomi(H, fr)).toLowerCase().includes(ql))).map(fr => {
     const est = fr.category === 'appliance' ? null : project.est(fr, { materialCode: pj.matCode, fasadCode: pj.fasadCode, sheet: pj.sheet, xizmatlar: doc.xizmatlar });
     return { name: L.modulNomi(H, fr), dims: fr.w + '×' + fr.d + '×' + fr.h + ' ' + t('umumiy.mm'), lim: t('mebel.chegara', { a: fr.min_w || '—', b: fr.max_w || '—' }),

@@ -51,7 +51,7 @@ export function tezOshxona() {
   const H = project.H, doc = project.doc;
   if (!H) return;
   let v = null;
-  try { v = konstruksiya(doc.room, { devor: 0 }, H.catalog).variantlar[0] || null; } catch (e) { xato('S3D-KONS-104', { modul: 'ishjoyi', err: e }); return; }
+  try { v = konstruksiya(doc.room, { devor: 0 }, H.korinadiKatalog).variantlar[0] || null; } catch (e) { xato('S3D-KONS-104', { modul: 'ishjoyi', err: e }); return; }
   if (!v || !v.placements.length) { toast(t('konstruktor.topilmadi')); return; }
   doc.placements = v.placements.filter(p => H.catalog[p.frg]);
   doc.kitchen = Object.assign(L.freshKitchen(), v.kitchen);

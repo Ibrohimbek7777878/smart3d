@@ -15,7 +15,7 @@ export function openKonstruktor() {
 
 function hisobla(q) {
   try {
-    const r = konstruksiya(project.doc.room, { shakl: q.shakl, xolodilnik: q.xolodilnik, plita: q.plita ? 'erkin' : false, ustki: q.ustki }, project.H.catalog);
+    const r = konstruksiya(project.doc.room, { shakl: q.shakl, xolodilnik: q.xolodilnik, plita: q.plita ? 'erkin' : false, ustki: q.ustki }, project.H.korinadiKatalog);
     if (r.xato && r.xato !== 'S3D-KONS-103') xato(r.xato, { modul: 'konstruktor' });
     patchSheet({ natija: r });
   } catch (e) { xato('S3D-KONS-104', { modul: 'konstruktor', err: e }); }

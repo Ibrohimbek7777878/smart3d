@@ -49,6 +49,8 @@ export const XATOLAR = {
   'S3D-ADM-011': { http: 404, matn: 'Material (dekor) topilmadi' },
   'S3D-ADM-012': { http: 400, matn: 'Material qiymati noto\'g\'ri (rang #rrggbb, narx butun son)' },
   'S3D-ADM-013': { http: 400, matn: 'Rasm fayli noto\'g\'ri (PNG, JPEG yoki WebP, 600 KB gacha)' },
+  'S3D-ADM-014': { http: 404, matn: 'Modul topilmadi' },
+  'S3D-ADM-015': { http: 400, matn: 'Modul sozlamasi noto\'g\'ri (nom, o\'lcham chegarasi, narx rejimi)' },
   'S3D-ADM-016': { http: 404, matn: 'Qaytariladigan admin o\'zgartirishi yo\'q — qiymat allaqachon fayldagidek' },
   'S3D-ADM-104': { matn: 'Rasm fayli o\'qilmadi' },
   /* TZ-24 B: shaxsiy shablonlar */

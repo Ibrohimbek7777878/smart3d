@@ -19,5 +19,11 @@ export function applySexStandart(frag, std) {
     if (t[k].min != null) frag['min_' + m.o] = t[k].min + m.ofset; else delete frag['min_' + m.o];
     if (t[k].max != null) frag['max_' + m.o] = t[k].max + m.ofset; else delete frag['max_' + m.o];
   }
+  adminChegara(frag);
   return frag;
+}
+
+/** TZ-37 (2-faza): admin modulga alohida o'lcham chegarasi bergan bo'lsa (fragment.admin_lim, engine/adminQatlam.js) — u sex standartidan ustun */
+function adminChegara(frag) {
+  if (frag.admin_lim) for (const k of Object.keys(frag.admin_lim)) frag[k] = frag.admin_lim[k];
 }
