@@ -238,3 +238,50 @@ export function adminSxema2(db) {
   addColumn(db, 'users', 'blok_sabab', "TEXT NOT NULL DEFAULT ''");
   addColumn(db, 'users', 'blok_vaqt', 'DATETIME');
 }
+
+/** TZ-37 (3-faza): admin panel — ERP sinxronlash va tarix. Idempotent (mavjud bazaga ham qo'shiladi; mavjud ma'lumot o'zgarmaydi).
+ *  erp_partiya — admin yuklagan ERP eksporti (qoralama: farq ro'yxati; qo'llangach: nima yozilgani — qaytarish uchun eski qiymatlar bilan);
+ *  erp_narx — ERP qatlami: fayl narxi USTIGA, admin qo'lda narxidan (mat_narx) PASTGA qo'yiladi (tur: plita | furnitura; kalit: ERP-kod | furnitura ID);
+ *  narx_qaytar — narx_history yozuvi qaytarilganini belgilaydi (narx_history o'zi routes/narxlar.js da, uning jadvali o'zgarmaydi);
+ *  narx_history — routes/narxlar.js dagi bilan bir xil (IF NOT EXISTS): tarix sahifasi router tartibiga bog'liq bo'lmasin. */
+export function adminSxema3(db) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS erp_partiya (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER,
+      tur TEXT NOT NULL,
+      holat TEXT NOT NULL DEFAULT 'qoralama',
+      fayl_nom TEXT NOT NULL DEFAULT '',
+      erp_sana TEXT NOT NULL DEFAULT '',
+      xulosa_json TEXT NOT NULL DEFAULT '{}',
+      farq_json TEXT NOT NULL DEFAULT '',
+      qollangan_json TEXT NOT NULL DEFAULT '',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      qollangan_at DATETIME,
+      qollagan_by INTEGER,
+      qaytarilgan_at DATETIME
+    );
+    CREATE INDEX IF NOT EXISTS idx_erp_partiya_holat ON erp_partiya(holat, id);
+    CREATE TABLE IF NOT EXISTS erp_narx (
+      tur TEXT NOT NULL,
+      kalit TEXT NOT NULL,
+      uzs INTEGER NOT NULL,
+      erp_id TEXT NOT NULL DEFAULT '',
+      sku TEXT NOT NULL DEFAULT '',
+      nom TEXT NOT NULL DEFAULT '',
+      sana TEXT NOT NULL DEFAULT '',
+      partiya_id INTEGER,
+      updated_by INTEGER,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (tur, kalit)
+    );
+    CREATE TABLE IF NOT EXISTS narx_history (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, kalit TEXT NOT NULL,
+      eski TEXT, yangi TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP);
+    CREATE TABLE IF NOT EXISTS narx_qaytar (
+      history_id INTEGER PRIMARY KEY,
+      user_id INTEGER,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS idx_admin_audit_vaqt ON admin_audit(created_at);
+  `);
+}

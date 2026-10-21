@@ -13,3 +13,4 @@ export const mono = { fontFamily: "'JetBrains Mono',monospace", fontSize: '12px'
 export const belgi = (ok) => ({ fontSize: '12px', fontWeight: '700', padding: '2px 8px', borderRadius: '999px', whiteSpace: 'nowrap',
   background: ok ? 'rgba(95,225,196,.14)' : 'rgba(255,181,154,.14)', color: ok ? 'var(--cyan)' : 'var(--acct)' });
 export const chipU = (on) => ({ minHeight: '40px', padding: '0 14px', borderRadius: '999px', border: on ? '0' : '1px solid var(--line)', background: on ? 'var(--acc)' : 'var(--sfc)', color: on ? 'var(--ink)' : 'var(--txt)', fontWeight: '700', fontSize: '14px', cursor: 'pointer', whiteSpace: 'nowrap' });
+export const belgiXato = { ...belgi(false), background: 'rgba(255,123,123,.16)', color: 'var(--danger)' };   // TZ-37 (3-faza): xato / sozlanmagan holat

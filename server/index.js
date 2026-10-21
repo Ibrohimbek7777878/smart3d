@@ -27,7 +27,7 @@ import { securityHeaders, inlineScriptHashes, TG_ILOVA } from './himoya.js';
 import { loadConfig, APP_DIR, WEB_DIST } from './lib/config.js';
 import { openDb } from './lib/db.js';
 import { yadroSxema, mcModullar, adminSxema, promptlarSeed, aiSxema } from './lib/sxema.js';
-import { adminSxema2 } from './lib/sxema.js';
+import { adminSxema2, adminSxema3 } from './lib/sxema.js';
 import { aiTejash } from './lib/ai-tejash.js';
 import { createAuth, zaifAdminTekshir } from './lib/auth.js';
 import { rateLimit } from './lib/limit.js';
@@ -65,6 +65,7 @@ mcModullar(db, APP_DIR);
 adminSxema(db);
 aiSxema(db);                                  // TZ-40: ai_kesh, ai_sarf, promptlar_admin.spec_*
 adminSxema2(db);                              // TZ-37 (2-faza): materiallar, katalog, users.bloklangan (createAuth'dan OLDIN — u shu ustunni o'qiydi)
+adminSxema3(db);                              // TZ-37 (3-faza): ERP sinxronlash (erp_partiya, erp_narx), narx tarixini qaytarish
 promptlarSeed(db, APP_DIR);
 const tejash = aiTejash({ db, jurnal });      // TZ-40: AI token tejash (tayyor → kesh → qoida → Claude)
 tejash.royxatToldir();                        // tayyor promptlarga tuzilma (qoida bilan, bepul; mavjud tuzilma o'zgarmaydi)
