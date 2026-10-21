@@ -8,8 +8,13 @@
  *   KROMKA — korpus/polka detali: old qirra (F) bor, orqa qirra (B) yo'q; fasad — 4 tomon; 16 yangi modul — slot formatida
  *            (kromka_korpus / kromka_fasad, MC modullari kabi).
  *   PETLYA — eski 'hinge' yozuvi yo'q; har ochiladigan eshikda kosa D6 qoidasida (uchidan 105, qirradan 21,5; soni petlyaSoni).
- *   TESHIK — bir koordinatada qty > 1 (eski shablon teshiklari) va teshiksiz korpus — faqat hisobot (joy manbasi yo'q).
- *   NARX   — 85 modul narx aniqligi (eng yuqori / mediana) — faqat ma'lumot.
+ *   KONF   — konfirmat teshik joyi (B4 birikmalari): teshik detal ichida; torets teshigi uchida; bir koordinatada ikkita yo'q; yuza
+ *            va torets teshiklari soni teng (= konfirmat soni, joyi aniq birikmalar); sex (Bazis) bilan tekshirilgan generator
+ *            (engine/chizish.js) bilan teshikma-teshik bir xil (yon devor × yuqori/pastki panel). Joyi noaniq birikmalar (tsarga,
+ *            texnika polkasi, burchak, g'ildirakli tumba) — "kutilmoqda".
+ *   TESHIK — bir koordinatada qty > 1 (eski shablon teshiklari, GD-04 vintli modullar) — faqat hisobot (mahkamlagich turi — egasi).
+ *   NARX   — narx aniqligi ilova sukutida (sukutErpQollash + server sukut stavkasi): narxsiz qator yo'q; tasdiqlanmagan (taxmin)
+ *            qator faqat egasi javobini kutayotgan furnitura kodlarida; mediana/o'rtacha — ma'lumot.
  * Egasi javobini kutayotganlar (TZ-32 4-bo'lim) yiqitmaydi — "kutilmoqda" ro'yxatida chiqadi.
  * Ishga tushirish: node tests/verify_modul85.mjs [--stat] [--fayl <fragments.json>] */
 import { readFileSync } from 'node:fs';
@@ -17,6 +22,8 @@ import { fileURLToPath } from 'node:url';
 import { cutlist, productionCost } from '../app/js/engine/cutlist.js';
 import { applySexStandart } from '../app/js/engine/standart.js';
 import { D6, petlyaSoni } from '../app/js/engine/d6.js';
+import { narxSukut, sukutErpQollash } from '../app/js/engine/narxStavka.js';
+import { yangiChizma, chizmaKatalog } from '../app/js/engine/chizish.js';
 
 const DATA = fileURLToPath(new URL('../app/data/', import.meta.url));
 const J = (n) => JSON.parse(readFileSync(DATA + n, 'utf8'));
@@ -33,6 +40,11 @@ const QUTI_SHABLON = new Set(['SP-T-004', 'SP-T-005', 'SP-T-006', 'SP-T-007', 'S
 const NOM_SAVOL = new Set(['SP-K-004', 'SP-BD-005']);                                          // 9-savol
 const NARXSIZ_18 = ['KUPE-SYS-02', 'KUPE-SYS-03', 'TRUBA-OVAL', 'CONFIRMAT', 'PETLYA-MUZ', 'SLIDER-MUZ', 'TANDEM-500', 'TANDEM-400-NAM',
   'KARGO-200', 'NAVES-REG', 'NAVES-OGIR', 'NAVES-CAMAR', 'LIFT-HF', 'GILDIRAK-ROLIK', 'ZAMOK-MARKAZIY', 'KRYUCHOK-3TALIK', 'PETLYA-NAM', 'TIP-ON'];
+
+/* tasdiqlanmagan (taxmin) narxli furnitura kodlari — egasi javobini kutadi (TZ-32 A10/B8: ERP bog'lanishi, TS-1730 → petlya, NOG-90,
+ * GD-04/M8-60/SH-01 vint-shkant, upholstery, g'ildirak …). Boshqa har qanday taxmin qator (plita, kromka, raspil, prisadka, ish haqi,
+ * yangi furnitura kodi) — NARX kamchiligi. */
+const NARX_KUTILMOQDA = new Set(['TS-1730', 'GD-04', 'NOG-90', 'SH-01', 'M8-60', 'SR-450', 'MAT-UPH', 'GAS-UP', 'Ush-90', 'PROF-AL']);
 
 /* ── sex qoidalari (manba izohda) ── */
 const VARAQ = { L: 2800 - 2 * 10, W: 2070 - 2 * 10 };                                        // materials.json sheet 2800×2070, TRIM 10
@@ -66,10 +78,54 @@ export function sexTuri(f) {
   return null;
 }
 
+/** KONF: B4 birikmalarining konfirmat teshiklari — bir o'lchamda (cl — cutlist). x(tur, xabar, kutilmoqda) */
+function konfTekshir(f, cl, nom, w, d, h, x) {
+  const bir = f.birikmalar || [];
+  if (!bir.length) return;
+  const T = `${nom} ${w}×${d}×${h}`;
+  const joyli = bir.filter(b => (b.teshiklar || []).length), joysiz = bir.filter(b => !(b.teshiklar || []).length);
+  if (nom === 'sukut' && joysiz.length) {
+    const kodlar = [...new Set(joysiz.map(b => (/— (\S+) ×/.exec(b.nom || '') || [])[1] || '?'))];
+    x('KONF', `birikmada teshik joyi noaniq (${kodlar.join(', ')}) — balandligi/old-orqa joyi manbada yo'q (texnolog)`, true);
+  }
+  if (!joyli.length) return;
+  const kon = cl.holes.filter(hl => hl.kind === 'evrovint' || hl.kind === 'evrovint_torets');
+  const detal = Object.fromEntries(cl.parts.map(p => [p.code, p]));
+  const korilgan = new Set();
+  for (const hl of kon) {
+    const p = detal[hl.part];
+    if (!p) { x('KONF', `${T}: ${hl.part} detali yo'q`); continue; }
+    const kalit = [hl.part, hl.side, hl.torets || '', hl.x, hl.y].join('|');
+    if (korilgan.has(kalit)) x('KONF', `${T}: ${hl.part} ${hl.side}${hl.torets || ''} @${hl.x},${hl.y} — bir koordinatada ikkita teshik`);
+    korilgan.add(kalit);
+    if (hl.x < -0.6 || hl.x > p.width + 0.6 || hl.y < -0.6 || hl.y > p.length + 0.6) x('KONF', `${T}: ${hl.part} @${hl.x},${hl.y} detaldan (${p.length}×${p.width}) tashqarida`);
+    if (hl.kind === 'evrovint_torets' && Math.abs(hl.y) > 0.6 && Math.abs(hl.y - p.length) > 0.6) x('KONF', `${T}: ${hl.part} torets teshigi uchida emas (y ${hl.y}, uzunlik ${p.length})`);
+    if (hl.kind === 'evrovint' && (hl.y < 1 || hl.y > p.length - 1)) x('KONF', `${T}: ${hl.part} yuza teshigi chetda (y ${hl.y})`);
+  }
+  const son = (k) => kon.filter(hl => hl.kind === k).reduce((s, hl) => s + hl.qty * (hl.nusxa || 1), 0);
+  const yuza = son('evrovint'), torets = son('evrovint_torets');
+  const konf = cl.hardware.filter(z => z.code === 'CONFIRMAT').reduce((s, z) => s + z.qty, 0);
+  if (yuza !== torets) x('KONF', `${T}: yuza teshiklari ${yuza} ≠ torets teshiklari ${torets}`);
+  if (yuza > konf) x('KONF', `${T}: teshik ${yuza} > konfirmat ${konf}`);
+  if (!joysiz.length && yuza !== konf) x('KONF', `${T}: yuza teshiklari ${yuza} ≠ konfirmat soni ${konf}`);
+}
+
+/** NARX: modulning narx aniqligi ILOVA SUKUTIDA — plita sukut_erp (ERP) bog'langan, narx stavkalari server sukut hujjati */
+const matsApp = JSON.parse(JSON.stringify(mats));
+sukutErpQollash(matsApp);
+const stavkaApp = narxSukut(matsApp);
+const SLOT_APP = { korpus: 'LDSP16', polka: 'LDSP16', fasad: 'MDF16' };
+function narxHisob(f) {
+  if (!(f.parts || []).length || f.production === 'none') return null;
+  const cl = cutlist(f, f.w, f.d, f.h, matsApp, { projectSlots: SLOT_APP });
+  const pc = productionCost([cl], matsApp, { areaEstimate: true, furnituraById: furnById, furnituraBoglash: furnBoglash, stavka: stavkaApp });
+  return { pct: pc.aniqlik.pct, narxsiz: pc.aniqlik.narxsiz, taxmin: pc.aniqlik.taxmin };
+}
+
 /** bitta modul tekshiruvi → { tur: [{m, k}] } (k — kutilmoqda: egasi javobi) */
 export function tekshir(f0) {
   const f = JSON.parse(JSON.stringify(f0));
-  const R = { QUR: [], OLCHAM: [], FURN: [], KROMKA: [], PETLYA: [], TESHIK: [] };
+  const R = { QUR: [], OLCHAM: [], FURN: [], KROMKA: [], PETLYA: [], KONF: [], TESHIK: [], NARX: [] };
   const x = (tur, m, k = false) => R[tur].push({ m, k });
   if (f.production === 'none') return R;
   /* QUR */
@@ -88,6 +144,7 @@ export function tekshir(f0) {
       if (f.category !== 'countertop' && (a > VARAQ.L || b > VARAQ.W)) x('QUR', `${nom} ${w}×${d}×${h}: ${p.code} ${a}×${b} varaqqa sig'maydi`);
       if (!(p.finish_length > 0 && p.finish_width > 0)) x('QUR', `${nom}: ${p.code} o'lchami 0`);
     }
+    konfTekshir(f, cl, nom, w, d, h, x);
     for (const p of f.parts) {
       if (!TORTMA_YON.test(p.code) && !TORTMA_YON.test(p.nom || '')) continue;
       const pp = cl.parts.find(q => q.code === p.code);
@@ -177,22 +234,41 @@ export function tekshir(f0) {
   }
   if (qutimi(f) && !(f.holes || []).length && !(f.birikmalar || []).some(b => (b.teshiklar || []).length)) x('TESHIK', "korpus teshiklari yo'q (faqat petlya — D6)");
   for (const hl of f.holes || []) if ((+hl.qty || 1) > 1) x('TESHIK', `${hl.part} ${hl.kind} @${hl.x},${hl.y}: bir joyda ${hl.qty} ta`);
+  /* NARX */
+  const nh = narxHisob(f);
+  if (nh) {
+    if (nh.narxsiz) x('NARX', `${nh.narxsiz} ta narxsiz qator`);
+    for (const t of nh.taxmin) {
+      if (t.group === 'Furnitura' && NARX_KUTILMOQDA.has(t.code)) x('NARX', `${t.code} narxi taxmin (egasi javobi)`, true);
+      else x('NARX', `${t.group}: ${t.code} narxi tasdiqlanmagan (${t.manba})`);
+    }
+  }
   return R;
 }
 
-/** narx aniqligi (%), sukut sozlama, katalog kartasi hisobi (areaEstimate) */
-function aniqlik(f) {
-  if (!(f.parts || []).length) return null;
-  const cl = cutlist(f, f.w, f.d, f.h, mats, {});
-  return productionCost([cl], mats, { areaEstimate: true, furnituraById: furnById, furnituraBoglash: furnBoglash }).aniqlik.pct;
+/* KONF: sex (Bazis) bilan tekshirilgan generator (engine/chizish.js birikmalar(), MC-KP-01/02, MC-KU-07 bilan teshikma-teshik) —
+ * qo'lda chizilgan «ustki» quti (yon devor ikki panel orasida, pastki va yuqori panel butun eni bo'ylab) SP moduli bilan bir xil
+ * konstruksiya: teshiklari (joyi, diametri, chuqurligi, nusxasi) aynan bir xil bo'lishi kerak. x — kromka surilishidan tozalangan. */
+function bazisBilan(code) {
+  const f = frags.find(z => z.code === code);
+  const c = Object.assign(yangiChizma('ustki'), { w: f.w, d: f.d, h: f.h, tag: { tur: 'yoq', h: 0 }, ichki: { eshik: 0, polka: 0 } });
+  const S16 = { korpus: 'LDSP16', polka: 'LDSP16', fasad: 'LDSP16' };
+  const A = cutlist(f, f.w, f.d, f.h, mats, { projectSlots: S16 }), B = cutlist(chizmaKatalog(c, 'CH-T', 't'), f.w, f.d, f.h, mats, { projectSlots: S16 });
+  const NOM = { ust: 'qopqoq', past: 'tub' };
+  const imzo = (cl, nom) => {
+    const dedF = {};
+    for (const e of cl.edges) if (e.sides.includes('F') && e.thickness >= 1) dedF[e.code] = Math.max(dedF[e.code] || 0, e.thickness);
+    return cl.holes.filter(hl => /^evrovint/.test(hl.kind)).map(hl => [(nom && NOM[hl.part]) || hl.part, hl.side, hl.torets || '', Math.round((hl.x + (dedF[hl.part] || 0)) * 10) / 10, hl.y, hl.dia, hl.depth, hl.nusxa || 1].join(',')).sort().join(' ');
+  };
+  return { a: imzo(A, true), b: imzo(B, false) };
 }
 
 /* ── ishga tushirish ── */
 const SP = frags.filter(f => /^SP-/.test(f.code));
-const natija = SP.map(f => ({ code: f.code, r: tekshir(f), pct: aniqlik(f) }));
-const TURLAR = ['QUR', 'OLCHAM', 'FURN', 'KROMKA', 'PETLYA', 'TESHIK'];
-/* qat'iy turlar — tuzatilganlar (TZ-32 B1–B6); TESHIK (eski shablon teshiklari joyi) — hisobot, manba kelguncha */
-const QATIY = new Set(['QUR', 'OLCHAM', 'FURN', 'KROMKA', 'PETLYA']);
+const natija = SP.map(f => { const nh = narxHisob(f); return { code: f.code, r: tekshir(f), pct: nh ? nh.pct : null }; });
+const TURLAR = ['QUR', 'OLCHAM', 'FURN', 'KROMKA', 'PETLYA', 'KONF', 'TESHIK', 'NARX'];
+/* qat'iy turlar — tuzatilganlar (TZ-32 B1–B6, T1); TESHIK (GD-04 vintli modullarning eski shablon teshiklari) — hisobot, mahkamlagich turi qarori kelguncha */
+const QATIY = new Set(['QUR', 'OLCHAM', 'FURN', 'KROMKA', 'PETLYA', 'KONF', 'NARX']);
 
 let pass = 0, fail = 0;
 const ok = (name, cond, info = '') => { if (cond) { pass++; if (!STAT) console.log('  ✓', name); } else { fail++; console.log('  ✗', name, info); } };
@@ -207,7 +283,7 @@ const tozaQ = natija.filter(n => [...QATIY].every(t => !n.r[t].some(z => !z.k)))
 const tozaK = natija.filter(n => TURLAR.every(t => !n.r[t].length)).length;
 const pcts = natija.map(n => n.pct).filter(v => v != null).sort((a, b) => a - b);
 const med = pcts.length ? (pcts.length % 2 ? pcts[(pcts.length - 1) / 2] : (pcts[pcts.length / 2 - 1] + pcts[pcts.length / 2]) / 2) : null;
-console.log(`\nStatistika: ${SP.length} modul; qat'iy turlarda toza ${tozaQ}; toza (kutilmoqda hisobga olinmasa) ${toza}, to'liq toza ${tozaK}; narx aniqligi eng yuqori ${pcts[pcts.length - 1]}%, mediana ${med}%`);
+console.log(`\nStatistika: ${SP.length} modul; qat'iy turlarda toza ${tozaQ}; toza (kutilmoqda hisobga olinmasa) ${toza}, to'liq toza ${tozaK}; narx aniqligi (ilova sukuti) eng past ${pcts[0]}%, mediana ${med}%, o'rtacha ${Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length)}%, eng yuqori ${pcts[pcts.length - 1]}%`);
 for (const t of TURLAR) {
   const a = natija.filter(n => n.r[t].some(z => !z.k)).length, b = natija.filter(n => n.r[t].some(z => z.k)).length;
   console.log(`  ${t.padEnd(7)} kamchilik: ${String(a).padStart(2)} modul${b ? `; kutilmoqda: ${b} modul` : ''}`);
@@ -220,6 +296,11 @@ for (const t of TURLAR) {
   const msg = xato.slice(0, 4).map(n => n.code + ': ' + n.r[t].find(z => !z.k).m).join(' | ');
   if (QATIY.has(t)) ok(`${t}: kamchiliksiz (${SP.length - xato.length}/${SP.length})`, !xato.length, msg);
   else console.log(`  · ${t}: ${xato.length} modulda kamchilik (hisobot, yiqitmaydi — joy manbasi yo'q): ${msg}`);
+}
+/* KONF: SP moduli teshiklari sex generatori bilan aynan bir xil (yon devor × yuqori/pastki panel, butun eni bo'ylab) */
+for (const kod of ['SP-K-003', 'SP-W-004']) {
+  const r = bazisBilan(kod);
+  ok(`KONF: ${kod} konfirmat teshiklari sex generatori (chizish.js) bilan aynan bir xil (${r.a.split(' ').length} ta)`, r.a && r.a === r.b, '\n    SP ' + r.a + '\n    CH ' + r.b);
 }
 /* kutilmoqda — egasi javobi (TZ-32 4-bo'lim), yiqitmaydi */
 const kut = {};
