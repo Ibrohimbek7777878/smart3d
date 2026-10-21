@@ -51,8 +51,8 @@ function shablondanQur(text, yo) {
   const H = project.H;
   const p = yo.shablon === 'xona' ? XONA_SHABLON : parametrli().find(x => x.id === yo.shablon);
   if (!H || !p) { tushunmadim(text); return; }
-  const rj = shablonReja(text, p, H.catalog);
-  const r = promptLoyiha(rj.prompt, rj.kirish, H.catalog);
+  const rj = shablonReja(text, p, H.korinadiKatalog);
+  const r = promptLoyiha(rj.prompt, rj.kirish, H.korinadiKatalog);
   if (r.xato) { xato(r.xato, { modul: 'editor/ai' }); return; }
   const room = L.freshRoom();
   room.outline = r.xona.outline; room.wall_height = r.xona.H;
@@ -75,7 +75,7 @@ function shablondanQur(text, yo) {
 function garniturdanQur(text) {
   const H = project.H;
   if (!H) { tushunmadim(text); return; }
-  const g = garnituraReja(text, H.catalog, { sheets: (H.sheetCatalog && H.sheetCatalog.sheets) || [] });
+  const g = garnituraReja(text, H.korinadiKatalog, { sheets: (H.sheetCatalog && H.sheetCatalog.sheets) || [] });
   const qatorlar = garniturQatorlar(g);
   if (!g.placements.length) {                          // hech narsa qurilmadi — karta sababi bilan (joriy loyiha o'zgarmaydi)
     set('ai', { open: false, mic: false });
@@ -116,8 +116,8 @@ export async function runAI(silent) {
   try {
     const quvur = (project.doc.room && project.doc.room.utilities) || [];
     /* TZ-22: oshxona — avtomatik konstruktor (qoidalar, AI'siz); AI faqat matnni tushunadi */
-    const konstruktor = (room, talab) => konstruksiya(Object.assign({}, room, { utilities: quvur }), talab, H.catalog).variantlar[0] || null;
-    const res = await aiBuild(text, H.catalog, { llm: (t) => aiParse(t), konstruktor });
+    const konstruktor = (room, talab) => konstruksiya(Object.assign({}, room, { utilities: quvur }), talab, H.korinadiKatalog).variantlar[0] || null;
+    const res = await aiBuild(text, H.korinadiKatalog, { llm: (t) => aiParse(t), konstruktor });
     res.doc.placements = res.doc.placements.filter(p => H.catalog[p.frg]);
     res.doc.room.utilities = quvur;
     res.doc.kitchen = res.kitchen ? Object.assign(L.freshKitchen(), res.kitchen) : (project.doc.kitchen || L.freshKitchen());

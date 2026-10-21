@@ -11,6 +11,9 @@ import { rateLimit } from '../lib/limit.js';
 import { readJsonData } from '../lib/malumot.js';
 import { standartTekshir, STANDART_SUKUT } from '../../app/js/engine/konstruksiyaTili.js';
 import { KATEGORIYALAR } from '../../app/js/engine/promptlar.js';
+import adminMateriallar from './admin-materiallar.js';
+import adminKatalog from './admin-katalog.js';
+import adminFoydalanuvchilar from './admin-foydalanuvchilar.js';
 
 const KOD_RE = /^[A-Za-z0-9][A-Za-z0-9_.\-]{0,79}$/;
 const ID_RE = /^[a-z0-9][a-z0-9_-]{1,59}$/;
@@ -18,7 +21,8 @@ const js = (v) => { try { return JSON.parse(v); } catch (_) { return null; } };
 const obj = (b) => (b && typeof b === 'object' && !Array.isArray(b) ? b : {});
 const PROMPT_USTUN = ['id', 'kat', 'nom_uz', 'nom_ru', 'nom_en', 'matn_uz', 'matn_ru', 'matn_en', 'tartib', 'faol'];
 
-export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyToken, tejash }) {
+export default function adminPanelRouter(ctx) {
+  const { db, jurnal, auth, readToken, verifyToken, tejash } = ctx;
   const r = express.Router();
 
   /* ── umumiy ── */
@@ -33,6 +37,7 @@ export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyTo
   };
   const adminLimit = rateLimit({ windowMs: 60 * 1000, max: 240, key: (req) => 'adm' + (req.user ? req.user.id : req.ip) });
   const guard = [adminOnly404, adminLimit.take];
+  const qaytaruvchilar = new Map();                     // TZ-37 (2-faza): bo'lim → (audit yozuvi, eski, req) => hozirgi qiymat; /api/admin/qaytar shuni chaqiradi
 
   let katalog = null;                                   // furnitura-catalog.json: id → element (bir marta o'qiladi)
   const furnKatalog = () => {
@@ -337,13 +342,18 @@ export default function adminPanelRouter({ db, jurnal, auth, readToken, verifyTo
         hozir = stdBazadami() ? stdOl() : null;
         if (eski) db.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('standart_konstruksiya', ?, CURRENT_TIMESTAMP)").run(JSON.stringify(eski));
         else db.prepare("DELETE FROM settings WHERE key = 'standart_konstruksiya'").run();
-      } else throw new Kirish('S3D-ADM-007', 'bu bo\'limni qaytarib bo\'lmaydi');
+      } else if (qaytaruvchilar.has(a.bolim)) hozir = qaytaruvchilar.get(a.bolim)(a, eski, req);
+      else throw new Kirish('S3D-ADM-007', 'bu bo\'limni qaytarib bo\'lmaydi');
       db.prepare('UPDATE admin_audit SET qaytarilgan = 1 WHERE id = ?').run(id);
       yoz(req, a.bolim, a.kalit, hozir, eski);
     })();
     if (a.bolim === 'promptlar' && bazaPrompt(a.kalit)) await tejash.promptSpec(a.kalit, { claude: false, userId: req.user.id });   // matn qaytdi — tuzilma ham (bepul)
     res.json({ ok: true, qaytarildi: id, bolim: a.bolim, kalit: a.kalit });
   }));
+
+  /* ═══════════ 2-FAZA: materiallar, modullar katalogi, foydalanuvchilar — o'z fayllarida; umumiy yordamchilar shu yerdan ═══════════ */
+  const yordam = { guard, yoz, matn, himoya, Kirish, qaytaruvchilar };
+  for (const f of [adminMateriallar, adminKatalog, adminFoydalanuvchilar]) r.use(f(ctx, yordam));
 
   return r;
 }

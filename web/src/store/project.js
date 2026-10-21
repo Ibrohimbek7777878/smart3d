@@ -115,10 +115,10 @@ export const project = {
     if (kind === 'kitchen' && this.H) {
       let v = null;
       /* devor 0 — 3D da kameraga qaragan (orqa) devor */
-      try { v = konstruksiya(r, { devor: 0 }, this.H.catalog).variantlar[0] || null; } catch (e) { xato('S3D-KONS-104', { modul: 'konstruktor', err: e }); }
+      try { v = konstruksiya(r, { devor: 0 }, this.H.korinadiKatalog).variantlar[0] || null; } catch (e) { xato('S3D-KONS-104', { modul: 'konstruktor', err: e }); }
       if (v) { doc.placements = v.placements; doc.kitchen = Object.assign(L.freshKitchen(), v.kitchen); }
       else {
-        doc.placements = suggestLayout({ w: room.w, d: room.d }, this.H.catalog, [{ kind: 'pastki', qty: 3 }, { kind: 'ustki', qty: 2 }])
+        doc.placements = suggestLayout({ w: room.w, d: room.d }, this.H.korinadiKatalog, [{ kind: 'pastki', qty: 3 }, { kind: 'ustki', qty: 2 }])
           .filter(p => this.H.catalog[p.frg]);
       }
     }

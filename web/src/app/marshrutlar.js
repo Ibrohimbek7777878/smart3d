@@ -7,14 +7,14 @@
  *   /loyiha/:id             shu loyiha ish joyida       /sozlamalar           sozlamalar
  *   /sozlamalar/narxlar     sozlamalar, Narxlar bo'limi /buyurtmalar          buyurtmalar: admin — Sozlamalarda, usta — Loyihalarimda
  *   /tg                     Telegram mini-app kutish ekrani
- *   /admin, /admin/(narxlar|furnitura|promptlar|standart|tarix)   admin panel (TZ-37; faqat role=admin, aks holda 404 ko'rinishi)
+ *   /admin, /admin/(narxlar|furnitura|materiallar|katalog|promptlar|standart|foydalanuvchilar|tarix)   admin panel (TZ-37; faqat role=admin, aks holda 404 ko'rinishi)
  * Kirmagan foydalanuvchi himoyalangan manzilni ochsa — /kirish?qaytish=<manzil>, kirgach o'sha manzil ochiladi. */
 
 /** loyiha raqami — son (server bilan bir xil: server/routes/sahifalar.js ILOVA_YOLI). UUID'ga o'tilsa — ikkalasi birga kengayadi */
 const ID_RE = /^\d{1,15}$/;
 
 /** app.html beriladigan yo'llar (server, vite preview, service worker) — oxiridagi "/" bilan ham */
-export const ILOVA_YOL_RE = /^\/(?:kirish|royxat|loyihalar|loyiha\/(?:yangi|\d{1,15})|sozlamalar(?:\/narxlar)?|buyurtmalar|tg|admin(?:\/(?:narxlar|furnitura|promptlar|standart|tarix))?)\/?$/;
+export const ILOVA_YOL_RE = /^\/(?:kirish|royxat|loyihalar|loyiha\/(?:yangi|\d{1,15})|sozlamalar(?:\/narxlar)?|buyurtmalar|tg|admin(?:\/(?:narxlar|furnitura|materiallar|katalog|promptlar|standart|foydalanuvchilar|tarix))?)\/?$/;
 
 /** kirmasdan ochiladigan manzillar */
 const OCHIQ = new Set(['kirish', 'royxat', 'tg']);

@@ -35,7 +35,7 @@ export function promptQur(p, kirish) {
   if (!H || !p) return;
   almashtir(() => {
     let r;
-    try { r = promptLoyiha(p, kirish, H.catalog, { konstruksiya }); } catch (e) { xato('S3D-KONS-104', { modul: 'ai/promptlar', err: e }); return; }
+    try { r = promptLoyiha(p, kirish, H.korinadiKatalog, { konstruksiya }); } catch (e) { xato('S3D-KONS-104', { modul: 'ai/promptlar', err: e }); return; }
     if (r.xato) { xato(r.xato, { modul: 'ai/promptlar' }); return; }
     const room = L.freshRoom();
     room.outline = r.xona.outline; room.wall_height = r.xona.H;

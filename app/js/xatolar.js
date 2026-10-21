@@ -45,6 +45,16 @@ export const XATOLAR = {
   'S3D-ADM-009': { http: 409, matn: 'Bunday id allaqachon bor' },
   'S3D-ADM-101': { matn: 'Admin panel ma\'lumoti saqlanmadi' },
   'S3D-ADM-102': { matn: 'Admin panel ma\'lumoti o\'qilmadi' },
+  /* TZ-37 (2-faza): materiallar (Asosiy 100), modullar katalogi, foydalanuvchilar */
+  'S3D-AUTH-021': { http: 403, matn: 'Akkaunt bloklangan — administrator bilan bog\'laning' },
+  'S3D-ADM-011': { http: 404, matn: 'Material (dekor) topilmadi' },
+  'S3D-ADM-012': { http: 400, matn: 'Material qiymati noto\'g\'ri (rang #rrggbb, narx butun son)' },
+  'S3D-ADM-013': { http: 400, matn: 'Rasm fayli noto\'g\'ri (PNG, JPEG yoki WebP, 600 KB gacha)' },
+  'S3D-ADM-014': { http: 404, matn: 'Modul topilmadi' },
+  'S3D-ADM-015': { http: 400, matn: 'Modul sozlamasi noto\'g\'ri (nom, o\'lcham chegarasi, narx rejimi)' },
+  'S3D-ADM-016': { http: 404, matn: 'Qaytariladigan admin o\'zgartirishi yo\'q — qiymat allaqachon fayldagidek' },
+  'S3D-ADM-017': { http: 409, matn: 'Bu akkauntni bloklab bo\'lmaydi (o\'zingiz yoki admin)' },
+  'S3D-ADM-104': { matn: 'Rasm fayli o\'qilmadi' },
   /* TZ-24 B: shaxsiy shablonlar */
   'S3D-SHB-001': { http: 404, matn: 'Shablon topilmadi' },
   'S3D-SHB-002': { http: 409, matn: 'Shablonlar ko\'p — 100 tagacha; keraksizini o\'chiring' },

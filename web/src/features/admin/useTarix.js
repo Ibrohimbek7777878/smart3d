@@ -5,7 +5,7 @@ import { t } from '../../i18n/index.js';
 import { adm, royxatOl } from './actions.js';
 
 /* audit tarixi (TZ-37 p.5): GET /api/admin/audit?bolim=&limit= ; POST /api/admin/qaytar/:auditId */
-export const SUZGICH = ['', 'narxlar', 'furnitura', 'promptlar', 'standart'];
+export const SUZGICH = ['', 'narxlar', 'furnitura', 'materiallar', 'katalog', 'promptlar', 'standart', 'foydalanuvchilar'];
 const qisqa = (v) => {
   if (v == null || v === '') return '—';
   let s = typeof v === 'string' ? v : JSON.stringify(v);
