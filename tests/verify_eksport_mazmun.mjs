@@ -280,9 +280,12 @@ console.log('\n[4] Teshiklar (JSON)');
   const tekshir = J.holes.filter(h => h.nusxa !== undefined);   // kesim ro'yxatidan (birikma) — koordinata detal burchagidan: x — eni, y — uzunlik
   const tashqari = tekshir.filter(h => { const p = detal(h); return !p || h.local_x > p.width + 0.5 || h.local_y > p.length + 0.5; });
   ok(`JSON: kesim ro'yxatidan olingan ${tekshir.length} teshik koordinatasi detal ichida (0 ≤ x ≤ eni, 0 ≤ y ≤ uzunlik)`, tashqari.length === 0, tashqari.slice(0, 2).map(h => h.part + ' ' + h.local_x + ',' + h.local_y).join(' | '));
-  const jsonSon = J.holes.reduce((a, h) => a + h.qty, 0), jsonYuza = J.holes.filter(h => h.side !== 'T').reduce((a, h) => a + h.qty, 0);
-  info(`Teshiklar JSON: ${jsonSon} teshik (${J.holes.length} yozuv) — NC/DXF da ${kutilganTeshik} yuza teshigi; JSON faqat modul ta'rifidagi teshiklar va biriktirgichlar (konfirmat/ekssentrik), petlya/polka/tortma teshiklari va qo'lda chizilgan modullar yo'q — egasiga savol`);
-  void jsonYuza;
+  /* detal_teshiklari — kesim ro'yxatidagi HAMMA teshik (NC/DXF/KDT bilan bir xil to'plam) */
+  const dt = J.detal_teshiklari || [];
+  ok('JSON: detal_teshiklari bor, har yozuvda detal/x/y/dia/depth/side/kind/qty', dt.length > 0 && dt.every(h => ['placement', 'part', 'side', 'kind', 'dia', 'depth', 'x', 'y', 'qty'].every(k => h[k] !== undefined) && [h.dia, h.depth, h.x, h.y, h.qty].every(Number.isFinite)));
+  ok(`JSON: yuza teshiklari ${J.jami_yuza_teshigi} = NC/DXF (${kutilganTeshik})`, J.jami_yuza_teshigi === kutilganTeshik, J.jami_yuza_teshigi);
+  const tashq = dt.filter(h => { const cl = res.cutlists.find(k => k.placementId === h.placement), p = cl && cl.parts.find(q => q.code === h.part); return !p || h.x < -0.5 || h.y < -0.5 || h.x > p.width + 0.5 || h.y > p.length + 0.5; });
+  ok(`JSON: ${dt.length} yozuvning koordinatasi detal ichida (0 ≤ x ≤ eni, 0 ≤ y ≤ uzunlik)`, tashq.length === 0, tashq.slice(0, 2).map(h => h.part + ' ' + h.x + ',' + h.y).join(' | '));
 }
 
 /* ══ 5) BPJ, .b3d ══ */

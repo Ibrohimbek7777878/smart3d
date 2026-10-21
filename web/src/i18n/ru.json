@@ -472,6 +472,7 @@
  "hujjat.t_cutlist": "Сначала нужен расчёт сметы (деталировка пуста)",
  "hujjat.t_dxf": "DXF готов — раскрой",
  "hujjat.t_excel": "Смета Excel готова (5 разделов)",
+ "hujjat.t_rover": "Программа Rover ЧПУ готова: листов {v}, деталей {d}",
  "hujjat.t_gcode": "G-code (ISO) готов",
  "hujjat.t_giblab": "GibLab готов — {o} операций, {p}/{d} дет., {v} лист.",
  "hujjat.t_giblab_bazis": "GibLab (как из Bazis) готов — видов деталей: {d}, штук: {s}",

@@ -472,6 +472,7 @@
  "hujjat.t_cutlist": "Calculate the estimate first (cut list is empty)",
  "hujjat.t_dxf": "DXF ready — cutting layout",
  "hujjat.t_excel": "Excel estimate ready (5 sections)",
+ "hujjat.t_rover": "Rover CNC program ready: {v} sheets, {d} parts",
  "hujjat.t_gcode": "G-code (ISO) ready",
  "hujjat.t_giblab": "GibLab ready — {o} operations, {p}/{d} parts, {v} sheets",
  "hujjat.t_giblab_bazis": "GibLab (Bazis style) ready — {d} part types, {s} pcs",

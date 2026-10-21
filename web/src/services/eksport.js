@@ -16,6 +16,7 @@ import { stanokModeli } from '../../../app/js/engine/post/smart3d.js';
 import { projectYoz } from '../../../app/js/engine/post/project.js';
 import { kdtFayllar } from '../../../app/js/engine/post/kdt.js';
 import { cp1251 } from '../../../app/js/engine/post/xml.js';
+import { roverProgramlar } from '../../../app/js/engine/post/rover.js';
 import { render1080p, render360Panorama } from '../../../app/js/engine/photo-render.js';
 import { s3n } from '../shared/design3d/engine.js';
 import { t, til } from '../i18n/index.js';
@@ -263,7 +264,21 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
   teshiklar(c) {
     if (!ok(c, false)) return;
     const r = buildOBJ(view(c), c.H.catalog, { cutlists: (c.res && c.res.cutlists) || [] });
-    download('smart3d-holes.json', JSON.stringify({ version: 1, unit: 'mm', holes: r.holes, placements: r.placements }, null, 1), 'application/json');
+    /* detal_teshiklari — KESIM RO'YXATIDAGI hamma teshik (NC/DXF/KDT bilan bir xil to'plam: petlya, polka, tortma, konfirmat…); koordinata detal burchagidan:
+       x — eni bo'ylab, y — uzunlik bo'ylab (mm). holes — faqat modul ta'rifidagi (3D dunyo koordinatali) teshiklar, oldingi sxema o'zgarmadi. */
+    const nest = (c.res && c.res.nest && c.res.nest.by_material) || {}, nusxa = {};
+    for (const m of Object.values(nest)) for (const sh of m.sheets || []) for (const p of sh.parts || []) {
+      const ref = String(p.ref || ''), i = ref.indexOf(':'), k = i < 0 ? '' : ref.slice(0, ref.indexOf('#', i) < 0 ? undefined : ref.indexOf('#', i));
+      if (k) nusxa[k] = (nusxa[k] || 0) + 1;
+    }
+    const dt = [];
+    for (const cl of (c.res && c.res.cutlists) || []) for (const h of cl.holes || []) {
+      if (h.kind === 'cutout' || !(+h.dia > 0)) continue;
+      const q = Math.max(1, Math.round(+h.qty || 1)), n = h.ref ? 1 : (nusxa[cl.placementId + ':' + h.part] || 1);
+      dt.push({ placement: cl.placementId, fragment: cl.fragment, part: h.part, nusxa: h.ref || null, side: h.side, kind: h.kind || 'drill', dia: +h.dia, depth: +h.depth, x: +h.x, y: +h.y, qty: q * n, torets: h.side === 'T' });
+    }
+    const jami = dt.reduce((a, h) => a + h.qty, 0), yuza = dt.filter(h => !h.torets).reduce((a, h) => a + h.qty, 0);
+    download('smart3d-holes.json', JSON.stringify({ version: 1, unit: 'mm', holes: r.holes, placements: r.placements, detal_teshiklari: dt, jami_teshik: jami, jami_yuza_teshigi: yuza }, null, 1), 'application/json');
   },
   /* ── Stanokka (TZ-01: SINOV, sexda tekshirilmagan) ── */
   giblab(c) {
@@ -322,6 +337,20 @@ ${prodRows ? `<h2>${esc(t('hujjat.r_ich'))}</h2><table><tbody>${prodRows}</tbody
       c.toast(t('hujjat.t_kdt', { n, d: model.detallar.length }) + (ogoh.spTeshik ? t('hujjat.t_sp_teshik', { n: ogoh.spTeshik }) : '') + t('hujjat.t_sinov'));
     });
   },
+  /** Rover (Biesse) CNC frezer — sexning haqiqiy .ncc/.tap fayllari shaklida (engine/post/rover.js): har list alohida dastur, ZIP. SINOV: texnolog 1 detalda tekshirmagan. */
+  _rover(c, uslub) {
+    if (!ok(c, true)) return;
+    safe(c, () => {
+      const pr = roverProgramlar(c.res.nest, c.res.cutlists, { uslub, toolDia: 6 });
+      if (!pr.length) { c.toast(t('hujjat.t_bosh')); return; }
+      const zip = new SimpleZip();
+      for (const p of pr) zip.addFile(p.nom, p.matn);
+      download(fname(c) + '-rover-' + uslub + '.zip', new Blob([zip.generate()], { type: 'application/zip' }), 'application/zip');
+      c.toast(t('hujjat.t_rover', { v: pr.length, d: pr.reduce((a, p) => a + p.detal, 0) }) + t('hujjat.t_sinov'));
+    });
+  },
+  rover(c) { return this._rover(c, 'ncc'); },
+  roverTap(c) { return this._rover(c, 'tap'); },
   /** BPJ (TZ-17; TZ-33 B1 — hamma uchun ko'rinadi, SINOV: haqiqiy Bazis'da tekshirilmagan; yo'riqnoma — Fayllar → Bazis) */
   bpj(c) {
     if (!ok(c, false)) return;

@@ -31,6 +31,7 @@ export function useQadamFayllar() {
     { title: t('fayllar.stanokka'), col: 'var(--acct)', sub: t('fayllar.dastursiz'), mainLabel: 'GibLab', main: 'giblab',
       more: [['DXF', 'dxf'], ['G-code', 'gcode'], [t('fayllar.tez_orada', { nom: 'Biesse' }), null], [t('fayllar.tez_orada', { nom: 'Homag' }), null], ['PTP', 'ptp'], ['NC', 'nc'], ['XNC', 'xnc'], [t('fayllar.altendorf_giblab'), 'altendorf', null, () => openSheet('altendorfYoriq', {})],   // egasi #223: .gibcut ni GibLab yozadi (yopiq format) — yo'riqnoma + GibLab .project
         [t('fayllar.kesim_reja'), 'kesimReja'],   // matnli fazali kesim rejasi — stanok nomisiz
+        [t('fayllar.sinov', { nom: 'Rover CNC (.ncc)' }), 'rover'], [t('fayllar.sinov', { nom: 'Rover CNC (.tap)' }), 'roverTap'],
         [t('fayllar.sinov', { nom: 'Bazis (.bpj)' }), 'bpj', null, () => openSheet('bpjYoriq', {})],   // TZ-33 B1: avval yo'riqnoma
         [t('fayllar.sinov', { nom: 'Bazis (.b3d)' }), 'b3d', null, () => openSheet('b3dYoriq', {})],   // TZ-33 B2: .b3d yozuvchi — SINOV
         /* TZ-11: Bazis eksportidek GibLab .project va KDT prisadka — texnolog sinovigacha faqat admin, SINOV */
