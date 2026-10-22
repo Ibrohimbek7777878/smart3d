@@ -60,3 +60,45 @@ test('TZ-36 P9: tiklash sinovi — DEPLOY.md qadamlari (nusxani joyiga ko\'chiri
   for (const [nom, n] of Object.entries(oldin)) assert.equal(keyin[nom], n, `${nom}: qatorlar soni nusxadagi bilan bir xil`);
   t.close();
 });
+
+test('TZ-37/TZ-40: zaxira admin panel va AI jadvallarini ham qamraydi (material rasmi BLOB bayt-bayt), tiklash ularni qaytaradi', async () => {
+  /* init-db faqat asosiy jadvallarni yaratadi; admin panel jadvallari server ishga tushganda (lib/sxema.js) qo'shiladi — shu yerda ham xuddi shunday */
+  const S = await import('../lib/sxema.js');
+  const d = new Database(db);
+  for (const f of [S.yadroSxema, S.adminSxema, S.aiSxema, S.adminSxema2, S.adminSxema3].filter(Boolean)) f(d);   // adminSxema3 (3-faza) qo'shilganda ham o'zi qamraladi
+  const YANGI = ['furn_boglash', 'promptlar_admin', 'admin_audit', 'ai_kesh', 'ai_sarf', 'mat_admin', 'mat_rasm', 'mat_narx', 'katalog_admin'];
+  const rasm = Buffer.from(Array.from({ length: 4096 }, (_, i) => (i * 7 + 13) % 256));
+  d.prepare("INSERT INTO mat_rasm (kalit, mime, hajm, sha, data) VALUES ('sinov-dekor', 'image/png', ?, 'abc123', ?)").run(rasm.length, rasm);
+  d.prepare("INSERT INTO mat_admin (kalit, rang_hex) VALUES ('sinov-dekor', '#aabbcc')").run();
+  d.prepare("INSERT INTO mat_narx (kod, uzs) VALUES ('ERP-SINOV', 123000)").run();
+  d.prepare("INSERT INTO katalog_admin (kod, nom_uz, yashirin) VALUES ('MC-SINOV', 'Sinov modul', 1)").run();
+  d.prepare("INSERT INTO furn_boglash (kod, erp_id, koef) VALUES ('BZ-sinov', '90000001', 2)").run();
+  d.prepare("INSERT INTO promptlar_admin (id, kat) VALUES ('sinov-prompt', 'oshxona')").run();
+  d.prepare("INSERT INTO admin_audit (user_id, bolim, kalit, eski, yangi) VALUES (1, 'materiallar', 'dekor:sinov-dekor', NULL, '{}')").run();
+  d.prepare("INSERT INTO ai_kesh (kalit, yol, natija_json, yaratildi, muddat) VALUES ('k1', 'parse', '{}', 1, 2)").run();
+  d.prepare("INSERT INTO ai_sarf (sana, manba) VALUES ('2026-10-22', 'kesh')").run();
+  d.prepare("UPDATE users SET bloklangan = 1, blok_sabab = 'sinov' WHERE id = 1").run();
+  const jadvallar = (x) => Object.fromEntries(x.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name").all()
+    .map(t => [t.name, x.prepare(`SELECT COUNT(*) AS n FROM "${t.name}"`).get().n]));
+  const oldin = jadvallar(d);
+  for (const t of YANGI) assert.ok(t in oldin, t + ' sxemada yaratilmadi');
+  d.close();
+  const out = execFileSync(process.execPath, ['backup.js'], { cwd: SERVER_DIR, env: { ...process.env, DB_PATH: db, BACKUP_DIR: dir, KEEP: '6' } }).toString();
+  const nusxa = JSON.parse(out.trim().split('\n').pop()).nusxa;
+  const c = new Database(nusxa, { readonly: true });
+  assert.equal(c.pragma('integrity_check', { simple: true }), 'ok');
+  assert.deepEqual(jadvallar(c), oldin, 'zaxirada hamma jadval (yangilari ham) qatorlar soni bilan bir xil bo\'lishi kerak');
+  assert.ok(c.prepare("SELECT data FROM mat_rasm WHERE kalit = 'sinov-dekor'").get().data.equals(rasm), 'material rasmi (BLOB) bayt-bayt bir xil bo\'lishi kerak');
+  assert.equal(c.prepare('SELECT bloklangan FROM users WHERE id = 1').get().bloklangan, 1, 'users.bloklangan zaxirada');
+  c.close();
+  /* tiklash: bazani buzamiz, nusxani joyiga ko'chiramiz (DEPLOY.md) — yangi jadvallar qaytadi */
+  const b = new Database(db);
+  b.exec('DROP TABLE mat_rasm; DELETE FROM admin_audit; DELETE FROM mat_narx');
+  b.close();
+  for (const x of ['-wal', '-shm']) fs.rmSync(db + x, { force: true });
+  fs.copyFileSync(nusxa, db);
+  const t = new Database(db);
+  assert.deepEqual(jadvallar(t), oldin);
+  assert.ok(t.prepare("SELECT data FROM mat_rasm WHERE kalit = 'sinov-dekor'").get().data.equals(rasm));
+  t.close();
+});
