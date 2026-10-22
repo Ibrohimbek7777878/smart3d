@@ -65,6 +65,10 @@ export function materialTuri(nom, t) {
 const NAQSH = /дуб|ясен|сосн|орех|бук|вишн|ольх|кл[её]н|акаци|венге|зебрано|бодег|сонома|вотан|яблон|груш|листвен|кедр|бер[её]з|махагон|палисандр|шпон|древес|камен|бетон|мрамор|гранит|травертин|оникс|wood|oak|walnut|pine|beech|cherry|maple|marble|stone|concrete/i;
 const ODDIY_RANG = /бел(ый|ая|ое)|white|кашемир|графит|шифер|антра[цс]ит|сер(ый|ая|ое)|grey|gray|бежев|крем|cream|pearl|перл|soft touch|слонов|цемент|шагрен|гладк|мокрый|сахара|стальн|oddiy/i;
 export const oddiyDekor = (nom) => !NAQSH.test(String(nom || '')) && ODDIY_RANG.test(String(nom || ''));
+/** TZ-47 (A): dekor nomidan yo'nalish qoidasi — 'oddiy' (aylantiriladi) | 'naqsh' (yo'nalish saqlanadi) | null (nom aytmaydi).
+ *  Material ERP plitasiga (yoki boshqa materialga) almashtirilganda detal teksturasini YANGI nomga qarab qayta aniqlash uchun
+ *  (web/src/services/erpMaterial.js bazisAlmash). 3860: Bazis "Акрил 18мм" (yo'nalishli) → sexda Каштан Cream pearl (txt=false) — 4 list o'rniga 3. */
+export const dekorYonalishi = (nom) => (oddiyDekor(nom) ? 'oddiy' : NAQSH.test(String(nom || '')) ? 'naqsh' : null);
 
 /** kromka nomi → qalinlik ("19/1" → 1, "21/0.8" → 0.8) */
 function kromkaQalinlik(b) {

@@ -4,6 +4,7 @@ import { asosiyRang, dekorKalit } from '../../../app/js/engine/dekorAsosiy.js';
 import { dekorNomi } from '../features/editor/catalog/dekor.js';
 import { erpKod } from '../../../app/js/engine/erpKod.js';
 import { plitaFormati, bazisMoslashHammasi } from '../../../app/js/engine/plitaMoslash.js';
+import { dekorYonalishi } from '../../../app/js/engine/bazis/loyiha.js';
 
 /* TZ-23 E: ERP plitasi (1281 ta, materials-index.json) — alohida material kodi (ERP-…) bo'lib hisobga qo'shiladi:
  * har qism (korpus, fasad, orqa, stoleshnitsa) va har modul o'z dekorida bo'ladi, raskroy har dekorni alohida listda
@@ -108,10 +109,29 @@ export function materialRang(H, code) {
 }
 
 /** TZ-23 E: Bazis materialini almashtirish — fragment nusxasi, detallar yangi materialda (asl fragment o'zgarmaydi).
- *  almash — { 'BZM-…': 'ERP-…' | 'LDSP16' … } (doc.bazis.almash) */
-export function bazisAlmash(frag, almash) {
+ *  almash — { 'BZM-…': 'ERP-…' | 'LDSP16' … } (doc.bazis.almash).
+ *  TZ-47 (A): panelMats (materials.panel_materials) berilsa — almashtirilgan detalning TEKSTURASI yangi material nomiga qarab qayta aniqlanadi
+ *  (import vaqtida u Bazis nomidan qo'yilgan edi): oddiy dekor (Белый гладкий, Кашемир, Каштан pearl …) → 'erkin' (aylantiriladi),
+ *  yog'och/tosh naqshi (LDSP/Kashtan) → yo'nalishli ('en' — lokal X qisqa bo'lsa, aks holda 'uzunlik'); nomi aytmaydigan material (LDSP16 …), yupqa ЛМДФ/МДФ/akril naqshi yoki HDF —
+ *  tekstura o'zgarmaydi (o'ylab topilmaydi). Stoleshnitsa (stol_birga) tegilmaydi. */
+export function bazisAlmash(frag, almash, panelMats) {
   if (!frag || !almash || !Object.keys(almash).length) return frag;
-  return Object.assign({}, frag, { parts: (frag.parts || []).map(p => (almash[p.material_code] ? Object.assign({}, p, { material_code: almash[p.material_code] }) : p)) });
+  const nomi = (kod) => { const m = (panelMats || []).find(x => x.code === kod); return m ? String(m.name || '') : ''; };
+  const tekstura = (p, kod) => {
+    if (!panelMats || p.stol_birga) return p.tekstura;
+    const nom = nomi(kod);
+    if (/^HDF/.test(kod) || /лхдф|хдф|\bhdf\b/i.test(nom)) return p.tekstura;
+    const y = dekorYonalishi(nom);
+    if (y === 'oddiy') return 'erkin';
+    /* naqshli dekor — yo'nalishli faqat LDSP/Kashtan kabi plitada; yupqa ЛМДФ/МДФ/akril (masalan "ЛМДФ 0.55 ДУБ ВОТАН", 3978) sexda ham txt=false — tegilmaydi */
+    return y === 'naqsh' && !/лмдф|мдф|lmdf|\bmdf\b|акрил|akril/i.test(nom) ? (+p.len < +p.width ? 'en' : 'uzunlik') : p.tekstura;
+  };
+  return Object.assign({}, frag, { parts: (frag.parts || []).map(p => {
+    const kod = almash[p.material_code];
+    if (!kod) return p;
+    const t = tekstura(p, kod);
+    return Object.assign({}, p, { material_code: kod }, t !== undefined ? { tekstura: t } : {});
+  }) });
 }
 
 const QISM_SLOT = { korpus: 'korpus', polka: 'polka', fasad: 'fasad', orqa: 'orqa', stol: 'stoleshnitsa' };

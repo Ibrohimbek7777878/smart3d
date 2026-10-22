@@ -5,6 +5,8 @@
  *      (b) panelFitsSheet va kroy shartlari mos emasdi, (c) detal varaqdan haqiqatan katta. Narx jimgina kamaymaydi — yuza bo'yicha taxmin
  *   4) mijoz materiali: plita narxga (tannarx, ustama, aniqlik) kirmaydi; kesim, raspil va nest o'zgarmaydi
  *   5) mahalliy 30 ta haqiqiy buyurtma bo'lsa (git'da yo'q): sig'madi faqat HAQIQATAN varaqdan katta detal, narxga taxmin bilan qo'shilgan
+ *   8) TZ-47 (B): list formati farqi bo'lishi mumkin bo'lgan moslik (dekor boshqa formatda ham/faqat shunda bor) — "nomzod" (sabab "format"), "aniq" emas
+ *   7) TZ-47 (A): material almashtirilganda detal TEKSTURASI yangi material nomiga qarab qayta aniqlanadi (3860: "Акрил 18мм" → Каштан pearl: 4 list o'rniga 3)
  * Ishlatish: node tests/verify_narx_moslash.mjs */
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -16,8 +18,8 @@ const require = createRequire(import.meta.url);
 globalThis.SpPrice = require('../app/js/engine/price.js');
 const { loadData, createHisob } = await import('../web/src/services/hisob.js');
 const E = await import('../web/src/services/erpMaterial.js');
-const { nomMaydoni, nomFormati, plitaFormati, nomTahlil, bazisniERPga } = await import('../app/js/engine/plitaMoslash.js');
-const { bazisLoyiha, materialTuri, materiallarniQosh } = await import('../app/js/engine/bazis/loyiha.js');
+const { nomMaydoni, nomFormati, plitaFormati, nomTahlil, bazisniERPga, bazisMoslashHammasi } = await import('../app/js/engine/plitaMoslash.js');
+const { bazisLoyiha, materialTuri, materiallarniQosh, dekorYonalishi } = await import('../app/js/engine/bazis/loyiha.js');
 const { PANEL_CODE } = await import('../app/js/engine/bazis/b3d.js');
 const { cutlist, productionCost } = await import('../app/js/engine/cutlist.js');
 const { nestProject, nestPanels, panelFitsSheet } = await import('../app/js/engine/nesting.js');
@@ -66,6 +68,19 @@ ok('LMDF alohida tur: "ЛМДФ Сатин 5,8кв" ni LDSP bilan aralashtirmayd
 ok('tahlil: "Сатин BS", "16мм", "4,575", ishlab chiqaruvchi — dekor so\'zlariga kirmaydi', J(nomTahlil('ЛДСП Ультрадекор 4,575 Сатин BS 16мм').dekor) === '["сатин"]' && nomTahlil('ЛДСП Ультрадекор 4,575 Сатин BS 16мм').brend === 'ultradekor');
 const bel = bazisniERPga({ name: 'ЛДСП Ультрадекор 4,575 Белый гладкий 16мм', thickness: 16, tur: 'ldsp' }, sheets);
 ok('"Белый гладкий 4,575" — ERP\'dagi shu nomli plita topiladi yoki nomzodlar (jimgina boshqasini tanlamaydi)', (bel.holat === 'aniq' && /Белый гладкий/i.test(bel.sheet.name)) || (bel.holat === 'nomzod' && bel.nomzodlar.every(s => /Белый гладкий/i.test(s.name))), J([bel.holat, bel.nomzodlar.map(s => s.name)]));
+
+/* TZ-47 (B): list formati farqi bo'lishi mumkin bo'lgan moslik "aniq" emas — "nomzod" (sexda format ko'pincha o'zgaradi: Bazis nomida 4,575, kesish 5,0325) */
+const ant = bazisniERPga({ name: 'ЛДСП Ультрадекор 4,575 Антрацит 16мм', thickness: 16, tur: 'ldsp' }, sheets);
+ok('format: dekor ikki formatda ham bor (Антрацит 4,575 va 5,0325) — "aniq" emas, "nomzod" (sabab "format"), Bazis formati birinchi', ant.holat === 'nomzod' && ant.sabab === 'format' && !ant.sheet && ant.nomzodlar.length >= 2
+  && ant.nomzodlar[0].sku === '0164 PE' && ant.nomzodlar.some(x => /5,0325/.test(x.name)), J(ant.nomzodlar.map(x => x.sku + ' ' + x.name)));
+const kas = bazisniERPga({ name: 'ЛДСП Ультрадекор 4,575 Кашемир 16мм', thickness: 16, tur: 'ldsp' }, sheets);
+ok('format: dekor faqat BOSHQA formatda bor (Кашемир 4,575 yo\'q) — avval "yoq", endi "nomzod" (sabab "format")', kas.holat === 'nomzod' && kas.sabab === 'format' && kas.nomzodlar.every(x => /Кашемир/i.test(x.name)), J([kas.holat, kas.sabab, kas.nomzodlar.map(x => x.name)]));
+const belg = bazisniERPga({ name: 'ЛДСП Ультрадекор 4,575 Белый гладкий 16мм', thickness: 16, tur: 'ldsp' }, sheets);
+ok('format: dekor faqat Bazis formatida bor (Белый гладкий 4,575, katalogda boshqa format yo\'q) — "aniq" qoladi', belg.holat === 'aniq' && belg.sabab === 'dekor' && belg.sheet.sku === '0110 SM', J([belg.holat, belg.sabab]));
+ok('format: nomda aniq SKU ("7045 BS") — format farqi bo\'lsa ham "aniq" (foydalanuvchi o\'zi aytgan); nomda list maydoni yo\'q — oldingidek ("kop")', sat3.holat === 'aniq' && sat3.sabab === 'sku'
+  && bazisniERPga({ name: 'ЛДСП Ультрадекор Антрацит', thickness: 16, tur: 'ldsp' }, sheets).sabab === 'kop');
+const antD = bazisMoslashHammasi([{ code: 'BZM-x', name: 'ЛДСП Ультрадекор 4,575 Антрацит 16мм', thickness: 16, tur: 'ldsp' }], sheets);
+ok('bazisMoslashHammasi: format nomzodi avtomatik qo\'llanmaydi (E.bazisMoslash: aniq = 0, nomzod = 1)', antD['BZM-x'].holat === 'nomzod' && (() => { const dd = { bazis: { materiallar: { panel: [{ code: 'BZM-x', name: 'ЛДСП Ультрадекор 4,575 Антрацит 16мм', thickness: 16, tur: 'ldsp' }] } } }; const r = E.bazisMoslash(dd, H); return r.aniq === 0 && r.nomzod === 1 && !dd.bazis.almash; })());
 
 console.log('\n[3] Bazis → kesim → raskroy → narx (sun\'iy "Big one" oshxona: Satin 4,6кв)');
 const rect = (w, h) => [{ type: 'line', p1: [0, 0], p2: [w, 0] }, { type: 'line', p1: [w, 0], p2: [w, h] }, { type: 'line', p1: [w, h], p2: [0, h] }, { type: 'line', p1: [0, h], p2: [0, 0] }];
@@ -204,6 +219,48 @@ if (existsSync(TOPLAM)) {
   ok(`${n} ta haqiqiy buyurtma: "sig'madi" faqat HAQIQATAN varaqdan uzun detal (${sigmagan} ta); varaqdan kichigi sig'may qolgani yo'q`, n >= 20 && sigmaganKichik.length === 0, sigmaganKichik.slice(0, 4).join('; '));
   ok('har bir sig\'magan detal narxga yuza bo\'yicha taxmin bilan kirgan (jimgina kamayish yo\'q)', taxminsiz.length === 0, taxminsiz.join('; '));
 } else skip("haqiqiy buyurtmalar (Smart3D_toplam_2026-10-16 yo'q)");
+
+console.log('\n[7] TZ-47 (A): almashtirishda tekstura qayta aniqlanadi');
+ok('dekorYonalishi: Каштан pearl / Белый гладкий — oddiy; Дуб Вотан — naqsh; "ЛДСП 16мм" — nom aytmaydi (null)', dekorYonalishi('Каштан 18мм Cream pearl') === 'oddiy' && dekorYonalishi('ЛДСП Ультрадекор 4,575 Белый гладкий 16мм') === 'oddiy'
+  && dekorYonalishi('ЛДСП Ультрадекор 4,575 Дуб Вотан 16мм') === 'naqsh' && dekorYonalishi('ЛДСП 16мм') === null);
+{
+  const fr = { code: 'BZ-t', parts: [
+    { code: 'a', len: '1000', width: '800', material_code: 'BZM-a', tekstura: 'uzunlik' },     // Bazis "Акрил" (yo'nalishli) → oddiy Каштан
+    { code: 'b', len: '600', width: '900', material_code: 'BZM-b', tekstura: 'erkin' },        // oddiy dekor → naqshli Дуб (qisqa X → 'en')
+    { code: 'c', len: '900', width: '600', material_code: 'BZM-c', tekstura: 'erkin' },        // → nomi aytmaydigan LDSP16: o'zgarmaydi
+    { code: 'd', len: '900', width: '600', material_code: 'BZM-d', tekstura: 'erkin' },        // → yupqa ЛМДФ Дуб Вотан (sexda txt=false): o'zgarmaydi
+    { code: 'e', len: '900', width: '600', material_code: 'BZM-e', tekstura: 'uzunlik' },      // → HDF: o'zgarmaydi
+    { code: 'f', len: '3000', width: '600', material_code: 'BZM-f', tekstura: 'uzunlik', stol_birga: true }] };
+  const pm = [{ code: 'ERP-k', name: 'Каштан 18мм Cream pearl' }, { code: 'ERP-d', name: 'ЛДСП Ультрадекор 4,575 Дуб Вотан 16мм' }, { code: 'LDSP16', name: 'ЛДСП 16мм' },
+    { code: 'ERP-m', name: 'ЛМДФ 0.55 ММ ДУБ ВОТАН ТК' }, { code: 'HDF3', name: 'ЛХДФ 2,5мм 2800*2070 Белый' }, { code: 'STOL26-3050', name: 'Столешница 26мм' }];
+  const al = { 'BZM-a': 'ERP-k', 'BZM-b': 'ERP-d', 'BZM-c': 'LDSP16', 'BZM-d': 'ERP-m', 'BZM-e': 'HDF3', 'BZM-f': 'STOL26-3050' };
+  const y = bazisAlmash(fr, al, pm).parts, T = (c) => y.find(x => x.code === c).tekstura;
+  ok('oddiy dekorga almashtirilganda "uzunlik" → "erkin"; naqshli LDSP ga — yo\'nalishli (eni > uzunligi → "en")', T('a') === 'erkin' && T('b') === 'en', J(y.map(x => [x.code, x.tekstura])));
+  ok('nomi aytmaydigan material, yupqa ЛМДФ naqshi, HDF va stoleshnitsa — tekstura o\'zgarmaydi', T('c') === 'erkin' && T('d') === 'erkin' && T('e') === 'uzunlik' && T('f') === 'uzunlik', J(y.map(x => [x.code, x.tekstura])));
+  ok('material_code almashdi; panelMats berilmasa (eski chaqiruv) — tekstura umuman o\'zgarmaydi', y.every(x => x.material_code === al['BZM-' + x.code]) && bazisAlmash(fr, al).parts.every((x, i) => x.tekstura === fr.parts[i].tekstura));
+  ok('asl fragment o\'zgarmadi (nusxa)', fr.parts[0].tekstura === 'uzunlik' && fr.parts[0].material_code === 'BZM-a');
+}
+{
+  /* 6 ta 1000×800 detal "Акрил 18мм" (yo'nalishli), ERP Каштан 18мм (2440×1220): yo'nalishli — 3 list; almashtirishdan keyin erkin — 2 list */
+  const AK = 'Акрил 18мм тепа корпус';
+  const ob7 = []; for (let i = 0; i < 6; i++) ob7.push(panel('bok', AK, 18, 1000, 800));
+  const r7 = bazisLoyiha(ob7, { fayl: 'kashtan.b3d' });
+  const kod7 = r7.materiallar.panel[0].code;
+  const sh7 = { sku: '0506I', name: 'Каштан 18мм Cream pearl', th: 18, l: 2440, w: 1220, uzs: 614040, type: 'LDSP', id: 'x7' };
+  const nest7 = (yangi) => {
+    const d = { v: 1, room: { outline: [[0, 0], [5000, 0], [5000, 3000], [0, 3000]], wall_height: 2700, wall_thickness: 100, openings: [] },
+      placements: [{ id: 'bz7', frg: r7.fragment.code, name: 'bz', x: 500, y: 0, z: 0, w: r7.fragment.w, d: r7.fragment.d, h: r7.fragment.h, rot: 0, qty: 1 }],
+      bazis: { fragment: r7.fragment, materiallar: JSON.parse(JSON.stringify(r7.materiallar)), hisobot: r7.hisobot, almash: {} } };
+    const kod = E.erpQosh(H, d, sh7); d.bazis.almash[kod7] = kod;
+    H.catalog[r7.fragment.code] = yangi ? bazisAlmash(r7.fragment, d.bazis.almash, H.materials.panel_materials) : bazisAlmash(r7.fragment, d.bazis.almash);
+    materiallarniQosh(H.materials, d.bazis.materiallar);
+    const r = hisob(d);
+    return { list: r.nest.by_material[kod].sheet_count, tekstura: r.cutlists[0].parts.map(p => p.texture).join() };
+  };
+  const eski7 = nest7(false), yangi7 = nest7(true);
+  ok('Bazis "Акрил" detallari import vaqtida yo\'nalishli (uzunlik)', r7.fragment.parts.every(x => x.tekstura === 'uzunlik'), J(r7.fragment.parts.map(x => x.tekstura)));
+  ok('almashtirishdan keyin (yangi): Каштан pearl — erkin, 2 list; eski xatti-harakat: yo\'nalishli, 3 list', yangi7.list === 2 && eski7.list === 3 && /erkin/.test(yangi7.tekstura) && !/erkin/.test(eski7.tekstura), J([eski7, yangi7]));
+}
 
 console.log(`\n=== ${fail ? 'XATO: ' + fail + ' ta' : 'HAMMASI OK'} (${pass} pass, ${fail} fail) ===`);
 process.exit(fail ? 1 : 0);

@@ -205,7 +205,7 @@ function betterPlan(a, b) {
   return placedArea(a[a.length - 1]) < placedArea(b[b.length - 1]);
 }
 
-function bestPlan(items, L0, W0, maxRot) {
+function bestPlan(items, L0, W0, maxRot, improve = true) {
   const cfgs = [];
   for (let k = 0; k < SORTS.length; k++) for (const fit of FITS) for (const split of SPLITS) cfgs.push({ k, fit, split, maxRot });
   const orders = SORTS.map((_, k) => sortedBy(items, k));
@@ -232,13 +232,84 @@ function bestPlan(items, L0, W0, maxRot) {
     rest = new Set(top.unplaced);
   }
   if (betterPlan(greedy, best)) best = greedy;
-  return best || [];
+  return improve ? improvePlan(best || [], L0, W0, maxRot) : (best || []);
+}
+
+/* ── TZ-47 (C): "ortiqcha list" ni yo'qotish — eng bo'sh t ta varaq detallarini t−1 varaqqa qayta terish ───────────────────────
+ * Dalil (haqiqiy_solishtir.mjs, a2): sexning GibLab'i bir xil detallarni 83–94% to'ldirish bilan joylaydi; bizning ko'p-o'tishli tanlov
+ * 33 materialning 6 tasida +1 list (HDF 11 detal 91%, LEGE 20 detal 83%, 52 detal 94% …) — chunki hamma saralash tartiblari "katta birinchi".
+ * Yechim: eng bo'sh t ta varaq (t = 2…5) detallari t−1 varaqqa sig'ishi mumkin bo'lsa (umumiy maydon ≤ 95,5%), saralash tartibini va qoidalarni
+ * DETERMINISTIK tasodif (mulberry32, qat'iy urug') bilan o'zgartirib qayta terib ko'rish; faqat varaq soni KAMAYSA qabul qilinadi → mavjud natija hech qachon
+ * yomonlashmaydi. Vaqt o'rniga ish hajmi (detal × urinish) bilan chegaralangan — natija mashinaga bog'liq emas. */
+const IMPROVE_MAX_FILL = 0.955;     // t−1 varaqqa sig'ish uchun zarur to'ldirish chegarasi (undan yuqori — amalda mumkin emas, urinilmaydi)
+const IMPROVE_WORK = 1200000;       // bir material uchun jami ish hajmi: Σ (urinish × detal soni)
+const IMPROVE_MAX_T = 5;
+const SORT_KEYS = [it => it.l * it.w, it => Math.max(it.l, it.w), it => Math.min(it.l, it.w), it => it.l + it.w, it => it.w, it => it.l];
+
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** items → k varaqdan ko'p bo'lmagan reja (hammasi joylashsa) yoki null; urinishlar soni ≤ trials */
+function repackTo(items, k, L0, W0, maxRot, trials, rand) {
+  const n = items.length;
+  const okPlan = (plan) => plan.length <= k && plan.reduce((a, r) => a + r.placed.length, 0) === n;
+  /* 1) hamma standart sozlamalar shu kichik to'plamda (butun materialdagi tartib boshqacha edi) */
+  for (let c = 0; c < SORTS.length * FITS.length * SPLITS.length && c < trials; c++) {
+    const cfg = { k: Math.floor(c / (FITS.length * SPLITS.length)), fit: FITS[Math.floor(c / SPLITS.length) % FITS.length], split: SPLITS[c % SPLITS.length], maxRot };
+    const plan = runPlan(sortedBy(items, cfg.k), L0, W0, cfg);
+    if (okPlan(plan)) return plan;
+  }
+  /* 2) tasodifiy buzilgan tartib: kalit × (1 ± amp), tasodifiy fit/split */
+  const AMP = [0.08, 0.2, 0.4, 0.8];
+  for (let tr = 0; tr < trials; tr++) {
+    const key = SORT_KEYS[Math.floor(rand() * SORT_KEYS.length)], amp = AMP[tr % AMP.length];
+    const order = items.map((it, i) => [it, i, key(it) * (1 + amp * (rand() * 2 - 1))]).sort((a, b) => b[2] - a[2] || a[1] - b[1]).map(x => x[0]);
+    const cfg = { fit: FITS[Math.floor(rand() * FITS.length)], split: SPLITS[Math.floor(rand() * SPLITS.length)], maxRot };
+    const plan = runPlan(order, L0, W0, cfg);
+    if (okPlan(plan)) return plan;
+  }
+  return null;
+}
+
+function improvePlan(plan, L0, W0, maxRot) {
+  if (plan.length < 2) return plan;
+  const itemArea = (r) => r.placed.reduce((a, x) => a + x.it.l * x.it.w, 0);
+  const binArea = L0 * W0;
+  let work = IMPROVE_WORK, cur = plan.slice();
+  const rand = mulberry32(0x5eed0c4 + plan.length * 977);
+  for (let guard = 0; guard < 50 && cur.length >= 2 && work > 0; guard++) {
+    const order = cur.map((r, i) => [r, i, itemArea(r)]).sort((a, b) => a[2] - b[2] || a[1] - b[1]);   // eng bo'sh varaqlar birinchi
+    let topildi = false;
+    for (let t = 2; t <= Math.min(IMPROVE_MAX_T, cur.length) && !topildi; t++) {
+      const tanlangan = order.slice(0, t), jami = tanlangan.reduce((a, x) => a + x[2], 0);
+      if (jami > IMPROVE_MAX_FILL * (t - 1) * binArea) continue;                  // t−1 varaqqa sig'maydi (maydon bo'yicha)
+      const items = tanlangan.flatMap(x => x[0].placed.map(p => p.it));
+      const trials = Math.max(0, Math.min(3000, Math.floor(work / (items.length + 8))));
+      if (trials < 20) continue;
+      work -= trials * (items.length + 8);
+      const yangi = repackTo(items, t - 1, L0, W0, maxRot, trials, rand);
+      if (yangi) {
+        const olib = new Set(tanlangan.map(x => x[1]));
+        cur = cur.filter((_, i) => !olib.has(i)).concat(yangi);
+        topildi = true;
+      }
+    }
+    if (!topildi) break;
+  }
+  return cur;
 }
 
 /**
  * Panellarni varaq(lar)ga joylashtiradi.
  * @param {Array} panels — [{id, length, width, code, fragment, material, texture}]
- * @param {Object} opt — {sheetL, sheetW, trimL, trimW, kerf, sheetPrice, mode, maxRot, remMinA, remMinB, remUsableMin}
+ * @param {Object} opt — {sheetL, sheetW, trimL, trimW, kerf, sheetPrice, mode, maxRot, remMinA, remMinB, remUsableMin, improve (false — TZ-47 C qayta terishsiz)}
  */
 export function nestPanels(panels, opt = {}) {
   const sheetL = opt.sheetL || 2800, sheetW = opt.sheetW || 2070;
@@ -305,7 +376,7 @@ export function nestPanels(panels, opt = {}) {
       rest = r.unplaced;
     }
   } else {
-    plan = bestPlan(items, binL, binW, maxRot);
+    plan = bestPlan(items, binL, binW, maxRot, opt.improve !== false);   // TZ-47 (C): improve:false — faqat eski ko'p-o'tishli tanlov (o'lchov/test uchun)
   }
 
   const sheets = [];
