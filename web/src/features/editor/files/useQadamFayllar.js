@@ -42,7 +42,7 @@ export function useQadamFayllar() {
       ...(R ? [{ ok: !NS.placed_count || NS.placed_count === NS.panel_count, text: NS.placed_count === NS.panel_count ? t('fayllar.sigdi', { n: detTotal, v: NS.total_sheets || 0 }) : t('fayllar.sigmadi', { n: NS.panel_count - NS.placed_count }) }] : []),
       { ok: !sizeWarn, text: sizeWarn ? t('fayllar.chegaradan_tashqari', { n: sizeWarn }) : t('fayllar.chegarada') },
       ...(R ? R.val.errors : []).map(x => ({ ok: false, text: x.message || x.code })),
-      ...(missN ? [{ ok: false, text: t('fayllar.zapchast_narxsiz', { n: missN }) }] : [])],
+      ...(missN ? [{ ok: false, text: t('fayllar.zapchast_narxsiz', { n: missN }, missN) }] : [])],
     fileGroups: groups.map(g => ({ ...g, main: () => faylYukla(g.main),
       more: g.more.map(([l, k, ikon, go]) => ({ label: l, ikon, dis: !k, c: k ? 'var(--txt)' : 'var(--mut)', cur: k ? 'pointer' : 'not-allowed', go: () => { if (go) go(); else if (k) faylYukla(k); } })) }))
   };

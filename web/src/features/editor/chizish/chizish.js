@@ -176,7 +176,7 @@ export function useChizish() {
     },
     ogoh: K.ogoh.map(o => t('chizish.og_' + o.kod, { n: o.n, m: o.m })),
     izoh: s.izoh || null,                                    // TZ-26: AI konstruksiyasi — kim tushundi, nima to'g'rilandi
-    narx: narx ? { jami: raqam(narx.jami) + ' ' + t('umumiy.som'), detal: t('chizish.detal_n', { n: narx.detal }), narxsiz: narx.narxsiz ? t('chizish.narxsiz', { n: narx.narxsiz }) : '' } : null,
+    narx: narx ? { jami: raqam(narx.jami) + ' ' + t('umumiy.som'), detal: t('chizish.detal_n', { n: narx.detal }), narxsiz: narx.narxsiz ? t('chizish.narxsiz', { n: narx.narxsiz }, narx.narxsiz) : '' } : null,
     baland,
     saqlaModul: auth.user ? modullarimgaSaqla : null,
     yop: chizishYop
