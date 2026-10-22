@@ -61,7 +61,7 @@ for (const [nom, st, xz] of [['sukut stavkalar', s0, {}], ['raspil 43 000 + krom
 const pR = hisob(S);
 const rl = pR.lines.find(l => l.code === 'raspil');
 ok(`raspil Holzma 43 000 → mijozga ham aynan ${rl.amount} (43 000 × ${rl.qty} list), ustama qo'shilmagan`, rl.unit_price === 43000 && rl.ustama === false && pR.clientTotal - Math.round((pR.sheetCost + pR.hwCost) * (1 + pR.markupPct)) >= rl.amount);
-const p20 = hisob(qolla(S, { ustama: { foiz: 20 } })), p35 = hisob(S);
+const p20 = hisob(qolla(S, { ustama: { foiz: 20 } })), p35 = hisob(qolla(S, { ustama: { foiz: 35 } }));   // TZ-48: sukut ustama 0% — 35% admin/usta qo'yadi
 ok('ustama 35% → 20%: faqat plita+furnitura qismi o\'zgaradi, xizmatlar bir xil', p35.clientTotal - p20.clientTotal === Math.round((p35.sheetCost + p35.hwCost) * 1.35) - Math.round((p20.sheetCost + p20.hwCost) * 1.2));
 const ustamaSum = p35.clientTotal - p35.totalCost;
 ok(`ustama summasi (${ustamaSum}) = (plita+furnitura) × 35% — butun tannarxning 35% idan kam`, ustamaSum === Math.round((p35.sheetCost + p35.hwCost) * 1.35) - (p35.sheetCost + p35.hwCost) && ustamaSum < p35.totalCost * 0.35);

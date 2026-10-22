@@ -2,7 +2,7 @@ import { useSlice, set, get } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { toast, xato } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
-import { baseForSheet, slotForBase } from '../../../services/hisob.js';
+import { baseForSheet, slotForBase, markupPctOl } from '../../../services/hisob.js';
 import { raqam } from '../../../shared/lib/format.js';
 import { s3Thumb } from '../../../shared/design3d/engine.js';
 import { openMaterial } from './material.js';
@@ -34,14 +34,15 @@ function addModule(fr) {
 const kindOf = (fr) => fr.category === 'drawer_base' ? 'tortma' : /moyka/i.test(fr.name) ? 'moyka' : /shisha|vitr/i.test(fr.name) ? 'glass' : 'door';
 
 export function useQadamMebel() {
-  const ed = useSlice('editor'), pj = useSlice('project');
+  const ed = useSlice('editor'), pj = useSlice('project'), st = useSlice('settings');
   useSlice('data');
   const H = project.H, doc = project.doc;
+  const mk = markupPctOl(doc, st.sets.markup_pct);   // TZ-48: karta narxi kotirovka bilan bir xil ustamada
   const cats = L.DIZAYN_KATEGORIYA, curCat = cats.find(c => c[0] === ed.cat) || cats[0];
   const ql = ed.q.trim().toLowerCase();
   const allFr = H ? Object.values(H.korinadiKatalog).filter(fr => fr.category !== 'bazis') : [];   // TZ-21: yuklangan Bazis loyihasi — modul emas
   const catalog = allFr.filter(fr => curCat[2](fr) && (!ql || (fr.name + ' ' + fr.code + ' ' + L.modulNomi(H, fr)).toLowerCase().includes(ql))).map(fr => {
-    const est = fr.category === 'appliance' ? null : project.est(fr, { materialCode: pj.matCode, fasadCode: pj.fasadCode, sheet: pj.sheet, xizmatlar: doc.xizmatlar });
+    const est = fr.category === 'appliance' ? null : project.est(fr, { materialCode: pj.matCode, fasadCode: pj.fasadCode, sheet: pj.sheet, xizmatlar: doc.xizmatlar, markupPct: mk });
     return { name: L.modulNomi(H, fr), dims: fr.w + '×' + fr.d + '×' + fr.h + ' ' + t('umumiy.mm'), lim: t('mebel.chegara', { a: fr.min_w || '—', b: fr.max_w || '—' }),
       price: est == null ? t('mebel.ornatma') : t('mebel.taxmin', { s: raqam(est) }),
       add: () => addModule(fr),

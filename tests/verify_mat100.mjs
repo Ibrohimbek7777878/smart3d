@@ -10,6 +10,7 @@ const require = createRequire(import.meta.url);
 globalThis.SpPrice = require('../app/js/engine/price.js');
 const { loadData, createHisob } = await import('../web/src/services/hisob.js');
 const E = await import('../web/src/services/erpMaterial.js');
+const { plitaNarxi, plitaSozlama } = await import('../app/js/engine/narxStavka.js');
 const { dekorKalit } = await import('../app/js/engine/dekorAsosiy.js');
 
 const DATA = fileURLToPath(new URL('../app/data/', import.meta.url));
@@ -57,7 +58,7 @@ for (const e of A) {
       ok('doc.erpMat: ' + id, !!(doc.erpMat && doc.erpMat[code] && doc.erpMat[code].sheet_price === sh.uzs));
       ok('kesim materiali: ' + id, parts.length > 0 && parts.every(p => p.material === code), JSON.stringify([...new Set(parts.map(p => p.material))]));
       const line = r.prod.lines.find(l => l.code === code);
-      ok('narx (list narxi = ERP): ' + id, !!line && line.unit_price === sh.uzs && line.qty >= 1 && line.amount === line.unit_price * line.qty, JSON.stringify(line));
+      ok('narx (list narxi = ERP o\'rtacha sotuv narxi, TZ-48): ' + id, !!line && line.unit_price === plitaNarxi(sh.uzs, sh.lst, plitaSozlama(null)).narx && line.narx_tannarx === sh.uzs && line.qty >= 1 && line.amount === line.unit_price * line.qty, JSON.stringify(line));
       const j = E.joyRanglari(H, doc.placements, pj)[0]._rang || {};
       ok('3D rang = rang_hex: ' + id, SLOT[qism].every(s => j[s] && j[s].rang === hexN && j[s].yogoch === (e.yuza === 'yogoch')), JSON.stringify(j));
       ok('plitka rangi = 3D: ' + id, E.plitaRangi(H, sh).rang === hexN);
@@ -65,7 +66,7 @@ for (const e of A) {
       const saq = JSON.parse(JSON.stringify(E.erpSaqla(H, doc, [pj.matCode, pj.polkaCode, pj.fasadCode])));
       E.erpUla(H2, saq);
       const r2 = H2.recalc(saq, opt), l2 = r2.prod.lines.find(l => l.code === code);
-      ok('qayta ochildi: ' + id, r2.cutlists[0].parts.filter(p => SLOT[qism].includes(p.slot)).every(p => p.material === code) && !!l2 && l2.unit_price === sh.uzs && r2.prod.clientTotal === r.prod.clientTotal);
+      ok('qayta ochildi: ' + id, r2.cutlists[0].parts.filter(p => SLOT[qism].includes(p.slot)).every(p => p.material === code) && !!l2 && l2.unit_price === line.unit_price && r2.prod.clientTotal === r.prod.clientTotal);
     }
   }
 }

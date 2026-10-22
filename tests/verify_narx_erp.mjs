@@ -46,18 +46,23 @@ ok('bog\'lanmaganlar faqat: drill (umumiy), cutout (moyka kesimi), d6_eks_qirra,
 ok('tanlov kodlari mavjud va guruhi mos', xz[S.tanlov.raspil].guruh === 'raspil' && Object.values(S.tanlov.kromka).every(c => xz[c].guruh === 'kromka') && Object.values(S.tanlov.prisadka).every(c => xz[c].guruh === 'prisadka') && Object.values(S.tanlov.bazis).every(c => xz[c].guruh === 'bazis'));
 ok('server PUT tekshiruvidan o\'tadi (qayta qo\'llash o\'zgarish bermaydi)', narxQollash(S, { xizmatlar: xz, tanlov: S.tanlov }).ozgarish.length === 0);
 
-console.log('\n[E3] Bazis loyiha xizmati (detal soniga qarab)');
-ok('onlayn = Bazis3 — 3 000, oflayn = Bazis6 — 6 000 (detal boshiga)', bazisXizmat(S, 'onlayn').qiymat === 3000 && bazisXizmat(S, 'oflayn').qiymat === 6000 && /Bazis3/.test(bazisXizmat(S, 'onlayn').nom) && /Bazis6/.test(bazisXizmat(S, 'oflayn').nom));
+console.log('\n[E3] Bazis loyiha xizmati (detal soniga qarab) — TZ-48: sukutda YOQILGAN, 5 000 so\'m/detal, faqat 16/18/19 mm detallar (HDF hisobga olinmaydi)');
+ok('sukut (onlayn) = Bazis5 — 5 000 (detal boshiga); Bazis3 (3 000) va Bazis6 (6 000) katalogda qoladi, oflayn tanlov yo\'q', bazisXizmat(S, 'onlayn').qiymat === 5000 && /Bazis5/.test(bazisXizmat(S, 'onlayn').nom)
+  && !bazisXizmat(S, 'oflayn') && S.xizmatlar['03'].qiymat === 3000 && S.xizmatlar['04'].qiymat === 6000);
 const shkaf = mc.find(f => f.code === 'MC-KU-04');
 const SLOTS = { korpus: 'LDSP18', polka: 'LDSP16', fasad: 'MDF16', orqa: 'HDF3' };
 const cl = cutlist(shkaf, shkaf.w, shkaf.d, shkaf.h, mats, { projectSlots: SLOTS });
-const det = cl.parts.length;
+const det = cl.parts.filter(p => [16, 18, 19].includes(Math.round(p.thickness))).length;   // HDF (3 mm) kirmaydi
+ok(`sinov moduli: ${cl.parts.length} detal, shundan 16/18/19 mm — ${det} (HDF orqa devor hisobga olinmaydi)`, det > 0 && det < cl.parts.length && cl.parts.some(p => p.thickness < 10));
 const pr = (xizmatlar, stavka = S) => productionCost([cl], mats, { stavka, xizmatlar });
-const p0 = pr({}), pOn = pr({ bazis: 'onlayn' }), pOf = pr({ bazis: 'oflayn' });
-ok('sukut o\'chiq (S3): tanlanmasa Bazis qatori ham, summasi ham yo\'q; taklif summasi ko\'rinadi', !p0.lines.some(l => l.code === 'bazis') && p0.bazisCost === 0 && p0.xizmat_taklif.bazis.onlayn === det * 3000 && p0.xizmat_taklif.bazis.oflayn === det * 6000);
-ok(`onlayn: ${det} detal × 3 000 = ${det * 3000}`, pOn.lines.find(l => l.code === 'bazis').amount === det * 3000 && pOn.bazisCost === det * 3000 && pOn.lines.find(l => l.code === 'bazis').tasdiq === true);
-ok(`oflayn: ${det} detal × 6 000 = ${det * 6000}`, pOf.lines.find(l => l.code === 'bazis').amount === det * 6000 && pOf.bazisCost === det * 6000);
-ok('tannarx Bazis summasiga oshadi; perModule yig\'indisi = jami', pOn.totalCost === p0.totalCost + det * 3000 && pOn.perModule.reduce((s, m) => s + m.client, 0) === pOn.clientTotal);
+const p0 = pr({}), pOff = pr({ bazis: null }), pOn = pr({ bazis: 'onlayn' }), pOf = pr({ bazis: 'oflayn' });
+ok('sukut YOQILGAN (TZ-48): xizmatlar berilmasa Bazis qatori va summasi bor', p0.lines.some(l => l.code === 'bazis') && p0.bazisCost === det * 5000 && p0.xizmat_taklif.bazis.tanlangan === 'onlayn');
+ok('usta o\'chirsa (bazis: null) — qator ham, summa ham yo\'q; taklif summasi ko\'rinadi', !pOff.lines.some(l => l.code === 'bazis') && pOff.bazisCost === 0 && pOff.xizmat_taklif.bazis.taklif === det * 5000 && pOff.xizmat_taklif.bazis.tanlangan === null);
+ok(`eski loyihadagi 'onlayn': ${det} detal × 5 000 = ${det * 5000}, qator tasdiqlangan`, pOn.lines.find(l => l.code === 'bazis').amount === det * 5000 && pOn.bazisCost === det * 5000 && pOn.lines.find(l => l.code === 'bazis').tasdiq === true);
+ok('eski loyihadagi \'oflayn\' — tanlov.bazis.oflayn bog\'lanmagan bo\'lsa ham sukut stavka (narx o\'ylab topilmaydi)', pOf.bazisCost === det * 5000);
+const Sof = narxQollash(S, { tanlov: { bazis: { oflayn: '04' } } }).next;
+ok('admin tanlov.bazis.oflayn ga Bazis6 ni bog\'lasa — oflayn: ' + det + ' detal × 6 000', pr({ bazis: 'oflayn' }, Sof).bazisCost === det * 6000 && pr({}, Sof).bazisCost === det * 5000);
+ok('tannarx Bazis summasiga oshadi; perModule yig\'indisi = jami', p0.totalCost === pOff.totalCost + det * 5000 && p0.perModule.reduce((s, m) => s + m.client, 0) === p0.clientTotal);
 ok('stavka (bazis qatori) bo\'lmasa — xizmat qo\'shilmaydi, narx o\'ylab topilmaydi', pr({ bazis: 'onlayn' }, narxSukut(Object.assign({}, mats, { sukut_narx: undefined }))).bazisCost === 0);
 
 console.log('\n[E7] Narxsiz furnitura yashirin');

@@ -24,7 +24,7 @@ const { PANEL_CODE } = await import('../app/js/engine/bazis/b3d.js');
 const { cutlist, productionCost } = await import('../app/js/engine/cutlist.js');
 const { nestProject, nestPanels, panelFitsSheet } = await import('../app/js/engine/nesting.js');
 const { bazisAlmash } = E;
-const { narxSukut } = await import('../app/js/engine/narxStavka.js');
+const { narxSukut, plitaNarxi, plitaSozlama } = await import('../app/js/engine/narxStavka.js');
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DATA = join(ROOT, 'app/data/');
@@ -139,9 +139,11 @@ dA.bazis.almash = { [bm.code]: E.erpQosh(H, dA, bs) };
 E.erpUla(H, dA); H.catalog[rs.fragment.code] = bazisAlmash(rs.fragment, dA.bazis.almash);
 const rA = hisob(dA);
 const nmA = matJoy(rA, kodBS), lnA = rA.prod.lines.filter(l => l.code === kodBS);
-ok('ERP SKU 7045 BS tanlangach: material kodi ERP-…, narx katalogdagi ERP narxi (282 568), manba "ERP", tasdiqlangan', !!nmA && lnA[0].unit_price === bs.uzs && lnA[0].manba === 'ERP' && lnA[0].tasdiq === true, J(lnA[0]));
+/* TZ-48 (egasi #302 Q1): plita narxi = ERP o'rtacha sotuv narxi (sukut): ro'yxat narxi (lst) − 25 000; ro'yxat yo'q bo'lsa tannarx × 1,156. ERP tannarxi (282 568) — narx tarkibida */
+const bsNarx = plitaNarxi(bs.uzs, bs.lst, plitaSozlama(H.narxlar));
+ok(`ERP SKU 7045 BS tanlangach: material kodi ERP-…, narx = ERP o'rtacha sotuv narxi (${bsNarx.narx}; ERP tannarx ${bs.uzs}, qoida ${bsNarx.qoida}), manba "ERP", tasdiqlangan`, !!nmA && bsNarx.narx > 0 && lnA[0].unit_price === bsNarx.narx && lnA[0].narx_tannarx === bs.uzs && lnA[0].manba === 'ERP' && lnA[0].tasdiq === true, J(lnA[0]));
 ok('list formati ERP materialida 2500×1830; 2600 va 2790 li uch planka sig\'madi → yuza bo\'yicha taxmin', nmA.sheet_length === 2500 && nmA.sheet_width === 1830 && nmA.unplaced.length === 3
-  && lnA.find(l => l.sigmadi).amount === taxminKutilgan(nmA, bs.uzs) && lnA.find(l => l.sigmadi).manba === 'taxmin');
+  && lnA.find(l => l.sigmadi).amount === taxminKutilgan(nmA, bsNarx.narx) && lnA.find(l => l.sigmadi).manba === 'taxmin');
 ok('narx aniqligi oshdi (Satin plitasi tasdiqlangan manbadan)', rA.prod.aniqlik.tasdiqlangan > r0.prod.aniqlik.tasdiqlangan, rA.prod.aniqlik.tasdiqlangan + ' ≤ ' + r0.prod.aniqlik.tasdiqlangan);
 ok('detallar yo\'qolmaydi: joylashgan + sig\'magan = 31 (24 + 4 + 3)', nmA.stats.placed_count + nmA.unplaced.length === 31 && nm0.stats.placed_count + nm0.unplaced.length === 31);
 

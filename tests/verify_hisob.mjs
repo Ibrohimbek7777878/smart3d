@@ -43,8 +43,12 @@ ok('raskroy bor', r.nest && Object.keys(r.nest.by_material || {}).length > 0);
 const strip = (o) => JSON.stringify(o, (k, v) => (k === 'created_at' ? undefined : v));
 const r2 = H.recalc(doc, opt);
 ok('barqaror: ikki marta hisob — bir xil', strip(r) === strip(r2));
-const withX = H.recalc(Object.assign({}, doc, { xizmatlar: { teshik: true } }), opt);
-ok('prisadka tanlansa tannarx oshadi (S3)', withX.prod.totalCost > r.prod.totalCost, withX.prod.totalCost + ' vs ' + r.prod.totalCost);
+/* TZ-48 (egasi #301): prisadka sukutda yoqilgan; usta o'chirsa (teshik: false) tannarx kamayadi */
+const withoutX = H.recalc(Object.assign({}, doc, { xizmatlar: { teshik: false } }), opt);
+ok('prisadka sukutda yoqilgan; usta o\'chirsa tannarx kamayadi (TZ-48)', withoutX.prod.totalCost < r.prod.totalCost && withoutX.prod.holeCost === 0 && r.prod.holeCost > 0, withoutX.prod.totalCost + ' vs ' + r.prod.totalCost);
+ok('ustama sukutda 0% (TZ-48): mijoz narxi = tannarx', r.prod.markupPct === 0 && r.prod.clientTotal === r.prod.totalCost);
+const mk35 = H.recalc(Object.assign({}, doc, { ustama: { yoqilgan: true, foiz: 35 } }), opt);
+ok('narx panelida ustama yoqilsa (doc.ustama 35%) — plita+furnitura × 1,35', mk35.prod.markupPct === 0.35 && mk35.prod.clientTotal === Math.round((mk35.prod.sheetCost + mk35.prod.hwCost) * 1.35) + mk35.prod.totalCost - mk35.prod.sheetCost - mk35.prod.hwCost);
 ok('ERP plita → hisob bazasi', baseForSheet({ type: 'LDSP', th: 16 }) === 'LDSP16' && baseForSheet({ type: 'HDF', th: 2.5 }) === 'HDF3');
 
 console.log(fail ? `\n❌ ${fail} xato (${pass} pass)` : `\n=== HAMMASI OK (${pass} pass, 0 fail) ===`);

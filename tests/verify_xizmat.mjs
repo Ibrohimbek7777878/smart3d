@@ -1,5 +1,5 @@
-/* verify_xizmat.mjs — TZ-03 (qoida S3): xizmatni usta tanlaydi.
-   Teshik burg'ilash (prisadka, moyka kesimi) faqat tanlansa tannarxga kiradi; ish haqi — avtomatik.
+/* verify_xizmat.mjs — TZ-03 (qoida S3): xizmatni usta tanlaydi → TZ-48 (egasi #301, 2026-10-22): prisadka va Bazis xizmati sukutda YOQILGAN, usta o'chira oladi.
+   Teshik burg'ilash (prisadka, moyka kesimi): sukutda tannarxga kiradi, usta o'chirsa (xizmatlar.teshik === false) chiqadi; ish haqi — avtomatik.
    Ishga tushirish: node tests/verify_xizmat.mjs */
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -18,11 +18,11 @@ const cls = frags.map((f, i) => Object.assign(cutlist(f, f.w, f.d, f.h, mats, {}
 cls[0].holes.push({ kind: 'cutout', x: 100, y: 600, w: 500, h: 500, qty: 1 });          // moyka kesimi (narxi yo'q)
 const parts = []; cls.forEach(cl => cl.parts.forEach(p => parts.push(Object.assign({}, p, { id: cl.placementId + ':' + p.ref }))));
 const nest = nestProject(parts, mats, { mode: 'bssf' });
-const off = productionCost(cls, mats, { nestResult: nest });                                   // standart: tanlanmagan
-const on = productionCost(cls, mats, { nestResult: nest, xizmatlar: { teshik: true } });
+const off = productionCost(cls, mats, { nestResult: nest, xizmatlar: { teshik: false } });     // usta o'chirgan (TZ-48: sukut — yoqilgan)
+const on = productionCost(cls, mats, { nestResult: nest });                                    // standart: yoqilgan
 const sum = (p) => p.perModule.reduce((s, m) => s + m.client, 0);
 
-console.log('\n[1] Standart holat — tanlanmagan (S3)');
+console.log('\n[1] Usta prisadkani o\'chirgan holat (TZ-48: sukut — yoqilgan)');
 ok('teshik tannarxga kirmaydi (holeCost 0)', off.holeCost === 0, String(off.holeCost));
 ok('narxli teshik qatori yo\'q, faqat "tanlanmagan" ma\'lumot qatori (0 so\'m)',
   !off.lines.some(l => /^hole:/.test(l.code) && l.code !== 'hole:tanlanmagan') && off.lines.some(l => l.code === 'hole:tanlanmagan' && l.amount === 0));
@@ -31,7 +31,9 @@ ok('taklif summasi ko\'rsatiladi', off.xizmat_taklif.teshik.tanlangan === false 
 ok('moyka kesimi "narx yo\'q" ro\'yxatiga tushmaydi (tanlanmagan)', !off.missing.some(m => m.code === 'hole:cutout'));
 ok('ish haqi: ERP xizmat narxiga kiritilgan — alohida qator yo\'q, 0 (egasi #222 Q3)', off.laborCost === 0 && !off.lines.some(l => l.group === 'Ish haqi') && !off.missing.some(m => m.group === 'Ish haqi'));
 
-console.log('\n[2] Usta tanlasa');
+console.log('\n[2] Sukut — yoqilgan (TZ-48)');
+ok('xizmatlar berilmasa ham prisadka yoqilgan; teshik: true bilan bir xil', on.xizmat_taklif.teshik.tanlangan === true
+  && productionCost(cls, mats, { nestResult: nest, xizmatlar: { teshik: true } }).totalCost === on.totalCost);
 ok('teshik tannarxga kiradi = standartdagi taklif summasi', on.holeCost === off.xizmat_taklif.teshik.amount && on.holeCost > 0, `${on.holeCost} vs ${off.xizmat_taklif.teshik.amount}`);
 ok('tannarx farqi aynan teshik summasi', on.totalCost - off.totalCost === on.holeCost, `${on.totalCost - off.totalCost} vs ${on.holeCost}`);
 ok('moyka kesimi narxi yo\'q — "narx yo\'q" ro\'yxatida', on.missing.some(m => m.code === 'hole:cutout'));

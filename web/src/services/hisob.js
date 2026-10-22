@@ -17,6 +17,7 @@ import * as PriceMod from '../../../app/js/engine/price.js';
 import { asosiyIndeks } from '../../../app/js/engine/dekorAsosiy.js';
 import { erpNarxQollash, materiallarQollash, katalogNomlar, katalogQollash, yashirinKodlar, korinadiKatalog } from '../../../app/js/engine/adminQatlam.js';
 import { sukutErpQollash } from '../../../app/js/engine/narxStavka.js';
+import { xizmatKatalog } from '../../../app/js/engine/xizmatKatalog.js';
 import { stolKitchen, stolMaterialQollash } from '../../../app/js/engine/stoleshnitsa.js';
 import { plitaFormati } from '../../../app/js/engine/plitaMoslash.js';
 import { erpAsl, erpQatlamQoy, erpSukutQoy } from './erpQatlam.js';
@@ -29,6 +30,7 @@ const SpPrice = () => globalThis.SpPrice || (PriceMod && (PriceMod.default || Pr
 export const DATA_FILES = {
   frags: 'fragments.json', mats: 'materials.json', nestDef: 'nesting-defaults.json',
   sheetCat: 'sheet-catalog.json', matIdx: 'materials-index.json', services: 'services.json',
+  erpXizmatlar: 'erp-xizmatlar.json',                             // TZ-48: «Xizmat qo'shish» oynasi — ERP xizmatlar ro'yxati
   appliances: 'appliances.json', mcFrags: 'fragments-mc.json', frFrags: 'fragments-fr.json', sexStd: 'sex-standartlari.json',
   furnCat: 'furnitura-catalog.json',
   stolErp: 'stoleshnitsa-erp.json',                               // TZ-32 yakuniy: stoleshnitsa dekorlari — har biri o'z ERP narxi (egasi #222 Q1)
@@ -73,7 +75,7 @@ export async function loadData(read, api) {
 
 /** Katalog va ma'lumotlar — eski boot() dagi yig'ish bilan bir xil. */
 export function createHisob(data) {
-  const { frags, mats, nestDef, sheetCat, matIdx, services, appliances, mcFrags, frFrags, sexStd, furnCat, stolErp, dekorMashhur, dekorAsosiy, furnBoglash, nomlarRu, nomlarEn, rasmlar } = data;
+  const { frags, mats, nestDef, sheetCat, matIdx, services, erpXizmatlar, appliances, mcFrags, frFrags, sexStd, furnCat, stolErp, dekorMashhur, dekorAsosiy, furnBoglash, nomlarRu, nomlarEn, rasmlar } = data;
   const furnById = {};
   for (const it of (furnCat && furnCat.items) || []) if (it.id) furnById[it.id] = it;
   const furnituraBoglash = (furnBoglash && furnBoglash.links) || {};
@@ -145,11 +147,18 @@ export function createHisob(data) {
       const m2 = JSON.parse(JSON.stringify(mats));
       const pm = (m2.panel_materials || []).find(x => x.code === base);
       if (!pm) return mats;
-      if (sh.uzs > 0) { pm.sheet_price = sh.uzs; delete pm.taxminiy; }   // TZ-32 A1: tanlangan ERP mahsulotining narxi — tasdiqlangan
+      if (sh.uzs > 0) {   // TZ-32 A1: tanlangan ERP mahsulotining narxi — tasdiqlangan
+        pm.sheet_price = sh.uzs; delete pm.taxminiy;
+        pm.src = 'ERP'; if (sh.lst > 0) pm.sheet_lst = sh.lst; else delete pm.sheet_lst;   // TZ-48: ERP narxi — «sotuv» rejimida ro'yxat narxi − chegirma (engine/narxStavka.js plitaNarxi)
+        if (sh.qolda) pm.qolda = true; else delete pm.qolda;
+      }
       const fm = plitaFormati(sh.name, sh.l, sh.w).f;   // TZ-42: list formati nomdagi maydondan (4,575 → 2500×1830) — katalogdagi eni/bo'yi ko'pincha sukut 2800×2070
       if (fm) pm.sheets = [fm];
       return m2;
     },
+
+    /** TZ-48: «Xizmat qo'shish» katalogi — ERP xizmatlar ro'yxati + narx hujjati (admin/jonli narx ustun) + Smart3D xizmatlar katalogi (taxmin) */
+    xizmatKatalog() { return xizmatKatalog({ erp: erpXizmatlar, services, narxlar: H.narxlar }); },
 
     /** Butun hisob — eski doRecalc() bilan bir xil tartib.
      *  opt: { materialCode, fasadCode, orqaCode, stolCode, sheet, nestCfg, markupPct } → { priceRes, val, cutlists, prod, nest, placements } */
@@ -190,8 +199,11 @@ export function createHisob(data) {
       const nest = nestProject(allParts, m, opt.nestCfg || nestDefaults);
       /* 5) ishlab chiqarish tannarxi (haqiqiy varaqlar soni bilan) */
       /* TZ-09: usta ustamasi (Sozlamalar) — berilmasa materials.json standarti (eski sayt bilan bir xil) */
-      const prod = productionCost(cutlists, m, Object.assign({ nestResult: nest, furnituraById: furnById, furnituraBoglash, furnituraKoef, xizmatlar: doc.xizmatlar || {}, stavka: H.narxlar, mijozMat: doc.mijozMat || {} },
-        opt.markupPct != null ? { markupPct: opt.markupPct } : {}));
+      /* TZ-48: ustama — sukutda 0%; usta narx panelida yoqadi va foizini o'zgartiradi (doc.ustama = { yoqilgan, foiz }) — loyiha bilan saqlanadi va Sozlamalardagi
+         qiymatdan ustun. doc.ustama yo'q — avvalgidek: Sozlamalar (opt.markupPct) → admin stavkasi → materials.json (0) */
+      const mp = markupPctOl(doc, opt.markupPct);
+      const prod = productionCost(cutlists, m, Object.assign({ nestResult: nest, furnituraById: furnById, furnituraBoglash, furnituraKoef, xizmatlar: doc.xizmatlar || {}, stavka: H.narxlar, mijozMat: doc.mijozMat || {},
+        qoshXizmat: doc.qoshXizmat || [] }, mp != null ? { markupPct: mp } : {}));
       /* 6) mijoz kotirovkasi — tannarx × (1 + ustama), modullarga taqsimlangan */
       const priceRes = buildQuote(placements, catalog, cutlists, prod, sizeCheck.warnings);
       return { priceRes, val, cutlists, prod, nest, placements, materials: m };
@@ -205,6 +217,16 @@ export function createHisob(data) {
 }
 
 /* ─────────── eski app.js dan so'zma-so'z (global state o'rniga parametr) ─────────── */
+
+/** TZ-48: loyihadagi ustama tanlovi (doc.ustama = { yoqilgan, foiz (%) }) → kasr (0.35) yoki null (tanlov yo'q — boshqa manba) */
+export function markupPctOl(doc, sozlama) {
+  const u = doc && doc.ustama;
+  if (u && typeof u === 'object' && typeof u.yoqilgan === 'boolean') {
+    const f = Number(u.foiz);
+    return u.yoqilgan && Number.isFinite(f) && f > 0 && f <= 300 ? Math.round(f * 10) / 1000 : 0;
+  }
+  return sozlama != null ? sozlama : null;
+}
 
 /** Loyiha slotlari (TZ §5 3.1): usta tanlagan korpus va fasad hamma modulga qo'llanadi.
  *  TZ-23 E: orqa devor va stoleshnitsa ham (tanlansa; tanlanmasa — modul/standart materiali, avvalgidek);
@@ -266,13 +288,14 @@ function buildQuote(placements, catalog, cutlists, prod, sizeWarnings) {
     const frag = catalog[cl.fragment] || {};
     const amount = (prod.perModule[i] || {}).client || 0;
     return { code: cl.fragment, name: p.name || frag.name || cl.fragment, w: p.w, d: p.d, h: p.h,
-             qty: 1, unit_price: amount, amount };
+             qty: 1, unit_price: amount, amount, amountFurnsiz: (prod.perModule[i] || {}).clientFurnsiz || 0 };   // TZ-48: «Furniturasiz» ko'rinish
   });
   return {
     lines,
     subtotal: prod.clientTotal,
     discount: 0,
     total: prod.clientTotal,
+    totalFurnsiz: prod.clientFurnsiz,
     markupPct: prod.markupPct,
     missing: prod.missing,
     incomplete: prod.missing.length > 0,

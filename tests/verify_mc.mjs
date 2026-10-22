@@ -179,7 +179,7 @@ const nest = nestProject(parts, mats, { mode: 'bssf', kerf: 4, trimL: 10, trimW:
 const unpl = Object.values(nest.by_material).reduce((s, r) => s + (r.unplaced || []).length, 0);
 ok(`kroy: ${parts.length} detal, ${nest.summary.total_sheets} varaq, sig'magan 0`, unpl === 0, String(unpl));
 const prod = productionCost(cls, mats, { nestResult: nest, furnituraById: furnById });
-ok(`tannarx ${prod.totalCost} > 0, mijoz narxi ${prod.clientTotal}`, prod.totalCost > 0 && prod.clientTotal > prod.totalCost);
+ok(`tannarx ${prod.totalCost} > 0, mijoz narxi ${prod.clientTotal} (TZ-48: ustama sukutda 0% — mijoz narxi = tannarx)`, prod.totalCost > 0 && prod.clientTotal === prod.totalCost && prod.markupPct === 0);
 const mcHw = prod.lines.filter(l => l.group === 'Furnitura' && (l.id || /^BZ-/.test(l.code)));
 ok('MebelCity zapchastlari smetada (nomi bilan)', mcHw.length > 5 && mcHw.every(l => l.name && !/^BZ-/.test(l.name)), String(mcHw.length));
 ok('ERP\'da narxi yo\'q zapchast — 0 so\'m va "narx yo\'q" (o\'ylab topilmaydi)',

@@ -23,6 +23,8 @@ export function erpMaterial(sh, mats) {
   return {
     code: erpKod(sh), name: String(sh.name || '').slice(0, 160), thickness: +sh.th || asos.thickness || 16,
     factor: asos.factor, sheet_price: narxBor ? +sh.uzs : asos.sheet_price,
+    ...(narxBor && +sh.lst > 0 ? { sheet_lst: +sh.lst } : {}),     // TZ-48: ERP ro'yxat narxi — «sotuv» rejimi (engine/narxStavka.js plitaNarxi)
+    ...(narxBor && sh.qolda ? { qolda: true } : {}),               // TZ-48: admin qo'lda kiritgan narx — sotuv koeffitsientiga tushmaydi
     sheets: ((f) => (f ? [f] : (asos.sheets || [[2800, 2070]])))(plitaFormati(sh.name, sh.l, sh.w).f),   // TZ-42: nomdagi maydon (4,575 → 2500×1830) — katalogda sukut 2800×2070 bo'lishi mumkin
     src: narxBor ? 'ERP' : 'ERP (narx yo\'q) — ' + base + ' narxi, taxminiy', taxminiy: !narxBor, asos: base,
     erp: { id: sh.id || '', sku: sh.sku || '', type: sh.type || '' }

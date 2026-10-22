@@ -70,7 +70,7 @@ export function useSozlamalar() {
   const std = (H && H.sexStd && H.sexStd.modullar) || {};
   const stdIn = st.stdIn || Object.fromEntries(Object.entries(std).map(([t, m]) => [t, Object.fromEntries(STD_DIMS.filter(k => m[k]).map(k => [k, { min: m[k].min ?? '', max: m[k].max ?? '' }]))]));
   const nc = st.nestIn || (H ? project.nestCfg() : {});
-  const std0 = H ? Math.round(((H.materials.pricing && H.materials.pricing.markup_pct) ?? 0.35) * 100) : 35;
+  const std0 = H ? Math.round(((H.materials.pricing && H.materials.pricing.markup_pct) ?? 0) * 100) : 0;   // TZ-48: sukut ustama 0%
   useEffect(() => { if (admin) loadXatolar(''); }, [admin]);
   const xj = st.xatolar;
   const setStd = (tur, k, patch) => setIn({ stdIn: { ...stdIn, [tur]: { ...stdIn[tur], [k]: { ...stdIn[tur][k], ...patch } } } });

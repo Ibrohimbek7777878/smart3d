@@ -240,6 +240,9 @@ export function tekshir(f0) {
     if (nh.narxsiz) x('NARX', `${nh.narxsiz} ta narxsiz qator`);
     for (const t of nh.taxmin) {
       if (t.group === 'Furnitura' && NARX_KUTILMOQDA.has(t.code)) x('NARX', `${t.code} narxi taxmin (egasi javobi)`, true);
+      /* TZ-48: prisadka sukutda yoqilgan → katalog modulining umumiy burg'ilash teshigi (kind 'drill', turi yo'q) materials.json hole_kinds dagi 300 so'm (taxmin) bilan
+         narxlanadi: u qaysi ERP prisadka xizmatiga mos kelishi (polka ushlagich? metka?) egasi javobini kutadi — «kutilmoqda» */
+      else if (t.group === 'Xizmatlar' && t.code === 'hole:drill') x('NARX', `${t.code} narxi taxmin (umumiy burg'ilash teshigi — ERP prisadka xizmatiga bog'lash egasi javobi)`, true);
       else x('NARX', `${t.group}: ${t.code} narxi tasdiqlanmagan (${t.manba})`);
     }
   }

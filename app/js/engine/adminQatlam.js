@@ -27,7 +27,7 @@ export function materiallarQollash(out, mv) {
   const narx = new Map(Object.entries(obj(mv.narx)).filter(([k, v]) => /^ERP-/.test(k) && Number.isInteger(v) && v > 0));
   if (narx.size) {
     for (const royxat of [out.sheetCat && out.sheetCat.sheets, out.matIdx && out.matIdx.items]) {
-      for (const s of royxat || []) { const v = narx.get(erpKod(s)); if (v) s.uzs = v; }
+      for (const s of royxat || []) { const v = narx.get(erpKod(s)); if (v) { s.uzs = v; s.qolda = true; } }   // TZ-48: admin qo'lda narxi — plita «sotuv» koeffitsientiga tushmaydi
     }
   }
   return out;

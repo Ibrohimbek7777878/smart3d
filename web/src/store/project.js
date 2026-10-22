@@ -151,7 +151,7 @@ export const project = {
     erpSaqla(this.H, this.doc, [p.matCode, p.polkaCode, p.fasadCode, p.orqaCode, p.stolCode]);
     return { app: 'smart3d', v: 2, ts: Date.now(), name: p.name, client: p.client, material: p.matCode, fasad: p.fasadCode,
       ...(p.polkaCode ? { polka: p.polkaCode } : {}), ...(p.orqaCode ? { orqa: p.orqaCode } : {}), ...(p.stolCode ? { stol: p.stolCode } : {}),
-      sheet: sh ? { sku: sh.sku, name: sh.name, type: sh.type, th: sh.th, l: sh.l, w: sh.w, uzs: sh.uzs } : null, doc: this.doc };
+      sheet: sh ? { sku: sh.sku, name: sh.name, type: sh.type, th: sh.th, l: sh.l, w: sh.w, uzs: sh.uzs, ...(sh.lst > 0 ? { lst: sh.lst } : {}), ...(sh.qolda ? { qolda: true } : {}) } : null, doc: this.doc };
   },
   /** serverdan yoki fayldan kelgan loyihani ochish */
   apply(p, meta) {

@@ -89,10 +89,11 @@ const ns3 = nestProject(c3.parts.map(p => Object.assign({}, p, { id: 'x:' + p.re
 ok('HDF — 1 list (3 detal 3 list emas), format 2800×2070', ns3.by_material['BZM-hdf'].sheet_count === 1 && ns3.by_material['BZM-hdf'].sheet_price === 140000, String(ns3.by_material['BZM-hdf'] && ns3.by_material['BZM-hdf'].sheet_count));
 const p3 = productionCost([c3], m3, { nestResult: ns3, stavka: S });
 ok('raspil: LDSP — Holzma 2 (43 000), HDF — Holzma 1 (25 000), alohida qatorlar', line(p3, 'raspil') && line(p3, 'raspil').unit_price === 43000 && line(p3, 'raspil_yupqa') && line(p3, 'raspil_yupqa').unit_price === 25000 && line(p3, 'raspil_yupqa').qty === 1
-  && p3.raspilCost === line(p3, 'raspil').amount + 25000, JSON.stringify(p3.lines.filter(l => l.group === 'Raspil').map(l => [l.code, l.qty, l.unit_price])));
+  && line(p3, 'raspil_qosh') && line(p3, 'raspil_qosh').qty === 1 && line(p3, 'raspil_qosh').unit_price === 43000   // TZ-48: +1 qo'shimcha raspil — alohida qator (Holzma 2)
+  && p3.raspilCost === line(p3, 'raspil').amount + 25000 + 43000, JSON.stringify(p3.lines.filter(l => l.group === 'Raspil').map(l => [l.code, l.qty, l.unit_price])));
 const S0 = narxQollash(S, { tanlov: { raspil_yupqa: null } }).next;
 const p30 = productionCost([c3], m3, { nestResult: ns3, stavka: S0 });
-ok('raspil_yupqa tanlanmasa — hammasi umumiy raspil stavkasida (avvalgidek), alohida qator yo\'q', !line(p30, 'raspil_yupqa') && line(p30, 'raspil').qty === p3.lines.filter(l => l.group === 'Raspil').reduce((s, l) => s + l.qty, 0));
+ok('raspil_yupqa tanlanmasa — hammasi umumiy raspil stavkasida (avvalgidek), alohida qator yo\'q', !line(p30, 'raspil_yupqa') && line(p30, 'raspil').qty === p3.lines.filter(l => l.group === 'Raspil' && l.code !== 'raspil_qosh').reduce((s, l) => s + l.qty, 0));
 ok('raspil_yupqa faqat raspil guruhidagi xizmat bo\'lishi mumkin (tekshiruv)', (() => { try { narxQollash(S, { tanlov: { raspil_yupqa: '780236012395' } }); return false; } catch (e) { return /topilmadi/.test(e.message); } })());
 ok('raspilYupqaXizmat: sukut = Holzma 1 (25 000)', raspilYupqaXizmat(S).qiymat === 25000 && /Holzma 1/.test(raspilYupqaXizmat(S).nom));
 

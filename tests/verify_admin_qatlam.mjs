@@ -11,6 +11,7 @@ const require = createRequire(import.meta.url);
 globalThis.SpPrice = require('../app/js/engine/price.js');
 const { loadData, createHisob } = await import('../web/src/services/hisob.js');
 const E = await import('../web/src/services/erpMaterial.js');
+const { plitaNarxi, plitaSozlama } = await import('../app/js/engine/narxStavka.js');
 const Q = await import('../app/js/engine/adminQatlam.js');
 const { erpKod } = await import('../app/js/engine/erpKod.js');
 const { applySexStandart } = await import('../app/js/engine/standart.js');
@@ -63,7 +64,8 @@ const hujjat = (H) => { const f = H.catalog['SP-K-001']; return { v: 1, room, pl
 const hisob = (H, sh) => { const doc = hujjat(H), c = E.erpQosh(H, doc, sh); return H.recalc(doc, { materialCode: c, polkaCode: c, fasadCode: 'MDF16' }); };
 const r0 = hisob(H0, sh0), r1 = hisob(H1, sh1);
 const l0 = r0.prod.lines.find(l => l.code === erpKod(sh0)), l1 = r1.prod.lines.find(l => l.code === erpKod(sh1));
-ok('HISOBGA ta\'sir: raskroydagi list narxi = admin narxi', !!l0 && !!l1 && l0.unit_price === sh0.uzs && l1.unit_price === yangiNarx, JSON.stringify([l0 && l0.unit_price, l1 && l1.unit_price]));
+/* TZ-48: ERP narxi (admin o'zgartirmagan) — o'rtacha sotuv narxi (plitaNarxi); admin qo'lda kiritgan narx (qolda) — AYNAN o'sha narx, sotuv koeffitsientiga tushmaydi */
+ok('HISOBGA ta\'sir: raskroydagi list narxi = admin narxi (qo\'lda — o\'zgarishsiz), admin tegmagan ERP plitasi — o\'rtacha sotuv narxi', !!l0 && !!l1 && l0.unit_price === plitaNarxi(sh0.uzs, sh0.lst, plitaSozlama(null)).narx && l1.unit_price === yangiNarx && l1.narx_qoida === undefined, JSON.stringify([l0 && l0.unit_price, l1 && l1.unit_price]));
 ok('HISOBGA ta\'sir: jami narx farq qiladi, list soni bir xil', r1.priceRes.total !== r0.priceRes.total && l0.qty === l1.qty);
 ok('yangi narx — faqat shu dekor tanlanganda (boshqa varaq narxi o\'zgarmagan)', (() => { const o = A[1].kodlar[0], s0 = H0.sheetCatalog.sheets.find(s => erpKod(s) === o), s1 = H1.sheetCatalog.sheets.find(s => erpKod(s) === o); return s0.uzs === s1.uzs; })());
 /* noto'g'ri qiymatlar e'tiborsiz */

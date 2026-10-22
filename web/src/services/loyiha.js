@@ -212,12 +212,13 @@ export function createEstimator(H) {
   return function estimate(f, opt) {
     const sh = opt.sheet;
     const xz = opt.xizmatlar || {};
-    const key = opt.materialCode + '|' + opt.fasadCode + '|' + (sh ? sh.sku + sh.name + '@' + sh.uzs : '') + '|xz' + (xz.teshik ? 1 : 0);
+    /* TZ-48: prisadka va Bazis sukutda YOQILGAN; ustama (markupPct) — kartada ham quyidagi kotirovkadagi bilan bir xil */
+    const key = opt.materialCode + '|' + opt.fasadCode + '|' + (sh ? sh.sku + sh.name + '@' + sh.uzs + '/' + (sh.lst || 0) : '') + '|xz' + (xz.teshik !== false ? 1 : 0) + (xz.bazis === false || xz.bazis === null ? 0 : 1) + '|mk' + (opt.markupPct != null ? opt.markupPct : '-');
     if (cache.key !== key || cache.stavka !== H.narxlar) { cache.key = key; cache.map = {}; cache.mats = null; cache.stavka = H.narxlar; }   // TZ-20: stavka o'zgarsa ham
     if (cache.map[f.code] == null) {
       const mats = cache.mats || (cache.mats = H.effectiveMaterials(sh));
       const cl = cutlist(f, f.w, f.d, f.h, mats, { projectSlots: projectSlots(opt.materialCode, opt.fasadCode) });
-      cache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: H.furnById, furnituraBoglash: H.furnituraBoglash, furnituraKoef: H.furnituraKoef, xizmatlar: xz, stavka: H.narxlar }).clientTotal;
+      cache.map[f.code] = productionCost([cl], mats, { areaEstimate: true, furnituraById: H.furnById, furnituraBoglash: H.furnituraBoglash, furnituraKoef: H.furnituraKoef, xizmatlar: xz, stavka: H.narxlar, ...(opt.markupPct != null ? { markupPct: opt.markupPct } : {}) }).clientTotal;
     }
     return cache.map[f.code];
   };
