@@ -1,6 +1,6 @@
-# TZ-42 — Fayl formatlari: sexdagi haqiqiy fayllarga moslash va to'liq chiqarish
+# TZ-43 — Fayl formatlari: sexdagi haqiqiy fayllarga moslash va to'liq chiqarish
 
-**Sana:** 2026-10-21 · **Navbat:** 42 · **Holat:** 1-BOSQICH BAJARILDI (`agent/format`) — haqiqiy stanokda sinov kutilmoqda
+**Sana:** 2026-10-21 · **Navbat:** 43 · **Holat:** 1-BOSQICH BAJARILDI (`agent/format`) — haqiqiy stanokda sinov kutilmoqda
 **Asos:** egasi #284: "fayllar formatini to'liq to'g'irlab ishlaydigan qilib ber, barcha formatdagi fayllarni to'liq chiqarib bera olish kerak". Bog'liq: TZ-11 (stanok), TZ-33 (SketchUp/Bazis).
 **Xavf:** PAST (eksport kodi; hisob, narx va saqlangan loyihaga tegilmagan). Orqaga qaytarish: `git revert`.
 **Moliya:** to'lov/narx hisobiga tegilmaydi.
