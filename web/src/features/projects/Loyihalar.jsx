@@ -14,7 +14,7 @@ export default function Loyihalar() {
           {t('loyihalar.loyihalarim')}
         </h1>
         <div style={{"display":"flex","gap":"8px","flexWrap":"wrap","flex":"1 1 320px","justifyContent":"flex-end"}}>
-          <input value={v.pq} onChange={v.onPq} placeholder={t('loyihalar.qidirish_nom_yoki_mijoz')} style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","height":"48px","flex":"1 1 220px","maxWidth":"340px","background":"var(--sfc)"}} />
+          <input value={v.pq} onChange={v.onPq} placeholder={t('loyihalar.qidirish_nom_yoki_mijoz')} style={{"width":"100%","borderRadius":"14px","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","height":"48px","flex":"1 1 220px","maxWidth":"340px","background":"var(--sfc)"}} />
           <button onClick={v.newProject} style={{"height":"48px","padding":"0 20px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"15px","cursor":"pointer","whiteSpace":"nowrap"}}>
             {t('loyihalar.yangi_loyiha')}
           </button>
@@ -46,7 +46,7 @@ export default function Loyihalar() {
       {/* TZ-23 C1: "Buyurtmalarim" — sexga yuborilganlar, holati bilan */}
       {!v.pq ? <Buyurtmalar admin={false} /> : null}
       {v.projEmpty ? (<>
-        <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"48px 24px","display":"flex","flexDirection":"column","alignItems":"center","gap":"14px","textAlign":"center"}}>
+        <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"48px 24px","display":"flex","flexDirection":"column","alignItems":"center","gap":"14px","textAlign":"center"}}>
           <span style={{"fontSize":"40px"}}>
             <Ikon n="qidiruv" size={40} gap={0} style={{ color: "var(--mut)" }} />
           </span>

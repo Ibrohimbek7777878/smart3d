@@ -81,7 +81,7 @@ export default function IchiniKorish() {
               </div>
             </div>
           </div>
-          <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"4px 14px 8px"}}>
+          <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"4px 14px 8px"}}>
             {(v.ins?.list || []).map((r, $index) => (<React.Fragment key={$index}>
               <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"9px 0","borderTop":"1px solid var(--line)","fontSize":"13px"}}>
                 <span>

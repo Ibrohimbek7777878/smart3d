@@ -68,7 +68,7 @@ export default function AiOyna() {
       <textarea value={v.aiText} onChange={v.onAiText} rows="4" placeholder={t('umumiy.oshxona_3_6x3_m_balandlik_2_7')} style={{"width":"100%","borderRadius":"16px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","padding":"16px","resize":"none","outline":"none"}}></textarea>
       <div style={{"display":"flex","gap":"6px","flexWrap":"wrap"}}>
         {v.aiEx.map((x, i) => (
-          <button key={i} onClick={x.pick} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"600","fontSize":"13px","textAlign":"left"}}>
+          <button key={i} onClick={x.pick} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"600","fontSize":"13px","textAlign":"left"}}>
             <span className="sc-interp">{x.t}</span>
           </button>))}
       </div>
