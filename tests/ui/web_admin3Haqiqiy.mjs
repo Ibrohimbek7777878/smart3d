@@ -161,7 +161,7 @@ async function asosiy(page, R) {
     && /Bir xil · 1/.test(await page.locator('[data-erp-chip="plita:bir_xil"]').innerText()) && /O'zgardi · 2/.test(await page.locator('[data-erp-chip="furnitura:ozgardi"]').innerText()) && /Yangi · 1/.test(await page.locator('[data-erp-chip="yangi:yangi"]').innerText());
   R.erpYoqXabar = await kut('[data-erp="yoq"]');
   R.erpHolat = (await page.locator('[data-erp="holat"]').innerText()).includes('Qoralama');
-  R.erpHechNarsaYoq = JSON.stringify(await jsonOl('/api/erp-narx')) === JSON.stringify({ plita: {}, furnitura: {}, sana: '' });
+  R.erpHechNarsaYoq = await (async () => { const e = await jsonOl('/api/erp-narx'); return JSON.stringify({ plita: e.plita, furnitura: e.furnitura, sana: e.sana }) === JSON.stringify({ plita: {}, furnitura: {}, sana: '' }); })();   // TZ-44: javobga versiya/jonli qo'shildi
   await page.screenshot({ path: `${OUT}/admin3-erp-1440.png`, fullPage: true });
   /* filtr va qidiruv */
   await page.locator('[data-erp-chip="plita:ozgardi"]').click(); await page.waitForTimeout(800);

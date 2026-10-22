@@ -21,6 +21,7 @@ const ustunlar = (x, t) => x.prepare(`PRAGMA table_info(${t})`).all().map(c => c
 const migratsiya = () => {
   S.yadroSxema(d); S.mcModullar(d, APP_DIR); S.adminSxema(d); S.aiSxema(d); S.adminSxema2(d);
   if (S.adminSxema3) S.adminSxema3(d);
+  if (S.erpJonliSxema) S.erpJonliSxema(d);                                                          // TZ-44: ERP jonli sinxron jadvallari
   S.promptlarSeed(d, APP_DIR);
 };
 
@@ -44,7 +45,8 @@ test('migratsiya: eski bazaga yangi jadvallar va ustunlar qo\'shiladi, mavjud ma
   assert.ok(!ustunlar(d, 'users').includes('bloklangan'));
   migratsiya();
   birinchi = jadvallar(d);
-  for (const t of ['mat_rasm', 'mat_admin', 'mat_narx', 'katalog_admin', 'furn_boglash', 'promptlar_admin', 'admin_audit', 'ai_kesh', 'ai_sarf']) assert.ok(t in birinchi, t + ' yaratilmadi');
+  for (const t of ['mat_rasm', 'mat_admin', 'mat_narx', 'katalog_admin', 'furn_boglash', 'promptlar_admin', 'admin_audit', 'ai_kesh', 'ai_sarf', 'erp_jonli_holat', 'erp_jonli_obyekt', 'erp_jonli_kat', 'erp_jonli_tarix']) assert.ok(t in birinchi, t + ' yaratilmadi');
+  assert.ok(ustunlar(d, 'erp_partiya').includes('manba'), 'erp_partiya.manba (TZ-44) qo\'shilmadi');
   for (const c of ['bloklangan', 'blok_sabab', 'blok_vaqt']) assert.ok(ustunlar(d, 'users').includes(c), 'users.' + c);
   for (const c of ['spec_json', 'spec_manba', 'spec_sana', 'spec_versiya', 'spec_hash', 'spec_tasdiq']) assert.ok(ustunlar(d, 'promptlar_admin').includes(c), 'promptlar_admin.' + c);
   /* mavjud ma'lumot */

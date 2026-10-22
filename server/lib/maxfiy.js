@@ -4,7 +4,7 @@
  *   2) umumiy shakllar: Anthropic/OpenAI kaliti (sk-…), Google API kaliti (AIza…), Telegram bot kaliti (123456:ABC…), JWT, "Bearer …".
  * Faqat matn bilan ishlaydi (hech narsa yozmaydi, tarmoqqa chiqmaydi). */
 const MAXFIY_MUHIT = ['AI_API_KEY', 'ANTHROPIC_API_KEY', 'ESKIZ_PASSWORD', 'ESKIZ_EMAIL', 'TELEGRAM_BOT_TOKEN', 'TELEGRAM_WEBHOOK_SECRET', 'JWT_SECRET',
-  'ADMIN_PASSWORD', 'YANDEX_SPEECH_KEY', 'DATABASE_URL', 'REDIS_URL'];
+  'ADMIN_PASSWORD', 'YANDEX_SPEECH_KEY', 'DATABASE_URL', 'REDIS_URL', 'ERP_LOGIN', 'ERP_PASSWORD'];   // TZ-44: ERP kirish ma'lumoti
 const SHAKLLAR = [
   /\bsk-[A-Za-z0-9_-]{12,}/g,
   /\bAIza[0-9A-Za-z_-]{20,}/g,
