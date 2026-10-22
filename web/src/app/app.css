@@ -83,3 +83,59 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 .adm-erp>:nth-child(n+3){flex:1 1 92px}
 .adm-eh{display:none}
 }
+
+/* TZ-49: «Narx tarkibi» (kichik blok va katta ko'rinish) — bo'lim, qator (nom, miqdor × narx = summa, ulush bar, manba), pastki jami */
+.nt{display:flex;flex-direction:column}
+.nt-bar{display:block;height:4px;border-radius:9px;background:var(--sfc3);overflow:hidden;flex:1 1 auto;min-width:0}
+.nt-bar>i{display:block;height:100%;border-radius:9px}
+.nt-b{border-top:1px solid var(--line);padding:4px 0 6px}
+.nt-b:first-of-type{border-top:0}
+.nt-bh{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:baseline;padding:10px 0 6px;font-weight:800}
+.nt-bh>.nt-bar{grid-column:1/-1}
+.nt-q{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"nom summa" "formula formula" "ul ul" "meta meta" "qolda qolda";gap:3px 12px;align-items:baseline;padding:9px 0;border-top:1px dashed var(--line);font-size:13px}
+.nt-q>.nt-nom{grid-area:nom}.nt-q>.nt-summa{grid-area:summa;text-align:right}.nt-q>.nt-formula{grid-area:formula}
+.nt-q>.nt-ul{grid-area:ul;display:flex;align-items:center;gap:8px}.nt-q>.nt-meta{grid-area:meta}.nt-q>.nt-qolda-q{grid-area:qolda;padding-top:4px}
+.nt-th{display:none}
+.nt-pastki{display:flex;flex-direction:column;gap:4px;border-top:2px solid var(--line);padding-top:10px;margin-top:4px}
+.nt-p{display:flex;justify-content:space-between;gap:12px;font-size:14px;font-weight:700}
+.nt-jami{font-size:18px;font-weight:800;color:var(--acct);padding:6px 0}
+.nt-keng .nt-q{font-size:14px}.nt-keng .nt-p{font-size:15px}.nt-keng .nt-jami{font-size:22px}
+@media (min-width:760px){
+.nt-keng .nt-th{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1.9fr) 130px minmax(120px,1fr);gap:16px;padding:0 0 6px;font-size:12px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
+.nt-keng .nt-q{grid-template-columns:minmax(0,2.2fr) minmax(0,1.9fr) 130px minmax(120px,1fr);grid-template-areas:"nom formula summa ul" "meta meta meta meta" "qolda qolda qolda qolda";gap:4px 16px;align-items:center}
+.nt-keng .nt-q>.nt-summa{font-size:15px}
+}
+
+/* TZ-49: chop hujjati (A4) — ekranda ko'rinmaydi; «PDF / Chop etish» da (window.print) faqat shu hujjat qoladi: menyu, tugmalar, 3D, oynalar yashiriladi */
+.chop-hujjat{display:none}
+@media print{
+@page{size:A4;margin:13mm 12mm}
+html,body{background:#fff !important;height:auto !important;min-height:0 !important;overflow:visible !important;margin:0 !important;padding:0 !important}
+body>*:not(.chop-hujjat){display:none !important}
+.chop-hujjat{display:block !important;position:static !important;color:#111;background:#fff;font:12px/1.4 Manrope,"Segoe UI",Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.chop-hujjat *{box-sizing:border-box}
+.chop-bosh{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #FF7A45;padding-bottom:6px;margin-bottom:10px}
+.chop-brend b{font-size:17px;margin-right:6px}.chop-brend small{color:#666;font-size:11px}
+.chop-sana{color:#444;font-size:12px}
+.chop-hujjat h1{font-size:20px;margin:0 0 4px;overflow-wrap:anywhere}
+.chop-meta{display:flex;gap:18px;flex-wrap:wrap;color:#444;font-size:12px;margin-bottom:12px}
+.chop-bolim{break-inside:avoid;page-break-inside:avoid;margin:0 0 10px}
+.chop-hujjat table{width:100%;border-collapse:collapse;table-layout:fixed}
+.chop-hujjat table th:nth-child(1),.chop-hujjat table td:nth-child(1){width:52%}
+.chop-hujjat table th:nth-child(2),.chop-hujjat table td:nth-child(2){width:14%}
+.chop-hujjat table th:nth-child(3),.chop-hujjat table td:nth-child(3){width:16%}
+.chop-hujjat table th:nth-child(4),.chop-hujjat table td:nth-child(4){width:18%}
+.chop-hujjat th,.chop-hujjat td{border:1px solid #999;padding:4px 7px;text-align:left;vertical-align:top;font-size:11.5px}
+.chop-hujjat th{background:#eee;font-weight:700}
+.chop-hujjat .chop-bnom th{background:#dde6e4;font-size:13px;border-color:#999}
+.chop-hujjat .n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.chop-hujjat thead{display:table-header-group}
+.chop-hujjat tr{break-inside:avoid;page-break-inside:avoid}
+.chop-hujjat td small{color:#666;font-size:10px}
+.chop-hujjat tfoot td{background:#f6f6f6;font-weight:700}
+.chop-jami{break-inside:avoid;page-break-inside:avoid;margin-top:12px}
+.chop-jami td{font-size:13px;font-weight:600}
+.chop-jami .chop-umumiy td{font-size:16px;font-weight:800;background:#ffe9df}
+.chop-izoh{color:#555;font-size:10.5px;margin:8px 0 0}
+.chop-oyoq{margin-top:14px;border-top:1px solid #ccc;padding-top:5px;color:#777;font-size:10.5px}
+}

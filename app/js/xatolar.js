@@ -139,6 +139,8 @@ export const XATOLAR = {
   'S3D-NARX-103': { matn: 'Narx stavkalari serverdan o\'qilmadi — fayldagi taxminiy qiymatlar ishlatilmoqda' },
   'S3D-NARX-104': { matn: 'Xizmatlar ro\'yxati (ERP) yuklanmadi — «Xizmat qo\'shish» da xizmat yo\'q' },
   'S3D-NARX-105': { matn: 'Xizmat qo\'shilmadi — miqdor yoki narx noto\'g\'ri' },
+  'S3D-NARX-106': { matn: 'Furnitura narxi qabul qilinmadi — 1 dan 1 000 000 000 so\'mgacha son kiriting' },   // TZ-49: qo'lda narx
+  'S3D-NARX-107': { matn: 'Chop etish oynasi ochilmadi — brauzer ruxsatini tekshiring' },                       // TZ-49: chop etish / PDF
   'S3D-UI-101': { matn: 'Bu bo\'limda xatolik yuz berdi' },
   'S3D-UI-102': { matn: 'Sahifa ochilmadi — qayta urinib ko\'ring' },          // TZ-30: manzil (/loyiha/5 …) ochilmadi
   'S3D-JS-101': { matn: 'Kutilmagan xato' },

@@ -5,6 +5,8 @@ import Toggle from '../../../shared/ui/Toggle.jsx';
 import { useQadamNarx } from './useQadamNarx.js';
 import { buyurtmaOch } from '../../buyurtma/buyurtma.js';
 import { input } from '../../../shared/ui/styles.js';
+import NarxTarkibKorinish from './NarxTarkibKorinish.jsx';
+import ChopHujjat from './ChopHujjat.jsx';
 
 /* TZ-19: ③ Narx — JSX va stillar tasdiqlangan dizayndan; qiymatlar useQadamNarx() dan. */
 export default function QadamNarx() {
@@ -77,37 +79,22 @@ export default function QadamNarx() {
         {v.tarkib ? <button onClick={v.tarkib.flip} data-tarkib-tugma="" aria-expanded={v.tarkib.ochiq} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"14px","fontWeight":"800","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","whiteSpace":"nowrap"}}>
           <Ikon n="qatlam" size={16} gap={0} />{v.tarkib.label}<Ikon n={v.tarkib.ochiq ? "tepa" : "past"} size={16} gap={0} />
         </button> : null}
+        {/* TZ-49 (egasi #303): katta ko'rinish va «PDF / Chop etish» — A4 hujjat (to'liq ro'yxat), ikkala tugma bitta hujjatni ochadi */}
+        {v.tarkib ? <button onClick={v.katta.ochish} data-tarkib-katta-tugma="" style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"14px","fontWeight":"800","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","whiteSpace":"nowrap"}}>
+          <Ikon n="toliq" size={16} gap={0} />{v.katta.label}
+        </button> : null}
+        {v.chop.bor ? <button onClick={v.chop.yoz} data-chop-tugma="tepa" title={v.chop.izoh} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"14px","fontWeight":"800","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","whiteSpace":"nowrap"}}>
+          <Ikon n="chop" size={16} gap={0} />{v.chop.label}
+        </button> : null}
         <button onClick={v.furnsiz.flip} data-furnsiz="" aria-pressed={v.furnsiz.on} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":v.furnsiz.on ? "0" : "1px solid var(--line)","background":v.furnsiz.on ? "var(--acc)" : "var(--sfc2)","color":v.furnsiz.on ? "var(--ink)" : "var(--txt)","fontSize":"14px","fontWeight":"800","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","whiteSpace":"nowrap"}}>
           <Ikon n="furnitura" size={16} gap={0} />{v.furnsiz.label}
         </button>
       </div>
       {v.furnsiz.on ? <span data-furnsiz-izoh="" style={{"fontSize":"13px","color":"var(--mut)","fontWeight":"600"}}>{v.furnsiz.izoh} · {v.furnsiz.furnituraJami} {t('narx.som')}</span> : null}
       {v.tarkib && v.tarkib.ochiq ? (
-        <div data-tarkib="" style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"4px 16px 12px","display":"flex","flexDirection":"column"}}>
-          {v.tarkib.bolimlar.map((b) => (
-            <div key={b.kod} data-tarkib-bolim={b.kod} style={{"display":"flex","flexDirection":"column"}}>
-              <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"12px 0 4px","fontWeight":"800","borderTop":"1px solid var(--line)"}}>
-                <span>{b.nom}</span>
-                <span style={{"fontVariantNumeric":"tabular-nums","whiteSpace":"nowrap"}} data-tarkib-jami="">{b.jami}</span>
-              </div>
-              {b.qatorlar.map((r, i) => (
-                <div key={i} data-tarkib-qator="" style={{"display":"flex","flexDirection":"column","gap":"1px","padding":"4px 0 6px","fontSize":"13px"}}>
-                  <span style={{"fontWeight":"700","minWidth":"0","overflowWrap":"anywhere"}}>{r.nom}</span>
-                  <span style={{"color":"var(--mut)","fontVariantNumeric":"tabular-nums"}}>{r.formula}</span>
-                  <span style={{"display":"flex","gap":"6px","flexWrap":"wrap","fontSize":"12px","color":"var(--mut)"}}>
-                    <span data-tarkib-manba={r.manbaKod} style={{"fontWeight":"800","color":r.manbaKod === 'erp' || r.manbaKod === 'egasi' || r.manbaKod === 'mijoz' ? "var(--cyan)" : "var(--acct)"}}>{r.manba}</span>
-                    <span data-tarkib-qoida={r.qoidaKod}>· {r.qoida}</span>
-                  </span>
-                </div>))}
-            </div>))}
-          <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"12px 0 2px","fontWeight":"800","borderTop":"1px solid var(--line)","fontSize":"15px"}}>
-            <span>{t('narx.tarkib_jami')}</span>
-            <span style={{"fontVariantNumeric":"tabular-nums"}} data-tarkib-hammasi="">{v.tarkib.jami}</span>
-          </div>
-          <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"2px 0","fontWeight":"700","color":"var(--mut)","fontSize":"14px"}}>
-            <span>{t('narx.tarkib_furnsiz')}</span>
-            <span style={{"fontVariantNumeric":"tabular-nums"}} data-tarkib-furnsiz="">{v.tarkib.furnsiz}</span>
-          </div>
+        <div data-tarkib="" style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"4px 16px 14px","display":"flex","flexDirection":"column"}}>
+          {/* TZ-49: bo'limlar, har qator — nom, miqdor × narx = summa, jamidagi ulushi (%), manba; pastda tannarx, ustama, jami */}
+          <NarxTarkibKorinish k={v.tarkib} />
         </div>) : null}
       {/* TZ-48 (egasi #301, 1-qaror; dizaynda yo'q — "Xizmatlar" kartasi uslubida): ustama sukutda qo'shilmaydi (0%), usta qo'lda yoqadi va foizini o'zgartiradi */}
       <div data-ustama="" style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexDirection":"column","gap":"2px"}}>
@@ -121,6 +108,7 @@ export default function QadamNarx() {
             </label>
             <button onClick={v.ustama.taklifTugma} data-ustama-taklif="" style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"14px","fontWeight":"700","cursor":"pointer"}}>{t('narx.ustama_taklif', { n: v.ustama.taklif })}</button>
           </div>) : null}
+        {v.ustama.manba ? <span data-ustama-manba="" style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"600","paddingTop":"4px"}}>{v.ustama.manba}</span> : null}
       </div>
       {v.hasMissing ? (<>
       <div style={{"borderRadius":"16px","background":"rgba(255,123,123,.10)","border":"1px solid rgba(255,123,123,.38)"}}>
@@ -132,6 +120,7 @@ export default function QadamNarx() {
         </button>
         {v.missOpen ? (<>
           <div style={{"padding":"0 14px 12px","display":"flex","flexDirection":"column","gap":"4px","fontSize":"13px","color":"var(--txt)"}}>
+            <button onClick={v.zapchastKiritish.ochish} data-zapchast-narx-kiriting="" style={{"alignSelf":"flex-start","minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"14px","fontWeight":"800","cursor":"pointer","marginBottom":"4px"}}>{v.zapchastKiritish.label}</button>
             {(v.missing || []).map((m, $index) => (<React.Fragment key={$index}>
               <span style={{"display":"flex","justifyContent":"space-between","gap":"8px"}}>
                 <span>
@@ -221,8 +210,12 @@ export default function QadamNarx() {
         </>) : null}
       </div>
       <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"4px 16px 8px"}}>
-        <div style={{"padding":"12px 0 6px","fontWeight":"800"}}>
-          {t('narx.sex_tannarxi')}
+        <div style={{"padding":"12px 0 6px","fontWeight":"800","display":"flex","justifyContent":"space-between","alignItems":"center","gap":"8px","flexWrap":"wrap"}}>
+          <span>{t('narx.sex_tannarxi')}</span>
+          {/* TZ-49 (egasi #303): «PDF / Chop etish» — shu karta sarlavhasi yonida; katta narx tarkibidagi bilan bir xil hujjat */}
+          {v.chop.bor ? <button onClick={v.chop.yoz} data-chop-tugma="karta" title={v.chop.izoh} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"14px","fontWeight":"800","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","whiteSpace":"nowrap"}}>
+            <Ikon n="chop" size={16} gap={0} />{v.chop.label}
+          </button> : null}
         </div>
         {(v.costRows || []).map((r, $index) => (<React.Fragment key={$index}>
           <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"9px 0","borderTop":"1px solid var(--line)","fontSize":"13px"}}>
@@ -296,6 +289,7 @@ export default function QadamNarx() {
       <button onClick={buyurtmaOch} data-buyurtma-ber="" style={{"height":"52px","borderRadius":"14px","border":"2px solid var(--acc)","background":"transparent","color":"var(--acc)","fontWeight":"800","fontSize":"16px","cursor":"pointer","flex":"0 0 auto","display":"flex","alignItems":"center","justifyContent":"center"}}>
         <Ikon n="buyurtma" size={19} />{t('buyurtma.ber')}
       </button>
+      <ChopHujjat />
       <button onClick={v.goStep4} style={{"height":"52px","borderRadius":"14px","border":"0","background":"var(--acc)","color":"var(--ink)","fontWeight":"800","fontSize":"16px","cursor":"pointer","flex":"0 0 auto"}}>
         {t('narx.keyingi_fayllar')}
       </button>

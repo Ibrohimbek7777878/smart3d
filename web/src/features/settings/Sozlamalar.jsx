@@ -86,6 +86,11 @@ export default function Sozlamalar() {
           <label style={lbl}>{t('sozlama.foyda')}
             <input type="number" inputMode="decimal" min="0" max="300" value={S.markup} onChange={S.onMarkup} onBlur={S.saveMarkup} onKeyDown={S.enter} placeholder={S.markupPh} style={input} />
           </label>
+          <span data-ustama-holat="" style={{ ...hint, fontWeight: '700', color: 'var(--txt)' }}>{S.markupHolat}</span>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <button onClick={S.markupNol} data-ustama-nol="" aria-pressed={S.markupNolOn} style={chip(S.markupNolOn)}>{t('sozlama.ustama_nol')}</button>
+            <button onClick={S.markupStandart} data-ustama-standart="" aria-pressed={S.markupBosh} style={chip(S.markupBosh)}>{t('sozlama.ustama_standart')}</button>
+          </div>
           <span style={hint}>{S.markupIzoh}</span>
         </section>
 

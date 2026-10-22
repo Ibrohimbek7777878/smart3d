@@ -23,6 +23,7 @@ const BpjYoriq = kechiktir(() => import('./eksport/BpjYoriq.jsx'), { joy: 'ichki
 const B3dYoriq = kechiktir(() => import('./eksport/B3dYoriq.jsx'), { joy: 'ichki' });
 const AltendorfYoriq = kechiktir(() => import('./eksport/AltendorfYoriq.jsx'), { joy: 'ichki' });
 const XizmatVaraq = kechiktir(() => import('./pricing/XizmatVaraq.jsx'), { joy: 'ichki' });
+const TarkibVaraq = kechiktir(() => import('./pricing/TarkibVaraq.jsx'), { joy: 'ichki' });
 
 /* TZ-19: muharrirdagi pastki varaqlar (dizaynda yo'q qismlar) — qaysi biri ochiq bo'lsa (ui.vq.kind) o'sha chiziladi. */
 const VARAQ = {
@@ -39,10 +40,11 @@ const VARAQ = {
   bpjYoriq: { title: () => <><Ikon n="bazis" size={18} />{t('bpj.sarlavha')}</>, label: 'bpj.sarlavha', Body: BpjYoriq },   // TZ-33 B1
   altendorfYoriq: { title: () => <><Ikon n="bazis" size={18} />{t('altendorf.sarlavha')}</>, label: 'altendorf.sarlavha', Body: AltendorfYoriq },   // egasi #223
   b3dYoriq: { title: () => <><Ikon n="bazis" size={18} />{t('b3d.sarlavha')}</>, label: 'b3d.sarlavha', Body: B3dYoriq },   // TZ-33 B2
-  xizmat: { title: () => <><Ikon n="qosh" size={18} />{t('xizmatq.sarlavha')}</>, label: 'xizmatq.sarlavha', Body: XizmatVaraq }   // TZ-48: «Xizmat qo'shish»
+  xizmat: { title: () => <><Ikon n="qosh" size={18} />{t('xizmatq.sarlavha')}</>, label: 'xizmatq.sarlavha', Body: XizmatVaraq },   // TZ-48: «Xizmat qo'shish»
+  tarkib: { title: () => <><Ikon n="qatlam" size={18} />{t('narx.tarkib')}</>, label: 'narx.tarkib', Body: TarkibVaraq, keng: true }   // TZ-49: «Narx tarkibi» katta ko'rinishi
 };
 
-const TANALAR = [TeshikVaraq, ShaklVaraq, OshxonaVaraq, MaterialVaraq, KonstruktorVaraq, BazisVaraq, FurnituraVaraq, DavomVaraq, BuyurtmaVaraq, OshxonaAiVaraq, BpjYoriq, B3dYoriq, AltendorfYoriq, XizmatVaraq];
+const TANALAR = [TeshikVaraq, ShaklVaraq, OshxonaVaraq, MaterialVaraq, KonstruktorVaraq, BazisVaraq, FurnituraVaraq, DavomVaraq, BuyurtmaVaraq, OshxonaAiVaraq, BpjYoriq, B3dYoriq, AltendorfYoriq, XizmatVaraq, TarkibVaraq];
 /** varaq tanalarini oldindan yuklash (3D sahna ko'tarilgach, bo'sh vaqtda — app/App.jsx): varaq ochilganda kutish bo'lmaydi */
 export const varaqlarniOldindanYukla = () => TANALAR.forEach(B => B.oldindan());
 
@@ -52,5 +54,5 @@ export default function Varaqlar() {
   const v = vq && VARAQ[vq.kind];
   if (!v) return null;
   const { Body } = v;
-  return <Varaq title={v.title(vq)} label={v.label && t(v.label)} kind={vq.kind} onClose={closeSheet}><Body /></Varaq>;
+  return <Varaq title={v.title(vq)} label={v.label && t(v.label)} kind={vq.kind} onClose={closeSheet} keng={!!v.keng}><Body /></Varaq>;
 }

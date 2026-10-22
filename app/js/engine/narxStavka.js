@@ -44,6 +44,17 @@ export const ustamaManbasi = (materials) => {
   return p && p.markup_pct != null && /^egasi/.test(String(p.price_src || '')) ? 'egasi' : 'taxmin';
 };
 
+/** TZ-49 (3): usta o'zi ustama bermaganda (null) amal qiladigan ustama va uning manbasi.
+ *  S.ustama.foiz (narx hujjati) bo'lsa: admin o'zgartirgan (yoki avval saqlagan, masalan 35% — u ustun turadi) → tur 'admin'; materials.json sukutiga teng → 'sukut'.
+ *  Hujjat yo'q — materials.json sukuti (0%). Natija: { tur: 'admin' | 'sukut', foiz (%), manba, sana }. */
+export function ustamaAdmin(S, materials) {
+  const q = S && S.ustama && S.ustama.foiz && S.ustama.foiz.qiymat != null ? S.ustama.foiz : null;
+  const mk = materials && materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0;
+  const sukut = { foiz: Math.round(mk * 1000) / 10, manba: ustamaManbasi(materials) };
+  if (!q) return { tur: 'sukut', foiz: sukut.foiz, manba: sukut.manba, sana: null };
+  return { tur: q.qiymat === sukut.foiz && q.manba === sukut.manba ? 'sukut' : 'admin', foiz: q.qiymat, manba: q.manba, sana: q.sana || null };
+}
+
 /** Boshlang'ich hujjat — materials.json dagi hozirgi ish haqi ("taxmin") va ustama (manbasi — ustamaManbasi). */
 export function narxSukut(materials) {
   const lab = (materials && materials.labor) || {};
