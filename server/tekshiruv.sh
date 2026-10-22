@@ -59,6 +59,8 @@ done <<'JADVAL'
 /admin/standart|200|admin bo'limi, ilova manzili
 /admin/foydalanuvchilar|200|admin bo'limi, ilova manzili
 /admin/tarix|200|admin bo'limi, ilova manzili
+/admin/erp|200|admin bo'limi, ilova manzili
+/admin/tizim|200|admin bo'limi, ilova manzili
 /admin/noma-lum-bolim|404|noma'lum admin bo'limi (app.html ga burilmaydi)
 /noma%27lum-sahifa|404|noma'lum sahifa (app.html ga burilmaydi)
 /api/narxlar|200|narx stavkalari (o'qish ochiq)
@@ -87,6 +89,7 @@ done <<'JSONJADVAL'
 /api/materiallar|200|dekor,narx|admin o'zgartirgan material rang, rasm va varaq narxi
 /api/katalog|200|modullar|modullar katalogi, admin o'zgartirishlari
 /api/furnitura-boglash|200|links|furnitura -> ERP bog'lash
+/api/erp-narx|200|plita,furnitura|ERP narx qatlami (admin tasdiqlagan; bo'sh bo'lishi mumkin)
 /api/promptlar|200|promptlar|tayyor so'rovlar
 /api/standart|200|korpus,fasad|standart konstruksiya
 /api/admin/audit|401/404|code|o'zgarishlar tarixi, kirishsiz yopiq (admin bo'lmaganga 404)
