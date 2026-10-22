@@ -1,6 +1,6 @@
 # TZ-48 — Narx qoidalari: egasi qarorlari (sukut siyosati, furniturasiz ko'rinish, Bazis/prisadka/raspil, narx tarkibi)
 
-**Sana:** 2026-10-22 · **Navbat:** 48 · **Holat:** TASDIQLANDI qisman (egasi #301 javoblari); 3 savol javob kutadi (§3). Kod — savollar yopilgach.
+**Sana:** 2026-10-22 · **Navbat:** 48 · **Holat:** TASDIQLANDI (egasi #301, #302); kod boshlandi.
 **Asos:** narx auditi (14 real buyurtma, o'rtacha +33%; `47-natija-haqiqiy-solishtirish.md` bilan birga), egasi javoblari + fayllar `PRISADKA-USLUGA-2026-10-22.txt`, `STANOK-VA-HDF-NARXLARI-2026-10-22.txt`.
 **Xavf:** O'RTA (narx hisobi o'zgaradi; saqlangan buyurtma summasi o'zgarmaydi). **Moliya:** to'lov/yechish yo'q. **Orqaga qaytarish:** `git revert`; ustama va stavkalar admin "Narxlar" da sukutga qaytariladi.
 **Diqqat:** boshqa chat TZ-44/47 (ERP jonli narx, haqiqiy buyurtmalar) ustida — `cutlist.js`, `narxStavka.js`, `hisob.js` bo'yicha uning commitlarini ol, ustidan yozma.
@@ -20,10 +20,10 @@
 `app/js/engine/cutlist.js` (productionCost: ustama sukuti, bazisXizmat, +1 raspil, mijoz materiali sukuti), `narxStavka.js` (sukut hujjat: ustama 0, xizmatlar yoqilgan, Holzma stavkalari), `app/data/materials.json`/`services.json` (prisadka xizmatlari, Holzma 1/2/3), `web/src/services/hisob.js`, `web/src/features/editor/pricing/*` (narx paneli: Furniturasiz, ustama bloki, narx tarkibi, xizmat qo'shish oynasi), lug'atlar uz/ru/en, testlar (`verify_narx*`, `verify_hisob`, yangi `verify_narx_qoida`, UI `web_narxlar`).
 **Tegilmaydi:** tasdiqlangan dizayn tokenlari (yangi bloklar mavjud komponent uslubida), saqlangan buyurtmalar summasi, ERP'ga yozish.
 
-## 3. Javob kutayotgan savollar
-- **Q1 Plita narxi.** Ustama 0% bo'lgani uchun plita narxi to'g'ridan-to'g'ri mijoz narxi bo'ladi: (a) ERP ro'yxat/sotuv narxi (masalan 7045 BS = 380 000), (b) ro'yxat − 25 000 (ERP sotuv hujjatlarida 355 000; HDF 165 000 → 140 000), (c) tannarx (display 282 568). 25 000 — doimiy chegirmami yoki faqat BIG ONE tarifimi?
-- **Q2 Bazis stavkasi:** 5 000 yoki 6 000 so'm / detal (16, 18, 19 mm; HDF yo'q)?
-- **Q3 "+1 raspil":** butun loyihaga 1 list (Holzma 2 = 43 000) yoki har plita materialiga 1 list?
+## 3. Savollarga javoblar (egasi #302)
+- **Q1 Plita narxi:** "ERP'da bormi, bor bo'lsa ko'r va o'rtacha narxni ol". Tekshirildi (`Smart3D_malumot/erp-plitalar-2026-10-18.json`, 144 mahsulot): ERP ro'yxat narxi tannarxdan o'rtacha ×1,13 (mediana ×1,14); real sotuvlarda (14 buyurtma, `47-natija…`) o'rtacha sotuv narxi tannarxdan ×1,156 va ERP ro'yxatdan 25 000 past. **Qaror:** plita narxi = ERP o'rtacha sotuv narxi: `price_list_uzs − 25 000` (ro'yxat narxi bo'lsa), yo'q bo'lsa tannarx (`display_price_uzs`) × 1,156; manba narx tarkibida ko'rinadi; admin "Narxlar" da "plita narx rejimi" (sotuv / tannarx) va 25 000 chegirma qiymati o'zgartiriladi.
+- **Q2 Bazis:** **5 000 so'm / detal**, faqat 16, 18, 19 mm detallar (HDF hisobga olinmaydi). (Egasi xabarida eslangan "6 000" — aniqlashtirishda 5 000 deb tasdiqlandi.)
+- **Q3 "+1 raspil":** butun loyihaga 1 ta qo'shimcha list raspil (tanlangan Holzma stavkasida); narx panelida ustaga **ogohlantirish** ("1 ta qo'shimcha raspil qo'shildi") va usta xohlasa **olib tashlay** oladi (qayta qo'shish ham).
 
 ## 4. Qabul
 - Sukutda: ustama 0, furnitura bor, prisadka va Bazis yoqilgan, stoleshnitsa/akril kirgan, raspil Holzma 2 + 1.
