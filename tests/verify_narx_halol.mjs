@@ -34,7 +34,14 @@ const SLOTS = { korpus: 'LDSP18', polka: 'LDSP16', fasad: 'MDF16', orqa: 'HDF3' 
 
 console.log('\n[A1] Plita narxi manbasi');
 const narxli = mats.panel_materials.filter(m => m.sheet_price > 0 && !m.unit_piece);
-const katalogda = (m) => sheets.some(s => Math.round(s.uzs) === Math.round(m.sheet_price) && Math.abs(+s.th - m.thickness) < 0.6);
+/* 2026-10-22: katalog ERP products API bilan moslandi (qator src'i "erp_api_<sana>"). materials.json dagi tasdiqlangan narxlar (10-13 katalog, 10-16 va 10-18 ERP) ERP'ning keyingi
+ * narxidan orqada qolishi mumkin; shunda ham narx haqiqiy ma'lumotga bog'langan bo'lishi SHART — yoki katalogda aynan bor, yoki ERP'dan qayta narxlangan qator bilan:
+ *   (a) SKU bor — shu SKU, shu qalinlikdagi qator ERP'dan qayta narxlangan (LDSP18 W1000 ST19, LMDF16 5981 CD);
+ *   (b) SKU yo'q (guruh narxi) — qatorning dollar narxi × eski kurs 11850 aynan shu narx (ERP hozir dollar narxlarini ×11950 da beradi; MDF18, HDF3).
+ * Boshqa hech narsa qabul qilinmaydi (o'ylab topilgan narx baribir "yo'q" bo'lib qoladi — pastdagi taxminiy plitalar tekshiruvi). */
+const KURS_ESKI = 11850;
+const katalogda = (m) => sheets.some(s => Math.abs(+s.th - m.thickness) < 0.6 && (Math.round(s.uzs) === Math.round(m.sheet_price)
+  || (/^erp_api_/.test(s.src || '') && (m.sku ? s.sku === m.sku : s.usd > 0 && Math.round(s.usd * KURS_ESKI) === Math.round(m.sheet_price)))));
 ok('har narxli plitada price_src bor', narxli.every(m => typeof m.price_src === 'string' && m.price_src.length > 2), narxli.filter(m => !m.price_src).map(m => m.code).join());
 const tasdiq = narxli.filter(m => !m.taxminiy), taxmin = narxli.filter(m => m.taxminiy);
 ok(`tasdiqlangan plita narxi ERP katalogida aynan bor (${tasdiq.map(m => m.code).join(', ')})`, tasdiq.every(katalogda) && tasdiq.every(m => !/^yoq/.test(m.price_src)),

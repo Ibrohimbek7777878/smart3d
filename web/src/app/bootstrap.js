@@ -14,12 +14,13 @@ import { TELEGRAM, TG_TIL } from './bridge/telegram.js';
 import { telegramIshga } from '../features/telegram/telegram.js';
 import { scene } from '../features/editor/scene/sahna.js';
 import { yangiIshJoyi } from '../features/editor/ishjoyi/ishjoyi.js';
+import { erpJonliBosh, erpQA } from '../services/erpJonli.js';
 
 /* TZ-19: ilova ishga tushishi — ma'lumot, saytdan o'tish (#hash), saqlangan kirish. Bir marta chaqiriladi (main.jsx). */
 export function bootstrap() {
   document.body.style.background = '#0F2229';
   if (!TELEGRAM && S.loggedIn) set('auth', { tiklash: true });   // Tezlik (testchi, 2026-10-22): saqlangan sessiya bor — /api/me kelguncha kirish ekrani ko'rsatilmaydi (initSession tugatadi)
-  project.load().then(() => { if (project.H) { loadServerStd(); loadNarxlar(); } });   // TZ-20: narx stavkalari
+  project.load().then(() => { if (project.H) { loadServerStd(); loadNarxlar(); erpJonliBosh(); } });   // TZ-20: narx stavkalari; TZ-44: jonli ERP narxlari (har 120 s)
   if (TELEGRAM) {                                   // TZ-16: Telegram ichida — kirish formasi o'rniga kutish ekrani
     set('nav', { screen: 'tg' });
     let tanlangan = null;
@@ -56,6 +57,8 @@ function installQA() {
     get sahna() { return scene.sahna; },
     /** bekor qilish / qaytarish: qadamlar soni { bekor, qayta } (store/bekor.js) */
     get tarix() { return project.tarix.holat(); },
+    /** TZ-44: jonli ERP narxlari — holat, qo'lda tekshirish */
+    erp: erpQA,
     nestCfg: () => project.nestCfg(),
     projectPayload: () => project.payload()
   };

@@ -1,0 +1,7 @@
+/* Admin "Modullar katalogi": telefonda (≤820px) qator 2 ustunli kartaga aylanadi. "O'lcham (mm): 600×550×720" kabi yozuv ustun
+ * kengligidan uzun bo'lsa (ayniqsa ruscha/inglizcha), qo'shni ustun ustiga chiqib ketardi (inline nowrap). Endi: yorliq tepada, qiymat
+ * ostida, kerak bo'lsa o'raladi. Kompyuterdagi jadval ko'rinishi o'zgarmaydi. */
+@media (max-width:820px){
+  .adm-kt>[data-l]{white-space:normal !important;display:flex;flex-direction:column;gap:2px;min-width:0}
+  .adm-kt>[data-l]::before{white-space:normal}
+}

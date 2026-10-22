@@ -268,3 +268,19 @@ Bu faza hozir alohida tarmoqda (`agent/admin3`) tayyorlanmoqda va **hali main'da
 - **Muhit:** yangi o'zgaruvchi **yo'q**. Lekin: panelning "Tizim → Zaxira" qismi zaxira papkasini **server jarayonining** `BACKUP_DIR` o'zgaruvchisidan oladi (sukut `server/backups`). Shuning uchun `BACKUP_DIR=/var/backups/smart3d` ni cron buyrug'idagina emas, **`/etc/smart3d.env` ga ham yozing**, papka servis foydalanuvchisi (`smart3d`) uchun o'qishga ochiq bo'lsin; aks holda panel "zaxira yo'q" ko'rsatadi. 36 soatdan eski eng yangi nusxa "eskirgan" deb belgilanadi (kunlik 03:00 cron, §8).
 - **ERP yuklash hajmi:** admin ERP eksportini JSON sifatida yuklaydi (`Smart3D_malumot/erp-*.json` namunalari ~60–90 KB). Server chegarasi 2 MB, nginx `3m` — yetadi; eksport 2 MB dan oshsa `S3D-VAL-003` (413) qaytadi, shunda ikkala chegara birga kengaytiriladi.
 - Server ERP'ga **ulanmaydi** (faqat yuklangan fayl bilan ishlaydi); tashqi so'rov va yangi port yo'q.
+
+## 12. TZ-44: ERP jonli narx sinxroni (agent/erpjonli; qo'shilgach shu bo'lim amal qiladi)
+Fon poller ERP narxlarini avtomatik yangilaydi. **Sukut — O'CHIQ** (muhit yo'q bo'lsa xato ham, ERP'ga so'rov ham yo'q); qo'lda yuklash (§11) avvalgidek ishlaydi.
+- **Yoqish (egasi, qo'lda):** `/etc/smart3d.env` ga qo'shing va servisni qayta ishga tushiring:
+  ```
+  ERP_JONLI=1
+  ERP_URL=https://mebelcity.bittada.uz        # sukut shu
+  ERP_LOGIN=<ERP akkaunti>                     # faqat O'QISH huquqli alohida akkaunt tavsiya etiladi
+  ERP_PASSWORD=<ERP paroli>
+  ```
+  Login va parol faqat shu faylda turadi: jurnalga, API javobiga, bazaga, zaxiraga chiqmaydi (sinov: `server/test/erp-jonli*.test.js`). `.env.example` da izoh bor.
+- **ERP yuki:** faqat GET (yagona POST — login formasi). Qaynoq to'plam (Asosiy 100 plitalari, sukut ERP plitalari, bog'langan furnitura, xizmatlar) har 2 daqiqada, ≤ ~60 so'rov; to'liq aylanish (ilova katalogi joylashgan kategoriyalar, 19 924 mahsulotning hammasi emas) har 15 daqiqada, ≤ 1 so'rov/soniya. Kategoriya ro'yxati (~1000 ta, ~20 sahifa) 6 soatda bir marta o'qiladi; katalogdagi `cat` nomi ERP kategoriya nomiga AYNAN teng kategoriyalar (plita, furnitura, stoleshnitsa) darhol bizniki deb belgilanadi va birinchi tsiklning o'zidayoq o'qiladi. Qolgan kategoriyalar (nomi mos kelmagan) past ustuvorlikda, har to'liq aylanishda ≤ 40 so'rov bilan asta-sekin tekshiriladi (bizniki emas — 7 kunda bir). Sukut plitalar (`materials.json sukut_erp`: LDSP16, MDF16, HDF3) ERP mahsulot ID bo'yicha yangilanadi: kategoriyasi noma'lum bo'lsa bir marta `search=<sku>` bilan topiladi. ERP javob bermasa — kechikish 2 → 4 → 8 … 15 daqiqa; oxirgi narxlar qoladi.
+- **Qoida:** narx ±30% (Admin → ERP → "Jonli sinxronlash"da 5…100 sozlanadi) ichida o'zgarsa avtomatik qo'llanadi (Tarixda "tizim: ERP jonli", qaytarish mumkin); katta o'zgarish, katalogda narx yo'q edi, ERP kursi >10% sakradi — "tasdiq kutadi" (mavjud ERP tasdiq oqimi). Admin qo'lda narxi ustun.
+- **Baza:** yangi jadvallar `erp_jonli_holat`, `erp_jonli_obyekt`, `erp_jonli_kat`, `erp_jonli_tarix` + `erp_partiya.manba` ustuni (`erpJonliSxema`, server o'zi qo'llaydi, ikki marta ishlasa zararsiz). Zaxira (`backup.js`) butun faylni oladi — alohida sozlama kerak emas. Orqaga qaytarish: `ERP_JONLI` ni olib tashlash yoki `git revert`; jadvallar qoladi, zarari yo'q.
+- **ERP o'zi** bosh ERP (1C) dan narxni har safar emas, vaqti-vaqti bilan oladi (`last_synced_at`) — jonli yangilanish shundan tezroq bo'lmaydi.
+- **Nginx/port:** o'zgarmaydi (server ERP'ga chiquvchi ulanish ochadi; `ERP_URL` ga 443 ruxsat bo'lishi kerak). `ERP_SINOV_REJIM` — faqat sinov, productionda e'tiborsiz.

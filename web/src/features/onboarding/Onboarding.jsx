@@ -108,14 +108,14 @@ export default function Onboarding() {
             </div>
           </>) : null}
           {v.onb?.isAi ? (<>
-            <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexDirection":"column","gap":"12px","padding":"20px"}}>
+            <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","display":"flex","flexDirection":"column","gap":"12px","padding":"20px"}}>
               <textarea value={v.aiText} onChange={v.onAiText} rows="4" placeholder={t('umumiy.oshxona_3_6x3_m_balandlik_2_7')} style={{"width":"100%","borderRadius":"16px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","padding":"16px","resize":"vertical","outline":"none"}}></textarea>
               <div style={{"display":"flex","gap":"8px","flexWrap":"wrap","alignItems":"center"}}>
                 <button onClick={v.toggleMic} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","height":"44px","background":v.micBg,"color":v.micT}}>
                   <Ikon n="mikrofon" size={16} gap={0} /><span className="sc-interp">{v.micLabel}</span>
                 </button>
                 {(v.aiEx || []).map((x, $index) => (<React.Fragment key={$index}>
-                  <button onClick={x?.pick} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"600"}}>
+                  <button onClick={x?.pick} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)","fontWeight":"600"}}>
                     <span className="sc-interp">{x?.t}</span>
                   </button>
                 </React.Fragment>))}

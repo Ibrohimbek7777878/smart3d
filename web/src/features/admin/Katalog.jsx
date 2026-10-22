@@ -4,9 +4,12 @@ import Varaq from '../../shared/ui/Varaq.jsx';
 import Ikon from '../../shared/ui/Ikon.jsx';
 import { useKatalog, OLCHAM, REJIMLAR } from './useKatalog.js';
 import { karta, sarlavha, izoh, tugma, ghost, xavfli, maydon, lbl, mono, belgi, chipU } from './stil.js';
+import './katalog.css';
 
 /* TZ-37 (2-faza, bo'lim 4): modullar katalogi — nom (uz/ru/en), ko'rinish (yashirish), o'lcham chegarasi, narx rejimi. Fayl ustiga baza; yashirish — faqat
  * tanlash ro'yxatida va AI/konstruktor tanlovida: ochiq loyihalar va hisob o'zgarmaydi. */
+/* modul turi (kategoriya kodi: cabinet, wall_cabinet…) — tanlangan tilda; noma'lum kod bo'lsa — o'zi */
+const turNomi = (c) => { const k = 'admin.kat_tur_' + c; const v = t(k); return v === k ? c : v; };
 const oraliq = (c, o) => (c['min_' + o] || c['max_' + o] ? (c['min_' + o] || '…') + '–' + (c['max_' + o] || '…') : '—');
 
 function Kalit({ on, onFlip, label, kod }) {
@@ -23,7 +26,7 @@ function Tahrir({ k }) {
   return (
     <Varaq title={e.kod} kind="admin-kat" onClose={() => k.setX(null)}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', overflowY: 'auto', minHeight: '0' }}>
-        <span style={izoh}>{e.nom_fayl} · {e.kategoriya}{e.guruh ? ' · ' + e.guruh : ''} · {e.w}×{e.d}×{e.h} {t('umumiy.mm')}{e.standart ? ' · ' + t('admin.kat_sex_standart', { n: e.standart }) : ''}</span>
+        <span style={izoh}>{e.nom_fayl} · {turNomi(e.kategoriya)}{e.guruh ? ' · ' + e.guruh : ''} · {e.w}×{e.d}×{e.h} {t('umumiy.mm')}{e.standart ? ' · ' + t('admin.kat_sex_standart', { n: e.standart }) : ''}</span>
         {['uz', 'ru', 'en'].map(l => (
           <label key={l} style={lbl}>{t('admin.kat_nom')} ({l})
             <input data-kat-f={'nom_' + l} value={x['nom_' + l]} onChange={k.on('nom_' + l)} placeholder={l === 'uz' ? e.nom_fayl : ''} maxLength={120} style={maydon} />
@@ -66,7 +69,7 @@ export default function Katalog() {
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
           <select data-kat-suzgich="kategoriya" value={k.kat} onChange={(ev) => k.setKat(ev.target.value)} aria-label={t('admin.kat_kategoriya')} style={{ ...maydon, width: 'auto', minWidth: '200px', height: '44px' }}>
             <option value="">{t('admin.kat_kategoriya')}: {t('admin.hammasi')}</option>
-            {k.kategoriyalar.map(([c, n]) => <option key={c} value={c}>{c} ({n})</option>)}
+            {k.kategoriyalar.map(([c, n]) => <option key={c} value={c}>{turNomi(c)} ({n})</option>)}
           </select>
           <button onClick={() => k.setFaqatYashirin(!k.faqatYashirin)} aria-pressed={k.faqatYashirin} data-kat-suzgich="yashirin" style={chipU(k.faqatYashirin)}><Ikon n="yashirish" size={14} />{t('admin.kat_yashirin')} ({k.yashirinSoni})</button>
         </div>
@@ -79,7 +82,7 @@ export default function Katalog() {
               <span style={{ ...mono, fontWeight: '800' }}>{e.kod}</span>
               <span style={{ minWidth: '0' }}>
                 <b>{e.nom.uz || e.nom_fayl}</b>{e.tahrir ? <> <b style={belgi(true)}>{t('admin.manba_baza')}</b></> : null}<br />
-                <span style={izoh}>{e.kategoriya}{e.nom.ru ? ' · ' + e.nom.ru : ''}</span>
+                <span style={izoh}>{turNomi(e.kategoriya)}{e.nom.ru ? ' · ' + e.nom.ru : ''}</span>
               </span>
               <span data-l={t('admin.kat_h_olcham')} style={{ ...mono, whiteSpace: 'nowrap' }}>{e.w}×{e.d}×{e.h}</span>
               <span data-l={t('admin.kat_h_eni')} style={{ ...mono, whiteSpace: 'nowrap' }}>{oraliq(e.chegara, 'w')}</span>

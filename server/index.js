@@ -27,7 +27,8 @@ import { securityHeaders, inlineScriptHashes, TG_ILOVA } from './himoya.js';
 import { loadConfig, APP_DIR, WEB_DIST } from './lib/config.js';
 import { openDb } from './lib/db.js';
 import { yadroSxema, mcModullar, adminSxema, promptlarSeed, aiSxema } from './lib/sxema.js';
-import { adminSxema2, adminSxema3 } from './lib/sxema.js';
+import { adminSxema2, adminSxema3, erpJonliSxema } from './lib/sxema.js';
+import { erpJonliYarat } from './lib/erp-jonli.js';
 import { aiTejash } from './lib/ai-tejash.js';
 import { createAuth, zaifAdminTekshir } from './lib/auth.js';
 import { rateLimit } from './lib/limit.js';
@@ -66,6 +67,7 @@ adminSxema(db);
 aiSxema(db);                                  // TZ-40: ai_kesh, ai_sarf, promptlar_admin.spec_*
 adminSxema2(db);                              // TZ-37 (2-faza): materiallar, katalog, users.bloklangan (createAuth'dan OLDIN — u shu ustunni o'qiydi)
 adminSxema3(db);                              // TZ-37 (3-faza): ERP sinxronlash (erp_partiya, erp_narx), narx tarixini qaytarish
+erpJonliSxema(db);                            // TZ-44: ERP jonli sinxron (holat, kategoriyalar, tarix) — faqat yangi jadvallar
 promptlarSeed(db, APP_DIR);
 const tejash = aiTejash({ db, jurnal });      // TZ-40: AI token tejash (tayyor → kesh → qoida → Claude)
 tejash.royxatToldir();                        // tayyor promptlarga tuzilma (qoida bilan, bepul; mavjud tuzilma o'zgarmaydi)
@@ -79,7 +81,8 @@ app.disable('x-powered-by');
 const server = http.createServer(app);
 const efir = narxEfiri({ server, app, allowed: cfg.ALLOWED_ORIGINS });          // WebSocket /ws — real-time narx
 const kirish = createAuth({ db, cfg });
-const ctx = { db, jurnal, cfg, tejash, ...kirish, broadcastPrice: efir.broadcastPrice };
+const erpJonli = erpJonliYarat({ db, jurnal });                                 // TZ-44: ERP_JONLI=1 + ERP_LOGIN + ERP_PASSWORD bo'lmasa — o'chiq (xato emas)
+const ctx = { db, jurnal, cfg, tejash, erpJonli, ...kirish, broadcastPrice: efir.broadcastPrice };
 const apiLimiter = rateLimit({ windowMs: 60 * 1000, max: 300 });                // TZ-19 X5: hamma /api — 300 / daqiqa / IP
 
 app.use(sorovJurnali(jurnal));
@@ -113,7 +116,10 @@ process.on('uncaughtException', (e) => {
 });
 
 /* ═══════════════════ START ═══════════════════ */
+server.on('close', () => { erpJonli.stop(); });                                     // TZ-44: poller tozalanadi (taymerlar unref — jarayonni ushlab turmaydi)
 server.listen(cfg.PORT, () => {
+  if (erpJonli.start()) jurnal.info({ code: 'S3D-ADM-100', msg: `ERP jonli sinxron yoqildi (${erpJonli.erpManzil}): qaynoq 2 daqiqa, to'liq 15 daqiqa` });
+  else if (process.env.ERP_JONLI === '1' && erpJonli.sabab) jurnal.warn({ code: 'S3D-ERP-001', msg: `ERP jonli sinxron o'chiq: ${erpJonli.sabab}` });
   console.log(`Smart3D server: http://localhost:${cfg.PORT}`);
   console.log(`WebSocket: ws://localhost:${cfg.PORT}/ws`);
   console.log(`API: http://localhost:${cfg.PORT}/api/health`);

@@ -53,6 +53,10 @@ export default function QadamNarx() {
           </span>
         </div>
       </div>
+      {/* TZ-44 (dizaynda yo'q): ERP narxlari qachon yangilangan — yangi bo'lsa oddiy qator, eski yoki aloqa yo'q bo'lsa ogohlantirish (--acct) */}
+      {v.erp ? <span data-erp-korsatkich="" data-erp-holat={v.erp.eski ? 'eski' : 'yangi'} role={v.erp.eski ? 'status' : undefined} style={{"alignSelf":"flex-start","display":"flex","alignItems":"center","gap":"6px","fontSize":"13px","fontWeight":v.erp.eski ? "700" : "600","color":v.erp.eski ? "var(--acct)" : "var(--mut)","fontVariantNumeric":"tabular-nums"}}>
+        <Ikon n={v.erp.eski ? "ogohlantirish" : "sinxron"} size={14} gap={0} />{v.erp.matn}
+      </span> : null}
       {/* TZ-20 (dizaynda yo'q — chip uslubida): "Narx aniqligi X%" — "* to'liq emas" o'rnida, jami narx ostida; bosilsa taxminiy qatorlar */}
       {v.aniqlik ? <button onClick={v.aniqlik.flip} data-aniqlik="" aria-expanded={v.aniqlik.ochiq} style={{"alignSelf":"flex-start","minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":v.aniqlik.toliq ? "var(--cyan)" : "var(--acct)","fontSize":"14px","fontWeight":"800","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","whiteSpace":"nowrap"}}>
         {v.aniqlik.label}<Ikon n={v.aniqlik.ochiq ? "tepa" : "past"} size={16} gap={0} />
@@ -91,7 +95,7 @@ export default function QadamNarx() {
         </>) : null}
       </div>
       </>) : null}
-      <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"4px 16px 8px"}}>
+      <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"4px 16px 8px"}}>
         <div style={{"display":"flex","justifyContent":"space-between","padding":"12px 0 6px"}}>
           <span style={{"fontWeight":"800"}}>
             {t('narx.mijozga_kotirovka')}
@@ -132,7 +136,7 @@ export default function QadamNarx() {
           <span style={{"fontSize":"13px","color":"var(--danger)","fontWeight":"600","paddingTop":"6px","display":"flex","alignItems":"center","gap":"6px"}}><Ikon n="ogohlantirish" size={15} gap={0} />{v.xz?.note}</span>
         </>) : null}
       </div>
-      <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"4px 16px 8px"}}>
+      <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"4px 16px 8px"}}>
         <div style={{"padding":"12px 0 6px","fontWeight":"800"}}>
           {t('narx.sex_tannarxi')}
         </div>
@@ -158,10 +162,10 @@ export default function QadamNarx() {
             {t('narx.raskroy_varaq', { n: v.rk?.n })}
           </span>
           <div style={{"display":"flex","gap":"6px"}}>
-            <button onClick={v.rkPrev} aria-label={t('narx.oldingi_varaq')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"36px","height":"36px","background":"var(--sfc2)"}}>
+            <button onClick={v.rkPrev} aria-label={t('narx.oldingi_varaq')} style={{"borderRadius":"14px","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"36px","height":"36px","background":"var(--sfc2)"}}>
               <Ikon n="chap" size={18} gap={0} />
             </button>
-            <button onClick={v.rkNext} aria-label={t('narx.keyingi_varaq')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"36px","height":"36px","background":"var(--sfc2)"}}>
+            <button onClick={v.rkNext} aria-label={t('narx.keyingi_varaq')} style={{"borderRadius":"14px","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"36px","height":"36px","background":"var(--sfc2)"}}>
               <Ikon n="ong" size={18} gap={0} />
             </button>
           </div>
@@ -189,7 +193,7 @@ export default function QadamNarx() {
           <Ikon n="qoldiq" gap={0} />{v.qoldiq.label}
         </button> : null}
       </div>
-      <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"4px 16px 8px"}}>
+      <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"4px 16px 8px"}}>
         <div style={{"padding":"12px 0 6px","fontWeight":"800"}}>
           {t('narx.detallar_royxati')}
         </div>

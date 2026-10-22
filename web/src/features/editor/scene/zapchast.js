@@ -83,7 +83,7 @@ export function useZapchast() {
     on: true, hisob: !!data, qatorlar, turlar, yop: zapchastOchYop, belgiN: data ? data.jami.belgi : 0,
     jami: data ? t('zapchast.jami', { n: data.jami.qty, s: raqam(data.jami.amount) }) : '',
     belgiJami: data ? t('zapchast.belgi_jami', { n: data.jami.belgi }) : '',
-    narxsiz: data && data.jami.narxsiz ? t('zapchast.narxsiz', { n: data.jami.narxsiz }) : '',
+    narxsiz: data && data.jami.narxsiz ? t('zapchast.narxsiz', { n: data.jami.narxsiz }, data.jami.narxsiz) : '',
     bosh: data && !qatorlar.length ? t('zapchast.bosh') : ''
   };
 }

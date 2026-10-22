@@ -320,7 +320,7 @@ export default function adminPanelRouter(ctx) {
     const rows = db.prepare(`SELECT a.id, a.bolim, a.kalit, a.eski, a.yangi, a.qaytarilgan, a.created_at, a.user_id, u.name AS kim, u.email
       FROM admin_audit a LEFT JOIN users u ON u.id = a.user_id WHERE (? = '' OR a.bolim = ?) ORDER BY a.id DESC LIMIT ?`).all(bolim, bolim, limit);
     res.set('Cache-Control', 'no-store').json(rows.map(x => ({ id: x.id, bolim: x.bolim, kalit: x.kalit, eski: js(x.eski), yangi: js(x.yangi),
-      qaytarilgan: !!x.qaytarilgan, vaqt: x.created_at, kim: x.kim || x.email || ('#' + x.user_id) })));
+      qaytarilgan: !!x.qaytarilgan, vaqt: x.created_at, kim: x.kim || x.email || (x.user_id ? '#' + x.user_id : 'tizim') })));
   }));
   /** shu o'zgarishni eski qiymatga qaytaradi (eski yo'q edi — o'chiradi). Qaytarish ham yangi audit yozuvi; bir yozuv bir marta qaytariladi. */
   r.post('/api/admin/qaytar/:auditId', guard, himoya(async (req, res) => {

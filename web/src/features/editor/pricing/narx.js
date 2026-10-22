@@ -12,7 +12,7 @@ export function narxKorinishi(res) {
   const toliq = pct === 100 && !(an.narxsiz > 0);
   return {
     total: res ? raqam(total) : '…', cost: res ? raqam(cost) : '…', profit: res ? raqam(total - cost) : '…',
-    star: pct != null && !toliq ? pct + '%' : '', note: pct != null ? (an.narxsiz > 0 ? t('narx.aniqlik_narxsiz', { n: pct, k: an.narxsiz }) : t('narx.aniqlik', { n: pct })) : '', som: t('umumiy.som'),
+    star: pct != null && !toliq ? pct + '%' : '', note: pct != null ? (an.narxsiz > 0 ? t('narx.aniqlik_narxsiz', { n: pct, k: an.narxsiz }, an.narxsiz) : t('narx.aniqlik', { n: pct })) : '', som: t('umumiy.som'),
     aniqlik: pct, toliq
   };
 }

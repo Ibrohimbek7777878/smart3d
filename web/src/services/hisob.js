@@ -19,6 +19,7 @@ import { erpNarxQollash, materiallarQollash, katalogNomlar, katalogQollash, yash
 import { sukutErpQollash } from '../../../app/js/engine/narxStavka.js';
 import { stolKitchen, stolMaterialQollash } from '../../../app/js/engine/stoleshnitsa.js';
 import { plitaFormati } from '../../../app/js/engine/plitaMoslash.js';
+import { erpAsl, erpQatlamQoy, erpSukutQoy } from './erpQatlam.js';
 
 /* price.js — UMD. Brauzerda (dev, eski sayt sahifasi) o'zi globalThis.SpPrice ga yoziladi; Vite build'i esa
    uni CommonJS deb o'qiydi (module.exports shoxobchasi) — u holda modulning default eksporti. Ikkalasi ham bir xil API. */
@@ -61,6 +62,8 @@ export async function loadData(read, api) {
     /* TZ-37 (2-faza): admin "Materiallar" (Asosiy 100: rang, rasm, varaq narxi) va "Modullar katalogi" (nom, yashirish, chegara, narx rejimi) — fayl ustiga;
        server yo'q yoki xato — jim (fayldagi qiymatlar). Narx/rang/rasm shu yerda, chegara va yashirish — createHisob'da (katalog yig'ilgach) */
     const [mv, kv, ev] = await Promise.all([api('/api/materiallar').catch(() => null), api('/api/katalog').catch(() => null), api('/api/erp-narx').catch(() => null)]);
+    out.erpAsl = erpAsl(out);                                         // TZ-44: fayl narxlari (qatlam qo'yilishidan oldin) — jonli yangilanishda tiklash uchun
+    out.erpEv = ev || null; out.adminMv = mv || null;                 // TZ-44: oxirgi javoblar (versiya, jonli holat; admin qatlami qayta qo'yilishi uchun)
     if (ev) erpNarxQollash(out, ev);                                  // TZ-37 (3-faza): ERP sinxron qatlami — fayl ustiga, admin qo'lda narxidan PASTDA
     if (mv) materiallarQollash(out, mv);
     if (kv && kv.modullar) { out.katalogAdmin = kv; katalogNomlar(out, kv); }
@@ -76,6 +79,7 @@ export function createHisob(data) {
   const furnituraBoglash = (furnBoglash && furnBoglash.links) || {};
   const furnituraKoef = (furnBoglash && furnBoglash.koef) || {};          // TZ-37: admin koeffitsienti (kod → koef; yo'q = 1)
   sukutErpQollash(mats);                                          // TZ-32 A1: egasi bog'lagan sukut plita → ERP narxi (bo'lmasa o'zgarmaydi)
+  erpSukutQoy(data, mats, data.erpEv);                            // TZ-44: sukut plitaning jonli narxi (server ev.sukut bergan bo'lsa); asl narx jonli yangilanishda tiklash uchun saqlanadi
   const catalog = {};
   for (const f of frags) catalog[f.code] = f;
   for (const f of (mcFrags && mcFrags.fragments) || []) catalog[f.code] = f;
@@ -107,6 +111,10 @@ export function createHisob(data) {
       H.sexStd = std;
       return true;
     },
+
+    /** TZ-44: jonli ERP narxlari — GET /api/erp-narx javobi (versiya, jonli holat); yangi javob kelsa erpYangila() qatlamni qayta qo'yadi (services/erpQatlam.js) */
+    erpEv: data.erpEv || null,
+    erpYangila(ev, doc) { return erpQatlamQoy(data, mats, ev, doc); },
 
     /** TZ-20: narx stavkalari (server /api/narxlar — admin "Narxlar" bo'limi). Berilmasa — materials.json ("taxmin"). */
     narxlar: null,

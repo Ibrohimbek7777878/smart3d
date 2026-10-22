@@ -51,7 +51,7 @@ export default function QadamMebel() {
       {v.bazis ? <button onClick={() => openSheet('bazis', {})} data-bazis-hisobot style={{ ...btnGhost, height: '44px', flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
         <Ikon n="bazis" size={17} gap={0} />{t('bazis.hisobot')}
       </button> : null}
-      <input value={v.q} onChange={v.onQ} placeholder={t('mebel.shkaf_2_eshik')} style={{"width":"100%","height":"52px","borderRadius":"14px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","height":"48px","background":"var(--sfc)","flex":"0 0 auto"}} />
+      <input value={v.q} onChange={v.onQ} placeholder={t('mebel.shkaf_2_eshik')} style={{"width":"100%","borderRadius":"14px","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","padding":"0 16px","outline":"none","height":"48px","background":"var(--sfc)","flex":"0 0 auto"}} />
       <div style={{"display":"flex","gap":"6px","overflowX":"auto","flex":"0 0 auto","paddingBottom":"2px"}}>
         {(v.cats || []).map((c, $index) => (<React.Fragment key={$index}>
           <button onClick={c?.pick} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","flex":"0 0 auto","background":c?.bg,"color":c?.c,"whiteSpace":"nowrap"}}>
@@ -61,7 +61,7 @@ export default function QadamMebel() {
       </div>
       <div style={{"display":"flex","gap":"6px","flexWrap":"wrap"}}>
         {(v.mats || []).map((m, $index) => (<React.Fragment key={$index}>
-          <button onClick={m?.cycle} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc)","color":"var(--txt)","fontWeight":"600"}}>
+          <button onClick={m?.cycle} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc)","color":"var(--txt)","fontWeight":"600"}}>
             <span style={{"color":"var(--mut)"}}>
               <span className="sc-interp">{m?.k}</span>{":"}
             </span>
@@ -75,7 +75,7 @@ export default function QadamMebel() {
         </React.Fragment>))}
       </div>
       {v.catEmpty ? (<>
-        <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","padding":"32px 16px","textAlign":"center","display":"flex","flexDirection":"column","gap":"6px"}}>
+        <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"32px 16px","textAlign":"center","display":"flex","flexDirection":"column","gap":"6px"}}>
           <span style={{"fontWeight":"800"}}>
             {t('umumiy.topilmadi_boshqa_soz_bilan')}
           </span>

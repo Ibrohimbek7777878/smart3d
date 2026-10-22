@@ -284,4 +284,64 @@ export function adminSxema3(db) {
     );
     CREATE INDEX IF NOT EXISTS idx_admin_audit_vaqt ON admin_audit(created_at);
   `);
+  addColumn(db, 'erp_partiya', 'manba', "TEXT NOT NULL DEFAULT ''");   // TZ-44: 'jonli' — ERP jonli sinxron yozuvi (tasdiq kutayotgan qoralama yoki qo'llangan to'plam); '' — admin yuklagan
+}
+
+/** TZ-44: ERP jonli sinxron (server/lib/erp-jonli.js) — faqat yangi jadvallar (idempotent; mavjud ma'lumot o'zgarmaydi; zaxira butun baza faylini oladi).
+ *  erp_jonli_holat — kalit/qiymat (versiya, oxirgi muvaffaqiyat, xato sanalgichi, kurs, pauza, chegara …);
+ *  erp_jonli_obyekt — katalog yozuvi (plita ERP-kod | furnitura ID | xizmat kodi) uchun ERP'dan oxirgi ko'rilgan narx, USD, kategoriya (qaynoq to'plam shundan tuziladi) va admin rad etgan narx;
+ *  erp_jonli_kat — ERP kategoriyalari: nechta katalog yozuvi mos tushgani, sahifalar soni, oxirgi skanerlash (ERP yukini kamaytiradi: bizniki bo'lmagan kategoriya kamdan-kam o'qiladi);
+ *  erp_jonli_tarix — har o'zgarish (qo'llandi | kutadi | rad | qaytarildi), eski → yangi, foiz. */
+export function erpJonliSxema(db) {
+  adminSxema3(db);                                              // erp_partiya.manba va erp_narx — shu yerda ham kafolatlanadi
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS erp_jonli_holat (
+      kalit TEXT PRIMARY KEY,
+      qiymat TEXT NOT NULL DEFAULT '',
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS erp_jonli_obyekt (
+      tur TEXT NOT NULL,
+      kalit TEXT NOT NULL,
+      kat_id TEXT NOT NULL DEFAULT '',
+      kat_nom TEXT NOT NULL DEFAULT '',
+      erp_id TEXT NOT NULL DEFAULT '',
+      sku TEXT NOT NULL DEFAULT '',
+      uzs INTEGER NOT NULL DEFAULT 0,
+      usd REAL NOT NULL DEFAULT 0,
+      erp_sana TEXT NOT NULL DEFAULT '',
+      rad_uzs INTEGER NOT NULL DEFAULT 0,
+      korilgan DATETIME DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (tur, kalit)
+    );
+    CREATE INDEX IF NOT EXISTS idx_erp_jonli_obyekt_kat ON erp_jonli_obyekt(kat_id);
+    CREATE TABLE IF NOT EXISTS erp_jonli_kat (
+      kat_id TEXT PRIMARY KEY,
+      nom TEXT NOT NULL DEFAULT '',
+      mos INTEGER NOT NULL DEFAULT 0,
+      jami INTEGER NOT NULL DEFAULT 0,
+      sahifa INTEGER NOT NULL DEFAULT 0,
+      skan_at DATETIME,
+      qaynoq_at DATETIME
+    );
+    CREATE TABLE IF NOT EXISTS erp_jonli_tarix (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      vaqt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      tur TEXT NOT NULL,
+      kalit TEXT NOT NULL,
+      nom TEXT NOT NULL DEFAULT '',
+      eski REAL,
+      yangi REAL,
+      foiz REAL,
+      harakat TEXT NOT NULL,
+      sabab TEXT NOT NULL DEFAULT '',
+      partiya_id INTEGER
+    );
+    CREATE INDEX IF NOT EXISTS idx_erp_jonli_tarix_id ON erp_jonli_tarix(id);
+  `);
+  /* kategoriya NOMI bo'yicha ustuvorlik (katalogdagi `cat` == ERP category_name): nom_norm — normallangan nom, kat_mos — shu nomli katalog yozuvlari soni,
+   * erp_soni — ERP ro'yxatidagi products_count (-1 — noma'lum; 0 — bo'sh kategoriya, o'qilmaydi) */
+  addColumn(db, 'erp_jonli_kat', 'nom_norm', "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, 'erp_jonli_kat', 'kat_mos', 'INTEGER NOT NULL DEFAULT 0');
+  addColumn(db, 'erp_jonli_kat', 'erp_soni', 'INTEGER NOT NULL DEFAULT -1');
 }

@@ -3,6 +3,7 @@ import { t } from '../../i18n/index.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
 import { raqam } from '../../shared/lib/format.js';
 import { useErp, GURUH_TARTIB, HOLAT_TARTIB } from './useErp.js';
+import ErpJonli from './ErpJonli.jsx';
 import { karta, sarlavha, izoh, tugma, ghost, xavfli, maydon, mono, belgi, belgiXato, chipU } from './stil.js';
 
 /* TZ-37 (3-faza): ERP sinxronlash. ERP bilan jonli aloqa YO'Q va ERP'ga hech narsa yozilmaydi: admin ERP'dan olingan JSON'ni yuklaydi, farqni ko'radi,
@@ -113,6 +114,8 @@ export default function Erp() {
   const Q = e.d.qatlam;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', minWidth: '0' }} data-admin-bolim="erp">
+      {/* TZ-44 (10): jonli sinxronlash (server ERP'dan o'zi oladi); tasdiq kutayotganlar — pastdagi yuklashlar ro'yxatiga (mavjud tasdiq oqimi) */}
+      <ErpJonli onKutayotgan={(id) => { if (id != null && e.d.partiyalar.some(p => String(p.id) === String(id))) e.ochish(id); else { const el = document.querySelector('[data-erp="royxat"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }} />
       <section style={karta} data-erp="yuklash">
         <span style={sarlavha}>{t('admin.erp_sarlavha')}</span>
         <span style={izoh}>{t('admin.erp_izoh')}</span>

@@ -61,6 +61,15 @@ export const XATOLAR = {
   'S3D-ADM-020': { http: 409, matn: 'Bu ERP yuklashi allaqachon qo\'llangan yoki bekor qilingan' },
   'S3D-ADM-021': { http: 400, matn: 'Qo\'llash tasdiqlanmadi yoki hech narsa tanlanmagan' },
   'S3D-ADM-105': { matn: 'ERP fayli o\'qilmadi (JSON emas yoki juda katta)' },
+  /* TZ-44: ERP jonli sinxron (server/lib/erp-jonli.js). 001–099 — server; 101+ — brauzer (narx paneli) uchun ajratilgan. Ruscha/inglizcha — web/src/i18n/{ru,en}.json "xato.S3D-ERP-…" */
+  'S3D-ERP-001': { http: 409, matn: 'ERP jonli sinxron o\'chiq (serverda ERP_JONLI, ERP_LOGIN, ERP_PASSWORD berilmagan)' },
+  'S3D-ERP-002': { http: 502, matn: 'ERP\'ga kirib bo\'lmadi — login yoki parolni tekshiring' },
+  'S3D-ERP-003': { http: 502, matn: 'ERP javob bermadi — oxirgi narxlar saqlanib turadi' },
+  'S3D-ERP-004': { http: 502, matn: 'ERP javobi tushunarsiz — oxirgi narxlar saqlanib turadi' },
+  'S3D-ERP-005': { http: 409, matn: 'Sinxronlash allaqachon bajarilmoqda — tugashini kuting' },
+  'S3D-ERP-006': { http: 409, matn: 'ERP jonli sinxron pauzada — avval davom ettiring' },
+  'S3D-ERP-007': { http: 429, matn: '"Hozir sinxronla" 30 soniyada bir martadan ko\'p bosilmaydi' },
+  'S3D-ERP-008': { http: 400, matn: 'Jonli sinxron sozlamasi noto\'g\'ri (pauza: ha/yo\'q, chegara: 5…100 foiz)' },
   /* TZ-24 B: shaxsiy shablonlar */
   'S3D-SHB-001': { http: 404, matn: 'Shablon topilmadi' },
   'S3D-SHB-002': { http: 409, matn: 'Shablonlar ko\'p — 100 tagacha; keraksizini o\'chiring' },

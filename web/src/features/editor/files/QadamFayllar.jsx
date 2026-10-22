@@ -39,7 +39,7 @@ export default function QadamFayllar() {
         </React.Fragment>))}
       </div>
       {(v.fileGroups || []).map((g, $index) => (<React.Fragment key={$index}>
-        <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexDirection":"column","gap":"12px","padding":"18px"}}>
+        <div style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","display":"flex","flexDirection":"column","gap":"12px","padding":"18px"}}>
           <div style={{"display":"flex","justifyContent":"space-between","alignItems":"center"}}>
             <span style={{"fontSize":"13px","fontWeight":"800","letterSpacing":".08em","textTransform":"uppercase","color":g?.col}}>
               <span className="sc-interp">{g?.title}</span>
@@ -56,7 +56,7 @@ export default function QadamFayllar() {
               {t('fayllar.yana')}
             </span>
             {(g?.more || []).map((m, $index) => (<React.Fragment key={$index}>
-              <button onClick={m?.go} disabled={m?.dis} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","minHeight":"34px","background":"var(--sfc2)","color":m?.c,"fontFamily":"'JetBrains Mono',monospace","fontSize":"12px","cursor":m?.cur}}>
+              <button onClick={m?.go} disabled={m?.dis} style={{"padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontWeight":"700","display":"flex","alignItems":"center","gap":"6px","minHeight":"34px","background":"var(--sfc2)","color":m?.c,"fontFamily":"'JetBrains Mono',monospace","fontSize":"12px","cursor":m?.cur}}>
                 {m?.ikon ? <Ikon n={m.ikon} size={14} gap={0} /> : null}<span className="sc-interp">{m?.label}</span>
               </button>
             </React.Fragment>))}

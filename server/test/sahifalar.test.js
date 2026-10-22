@@ -64,6 +64,25 @@ test('noma\'lum sahifa — 404 (dizayndagi sahifa), noma\'lum API — JSON 404',
   assert.equal((await a.json()).code, 'S3D-SRV-002');
 });
 
+/* /favicon.ico: HTML'da <link rel="icon"> bor, lekin brauzerlar /favicon.ico ni ham so'raydi — 404 emas, mavjud ikon (icons/icon-192.png) */
+test('/favicon.ico — 200, mavjud ikon fayli (PNG), kesh sarlavhasi; HEAD ham', { skip: !HAS_WEB && 'web/dist yo\'q' }, async () => {
+  const ikon = fs.readFileSync(path.join(DIST, 'icons', 'icon-192.png'));
+  const r = await fetch(base + '/favicon.ico');
+  assert.equal(r.status, 200);
+  assert.match(r.headers.get('content-type'), /^image\/png/);
+  assert.equal(r.headers.get('cache-control'), 'public, max-age=86400');
+  assert.equal(r.headers.get('x-content-type-options'), 'nosniff');
+  assert.ok(Buffer.from(await r.arrayBuffer()).equals(ikon), 'icon-192.png baytlari');
+  const h = await fetch(base + '/favicon.ico', { method: 'HEAD' });
+  assert.equal(h.status, 200);
+  assert.equal(h.headers.get('content-length'), String(ikon.length));
+  /* HTML dagi havola ham o'sha ikonga: ikkalasi bir xil fayl */
+  const a = await (await fetch(base + '/app.html')).text();
+  const href = (a.match(/<link rel="icon" href="([^"]+)"/) || [])[1];
+  assert.equal(href, '/icons/icon-192.png');
+  assert.equal((await fetch(base + href)).status, 200);
+});
+
 /* TZ-30: ilova manzillari (frontend bilan bir xil ro'yxat) — app.html, no-cache, /app.html bilan bir xil CSP; ro'yxatdan tashqari — 404 */
 const ILOVA = ['/kirish', '/royxat', '/loyihalar', '/loyiha/yangi', '/loyiha/42', '/sozlamalar', '/sozlamalar/narxlar', '/buyurtmalar', '/tg', '/kirish/'];
 test('TZ-30: ilova manzillari — app.html (200, no-cache, CSP /app.html bilan bir xil)', { skip: !HAS_WEB && 'web/dist yo\'q' }, async () => {
