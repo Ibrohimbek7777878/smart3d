@@ -9,7 +9,7 @@ import { erpUla, erpSaqla, bazisAlmash } from '../services/erpMaterial.js';
 import { chizmaUla } from '../services/chizma.js';
 import { report } from '../shared/lib/jurnal.js';
 import { xato } from './ui.js';
-import { t } from '../i18n/index.js';
+import { t, tilKut } from '../i18n/index.js';
 import { createTarix } from './bekor.js';
 
 /* TZ-19: loyiha modeli — ochiq loyiha hujjati (doc), hisob dvigateli (H) va oxirgi hisob natijasi (res).
@@ -40,7 +40,9 @@ export const project = {
 
   load() {
     if (!this.ready) {
-      this.ready = loadData()
+      /* Tezlik (testchi, 2026-10-22): ma'lumot so'rovlari (20+ fayl) tanlangan til lug'atidan KEYIN ketadi — aks holda ular tarmoqni band qilib, lug'at (va u bilan
+         birinchi chizish) kechikadi. O'zbekchada lug'at tayyor — kutish yo'q; lug'at yuklanmasa ham ma'lumot yuklanadi. */
+      this.ready = tilKut().catch(() => {}).then(() => loadData())
         .then(d => { this.H = createHisob(d); this.est = L.createEstimator(this.H); set('data', { ready: true }); })
         .catch(e => { report('S3D-DATA-101', { modul: 'data', err: e }); set('data', { err: 'S3D-DATA-101' }); });
     }

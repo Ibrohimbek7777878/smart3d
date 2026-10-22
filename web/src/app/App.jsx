@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSlice } from '../store/index.js';
 import { confirmNo, confirmYes } from '../store/ui.js';
 import Tasdiq from '../shared/ui/Tasdiq.jsx';
@@ -9,21 +9,44 @@ import { useTil } from '../i18n/index.js';
 import { set } from '../store/index.js';
 import Kirish from '../features/auth/Kirish.jsx';
 import TgKutish from '../features/telegram/TgKutish.jsx';
-import Onboarding from '../features/onboarding/Onboarding.jsx';
 import Header from '../features/shell/Header.jsx';
-import Loyihalar from '../features/projects/Loyihalar.jsx';
-import Sozlamalar from '../features/settings/Sozlamalar.jsx';
-import AdminQobiq from '../features/admin/AdminQobiq.jsx';
-import EditorPage from '../features/editor/EditorPage.jsx';
+import { kechiktir, boshVaqtda } from '../shared/lib/kechiktir.jsx';
+import { S } from '../store/session.js';
 import AiOyna from '../features/editor/ai/AiOyna.jsx';
 import IchiniKorish from '../features/editor/inside/IchiniKorish.jsx';
-import Varaqlar from '../features/editor/Varaqlar.jsx';
+import Varaqlar, { varaqlarniOldindanYukla } from '../features/editor/Varaqlar.jsx';
+
+/* Tezlik (testchi nuqsonlari, 2026-10-22): birinchi ekranda (kirish) kerak bo'lmagan qismlar — alohida bo'laklar, kerak bo'lganda yuklanadi:
+ * admin (faqat adminga), sozlamalar, "Loyihalarim", "Nima yasaymiz" (yashirilgan) va muharrir sahifasi (faqat kirgandan keyin).
+ * Muharrir bo'lagi oldindan yuklab qo'yiladi (pastda) — kirgach kutish bo'lmaydi. Kirish, qobiq va oynalar — asosiy bo'lakda. */
+const AdminQobiq = kechiktir(() => import('../features/admin/AdminQobiq.jsx'));
+const Sozlamalar = kechiktir(() => import('../features/settings/Sozlamalar.jsx'), { joy: 'qobiq' });
+const Loyihalar = kechiktir(() => import('../features/projects/Loyihalar.jsx'), { joy: 'qobiq' });
+const EditorPage = kechiktir(() => import('../features/editor/EditorPage.jsx'), { joy: 'qobiq' });
+const Onboarding = kechiktir(() => import('../features/onboarding/Onboarding.jsx'));
 
 /* TZ-19: ilova qobig'i — faqat qaysi sahifa ko'rinishini tanlaydi. Har sahifa va bo'lim — o'z modulida (features/*),
  * holat — store/, server va dvigatel — services/. Ekranlar JSX va stillari — tasdiqlangan dizayndan (o'zgarishsiz). */
 const SHELL = { app: [EditorPage, 'editor'], projects: [Loyihalar, 'projects'], settings: [Sozlamalar, 'settings'] };
 /* har bo'lim — o'z xato chegarasida: bittasi yiqilsa, qolgani ishlaydi */
 const M = ({ m, joy, children }) => <XatoChegarasi modul={m} joy={joy}>{children}</XatoChegarasi>;
+
+/* Tezlik (testchi, 2026-10-22): kechiktirilgan bo'laklarni oldindan yuklash (hech narsa chizmaydi).
+ *  - muharrir: birinchi chizishdan keyin — kirgan foydalanuvchida darhol (sessiya tekshirilayotgan paytda), kirmaganda bo'sh vaqtda
+ *    (ro'yxatdan o'tish formasi to'ldirilguncha keladi);
+ *  - 3D sahna ko'tarilgach (tarmoq bo'shadi): sozlamalar, "Loyihalarim", varaq tanalari (admin bo'lsa — admin panel ham): ochilganda kutish bo'lmaydi. */
+function OldindanYukla() {
+  const sceneOn = useSlice('editor').sceneOn, admin = (useSlice('auth').user || {}).role === 'admin';
+  useEffect(() => {
+    if (S.loggedIn) { EditorPage.oldindan(); return undefined; }
+    return boshVaqtda(() => EditorPage.oldindan());
+  }, []);
+  useEffect(() => {
+    if (!sceneOn) return undefined;
+    return boshVaqtda(() => { Sozlamalar.oldindan(); Loyihalar.oldindan(); varaqlarniOldindanYukla(); if (admin) AdminQobiq.oldindan(); }, 5000);
+  }, [sceneOn, admin]);
+  return null;
+}
 
 export default function App() {
   const { screen } = useSlice('nav');
@@ -44,6 +67,7 @@ export default function App() {
       ) : null}
       <M m="editor/ai"><AiOyna /></M>
       <M m="editor/inside"><IchiniKorish /></M>
+      <OldindanYukla />
       <Tasdiq cf={ui.cf} onNo={confirmNo} onYes={confirmYes} />
       <M m="editor/varaq"><Varaqlar /></M>
       <Toast text={ui.toast} code={ui.toastCode} />

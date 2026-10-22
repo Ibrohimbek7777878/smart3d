@@ -1,22 +1,27 @@
 import { createStore, useStoreSlice } from '../store/store.js';
 import uz from './uz.json';
-import ru from './ru.json';
-import en from './en.json';
 import { XATOLAR } from '../../../app/js/xatolar.js';
 
 /* TZ-18: uch til — o'zbek (asosiy), rus, ingliz. Har matn — kalit bo'yicha lug'atda (uz.json, ru.json, en.json).
  * Tarjima topilmasa — o'zbekchasi (keyin kalitning o'zi) ko'rinadi; to'liqlik testi (tests/verify_til.mjs) buni ushlaydi.
- * Til almashsa sahifa qayta yuklanmaydi: ilova va sayt ildizi til omboriga obuna (useTil), qolgani t() ni chaqiradi. */
-const LUGAT = { uz, ru, en };
+ * Til almashsa sahifa qayta yuklanmaydi: ilova va sayt ildizi til omboriga obuna (useTil), qolgani t() ni chaqiradi.
+ * Tezlik (testchi nuqsonlari, 2026-10-22): o'zbekcha lug'at — asosiy bo'lakda; ruscha va inglizcha — alohida bo'laklar (har biri ~35 KB gzip), tanlangan til
+ * bo'lgandagina yuklanadi (o'zbekcha ochgan foydalanuvchi ularni yuklamaydi). Yuklanguncha t() o'zbekchasini beradi (tarjima
+ * topilmagandagi qoida bilan bir xil); ilova va sayt birinchi chizishdan OLDIN tilniTayyorla() ni kutadi (main.jsx) — o'zbekchada kutish yo'q. */
+const LUGAT = { uz };
+const YUKLA = { ru: () => import('./ru.json'), en: () => import('./en.json') };
+const yuklanmoqda = {};
 /* xato kodlari: o'zbekcha matn — bitta manbadan (app/js/xatolar.js), ruscha/inglizcha — lug'atda "xato.S3D-…" */
 for (const [kod, x] of Object.entries(XATOLAR)) if (uz['xato.' + kod] == null) uz['xato.' + kod] = x.matn;
 export const TILLAR = [['uz', 'O\'zbekcha'], ['ru', 'Русский'], ['en', 'English']];
 const KALIT = 's3d-til';
 
+const KODLAR = TILLAR.map(x => x[0]);
+
 function boshlangich() {
-  try { const s = localStorage.getItem(KALIT); if (LUGAT[s]) return s; } catch (_) { /* yo'q */ }
+  try { const s = localStorage.getItem(KALIT); if (KODLAR.includes(s)) return s; } catch (_) { /* yo'q */ }
   const b = String((typeof navigator !== 'undefined' && navigator.language) || '').slice(0, 2).toLowerCase();
-  return LUGAT[b] && b !== 'uz' ? b : 'uz';
+  return KODLAR.includes(b) && b !== 'uz' ? b : 'uz';
 }
 
 export const tilStore = createStore({ til: { kod: typeof window !== 'undefined' ? boshlangich() : 'uz' } });
@@ -27,8 +32,8 @@ export const til = () => tilStore.get().til.kod;
 /** t('kirish.sarlavha') yoki t('narx.zapchast', { n: 3 }) — {n} o'rniga qiymat */
 export function t(key, vars) {
   const k = til();
-  let s = LUGAT[k][key];
-  if (s == null || s === '') s = LUGAT.uz[key];
+  let s = (LUGAT[k] || uz)[key];                    // lug'at hali yuklanmagan — o'zbekcha
+  if (s == null || s === '') s = uz[key];
   if (s == null) return key;
   return vars ? s.replace(/\{(\w+)\}/g, (m, n) => (vars[n] != null ? vars[n] : m)) : s;
 }
@@ -55,18 +60,39 @@ export const xatoMatni = (code) => t('xato.' + code) + ' · ' + code;
 export function serverXato(matn, code) {
   if (!code || til() === 'uz') return matn;
   const k = 'xato.' + code;
-  return LUGAT[til()][k] ? LUGAT[til()][k] : matn;
+  const L = LUGAT[til()];
+  return L && L[k] ? L[k] : matn;
 }
 
-/** til almashtirish: eslab qolinadi (qurilmada; kirgan bo'lsa — serverda ham, onChange orqali) */
+/** tilning lug'ati yuklanadimi (kod berilmasa — tanlangan til): tayyor bo'lsa — darhol; yuklanmasa (tarmoq) rad etadi */
+export function tilniTayyorla(kod) {
+  kod = kod || til();
+  if (LUGAT[kod] || !YUKLA[kod]) return Promise.resolve();
+  return yuklanmoqda[kod] || (yuklanmoqda[kod] = YUKLA[kod]().then(
+    (m) => { LUGAT[kod] = m.default; },
+    (e) => { delete yuklanmoqda[kod]; throw e; }));
+}
+
+/** til almashtirish: eslab qolinadi (qurilmada; kirgan bo'lsa — serverda ham, onChange orqali).
+ *  Lug'at yuklangan bo'lsa — darhol; yuklanmagan bo'lsa (ru/en, birinchi marta) — yuklangach. Tarmoq yo'q bo'lsa til almashmaydi,
+ *  qayta tanlash mumkin. Qaytaradi: almashgunicha kutiladigan va'da (ilova ishga tushishida kutiladi). */
 const listeners = new Set();
-export function setTil(kod, serverdan) {
-  if (!LUGAT[kod] || kod === til()) return;
+let sorov = 0, kutish = Promise.resolve();
+function qollash(kod, serverdan) {
   tilStore.set('til', { kod });
   try { localStorage.setItem(KALIT, kod); } catch (_) { /* kvota */ }
   document.documentElement.lang = kod;
   listeners.forEach(f => f(kod, !!serverdan));
 }
+export function setTil(kod, serverdan) {
+  if (!KODLAR.includes(kod) || kod === til()) return kutish;
+  const n = ++sorov;
+  if (LUGAT[kod]) { qollash(kod, serverdan); return kutish; }
+  kutish = tilniTayyorla(kod).then(() => { if (n === sorov) qollash(kod, serverdan); }, () => { /* tarmoq yo'q — til almashmaydi */ });
+  return kutish;
+}
+/** birinchi chizishdan oldin: tanlangan tilning lug'ati (va kutilayotgan setTil) tayyor bo'lishini kutish */
+export const tilKut = () => Promise.all([tilniTayyorla(), kutish]).then(() => undefined);
 export const onTil = (fn) => { listeners.add(fn); return () => listeners.delete(fn); };
 
 /** React: til o'zgarsa qayta chizish (ilova va sayt ildizida) */

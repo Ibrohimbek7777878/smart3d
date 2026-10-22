@@ -6,7 +6,7 @@ import { loadSettings } from '../settings/actions.js';
 import { openPending } from '../projects/actions.js';
 import { ishJoyiOch, yangiIshJoyi } from '../editor/ishjoyi/ishjoyi.js';
 import { checkAiStatus } from '../editor/ai/actions.js';
-import { t, til, serverXato } from '../../i18n/index.js';
+import { t, til, serverXato, tilKut } from '../../i18n/index.js';
 import { TELEGRAM } from '../../app/bridge/telegram.js';
 import { telegramUlash } from '../telegram/telegram.js';
 import { marshrutgaQayt } from '../../app/tarix.js';
@@ -32,6 +32,7 @@ export async function afterLogin() {
 
 /** sahifa ochilganda: saqlangan kirish kaliti tekshiriladi */
 export async function initSession() {
+  await tilKut().catch(() => {});                  // Tezlik (testchi, 2026-10-22): tarmoqni birinchi navbatda til lug'ati oladi (project.load da ham)
   await checkAiStatus();
   if (!S.loggedIn) return;
   set('auth', { user: S.user });
