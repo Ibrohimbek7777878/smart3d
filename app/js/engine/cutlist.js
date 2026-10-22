@@ -18,6 +18,7 @@ import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nes
 import { kromkaXizmat, prisadkaXizmat, raspilXizmat, raspilYupqaXizmat, bazisXizmat, tasdiqMi, ustamaManbasi, plitaSozlama, plitaNarxi, plitaERPMi, BAZIS_QALINLIKLAR } from './narxStavka.js';
 import { qoshXizmatTekshir } from './xizmatKatalog.js';
 import { D6, petlyaSoni as d6PetlyaSoni } from './d6.js';            // TZ-32 B6: SP modul petlyasi (3c)
+import { joyOqi } from './bazis/teshikJoy.js';                       // Bazis importi: mahkamlagichlardan joylashuvli teshiklar (3d')
 
 /** TZ-36 K3: shu qalinlikgacha (mm) list "yupqa" (HDF 2,5–3 mm) — alohida raspil stavkasi (tanlov.raspil_yupqa) */
 const RASPIL_YUPQA_MM = 3.5;
@@ -407,6 +408,18 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
       ...(t.narxQty != null ? { narx_qty: Math.max(0, Math.round(+t.narxQty || 0)) } : {}) });   // TZ-36 K1: ERP prisadka hisobi (teshik.js ERP_HISOB)
   }
 
+  /* ── 3d') Bazis importi: mahkamlagichlardan JOYLASHUVI BILAN teshiklar (bazis/teshikJoy.js) — faqat stanok/KDT fayli uchun.
+   * Narxga kirmaydi (stanok_uchun): prisadka narxi yuqoridagi bazisTeshik (ERP bilan kalibrlangan) bo'yicha — ikki marta sanalmasin. */
+  const nusxaJoy = {};
+  for (const p of parts) nusxaJoy[p.code] = (nusxaJoy[p.code] || 0) + 1;
+  for (const q of frag.bazisJoy || []) {
+    for (const hl of joyOqi(q)) {
+      const code = hl.ref.slice(0, hl.ref.indexOf('#'));
+      if (!nusxaJoy[code]) continue;
+      holes.push(Object.assign({ fragment: frag.code, part: code }, hl, { x: Math.round((hl.x - dedOf(code, 'F')) * 10) / 10, y: Math.round((hl.y - dedOf(code, 'L')) * 10) / 10, qty: 1, nusxa: 1, stanok_uchun: true }));
+    }
+  }
+
   /* ── 4) Furnitura ────────────────────────────────────────────── */
   const nomBom = (s) => String(s || '').replace(/\r/g, ' ').replace(/\s+/g, ' ').trim();
   const hardware = (frag.hardware || []).map(hw => ({
@@ -462,7 +475,7 @@ export function cutlist(frag, w, d, h, materials = {}, opt = {}) {
   /* ── 5) Statistika ───────────────────────────────────────────── */
   let areaMm2 = 0;
   for (const p of parts) areaMm2 += p.length * p.width;
-  const holeCount = holes.reduce((s, x) => s + x.qty * (x.nusxa || 1), 0);
+  const holeCount = holes.reduce((s, x) => s + (x.stanok_uchun ? 0 : x.qty * (x.nusxa || 1)), 0);
   const edgeMeters = edges.reduce((s, x) => s + x.meters, 0);
 
   return {
@@ -633,6 +646,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       hwAgg[hw.code].qty += hw.qty;
     }
     for (const hl of cl.holes || []) {
+      if (hl.stanok_uchun) continue;           // Bazis mahkamlagichlaridan joyli teshiklar — faqat stanok fayli; narx bazisTeshik bo'yicha
       const key = hl.tur || hl.kind;           // TZ-20: Bazis teshigi turi bo'yicha (konfirmat, polka, ruchka — hammasi 'drill')
       holeAgg[key] = holeAgg[key] || { qty: 0, kind: hl.kind };
       /* TZ-36 K1: narx soni — ERP qoidasi bo'yicha (narx_qty bor bo'lsa — o'sha; ruchka — 1 ta/dona, teshik 2 ta) */

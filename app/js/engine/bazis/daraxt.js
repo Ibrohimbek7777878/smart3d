@@ -33,7 +33,8 @@ function yozuv(m, dv, dec, pos, chuqur) {
     if (vp + 4 > m.length) throw new Buzuq(pos);
     const n = u32(m, vp);
     if (n > 5000000 || vp + 4 + n * 2 > m.length) throw new Buzuq(pos);
-    return [{ i: idx, t: 'str', v: dec.decode(m.subarray(vp + 4, vp + 4 + n * 2)) }, vp + 4 + n * 2];
+    const xom = m.subarray(vp + 4, vp + 4 + n * 2);
+    return [{ i: idx, t: 'str', v: dec.decode(xom), xom: n * 2 > 20 ? xom : null }, vp + 4 + n * 2];   // xom — mahkamlash sxemasi (zlib) uchun
   }
   if (t === 7) {
     if (vp + 4 > m.length) throw new Buzuq(pos);
@@ -120,6 +121,45 @@ function tfMi(k) {
   return Math.abs(k.v.slice(3).reduce((a, x) => a + x.v * x.v, 0) - 1) < 0.02;
 }
 
+/* ── mahkamlash sxemasi (evrovint, ekssentrik, shkant …): guruh tugunidagi uzun satr ichida zlib; ichida o'z lug'atli TLV ──
+ * scripts/bazis_daraxt.py (sxema, _sxema_top) ning JS ko'chirmasi. Diametr/chuqurlik (d1, d2, h …) shu yerda; o'qilmasa — null. */
+function sxemaOqi(d, dec) {
+  const dv = new DataView(d.buffer, d.byteOffset, d.byteLength);
+  const n = u32(d, 0), nomlar = [];
+  let pos = 4;
+  for (let k = 0; k < n; k++) {
+    const ln = u32(d, pos);
+    nomlar.push(String.fromCharCode(...d.subarray(pos + 4, pos + 4 + ln)));
+    pos += 4 + ln;
+  }
+  if (!(d[pos] === 255 && d[pos + 1] === 255 && d[pos + 2] === 255 && d[pos + 3] === 255)) throw new Buzuq(pos);
+  const soni = u32(d, pos + 4);
+  pos += 9;
+  const ich = [];
+  for (let k = 0; k < soni; k++) { const [r, p] = yozuv(d, dv, dec, pos, 0); ich.push(r); pos = p; }
+  const ol = (k) => {
+    const nom = k.i < nomlar.length ? nomlar[k.i] : '_';
+    if (k.t === 'S') {
+      const el = k.v.map(ol);
+      if (el.length && el.every(e => e[0] === '_')) return [nom, el.map(e => e[1])];
+      return [nom, Object.fromEntries(el)];
+    }
+    if (k.t === 'blob') return [nom, '<blob>'];
+    return [nom, k.v];
+  };
+  return Object.fromEntries(ich.map(ol));
+}
+function sxemaTop(node, inflate, dec) {
+  for (const k of node.v) {
+    if (k.t !== 'str' || !k.xom) continue;
+    let i = -1;
+    for (let q = 0; q <= 8 && q + 1 < k.xom.length; q++) if (k.xom[q] === 0x78 && k.xom[q + 1] === 0x9c) { i = q; break; }
+    if (i < 0) continue;
+    try { return sxemaOqi(inflate(k.xom.subarray(i)), dec); } catch (e) { return null; }   // o'qilmagan sxema = yo'q
+  }
+  return null;
+}
+
 /** tugun → b3d.js oqimi ({name, type, val}); bolalar ro'yxati va mantiqiy qiymatlarsiz */
 function tekis(node, O, out) {
   for (const k of node.v) {
@@ -144,7 +184,7 @@ export function daraxt(bytes, opts = {}) {
   const asos = asosiyRoyxat(m, dv, dec, O, C);
   if (!asos) return null;
   const objects = [];
-  const yur = (royxat, ota, chuqur, otaNom) => {
+  const yur = (royxat, ota, chuqur, otaNom, otaRec) => {
     for (const node of royxat) {
       if (node.t !== 'S' || node.i !== O) continue;
       const kod = (node.v.find(k => k.i === C) || {}).v;
@@ -160,14 +200,16 @@ export function daraxt(bytes, opts = {}) {
         rec = { modelCode: kod };
         const nm = oqim.find(x => x.type === 'str' && x.val.trim());
         if (nm) rec.name = nm.val.trim();
+        if (opts.inflate) { const sx = sxemaTop(node, opts.inflate, dec); if (sx) rec.sxema = sx; }
       }
       const nom = N != null ? ((node.v.find(k => k.i === N && k.t === 'str') || {}).v || '').trim() : '';
       if (nom && !rec.name) rec.name = nom;
       rec.tf = g; rec.chuqur = chuqur; rec.ota = otaNom;
+      Object.defineProperty(rec, 'guruh', { value: otaRec || null, enumerable: false });   // guruh — ota yozuv (mahkamlash sxemasi shu yerda); JSON/solishtirishga kirmaydi
       objects.push(rec);
-      for (const k of node.v) if (royxatMi(k, O)) yur(k.v, g, chuqur + 1, nom || rec.name || null);
+      for (const k of node.v) if (royxatMi(k, O)) yur(k.v, g, chuqur + 1, nom || rec.name || null, rec);
     }
   };
-  yur(asos.r.v, BIRLIK, 0, null);
+  yur(asos.r.v, BIRLIK, 0, null, null);
   return { objects, format: 'daraxt' };
 }

@@ -1,5 +1,5 @@
 /* verify_narx_kalibrovka.mjs — TZ-36: narx kalibrovkasi (ERP buyurtmalariga yaqinlashtirish; egasi #194/#222: "ERP'da qanday bo'lsa shunday").
- *   K1  Bazis prisadka ERP hisobi: «ПРИСАДКА ЕВРО» soni = Евро mahkamlagich soni (qirra teshigi alohida emas), ruchka 1 ta/dona, belgi 0,4
+ *   K1  Bazis prisadka ERP hisobi: «ПРИСАДКА ЕВРО» soni = Евро mahkamlagich soni (qirra teshigi alohida emas), ruchka 1 ta/dona, belgi (МЕТКА) = samorez + metka obyektlari (prisadka aniqligi, 2026-10-22: 14 ERP buyurtmasida aynan)
  *   K2  kromka stavkasi eni/qalinligiga qarab (19/0,4 — 3 000, 19/1 — 4 000, 21/1 — 4 800, 35/1 — 5 700, 42/2 — 9 500) + metrga chiqit 8%
  *   K3  HDF: sukut_erp.HDF3 = ERP ЛХДФ 2,5мм 2800*2070 (140 000); barcha HDF — bitta kroy guruhi; raspil HDF/3 mm — Holzma 1 (25 000), LDSP — Holzma 2 (43 000)
  *   K5  Bazis stoleshnitsa — stoleshnitsa narxida (STOL26-3050 …), LDSP varag'ida emas; bo'laklar standart uzunlikka birga joylashadi
@@ -31,9 +31,9 @@ console.log('\n[K1] Bazis prisadka — ERP hisobi');
 const objs = [...obj('Евро 51мм Алкан', 136), ...obj('Евровинт 7х51 (32) Мин60 симм', 37), ...obj('Петля прямая', 16), ...obj('Ручка 160 мм', 8), ...obj('Полкодержатель D5', 34), ...obj('metka samarezga', 10)];
 const th = bazisTeshiklar(objs);
 const tq = (t) => th.find(x => x.tur === t) || {};
-ok('jismoniy son o\'zgarmadi (KDT bilan tekshirilgan): konfirmat_yuza 0,81 × 173, ruchka 16', tq('konfirmat_yuza').qty === Math.round(173 * 0.81) && tq('ruchka').qty === 16);
+ok('jismoniy son (KDT bilan tekshirilgan, detal nusxalari hisobga olingan): konfirmat_yuza 1 × 173, ruchka 16, belgi = metka + 4 × petlya', tq('konfirmat_yuza').qty === 173 && tq('ruchka').qty === 16 && tq('belgi').qty === 10 + 16 * 4);
 ok('narxQty: konfirmat_yuza = Евро soni (obyektlar), qirra — narxQty yo\'q', tq('konfirmat_yuza').narxQty === 173 && tq('konfirmat_qirra').narxQty === undefined, JSON.stringify(th.filter(x => /konf/.test(x.tur))));
-ok('narxQty: belgi = jismoniy × 0,4', tq('belgi').narxQty === Math.round(tq('belgi').qty * 0.4), JSON.stringify(tq('belgi')));
+ok('narxQty: belgi (МЕТКА) = metka/samorez obyektlari soni (10); petlya vintlari/plankasi ПЕТЛЕ ichida', tq('belgi').narxQty === 10, JSON.stringify(tq('belgi')));
 const frag = { code: 'BZ-test', name: 'test', w: 1000, d: 500, h: 800, category: 'bazis', production: 'panel', price_mode: 'unit', price: 0, auto_hardware: false,
   slots: { korpus: 'LDSP16', fasad: 'LDSP16', orqa: 'HDF3' }, parts: [{ code: 'a', nom: 'a', qty: 1, len: '600', width: '400', slot: 'korpus' }], edge: [], hardware: [], bazisTeshik: th };
 const cl = cutlist(frag, 1000, 500, 800, mats, {});
