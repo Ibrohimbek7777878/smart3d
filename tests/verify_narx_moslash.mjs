@@ -44,7 +44,10 @@ ok('maydoni noma\'lum (4,3кв yoki "16мм" yoki bo\'sh) — null (o\'ylab topi
 ok('"4,6кв" → 2500×1830 (moslash uchun); Bazis materialining kroy formati esa faqat aniq maydondan ("4,575") — "4,6кв" nominal, o\'zgarmaydi', J(nomFormati('ЛДСП, Сатин 4,6кв')) === '[2500,1830]'
   && materialTuri('ЛДСП, Сатин 4,6кв', 16).varaq === null && J(materialTuri('ЛДСП Ультрадекор 4,575 Белый 16мм', 16).varaq) === '[2500,1830]');
 ok('aniq o\'lcham nomda ("2800*2070") — o\'sha o\'lcham, maydondan ustun', J(materialTuri('ЛХДФ 3мм 2800*2070 Белый 5,175кв', 3).varaq) === '[2800,2070]');
-ok('katalogdagi sukut 2800×2070 nomdagi 4,575 ga tuzatiladi → 2500×1830 (7045 BS)', !!bs && bs.l === 2800 && bs.w === 2070 && J(plitaFormati(bs.name, bs.l, bs.w).f) === '[2500,1830]' && plitaFormati(bs.name, bs.l, bs.w).tuzatildi);
+/* 2026-10-22: katalog ERP products API bilan moslandi (scripts/katalog_erp_yangilash.py) — 7045 BS endi to'g'ri 2500×1830 formatda saqlanadi (avval sukut 2800×2070).
+ * plitaFormati eski/sukut 2800×2070 kiritilsa nomdagi 4,575 ga baribir tuzatadi (eski saqlangan loyihalar va ERP'da formati yo'q plitalar uchun) — shu mantiq sintetik kirish bilan tekshiriladi */
+ok('katalog ERP bilan moslangan: 7045 BS = 2500×1830 (nomdagi 4,575 ga mos), plitaFormati tuzatish talab qilmaydi', !!bs && bs.l === 2500 && bs.w === 1830 && J(plitaFormati(bs.name, bs.l, bs.w).f) === '[2500,1830]' && !plitaFormati(bs.name, bs.l, bs.w).tuzatildi);
+ok('sukut 2800×2070 kiritilsa nomdagi 4,575 ga tuzatiladi → 2500×1830 (eski loyiha / ERP\'da formati yo\'q plita)', !!bs && J(plitaFormati(bs.name, 2800, 2070).f) === '[2500,1830]' && plitaFormati(bs.name, 2800, 2070).tuzatildi);
 ok('boshqa katalog o\'lchami tegilmaydi (5,796 nomli 2440×1220; maydonsiz nom)', J(plitaFormati('ЛДСП Эггер 5,796 Белый 16мм', 2440, 1220).f) === '[2440,1220]' && J(plitaFormati('Акрил Shanghai UV 18мм Серый', 2800, 2070).f) === '[2800,2070]');
 ok('ERP plitasi materialga o\'girilganda varaq formati — 2500×1830', J(E.erpMaterial(bs, H.materials).sheets) === '[[2500,1830]]');
 
@@ -122,7 +125,7 @@ E.erpUla(H, dA); H.catalog[rs.fragment.code] = bazisAlmash(rs.fragment, dA.bazis
 const rA = hisob(dA);
 const nmA = matJoy(rA, kodBS), lnA = rA.prod.lines.filter(l => l.code === kodBS);
 ok('ERP SKU 7045 BS tanlangach: material kodi ERP-…, narx katalogdagi ERP narxi (282 568), manba "ERP", tasdiqlangan', !!nmA && lnA[0].unit_price === bs.uzs && lnA[0].manba === 'ERP' && lnA[0].tasdiq === true, J(lnA[0]));
-ok('list formati ERP materialida 2500×1830 (katalogdagi 2800×2070 emas); 2600 va 2790 li uch planka sig\'madi → yuza bo\'yicha taxmin', nmA.sheet_length === 2500 && nmA.sheet_width === 1830 && nmA.unplaced.length === 3
+ok('list formati ERP materialida 2500×1830; 2600 va 2790 li uch planka sig\'madi → yuza bo\'yicha taxmin', nmA.sheet_length === 2500 && nmA.sheet_width === 1830 && nmA.unplaced.length === 3
   && lnA.find(l => l.sigmadi).amount === taxminKutilgan(nmA, bs.uzs) && lnA.find(l => l.sigmadi).manba === 'taxmin');
 ok('narx aniqligi oshdi (Satin plitasi tasdiqlangan manbadan)', rA.prod.aniqlik.tasdiqlangan > r0.prod.aniqlik.tasdiqlangan, rA.prod.aniqlik.tasdiqlangan + ' ≤ ' + r0.prod.aniqlik.tasdiqlangan);
 ok('detallar yo\'qolmaydi: joylashgan + sig\'magan = 31 (24 + 4 + 3)', nmA.stats.placed_count + nmA.unplaced.length === 31 && nm0.stats.placed_count + nm0.unplaced.length === 31);
