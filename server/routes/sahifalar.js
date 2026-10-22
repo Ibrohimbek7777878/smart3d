@@ -17,6 +17,12 @@ export const ILOVA_YOLI = /^\/(kirish|royxat|loyihalar|loyiha\/(yangi|\d{1,15})|
 export function sahifalar({ webDist, eski }) {
   const hasWeb = fs.existsSync(path.join(webDist, 'index.html'));
   const statik = express.Router();
+  /* /favicon.ico: brauzerlar HTML'dagi <link rel="icon"> dan qat'i nazar shu manzilni ham so'raydi (404 jurnalni to'ldirardi).
+   * Yangi rasm yo'q — mavjud ikon (icons/icon-192.png) beriladi; kesh — boshqa statik fayllardek (1 kun). */
+  const ikonYoli = path.join(hasWeb ? webDist : eski, 'icons', 'icon-192.png');
+  statik.get('/favicon.ico', (req, res, next) => {
+    res.set('Cache-Control', 'public, max-age=86400').type('png').sendFile(ikonYoli, (e) => { if (e && !res.headersSent) next(); });
+  });
   if (hasWeb) {
     statik.use('/eski', express.static(eski, { setHeaders: (res, f) => { if (noCache(f)) res.set('Cache-Control', 'no-cache'); } }));
     statik.use(express.static(webDist, {
