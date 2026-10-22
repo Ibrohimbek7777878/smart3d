@@ -9,6 +9,7 @@ import { goStep } from '../actions.js';
 import { narxKorinishi } from './narx.js';
 import { t } from '../../../i18n/index.js';
 import * as L from '../../../services/loyiha.js';
+import { erpKorsatkich } from '../../../services/erpHolat.js';
 
 /* TZ-19: ③ Narx — mijoz narxi, tannarx, foyda, kotirovka, xizmatlar (S3), tannarx tarkibi, raskroy varaqlari, detallar. */
 const RANGLAR = ['#FF7A45', '#5FE1C4', '#B9A6FF', '#FFB59A', '#F3F0E9'];    // dizayndagi raskroy ranglari
@@ -60,7 +61,7 @@ function flipBazis(tur, joriy) {
 }
 
 export function useQadamNarx() {
-  const ed = useSlice('editor'), pj = useSlice('project'), auth = useSlice('auth');
+  const ed = useSlice('editor'), pj = useSlice('project'), auth = useSlice('auth'), erp = useSlice('erp');
   const R = project.res, pr = R ? R.priceRes : null, prod = R ? R.prod : null, B = prod ? prod.breakdown : {}, NS = R ? R.nest.summary : {};
   const missN = prod ? prod.missing.length : 0;
   const xzt = (prod && prod.xizmat_taklif && prod.xizmat_taklif.teshik) || { tanlangan: false, qty: 0, amount: 0 };
@@ -69,8 +70,11 @@ export function useQadamNarx() {
   const rs = raskroy(R, ed.rk);
   const det = {};
   if (R) for (const cl of R.cutlists) for (const pt of cl.parts) { const k = pt.material || '—'; det[k] = (det[k] || 0) + (+pt.qty || 1); }
+  const ek = erpKorsatkich(erp, Date.now());
   return {
     price: narxKorinishi(R),
+    /* TZ-44 (8): "ERP narxlari: HH:MM" — yangi bo'lsa oddiy; eski (> 10 daqiqa), jonli o'chiq, ERP xatosi yoki aloqa yo'q — ogohlantirish. Server jonli holat bermasa — chiqmaydi */
+    erp: ek ? { eski: ek.eski, matn: !ek.eski ? t('narx.erp_vaqt', { vaqt: ek.vaqt }) : ek.vaqt ? t('narx.erp_eski', { vaqt: ek.vaqt }) : t('narx.erp_hali') } : null,
     markupLabel: t('narx.foyda', { n: prod ? Math.round((prod.markupPct || 0) * 100) : 0 }),
     hasMissing: missN > 0, missText: t('narx.zapchast_narxi_yoq', { n: missN }),
     /* TZ-20: "Narx aniqligi X%" — bosilsa taxminiy qatorlar (qaysi summa tasdiqlanmagan) */

@@ -5,6 +5,7 @@ import { suggestLayout } from '../../../app/js/ai.js';
 import { konstruksiya } from '../../../app/js/engine/konstruktor/index.js';
 import { materiallarniQosh } from '../../../app/js/engine/bazis/loyiha.js';
 import { eskiKodlar } from '../../../app/js/engine/kodlar.js';
+import { erpKod } from '../../../app/js/engine/erpKod.js';
 import { erpUla, erpSaqla, bazisAlmash } from '../services/erpMaterial.js';
 import { chizmaUla } from '../services/chizma.js';
 import { report } from '../shared/lib/jurnal.js';
@@ -85,14 +86,30 @@ export const project = {
     clearTimeout(recalcTimer);
     if (now) this.recalc(); else recalcTimer = setTimeout(() => this.recalc(), 220);
   },
-  recalc() {
-    if (!this.H) return;
+  /** hisob dvigateli (kesim, raskroy, narx) — natija this.res; holat va tinglovchilarga tegmaydi */
+  hisobla() {
     const s = get(), p = s.project;
     try {
       this.res = this.H.recalc(this.doc, { materialCode: p.matCode, fasadCode: p.fasadCode, orqaCode: p.orqaCode, stolCode: p.stolCode, polkaCode: p.polkaCode, sheet: p.sheet, nestCfg: this.nestCfg(), markupPct: s.settings.sets.markup_pct });
     } catch (e) { xato('S3D-CALC-101', { modul: 'hisob', err: e }); }
+  },
+  recalc() {
+    if (!this.H) return;
+    this.hisobla();
     set('project', st => ({ dv: st.dv + 1 }));
     recalcListeners.forEach(f => f());
+  },
+  /** TZ-44: jonli ERP narxi keldi — narx qatlami yangilanadi va FAQAT narx qayta hisoblanadi. Loyiha (doc), tanlov, 3D sahna va avtomatik saqlash
+   *  tegilmaydi: changed()/onRecalc chaqirilmaydi (u 3D'ni qayta quradi va serverga saqlaydi). Loyihada tanlangan plita (project.sheet) — narxi o'zgargan bo'lsa yangilanadi.
+   *  → narxi o'zgargan plita va furnitura soni */
+  erpNarxYangila(ev) {
+    if (!this.H || !this.H.erpYangila || !ev) return 0;
+    const r = this.H.erpYangila(ev, this.doc);
+    this.H.erpEv = ev;
+    const sh = get().project.sheet, v = sh && r.plita.get(erpKod(sh));
+    if (v > 0 && v !== sh.uzs) set('project', { sheet: { ...sh, uzs: v } });
+    if (r.n) { this.rebuildEstimator(); this.hisobla(); set('project', st => ({ dv: st.dv + 1 })); }
+    return r.n;
   },
 
   /** yangi hujjat: bo'sh yoki namuna bilan */

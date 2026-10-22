@@ -53,6 +53,10 @@ export default function QadamNarx() {
           </span>
         </div>
       </div>
+      {/* TZ-44 (dizaynda yo'q): ERP narxlari qachon yangilangan — yangi bo'lsa oddiy qator, eski yoki aloqa yo'q bo'lsa ogohlantirish (--acct) */}
+      {v.erp ? <span data-erp-korsatkich="" data-erp-holat={v.erp.eski ? 'eski' : 'yangi'} role={v.erp.eski ? 'status' : undefined} style={{"alignSelf":"flex-start","display":"flex","alignItems":"center","gap":"6px","fontSize":"13px","fontWeight":v.erp.eski ? "700" : "600","color":v.erp.eski ? "var(--acct)" : "var(--mut)","fontVariantNumeric":"tabular-nums"}}>
+        <Ikon n={v.erp.eski ? "ogohlantirish" : "sinxron"} size={14} gap={0} />{v.erp.matn}
+      </span> : null}
       {/* TZ-20 (dizaynda yo'q — chip uslubida): "Narx aniqligi X%" — "* to'liq emas" o'rnida, jami narx ostida; bosilsa taxminiy qatorlar */}
       {v.aniqlik ? <button onClick={v.aniqlik.flip} data-aniqlik="" aria-expanded={v.aniqlik.ochiq} style={{"alignSelf":"flex-start","minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":v.aniqlik.toliq ? "var(--cyan)" : "var(--acct)","fontSize":"14px","fontWeight":"800","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","whiteSpace":"nowrap"}}>
         {v.aniqlik.label}<Ikon n={v.aniqlik.ochiq ? "tepa" : "past"} size={16} gap={0} />

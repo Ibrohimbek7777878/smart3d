@@ -15,6 +15,7 @@ export const store = createStore({
   auth: { user: null, save: null, smsBor: false, googleId: '', f: { name: '', email: '', phone: '', pass: '', shop: '', show: false, err: {}, tried: false, usul: 'email', kod: '', yuborildi: false, qayta: 0 } },
   ui: { toast: '', toastCode: '', cf: null, vq: null, tilMenu: null },
   data: { ready: false, err: '' },
+  erp: { bor: false, yoqilgan: false, oxirgi: null, yangilangan: null, manba: null, xato: 0, kurs: null, versiya: null, aloqa: true, tekshirilgan: 0 },   // TZ-44: jonli ERP narxlari holati (services/erpJonli.js)
   onb: { kind: 'kitchen', room: { w: 5000, d: 4000, h: 2700 } },          // egasi #152: standart xona 5 × 4 m (ishjoyi STANDART_XONA bilan bir xil)
   project: { name: t('umumiy.yangi_loyiha'), client: '', matCode: 'LDSP16', polkaCode: 'LDSP16',   /* egasi #209: korpus sukuti — LDSP 16 mm (sex standarti, avval LDSP18) */
     fasadCode: 'MDF16', orqaCode: null, stolCode: null, sheet: null, docV: 0, dv: 0 },
