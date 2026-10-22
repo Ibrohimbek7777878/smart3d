@@ -181,7 +181,7 @@ async function asosiy(page, R, tutqich) {
   R.faqatGet = erp.faqatGet();
   R.errs = errs;
 
-  R.ok = R.boshlandi && R.shakl === 'furnitura,jonli,plita,sana,versiya,yangilangan' && R.korsatkich1 && R.korsatkich1.holat === 'yangi' && /^ERP narxlari: \d\d:\d\d$/.test(R.korsatkich1.matn) && R.erpHolat1.bor && R.erpHolat1.yoqilgan
+  R.ok = R.boshlandi && R.shakl === 'furnitura,jonli,plita,sana,sukut,versiya,yangilangan' && R.korsatkich1 && R.korsatkich1.holat === 'yangi' && /^ERP narxlari: \d\d:\d\d$/.test(R.korsatkich1.matn) && R.erpHolat1.bor && R.erpHolat1.yoqilgan
     && R.buyurtmaYuborildi && R.buyurtma0 && R.hozir1.status === 200 && R.hozir1.qollandi >= 1 && R.versiya.yangi === R.versiya.eski + 1 && R.versiya.plita && R.tekshir2 === 'yangi'
     && R.katalogYangi.narx === yangi && R.katalogBoshida !== yangi && R.xabar && R.buyurtmaQotgan && R.etag.e && R.etag.s304 && R.etag.oxirgi
     && R.hozir2.kutadi >= 1 && R.katta.brauzer === yangi && R.katta.server === yangi && R.katta.tasdiq.soni >= 1
