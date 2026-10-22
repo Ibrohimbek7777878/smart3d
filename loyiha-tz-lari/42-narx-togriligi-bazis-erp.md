@@ -1,6 +1,6 @@
 # TZ-42 — Narx to'g'riligi: Bazis materialini ERP mahsulotiga moslash, "varaqqa sig'madi", furnitura bog'lash, mijoz materiali
 
-**Sana:** 2026-10-22 · **Navbat:** 42 · **Holat:** BOSHLANDI 2026-10-22 (egasi #283: "boshla to'g'irla"; asos: egasi #280–#282)
+**Sana:** 2026-10-22 · **Navbat:** 42 · **Holat:** 1, 2, 4-BANDLAR BAJARILDI 2026-10-22 (`main`; testlar yashil); 3-band QISMAN (3 ta furnitura bog'landi, 21 tasi egasi javobini kutadi). Boshlangan (egasi #283: "boshla to'g'irla"; asos: egasi #280–#282)
 **Koordinator:** smart3d-51 chati. **Diqqat:** boshqa chatlar parallel ishlayapti (admin 3-faza, QA) — faqat o'z fayllaringiz.
 
 ## Haqiqiy taqqoslash (ERP, faqat o'qildi, 2026-10-22): sotuv hujjati 506234 "BIG ONE" — loyiha "Big one Ixtiyor bayavut oshxona"
