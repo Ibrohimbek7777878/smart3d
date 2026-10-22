@@ -61,7 +61,7 @@
 | 44 | [ERP narxlari jonli — har 2 daqiqada avtomatik yangilanish](44-erp-jonli-narx.md) | BOSHLANDI 2026-10-22 | egasi: serverga ERP_LOGIN/ERP_PASSWORD (.env) |
 | 45 | [Lokal kataloglarni jonli ERP bilan tenglashtirish (narx, plita formati)](45-katalog-erp-yangilash.md) | BOSHLANDI 2026-10-22 | — |
 | 46 | [600+ Bazis modulini katalogga olish (mustaqil TZ)](46-modullar-600-import.md) | TAKLIF 2026-10-22 | egasi: manba papka (.fr3d) yo'li, "boshla", TZ-41 savollari |
-| 47 | [Narxni haqiqiy ERP buyurtmalari bilan o'lchash va to'g'rilash](47-narx-haqiqiy-buyurtmalar.md) | BOSHLANDI 2026-10-22 (1-bosqich: tahlil) | egasi: BIG ONE .project fayli (ixtiyoriy) |
+| 47 | [Narxni haqiqiy ERP buyurtmalari bilan o'lchash va to'g'rilash](47-narx-haqiqiy-buyurtmalar.md) | **1-bosqich va 2A,B,C BAJARILDI** 2026-10-22 (`main`); xato 38,9% → 36,7% | egasi: ustama siyosati, furnitura, prisadka/Bazis sukuti, raspil stanoki |
 
 > Eslatma: raqam takrorlangan — **37** (admin panel va `37-fragmentlar-50.md` — full base 61 modul) va **41** (`41-modul-minmax-standart-jadvali.md` va `41-natija-modul-minmax.md` — tahlil va natija). Fayl nomlari o'zgartirilmadi (commit xabarlari va havolalar buzilmasin).
 

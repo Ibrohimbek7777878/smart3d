@@ -1,6 +1,6 @@
 # TZ-47 — Narxni haqiqiy ERP buyurtmalari bilan o'lchash va to'g'rilash ("100% to'g'ri" yo'li)
 
-**Sana:** 2026-10-22 · **Navbat:** 47 · **Holat:** BOSHLANDI 2026-10-22 (egasi #299: "narxni 100% to'g'ri chiqadigan qilish kerak, nima bo'lsa ham")
+**Sana:** 2026-10-22 · **Navbat:** 47 · **Holat:** 1-BOSQICH (tahlil) va 2-BOSQICH A,B,C BAJARILDI 2026-10-22 (`main`); jami xato 38,9% → 36,7%; egasi qarorlari kutilmoqda (ustama, furnitura, prisadka/Bazis, raspil stanoki). Boshlangan (egasi #299: "narxni 100% to'g'ri chiqadigan qilish kerak, nima bo'lsa ham")
 **Halol chegara:** "aynan 100%" har buyurtmada mumkin emas (sex raskroy qarori, chegirma, qo'lda tuzatilgan narx, mijoz materiali). Maqsad: **haqiqiy buyurtmalarda o'lchanadigan xato** — komponentlar bo'yicha (plita varaqlari, kromka m, har xizmat turi, jami) — o'rtacha |xato| ≤ 3% va har chetlanishning **tushuntirilgan sababi**. Plita ustamasi (35%) siyosati egasiniki — o'zgartirilmaydi, lekin ERP sotuv narxi bilan farqi alohida ko'rsatiladi.
 
 ## Haqiqiy ma'lumot (hammasi LOKAL, maxfiy, repoga kirmaydi)
