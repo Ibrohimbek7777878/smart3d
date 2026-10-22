@@ -8,6 +8,7 @@ Har bir element uchun (SKU + nom bo'yicha manbadagi qator):
   · manbada so'm narxi > 0      → uzs = manba, price_src = "erp_uzs"
   · faqat dollar narxi > 0      → uzs = usd × kurs (fayldagi exchangeRate), price_src = "erp_usd×kurs"
   · ikkalasi ham 0 yoki yo'q    → uzs = usd = 0, no_price = true, price_src = "yoq"
+  · price_src "erp_api_<sana>" (ERP /api/v2/products/ narxi, scripts/katalog_erp_yangilash.py) — xlsx'dan YANGIROQ: o'tkazib yuboriladi, tegilmaydi
 
 Ishlatish:  python3 -I scripts/furnitura_narx_tiklash.py [--dry-run]
 Faqat Python standart kutubxonasi (openpyxl shart emas).
@@ -69,8 +70,11 @@ def main():
 
     cat = json.loads(JSON_PATH.read_text(encoding="utf8"))
     rate = cat.get("exchangeRate") or 12800
-    stats = {"erp_uzs": 0, "erp_usd×kurs": 0, "yoq": 0, "manbada_yoq": 0, "ozgardi": 0}
+    stats = {"erp_uzs": 0, "erp_usd×kurs": 0, "yoq": 0, "manbada_yoq": 0, "ozgardi": 0, "erp_api_otkazildi": 0}
     for it in cat["items"]:
+        if str(it.get("price_src", "")).startswith("erp_api_"):
+            stats["erp_api_otkazildi"] += 1
+            continue
         r = src.get((it.get("sku", "").strip(), it.get("name", "").strip()))
         if r is None:
             stats["manbada_yoq"] += 1
@@ -88,9 +92,11 @@ def main():
         if (it["uzs"], it["usd"]) != before:
             stats["ozgardi"] += 1
 
+    erp_api = stats["erp_api_otkazildi"]
     cat["_meta"] = (f"Furnitura katalogi ({len(cat['items'])} ta). Narx manbai: {XLSX.name} / {SHEET}. "
                     f"price_src: erp_uzs | erp_usd×kurs (kurs {rate}) | yoq (narx yo'q — o'ylab topilmaydi). "
-                    "Qayta tiklash: scripts/furnitura_narx_tiklash.py")
+                    + (f"ERP /api/v2/products/ narxi (price_src erp_api_<sana>, {erp_api} ta qator) — scripts/katalog_erp_yangilash.py; bu skript ularga tegmaydi. " if erp_api else "")
+                    + "Qayta tiklash: scripts/furnitura_narx_tiklash.py")
     print(json.dumps(stats, ensure_ascii=False))
     if not dry:
         JSON_PATH.write_text(json.dumps(cat, ensure_ascii=False, indent=1), encoding="utf8")

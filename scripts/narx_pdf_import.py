@@ -108,7 +108,7 @@ def main():
     seq = max((int(it["id"][2:]) for it in items if str(it.get("id", "")).startswith(PREFIX)), default=0)
 
     hisob = {"pdf_qator": len(rows), "narxi_bor": sum(r["narx"] > 0 for r in rows), "erp_bilan_mos": 0, "narx_bir_xil": 0,
-             "narx_yangilandi": 0, "yangi": 0, "yangi_narxsiz": 0}
+             "narx_yangilandi": 0, "yangi": 0, "yangi_narxsiz": 0, "erp_api_otkazildi": 0}
     ozgardi, sanoq = [], {}
     for r in rows:
         uzs = int(round(r["narx"]))
@@ -118,6 +118,9 @@ def main():
         it = by_sku.get(norm(r["artikul"])) if len(norm(r["artikul"])) >= 4 else None   # "1" kabi qisqa artikul — ishonchsiz
         if it is None:
             it = by_kalit.get(kalit)
+        if it is not None and str(it.get("price_src", "")).startswith("erp_api_"):
+            hisob["erp_api_otkazildi"] += 1          # ERP /api/v2/products/ narxi (scripts/katalog_erp_yangilash.py) ustun — do'kon narxi bilan qayta yozilmaydi
+            continue
         if it is not None and not it.get("dokon"):
             hisob["erp_bilan_mos"] += 1
             if uzs > 0 and it.get("uzs") != uzs:
@@ -152,10 +155,12 @@ def main():
     for o in ozgardi[:30]:
         print("  narx:", o["id"], o["nom"][:60], o["eski"], "→", o["yangi"])
     if not dry:
+        erp_api = sum(1 for i in items if str(i.get("price_src", "")).startswith("erp_api_"))
         cat["_meta"] = (f"Furnitura katalogi ({len(items)} ta). Narx manbai: Mahsulotlar_Katalog_Narxlari.xlsx / Zapchast_Furnitura "
                         f"va do'kon narx ro'yxati NARX.pdf ({sana}; dokon — qator kaliti, scripts/narx_pdf_import.py). "
-                        "price_src: erp_uzs | erp_usd×kurs (kurs 12800) | dokon_<sana> | yoq (narx yo'q — o'ylab topilmaydi). "
-                        "Qayta tiklash: scripts/furnitura_narx_tiklash.py")
+                        f"price_src: erp_uzs | erp_usd×kurs (kurs {cat.get('exchangeRate')}) | dokon_<sana> | yoq (narx yo'q — o'ylab topilmaydi). "
+                        + (f"ERP /api/v2/products/ narxi (price_src erp_api_<sana>, {erp_api} ta qator) — scripts/katalog_erp_yangilash.py; do'kon narxi ularni o'zgartirmaydi. " if erp_api else "")
+                        + "Qayta tiklash: scripts/furnitura_narx_tiklash.py")
         PATH.write_text(json.dumps(cat, ensure_ascii=False, indent=1), encoding="utf8")
         print("yozildi:", PATH.relative_to(ROOT))
 

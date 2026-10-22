@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "manba": "ERP 2026-10-18 (mahsulotlar, faqat o'qish)",
+  "manba": "ERP 2026-10-18 (mahsulotlar, faqat o'qish); narx_m2 2026-10-22 ERP products API bilan yangilandi (scripts/katalog_erp_yangilash.py)",
   "birlik": "narx_m2 — 1 m2 narxi (ERP birligi m2: ombor qatorida miqdor x narx = jami); dona narxi = narx_m2 x uzunlik x eni / 1e6",
   "sukut": "egasi aytmagan — qalinlik bo'yicha eng ko'p qoldiqli (qoldiq_m2) dekor",
   "chiqarilgan": "narxsiz, eni 600 emas, qalinlik 26/38 emas, birligi m2 emas mahsulotlar kiritilmagan"
@@ -22,7 +22,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 249240,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 1.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -39,7 +39,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 210754,
+   "narx_m2": 209006,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -56,7 +56,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 236040,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 139.0,
    "kategoriya": "Союз Классик"
@@ -73,7 +73,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 236040,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 83.0,
    "kategoriya": "Союз Спейшл Эдишн"
@@ -90,7 +90,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 210754,
+   "narx_m2": 209006,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -124,7 +124,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 177120,
+   "narx_m2": 176382,
    "narx_list_m2": null,
    "qoldiq_m2": 1.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -175,7 +175,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 289802,
+   "narx_m2": 287398,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -226,7 +226,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -243,7 +243,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 276548,
+   "narx_m2": 274253,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -294,7 +294,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 236040,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Союз Классик"
@@ -396,7 +396,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 177858,
+   "narx_m2": 176382,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -413,7 +413,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -430,7 +430,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190200,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 5.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -447,7 +447,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 236040,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -464,7 +464,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 177858,
+   "narx_m2": 176382,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -481,7 +481,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -515,7 +515,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -532,7 +532,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -549,7 +549,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -583,7 +583,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190992,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Юниверсал"
@@ -600,7 +600,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -617,7 +617,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -634,7 +634,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190992,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Юниверсал"
@@ -651,7 +651,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 236040,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 131.0,
    "kategoriya": "Союз Классик"
@@ -668,7 +668,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190200,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 9.0,
    "kategoriya": "Союз Юниверсал"
@@ -685,7 +685,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -702,7 +702,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190200,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Союз Юниверсал"
@@ -719,7 +719,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190200,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 4.0,
    "kategoriya": "Союз Юниверсал"
@@ -736,7 +736,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Стандарт ПРО"
@@ -753,7 +753,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -770,7 +770,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 210754,
+   "narx_m2": 209006,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -787,7 +787,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 236040,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Союз Классик"
@@ -804,7 +804,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 210754,
+   "narx_m2": 209006,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -821,7 +821,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 276548,
+   "narx_m2": 274253,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -855,7 +855,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 171230,
+   "narx_m2": 169810,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -889,7 +889,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190992,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Юниверсал"
@@ -906,7 +906,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 27.0,
    "kategoriya": "Союз Классик"
@@ -923,7 +923,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 164603,
+   "narx_m2": 163237,
    "narx_list_m2": null,
    "qoldiq_m2": 205.0,
    "kategoriya": "Союз Юниверсал"
@@ -957,7 +957,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190992,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Юниверсал"
@@ -974,7 +974,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 171230,
+   "narx_m2": 169810,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1008,7 +1008,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190992,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 129.0,
    "kategoriya": "Союз Юниверсал"
@@ -1042,7 +1042,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 1.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1059,7 +1059,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Стандарт ПРО"
@@ -1076,7 +1076,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 13.0,
    "kategoriya": "Союз Классик"
@@ -1093,7 +1093,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 428.0,
    "kategoriya": "Союз Классик"
@@ -1110,7 +1110,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190992,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 180.0,
    "kategoriya": "Союз Юниверсал"
@@ -1127,7 +1127,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 177858,
+   "narx_m2": 176382,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1161,7 +1161,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Стандарт ПРО"
@@ -1178,7 +1178,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Стандарт ПРО"
@@ -1195,7 +1195,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 210754,
+   "narx_m2": 209006,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1229,7 +1229,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190992,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 20.0,
    "kategoriya": "Союз Юниверсал"
@@ -1246,7 +1246,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 291.0,
    "kategoriya": "Союз Стандарт ПРО"
@@ -1263,7 +1263,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 133.0,
    "kategoriya": "Союз Стандарт ПРО"
@@ -1280,7 +1280,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 207.0,
    "kategoriya": "Союз Стандарт ПРО"
@@ -1297,7 +1297,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 171230,
+   "narx_m2": 169810,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1314,7 +1314,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190992,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Союз Юниверсал"
@@ -1331,7 +1331,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1348,7 +1348,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 171230,
+   "narx_m2": 169810,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1365,7 +1365,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1382,7 +1382,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1399,7 +1399,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 210754,
+   "narx_m2": 209006,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1416,7 +1416,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1484,7 +1484,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Стандарт ПРО"
@@ -1501,7 +1501,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Спейшл Эдишн"
@@ -1518,7 +1518,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Стандарт ПРО"
@@ -1535,7 +1535,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 171230,
+   "narx_m2": 169810,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1552,7 +1552,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1569,7 +1569,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1586,7 +1586,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 56.0,
    "kategoriya": "Союз Классик"
@@ -1603,7 +1603,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 223889,
+   "narx_m2": 222031,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1620,7 +1620,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Классик"
@@ -1654,7 +1654,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 134.0,
    "kategoriya": "Союз Стандарт ПРО"
@@ -1671,7 +1671,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 276548,
+   "narx_m2": 274253,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1688,7 +1688,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 171230,
+   "narx_m2": 169810,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1722,7 +1722,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 210754,
+   "narx_m2": 209006,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1739,7 +1739,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 289802,
+   "narx_m2": 287398,
    "narx_list_m2": null,
    "qoldiq_m2": 7.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1756,7 +1756,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 267.0,
    "kategoriya": "Союз Классик"
@@ -1773,7 +1773,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 171230,
+   "narx_m2": 169810,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1790,7 +1790,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Стандарт ПРО"
@@ -1824,7 +1824,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 237024,
+   "narx_m2": 235057,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз Классик"
@@ -1841,7 +1841,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 223889,
+   "narx_m2": 222031,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1858,7 +1858,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
@@ -1875,7 +1875,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 163920,
+   "narx_m2": 163237,
    "narx_list_m2": null,
    "qoldiq_m2": 20.0,
    "kategoriya": "Ультрадекор 3050*600*26мм Мат"
@@ -1960,7 +1960,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 163920,
+   "narx_m2": 163237,
    "narx_list_m2": null,
    "qoldiq_m2": 17.0,
    "kategoriya": "Ультрадекор 3050*600*26мм Мат"
@@ -1977,7 +1977,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 163920,
+   "narx_m2": 163237,
    "narx_list_m2": null,
    "qoldiq_m2": 163.0,
    "kategoriya": "Ультрадекор 3050*600*26мм Мат"
@@ -2028,7 +2028,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 163920,
+   "narx_m2": 163237,
    "narx_list_m2": null,
    "qoldiq_m2": 148.0,
    "kategoriya": "Ультрадекор 3050*600*26мм Мат"
@@ -2130,7 +2130,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 183600,
+   "narx_m2": 182835,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Ультрадекор 3050*600*26мм Мат"
@@ -2147,7 +2147,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190200,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 2612.0,
    "kategoriya": "Ультрадекор 3050*600*26мм Глянец"
@@ -2215,7 +2215,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 163920,
+   "narx_m2": 163237,
    "narx_list_m2": null,
    "qoldiq_m2": 6.0,
    "kategoriya": "Ультрадекор 3050*600*26мм Мат"
@@ -2266,7 +2266,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 190992,
+   "narx_m2": 189408,
    "narx_list_m2": null,
    "qoldiq_m2": 43.0,
    "kategoriya": "Ультрадекор 3050*600*26мм Мат"
@@ -2300,7 +2300,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 476160,
+   "narx_m2": 474176,
    "narx_list_m2": null,
    "qoldiq_m2": 47.0,
    "kategoriya": "Группа 1"
@@ -2351,7 +2351,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 514320,
+   "narx_m2": 512177,
    "narx_list_m2": null,
    "qoldiq_m2": 77.0,
    "kategoriya": "Группа 2"
@@ -2385,7 +2385,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 458640,
+   "narx_m2": 456729,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Группа 2 на вывод"
@@ -2402,7 +2402,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 557160,
+   "narx_m2": 554839,
    "narx_list_m2": null,
    "qoldiq_m2": 41.0,
    "kategoriya": "Группа 3"
@@ -2453,7 +2453,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 975600,
+   "narx_m2": 971535,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Группа 4 на вывод"
@@ -2470,7 +2470,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 975600,
+   "narx_m2": 971535,
    "narx_list_m2": null,
    "qoldiq_m2": 1.0,
    "kategoriya": "Группа 4 на вывод"
@@ -2487,7 +2487,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 1009560,
+   "narx_m2": 1005354,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Группа 4"
@@ -2504,7 +2504,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 478144,
+   "narx_m2": 474176,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Группа 1"
@@ -2521,7 +2521,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 516463,
+   "narx_m2": 512177,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Группа 2"
@@ -2555,7 +2555,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 557160,
+   "narx_m2": 554839,
    "narx_list_m2": null,
    "qoldiq_m2": 59.0,
    "kategoriya": "Группа 3"
@@ -2572,7 +2572,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 514320,
+   "narx_m2": 512177,
    "narx_list_m2": null,
    "qoldiq_m2": 28.0,
    "kategoriya": "Группа 2"
@@ -2589,7 +2589,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 557160,
+   "narx_m2": 554839,
    "narx_list_m2": null,
    "qoldiq_m2": 51.0,
    "kategoriya": "Группа 3"
@@ -2606,7 +2606,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 979665,
+   "narx_m2": 971535,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Группа 4 на вывод"
@@ -2623,7 +2623,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 514320,
+   "narx_m2": 512177,
    "narx_list_m2": null,
    "qoldiq_m2": 32.0,
    "kategoriya": "Группа 2"
@@ -2640,7 +2640,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 507360,
+   "narx_m2": 505246,
    "narx_list_m2": 1375000,
    "qoldiq_m2": 15.0,
    "kategoriya": "Группа 3 на вывод"
@@ -2657,7 +2657,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 514320,
+   "narx_m2": 512177,
    "narx_list_m2": null,
    "qoldiq_m2": 1.0,
    "kategoriya": "Группа 2"
@@ -2691,7 +2691,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 514320,
+   "narx_m2": 512177,
    "narx_list_m2": null,
    "qoldiq_m2": 52.0,
    "kategoriya": "Группа 2"
@@ -2742,7 +2742,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 429360,
+   "narx_m2": 427571,
    "narx_list_m2": null,
    "qoldiq_m2": 1.0,
    "kategoriya": "Группа 1 на вывод"
@@ -2759,7 +2759,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 509474,
+   "narx_m2": 505246,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Группа 3 на вывод"
@@ -2810,7 +2810,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 507360,
+   "narx_m2": 505246,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Группа 3 на вывод"
@@ -2844,7 +2844,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 557160,
+   "narx_m2": 554839,
    "narx_list_m2": null,
    "qoldiq_m2": 9.0,
    "kategoriya": "Группа 3"
@@ -2878,7 +2878,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 509474,
+   "narx_m2": 505246,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Группа 3 на вывод"
@@ -2912,7 +2912,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 458640,
+   "narx_m2": 456729,
    "narx_list_m2": null,
    "qoldiq_m2": 1.0,
    "kategoriya": "Группа 2 на вывод"
@@ -2929,7 +2929,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 476160,
+   "narx_m2": 474176,
    "narx_list_m2": null,
    "qoldiq_m2": 43.0,
    "kategoriya": "Группа 1"
@@ -2946,7 +2946,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 557160,
+   "narx_m2": 554839,
    "narx_list_m2": null,
    "qoldiq_m2": 41.0,
    "kategoriya": "Группа 3"
@@ -2963,7 +2963,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 509474,
+   "narx_m2": 505246,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Группа 3 на вывод"
@@ -3014,7 +3014,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 557160,
+   "narx_m2": 554839,
    "narx_list_m2": null,
    "qoldiq_m2": 40.0,
    "kategoriya": "Группа 3"
@@ -3048,7 +3048,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 509474,
+   "narx_m2": 505246,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Группа 3 на вывод"
@@ -3172,7 +3172,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 579484,
+   "narx_m2": 574676,
    "narx_list_m2": null,
    "qoldiq_m2": 61.0,
    "kategoriya": "3 ЦГ"
@@ -3208,7 +3208,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 243651,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3226,7 +3226,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 243651,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3280,7 +3280,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 42.0,
    "kategoriya": "1 ЦГ"
@@ -3298,7 +3298,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 88.0,
    "kategoriya": "1 ЦГ"
@@ -3316,7 +3316,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 230516,
+   "narx_m2": 228604,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3334,7 +3334,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 1.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3352,7 +3352,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 263413,
+   "narx_m2": 261227,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3370,7 +3370,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 5.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3406,7 +3406,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 262320,
+   "narx_m2": 261227,
    "narx_list_m2": null,
    "qoldiq_m2": 177.0,
    "kategoriya": "2 ЦГ"
@@ -3424,7 +3424,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 302937,
+   "narx_m2": 300423,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3460,7 +3460,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 243651,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3478,7 +3478,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 26.0,
    "kategoriya": "1 ЦГ"
@@ -3496,7 +3496,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 3.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3514,7 +3514,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 302937,
+   "narx_m2": 300423,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3532,7 +3532,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 282000,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 87.0,
    "kategoriya": "3 ЦГ"
@@ -3550,7 +3550,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 88.0,
    "kategoriya": "1 ЦГ"
@@ -3586,7 +3586,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 283175,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3604,7 +3604,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 38.0,
    "kategoriya": "1 ЦГ"
@@ -3622,7 +3622,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 28.0,
    "kategoriya": "1 ЦГ"
@@ -3640,7 +3640,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 301680,
+   "narx_m2": 300423,
    "narx_list_m2": null,
    "qoldiq_m2": 8.0,
    "kategoriya": "4 ЦГ"
@@ -3694,7 +3694,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 262320,
+   "narx_m2": 261227,
    "narx_list_m2": null,
    "qoldiq_m2": 115.0,
    "kategoriya": "2 ЦГ"
@@ -3712,7 +3712,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 29.0,
    "kategoriya": "1 ЦГ"
@@ -3730,7 +3730,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 250278,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3748,7 +3748,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 243651,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3766,7 +3766,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 45.0,
    "kategoriya": "1 ЦГ"
@@ -3784,7 +3784,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 282000,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 12.0,
    "kategoriya": "3 ЦГ"
@@ -3802,7 +3802,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 302937,
+   "narx_m2": 300423,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3838,7 +3838,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 302937,
+   "narx_m2": 300423,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3856,7 +3856,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 262320,
+   "narx_m2": 261227,
    "narx_list_m2": null,
    "qoldiq_m2": 9.0,
    "kategoriya": "2 ЦГ"
@@ -3874,7 +3874,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 262320,
+   "narx_m2": 261227,
    "narx_list_m2": null,
    "qoldiq_m2": 33.0,
    "kategoriya": "2 ЦГ"
@@ -3892,7 +3892,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 33.0,
    "kategoriya": "1 ЦГ"
@@ -3910,7 +3910,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 1.0,
    "kategoriya": "1 ЦГ"
@@ -3928,7 +3928,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 302937,
+   "narx_m2": 300423,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3946,7 +3946,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 302937,
+   "narx_m2": 300423,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -3964,7 +3964,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 146.0,
    "kategoriya": "1 ЦГ"
@@ -3982,7 +3982,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 269920,
+   "narx_m2": 267680,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -4000,7 +4000,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 282000,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 1.0,
    "kategoriya": "3 ЦГ"
@@ -4018,7 +4018,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 282000,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -4036,7 +4036,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 282000,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 268.0,
    "kategoriya": "3 ЦГ"
@@ -4054,7 +4054,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 520360,
+   "narx_m2": 520361,
    "narx_list_m2": 615000,
    "qoldiq_m2": 71.0,
    "kategoriya": "3 ЦГ"
@@ -4072,7 +4072,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 282000,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 106.0,
    "kategoriya": "3 ЦГ"
@@ -4126,7 +4126,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 302937,
+   "narx_m2": 300423,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -4144,7 +4144,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 262320,
+   "narx_m2": 261227,
    "narx_list_m2": null,
    "qoldiq_m2": 3.0,
    "kategoriya": "2 ЦГ"
@@ -4162,7 +4162,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 262320,
+   "narx_m2": 261227,
    "narx_list_m2": null,
    "qoldiq_m2": 2.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -4180,7 +4180,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 62.0,
    "kategoriya": "1 ЦГ"
@@ -4198,7 +4198,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 282000,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 1.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -4216,7 +4216,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 282000,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 9.0,
    "kategoriya": "3 ЦГ"
@@ -4234,7 +4234,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 263413,
+   "narx_m2": 261227,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -4270,7 +4270,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 161.0,
    "kategoriya": "1 ЦГ"
@@ -4288,7 +4288,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 282000,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 97.0,
    "kategoriya": "3 ЦГ"
@@ -4324,7 +4324,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 282000,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 142.0,
    "kategoriya": "3 ЦГ"
@@ -4342,7 +4342,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 263413,
+   "narx_m2": 261227,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -4378,7 +4378,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 242640,
+   "narx_m2": 241629,
    "narx_list_m2": null,
    "qoldiq_m2": 102.0,
    "kategoriya": "1 ЦГ"
@@ -4396,7 +4396,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 249240,
+   "narx_m2": 248202,
    "narx_list_m2": null,
    "qoldiq_m2": 42.0,
    "kategoriya": "2 ЦГ"
@@ -4432,7 +4432,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 263413,
+   "narx_m2": 261227,
    "narx_list_m2": null,
    "qoldiq_m2": 133.0,
    "kategoriya": "2 ЦГ"
@@ -4486,7 +4486,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 283175,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -4504,7 +4504,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 283175,
+   "narx_m2": 280825,
    "narx_list_m2": null,
    "qoldiq_m2": 0.0,
    "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
@@ -4522,7 +4522,7 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 302937,
+   "narx_m2": 300423,
    "narx_list_m2": null,
    "qoldiq_m2": 12.0,
    "kategoriya": "4 ЦГ"
