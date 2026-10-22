@@ -1,0 +1,28 @@
+/* Sarlavha (Header.jsx) — telefonda sig'dirish. Faqat ≤560px; kompyuter/planshet (>560px) ko'rinishi o'zgarmaydi.
+ * Inline uslublar tasdiqlangan dizayndan, shuning uchun bu yerda !important. Maqsad: 320–560px da gorizontal surilish yo'q,
+ * narx ("6 197 349 so'm"), til/menyu va avatar to'liq ko'rinadi, loyiha nomi maydoni ≥ ~80px (admin bilan ham).
+ * Admin uchun "Til" va "Admin panel" tugmalari bitta "Menyu" ikonasiga yig'iladi (SarlavhaMenyu.jsx).
+ * ≤370px da (qolgan joy yetmaydi) "3D" belgisi yashiriladi — "Loyihalar" ga o'tish asboblar qatorida ham bor. */
+[data-sarl="menyu"]{display:none !important}
+@media (max-width:560px){
+  [data-sarl-bosh]{padding:0 8px !important;gap:4px !important}
+  [data-sarl-bosh] [data-sarl="logo-belgi"]{width:32px !important;height:32px !important;border-radius:10px !important;font-size:14px !important}
+  [data-sarl-bosh] [data-sarl="nom"]{flex:1 1 0 !important;min-width:80px !important;height:40px !important;padding:0 8px !important;border-radius:12px !important}
+  [data-sarl-bosh] [data-sarl="nom-input"]{flex:1 1 0 !important;width:100% !important;min-width:0 !important}
+  [data-sarl-bosh] [data-sarl="qalam"]{display:none !important}
+  [data-sarl-bosh] [data-sarl="ong"]{gap:4px !important;flex:0 0 auto}
+  [data-sarl-bosh] [data-sarl="narx"]{height:40px !important;padding:0 8px !important;font-size:13px !important;flex:0 0 auto}
+  [data-sarl-bosh] [data-til-menyu],[data-sarl-bosh] [data-admin-havola],[data-sarl-bosh] [data-sarl="menyu"],[data-sarl-bosh] [data-sozlamalar]{width:34px !important;height:34px !important;border-radius:12px !important}
+  [data-sarl-bosh] [data-sozlamalar]{border-radius:999px !important;font-size:13px !important;flex:0 0 auto}
+  [data-sarl-bosh][data-sarl-ed][data-sarl-admin] [data-til-menyu],[data-sarl-bosh][data-sarl-ed][data-sarl-admin] [data-admin-havola]{display:none !important}
+  [data-sarl-bosh][data-sarl-ed][data-sarl-admin] [data-sarl="menyu"]{display:grid !important}
+}
+@media (max-width:370px){
+  [data-sarl-bosh][data-sarl-ed] [data-sarl="logo"]{display:none !important}
+}
+@media (max-width:340px){
+  [data-sarl-bosh]{padding:0 6px !important;gap:3px !important}
+  [data-sarl-bosh] [data-sarl="ong"]{gap:3px !important}
+  [data-sarl-bosh] [data-sarl="nom"]{padding:0 6px !important}
+  [data-sarl-bosh] [data-sarl="narx"]{padding:0 6px !important}
+}
