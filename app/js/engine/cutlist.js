@@ -496,6 +496,7 @@ const USTAMA_GURUH = new Set(['Plita (Kroy)', 'Plita (Taxminiy)', 'Stoleshnitsa'
  *   stavka: TZ-20 narx stavkalari (server /api/narxlar, engine/narxStavka.js) — raspil, kromka, prisadka, ish haqi, ustama;
  *     berilmagan (yoki tanlanmagan) joyda materials.json dagi qiymat "taxmin" belgisi bilan. Natijada aniqlik — "Narx aniqligi X%".
  *   xizmatlar: { teshik: true } — usta tanlagan xizmatlar (S3); berilmasa teshik burg'ilash tannarxga kirmaydi
+ *   mijozMat: TZ-42 — { materialKodi: true } mijoz o'zi olib kelgan plitalar (narxga kirmaydi; kesim va xizmatlar o'zgarmaydi)
  *   furnituraById: ERP furnitura ID → {name, uzs, no_price} (hw.id bor bo'lsa narx shu yerdan)
  *   areaEstimate: kroysiz taxmin (katalog kartasi uchun) — varaq maydoni ÷ 0.85, butun varaqqa yaxlitlanmaydi
  * @returns {{lines, totalCost, clientTotal, perModule:[{cost, client}], missing:[], breakdown}}
@@ -646,21 +647,38 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   /* 1) Plita — kroy natijasidagi haqiqiy varaqlar (yoki taxmin) */
   let sheetCost = 0, totalSheetsCount = 0, totalPanelArea = 0, yupqaSheets = 0;
   const sheetCostByMat = {};
+  const sigmadi = [];                       // TZ-42: varaqqa sig'magan detallar — yuza bo'yicha taxminiy narx bilan hisobga qo'shilgan
+  /* TZ-42: mijoz materiali (doc.mijozMat: material kodi → true) — plita narxi tannarxga, ustamaga va aniqlikka kirmaydi;
+     kesim, raspil, kromka, 3D va fayllar o'zgarmaydi (ERP: is_customer_material) */
+  const mijozMat = opt.mijozMat || {};
+  const mijozNom = ' — mijoz materiali';
   const mats = opt.nestResult && opt.nestResult.by_material && !opt.areaEstimate
     ? Object.keys(opt.nestResult.by_material) : Object.keys(groups).filter(c => !(matByCode[c] && matByCode[c].unit_piece));
   for (const mat of mats) {
     const meta = matByCode[mat] || { name: mat };
     const nm = opt.nestResult && opt.nestResult.by_material && opt.nestResult.by_material[mat];
-    const unitPrice = (nm && nm.sheet_price) || meta.sheet_price || 0;
-    if (!(unitPrice > 0)) noteMissing('Plita', mat, meta.name);
-    let qty, amount, name, group;
+    const mijoz = !!mijozMat[mat];
+    const unitPrice = mijoz ? 0 : ((nm && nm.sheet_price) || meta.sheet_price || 0);
+    if (!mijoz && !(unitPrice > 0)) noteMissing('Plita', mat, meta.name);
+    let qty, amount, name, group, lostLine = null;
     if (nm && !opt.areaEstimate) {
       qty = nm.sheet_count || 0;
       amount = qty * unitPrice;
       totalPanelArea += nm.stats ? nm.stats.used_area_m2 : 0;
-      const lost = (nm.unplaced || []).length;
-      if (lost) noteMissing('Kroy', mat, `${meta.name || mat}: ${lost} ta detal varaqqa sig'madi — tannarxga kirmagan`);
-      name = `${meta.name || mat} (${qty} varaq, ${nm.stats ? nm.stats.utilization_pct : 0}% unumdorlik)`;
+      const lost = nm.unplaced || [];
+      if (lost.length) {
+        /* TZ-42: detal varaqdan katta (yoki tanlangan formatga sig'maydi) — avval "tannarxga kirmagan" bo'lib narx jimgina kamayardi.
+           Endi yuza bo'yicha taxminiy varaq (÷ 0.85 — taxminiy kroy unumdorligi, areaEstimate bilan bir xil) narxga qo'shiladi, "taxmin" belgisi bilan. */
+        const area = lost.reduce((a, it) => a + (+it.src.length || 0) * (+it.src.width || 0), 0);
+        const sheetA = (nm.sheet_length * nm.sheet_width) || sheetArea(meta, groups[mat]);
+        const lq = Math.max(0.01, Math.round(area / (sheetA * 0.85) * 100) / 100);
+        const la = Math.round(lq * unitPrice);
+        totalPanelArea += area / 1e6;
+        lostLine = { soni: lost.length, yuza_m2: Math.round(area / 1e4) / 100, varaq: lq, amount: la };
+        sigmadi.push({ code: mat, name: meta.name || mat, soni: lost.length, yuza_m2: lostLine.yuza_m2, varaq: lq, amount: la,
+          detallar: lost.slice(0, 5).map(it => `${it.src.length}×${it.src.width}`) });
+      }
+      name = `${meta.name || mat} (${qty} varaq, ${nm.stats ? nm.stats.utilization_pct : 0}% unumdorlik)` + (mijoz ? mijozNom : '');
       group = 'Plita (Kroy)';
     } else {
       const area = (areaByMat[mat] || 0);
@@ -668,16 +686,27 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       qty = Math.round(sheetsExact * 100) / 100;
       amount = Math.round(sheetsExact * unitPrice);
       totalPanelArea += area / 1e6;
-      name = `${meta.name || mat} (~${qty} varaq, taxminiy)`;
+      name = `${meta.name || mat} (~${qty} varaq, taxminiy)` + (mijoz ? mijozNom : '');
       group = 'Plita (Taxminiy)';
     }
     sheetCost += amount;
     totalSheetsCount += qty;
     if (meta.thickness > 0 && meta.thickness <= RASPIL_YUPQA_MM) yupqaSheets += qty;   // TZ-36 K3: HDF/3 mm list — alohida raspil stavkasi
     sheetCostByMat[mat] = amount;
-    lines.push({ group, code: mat, name, qty, unit: 'varaq', unit_price: unitPrice, amount, no_price: !(unitPrice > 0),
+    lines.push({ group, code: mat, name, qty, unit: 'varaq', unit_price: unitPrice, amount, no_price: !mijoz && !(unitPrice > 0),
       util: nm && !opt.areaEstimate && nm.stats ? nm.stats.utilization_pct : null,   // TZ-18: hujjat tilida qayta yig'ish uchun
-      tasdiq: unitPrice > 0 && !meta.taxminiy, manba: unitPrice > 0 ? (meta.taxminiy ? 'taxmin' : 'ERP') : 'yoq' });   // TZ-20: ERP plita narxi
+      ...(mijoz ? { mijoz: true, tasdiq: true, manba: 'mijoz' }
+        : { tasdiq: unitPrice > 0 && !meta.taxminiy, manba: unitPrice > 0 ? (meta.taxminiy ? 'taxmin' : 'ERP') : 'yoq' }) });   // TZ-20: ERP plita narxi
+    if (lostLine) {
+      sheetCost += lostLine.amount;
+      totalSheetsCount += lostLine.varaq;
+      if (meta.thickness > 0 && meta.thickness <= RASPIL_YUPQA_MM) yupqaSheets += lostLine.varaq;
+      sheetCostByMat[mat] += lostLine.amount;
+      lines.push({ group: 'Plita (Taxminiy)', code: mat, sigmadi: lostLine,
+        name: `${meta.name || mat}: ${lostLine.soni} ta detal varaqqa sig'madi — yuza bo'yicha ~${lostLine.varaq} varaq (taxminiy)` + (mijoz ? mijozNom : ''),
+        qty: lostLine.varaq, unit: 'varaq', unit_price: unitPrice, amount: lostLine.amount, no_price: !mijoz && !(unitPrice > 0),
+        ...(mijoz ? { mijoz: true, tasdiq: true, manba: 'mijoz' } : { tasdiq: false, manba: unitPrice > 0 ? 'taxmin' : 'yoq' }) });
+    }
   }
 
   /* 1b) TZ-20: raspil — list boshiga, egasi tanlagan stanok stavkasi (tanlanmasa — qator yo'q, ish haqi ichida taxmin) */
@@ -707,13 +736,15 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     const meta = matByCode[mat];
     /* TZ-36 K5: Bazis stoleshnitsa — bo'laklar standart uzunlikka (3050/4200) birga joylashadi (ERP: 2 bo'lak = 1 dona); kitchen — har bo'lak 1 dona (#162) */
     const qty = groups[mat].every(p => p.stol_birga) ? stolDonaSoni(groups[mat], meta.std_l || (meta.sheets && meta.sheets[0] && meta.sheets[0][0]) || 3050, meta.sheets && meta.sheets[0] && meta.sheets[0][1], kerf) : groups[mat].length;
-    const unitPrice = meta.sheet_price || 0;
-    if (!(unitPrice > 0)) noteMissing('Stoleshnitsa', mat, meta.name);
+    const mijoz = !!mijozMat[mat];   // TZ-42: mijoz stoleshnitsasi — narxga kirmaydi
+    const unitPrice = mijoz ? 0 : (meta.sheet_price || 0);
+    if (!mijoz && !(unitPrice > 0)) noteMissing('Stoleshnitsa', mat, meta.name);
     const amount = qty * unitPrice;
     sheetCost += amount;
     stolPieceCost[mat] = unitPrice;
-    lines.push({ group: 'Stoleshnitsa', code: mat, name: meta.name, qty, unit: 'dona', unit_price: unitPrice, amount, no_price: !(unitPrice > 0),
-      tasdiq: unitPrice > 0 && !meta.taxminiy && /^ERP/.test(String(meta.price_src || '')), manba: unitPrice > 0 ? (/^ERP/.test(String(meta.price_src || '')) ? 'ERP' : 'taxmin') : 'yoq' });
+    lines.push({ group: 'Stoleshnitsa', code: mat, name: meta.name + (mijoz ? mijozNom : ''), qty, unit: 'dona', unit_price: unitPrice, amount, no_price: !mijoz && !(unitPrice > 0),
+      ...(mijoz ? { mijoz: true, tasdiq: true, manba: 'mijoz' }
+        : { tasdiq: unitPrice > 0 && !meta.taxminiy && /^ERP/.test(String(meta.price_src || '')), manba: unitPrice > 0 ? (/^ERP/.test(String(meta.price_src || '')) ? 'ERP' : 'taxmin') : 'yoq' }) });
   }
 
   /* 2) Kromka */
@@ -877,6 +908,8 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     clientTotal,
     perModule,
     missing,
+    sigmadi,                                   // TZ-42: varaqqa sig'magan detallar (yuza bo'yicha taxminiy narx bilan hisobga qo'shilgan)
+    mijoz: Object.keys(mijozMat).filter(c => lines.some(l => l.code === c && l.mijoz)),   // TZ-42: narxga kirmagan (mijoz) materiallar
     yashirin: Object.values(yashirinAgg),   // TZ-32 E7: narxi topilmagani uchun yashirilgan furnitura (eslatish uchun)
     taxminiy,
     xizmat_taklif: { teshik: { tanlangan: teshikOn, qty: totalHoles, amount: teshikOn ? holeCost : holeTaklif },

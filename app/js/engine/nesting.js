@@ -400,7 +400,9 @@ export function nestPanels(panels, opt = {}) {
 export function panelFitsSheet(p, L, W, kerf = KERF_DEFAULT, trimL = TRIM_DEFAULT, trimW = TRIM_DEFAULT) {
   const tex = String(p.texture || p.grain || '').toLowerCase();
   const len = +p.length || 0, wid = +p.width || 0;
-  const fits = (l, w) => l + trimL + kerf <= L && w + trimW + kerf <= W;
+  /* TZ-42: nestPanels bilan AYNAN bir xil shart — samarali o'lcham = varaq − 2×trim (kerf faqat qo'shni detallar orasida, chetida emas).
+   * Avval `l + trim + kerf <= L` edi: varaqdan 4–14 mm kichik detal "sig'adi" deb formatni tanlatib, kroyda esa sig'may qolardi. */
+  const fits = (l, w) => l + 2 * trimL <= L && w + 2 * trimW <= W;
   if (tex === 'uzunlik' || tex === 'length' || tex === 'y') return fits(len, wid);
   if (tex === 'en' || tex === 'width' || tex === 'x') return fits(wid, len);
   return fits(len, wid) || fits(wid, len);

@@ -7,7 +7,8 @@ import { raqam } from '../../shared/lib/format.js';
 import { t } from '../../i18n/index.js';
 import { openBazisMaterial } from '../editor/catalog/material.js';
 import { dekorRang } from '../../../../app/js/engine/rang.js';
-import { materialRang } from '../../services/erpMaterial.js';
+import { materialRang, bazisMoslash } from '../../services/erpMaterial.js';
+import { bazisniERPga } from '../../../../app/js/engine/plitaMoslash.js';
 import { ishJoyiOch } from '../editor/ishjoyi/ishjoyi.js';
 
 /* TZ-21: Bazis faylini yuklash (.b3d, .fr3d, .bpj) — brauzerda o'qiladi (xom fayl serverga yuborilmaydi), natija — yangi loyiha:
@@ -39,6 +40,7 @@ export function bazisHujjat(res) {
   const doc = L.newDoc(room);
   doc.placements = [L.devordan(doc, { id: 'bz1', frg: f.code, name: f.name, x: Math.round((W - f.w) / 2), y: 0, z: 0, w: f.w, d: f.d, h: f.h, rot: 0, qty: 1 })];   // #152: devorga tiralmaydi
   doc.bazis = { fragment: f, materiallar: res.materiallar, hisobot: res.hisobot };
+  bazisMoslash(doc, project.H);                       // TZ-42: ERP plitasiga avtomatik moslash (faqat bir qiymatli)
   return doc;
 }
 
@@ -78,6 +80,8 @@ export function useBazisVaraq() {
   const h = (b && b.hisobot) || null;
   if (!h) return null;
   const mat = (project.H && project.H.materials.panel_materials) || [];
+  const sheets = (project.H && project.H.sheetCatalog && project.H.sheetCatalog.sheets) || null;
+  const avto = Object.keys(b.almash || {}).filter(k => /^ERP-/.test(b.almash[k])).length;
   return {
     olcham: h.olcham.join(' × ') + ' ' + t('umumiy.mm'),
     qatorlar: [
@@ -91,11 +95,14 @@ export function useBazisVaraq() {
       const x = mat.find(y => y.code === m.code) || {};
       const yk = b.almash && b.almash[m.code], y = yk ? mat.find(z => z.code === yk) : null;
       const r = y ? materialRang(project.H, yk) : dekorRang(m.name);   // #182: almashtirilgan ERP dekori — Asosiy 100 namunasi (3D bilan bir xil)
+      /* TZ-42: almashtirilmagan material — ERP'da nechta mos plita bor (nomzod) yoki yo'q (narx taxminiy bo'lib qoladi) */
+      const mos = !y && sheets ? bazisniERPga(m, sheets) : null;
+      const erp = !mos ? null : mos.holat === 'nomzod' || mos.holat === 'aniq' ? t('bazis.erp_nomzod', { n: mos.nomzodlar.length }) : mos.sabab === 'dekor_yoq' ? t('bazis.erp_yoq') : null;
       return { nom: m.name, d: t('bazis.material_d', { t: m.thickness, n: m.detal, v: (x.sheets && x.sheets[0] ? x.sheets[0].join('×') : '—'), a: m.asos }),
-        yangi: y ? t('bazis.almashtirildi', { nom: y.name }) : null, rang: r ? '#' + r.rang.toString(16).padStart(6, '0') : null,
+        yangi: y ? t('bazis.almashtirildi', { nom: y.name }) : erp, rang: r ? '#' + r.rang.toString(16).padStart(6, '0') : null,
         almashtir: () => openBazisMaterial(m.code) };
     }),
     chiqarildi: Object.entries(h.chiqarildi || {}).map(([k, v]) => ({ nom: t('bazis.chiq_' + k), n: v.soni, misol: v.misol.join(', ') })),
-    eslatma: [t('bazis.eslatma_narx'), t('bazis.eslatma_teshik'), t('bazis.eslatma_rang')].concat(h.kesildi3d ? [t('bazis.eslatma_3d')] : []).concat(h.usul === 'tekis' ? [t('bazis.eslatma_tekis')] : [])
+    eslatma: (avto ? [t('bazis.erp_hisobot', { a: avto })] : []).concat(h.materiallar.some(m => !(b.almash && b.almash[m.code])) ? [t('bazis.eslatma_narx')] : []).concat([t('bazis.eslatma_teshik'), t('bazis.eslatma_rang')]).concat(h.kesildi3d ? [t('bazis.eslatma_3d')] : []).concat(h.usul === 'tekis' ? [t('bazis.eslatma_tekis')] : [])
   };
 }

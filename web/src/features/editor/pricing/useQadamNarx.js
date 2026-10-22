@@ -33,10 +33,15 @@ function raskroy(R, idx) {
 function plitaQatorlari(R, prod, B) {
   const bm = (R && R.nest && R.nest.by_material) || {};
   const lines = (prod.lines || []).filter(l => /^Plita/.test(l.group));
-  const rows = lines.filter(l => bm[l.code] && bm[l.code].stats).map(l => {
+  const rows = [];
+  for (const l of lines.filter(x => bm[x.code] && bm[x.code].stats && !x.sigmadi)) {
     const nm = bm[l.code], st = nm.stats;
-    return [(project.H ? project.matName(l.code) : l.code), t('narx.plita_mat', { n: nm.sheet_count || 0, m: dec(Math.round((st.used_area_m2 || 0) * 100) / 100), p: dec(st.utilization_pct || 0) }), l.amount];
-  });
+    /* TZ-42: mijoz materiali — qator ko'rinadi (kesim hisoblanadi), summa 0 va belgi bilan */
+    rows.push([(project.H ? project.matName(l.code) : l.code) + (l.mijoz ? t('narx.mijoz_mat') : ''), t('narx.plita_mat', { n: nm.sheet_count || 0, m: dec(Math.round((st.used_area_m2 || 0) * 100) / 100), p: dec(st.utilization_pct || 0) }), l.amount]);
+    /* TZ-42: varaqqa sig'magan detallar — jim tashlanmaydi: yuza bo'yicha taxminiy varaq (alohida qator, "taxminiy") */
+    const sg = lines.find(x => x.sigmadi && x.code === l.code);
+    if (sg) rows.push([t('narx.sigmadi', { nom: project.H ? project.matName(l.code) : l.code, n: sg.sigmadi.soni, v: dec(sg.sigmadi.varaq) }) + (l.mijoz ? t('narx.mijoz_mat') : t('narx.taxminiy')), '', sg.amount]);
+  }
   return rows.length ? rows : [[t('narx.plita'), t('narx.plita_q', { n: B.sheetsCount || 0, m: dec(B.panelAreaM2) }), prod.sheetCost]];
 }
 

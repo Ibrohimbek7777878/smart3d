@@ -8,7 +8,8 @@ import { RANG_GURUHLARI, GURUH_RANG } from '../../../../../app/js/engine/rang.js
 import { asosiyRang } from '../../../../../app/js/engine/dekorAsosiy.js';
 import { raqam } from '../../../shared/lib/format.js';
 import { t } from '../../../i18n/index.js';
-import { dekorlarga } from './dekor.js';
+import { dekorlarga, dekorNomi } from './dekor.js';
+import { bazisniERPga } from '../../../../../app/js/engine/plitaMoslash.js';
 import { dekorRang } from '../../../../../app/js/engine/rang.js';
 import { stolQalinlik } from '../../../../../app/js/engine/kitchen.js';
 import { stolDekor, stolDonaNarx } from '../../../../../app/js/engine/stoleshnitsa.js';
@@ -47,9 +48,22 @@ export function openBazisMaterial(kod) {
   const m = bazisMat(kod);
   openSheet('material', { bazis: kod, qism: (m && BZ_QISM[m.tur]) || 'korpus', modul: null, modul0: null, q: '', guruh: null, th: null, tur: null, fil: false, hammasi: false });
 }
+/** TZ-42: "Mijoz materiali" belgisi (doc.mijozMat: material kodi → true) — belgilangan plita narxga (tannarx, ustama, aniqlik) kirmaydi;
+ *  kesim, 3D va fayllar o'zgarmaydi. Hisob: services/hisob.js recalc → engine/cutlist.js productionCost (opt.mijozMat) */
+function mijozFlip(kod, nom) {
+  const d = project.doc, m = Object.assign({}, d.mijozMat), on = !m[kod];
+  if (on) m[kod] = true; else delete m[kod];
+  if (Object.keys(m).length) d.mijozMat = m; else delete d.mijozMat;
+  yangila();
+  toast(t(on ? 'mebel.mijoz_belgilandi' : 'mebel.mijoz_olindi', { nom }));
+}
 function bazisQoy(kod, code) {
   const b = project.doc.bazis;
   if (!b) return;
+  const eski = b.almash && b.almash[kod] || kod, yangi = code && code !== kod ? code : kod;
+  if (eski !== yangi && project.doc.mijozMat && project.doc.mijozMat[eski]) {   // TZ-42: almashtirilsa ham shu plita mijozniki — belgi ko'chadi
+    const m = Object.assign({}, project.doc.mijozMat, { [yangi]: true }); delete m[eski]; project.doc.mijozMat = m;
+  }
   b.almash = Object.assign({}, b.almash);
   if (code && code !== kod) b.almash[kod] = code; else delete b.almash[kod];
   if (!Object.keys(b.almash).length) delete b.almash;
@@ -237,6 +251,14 @@ export function useMaterialVaraq() {
       variantlar: g.variantlar.length > 1 || kor.th ? g.variantlar.map(v => ({ label: (+v.th || 0) + ' ' + t('umumiy.mm'), on: kor === v, pick: tanla(v) })) : []
     };
   };
+  /* TZ-42: Bazis materiali uchun ERP'dagi mos plitalar (nomzodlar) — o'sha plitka ko'rinishida; narx ERP'dan. Bir qiymatli bo'lsa
+   * ham ko'rsatiladi (avtomatik qo'llanmagan eski loyihada tanlash uchun); noaniq bo'lsa — foydalanuvchi o'zi tanlaydi (o'ylab topilmaydi) */
+  const erpMos = bz && bzM && !almash[bz] ? bazisniERPga(bzM, all) : null;
+  const nomzodlar = erpMos ? erpMos.nomzodlar.map(sh => {
+    const d = dekorNomi(sh.name, sh.type);
+    return Object.assign(plitka({ g: { key: 'nomzod|' + erpKod(sh), nom: d.nom, brend: d.brend, tur: sh.type, variantlar: [sh] }, r: plitaRangi(H, sh) }),
+      { sub: [sh.sku, d.brend, (+sh.th || 0) + ' ' + t('umumiy.mm')].filter(Boolean).join(' · '), variantlar: [] });
+  }) : [];
   let qolgan = chek;
   const bolimlar = GURUHLAR.map(k => {
     const list = korinadi.filter(d => (d.r ? d.r.guruh : 'boshqa') === k).slice(0, Math.max(0, qolgan));
@@ -274,6 +296,9 @@ export function useMaterialVaraq() {
       .concat(qalin.map(v => ({ label: v + ' ' + t('umumiy.mm'), on: q.th === v, pick: () => yangiFiltr({ th: q.th === v ? null : v }) }))) : [],
     turlar: pm.filter(m => TURLAR[qism].test(m.code) && (!bzTh || m.thickness === bzTh)).map(m => ({ label: L.materialNomi(H, m.code, m.name), on: cur === m.code,
       pick: () => { qoyish(m.code); tanlandi(m.name); } })),
+    nomzodlar, nomzodMatn: nomzodlar.length ? t('mebel.mos_nomzod', { n: nomzodlar.length }) : '',
+    /* TZ-42: mijoz materiali — hozirgi material uchun belgi (qism/Bazis materiali) */
+    mijoz: cur ? { on: !!(project.doc.mijozMat || {})[cur], flip: () => mijozFlip(cur, curM ? L.materialNomi(H, cur, curM.name) : cur) } : null,
     /* Bazis: asl materialga qaytish */
     asli: bz && almash[bz] ? () => { bazisQoy(bz, null); toast(t('mebel.bazis_qaytdi', { nom: bzM ? bzM.name : bz })); } : null,
     /* rang oilasi: bitta bosish bilan saralash (doiralar) */

@@ -40,7 +40,9 @@ function hujjatTili(c) {
     modul: (l) => (uz || !c.H || !c.H.catalog[l.code] ? l.name : modulNomi(c.H, c.H.catalog[l.code])),
     qator: (l) => {
       if (uz) return l.name;
-      if (/^Plita/.test(l.group)) return materialNomi(c.H, l.code, asl(l.code)) + ' ' + (l.util != null ? t('hujjat.plita_q', { n: l.qty, p: l.util }) : t('hujjat.plita_taxmin', { n: l.qty }));
+      if (/^Plita/.test(l.group)) return materialNomi(c.H, l.code, asl(l.code)) + ' ' + (l.sigmadi ? t('hujjat.plita_sigmadi', { n: l.sigmadi.soni, v: l.sigmadi.varaq })   // TZ-42: varaqqa sig'magan detallar — yuza bo'yicha taxmin
+        : l.util != null ? t('hujjat.plita_q', { n: l.qty, p: l.util }) : t('hujjat.plita_taxmin', { n: l.qty })) + (l.mijoz ? t('hujjat.mijoz') : '');   // TZ-42: mijoz materiali
+      if (l.group === 'Stoleshnitsa' && l.mijoz) return l.name.replace(' — mijoz materiali', '') + t('hujjat.mijoz');   // TZ-42
       if (l.group === 'Kromka') return materialNomi(c.H, l.code, asl(l.code)) + tx(l);
       if (l.group === 'Xizmatlar') return (l.code === 'hole:tanlanmagan' ? t('hujjat.teshik_tanlanmagan', { n: l.qty }) : t('hujjat.teshik_q', { n: l.qty })) + tx(l);
       if (l.group === 'Ish haqi') {   // TZ-32 A6: sex xizmatidan tanlangan raspil/kromka — nomda aytilmaydi (dvigatel bilan bir xil)
