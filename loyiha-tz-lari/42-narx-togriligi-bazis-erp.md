@@ -20,6 +20,15 @@ Bizning hisob (smart.bittada.uz/loyiha/9): mijoz narxi 10 175 683, tannarx 7 977
 3. **25 ta Bazis furnitura nomi ERP bilan bog'lanmagan** (Петля прямая/полугорбатая кухня симм, Ножка регулируемая 100..125, Направляющие Салазка / Тандем / шар. полн.выдв. L300 1045-12 Z, Сушилка/Сушка SU02 + Решетки, Вытяжка 2 дв, Держатели, Евровинт 7x50 / 7x51, Эксцентрик пластик, samorez 16, Евро 51мм Алкан, POLKADERJATEL; `pr-1`, `pr-9`, `Фрагмент3` — Bazis ichki nomlari). → mavjud ERP katalogi (`app/data/furnitura-catalog.json`, 3089 ta) bo'yicha **bir qiymatli** mosliklarni `app/data/furnitura-boglash.json` ga qo'shish (birlik/koeffitsientni o'ylab topmasdan: juft/dona/quti/kg aniq bo'lmasa — bog'lamaydi, nomzod bilan hisobotga yozadi). `pr-*`, `Фрагмент*` mahsulot emasmi — tekshirib, taklif beradi (qaror egasida).
 4. **Mijoz materiali.** ERP'da qator `is_customer_material` bor (mijoz o'zi olib kelgan material narxga kirmaydi). Bizda yo'q. → materialga "mijoz materiali" belgisi (narx panelida/material tanlovida): belgilangan plita narxga kirmaydi, lekin kesim, 3D va fayllar hisoblanadi; ro'yxatda "mijoz materiali" yoziladi; tannarx, ustama va aniqlikka ta'siri to'g'ri.
 
+## Natija: 3-band — furnitura bog'lash (agent "Data · Furnitura bog'lash", 2026-10-22)
+Fayl: `app/data/furnitura-boglash.json` (`_meta.tz42_2026-10-22` — bog'langanlar + asos; `_meta.savol` — bog'lanmaganlar, sabab va nomzod ID lari; admin panelning "narxsiz" ro'yxatida chiqadi). Test: `tests/verify_furn_boglash.mjs` (run-all ichida).
+- **Kod qoidasi:** `'BZ-' + slug(nom).slice(0,40)` (`app/js/engine/bazis/loyiha.js`); registr, bo'shliq, tinish belgisi ta'sir qilmaydi.
+- **Bog'landi (3):** Петля прямая кухня симм → 90002525 (3 000), Ножка регулируемая 100..125 мм → 90002491 (3 500), POLKADERJATEL → 90002019 (430). Asos: egasi 2026-10-17 tasdiqlagan o'sha tur (BZ-petlya_pryamaya, NOG-100, BZ-polkoderjatel_*); koef 1 (hammasi dona narxi).
+- **Bog'lanmadi (21):** katalogda BIRLIK maydoni yo'q (NARX.pdf'da birlik yozilmagan) — quti/juft narxi bo'lishi mumkin, o'lcham nomda yo'q yoki bir necha narx sinfi bor (qoida 4.3). Sabab va nomzodlar `_meta.savol` da.
+- **ERP'da aynan nomli, lekin narxsiz:** 90001967 «Петля прямая.», 90001966 «Петля Полугорбатый.», 90001964 «Петля горбатая.», 90001977 «Стяжка 7*50 Шестигран (1 ком = 100шт)» (bog'langanda koef 0.01), 90001959 «Направляющие 30см (Белый)». ERP'da narx kiritilsa — bir qiymatli moslik bo'ladi.
+- **pr-1, pr-9, Фрагмент3:** mahsulot emas, Bazis guruhi bo'lishi ehtimoli katta (modelCode 1005 «modul (guruh)» `FITTING_CODES` ichida, `GROUP_KEYS` da `фрагмент` / `pr-N` yo'q). Taklif (engine, qaror egasida): `classifyFitting` da shu nomlarni guruh deb o'tkazib yuborish.
+- Narxsiz (24 nomdan): oldin 24 → keyin 21.
+
 ## Qabul
 - Satin plitasi ERP SKU bo'yicha moslanadi (narx 355 000 va "ERP" manba); aniqlik 35% dan sezilarli oshadi.
 - Detallar yo'qolmaydi: sig'madi — qayta nest yoki yuza bo'yicha taxmin; Satin varaq soni ERP'dagi 14 ga yaqin.
