@@ -10,7 +10,8 @@
  *   xizmatlar: { <kod>: { nom, guruh: raspil|kromka|prisadka, qiymat, birlik, kategoriya, manba: 'sex jadvali'|'egasi', sana } }
  *   tanlov:    { raspil: <kod>|null, raspil_yupqa?: <kod> (TZ-36: HDF ≤ 3 mm list uchun raspil), kromka: { _sukut|<kromka kodi>|E<eni>x<qalinlik> (TZ-36: "E19x1"): <kod> }, prisadka: { <teshik turi>: <kod> }, bazis: { onlayn|oflayn: <kod> } }
  *   ish_haqi:  { yoqilgan, detal, modul } — har biri { qiymat, manba, sana }
- *   ustama:    { foiz: { qiymat (0–300), manba, sana } } */
+ *   ustama:    { foiz: { qiymat (0–300), manba, sana } }   (TZ-48: sukut 0 — usta narx panelida qo'lda yoqadi)
+ *   plita:     { rejim: 'sotuv'|'tannarx', chegirma (so'm), koef } — har biri { qiymat, manba, sana } (TZ-48, egasi #302 Q1: ERP o'rtacha sotuv narxi) */
 
 export const MANBALAR = ['egasi', 'sex jadvali', 'taxmin'];
 export const TASDIQ_MANBA = ['egasi', 'sex jadvali'];
@@ -18,7 +19,14 @@ export const GURUHLAR = ['raspil', 'kromka', 'prisadka', 'bazis'];
 /** TZ-32 E3: Bazis loyiha xizmati — detal soniga qarab; usta narx panelida tanlaydi (onlayn / oflayn) */
 export const BAZIS_TURLARI = ['onlayn', 'oflayn'];
 /** aql chegarasi (so'm): list, metr, dona; ish haqi — detal, modul; ustama — % */
-export const AQL = { raspil: 1e6, kromka: 2e5, prisadka: 1e5, bazis: 1e5, detal: 1e6, modul: 1e7, foiz: 300 };
+export const AQL = { raspil: 1e6, kromka: 2e5, prisadka: 1e5, bazis: 1e5, detal: 1e6, modul: 1e7, foiz: 300, chegirma: 1e6 };
+/** TZ-48 (egasi #301/#302): Bazis xizmati faqat shu qalinlikdagi (mm) detallar soniga hisoblanadi — HDF (yupqa) kirmaydi */
+export const BAZIS_QALINLIKLAR = [16, 18, 19];
+/** TZ-48 (egasi #302 Q1): plita narxi = ERP o'rtacha sotuv narxi. Sukut qiymatlar (materials.json plita_narx bilan bir xil): ro'yxat narxi − 25 000;
+ *  ro'yxat narxi yo'q bo'lsa — ERP tannarx × 1,156 (14 real buyurtmada o'rtacha sotuv/tannarx). Hujjatda `plita` bo'lmasa (eski) shular ishlatiladi. */
+export const PLITA_SUKUT = { rejim: 'sotuv', chegirma: 25000, koef: 1.156 };
+export const PLITA_REJIMLAR = ['sotuv', 'tannarx'];
+export const KOEF_CHEGARA = [0.5, 5];
 /** teshik turi (hisobdagi kalit: Bazis turi yoki fragment teshigi turi) — prisadka qatoriga bog'lanadi */
 export const TESHIK_TURLARI = ['konfirmat_yuza', 'konfirmat_qirra', 'petlya', 'polka', 'ruchka', 'shkant', 'eksentrik', 'belgi',
   'drill', 'dowel', 'hinge', 'cam', 'mark', 'cutout', 'd6_kosa', 'd6_eksentrik', 'd6_eks_qirra', 'd6_eks_bolt'];
@@ -40,17 +48,24 @@ export const ustamaManbasi = (materials) => {
 export function narxSukut(materials) {
   const lab = (materials && materials.labor) || {};
   const sana = ((materials && materials._meta && materials._meta.updated) || '').slice(0, 10) || null;
-  const mk = materials && materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0.35;
+  const mk = materials && materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0;   // TZ-48: sukut 0% (avval 35%)
   const q = (qiymat) => ({ qiymat, manba: 'taxmin', sana });
   /* ish haqi: materials.labor.price_src "egasi, <sana>" bo'lsa — tasdiqlangan (egasi #222 Q3: ERP'da ish haqi xizmat narxiga kiritilgan, alohida stavka 0) */
   const ihTasdiq = /^egasi/.test(String(lab.price_src || ''));
   const ihQ = (qiymat) => (ihTasdiq ? { qiymat, manba: 'egasi', sana: (/\d{4}-\d{2}-\d{2}/.exec(lab.price_src) || [])[0] || sana } : q(qiymat));
   const um = ustamaManbasi(materials);
   const uSana = um === 'egasi' ? ((/\d{4}-\d{2}-\d{2}/.exec(materials.pricing.price_src) || [])[0] || sana) : sana;   // "egasi, 2026-10-17" → sana
+  /* TZ-48: plita narx sozlamasi (materials.json plita_narx; yo'q bo'lsa — egasi sukuti PLITA_SUKUT) */
+  const pn = (materials && materials.plita_narx) || {};
+  const pTasdiq = /^egasi/.test(String(pn.price_src || '')) || !materials || !materials.plita_narx;
+  const pSana = (/\d{4}-\d{2}-\d{2}/.exec(pn.price_src || '') || [])[0] || sana;
+  const pQ = (qiymat) => ({ qiymat, manba: pTasdiq ? 'egasi' : 'taxmin', sana: pSana });
   let doc = {
     versiya: 1, xizmatlar: {}, tanlov: { raspil: null, kromka: {}, prisadka: {}, bazis: {} },
     ish_haqi: { yoqilgan: ihQ(true), detal: ihQ(lab.panel_per_piece || 0), modul: ihQ(lab.per_fragment_min || 0) },
-    ustama: { foiz: { qiymat: Math.round(mk * 1000) / 10, manba: um, sana: uSana } }
+    ustama: { foiz: { qiymat: Math.round(mk * 1000) / 10, manba: um, sana: uSana } },
+    plita: { rejim: pQ(PLITA_REJIMLAR.includes(pn.rejim) ? pn.rejim : PLITA_SUKUT.rejim), chegirma: pQ(pn.chegirma >= 0 && pn.chegirma <= AQL.chegirma ? pn.chegirma : PLITA_SUKUT.chegirma),
+      koef: pQ(pn.koef >= KOEF_CHEGARA[0] && pn.koef <= KOEF_CHEGARA[1] ? pn.koef : PLITA_SUKUT.koef) }
   };
   /* TZ-32 E: ERP xizmatlar jadvalidagi sukut stavkalar va oldindan tanlangan qatorlar (materials.json sukut_narx) — har qiymat
      manbali; buzuq yozuv hujjatni buzmaydi (o'sha qism tashlab ketiladi) */
@@ -83,7 +98,7 @@ const bugun = () => new Date().toISOString().slice(0, 10);
 /**
  * O'zgarishni tekshirib joriy hujjatga qo'llaydi (server PUT). Xato bo'lsa NarxXato (narxXatoMi) — hech narsa o'zgarmaydi.
  * patch: { xizmatlar?: {kod: qator|null}, tanlov?: {raspil?, kromka?: {k: kod|null}, prisadka?: {...}},
- *          ish_haqi?: {yoqilgan?: bool, detal?: son, modul?: son}, ustama?: {foiz?: son} }
+ *          ish_haqi?: {yoqilgan?: bool, detal?: son, modul?: son}, ustama?: {foiz?: son}, plita?: {rejim?: 'sotuv'|'tannarx', chegirma?: son, koef?: son} }
  * → { next, ozgarish: [{ kalit, eski, yangi }] }
  */
 export function narxQollash(cur, patch) {
@@ -152,6 +167,17 @@ export function narxQollash(cur, patch) {
   if (patch.ustama != null) {
     const us = obyekt(patch.ustama, 'ustama');
     if ('foiz' in us && us.foiz !== '' && us.foiz != null) qiymatQ('ustama', 'foiz', son(us.foiz, 'ustama.foiz', AQL.foiz));
+  }
+  if (patch.plita != null) {   // TZ-48: plita narx rejimi (sotuv / tannarx), ro'yxat narxidan chegirma va ro'yxat narxi yo'q bo'lgandagi koeffitsient
+    const pl = obyekt(patch.plita, 'plita');
+    next.plita = next.plita || {};
+    if ('rejim' in pl) { if (!PLITA_REJIMLAR.includes(pl.rejim)) yoq(`plita.rejim: ${PLITA_REJIMLAR.join(' yoki ')} bo'lishi kerak`); qiymatQ('plita', 'rejim', pl.rejim); }
+    if ('chegirma' in pl && pl.chegirma !== '' && pl.chegirma != null) qiymatQ('plita', 'chegirma', son(pl.chegirma, 'plita.chegirma', AQL.chegirma));
+    if ('koef' in pl && pl.koef !== '' && pl.koef != null) {
+      const k = typeof pl.koef === 'number' ? pl.koef : (typeof pl.koef === 'string' && pl.koef.trim() !== '' ? Number(pl.koef.replace(',', '.')) : NaN);
+      if (!Number.isFinite(k) || k < KOEF_CHEGARA[0] || k > KOEF_CHEGARA[1]) yoq(`plita.koef: ${KOEF_CHEGARA[0]}…${KOEF_CHEGARA[1]} oralig'idagi son bo'lishi kerak`);
+      qiymatQ('plita', 'koef', Math.round(k * 1000) / 1000);   // 1,156 — uch xona
+    }
   }
   return { next, ozgarish: oz };
 }
@@ -248,6 +274,37 @@ export const raspilYupqaXizmat = (S) => (S && S.tanlov ? xz(S, S.tanlov.raspil_y
 /** TZ-32 E3: Bazis loyiha xizmati (tur: 'onlayn' | 'oflayn') → narx qatori (detal boshiga) yoki null */
 export const bazisXizmat = (S, tur) => (S && S.tanlov && S.tanlov.bazis ? xz(S, S.tanlov.bazis[tur]) : null);
 
+/* ─────────── TZ-48: plita narxi — ERP o'rtacha sotuv narxi (egasi #302 Q1) ─────────── */
+/** narx hujjatidagi `plita` bo'limi → { rejim, chegirma, koef, manba }; hujjatda yo'q (eski) yoki buzuq qiymat — egasi sukuti (PLITA_SUKUT) */
+export function plitaSozlama(S) {
+  const p = (S && S.plita) || {};
+  const q = (k) => (p[k] && typeof p[k] === 'object' ? p[k] : null);
+  const rejim = q('rejim') && PLITA_REJIMLAR.includes(q('rejim').qiymat) ? q('rejim').qiymat : PLITA_SUKUT.rejim;
+  const ch = q('chegirma') && Number.isFinite(+q('chegirma').qiymat) && q('chegirma').qiymat >= 0 ? +q('chegirma').qiymat : PLITA_SUKUT.chegirma;
+  const kf = q('koef') && Number.isFinite(+q('koef').qiymat) && q('koef').qiymat >= KOEF_CHEGARA[0] && q('koef').qiymat <= KOEF_CHEGARA[1] ? +q('koef').qiymat : PLITA_SUKUT.koef;
+  return { rejim, chegirma: ch, koef: kf, manba: (q('rejim') && q('rejim').manba) || 'egasi' };
+}
+/** Plita materiali narxi ERP TANNARXIdan (display_price_uzs) olinganmi? Faqat shunday narx «sotuv» rejimida o'zgartiriladi: ERP plitasi (src 'ERP'),
+ *  sukut ERP plitasi (price_src 'ERP, <sana>'). Admin qo'lda kiritgan (qolda), taxminiy va xlsx/katalog narxi (LDSP18, LMDF16 …) o'zgarmaydi. */
+export const plitaERPMi = (meta) => !!meta && !meta.taxminiy && !meta.qolda && (meta.src === 'ERP' || /^ERP,/.test(String(meta.price_src || '')));
+/**
+ * ERP plitasining hisobdagi narxi.
+ *  rejim 'tannarx' — ERP tannarxi (display_price_uzs) o'zi;
+ *  rejim 'sotuv' (sukut) — ERP o'rtacha sotuv narxi: ro'yxat narxi (lst, price_list_uzs) bo'lsa  lst − chegirma (25 000); yo'q bo'lsa  tannarx × koef (1,156).
+ *  Tagi: ro'yxat − chegirma tannarxdan past chiqsa (ERP'da ro'yxat narxi = tannarx bo'lgan plitalar, masalan Akril AGT) — tannarx olinadi (sotuv narxi tannarxdan pastga tushmaydi).
+ * → { narx, qoida: 'tannarx'|'sotuv_royxat'|'sotuv_royxat_taglik'|'sotuv_koef', tannarx, lst } — qoida narx tarkibida ko'rinadi
+ */
+export function plitaNarxi(tannarx, lst, sz) {
+  const t = +tannarx || 0, l = +lst || 0;
+  if (!(t > 0)) return { narx: 0, qoida: 'yoq', tannarx: 0, lst: l };
+  if (!sz || sz.rejim === 'tannarx') return { narx: t, qoida: 'tannarx', tannarx: t, lst: l };
+  if (l > 0) {
+    const n = l - sz.chegirma;
+    return n >= t ? { narx: n, qoida: 'sotuv_royxat', tannarx: t, lst: l } : { narx: t, qoida: 'sotuv_royxat_taglik', tannarx: t, lst: l };
+  }
+  return { narx: Math.round(t * sz.koef), qoida: 'sotuv_koef', tannarx: t, lst: l };
+}
+
 /* ─────────── TZ-32 A1: sukut plita → ERP mahsuloti (materials.json sukut_erp) ─────────── */
 /**
  * materials.sukut_erp: { <panel kodi>: null | { sku, nom, uzs, manba, sana, l?, w? } } — egasi tanlagan ERP mahsuloti (2-savol).
@@ -266,6 +323,7 @@ export function sukutErpQollash(materials) {
     if (!pm || !(uzs > 0) || uzs > 1e8 || !SANA_RE.test(String(v.sana || ''))) continue;
     pm.sheet_price = Math.round(uzs * 100) / 100;
     pm.price_src = String(v.manba || 'ERP').slice(0, 40) + ', ' + v.sana;
+    if (Number(v.lst) > 0 && Number(v.lst) <= 1e8) pm.sheet_lst = Math.round(Number(v.lst));   // TZ-48: ERP ro'yxat narxi — plita «sotuv» rejimi (plitaNarxi)
     if (v.sku) pm.sku = String(v.sku).slice(0, 60);
     if (v.nom) pm.sku_nom = String(v.nom).slice(0, 200);
     /* varaq formati — narx shu mahsulotning formati uchun (masalan ERP 4,575 = 2500×1830); aks holda narx noto'g'ri varaqqa tushadi */

@@ -10,6 +10,7 @@ ERP eksporti — lokal maxfiy fayl (Smart3D_malumot/, gitga KIRMAYDI; ERP ga bu 
 Plita (sheet-catalog.json + materials-index.json — ikkalasi bir xil qiymat, narx_import.py kabi):
   · uzs  ← ERP display_price_uzs (> 0 bo'lsa; katalogda narx yo'q bo'lsa ham to'ldiriladi); src = "erp_api_<sana>"
   · usd  ← ERP price_usd (narx yozilganda)
+  · lst  ← ERP price_list_uzs (> 0 bo'lsa; ro'yxat/sotuv narxi, TZ-48 plita «sotuv» rejimi); ERP'da yo'q bo'lsa katalogdagi qiymat tegilmaydi
   · l, w ← ERP length/width (ikkalasi > 100; nomdagi maydon — 4,575 va h.k. — ERP formatiga zid bo'lsa tegilmaydi)
   · th   O'ZGARMAYDI (erpKod() kaliti; ERP qalinligi ba'zan noto'g'ri) — farqlar hisobotda
   · ERP'da narxsiz / noaniq / topilmagan — qiymat O'ZGARMAYDI (qoida 4.3)
@@ -95,6 +96,10 @@ def main():
             s["usd"] = m["usd"] = float(x["yangi_usd"])
             st["usd_ozgardi"] += 1
             ozgardi = True
+        if x.get("yangi_lst") and round(s.get("lst") or 0) != x["yangi_lst"]:   # TZ-48: ERP ro'yxat (sotuv) narxi — plita «sotuv» rejimi (lst − 25 000)
+            s["lst"] = m["lst"] = x["yangi_lst"]
+            st["lst_yozildi"] = st.get("lst_yozildi", 0) + 1
+            ozgardi = True
         if x["yangi_lw"]:
             l, w = (float(v) for v in x["yangi_lw"])
             if (float(s["l"]), float(s["w"])) != (l, w):
@@ -151,7 +156,7 @@ def main():
 
     # ───────── _meta ─────────
     sc_doc["_meta"] = (sc_doc["_meta"].split(" ERP API")[0].rstrip(".") +
-                       f". ERP API {sana}: narx (display_price_uzs), usd va list formati (length×width) ERP bilan moslandi (bir qiymatli moslik: nom+SKU); "
+                       f". ERP API {sana}: narx (display_price_uzs), usd, lst (price_list_uzs — ro'yxat/sotuv narxi, TZ-48) va list formati (length×width) ERP bilan moslandi (bir qiymatli moslik: nom+SKU); "
                        "qalinlik o'zgarmagan (erpKod kaliti). src: katalog | narx-2026 | erp_api_<sana>. Qayta moslash: scripts/katalog_erp_yangilash.py")
     mi_doc["_meta"] = (mi_doc["_meta"].split(" ERP API")[0].rstrip(".") +
                        f". ERP API {sana}: narx/usd/l/w sheet-catalog.json bilan bir xil (scripts/katalog_erp_yangilash.py)") if isinstance(mi_doc.get("_meta"), str) else mi_doc.get("_meta")

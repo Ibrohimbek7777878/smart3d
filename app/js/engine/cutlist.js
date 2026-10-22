@@ -15,7 +15,8 @@ import { resolveSlots } from './slots.js';
 import { chizmaYech } from './chizish.js';
 import { joyQutilar, d6Teshiklar, petlyaSoni } from './d6.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
-import { kromkaXizmat, prisadkaXizmat, raspilXizmat, raspilYupqaXizmat, bazisXizmat, tasdiqMi, ustamaManbasi } from './narxStavka.js';
+import { kromkaXizmat, prisadkaXizmat, raspilXizmat, raspilYupqaXizmat, bazisXizmat, tasdiqMi, ustamaManbasi, plitaSozlama, plitaNarxi, plitaERPMi, BAZIS_QALINLIKLAR } from './narxStavka.js';
+import { qoshXizmatTekshir } from './xizmatKatalog.js';
 import { D6, petlyaSoni as d6PetlyaSoni } from './d6.js';            // TZ-32 B6: SP modul petlyasi (3c)
 
 /** TZ-36 K3: shu qalinlikgacha (mm) list "yupqa" (HDF 2,5–3 mm) — alohida raspil stavkasi (tanlov.raspil_yupqa) */
@@ -492,10 +493,12 @@ const USTAMA_GURUH = new Set(['Plita (Kroy)', 'Plita (Taxminiy)', 'Stoleshnitsa'
  *
  * @param {Array} cutlists — barcha modullar cutlist natijalari (doc.placements tartibida)
  * @param {Object} materials — materials.json (effektiv: tanlangan ERP varag'i bilan)
- * @param {Object} [opt] — { nestResult, markupPct, areaEstimate, furnituraById, xizmatlar, stavka }
+ * @param {Object} [opt] — { nestResult, markupPct, areaEstimate, furnituraById, xizmatlar, stavka, qoshXizmat }
  *   stavka: TZ-20 narx stavkalari (server /api/narxlar, engine/narxStavka.js) — raspil, kromka, prisadka, ish haqi, ustama;
  *     berilmagan (yoki tanlanmagan) joyda materials.json dagi qiymat "taxmin" belgisi bilan. Natijada aniqlik — "Narx aniqligi X%".
- *   xizmatlar: { teshik: true } — usta tanlagan xizmatlar (S3); berilmasa teshik burg'ilash tannarxga kirmaydi
+ *   xizmatlar: usta tanlovi (TZ-48, egasi #301: sukut YOQILGAN): teshik (prisadka) — false bo'lsa o'chadi; bazis — false/null bo'lsa o'chadi ('onlayn'/'oflayn' — eski loyiha,
+ *     yoqilgan); raspil1 — false bo'lsa «+1 qo'shimcha raspil» olib tashlanadi (sukut: butun loyihaga +1 list, tanlangan Holzma stavkasida)
+ *   qoshXizmat: TZ-48 — usta narx panelida «Xizmat qo'shish» dan qo'shgan ERP xizmatlari [{ kod, nom, guruh, birlik, narx, manba, sana, soni }]
  *   mijozMat: TZ-42 — { materialKodi: true } mijoz o'zi olib kelgan plitalar (narxga kirmaydi; kesim va xizmatlar o'zgarmaydi)
  *   furnituraById: ERP furnitura ID → {name, uzs, no_price} (hw.id bor bo'lsa narx shu yerdan)
  *   areaEstimate: kroysiz taxmin (katalog kartasi uchun) — varaq maydoni ÷ 0.85, butun varaqqa yaxlitlanmaydi
@@ -515,15 +518,17 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   (materials.hole_kinds || []).forEach(m => { holeByKind[m.code] = m; });
   const S = opt.stavka || null;             // TZ-20: narx stavkalari
   const labor = materials.labor || {};
-  /* TZ-03 (qoida S3): xizmatni usta o'zi tanlaydi. Teshik burg'ilash (prisadka, moyka kesimi ham)
-     faqat opt.xizmatlar.teshik === true bo'lsa tannarxga kiradi; aks holda summasi faqat taklif
-     sifatida qaytadi (xizmat_taklif). Ish haqi — sexning doimiy xarajati, avtomatik (egasi qarori). */
-  const teshikOn = !!(opt.xizmatlar && opt.xizmatlar.teshik === true);
-  /* ustama: usta o'zi qo'ygan (Sozlamalar) → admin stavkasi (TZ-20) → materials.json */
+  /* TZ-03 (qoida S3) → TZ-48 (egasi #301, 2026-10-22): prisadka va Bazis xizmati sukutda YOQILGAN, usta narx panelida o'chira oladi.
+     Teshik burg'ilash (prisadka, moyka kesimi ham) opt.xizmatlar.teshik === false bo'lsagina tannarxdan chiqadi (summasi xizmat_taklif da qoladi).
+     Ish haqi — sexning doimiy xarajati, avtomatik (egasi qarori). */
+  const xzO = opt.xizmatlar || {};
+  const teshikOn = xzO.teshik !== false;
+  /* ustama: usta o'zi qo'ygan (Sozlamalar / narx paneli) → admin stavkasi (TZ-20) → materials.json. TZ-48: sukut 0% (avval 35%) */
   const sUst = S && S.ustama && S.ustama.foiz && S.ustama.foiz.qiymat != null ? S.ustama.foiz : null;
   const markup = opt.markupPct != null ? opt.markupPct
     : sUst ? sUst.qiymat / 100
-    : (materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0.35);
+    : (materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0);
+  const plitaSz = plitaSozlama(S);          // TZ-48: plita narxi — ERP o'rtacha sotuv (ro'yxat − 25 000 / tannarx × 1,156) yoki tannarx
   const markupManba = opt.markupPct != null ? 'usta' : sUst ? sUst.manba : ustamaManbasi(materials);   // TZ-30: materials.json — egasi tasdiqlagan bo'lsa 'egasi'
 
   const missing = [];
@@ -658,7 +663,11 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     const meta = matByCode[mat] || { name: mat };
     const nm = opt.nestResult && opt.nestResult.by_material && opt.nestResult.by_material[mat];
     const mijoz = !!mijozMat[mat];
-    const unitPrice = mijoz ? 0 : ((nm && nm.sheet_price) || meta.sheet_price || 0);
+    /* TZ-48 (egasi #302 Q1): ERP plitasining narxi — ERP O'RTACHA SOTUV narxi (ro'yxat narxi − 25 000; ro'yxat yo'q bo'lsa tannarx × 1,156) yoki tannarx (admin rejimi).
+       Faqat narx hisobi: kroy, list soni va fayllar o'zgarmaydi. ERP bo'lmagan (taxminiy, xlsx, admin qo'lda) narx o'zgarmaydi. */
+    const narx0 = mijoz ? 0 : ((nm && nm.sheet_price) || meta.sheet_price || 0);
+    const pn = narx0 > 0 && plitaERPMi(meta) ? plitaNarxi(narx0, meta.sheet_lst, plitaSz) : null;
+    const unitPrice = pn ? pn.narx : narx0;
     if (!mijoz && !(unitPrice > 0)) noteMissing('Plita', mat, meta.name);
     let qty, amount, name, group, lostLine = null;
     if (nm && !opt.areaEstimate) {
@@ -695,6 +704,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     sheetCostByMat[mat] = amount;
     lines.push({ group, code: mat, name, qty, unit: 'varaq', unit_price: unitPrice, amount, no_price: !mijoz && !(unitPrice > 0),
       util: nm && !opt.areaEstimate && nm.stats ? nm.stats.utilization_pct : null,   // TZ-18: hujjat tilida qayta yig'ish uchun
+      ...(pn ? { narx_qoida: pn.qoida, narx_tannarx: pn.tannarx, ...(pn.lst > 0 ? { narx_lst: pn.lst } : {}) } : {}),   // TZ-48: narx tarkibi — qaysi qoida bilan
       ...(mijoz ? { mijoz: true, tasdiq: true, manba: 'mijoz' }
         : { tasdiq: unitPrice > 0 && !meta.taxminiy, manba: unitPrice > 0 ? (meta.taxminiy ? 'taxmin' : 'ERP') : 'yoq' }) });   // TZ-20: ERP plita narxi
     if (lostLine) {
@@ -705,6 +715,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       lines.push({ group: 'Plita (Taxminiy)', code: mat, sigmadi: lostLine,
         name: `${meta.name || mat}: ${lostLine.soni} ta detal listga sig'madi — yuza bo'yicha ~${lostLine.varaq} list (taxminiy)` + (mijoz ? mijozNom : ''),
         qty: lostLine.varaq, unit: 'varaq', unit_price: unitPrice, amount: lostLine.amount, no_price: !mijoz && !(unitPrice > 0),
+        ...(pn ? { narx_qoida: pn.qoida, narx_tannarx: pn.tannarx, ...(pn.lst > 0 ? { narx_lst: pn.lst } : {}) } : {}),
         ...(mijoz ? { mijoz: true, tasdiq: true, manba: 'mijoz' } : { tasdiq: false, manba: unitPrice > 0 ? 'taxmin' : 'yoq' }) });
     }
   }
@@ -727,6 +738,16 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     raspilCost += amt;
     lines.push({ group: 'Raspil', code: 'raspil_yupqa', name: `Raspil (HDF, yupqa list) — ${yupqaN} list × ${rxY.qiymat}`, qty: yupqaN, unit: 'list',
       unit_price: rxY.qiymat, amount: amt, tasdiq: tasdiqMi(rxY.manba), manba: rxY.manba, xizmat: rxY.nom });
+  }
+  /* TZ-48 (egasi #302 Q3): butun loyihaga +1 list qo'shimcha raspil (tanlangan Holzma stavkasida; kesishda xato/qayta kesish zaxirasi). Narx panelida ustaga ogohlantirish
+     va olib tashlash/qaytarish (opt.xizmatlar.raspil1 === false — olib tashlangan). Loyihada kamida bitta list bo'lsa va raspil stavkasi tanlangan bo'lsa; katalog kartasi
+     (areaEstimate) narxida yo'q — u butun loyiha uchun bitta. Alohida qator (raspil_qosh) — asosiy raspil soni (list) o'zgarmaydi. */
+  const raspil1Mumkin = !!rx && !opt.areaEstimate && totalSheetsCount > 0;
+  const raspil1Bor = raspil1Mumkin && xzO.raspil1 !== false;
+  if (raspil1Bor) {
+    raspilCost += rx.qiymat;
+    lines.push({ group: 'Raspil', code: 'raspil_qosh', name: `Qo'shimcha raspil (+1 list) — 1 list × ${rx.qiymat}`, qty: 1, unit: 'list',
+      unit_price: rx.qiymat, amount: rx.qiymat, tasdiq: tasdiqMi(rx.manba), manba: rx.manba, xizmat: rx.nom, qoida: 'raspil_qosh' });
   }
 
   /* 1b) Standart stoleshnitsa bo'laklari (egasi #162): har bo'lak = 1 dona 3050/4200 li stoleshnitsa, maydon emas.
@@ -815,15 +836,31 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     });
   }
 
-  /* 4b) TZ-32 E3: Bazis loyiha xizmati — detal soniga qarab (onlayn / oflayn); faqat usta narx panelida tanlasa (S3: sukut o'chiq).
-     Qator narxi — stavkalardagi 'bazis' guruhi (ERP Bazis3 / Bazis6). Stavka bo'lmasa taklif summasi 0 va xizmat qo'shilmaydi. */
-  const bTur = opt.xizmatlar && (opt.xizmatlar.bazis === 'onlayn' || opt.xizmatlar.bazis === 'oflayn') ? opt.xizmatlar.bazis : null;
+  /* 4b) Bazis loyiha xizmati — detal soniga qarab. TZ-48 (egasi #301/#302): sukutda YOQILGAN (usta narx panelida o'chiradi: xizmatlar.bazis false/null);
+     5 000 so'm/detal (ERP Bazis5, stavkalardagi 'bazis' guruhi, tanlov.bazis.onlayn); FAQAT 16, 18, 19 mm qalinlikdagi detallar soni — HDF (yupqa) va
+     boshqa qalinlik hisobga olinmaydi. Eski loyihadagi 'onlayn'/'oflayn' tanlovi yoqilgan deb olinadi ('oflayn' — admin tanlov.bazis.oflayn ga bog'lasa).
+     Stavka bo'lmasa taklif summasi 0 va xizmat qo'shilmaydi (narx o'ylab topilmaydi). */
+  const bazisDetalMi = (p) => BAZIS_QALINLIKLAR.includes(Math.round(+p.thickness || 0));
+  const bazisQty = (cutlists || []).reduce((n, cl) => n + (cl.parts || []).filter(bazisDetalMi).length, 0);
+  const bazisOn = xzO.bazis !== false && xzO.bazis !== null;
   const bRate = { onlayn: bazisXizmat(S, 'onlayn'), oflayn: bazisXizmat(S, 'oflayn') };
-  const bazisPerPart = bTur && bRate[bTur] ? bRate[bTur].qiymat : 0;
-  const bazisCost = totalParts * bazisPerPart;
+  const bTur = xzO.bazis === 'oflayn' && bRate.oflayn ? 'oflayn' : 'onlayn';
+  const bazisPerPart = bazisOn && bRate[bTur] ? bRate[bTur].qiymat : 0;
+  const bazisCost = bazisQty * bazisPerPart;
   if (bazisCost > 0) {
-    lines.push({ group: 'Xizmatlar', code: 'bazis', name: `Bazis loyiha (${bTur === 'onlayn' ? 'onlayn' : 'oflayn'}) — ${totalParts} detal × ${bazisPerPart}`,
-      qty: totalParts, unit: 'detal', unit_price: bazisPerPart, amount: bazisCost, tasdiq: tasdiqMi(bRate[bTur].manba), manba: bRate[bTur].manba, xizmat: bRate[bTur].nom });
+    lines.push({ group: 'Xizmatlar', code: 'bazis', name: `Bazis loyiha — ${bazisQty} detal (16/18/19 mm) × ${bazisPerPart}`,
+      qty: bazisQty, unit: 'detal', unit_price: bazisPerPart, amount: bazisCost, tasdiq: tasdiqMi(bRate[bTur].manba), manba: bRate[bTur].manba, xizmat: bRate[bTur].nom, qoida: 'bazis_16_18_19' });
+  }
+
+  /* 4c) TZ-48: «Xizmat qo'shish» — usta ERP xizmatlar ro'yxatidan tanlab miqdor bilan qo'shgan qatorlar (doc.qoshXizmat). Narx — qo'shilgan paytdagi
+     (loyiha o'z narxini saqlaydi); ustamasiz xizmat. Manba (ERP / taxmin) qatorda va narx aniqligida ko'rinadi. */
+  const qoshList = qoshXizmatTekshir(opt.qoshXizmat);
+  let qoshCost = 0;
+  for (const x of qoshList) {
+    const amount = x.soni * x.narx;
+    qoshCost += amount;
+    lines.push({ group: 'Xizmatlar', code: 'qosh:' + x.kod, name: x.nom, qty: x.soni, unit: x.birlik, unit_price: x.narx, amount, no_price: false,
+      tasdiq: tasdiqMi(x.manba), manba: x.manba, qosh: true, xizmat_guruh: x.guruh, qoida: 'qosh_xizmat' });
   }
 
   /* 5) Sex ish haqi (arralash + yig'ish) — TZ-20 stavkasi (detal / modul boshiga, yoqilgan yoki o'chirilgan) → materials.labor (taxmin) */

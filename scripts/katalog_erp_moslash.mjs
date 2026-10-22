@@ -7,6 +7,7 @@
  *
  * Reja qoidalari (qoida 4.3 — narx o'ylab topilmaydi):
  *   PLITA     bir qiymatli moslik: narx — ERP display_price_uzs > 0 bo'lsa; narxsiz (ERP 0/yo'q) — mavjud qiymat O'ZGARMAYDI.
+ *             lst (TZ-48) — ERP price_list_uzs > 0 bo'lsa (ro'yxat/sotuv narxi; plita «sotuv» rejimi: lst − 25 000); yo'q bo'lsa katalogda `lst` yo'q.
  *             list formati (l×w) — ERP length/width ikkalasi > 100 bo'lsa; nomdagi maydon (4,575 …) ERP formatiga zid bo'lsa — format TEGILMAYDI ("format_ziddiyat").
  *             qalinlik (th) O'ZGARMAYDI: u erpKod() (admin narxi, dekor-asosiy.json, saqlangan loyihalar kaliti) ning bir qismi, ERP qalinligi esa
  *             ba'zan noto'g'ri (1, 15, 179 mm) — farqlar faqat hisobotga yoziladi.
@@ -79,7 +80,9 @@ export function reja(erp, sheetsDoc, furnDoc, stolDoc = { items: [] }) {
       const th = raqam(e.thickness);
       if (th > 0 && th !== s.th) out.th_farq.push({ sku: s.sku, nom: s.name, katalog: s.th, erp: th, erp_kategoriya: e.category_name || '' });
       const usd = yangiUzs > 0 && raqam(e.price_usd) > 0 ? yaxlit4(raqam(e.price_usd)) : null;
+      const lst = raqam(e.price_list_uzs);                      // TZ-48: ERP ro'yxat (sotuv) narxi — plita «sotuv» rejimi uchun (katalogda `lst`); 0/yo'q — null
       out.plita.push({ i, sku: s.sku, nom: s.name, erp_id: q.erp_id, h: q.h, eski_uzs: s.uzs || 0, yangi_uzs: yangiUzs, eski_usd: s.usd || 0, yangi_usd: usd,
+                       eski_lst: s.lst || 0, yangi_lst: lst > 0 ? Math.round(lst) : null,
                        eski_lw: [s.l, s.w], yangi_lw: l != null ? [l, w] : null, foiz: q.foiz });
     } else {
       const it = furnById.get(q.k);

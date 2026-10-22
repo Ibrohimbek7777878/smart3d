@@ -298,6 +298,7 @@
    "sku": "0110 SM",
    "nom": "ЛДСП Ультрадекор 5,0325 Белый гладкий 0110 16мм",
    "uzs": 341761,
+   "lst": 410000,
    "l": 2750,
    "w": 1830,
    "manba": "ERP",
@@ -309,6 +310,7 @@
    "sku": "0101 SM",
    "nom": "ЛМДФ 1/2 5,796 Белый Гладкий (односторонний) 16мм",
    "uzs": 580515,
+   "lst": 640000,
    "l": 2800,
    "w": 2070,
    "manba": "ERP",
@@ -320,6 +322,7 @@
    "sku": "0110 PE",
    "nom": "ЛХДФ 2,5мм 2800*2070 Белый 5,796кв",
    "uzs": 140000,
+   "lst": 165000,
    "l": 2800,
    "w": 2070,
    "manba": "ERP",
@@ -329,7 +332,7 @@
   }
  },
  "sukut_narx": {
-  "_izoh": "TZ-32 E (2026-10-18): sukut narx stavkalari — Bittada ERP xizmatlar jadvalidan (mijoz narxi, client_price; faqat o'qish). Boshlang'ich hujjat (narxSukut) shu yerdan to'ldiriladi; egasi/admin Sozlamalar → Narxlar da o'zgartiradi. 'tanlov' — oldindan tanlangan qator (raspil: Holzma 2 — ERP buyurtmalarida eng ko'p; kromka: korpus 19/0,4 — 3 000/m, fasad 19/2 — 4 900/m (egasi); prisadka: teshik turi → ERP присадка xizmati). 'bazis' — usta narx panelida tanlaydigan xizmat (sukut o'chiq, S3): onlayn = Bazis3 (3 000/detal), oflayn = Bazis6 (6 000/detal). TZ-36 (2026-10-18): kromka — eni/qalinligiga qarab (kalit E<eni>x<qalinlik>: Bazis kromka nomi «19/1» → ERP «ПВХ 19/1 прямая» 4 000; 21/1 — «глянцевая прямая» 4 800 (oddiy «21/1 прямая» ERP'da yo'q); 35/1 — 5 700; 42/2 — «глянцевая прямая» 9 500; kod bo'yicha tanlov (PVC04, PVC2) ustun). raspil_yupqa — HDF/3 mm list uchun Holzma 1 (25 000); LDSP uchun raspil — Holzma 2. Prisadka ЕВРО: yuza+qirra bitta juftlik (cutlist.js).",
+  "_izoh": "TZ-32 E (2026-10-18): sukut narx stavkalari — Bittada ERP xizmatlar jadvalidan (mijoz narxi, client_price; faqat o'qish). Boshlang'ich hujjat (narxSukut) shu yerdan to'ldiriladi; egasi/admin Sozlamalar → Narxlar da o'zgartiradi. 'tanlov' — oldindan tanlangan qator (raspil: Holzma 2 — ERP buyurtmalarida eng ko'p; kromka: korpus 19/0,4 — 3 000/m, fasad 19/2 — 4 900/m (egasi); prisadka: teshik turi → ERP присадка xizmati). 'bazis' — Bazis loyiha xizmati (TZ-48, egasi #301/#302: sukutda YOQILGAN, usta narx panelida o'chira oladi): 'onlayn' = Bazis5 (5 000/detal; faqat 16, 18, 19 mm detallar soni, HDF hisobga olinmaydi); Bazis3/Bazis6 (3 000/6 000) katalogda qoladi, 'oflayn' ga admin bog'lasa ishlatiladi. TZ-48: prisadka xizmatlari 12 ta (ERP: + ОВАЛ КАТТА 10 000, ОВАЛ КИЧИК 3 000, ОВАЛ КИЧИК 5 5 000, Паз 4 000 — teshik turiga bog'lash alohida). TZ-36 (2026-10-18): kromka — eni/qalinligiga qarab (kalit E<eni>x<qalinlik>: Bazis kromka nomi «19/1» → ERP «ПВХ 19/1 прямая» 4 000; 21/1 — «глянцевая прямая» 4 800 (oddiy «21/1 прямая» ERP'da yo'q); 35/1 — 5 700; 42/2 — «глянцевая прямая» 9 500; kod bo'yicha tanlov (PVC04, PVC2) ustun). raspil_yupqa — HDF/3 mm list uchun Holzma 1 (25 000); LDSP uchun raspil — Holzma 2. Prisadka ЕВРО: yuza+qirra bitta juftlik (cutlist.js).",
   "xizmatlar": {
    "7802360156": {
     "nom": "Услуга Распила Holzma 2",
@@ -493,6 +496,51 @@
     "manba": "sex jadvali",
     "sana": "2026-10-18"
    },
+   "01": {
+    "nom": "Bazis5",
+    "guruh": "bazis",
+    "qiymat": 5000,
+    "birlik": "detal",
+    "kategoriya": "Bazis",
+    "manba": "sex jadvali",
+    "sana": "2026-10-22"
+   },
+   "780236010876": {
+    "nom": "ПРИСАДКА ОВАЛ КАТТА",
+    "guruh": "prisadka",
+    "qiymat": 10000,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-22"
+   },
+   "780236010786": {
+    "nom": "ПРИСАДКА ОВАЛ КИЧИК",
+    "guruh": "prisadka",
+    "qiymat": 3000,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-22"
+   },
+   "780236012496": {
+    "nom": "ПРИСАДКА ОВАЛ КИЧИК 5",
+    "guruh": "prisadka",
+    "qiymat": 5000,
+    "birlik": "dona",
+    "kategoriya": "Услуги сверления",
+    "manba": "sex jadvali",
+    "sana": "2026-10-22"
+   },
+   "780236010805": {
+    "nom": "Присадка Паз",
+    "guruh": "prisadka",
+    "qiymat": 4000,
+    "birlik": "dona",
+    "kategoriya": "Услуги пазования",
+    "manba": "sex jadvali",
+    "sana": "2026-10-22"
+   },
    "780236012397": {
     "nom": "Услуга ПВХ 19/1 прямая",
     "guruh": "kromka",
@@ -559,8 +607,7 @@
     "mark": "780236010863"
    },
    "bazis": {
-    "onlayn": "03",
-    "oflayn": "04"
+    "onlayn": "01"
    },
    "raspil_yupqa": "7802360124"
   }
@@ -754,9 +801,17 @@
  ],
  "kerf": 4,
  "pricing": {
-  "markup_pct": 0.35,
-  "price_src": "egasi, 2026-10-17",
-  "note": "Mijoz narxi = tannarx × (1 + markup_pct). 35% — egasi tasdiqladi (2026-10-17, SORIZLAR #181: \"35 foiz qolsin\"). Usta o'z ustamasini Sozlamalarda, admin — Narxlar bo'limida o'zgartira oladi."
+  "markup_pct": 0,
+  "markup_taklif": 0.35,
+  "price_src": "egasi, 2026-10-22",
+  "note": "TZ-48 (egasi #301, 2026-10-22): ustama sukutda QO'SHILMAYDI (0%). Usta narx panelida ustamani qo'lda yoqadi va foizini o'zgartiradi; taklif qiymati — 35% (markup_taklif; avval 2026-10-17 da egasi tasdiqlagan sukut edi). Mijoz narxi = (plita + furnitura) × (1 + ustama) + xizmatlar. Admin — Narxlar bo'limida sukut ustamani o'zgartira oladi (qo'lda kiritilgan admin qiymati ustun)."
+ },
+ "plita_narx": {
+  "rejim": "sotuv",
+  "chegirma": 25000,
+  "koef": 1.156,
+  "price_src": "egasi, 2026-10-22",
+  "note": "TZ-48 (egasi #302, Q1): plita narxi = ERP O'RTACHA SOTUV narxi. rejim 'sotuv': ERP ro'yxat narxi (price_list_uzs, katalogda `lst`) − chegirma (25 000 so'm: 14 real buyurtmada o'rtacha sotuv narxi ro'yxatdan 25 000 past); ro'yxat narxi yo'q bo'lsa — ERP tannarx (display_price_uzs) × koef (1,156: real sotuvlarda o'rtacha sotuv/tannarx). rejim 'tannarx': ERP tannarxi (avvalgi qoida). Faqat narx hisobiga (kroy va list soni o'zgarmaydi); faqat ERP manbali plita narxiga (admin qo'lda kiritgan narx va taxminiy narx o'zgarmaydi). Admin Narxlar bo'limida rejim, chegirma va koef o'zgartiriladi."
  },
  "kromka_chiqit": {
   "foiz": 8,
