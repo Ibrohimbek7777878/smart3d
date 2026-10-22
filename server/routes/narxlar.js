@@ -40,8 +40,8 @@ export default function narxlarRouter({ db, jurnal, auth, adminOnly }) {
   });
   /** TZ-36 P7: sukut stavkalarga qaytarish (admin). Serverda admin avval saqlagan eski qiymat (masalan ish haqi) bazada qoladi —
    *  yangilashdan keyin shu endpoint uni materials.json dagi sukutga (ish haqi 0, "egasi" manbasi) qaytaradi.
-   *  qamrov: 'ish_haqi' | 'ustama' | 'hammasi' (xizmatlar + tanlov + ish haqi + ustama). Har o'zgarish narx_history ga (kim, eski → yangi). */
-  const QAMROV = { ish_haqi: ['ish_haqi'], ustama: ['ustama'], hammasi: ['xizmatlar', 'tanlov', 'ish_haqi', 'ustama'] };
+   *  qamrov: 'ish_haqi' | 'ustama' | 'plita' | 'hammasi' (xizmatlar + tanlov + ish haqi + ustama + plita). Har o'zgarish narx_history ga (kim, eski → yangi). */
+  const QAMROV = { ish_haqi: ['ish_haqi'], ustama: ['ustama'], plita: ['plita'], hammasi: ['xizmatlar', 'tanlov', 'ish_haqi', 'ustama', 'plita'] };   // TZ-48: plita narx rejimi ham
   const yassi = (doc, bolimlar) => {
     const o = {};
     for (const b of bolimlar) {

@@ -14,7 +14,7 @@ import { qoshXizmat, qoshOlib } from './narxActions.js';
  * Narx — ERP xizmatlar jadvali (yoki narx hujjatidagi yangi narx); Smart3D katalogidagi (ERP emas) xizmat «taxmin» deb belgilanadi — narx o'ylab topilmaydi. */
 const MAX = 80;
 const MANBA = { 'sex jadvali': 'erp', egasi: 'egasi', taxmin: 'taxmin' };
-const birlikNomi = (u) => { const k = 'narx.u_' + u, v = t(k); return v === k ? String(u || '') : v; };
+const birlikNomi = (u) => { const v = t('narx.u_' + u); return v === 'narx.u_' + u ? String(u || '') : v; };
 
 function Qator({ x, bor }) {
   const [soni, setSoni] = useState('1');

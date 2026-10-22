@@ -835,8 +835,6 @@
  "narx.teshik_yoq": "loyihada teshik yo'q",
  "narx.bazis": "Bazis loyiha",
  "narx.bazis_olindi": "Bazis loyiha smetadan olindi",
- "narx.bazis_onlayn": "Bazis loyiha (onlayn)",
- "narx.bazis_oflayn": "Bazis loyiha (oflayn)",
  "narx.bazis_q": "{n} detal · {s} so'm/detal",
  "narx.bazis_qoshildi": "Bazis loyiha smetaga qo'shildi",
  "narx.bazis_sub": "{n} detal (16/18/19 mm) × {s} = {j} so'm · HDF va boshqa qalinlik: {h} ta hisobga olinmaydi",
@@ -2006,5 +2004,7 @@
  "narxlar.plita_chegirma": "Ro'yxat narxidan chegirma",
  "narxlar.plita_koef": "Koeffitsient (ro'yxat narxi yo'q bo'lsa)",
  "narxlar.b_som": "so'm",
- "narxlar.b_koef": "× tannarx"
+ "narxlar.b_koef": "× tannarx",
+ "narx.raspil_qosh_nom": "Qo'shimcha raspil (+1 list)",
+ "narx.raspil_yupqa_nom": "Raspil (HDF, yupqa list)"
 }

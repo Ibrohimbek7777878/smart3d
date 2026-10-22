@@ -33,10 +33,11 @@ const B = await import('../app/js/engine/bazis/b3d.js');
 const { bazisLoyiha, materiallarniQosh } = await import('../app/js/engine/bazis/loyiha.js');
 const { nestProject } = await import('../app/js/engine/nesting.js');
 const { nomTahlil, nomFormati, bazisniERPga } = await import('../app/js/engine/plitaMoslash.js');
-const { narxSukut, kromkaOlchamKaliti } = await import('../app/js/engine/narxStavka.js');
+const { narxSukut, kromkaOlchamKaliti, plitaNarxi, plitaSozlama } = await import('../app/js/engine/narxStavka.js');
 const { bazisAlmash } = E;
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
+const plitaSz = plitaSozlama(null);   // TZ-48: plita narx qoidasi (ERP o'rtacha sotuv) — sukut sozlama
 const ASOSIY = process.env.SMART3D_ASOSIY || join(ROOT, '..', 'Smart3D');
 const PAKET = process.env.SMART3D_TOPLAM || join(ASOSIY, 'Smart3D_toplam_2026-10-16');
 const MALUMOT = process.env.SMART3D_MALUMOT || join(ASOSIY, 'Smart3D_malumot');
@@ -250,7 +251,7 @@ const sozKls = (nom, t, tur) => (tur === 'hdf' || /хдф/i.test(nom) ? 'hdf' : 
 /** ERP mahsulot → erpQosh uchun "sheet" yozuvi (sheet-catalog.json shakli); narx = display_price_uzs (tannarx) */
 function sheetYozuv(q, fmt) {
   const p = q.p || {};
-  return { id: p.id || '', sku: q.sku, name: q.nom, th: thNomdan(q.nom, p), l: p.length > 100 ? p.length : fmt[0], w: p.width > 100 ? p.width : fmt[1], uzs: q.tannarx || 0, type: turNomdan(q.nom) };
+  return { id: p.id || '', sku: q.sku, name: q.nom, th: thNomdan(q.nom, p), l: p.length > 100 ? p.length : fmt[0], w: p.width > 100 ? p.width : fmt[1], uzs: q.tannarx || 0, ...(q.royxat > 0 ? { lst: q.royxat } : {}), type: turNomdan(q.nom) };   // TZ-48: lst — ERP ro'yxat narxi (plita «sotuv» rejimi)
 }
 
 function moslash(rs, erp, gl) {
@@ -310,7 +311,7 @@ const xona = { outline: [[0, 0], [5000, 0], [5000, 3000], [0, 3000]], wall_heigh
 async function bizHisob(rs, ms, { gibFormat = false, avto = false } = {}) {
   const H = await yangiH();
   const doc = { v: 1, room: xona, placements: [{ id: 'bz1', frg: rs.fragment.code, name: 'bz', x: 500, y: 0, z: 0, w: rs.fragment.w, d: rs.fragment.d, h: rs.fragment.h, rot: 0, qty: 1 }],
-    bazis: { fragment: rs.fragment, materiallar: JSON.parse(JSON.stringify(rs.materiallar)), hisobot: rs.hisobot, almash: {} }, xizmatlar: { teshik: true, bazis: 'onlayn' }, mijozMat: {} };
+    bazis: { fragment: rs.fragment, materiallar: JSON.parse(JSON.stringify(rs.materiallar)), hisobot: rs.hisobot, almash: {} }, mijozMat: {} };   // TZ-48: xizmatlar berilmaydi — sukut: prisadka, Bazis va +1 raspil yoqilgan
   /* stoleshnitsa (Bazis panel, material STOL…): ERP sotuvida stoleshnitsa mahsuloti bo'lmasa — mijoz materiali (narxga kirmaydi), aks holda ilova narxi */
   const stolKodlar = [...new Set(rs.fragment.parts.filter(p => /^STOL/.test(p.material_code || '')).map(p => p.material_code))];
   if (!ms.erpStol) for (const k of stolKodlar) doc.mijozMat[k] = true;
@@ -435,7 +436,8 @@ for (const n of natijalar) {
   n.qism.boshqa = { erp: erp.qismlar.boshqa, biz: 0 };
   /* plita narx siyosati (ustama) ta'siri: ERP varaq sonida bizning tannarx×1.35 ↔ ERP sotuv narxi */
   const plitaERP = [...erp.plita, ...erp.hdf, ...erp.stol.filter(x => !x.xizmat)];
-  n.siyosat = { erpTannarxKorsatma: sum(plitaERP.map(q => (q.tannarx != null ? q.tannarx * q.qty * mk : q.jami))), erpSotuv: sum(plitaERP.map(q => q.jami)) };
+  /* TZ-48: bizning plita narx qoidasi (ERP o'rtacha sotuv: ro'yxat − 25 000 / tannarx × 1,156; ustama bo'lsa ×(1+ustama)) ERP varaq soni va SKU lariga qo'llangan ↔ ERP sotuv */
+  n.siyosat = { erpTannarxKorsatma: sum(plitaERP.map(q => (q.tannarx != null ? plitaNarxi(q.tannarx, q.royxat, plitaSz).narx * q.qty * mk : q.jami))), erpSotuv: sum(plitaERP.map(q => q.jami)) };
   n.siyosat.erpRoyxat = sum(plitaERP.map(q => (q.royxat != null ? q.royxat * q.qty : q.jami)));
   n.siyosat.farq = n.siyosat.erpTannarxKorsatma - n.siyosat.erpSotuv;
   n.jami = { erpSotuv: erp.sotuv, erpRoyxat: erp.erpRoyxat, erpTannarx: erp.erpTannarx, bizTannarx: biz.tannarxFurnsiz, bizMijoz: biz.mijozFurnsiz, bizTannarxFurnBilan: biz.tannarx, bizMijozFurnBilan: biz.mijoz, avtoTannarx: n.bizA.tannarxFurnsiz, avtoMijoz: n.bizA.mijozFurnsiz };
@@ -483,13 +485,13 @@ function varaqSabab(n, q, r, bizQty) {
 }
 
 /* mijoz narxi farqining (biz − ERP sotuv, furnitura'siz) AMALIY SABABLARGA bo'linishi — yig'indisi jami farqqa teng */
-const PARCHA = [['siyosat', "plita ustama siyosati (tannarx×1,35 ↔ ERP sotuv narxi)"], ['plitaVaraq', 'LDSP/Kashtan/LEGE varaq soni'], ['hdfVaraq', "HDF varaq soni (ERP'da sotilgan)"], ['hdfYoq', "HDF: Bazis'da bor, ERP'da sotilmagan"], ['stol', 'stoleshnitsa (ilova narxi ↔ sotilgan)'], ['kromka', 'kromka (metr, tur, chiqit)'],
+const PARCHA = [['siyosat', "plita narx qoidasi (ro'yxat − 25 000 / tannarx × 1,156 ↔ ERP sotuv narxi)"], ['plitaVaraq', 'LDSP/Kashtan/LEGE varaq soni'], ['hdfVaraq', "HDF varaq soni (ERP'da sotilgan)"], ['hdfYoq', "HDF: Bazis'da bor, ERP'da sotilmagan"], ['stol', 'stoleshnitsa (ilova narxi ↔ sotilgan)'], ['kromka', 'kromka (metr, tur, chiqit)'],
   ['raspilMiqdor', 'raspil list soni'], ['raspilStavka', 'raspil stavkasi (stanok: Altendorf/Holzma, maxsus narx)'], ['ovalPaz', "prisadka ОВАЛ/ПАЗ (modellanmagan)"], ['prisadka', 'prisadka (7 modellangan tur)'], ['bazis', 'Bazis xizmati'], ['boshqa', "boshqa (noma'lum ERP xizmat)"]];
 for (const n of natijalar) {
   const q = n.qism, d = {};
   d.siyosat = n.siyosat.farq;
   const mk2 = 1 + n.biz.ustama, bizHdfSotuv = n.erp.hdf.length ? q.hdf.biz : 0;
-  const atOur = (arr) => sum(arr.filter(x => !x.xizmat).map(x => (x.tannarx != null ? x.tannarx * x.qty * mk2 : x.jami)));
+  const atOur = (arr) => sum(arr.filter(x => !x.xizmat).map(x => (x.tannarx != null ? plitaNarxi(x.tannarx, x.royxat, plitaSz).narx * x.qty * mk2 : x.jami)));   // TZ-48: bizning narx qoidasi bilan
   d.plitaVaraq = q.plita.biz - atOur(n.erp.plita);
   d.hdfVaraq = bizHdfSotuv - atOur(n.erp.hdf);
   d.hdfYoq = n.erp.hdf.length ? 0 : q.hdf.biz;
@@ -720,8 +722,8 @@ tbl(['komponent', 'n', "o'rtacha abs(xato)", 'mediana abs(xato)', "o'rtacha (bel
 H1('i) Eng katta 10 chetlanish (buyurtma × sabab; mijoz narxi bo\'yicha so\'m farqi: biz − ERP sotuv, furnitura\'siz)');
 tbl(['#', 'buyurtma', 'sabab', 'farq so\'m', 'ERP sotuv jami', 'ERP sotuvga %'], chet.slice(0, 10).map((x, i) => [i + 1, x.id, x.nom, soM(x.farq), soM(x.erp), pS(x.farq / x.erp * 100)]));
 
-H1('j) ERP plita narx siyosati: ERP varaq soni bilan bizning (tannarx × 1.35) ↔ ERP sotuv narxi (plita, HDF, stoleshnitsa mahsuloti)');
-tbl(['buyurtma', 'ERP sotuv (plita qatorlari)', 'tannarx×1.35', 'farq', 'farq %', 'ERP ustama (sotuv/tannarx)', 'price_list × varaq', 'price_list ↔ sotuv %'],
+H1('j) ERP plita narx siyosati: ERP varaq soni bilan bizning narx qoidamiz (TZ-48: ERP o\'rtacha sotuv narxi) ↔ ERP sotuv narxi (plita, HDF, stoleshnitsa mahsuloti)');
+tbl(['buyurtma', 'ERP sotuv (plita qatorlari)', 'bizning qoida', 'farq', 'farq %', 'ERP ustama (sotuv/tannarx)', 'price_list × varaq', 'price_list ↔ sotuv %'],
   natijalar.map(n => [n.id, soM(n.siyosat.erpSotuv), soM(n.siyosat.erpTannarxKorsatma), soM(n.siyosat.farq), pS(pct(n.siyosat.erpTannarxKorsatma, n.siyosat.erpSotuv)), n.ustamaERP.sotuv != null ? r1(n.ustamaERP.sotuv * 100) + '%' : '—', soM(n.siyosat.erpRoyxat), pS(pct(n.siyosat.erpRoyxat, n.siyosat.erpSotuv))]));
 P(`Plita narxi (ERP varaq soni bilan, ${natijalar.filter(n => n.siyosat.erpSotuv > 0).length} buyurtma, Σ): tannarx×1,35 ↔ ERP sotuv ${pS(pct(sum(natijalar.map(n => n.siyosat.erpTannarxKorsatma)), sum(natijalar.map(n => n.siyosat.erpSotuv))))}; price_list_uzs ↔ ERP sotuv ${pS(pct(sum(natijalar.map(n => n.siyosat.erpRoyxat)), sum(natijalar.map(n => n.siyosat.erpSotuv))))}; tannarx×1,00 ↔ ERP sotuv ${pS(pct(sum(natijalar.map(n => n.siyosat.erpTannarxKorsatma / (1 + n.biz.ustama))), sum(natijalar.map(n => n.siyosat.erpSotuv))))}`);
 P();

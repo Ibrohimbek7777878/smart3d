@@ -17,7 +17,7 @@ import { flipPrisadka, flipBazis, flipRaspil1, ustamaFlip, ustamaFoiz, qoshSoni,
 const RANGLAR = ['#FF7A45', '#5FE1C4', '#B9A6FF', '#FFB59A', '#F3F0E9'];    // dizayndagi raskroy ranglari
 const dec = (x) => String(x || 0).replace('.', ',');
 /** birlik (varaq, list, m, m2, dona, detal …) → tilda; lug'atda yo'q birlik (ERP: «шт», «reys») — o'zi */
-const birlikNomi = (u) => { const k = 'narx.u_' + u, v = t(k); return v === k ? String(u || '') : v; };
+const birlikNomi = (u) => { const v = t('narx.u_' + u); return v === 'narx.u_' + u ? String(u || '') : v; };
 /** manba (dvigatel) → ko'rinadigan kalit: ERP / egasi / qo'lda / taxmin / narx yo'q / mijoz */
 const MANBA = { ERP: 'erp', 'sex jadvali': 'erp', egasi: 'egasi', usta: 'qolda', qolda: 'qolda', taxmin: 'taxmin', yoq: 'yoq', mijoz: 'mijoz' };
 
@@ -58,6 +58,9 @@ function tarkibKorinishi(prod) {
   if (!T) return null;
   const qatorNomi = (bolim, r) => {
     if (bolim === 'plita' && r.qoida !== 'sigmadi' && r.qoida !== 'stol' && project.H && project.H.materials.panel_materials.some(m => m.code === r.kod)) return project.matName(r.kod) + (r.qoida === 'mijoz' ? t('narx.mijoz_mat') : '');
+    if (bolim === 'raspil') return r.kod === 'raspil_qosh' ? t('narx.raspil_qosh_nom') : r.kod === 'raspil_yupqa' ? t('narx.raspil_yupqa_nom') : t('narx.raspil');
+    if (bolim === 'bazis') return t('narx.bazis');
+    if (bolim === 'ish_haqi') return t('narx.ish_haqi');
     return String(r.nom || '').replace(/ — taxminiy$/, '').replace(/ — mijoz materiali$/, t('narx.mijoz_mat'));
   };
   const sozlar = (r) => {

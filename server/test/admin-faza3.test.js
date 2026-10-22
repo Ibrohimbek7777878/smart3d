@@ -221,7 +221,7 @@ test('tarix: har bo\'limdan o\'zgarish bitta ro\'yxatda (audit + narxlar); kim v
   const nx = j.items.filter(x => x.manba === 'narx');
   assert.equal(nx.length, 3); assert.ok(nx.every(x => /^n\d+$/.test(x.id) && x.bolim === 'narxlar' && x.qaytariladi === true && x.qaytarilgan === false));
   const ust = nx.find(x => x.kalit === 'ustama.foiz');
-  assert.equal(ust.eski.qiymat, 35); assert.equal(ust.yangi.qiymat, 40);
+  assert.equal(ust.eski.qiymat, 0); assert.equal(ust.yangi.qiymat, 40);   // TZ-48: sukut ustama 0%
   const fu = j.items.find(x => x.bolim === 'furnitura');
   assert.deepEqual([fu.kalit, fu.eski, fu.yangi.koef, fu.manba, fu.qaytariladi], ['TARIX-1', null, 0.5, 'audit', true]);
   assert.equal(j.kimlar.length, 2); TOK.id1 = j.kimlar[0].id; TOK.id2 = fu.kim_id;
@@ -286,7 +286,7 @@ test('narxlarni qaytarish: ustama — eski qiymat AYNAN tiklanadi (manba va sana
   assert.equal(j.jami, 2);
   assert.equal(j.items.find(x => x.id === ust.id).qaytarilgan, true); assert.equal(j.items.find(x => x.id === ust.id).qaytariladi, false);
   const yangi = j.items.find(x => x.id !== ust.id);
-  assert.deepEqual([yangi.eski.qiymat, yangi.yangi.qiymat, yangi.kim_id], [40, 35, TOK.id2], 'qaytarish: kim, eski → yangi');
+  assert.deepEqual([yangi.eski.qiymat, yangi.yangi.qiymat, yangi.kim_id], [40, 0, TOK.id2], 'qaytarish: kim, eski → yangi');
   assert.equal((await tarix(X, '?holat=qaytarilgan')).jami, 1);
   const q2 = await X.api('/api/admin/narx-qaytar/' + ust.id.slice(1), { method: 'POST', token: t, body: {} });
   assert.equal(q2.status, 409); assert.equal((await q2.json()).code, 'S3D-ADM-007');
@@ -294,7 +294,7 @@ test('narxlarni qaytarish: ustama — eski qiymat AYNAN tiklanadi (manba va sana
   assert.equal((await X.api('/api/admin/narx-qaytar/' + yangi.id.slice(1), { method: 'POST', token: t, body: {} })).status, 200);
   assert.equal((await narxHujjat(X)).ustama.foiz.qiymat, 40);
   assert.equal((await X.api('/api/admin/narx-qaytar/' + (await tarix(X, '?q=ustama&holat=faol')).items[0].id.slice(1), { method: 'POST', token: t, body: {} })).status, 200);
-  assert.equal((await narxHujjat(X)).ustama.foiz.qiymat, 35);
+  assert.equal((await narxHujjat(X)).ustama.foiz.qiymat, 0);
 });
 
 test('narxlarni qaytarish: xizmat va tanlov — bog\'liq tozalash; noma\'lum va noto\'g\'ri id', async () => {

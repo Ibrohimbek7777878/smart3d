@@ -975,7 +975,8 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     xizmat_taklif: { teshik: { tanlangan: teshikOn, qty: totalHoles, amount: teshikOn ? holeCost : holeTaklif },
       /* TZ-48: Bazis — qty: 16/18/19 mm detallar (HDF va boshqa qalinlik hisobga olinmaydi), jami: barcha detal; narx — detal boshiga (Bazis5); narxBor — stavka bor */
       bazis: { tanlangan: bazisOn && bRate[bTur] ? bTur : null, qty: bazisQty, jami: totalParts, narx: bRate[bTur] ? bRate[bTur].qiymat : 0, narxBor: !!bRate[bTur],
-        amount: bazisCost, taklif: bRate[bTur] ? bazisQty * bRate[bTur].qiymat : 0 },
+        amount: bazisCost, taklif: bRate[bTur] ? bazisQty * bRate[bTur].qiymat : 0,
+        onlayn: bRate.onlayn ? bazisQty * bRate.onlayn.qiymat : 0, oflayn: bRate.oflayn ? bazisQty * bRate.oflayn.qiymat : 0 },   // orqaga moslik (scripts/haqiqiy_solishtir.mjs)
       /* TZ-48: +1 qo'shimcha raspil — mumkin: stavka tanlangan va loyihada list bor; bor: hozir narxda; narx: bitta listning raspil narxi */
       raspil1: { mumkin: raspil1Mumkin, bor: raspil1Bor, narx: rx ? rx.qiymat : 0, amount: raspil1Bor ? rx.qiymat : 0 } },
     sheetCost,

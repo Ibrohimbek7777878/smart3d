@@ -840,8 +840,6 @@
  "narx.teshik_yoq": "no holes in the project",
  "narx.bazis": "Bazis project",
  "narx.bazis_olindi": "Bazis project removed from the estimate",
- "narx.bazis_onlayn": "Bazis project (online)",
- "narx.bazis_oflayn": "Bazis project (offline)",
  "narx.bazis_q": "{n} parts · {s} UZS/part",
  "narx.bazis_qoshildi": "Bazis project added to the estimate",
  "narx.bazis_sub": "{n} parts (16/18/19 mm) × {s} = {j} UZS · HDF and other thicknesses: {h} not counted",
@@ -2132,5 +2130,7 @@
  "narxlar.b_som": "UZS",
  "narxlar.b_koef": "× cost",
  "xato.S3D-NARX-104": "Service list (ERP) not loaded — no services in \"Add service\"",
- "xato.S3D-NARX-105": "Service not added — invalid quantity or price"
+ "xato.S3D-NARX-105": "Service not added — invalid quantity or price",
+ "narx.raspil_qosh_nom": "Extra sawing (+1 sheet)",
+ "narx.raspil_yupqa_nom": "Sawing (HDF, thin sheet)"
 }

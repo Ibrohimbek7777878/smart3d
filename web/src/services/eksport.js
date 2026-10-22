@@ -44,13 +44,15 @@ function hujjatTili(c) {
         : l.util != null ? t('hujjat.plita_q', { n: l.qty, p: l.util }) : t('hujjat.plita_taxmin', { n: l.qty })) + (l.mijoz ? t('hujjat.mijoz') : '');   // TZ-42: mijoz materiali
       if (l.group === 'Stoleshnitsa' && l.mijoz) return l.name.replace(' — mijoz materiali', '') + t('hujjat.mijoz');   // TZ-42
       if (l.group === 'Kromka') return materialNomi(c.H, l.code, asl(l.code)) + tx(l);
+      if (l.group === 'Xizmatlar' && l.code === 'bazis') return t('narx.bazis') + ' — ' + t('narx.bazis_q', { n: l.qty, s: l.unit_price });   // TZ-48: Bazis (teshik emas)
+      if (l.group === 'Xizmatlar' && l.qosh) return l.name;   // TZ-48: «Xizmat qo'shish» — ERP xizmat nomi
       if (l.group === 'Xizmatlar') return (l.code === 'hole:tanlanmagan' ? t('hujjat.teshik_tanlanmagan', { n: l.qty }) : t('hujjat.teshik_q', { n: l.qty })) + tx(l);
       if (l.group === 'Ish haqi') {   // TZ-32 A6: sex xizmatidan tanlangan raspil/kromka — nomda aytilmaydi (dvigatel bilan bir xil)
         const sx = l.sex_xizmati || [], r = sx.includes('raspil'), k = sx.includes('kromka');
         return (r && k ? t('hujjat.ish_haqi_yigish', { n: l.qty }) : r ? t('hujjat.ish_haqi_kromka', { n: l.qty })
           : k ? t('hujjat.ish_haqi_arralash', { n: l.qty }) : t('hujjat.ish_haqi_q', { n: l.qty })) + tx(l);
       }
-      if (l.group === 'Raspil') return t('narx.raspil') + ' — ' + t('narx.raspil_q', { n: l.qty, s: l.unit_price });   // TZ-20
+      if (l.group === 'Raspil') return (l.code === 'raspil_qosh' ? t('narx.raspil_qosh_nom') : t('narx.raspil')) + ' — ' + t('narx.raspil_q', { n: l.qty, s: l.unit_price });   // TZ-20; TZ-48: +1 qo'shimcha raspil
       return l.name;
     },
     birlik: (u) => (uz || !BIRLIK.includes(u) ? u : t('hujjat.u_' + u)),

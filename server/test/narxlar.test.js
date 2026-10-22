@@ -45,20 +45,24 @@ const admin = async () => (await (await api('/api/login', { method: 'POST', body
 let BOSH = null;   // TZ-32 E: boshlang'ich xizmatlar — ERP sukut stavkalari (materials.json sukut_narx)
 const RASPIL = { '780236019999': { nom: 'Услуга Распила Altendorf 1', guruh: 'raspil', qiymat: 18000, birlik: 'list', manba: 'sex jadvali', sana: '2026-07-03' } };
 
-test('boshlang\'ich holat: hamma o\'qiydi, ish haqi — 0 "egasi" (ERP: xizmat narxiga kiritilgan, #222 Q3), ustama 35% — "egasi" (materials.json, TZ-30)', async () => {
+test('boshlang\'ich holat: hamma o\'qiydi, ish haqi — 0 "egasi" (ERP: xizmat narxiga kiritilgan, #222 Q3), ustama 0% — "egasi" (materials.json, TZ-48: egasi #301), plita narx rejimi — sotuv', async () => {
   const r = await api('/api/narxlar');
   assert.equal(r.status, 200);
   const g = await r.json();
   BOSH = g.xizmatlar;
   assert.ok(Object.keys(BOSH).length >= 18 && Object.values(BOSH).every(r => r.manba === 'sex jadvali' && r.sana && r.qiymat > 0), 'sukut — ERP xizmatlari, manbali');
   assert.equal(g.tanlov.raspil, '7802360156', 'sukut raspil — Holzma 2');
-  assert.deepEqual(g.tanlov.bazis, { onlayn: '03', oflayn: '04' });
+  assert.deepEqual(g.tanlov.bazis, { onlayn: '01' }, 'TZ-48: Bazis — Bazis5 (5 000/detal), sukutda yoqilgan');
+  assert.equal(g.xizmatlar['01'].qiymat, 5000);
+  assert.equal(Object.values(g.xizmatlar).filter(r => r.guruh === 'prisadka').length, 12, 'TZ-48: prisadka xizmatlari 12 ta');
+  assert.deepEqual([g.plita.rejim.qiymat, g.plita.chegirma.qiymat, g.plita.koef.qiymat], ['sotuv', 25000, 1.156], 'TZ-48: plita narxi — ERP o\'rtacha sotuv narxi');
+  assert.equal(g.plita.rejim.manba, 'egasi');
   assert.equal(g.ish_haqi.detal.manba, 'egasi');   // TZ-32 yakuniy Q3: ish haqi ERP xizmat narxiga kiritilgan — stavka 0, tasdiqlangan
   assert.equal(g.ish_haqi.detal.qiymat, 0);
   assert.equal(g.ish_haqi.modul.qiymat, 0);
-  assert.equal(g.ustama.foiz.qiymat, 35);
-  assert.equal(g.ustama.foiz.manba, 'egasi');   // TZ-30: egasi tasdiqladi (#181, pricing.price_src "egasi, 2026-10-17")
-  assert.equal(g.ustama.foiz.sana, '2026-10-17');
+  assert.equal(g.ustama.foiz.qiymat, 0);   // TZ-48 (egasi #301): ustama sukutda qo'shilmaydi (avval TZ-30: 35%)
+  assert.equal(g.ustama.foiz.manba, 'egasi');   // materials.json pricing.price_src "egasi, 2026-10-22"
+  assert.equal(g.ustama.foiz.sana, '2026-10-22');
 });
 
 test('faqat admin: tokensiz 401, usta 403 (S3D-AUTH-006), tarix ham', async () => {
@@ -122,7 +126,7 @@ test('admin: xizmat + tanlov + ish haqi + ustama → saqlanadi, tarix (kim, eski
   const tarix = await (await api('/api/narxlar/tarix', { token: T })).json();
   assert.equal(tarix.length, 5);
   const ust = tarix.find(x => x.kalit === 'ustama.foiz');
-  assert.equal(ust.eski.qiymat, 35);
+  assert.equal(ust.eski.qiymat, 0);
   assert.equal(ust.yangi.qiymat, 30);
   assert.ok(ust.kim && ust.vaqt);
   assert.equal(tarix.find(x => x.kalit === 'xizmatlar.780236019999').eski, null);
@@ -151,7 +155,7 @@ test('TZ-36 P7: sukut stavkalarga qaytarish — faqat admin; eski ish haqi (12 0
     assert.equal(r.status, 400);
     assert.equal((await r.json()).code, 'S3D-NARX-001');
   }
-  /* ish haqi qaytadi; ustama (35 -> 30 test o'zgartirgan) tegilmaydi */
+  /* ish haqi qaytadi; ustama (0 -> 30 test o'zgartirgan) tegilmaydi */
   const oldin = await (await api('/api/narxlar')).json();
   const r = await api('/api/narxlar/sukut', { method: 'POST', token: T, body: { qamrov: 'ish_haqi' } });
   assert.equal(r.status, 200);
@@ -182,7 +186,33 @@ test('TZ-36 P7: qamrov "hammasi" — xizmat, tanlov, ustama ham boshlang\'ich ho
   const g = await (await api('/api/narxlar')).json();
   assert.deepEqual(g.xizmatlar, BOSH);
   assert.equal(g.tanlov.raspil, '7802360156');
-  assert.equal(g.ustama.foiz.qiymat, 35);
+  assert.equal(g.ustama.foiz.qiymat, 0);
   assert.equal(g.ustama.foiz.manba, 'egasi');
   assert.equal(g.ish_haqi.modul.qiymat, 0);
+});
+
+test('TZ-48: plita narx rejimi — admin o\'zgartiradi (sotuv / tannarx, chegirma, koeffitsient), noto\'g\'ri qiymat rad, tarixga yoziladi, sukutga qaytariladi', async () => {
+  const T = await admin();
+  const U = await usta('998991110779');
+  assert.equal((await api('/api/narxlar', { method: 'PUT', token: U.token, body: { plita: { rejim: 'tannarx' } } })).status, 403);
+  for (const plita of [{ rejim: 'x' }, { chegirma: -1 }, { chegirma: 2e6 }, { koef: 0.1 }, { koef: 9 }, { koef: 'abc' }]) {
+    const r = await api('/api/narxlar', { method: 'PUT', token: T, body: { plita } });
+    assert.equal(r.status, 400, JSON.stringify(plita));
+    assert.equal((await r.json()).code, 'S3D-NARX-001');
+  }
+  const r = await api('/api/narxlar', { method: 'PUT', token: T, body: { plita: { rejim: 'tannarx', chegirma: 30000, koef: 1.2 } } });
+  assert.equal(r.status, 200);
+  assert.equal((await r.json()).ozgarish, 3);
+  let g = await (await api('/api/narxlar')).json();
+  assert.deepEqual([g.plita.rejim.qiymat, g.plita.chegirma.qiymat, g.plita.koef.qiymat], ['tannarx', 30000, 1.2]);
+  assert.equal(g.plita.rejim.manba, 'egasi');
+  const tarix = await (await api('/api/narxlar/tarix', { token: T })).json();
+  const t = tarix.find(x => x.kalit === 'plita.rejim');
+  assert.equal(t.eski.qiymat, 'sotuv'); assert.equal(t.yangi.qiymat, 'tannarx'); assert.ok(t.kim);
+  /* sukutga qaytarish: faqat plita (qamrov "plita") — ustama tegilmaydi */
+  const ust = g.ustama;
+  assert.equal((await (await api('/api/narxlar/sukut', { method: 'POST', token: T, body: { qamrov: 'plita' } })).json()).ozgarish, 3);
+  g = await (await api('/api/narxlar')).json();
+  assert.deepEqual([g.plita.rejim.qiymat, g.plita.chegirma.qiymat, g.plita.koef.qiymat], ['sotuv', 25000, 1.156]);
+  assert.deepEqual(g.ustama, ust);
 });

@@ -839,8 +839,6 @@
  "narx.teshik_yoq": "в проекте нет отверстий",
  "narx.bazis": "Проект Bazis",
  "narx.bazis_olindi": "Проект Bazis убран из сметы",
- "narx.bazis_onlayn": "Проект Bazis (онлайн)",
- "narx.bazis_oflayn": "Проект Bazis (оффлайн)",
  "narx.bazis_q": "{n} дет. · {s} сум/деталь",
  "narx.bazis_qoshildi": "Проект Bazis добавлен в смету",
  "narx.bazis_sub": "{n} дет. (16/18/19 мм) × {s} = {j} сум · HDF и другие толщины: {h} не считаются",
@@ -2129,5 +2127,7 @@
  "narxlar.b_som": "сум",
  "narxlar.b_koef": "× себестоимость",
  "xato.S3D-NARX-104": "Список услуг (ERP) не загружен — в «Добавить услугу» нет услуг",
- "xato.S3D-NARX-105": "Услуга не добавлена — неверное количество или цена"
+ "xato.S3D-NARX-105": "Услуга не добавлена — неверное количество или цена",
+ "narx.raspil_qosh_nom": "Дополнительный распил (+1 лист)",
+ "narx.raspil_yupqa_nom": "Распил (HDF, тонкий лист)"
 }
