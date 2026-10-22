@@ -27,7 +27,28 @@ const FURN = [
   { k: '90000002', sku: 'F2', nom: 'Ручка Тест F2', fayl: 20000 }
 ];
 const KAT = { plita: PLITA, furnitura: FURN, stoleshnitsa: [], kurs: 12800, kodlar: { plita: new Set(PLITA.map(x => x.k)), furnitura: new Set(FURN.map(x => x.k)) } };
-const KATALOG = { ol: () => KAT, qaynoq: () => ({ plita: new Set(['ERP-t1', 'ERP-t2']), furnitura: new Set(['90000001']) }) };
+const BOSH_SUKUT = () => new Map();                                         // sintetik sinovlarda sukut plitalar yo'q (haqiqiy materials.json ga bog'lanmaydi)
+const KATALOG = { ol: () => KAT, qaynoq: () => ({ plita: new Set(['ERP-t1', 'ERP-t2']), furnitura: new Set(['90000001']) }), sukut: BOSH_SUKUT };
+/* katalog yozuvlarida `cat` bor (haqiqiy katalogdagidek: ERP category_name bilan AYNAN bir xil) — kategoriya NOMI bo'yicha ustuvorlik sinovlari uchun */
+const KAT_CAT = { ...KAT, plita: PLITA.map((x, i) => ({ ...x, cat: i === 3 ? 'Пусто Тест' : 'ЛДСП Тест' })), furnitura: FURN.map(x => ({ ...x, cat: 'Фурнитура Тест' })),
+  stoleshnitsa: [{ erp_id: 5001, sku: 'ST1', nom: 'Столешница тест 3050*600*26мм', narx_m2: 200000, cat: 'Столешницы Тест' }] };
+const KATALOG_CAT = { ol: () => KAT_CAT, qaynoq: KATALOG.qaynoq, sukut: BOSH_SUKUT };
+/** 1000 kategoriyali ERP (haqiqiy ERP kabi): plita/furnitura/stoleshnitsa kategoriyalari ro'yxat OXIRIDA (id 873, 421, 650), qolgan 996 tasi katalogga aloqasiz */
+function erp1000() {
+  const kategoriyalar = Array.from({ length: 1000 }, (_, i) => ({ id: i + 1, name: 'Kategoriya ' + (i + 1), parent: null, products_count: 5 }));
+  kategoriyalar[872] = { id: 873, name: 'ЛДСП Тест', parent: null, products_count: 4 };
+  kategoriyalar[420] = { id: 421, name: 'Фурнитура Тест', parent: null, products_count: 2 };
+  kategoriyalar[649] = { id: 650, name: 'Столешницы Тест', parent: null, products_count: 1 };
+  kategoriyalar[6] = { id: 7, name: 'Пусто Тест', parent: null, products_count: 0 };
+  const mahsulotlar = [
+    erpMahsulot({ id: 101, sku: 'A100', name: PLITA[0].nom, kat: 873, uzs: 312000 }), erpMahsulot({ id: 102, sku: 'A200', name: PLITA[1].nom, kat: 873, uzs: 400000 }),
+    erpMahsulot({ id: 103, sku: 'A300', name: PLITA[2].nom, kat: 873, uzs: 500000 }), erpMahsulot({ id: 777, sku: 'N1', name: 'Boshqa narsa', kat: 873, uzs: 5 }),
+    erpMahsulot({ id: 201, sku: 'F1', name: FURN[0].nom, kat: 421, uzs: 10500 }), erpMahsulot({ id: 202, sku: 'F2', name: FURN[1].nom, kat: 421, uzs: 20000 }),
+    erpMahsulot({ id: 5001, sku: 'ST1', name: 'Столешница тест 3050*600*26мм', kat: 650, uzs: 210000, unit: 'м2' }),
+    ...Array.from({ length: 5 }, (_, i) => erpMahsulot({ id: 8000 + i, sku: 'K' + i, name: 'Aloqasiz ' + i, kat: 5, uzs: 1000 + i }))
+  ];
+  return { kategoriyalar, mahsulotlar };
+}
 const KATLAR = [{ id: 1, name: 'ЛДСП Тест' }, { id: 2, name: 'Фурнитура Тест' }, { id: 3, name: 'Мусор' }, { id: 4, name: 'Пусто' }];
 
 const shovqin = (kat, n, bosh) => Array.from({ length: n }, (_, i) => erpMahsulot({ id: bosh + i, sku: 'N' + (bosh + i), name: 'Шуруп шум ' + (bosh + i), kat, uzs: 1000 + i }));
@@ -97,6 +118,148 @@ test('erpQatorNormal / kursMediana: nofaol qator tashlanadi, dollar ERP kursida,
   assert.equal(erpQatorNormal({ id: 1, name: 'a', display_price_uzs: -5 }).qator.display_price_uzs, -1);
   assert.equal(kursMediana([{ price: 117736.8, usd: 10 }, { price: 235473.6, usd: 20 }, { price: 11773.68, usd: 1 }, { price: 1, usd: 0 }]), 11773.68);
   assert.equal(kursMediana([{ price: 100, usd: 1 }]), 0, 'kamida 3 ta namuna');
+});
+
+/* ═══════════ kategoriya NOMI bo'yicha ustuvorlik (haqiqiy ERP: ~1000 kategoriya) ═══════════ */
+test('1000 kategoriyali ERP: BIRINCHI qaynoq tsiklning o\'zidayoq plita va furnitura o\'z kategoriyasi (katalogdagi cat nomi) orqali yangilanadi; byudjet ≤ ~60 so\'rov', async () => {
+  const m = await muhit({ erp: erp1000(), katalog: KATALOG_CAT });
+  const st = await m.jonli.aylanish('qaynoq');
+  assert.equal(st.xato, null, JSON.stringify(st.xato));
+  const g = m.erp.getlar();
+  const royxat = g.filter(x => x.path === '/api/v2/products/categories/');
+  assert.equal(royxat.length, 20, '1000 kategoriya = 20 sahifa ro\'yxat (mahsulot so\'rovi emas)');
+  const mahs = g.filter(x => x.path === '/api/v2/products/').map(x => x.query.category);
+  assert.deepEqual([...new Set(mahs)].sort(), ['421', '873'], 'faqat qaynoq plita/furnitura kategoriyalari o\'qildi (kashf kerak emas)');
+  assert.ok(st.sorov <= 60, `birinchi qaynoq tsikl so'rovi: ${st.sorov}`);
+  assert.equal(m.layer()['plita:ERP-t1'], 312000, 'plita narxi birinchi tsiklda yangilandi');
+  assert.equal(m.layer()['furnitura:90000001'], 10500, 'furnitura ham');
+  /* diagnostika: kuzatilayotgan obyektlar va kashf qilinmagan kategoriyalar */
+  const h = m.jonli.holat();
+  assert.deepEqual(h.kuzatilayotgan, { plita: 3, furnitura: 2, xizmat: 2, sukut: 0 });
+  assert.deepEqual(h.katalog, { plita: 4, furnitura: 2, qaynoq_plita: 2, qaynoq_furnitura: 1, qaynoq_sukut: 0 });
+  assert.equal(h.kategoriyalar.jami, 1000); assert.equal(h.kategoriyalar.nom_mos, 4);            // ЛДСП Тест, Пусто Тест, Фурнитура Тест, Столешницы Тест
+  assert.equal(h.kategoriyalar.qaynoq, 2); assert.equal(h.kategoriyalar.qaynoq_nomalum, 0);
+  assert.equal(h.kategoriyalar.kashf, 3, 'o\'qilgan 2 + bo\'sh (products_count=0) 1');
+  assert.equal(h.kategoriyalar.kashf_qilinmagan, 997, '1000 − 2 (o\'qilgan) − 1 (bo\'sh)');
+  assert.equal(h.kategoriyalar.nom_mos_kashf_qilinmagan, 1, 'stoleshnitsa kategoriyasi to\'liq aylanishda o\'qiladi');
+  /* ikkinchi qaynoq tsikl: ro'yxat qayta so'ralmaydi, yana faqat 2 kategoriya + xizmatlar */
+  m.erp.tozala();
+  const st2 = await m.jonli.aylanish('qaynoq');
+  assert.equal(m.erp.getlar().filter(x => x.path === '/api/v2/products/categories/').length, 0);
+  assert.ok(st2.sorov <= 4, `ikkinchi tsikl: ${st2.sorov}`);
+  await m.yop();
+});
+
+test('to\'liq aylanish 1000 kategoriyada: avval plita/furnitura, so\'ng nomi katalogga mos (stoleshnitsa), keyin faqat kichik byudjet (40) bilan boshqalar; bo\'sh kategoriya o\'qilmaydi', async () => {
+  const m = await muhit({ erp: erp1000(), katalog: KATALOG_CAT });
+  const st = await m.jonli.aylanish('toliq');
+  assert.equal(st.xato, null, JSON.stringify(st.xato));
+  const mahs = m.erp.getlar().filter(x => x.path === '/api/v2/products/').map(x => x.query.category);
+  assert.deepEqual(mahs.slice(0, 2).sort(), ['421', '873'], 'plita va furnitura kategoriyalari BIRINCHI');
+  assert.equal(mahs[2], '650', 'nomi katalogga mos kategoriya (stoleshnitsa) keyin');
+  assert.ok(!mahs.includes('7'), 'products_count=0 kategoriya o\'qilmaydi');
+  const kashf = mahs.slice(3);
+  assert.ok(kashf.length > 0 && kashf.length <= 40, `kashf so'rovlari ${kashf.length} (byudjet 40)`);
+  assert.ok(st.sorov <= 2 + 20 + 3 + 40 + 1, `to'liq tsikl so'rovi ${st.sorov} (login 2 + ro'yxat 20 + plita/furnitura/stoleshnitsa 3 + kashf ≤ 40 + xizmat 1)`);
+  assert.equal(m.layer()['plita:ERP-t1'], 312000);
+  const h = m.jonli.holat();
+  assert.equal(h.kategoriyalar.nom_mos_kashf_qilinmagan, 0);
+  assert.equal(h.kategoriyalar.kashf_qilinmagan, 996 - kashf.length);
+  /* keyingi to'liq tsikl: kashf davom etadi (yana ≤ 40), plita/furnitura/stoleshnitsa qayta o'qiladi */
+  m.erp.tozala();
+  await m.jonli.aylanish('toliq');
+  const mahs2 = m.erp.getlar().filter(x => x.path === '/api/v2/products/').map(x => x.query.category);
+  assert.deepEqual(mahs2.slice(0, 3).sort(), ['421', '650', '873']);
+  assert.ok(mahs2.length - 3 <= 40);
+  assert.equal(m.jonli.holat().kategoriyalar.kashf_qilinmagan, 996 - kashf.length - (mahs2.length - 3), 'kashf oldingi qolgan joydan davom etdi');
+  await m.yop();
+});
+
+test('katalogda cat yo\'q yoki ERP nomi mos kelmasa — eski yo\'l: qaynoq tsiklda kashf (kichik byudjet) topadi', async () => {
+  const kat = { ...KAT, plita: PLITA.map(x => ({ ...x, cat: 'Mavjud-bo\'lmagan nom' })) };
+  const m = await muhit({ erp: erp1000(), katalog: { ol: () => kat, qaynoq: KATALOG.qaynoq, sukut: BOSH_SUKUT } });
+  const st = await m.jonli.aylanish('qaynoq');
+  assert.equal(st.xato, null);
+  const h = m.jonli.holat();
+  assert.ok(h.kategoriyalar.qaynoq_nomalum >= 0);
+  const mahs = m.erp.getlar().filter(x => x.path === '/api/v2/products/');
+  assert.ok(mahs.length <= 35, `qaynoq kashf byudjeti: ${mahs.length}`);
+  await m.yop();
+});
+
+/* ═══════════ sukut plitalar (LDSP16, MDF16, HDF3): ERP mahsulot ID bo'yicha ═══════════ */
+const SUKUT_KAT = (extra = {}) => ({ ol: () => KAT, qaynoq: () => ({ plita: new Set(), furnitura: new Set() }), sukut: () => new Map([['LDSP16', { erp_id: '10807', sku: '0110 SM', nom: 'ЛДСП Ультрадекор Белый гладкий 0110 16мм', fayl: 341761 }]]), ...extra });
+function erpSukut(narx = 341761) {
+  const shovqin0 = Array.from({ length: 55 }, (_, i) => erpMahsulot({ id: 20000 + i, sku: '0110 SM ' + i, name: 'Boshqa 0110 SM mahsulot ' + i, kat: 9, uzs: 1000 + i }));   // qidiruvda bizdan OLDIN (2-sahifaga tushadi)
+  return { kategoriyalar: [{ id: 9, name: 'Sukut kategoriya', products_count: 56 }], mahsulotlar: [...shovqin0, erpMahsulot({ id: 10807, sku: '0110 SM', name: 'ЛДСП Ультрадекор Белый гладкий 0110 16мм', kat: 9, uzs: narx })] };
+}
+test('sukut plita (LDSP16): kategoriyasi noma\'lum — search=<sku> bilan ID bo\'yicha topiladi, keyin o\'z kategoriyasi orqali yangilanadi; /api/erp-narx sukut bo\'limi, versiya, ETag', async () => {
+  const m = await muhit({ erp: erpSukut(), katalog: SUKUT_KAT() });
+  const st = await m.jonli.aylanish('qaynoq');
+  assert.equal(st.xato, null, JSON.stringify(st.xato));
+  const q1 = m.erp.getlar().filter(x => x.path === '/api/v2/products/' && x.query.search);
+  assert.deepEqual(q1.map(x => [x.query.search, x.query.page]), [['0110 SM', '1'], ['0110 SM', '2']], 'sku bo\'yicha qidiruv, 2-sahifada topildi');
+  assert.deepEqual(m.jonli.ommaviy().sukut, {}, 'narx o\'zgarmadi — qatlamda yo\'q (fayldagi narx amal qiladi)');
+  assert.equal(m.jonli.holat().kuzatilayotgan.sukut, 1);
+  assert.equal(m.db.prepare("SELECT kat_id FROM erp_jonli_obyekt WHERE tur = 'sukut' AND kalit = 'LDSP16'").get().kat_id, '9', 'kategoriya o\'rganildi');
+  /* ERP narxi +5% → keyingi tsikl kategoriya orqali (qidiruvsiz) qo'llaydi */
+  narxQoy(m.erp, 10807, 359000);
+  const e0 = m.jonli.ommaviyEtag(), v0 = m.jonli.holat().versiya;
+  m.erp.tozala();
+  const st2 = await m.jonli.aylanish('qaynoq');
+  assert.equal(st2.xato, null);
+  const g = m.erp.getlar();
+  assert.ok(!g.some(x => x.query.search), 'kategoriya ma\'lum — qidiruv yo\'q');
+  assert.deepEqual([...new Set(g.filter(x => x.path === '/api/v2/products/').map(x => x.query.category))], ['9']);
+  assert.deepEqual(m.jonli.ommaviy().sukut, { LDSP16: 359000 });
+  assert.equal(m.layer()['sukut:LDSP16'], 359000);
+  assert.ok(m.jonli.holat().versiya > v0); assert.notEqual(m.jonli.ommaviyEtag(), e0, 'ETag o\'zgardi');
+  assert.deepEqual(m.jonli.ommaviy().plita, {}); assert.deepEqual(m.jonli.ommaviy().furnitura, {}, 'plita/furnitura bo\'limlariga aralashmaydi');
+  /* audit va qaytarish: partiya qollangan_json da sukut, eski = null (qatlam yo'q edi) */
+  const b = m.db.prepare("SELECT qollangan_json FROM erp_partiya WHERE manba = 'jonli' AND holat = 'qollandi' ORDER BY id DESC").get();
+  assert.deepEqual(JSON.parse(b.qollangan_json).sukut.map(x => [x.k, x.eski, x.yangi]), [['LDSP16', null, 359000]]);
+  assert.ok(m.jonli.holat().ozgarishlar.some(o => o.tur === 'sukut' && o.kalit === 'LDSP16' && o.harakat === 'qollandi' && o.eski === 341761 && o.yangi === 359000));
+  /* >30% — tasdiq kutadi, public narx o'zgarmaydi */
+  narxQoy(m.erp, 10807, 900000);
+  await m.jonli.aylanish('qaynoq');
+  assert.deepEqual(m.jonli.ommaviy().sukut, { LDSP16: 359000 });
+  const qr = JSON.parse(m.db.prepare("SELECT farq_json FROM erp_partiya WHERE manba = 'jonli' AND holat = 'qoralama'").get().farq_json);
+  const x = qr.find(y => y.g === 'sukut');
+  assert.ok(x && x.k === 'LDSP16' && x.q === true && x.sabab === 'katta_ozgarish' && x.eski === 359000 && x.yangi === 900000 && x.h === 'ozgardi', JSON.stringify(x));
+  assert.ok(m.jonli.holat().tasdiq_kutadi.soni >= 1);
+  /* admin qo'lda narxi (mat_narx, kod = LDSP16) ustun */
+  narxQoy(m.erp, 10807, 365000);                                          // ERP qaytdi: +1,7%
+  m.db.prepare("INSERT INTO mat_narx (kod, uzs) VALUES ('LDSP16', 500000)").run();
+  const st3 = await m.jonli.aylanish('qaynoq');
+  assert.deepEqual(m.jonli.ommaviy().sukut, { LDSP16: 359000 }, 'qo\'lda narx bor — ERP o\'zgartirmaydi');
+  assert.ok(st3.qolda >= 1);
+  await m.yop();
+});
+
+test('sukut plita ERP\'da topilmasa: xato emas (ogohlantirish), 6 soat ichida qayta qidirilmaydi, narx o\'zgarmaydi', async () => {
+  const m = await muhit({ erp: { kategoriyalar: [{ id: 9, name: 'X', products_count: 1 }], mahsulotlar: [erpMahsulot({ id: 1, sku: 'Q', name: 'Boshqa', kat: 9, uzs: 5 })] }, katalog: SUKUT_KAT() });
+  const st = await m.jonli.aylanish('qaynoq');
+  assert.equal(st.xato, null);
+  assert.ok(st.ogohlantirish.some(o => /sukut LDSP16: ERP mahsuloti \(id 10807\) topilmadi/.test(o.matn)), JSON.stringify(st.ogohlantirish));
+  const n = m.erp.getlar().filter(x => x.query.search).length;
+  assert.ok(n >= 2 && n <= 4);
+  m.erp.tozala();
+  await m.jonli.aylanish('qaynoq');
+  assert.equal(m.erp.getlar().filter(x => x.query.search).length, 0, '6 soat ichida qayta qidirilmaydi');
+  assert.deepEqual(m.jonli.ommaviy().sukut, {});
+  await m.yop();
+});
+
+test('sukut: haqiqiy materials.json — LDSP16, MDF16, HDF3 qaynoq to\'plamga ERP ID bilan kiradi; kodlar to\'plami ham (admin qollash uchun)', async () => {
+  const { sukutErpOl, qaynoqKalitlar, erpKatalog } = await import('../lib/erp-katalog.js');
+  const sk = sukutErpOl();
+  assert.deepEqual([...sk.keys()].sort(), ['HDF3', 'LDSP16', 'MDF16']);
+  assert.equal(sk.get('LDSP16').erp_id, '10807'); assert.equal(sk.get('MDF16').erp_id, '11578'); assert.equal(sk.get('HDF3').erp_id, '11750');
+  assert.ok(sk.get('LDSP16').fayl > 0);
+  const db = new Database(':memory:'); db.exec('CREATE TABLE furn_boglash (kod TEXT, erp_id TEXT)');
+  assert.deepEqual([...qaynoqKalitlar(db).sukut].sort(), ['HDF3', 'LDSP16', 'MDF16']);
+  assert.deepEqual([...erpKatalog().kodlar.sukut].sort(), ['HDF3', 'LDSP16', 'MDF16']);
+  db.close();
 });
 
 /* ═══════════ sahifalash (ERP shakli noaniq bo'lsa ham xavfsiz) ═══════════ */
@@ -213,12 +376,16 @@ test('qaynoq aylanish ERP yukini kamaytiradi: kategoriya xaritasi o\'rganilgach 
   assert.ok(g.filter(x => x.path === '/erp/services/api/manage/services/').length >= 1, 'xizmatlar har aylanishda');
   assert.ok(st.sorov <= 8, `qaynoq aylanish so\'rovi: ${st.sorov}`);
   assert.equal(erp.loginSoni, 1, 'sessiya qayta ishlatildi');
-  /* to'liq aylanish: bizniki kategoriyalar (1, 2) + kategoriya ro'yxati; bizniki bo'lmagan (3, 4) kashf muddatigacha o'qilmaydi */
+  /* to'liq aylanish: bizniki kategoriyalar (1, 2); bizniki bo'lmagan (3, 4) kashf muddatigacha o'qilmaydi; kategoriya ro'yxati 6 soatda bir marta so'raladi */
   erp.tozala();
   await jonli.aylanish('toliq');
   const t = erp.getlar();
   assert.deepEqual([...new Set(t.filter(x => x.path === '/api/v2/products/').map(x => x.query.category))].sort(), ['1', '2']);
-  assert.equal(t.filter(x => x.path === '/api/v2/products/categories/').length, 1);
+  assert.equal(t.filter(x => x.path === '/api/v2/products/categories/').length, 0, 'kategoriya ro\'yxati yangi — qayta so\'ralmaydi');
+  db.prepare("UPDATE erp_jonli_holat SET qiymat = ? WHERE kalit = 'kat_royxat_vaqti'").run(new Date(Date.now() - 7 * 3600_000).toISOString());
+  erp.tozala();
+  await jonli.aylanish('toliq');
+  assert.equal(erp.getlar().filter(x => x.path === '/api/v2/products/categories/').length, 1, '6 soatdan keyin ro\'yxat yangilandi');
   /* bizniki bo'lmagan kategoriya 7 kundan keyin qayta tekshiriladi */
   db.prepare("UPDATE erp_jonli_kat SET skan_at = datetime('now', '-8 days') WHERE kat_id = '3'").run();
   erp.tozala();
@@ -452,11 +619,14 @@ test('so\'rovlar orasidagi tezlik chegarasi (≤ 1 so\'rov/soniya to\'liqda) ush
 test('jadval: qaynoq har qaynoqMs, to\'liq har toliqMs; bir vaqtda bitta aylanish; stop() dan keyin so\'rov yo\'q', async () => {
   const m = await muhit({ sozlama: { qaynoqMs: 150, toliqMs: 900, boshKechikishMs: 20 } });
   assert.equal(m.jonli.start(), true); assert.equal(m.jonli.start(), false, 'ikkinchi start — hech narsa');
-  await new Promise(r => setTimeout(r, 2200));
+  const toliqlar = new Set(), qaynoqlar = new Set();
+  const kuzat = setInterval(() => { const x = m.jonli.holat(); if (x.oxirgi_toliq) toliqlar.add(x.oxirgi_toliq.boshlandi); if (x.oxirgi_qaynoq) qaynoqlar.add(x.oxirgi_qaynoq.boshlandi); }, 10);
+  await new Promise(r => setTimeout(r, 2600));
+  clearInterval(kuzat);
   const h = m.jonli.holat();
   assert.ok(h.oxirgi_qaynoq && h.oxirgi_toliq, 'ikkala tur ham ishladi');
-  const kategoriyaRoyxati = m.erp.getlar().filter(x => x.path === '/api/v2/products/categories/').length;
-  assert.ok(kategoriyaRoyxati >= 2 && kategoriyaRoyxati <= 4, `to'liq aylanishlar soni (kategoriya ro'yxati): ${kategoriyaRoyxati}`);
+  assert.ok(toliqlar.size >= 2 && toliqlar.size <= 4, `to'liq aylanishlar soni: ${toliqlar.size}`);
+  assert.ok(qaynoqlar.size >= 6, `qaynoq aylanishlar soni: ${qaynoqlar.size}`);
   const xizmatSoni = m.erp.getlar().filter(x => x.path === '/erp/services/api/manage/services/').length;
   assert.ok(xizmatSoni >= 8, `qaynoq aylanishlar soni (xizmatlar har aylanishda): ${xizmatSoni}`);
   assert.equal(m.erp.loginSoni, 1);
@@ -517,7 +687,7 @@ test('PAROL va LOGIN hech qayerga chiqmaydi: jurnal, xato matni, holat/ommaviy j
   const st1 = await m.jonli.aylanish('toliq');
   assert.equal(st1.xato.kod, KOD.KIRISH, JSON.stringify(st1.xato));
   /* kutilmagan xato matni parolni o'z ichiga olsa — redaktsiya */
-  const kat = { ol: () => { throw new Error('baza xatosi login=' + m.erp.login + ' parol=' + PAROL + ' oxiri'); }, qaynoq: KATALOG.qaynoq };
+  const kat = { ol: () => { throw new Error('baza xatosi login=' + m.erp.login + ' parol=' + PAROL + ' oxiri'); }, qaynoq: KATALOG.qaynoq, sukut: BOSH_SUKUT };
   m.erp.parol = PAROL;
   const m2 = await muhit({ eskiParol: PAROL, katalog: kat, erp: { parol: PAROL } });
   const st2 = await m2.jonli.aylanish('toliq');

@@ -339,4 +339,9 @@ export function erpJonliSxema(db) {
     );
     CREATE INDEX IF NOT EXISTS idx_erp_jonli_tarix_id ON erp_jonli_tarix(id);
   `);
+  /* kategoriya NOMI bo'yicha ustuvorlik (katalogdagi `cat` == ERP category_name): nom_norm — normallangan nom, kat_mos — shu nomli katalog yozuvlari soni,
+   * erp_soni — ERP ro'yxatidagi products_count (-1 — noma'lum; 0 — bo'sh kategoriya, o'qilmaydi) */
+  addColumn(db, 'erp_jonli_kat', 'nom_norm', "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, 'erp_jonli_kat', 'kat_mos', 'INTEGER NOT NULL DEFAULT 0');
+  addColumn(db, 'erp_jonli_kat', 'erp_soni', 'INTEGER NOT NULL DEFAULT -1');
 }

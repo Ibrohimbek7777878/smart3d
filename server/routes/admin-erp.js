@@ -7,7 +7,7 @@
  *   GET    /api/admin/erp/:id?guruh=&holat=&q=&limit=&offset=   → farq qatorlari (|o'zgarish %| bo'yicha; "faylda yo'q" — faqat holat=yoq bilan)
  *   POST   /api/admin/erp/:id/qollash    { tasdiq: true, guruhlar?, istisno?: ['plita:ERP-…', …], yangi_xizmat? }  → narxlar qo'llanadi (admin_audit: 'erp')
  *   DELETE /api/admin/erp/:id            qoralamani o'chirish
- *   POST   /api/admin/erp/sukut          { tasdiq: true, guruh?: 'hammasi'|'plita'|'furnitura' }  → ERP qatlami olib tashlanadi, narxlar fayldagidek
+ *   POST   /api/admin/erp/sukut          { tasdiq: true, guruh?: 'hammasi'|'plita'|'furnitura'|'sukut' }  → ERP qatlami olib tashlanadi, narxlar fayldagidek ('sukut' — sukut plitalar LDSP16/MDF16/HDF3, TZ-44)
  *   GET    /api/erp-narx  (ochiq)        → { plita:{ERP-kod: so'm}, furnitura:{ID: so'm}, sana, versiya, yangilangan, jonli:{…} } — brauzer fayl narxi USTIGA qo'yadi (engine/adminQatlam.js);
  *                                         ETag / If-None-Match → 304 (TZ-44)
  *   JONLI SINXRON (TZ-44, server/lib/erp-jonli.js; ERP_JONLI=1 + ERP_LOGIN + ERP_PASSWORD muhitda bo'lsa fon poller ishlaydi):
@@ -28,8 +28,10 @@ import { erpMahsulotOqi, mahsulotFarq, erpXizmatOqi, xizmatFarq } from '../../ap
 import { narxCurrent, narxSaqla } from '../lib/narx-hujjat.js';
 
 const js = (v) => { try { return JSON.parse(v); } catch (_) { return null; } };
-const GURUHLAR = ['plita', 'furnitura', 'xizmat'];
-const KOR_GURUH = ['plita', 'furnitura', 'xizmat', 'stoleshnitsa', 'yangi', 'noaniq'];
+/** `sukut` (sukut plitalar, TZ-44) kaliti nol bo'lsa javobda ko'rinmaydi — 3-faza javob shakli o'zgarmaydi */
+const bezNol = (o) => { if (!o.sukut) delete o.sukut; return o; };
+const GURUHLAR = ['plita', 'furnitura', 'xizmat', 'sukut'];                      // sukut — materials.json sukut_erp plitalari (TZ-44, jonli sinxron; ERP mahsulot ID bo'yicha)
+const KOR_GURUH = ['plita', 'furnitura', 'xizmat', 'sukut', 'stoleshnitsa', 'yangi', 'noaniq'];
 const KOR_HOLAT = ['q', 'ozgardi', 'toldirildi', 'bir_xil', 'narxsiz', 'qolda', 'yangi', 'noaniq', 'yoq'];
 const QORALAMA_SAQLASH = 8;             // eng ko'pi bilan shuncha qoralama (eskisi o'chadi)
 const QORALAMA_KUN = 14;
@@ -47,13 +49,13 @@ export default function adminErpRouter({ db, jurnal, erpJonli }, { guard, yoz, m
   r.get('/api/erp-narx', (req, res) => {
     res.set('Cache-Control', 'no-cache');
     if (!erpJonli) {                                                         // jonli modul ulanmagan (eski sinov muhiti) — avvalgi shakl
-      const plita = {}, furnitura = {};
+      const plita = {}, furnitura = {}, sukut = {};
       let sana = '';
       for (const x of db.prepare('SELECT tur, kalit, uzs, sana FROM erp_narx WHERE uzs > 0').all()) {
-        (x.tur === 'plita' ? plita : furnitura)[x.kalit] = x.uzs;
+        (x.tur === 'plita' ? plita : x.tur === 'sukut' ? sukut : furnitura)[x.kalit] = x.uzs;
         if (x.sana > sana) sana = x.sana;
       }
-      return res.json({ plita, furnitura, sana });
+      return res.json({ plita, furnitura, sukut, sana });
     }
     const etag = erpJonli.ommaviyEtag(), j = erpJonli.sarlavha();
     res.set('ETag', etag).set('X-Erp-Versiya', String(j.versiya)).set('X-Erp-Oxirgi', j.oxirgi || '');   // 304 da ham keladi: ERP tirikligi sarlavhada
@@ -203,14 +205,14 @@ export default function adminErpRouter({ db, jurnal, erpJonli }, { guard, yoz, m
     const tanlangan = qatorlar.filter(x => x.q && guruhlar.includes(x.g) && !istisno.has(x.g + ':' + x.k) && (x.g !== 'xizmat' || x.h !== 'yangi' || b.yangi_xizmat === true));
     if (!tanlangan.length) throw new Kirish('S3D-ADM-021', 'qo\'llanadigan qator yo\'q');
     const sana = p.erp_sana || bugun();
-    const qollandi = { plita: 0, furnitura: 0, xizmat: 0 }, otkazildi = { qolda: 0, katalogda_yoq: 0, chegara: 0 };
-    const ozgarish = { plita: [], furnitura: [], xizmat: [] };
+    const qollandi = { plita: 0, furnitura: 0, xizmat: 0, sukut: 0 }, otkazildi = { qolda: 0, katalogda_yoq: 0, chegara: 0 };
+    const ozgarish = { plita: [], furnitura: [], xizmat: [], sukut: [] };
     db.transaction(() => {
       const K = katalog(), qolda = qoldaMap(db);
       for (const x of tanlangan) {
         if (x.g === 'xizmat') continue;
         if (!K.kodlar[x.g].has(x.k)) { otkazildi.katalogda_yoq++; continue; }
-        if (x.g === 'plita' && qolda.get(x.k) > 0) { otkazildi.qolda++; continue; }                 // qoralamadan keyin admin qo'lda narx qo'ygan — u ustun
+        if ((x.g === 'plita' || x.g === 'sukut') && qolda.get(x.k) > 0) { otkazildi.qolda++; continue; }                 // qoralamadan keyin admin qo'lda narx qo'ygan — u ustun
         if (!(Number.isInteger(x.yangi) && x.yangi > 0)) { otkazildi.chegara++; continue; }
         const eski = layerOl.get(x.g, x.k) || null;
         layerUpsert.run(x.g, x.k, x.yangi, x.erp_id || '', x.sku || '', x.nom || '', sana, p.id, req.user.id);
@@ -231,14 +233,14 @@ export default function adminErpRouter({ db, jurnal, erpJonli }, { guard, yoz, m
           for (const o of q.ozgarish) if (o.kalit.startsWith('xizmatlar.')) { ozgarish.xizmat.push({ k: o.kalit.slice(10), eski: o.eski, yangi: o.yangi }); qollandi.xizmat++; }
         }
       }
-      const jami = qollandi.plita + qollandi.furnitura + qollandi.xizmat;
+      const jami = qollandi.plita + qollandi.furnitura + qollandi.xizmat + qollandi.sukut;
       if (!jami) throw new Kirish('S3D-ADM-021', 'hech qaysi qator qo\'llanmadi (hammasi o\'tkazib yuborildi)');
       db.prepare("UPDATE erp_partiya SET holat = 'qollandi', qollangan_at = CURRENT_TIMESTAMP, qollagan_by = ?, qollangan_json = ? WHERE id = ?").run(req.user.id, JSON.stringify(ozgarish), p.id);
-      yoz(req, 'erp', 'partiya:' + p.id, null, { fayl: p.fayl_nom, erp_sana: p.erp_sana, tur: p.tur, qollandi, otkazildi });
+      yoz(req, 'erp', 'partiya:' + p.id, null, { fayl: p.fayl_nom, erp_sana: p.erp_sana, tur: p.tur, qollandi: bezNol(qollandi), otkazildi });
       if (p.manba === 'jonli' && erpJonli) erpJonli.radEtish(qatorlar.filter(x => x.q && !tanlangan.includes(x)));   // jonli qoralamada admin istisno qilganlar — rad etilgan narx
       bump();
     })();
-    res.json({ ok: true, id: p.id, qollandi, otkazildi });
+    res.json({ ok: true, id: p.id, qollandi: bezNol(qollandi), otkazildi });
   }));
 
   /* ═══════════ SUKUTGA QAYTARISH (ERP qatlamini olib tashlash) ═══════════ */
@@ -246,21 +248,21 @@ export default function adminErpRouter({ db, jurnal, erpJonli }, { guard, yoz, m
     const b = obj(req.body);
     if (b.tasdiq !== true) throw new Kirish('S3D-ADM-021', 'tasdiq: true kerak');
     const guruh = b.guruh === undefined ? 'hammasi' : b.guruh;
-    if (!['hammasi', 'plita', 'furnitura'].includes(guruh)) throw new Kirish('S3D-ADM-021', 'guruh: hammasi | plita | furnitura');
-    const turlar = guruh === 'hammasi' ? ['plita', 'furnitura'] : [guruh];
+    if (!['hammasi', 'plita', 'furnitura', 'sukut'].includes(guruh)) throw new Kirish('S3D-ADM-021', 'guruh: hammasi | plita | furnitura | sukut');
+    const turlar = guruh === 'hammasi' ? ['plita', 'furnitura', 'sukut'] : [guruh];
     const qatorlar = db.prepare(`SELECT * FROM erp_narx WHERE tur IN (${turlar.map(() => '?').join(',')})`).all(...turlar);
     if (!qatorlar.length) return fail(res, 'S3D-ADM-016');
-    const ozgarish = { plita: [], furnitura: [], xizmat: [] };
+    const ozgarish = { plita: [], furnitura: [], xizmat: [], sukut: [] };
     let id;
     db.transaction(() => {
       id = Number(db.prepare("INSERT INTO erp_partiya (user_id, tur, holat, fayl_nom, qollangan_at, qollagan_by) VALUES (?, 'sukut', 'qollandi', ?, CURRENT_TIMESTAMP, ?)").run(req.user.id, guruh, req.user.id).lastInsertRowid);
       for (const x of qatorlar) ozgarish[x.tur].push({ k: x.kalit, eski: { uzs: x.uzs, erp_id: x.erp_id, sku: x.sku, nom: x.nom, sana: x.sana, partiya_id: x.partiya_id }, yangi: null, nom: x.nom });
       db.prepare(`DELETE FROM erp_narx WHERE tur IN (${turlar.map(() => '?').join(',')})`).run(...turlar);
-      db.prepare('UPDATE erp_partiya SET qollangan_json = ?, xulosa_json = ? WHERE id = ?').run(JSON.stringify(ozgarish), JSON.stringify({ olib_tashlandi: { plita: ozgarish.plita.length, furnitura: ozgarish.furnitura.length } }), id);
-      yoz(req, 'erp', 'sukut:' + id, { plita: ozgarish.plita.length, furnitura: ozgarish.furnitura.length }, null);
+      db.prepare('UPDATE erp_partiya SET qollangan_json = ?, xulosa_json = ? WHERE id = ?').run(JSON.stringify(ozgarish), JSON.stringify({ olib_tashlandi: bezNol({ plita: ozgarish.plita.length, furnitura: ozgarish.furnitura.length, sukut: ozgarish.sukut.length }) }), id);
+      yoz(req, 'erp', 'sukut:' + id, bezNol({ plita: ozgarish.plita.length, furnitura: ozgarish.furnitura.length, sukut: ozgarish.sukut.length }), null);
       bump();
     })();
-    res.json({ ok: true, id, olib_tashlandi: { plita: ozgarish.plita.length, furnitura: ozgarish.furnitura.length } });
+    res.json({ ok: true, id, olib_tashlandi: bezNol({ plita: ozgarish.plita.length, furnitura: ozgarish.furnitura.length, sukut: ozgarish.sukut.length }) });
   }));
 
   /* ═══════════ TARIXDAN QAYTARISH ═══════════ */
@@ -269,9 +271,9 @@ export default function adminErpRouter({ db, jurnal, erpJonli }, { guard, yoz, m
     const p = id ? db.prepare('SELECT * FROM erp_partiya WHERE id = ?').get(id) : null;
     if (!p || !p.qollangan_json || p.holat === 'qaytarilgan') throw new Kirish('S3D-ADM-007', 'bu ERP yozuvini qaytarib bo\'lmaydi');
     const ch = js(p.qollangan_json) || {};
-    const qaytdi = { plita: 0, furnitura: 0, xizmat: 0 };
+    const qaytdi = { plita: 0, furnitura: 0, xizmat: 0, sukut: 0 };
     let otkazildi = 0;
-    for (const g of ['plita', 'furnitura']) {
+    for (const g of ['plita', 'furnitura', 'sukut']) {
       for (const x of ch[g] || []) {
         const hozir = layerOl.get(g, x.k) || null;
         const mos = x.yangi === null ? hozir === null : !!hozir && hozir.uzs === x.yangi;          // keyin boshqa o'zgargan bo'lsa — tegmaymiz
@@ -298,11 +300,11 @@ export default function adminErpRouter({ db, jurnal, erpJonli }, { guard, yoz, m
     }
     db.prepare("UPDATE erp_partiya SET holat = 'qaytarilgan', qaytarilgan_at = CURRENT_TIMESTAMP WHERE id = ?").run(p.id);
     if (p.manba === 'jonli' && erpJonli) {                                                         // jonli sinxron qo'llagan narx qaytarildi — ERP'da shu narx turguncha qayta qo'llanmaydi
-      erpJonli.radEtish(['plita', 'furnitura'].flatMap(g => (ch[g] || []).map(x => ({ g, k: x.k, nom: x.nom, eski: x.eski && x.eski.uzs, yangi: x.yangi }))), 'qaytarildi');
+      erpJonli.radEtish(['plita', 'furnitura', 'sukut'].flatMap(g => (ch[g] || []).map(x => ({ g, k: x.k, nom: x.nom, eski: x.eski && x.eski.uzs, yangi: x.yangi }))), 'qaytarildi');
       erpJonli.radEtish((ch.xizmat || []).filter(x => x.yangi && x.yangi.qiymat > 0).map(x => ({ g: 'xizmat', k: x.k, nom: x.yangi.nom, eski: x.eski && x.eski.qiymat, yangi: x.yangi.qiymat })), 'qaytarildi');
     }
     bump();
-    return { qaytarildi: qaytdi, otkazildi };
+    return { qaytarildi: bezNol(qaytdi), otkazildi };
   });
 
   return r;

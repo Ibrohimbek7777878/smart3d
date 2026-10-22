@@ -24,7 +24,7 @@
 import { erpMahsulotOqi, mahsulotFarq, erpXizmatOqi, xizmatFarq, xulosaHisobla } from '../../app/js/engine/erpSinxron.js';
 import { narxQollash, narxXatoMi } from '../../app/js/engine/narxStavka.js';
 import { narxCurrent, narxSaqla } from './narx-hujjat.js';
-import { erpKatalog, farqKirish, qaynoqKalitlar } from './erp-katalog.js';
+import { erpKatalog, farqKirish, qaynoqKalitlar, katCatXarita, katNomNorm, sukutErpOl, qatlamMap, qoldaMap } from './erp-katalog.js';
 import { maxfiyTozala } from './maxfiy.js';
 
 /* ── xato kodlari (app/js/xatolar.js) ── */
@@ -39,7 +39,7 @@ export class ErpXato extends Error {
 
 export const SUKUT = Object.freeze({
   qaynoqMs: 120_000, toliqMs: 900_000, taymAutMs: 15_000, qaynoqOraliqMs: 500, toliqOraliqMs: 1000,
-  qaynoqButget: 55, toliqButget: 600, kashfButget: 120, kashfQaytaKun: 7, bolakSorov: 80, maksSahifa: 400,
+  qaynoqButget: 55, toliqButget: 600, kashfButget: 40, kashfQaytaKun: 7, katRoyxatMs: 6 * 3600_000, katRoyxatMaxSahifa: 80, bolakSorov: 80, maksSahifa: 400,
   boshKechikishMs: 3000, orqaBoshiMs: 120_000, orqaMaxMs: 900_000, hozirOraliqMs: 30_000, eskiDaqiqa: 10,
   chegaraFoiz: 30, kursChegaraFoiz: 10, kutishMaxMs: 25_000, tarixSaqlash: 2000, qoralamaMax: 500, partiyaKun: 90
 });
@@ -263,6 +263,7 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
   const S = { ...SUKUT, ...(sinov ? { boshKechikishMs: 300, hozirOraliqMs: 1500, qaynoqOraliqMs: 0, toliqOraliqMs: 0, taymAutMs: 5000 } : {}), ...sozlama };
   const katOl = katalog && katalog.ol ? katalog.ol : erpKatalog;
   const qaynoqOl = katalog && katalog.qaynoq ? katalog.qaynoq : (d, k) => qaynoqKalitlar(d, k);
+  const sukutOl = katalog && katalog.sukut ? katalog.sukut : sukutErpOl;           // sukut plitalar (materials.json sukut_erp): kod → { erp_id, sku, nom, fayl }
 
   /* — sozlama (faqat muhitdan) — */
   const login = typeof env.ERP_LOGIN === 'string' ? env.ERP_LOGIN : '';
@@ -299,14 +300,14 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
   };
 
   /* ═══ ommaviy javob (GET /api/erp-narx) ═══ */
-  let narxKesh = { imzo: '', plita: {}, furnitura: {}, sana: '' };
+  let narxKesh = { imzo: '', plita: {}, furnitura: {}, sukut: {}, sana: '' };
   function narxlar() {
     const imzo = db.prepare("SELECT COUNT(*) AS n, COALESCE(SUM(uzs), 0) AS s, COALESCE(MAX(updated_at), '') AS m, COALESCE(MAX(sana), '') AS d FROM erp_narx WHERE uzs > 0").get();
     const kalit = `${kvSon('versiya', 0)}|${imzo.n}|${imzo.s}|${imzo.m}|${imzo.d}`;
     if (narxKesh.imzo !== kalit) {
-      const plita = {}, furnitura = {};
-      for (const x of db.prepare('SELECT tur, kalit, uzs FROM erp_narx WHERE uzs > 0').all()) (x.tur === 'plita' ? plita : furnitura)[x.kalit] = x.uzs;
-      narxKesh = { imzo: kalit, plita, furnitura, sana: imzo.d };
+      const plita = {}, furnitura = {}, sukut = {};
+      for (const x of db.prepare('SELECT tur, kalit, uzs FROM erp_narx WHERE uzs > 0').all()) (x.tur === 'plita' ? plita : x.tur === 'sukut' ? sukut : furnitura)[x.kalit] = x.uzs;
+      narxKesh = { imzo: kalit, plita, furnitura, sukut, sana: imzo.d };
     }
     return narxKesh;
   }
@@ -333,7 +334,7 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
   const sarlavha = () => ({ versiya: kvSon('versiya', 0), oxirgi: kv('oxirgi_muvaffaqiyat', '') });
   function ommaviy() {
     const n = narxlar();
-    return { plita: n.plita, furnitura: n.furnitura, sana: n.sana, versiya: kvSon('versiya', 0), yangilangan: kv('yangilangan', '') || null, jonli: jonliKorinish() };
+    return { plita: n.plita, furnitura: n.furnitura, sukut: n.sukut, sana: n.sana, versiya: kvSon('versiya', 0), yangilangan: kv('yangilangan', '') || null, jonli: jonliKorinish() };
   }
 
   /* ═══ yozuvlar ═══ */
@@ -354,7 +355,6 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
     ON CONFLICT(kat_id) DO UPDATE SET nom = excluded.nom, mos = excluded.mos, jami = excluded.jami, sahifa = excluded.sahifa, skan_at = CURRENT_TIMESTAMP,
       qaynoq_at = COALESCE(excluded.qaynoq_at, erp_jonli_kat.qaynoq_at)`);
   const katMos = db.prepare('UPDATE erp_jonli_kat SET mos = ? WHERE kat_id = ?');
-  const katNomYoz = db.prepare(`INSERT INTO erp_jonli_kat (kat_id, nom) VALUES (?, ?) ON CONFLICT(kat_id) DO UPDATE SET nom = excluded.nom`);
 
   /* ── tasdiq kutayotgan qoralama (erp_partiya, manba 'jonli') ── */
   const qoralamaOl = () => db.prepare("SELECT * FROM erp_partiya WHERE manba = 'jonli' AND holat = 'qoralama' ORDER BY id DESC LIMIT 1").get() || null;
@@ -386,7 +386,7 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
 
   /* ── avtomatik qo'llash: erp_narx + (xizmat bo'lsa) narx hujjati + partiya + admin_audit + tarix + versiya — BITTA tranzaksiyada ── */
   function avtoQollash(royxat, sana, tur) {
-    const ozgarish = { plita: [], furnitura: [], xizmat: [] }, otkazildi = { qolda: 0, katalogda_yoq: 0, chegara: 0 };
+    const ozgarish = { plita: [], furnitura: [], xizmat: [], sukut: [] }, otkazildi = { qolda: 0, katalogda_yoq: 0, chegara: 0 };
     const id = Number(db.prepare("INSERT INTO erp_partiya (user_id, tur, holat, fayl_nom, erp_sana, qollangan_at, manba) VALUES (NULL, 'jonli', 'qollandi', ?, ?, CURRENT_TIMESTAMP, 'jonli')")
       .run(`ERP jonli (${tur})`, sana).lastInsertRowid);
     for (const x of royxat) {
@@ -410,8 +410,8 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
         for (const o of q.ozgarish) if (o.kalit.startsWith('xizmatlar.')) ozgarish.xizmat.push({ k: o.kalit.slice(10), eski: o.eski, yangi: o.yangi, nom: (o.yangi && o.yangi.nom) || '' });
       }
     }
-    const qollandi = { plita: ozgarish.plita.length, furnitura: ozgarish.furnitura.length, xizmat: ozgarish.xizmat.length };
-    const jami = qollandi.plita + qollandi.furnitura + qollandi.xizmat;
+    const qollandi = { plita: ozgarish.plita.length, furnitura: ozgarish.furnitura.length, xizmat: ozgarish.xizmat.length, sukut: ozgarish.sukut.length };
+    const jami = qollandi.plita + qollandi.furnitura + qollandi.xizmat + qollandi.sukut;
     if (!jami) { db.prepare('DELETE FROM erp_partiya WHERE id = ?').run(id); return { id: null, qollandi, otkazildi }; }
     db.prepare("UPDATE erp_partiya SET qollangan_json = ?, xulosa_json = ? WHERE id = ?").run(JSON.stringify(ozgarish), JSON.stringify({ qollandi, otkazildi, tur }), id);
     db.prepare('INSERT INTO admin_audit (user_id, bolim, kalit, eski, yangi) VALUES (NULL, ?, ?, NULL, ?)')
@@ -421,15 +421,15 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
       if (q) tarixYoz.run(x.g, x.k, x.nom || '', x.eski ?? null, x.yangi ?? null, x.foiz ?? null, 'qollandi', '', id);
     }
     versiyaOshir();
-    jurnal.info({ code: 'S3D-ADM-100', msg: `ERP jonli: ${jami} narx qo'llandi (plita ${qollandi.plita}, furnitura ${qollandi.furnitura}, xizmat ${qollandi.xizmat}; partiya #${id})` });
+    jurnal.info({ code: 'S3D-ADM-100', msg: `ERP jonli: ${jami} narx qo'llandi (plita ${qollandi.plita}, furnitura ${qollandi.furnitura}, xizmat ${qollandi.xizmat}, sukut ${qollandi.sukut}; partiya #${id})` });
     return { id, qollandi, otkazildi };
   }
 
   /* ═══ qatorlarni baholash (mahsulotlar va xizmatlar umumiy yakuni) ═══ */
   function yakunlash({ avto, kutadi, info, baholangan, sana, tur, st }) {
     const tx = db.transaction(() => {
-      const ql = avto.length ? avtoQollash(avto, sana, tur) : { id: null, qollandi: { plita: 0, furnitura: 0, xizmat: 0 } };
-      st.qollandi += ql.qollandi.plita + ql.qollandi.furnitura + ql.qollandi.xizmat;
+      const ql = avto.length ? avtoQollash(avto, sana, tur) : { id: null, qollandi: { plita: 0, furnitura: 0, xizmat: 0, sukut: 0 } };
+      st.qollandi += ql.qollandi.plita + ql.qollandi.furnitura + ql.qollandi.xizmat + ql.qollandi.sukut;
       const rows = [...kutadi, ...info];
       const yq = qoralamaYangila(baholangan, rows, sana);
       st.kutadi += kutadi.length;
@@ -457,8 +457,23 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
     const kursSakradi = !!(kurs > 0 && kursQabul > 0 && Math.abs(kurs / kursQabul - 1) * 100 > S.kursChegaraFoiz);
     const avto = [], kutadi = [], info = [], baholangan = new Set(), mosKat = new Map();
     const yoz = [];
-    for (const x of f.qatorlar) {
-      if (x.g !== 'plita' && x.g !== 'furnitura') { if (x.h === 'noaniq') st.noaniq++; continue; }
+    /* sukut plitalar (LDSP16, MDF16, HDF3 …): ERP mahsulot ID bo'yicha moslanadi (nom bo'yicha katalogda topilmaydi); qatlam — erp_narx tur 'sukut' */
+    const sukutQ = [];
+    const sk = sukutOl();
+    if (sk.size) {
+      const idKod = new Map([...sk].map(([kod, v]) => [v.erp_id, [kod, v]]));
+      const lay = qatlamMap(db, 'sukut'), qolda = qoldaMap(db);
+      for (const r of o.qatorlar) {
+        const t = idKod.get(String(r.id));
+        if (!t) continue;
+        const [kod, v] = t, qd = qolda.get(kod) || 0, ly = lay.get(kod) || 0, eski = qd > 0 ? qd : ly > 0 ? ly : v.fayl || 0, yangi = r.narx;
+        const h = !(yangi > 0) ? 'narxsiz' : qd > 0 ? (yangi === qd ? 'bir_xil' : 'qolda') : eski === yangi ? 'bir_xil' : eski > 0 ? 'ozgardi' : 'toldirildi';
+        sukutQ.push({ g: 'sukut', k: kod, erp_id: r.id, sku: r.sku || v.sku, nom: v.nom || r.nom, birlik: r.birlik, royxat: r.royxat, katalog_nom: v.nom, eski, yangi,
+          foiz: eski > 0 && yangi > 0 ? Math.round((yangi - eski) / eski * 1000) / 10 : null, manba: qd > 0 ? 'qolda' : ly > 0 ? 'erp' : 'fayl', h, q: h === 'ozgardi' || h === 'toldirildi' });
+      }
+    }
+    for (const x of [...f.qatorlar, ...sukutQ]) {
+      if (x.g !== 'plita' && x.g !== 'furnitura' && x.g !== 'sukut') { if (x.h === 'noaniq') st.noaniq++; continue; }
       if (x.h === 'yoq') continue;
       if (x.h === 'noaniq') { st.noaniq++; continue; }
       const y = yon.get(String(x.erp_id)) || {};
@@ -520,37 +535,84 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
   }
 
   /* ═══ kategoriyalar va aylanish rejasi ═══ */
+  /** ERP kategoriyalar ro'yxati (id, name, products_count; sahifa 50) → erp_jonli_kat. Katalogdagi `cat` nomiga AYNAN mos kategoriyalar belgilanadi (kat_mos > 0) —
+   *  ular kashf navbatida birinchi o'qiladi; products_count = 0 — bo'sh kategoriya (o'qilmaydi). Ro'yxat mahsulot so'rovi emas, lekin ERP'ga so'rov: 6 soatda bir marta. */
+  const katRoyxatYoz = db.prepare(`INSERT INTO erp_jonli_kat (kat_id, nom, nom_norm, kat_mos, erp_soni, sahifa, skan_at)
+      VALUES (@id, @nom, @norm, @mos, @soni, @sahifa, CASE WHEN @soni = 0 THEN CURRENT_TIMESTAMP END)
+    ON CONFLICT(kat_id) DO UPDATE SET nom = excluded.nom, nom_norm = excluded.nom_norm, kat_mos = excluded.kat_mos, erp_soni = excluded.erp_soni,
+      sahifa = CASE WHEN excluded.erp_soni > 0 THEN excluded.sahifa ELSE erp_jonli_kat.sahifa END, skan_at = COALESCE(erp_jonli_kat.skan_at, excluded.skan_at)`);
   async function kategoriyalarYangila(m, signal) {
-    if (signal && signal.aborted) return;
-    const r = await m.royxat('/api/v2/products/categories/', {}, 20);
+    if (signal && signal.aborted) return 0;
+    const r = await m.royxat('/api/v2/products/categories/', {}, S.katRoyxatMaxSahifa);
+    const nomlar = katCatXarita(katOl()).nomlar;
     let n = 0;
     db.transaction(() => {
       for (const c of r.qatorlar) {
         if (!obj(c) || c.id == null) continue;
-        katNomYoz.run(String(c.id), String(c.name ?? c.title ?? c.category_name ?? '').slice(0, 200)); n++;
+        const nom = String(c.name ?? c.title ?? c.category_name ?? '').slice(0, 200), norm = katNomNorm(nom), mos = nomlar.get(norm);
+        const soni = Number.isFinite(Number(c.products_count)) && c.products_count !== null && c.products_count !== '' ? Math.max(0, Math.round(Number(c.products_count))) : -1;
+        katRoyxatYoz.run({ id: String(c.id), nom, norm, mos: mos ? mos.plita + mos.furnitura + mos.stol : 0, soni, sahifa: soni > 0 ? Math.ceil(soni / 50) : 0 }); n++;
       }
     })();
     set('kat_royxat_vaqti', new Date().toISOString());
     return n;
   }
   const katSoni = () => db.prepare('SELECT COUNT(*) AS n FROM erp_jonli_kat').get().n;
+  const katNarx = (c) => Math.max(1, c.sahifa || (c.erp_soni > 0 ? Math.ceil(c.erp_soni / 50) : 0) || 4);      // o'qish narxi (sahifalar soni)
 
-  /** qaynoq kategoriyalar: qaynoq kalitlar ma'lum bo'lgan kategoriyalar (eng eski o'qilgani birinchi) + kashf etilmagan qaynoq kalitlar soni */
+  /** qaynoq kategoriyalar: qaynoq kalit uchun avval o'rganilgan kategoriya (erp_jonli_obyekt), bo'lmasa katalogdagi `cat` NOMI bo'yicha ERP kategoriyasi
+   *  (birinchi tsiklning o'zidayoq); ikkalasi ham yo'q bo'lsa — nomalum (kashf bilan topiladi). Eng eski o'qilgani birinchi. */
   function qaynoqKategoriyalar() {
-    const q = qaynoqOl(db, katOl());
-    const jami = q.plita.size + q.furnitura.size;
+    const kat = katOl(), q = qaynoqOl(db, kat), cx = katCatXarita(kat);
+    const nomXarita = new Map();
+    for (const r of db.prepare("SELECT kat_id, nom_norm FROM erp_jonli_kat WHERE nom_norm <> ''").all()) { const l = nomXarita.get(r.nom_norm); if (l) l.push(r.kat_id); else nomXarita.set(r.nom_norm, [r.kat_id]); }
     const kats = new Set();
-    let nomalum = 0;
-    for (const [tur, to] of [['plita', q.plita], ['furnitura', q.furnitura]]) {
-      for (const k of to) { const o = obyektOl.get(tur, k); if (o && o.kat_id) kats.add(o.kat_id); else nomalum++; }
+    let nomalum = 0, nomBilan = 0, urganilgan = 0;
+    const sukutNomalum = [];
+    for (const kod of sukutOl().keys()) {                                     // sukut plitalar: kategoriyasi o'rganilgan bo'lsa — o'sha; aks holda qidiruv (search=<sku>) bilan topiladi
+      const o = obyektOl.get('sukut', kod);
+      if (o && o.kat_id) { kats.add(o.kat_id); urganilgan++; } else sukutNomalum.push(kod);
     }
-    const royxat = [...kats].map(id => db.prepare('SELECT kat_id, nom, sahifa, qaynoq_at FROM erp_jonli_kat WHERE kat_id = ?').get(id) || { kat_id: id, nom: '', sahifa: 0, qaynoq_at: null })
+    for (const [tur, to] of [['plita', q.plita], ['furnitura', q.furnitura]]) {
+      for (const k of to) {
+        const o = obyektOl.get(tur, k);
+        if (o && o.kat_id) { kats.add(o.kat_id); urganilgan++; continue; }
+        const l = nomXarita.get(cx[tur].get(k));
+        if (l && l.length) { for (const id of l) kats.add(id); nomBilan++; } else nomalum++;
+      }
+    }
+    const get = db.prepare('SELECT kat_id, nom, sahifa, erp_soni, qaynoq_at FROM erp_jonli_kat WHERE kat_id = ?');
+    const royxat = [...kats].map(id => get.get(id) || { kat_id: id, nom: '', sahifa: 0, erp_soni: -1, qaynoq_at: null }).filter(c => c.erp_soni !== 0)
       .sort((a, b) => String(a.qaynoq_at || '').localeCompare(String(b.qaynoq_at || '')));
-    return { royxat, nomalum, jami };
+    return { royxat, nomalum, sukutNomalum, jami: q.plita.size + q.furnitura.size, nom_bilan: nomBilan, urganilgan, qaynoq: { plita: q.plita.size, furnitura: q.furnitura.size, sukut: sukutOl().size } };
   }
-  const bizniki = () => db.prepare("SELECT kat_id, nom, sahifa, skan_at FROM erp_jonli_kat WHERE mos > 0 OR kat_id IN (SELECT kat_id FROM erp_jonli_obyekt WHERE kat_id <> '') ORDER BY COALESCE(skan_at, '') ASC").all();
-  const kashfEtilmagan = () => db.prepare(`SELECT kat_id, nom, sahifa, skan_at FROM erp_jonli_kat WHERE skan_at IS NULL
-    OR (mos = 0 AND skan_at < datetime('now', '-${S.kashfQaytaKun} days')) ORDER BY COALESCE(skan_at, '') ASC, kat_id`).all();
+  /** to'liq aylanish: bizniki kategoriyalar — mahsulot mos tushgan, o'rganilgan yoki katalog `cat` nomiga teng. Hali o'qilmaganlari birinchi, keyin eng eskisi. */
+  const bizniki = () => db.prepare(`SELECT kat_id, nom, sahifa, erp_soni, skan_at FROM erp_jonli_kat WHERE erp_soni <> 0
+    AND (mos > 0 OR kat_mos > 0 OR kat_id IN (SELECT kat_id FROM erp_jonli_obyekt WHERE kat_id <> '')) ORDER BY COALESCE(skan_at, '') ASC, kat_mos DESC, kat_id`).all();
+  /** kashf: nomi katalogga mos kelmagan, hali o'qilmagan (yoki bizniki emas deb 7 kundan oshgan) kategoriyalar — past ustuvorlik, kichik byudjet */
+  const kashfEtilmagan = () => db.prepare(`SELECT kat_id, nom, sahifa, erp_soni, skan_at FROM erp_jonli_kat WHERE erp_soni <> 0 AND kat_mos = 0 AND mos = 0
+    AND kat_id NOT IN (SELECT kat_id FROM erp_jonli_obyekt WHERE kat_id <> '')
+    AND (skan_at IS NULL OR skan_at < datetime('now', '-${S.kashfQaytaKun} days')) ORDER BY COALESCE(skan_at, '') ASC, kat_id`).all();
+
+  /** sukut plitalarning ERP kategoriyasi noma'lum: `search=<sku>` (so'ng nom) bilan ERP mahsuloti ID bo'yicha topiladi va oddiy quvurdan o'tadi (narx + kategoriya o'rganiladi).
+   *  Topilmagan — 6 soatda bir urinish; topilgan, lekin javobda kategoriya yo'q — har tsiklda (≤ 2 so'rov). */
+  async function sukutQidir(m, kodlar, tur, st, yengilXato) {
+    const sk = sukutOl();
+    for (const kod of kodlar) {
+      const v = sk.get(kod);
+      if (!v) continue;
+      const ob = obyektOl.get('sukut', kod);
+      if (!(ob && ob.erp_id) && Date.now() - Date.parse(kv('sukut_izlash_' + kod, '')) < 6 * 3600_000) continue;
+      let row = null;
+      for (const q of [v.sku, v.nom]) {
+        if (!q || row) continue;
+        try { const r = await m.royxat('/api/v2/products/', { search: q }, 2); row = r.qatorlar.find(x => obj(x) && String(x.id) === v.erp_id) || null; } catch (e) { yengilXato(e, `sukut ${kod} qidiruvi`); break; }
+      }
+      set('sukut_izlash_' + kod, new Date().toISOString());
+      if (!row) { st.ogohlantirish.push({ kod: KOD.JAVOB, matn: `sukut ${kod}: ERP mahsuloti (id ${v.erp_id}) topilmadi` }); continue; }
+      mahsulotIshlov([row], tur, st, 0);
+    }
+  }
 
   /** kategoriyani o'qiydi (maks sahifagacha), xom qatorlarga kategoriya belgisini qo'yadi */
   async function kategoriyaOqi(m, kat, maks, st) {
@@ -580,20 +642,28 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
         manbaXato++; birinchiXato = birinchiXato || e;
         st.ogohlantirish.push({ kod: e.kod, matn: `${nom}: ${e.message}` });
       };
-      /* 1) kategoriyalar ro'yxati (to'liqda — doim; qaynoqda — bo'sh yoki eskirgan bo'lsa) */
+      /* 1) kategoriyalar ro'yxati (hech yuklanmagan yoki 6 soatdan eski bo'lsa; ~1000 kategoriya = ~20 sahifa). Qaynoq aylanishda bu ham byudjetdan ayriladi */
       const royxatVaqti = Date.parse(kv('kat_royxat_vaqti', ''));
-      if (tur === 'toliq' || katSoni() === 0 || !(Date.now() - royxatVaqti < 6 * 3600_000)) {
+      let royxatSarf = 0;
+      if (katSoni() === 0 || !(Date.now() - royxatVaqti < S.katRoyxatMs)) {
+        const s0 = sorovSoni;
         try { await kategoriyalarYangila(m, signal); manbaOk++; } catch (e) { yengilXato(e, 'kategoriyalar'); }
+        royxatSarf = sorovSoni - s0; st.kat_royxat_sorov = royxatSarf;
       }
-      /* 2) o'qiladigan kategoriyalar */
-      let byudjet = tur === 'toliq' ? S.toliqButget : S.qaynoqButget;
+      /* 2) o'qiladigan kategoriyalar: qaynoq (o'z kategoriyasi — o'rganilgan yoki katalog `cat` nomi bo'yicha) → bizniki (nom mos) → kashf (nom mos emas, kichik byudjet) */
+      let byudjet = tur === 'toliq' ? S.toliqButget : Math.max(S.qaynoqButget - royxatSarf, Math.min(15, S.qaynoqButget));
       const qk = qaynoqKategoriyalar();
+      if (qk.sukutNomalum.length && !signal.aborted) {
+        const s1 = sorovSoni;
+        await sukutQidir(m, qk.sukutNomalum, tur, st, yengilXato);
+        byudjet = Math.max(0, byudjet - (sorovSoni - s1));
+      }
       const reja = [], korilgan = new Set();
       const qosh = (c, qism) => { if (!korilgan.has(c.kat_id)) { korilgan.add(c.kat_id); reja.push({ ...c, qism }); } };
       for (const c of qk.royxat) qosh(c, 'qaynoq');
       if (tur === 'toliq') for (const c of bizniki()) qosh(c, 'bizniki');
-      let kashf = tur === 'toliq' ? S.kashfButget : (qk.nomalum > 0 ? Math.max(0, byudjet - qk.royxat.reduce((a, c) => a + Math.max(1, c.sahifa || 1), 0)) : 0);
-      for (const c of kashfEtilmagan()) { if (kashf <= 0) break; if (!korilgan.has(c.kat_id)) { qosh(c, 'kashf'); kashf -= Math.max(1, c.sahifa || 4); } }
+      let kashf = tur === 'toliq' ? S.kashfButget : (qk.nomalum > 0 ? Math.min(20, Math.max(0, byudjet - qk.royxat.reduce((a, c) => a + katNarx(c), 0))) : 0);
+      for (const c of kashfEtilmagan()) { if (kashf <= 0) break; if (!korilgan.has(c.kat_id)) { qosh(c, 'kashf'); kashf -= katNarx(c); } }
       /* 3) bo'lak-bo'lak o'qish va qo'llash (qaynoq kategoriyalar birinchi — ular tezroq yangilanadi; bo'lak kategoriya chegarasida tugaydi) */
       let xomlar = [], bolakSorov = 0;
       const bolakYakun = () => {
@@ -735,7 +805,12 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
       const q = qoralamaOl();
       const qx = q ? (js(q.xulosa_json) || {}) : {};
       const qr = q ? (js(q.farq_json) || []) : [];
-      const katlar = db.prepare('SELECT COUNT(*) AS n, SUM(skan_at IS NOT NULL) AS k, SUM(mos > 0) AS b FROM erp_jonli_kat').get();
+      const katlar = db.prepare(`SELECT COUNT(*) AS n, SUM(skan_at IS NOT NULL) AS k, SUM(mos > 0) AS b, SUM(kat_mos > 0) AS nm,
+        SUM(kat_mos > 0 AND skan_at IS NULL AND erp_soni <> 0) AS nmk, SUM(skan_at IS NULL AND erp_soni <> 0) AS kk FROM erp_jonli_kat`).get();
+      const kuz = { plita: 0, furnitura: 0, xizmat: 0, sukut: 0 };
+      for (const r of db.prepare("SELECT tur, COUNT(*) AS n FROM erp_jonli_obyekt WHERE erp_id <> '' GROUP BY tur").all()) kuz[r.tur] = r.n;
+      let kat = { plita: [], furnitura: [] }, qk = { royxat: [], nomalum: 0, qaynoq: { plita: 0, furnitura: 0, sukut: 0 } };
+      try { kat = katOl(); qk = qaynoqKategoriyalar(); } catch (_) { /* diagnostika ixtiyoriy: katalog o'qilmasa ham holat chiqadi */ }
       const kk = kvJs('kurs_kutadi');
       return {
         yoqilgan, sabab, manzil: erpManzil, pauza: pauzaOl(), chegara_foiz: chegaraOl(), band,
@@ -746,7 +821,10 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
         keyingi_qaynoq: ishlayapti && !pauzaOl() ? new Date(Math.max(keyingiUrinish, qaynoqDue)).toISOString() : null,
         keyingi_toliq: ishlayapti && !pauzaOl() ? new Date(Math.max(keyingiUrinish, toliqDue)).toISOString() : null,
         oxirgi_qaynoq: kvJs('oxirgi_qaynoq'), oxirgi_toliq: kvJs('oxirgi_toliq'),
-        kategoriyalar: { jami: katlar.n || 0, kashf: katlar.k || 0, bizniki: katlar.b || 0 },
+        kategoriyalar: { jami: katlar.n || 0, kashf: katlar.k || 0, bizniki: katlar.b || 0, kashf_qilinmagan: katlar.kk || 0, nom_mos: katlar.nm || 0, nom_mos_kashf_qilinmagan: katlar.nmk || 0,
+          qaynoq: qk.royxat.length, qaynoq_nomalum: qk.nomalum },
+        kuzatilayotgan: kuz,                                                    // ERP'dan oxirgi ko'rilgan obyektlar soni (plita / furnitura / xizmat)
+        katalog: { plita: kat.plita.length, furnitura: kat.furnitura.length, qaynoq_plita: qk.qaynoq.plita, qaynoq_furnitura: qk.qaynoq.furnitura, qaynoq_sukut: qk.qaynoq.sukut },
         sozlama: { qaynoq_soniya: Math.round(S.qaynoqMs / 1000), toliq_soniya: Math.round(S.toliqMs / 1000), taym_aut_soniya: Math.round(S.taymAutMs / 1000), eski_daqiqa: S.eskiDaqiqa },
         tasdiq_kutadi: { soni: qr.filter(x => x.q).length, ogohlantirish: qr.filter(x => !x.q).length, partiya_id: q ? q.id : null, sabab: qx.sabab || {} },
         ozgarishlar: db.prepare('SELECT id, vaqt, tur, kalit, nom, eski, yangi, foiz, harakat, sabab, partiya_id FROM erp_jonli_tarix ORDER BY id DESC LIMIT 50').all()
