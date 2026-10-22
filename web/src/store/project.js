@@ -122,8 +122,8 @@ export const project = {
     if (this.H && this.doc) chizmaUla(this.H, this.doc);  // TZ-24 A: qo'lda chizilgan modullar
     const b = this.doc && this.doc.bazis;
     if (!b || !b.fragment || !this.H) return;
-    this.H.catalog[b.fragment.code] = bazisAlmash(b.fragment, b.almash);   // TZ-23 E: almashtirilgan materiallar
     materiallarniQosh(this.H.materials, b.materiallar);
+    this.H.catalog[b.fragment.code] = bazisAlmash(b.fragment, b.almash, this.H.materials.panel_materials);   // TZ-23 E: almashtirilgan materiallar; TZ-47 (A): tekstura yangi material nomiga qarab
   },
   /** yangi loyiha: xona (onboarding) + oshxona tanlansa — avtomatik konstruktor (TZ-22, AI'siz) eng yaxshi varianti;
    *  konstruktor variant topolmasa — eski namuna (3 pastki + 2 ustki) */

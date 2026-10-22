@@ -106,7 +106,7 @@ const tahlilSheet = (sh) => { let r = KESH.get(sh); if (!r) { r = nomTahlil(sh.n
  * @param {{ name: string, thickness?: number, tur?: string }} bm — Bazis materiali (loyiha.js hisobot.materiallar yozuvi)
  * @param {Array} sheets — ERP plitalari (sheet-catalog.json .sheets: sku, name, type, th, l, w, uzs)
  * @returns {{ holat: 'aniq'|'nomzod'|'yoq', sheet: object|null, nomzodlar: object[], sabab: string }}
- *   aniq — bitta ERP plitasi (avtomatik qo'llanadi); nomzod — bir nechta (foydalanuvchi tanlaydi, eng ko'pi 6 ta);
+ *   aniq — bitta ERP plitasi (avtomatik qo'llanadi); nomzod — bir nechta (foydalanuvchi tanlaydi, eng ko'pi 6 ta); sabab 'format' (TZ-47 B) — dekor boshqa list formatida ham/faqat shunda bor;
  *   yoq — mos ERP plitasi topilmadi (sabab: tur | dekor_yoq | nom_yoq).
  */
 export function bazisniERPga(bm, sheets) {
@@ -116,36 +116,51 @@ export function bazisniERPga(bm, sheets) {
   const turlar = ERP_TUR[(bm && bm.tur) || ''];
   if (!turlar) return yoq('tur');
   const b = nomTahlil(nom), th = +(bm && bm.thickness) || b.th || 0;
-  /* 1) tur, qalinlik, list maydoni (ikkalasida ham aytilgan bo'lsa) */
-  let pool = (sheets || []).filter(s => turlar.includes(s.type) && (!th || Math.abs((+s.th || 0) - th) < 0.6));
-  if (b.maydon != null) {
-    pool = pool.filter(s => {
-      const m = tahlilSheet(s).maydon;
-      if (m != null) return m === b.maydon;
-      return !(+s.l > 100 && +s.w > 100) || Math.abs(s.l * s.w / 1e6 - b.maydon) < 0.1;
-    });
+  /* ERP plitasi Bazis nomidagi list maydoniga mosmi (nomda maydon yo'q bo'lsa — katalogdagi eni×bo'yi bo'yicha) */
+  const formatMos = (s) => {
+    const m = tahlilSheet(s).maydon;
+    if (m != null) return m === b.maydon;
+    return !(+s.l > 100 && +s.w > 100) || Math.abs(s.l * s.w / 1e6 - b.maydon) < 0.1;
+  };
+  /* nomzod tanlash: formatFiltr — Bazis nomidagi list maydoni (4,575 …) ERP plitasi maydoniga teng bo'lishi shart (sukut); TZ-47 (B): formatsiz ham sinaladi */
+  const tanla = (formatFiltr) => {
+    /* 1) tur, qalinlik, list maydoni (ikkalasida ham aytilgan bo'lsa) */
+    let pool = (sheets || []).filter(s => turlar.includes(s.type) && (!th || Math.abs((+s.th || 0) - th) < 0.6));
+    if (formatFiltr && b.maydon != null) pool = pool.filter(formatMos);
+    /* narxi bor plitalar — oldin (#151: narxsiz plita ro'yxatda ko'rinmaydi); faqat narxsiz bo'lsa — ular */
+    const narxli = pool.filter(s => s.uzs > 0);
+    if (narxli.length) pool = narxli;
+    /* takrorlarni olib tashlash: bir xil sku+nom+qalinlik */
+    const ko = new Set();
+    pool = pool.filter(s => { const k = [s.sku, s.name, s.th].join('|'); if (ko.has(k)) return false; ko.add(k); return true; });
+    if (!pool.length) return yoq('dekor_yoq');
+    /* 2) SKU — nomda ERP SKU'si aynan yozilgan bo'lsa (qo'shimchasi bilan: "7045 BS") */
+    const sk = pool.filter(s => b.sku.includes(skuKalit(s.sku)) && /[a-z]/.test(skuKalit(s.sku).replace(/^[a-z]?\d+/, '')));
+    if (sk.length === 1) return { holat: 'aniq', sheet: sk[0], nomzodlar: [sk[0]], sabab: 'sku' };
+    /* 3) dekor so'zlari va ishlab chiqaruvchi */
+    const brendOk = (s) => !b.brend || !tahlilSheet(s).brend || tahlilSheet(s).brend === b.brend;
+    const dekorda = pool.filter(s => b.dekor.length && brendOk(s) && ichida(b.dekor, tahlilSheet(s).dekor));
+    const aynan = dekorda.filter(s => tengToplam(b.dekor, tahlilSheet(s).dekor));
+    /* nomzodlar tartibi: Bazis nomiga eng yaqin (ortiqcha dekor so'zi kam) → Ultradekor (sex standarti, #151) → arzoni */
+    const tartib = (list) => list.slice().sort((x, y) => (tahlilSheet(x).dekor.length - tahlilSheet(y).dekor.length)
+      || ((tahlilSheet(y).brend === 'ultradekor') - (tahlilSheet(x).brend === 'ultradekor')) || ((+x.uzs || 0) - (+y.uzs || 0)) || String(x.sku).localeCompare(String(y.sku)));
+    if (aynan.length === 1) return { holat: 'aniq', sheet: aynan[0], nomzodlar: [aynan[0]], sabab: 'dekor' };
+    if (aynan.length > 1) return { holat: 'nomzod', sheet: null, nomzodlar: tartib(aynan).slice(0, 6), sabab: 'kop' };
+    if (dekorda.length) return { holat: 'nomzod', sheet: null, nomzodlar: tartib(dekorda).slice(0, 6), sabab: 'kop' };
+    return yoq('dekor_yoq');
+  };
+  const r = tanla(true);
+  /* TZ-47 (B): sexda format ko'pincha o'zgaradi (Bazis nomida 4,575 — kesish 5,0325 dan; 3812, 3877, 3888, 3936, 4034, 4250). Shuning uchun format farqi
+     bo'lishi mumkin bo'lgan moslik "aniq" EMAS — "nomzod" (foydalanuvchi tanlaydi): (a) dekor boshqa formatda ham bor, (b) dekor faqat boshqa formatda bor
+     (avval "yoq"). Nomdagi aniq SKU ("7045 BS") — aniq qoladi; Bazis nomida list maydoni bo'lmasa — oldingidek. */
+  if (b.maydon != null && r.sabab !== 'sku' && (r.sabab === 'dekor' || r.sabab === 'dekor_yoq')) {
+    const t = tanla(false);
+    if (t.holat !== 'yoq' && t.sabab !== 'sku') {
+      const boshqa = t.nomzodlar.filter(s => !formatMos(s));
+      if (boshqa.length) return { holat: 'nomzod', sheet: null, nomzodlar: (r.sheet ? [r.sheet] : []).concat(boshqa.filter(s => s !== r.sheet)).slice(0, 6), sabab: 'format' };
+    }
   }
-  /* narxi bor plitalar — oldin (#151: narxsiz plita ro'yxatda ko'rinmaydi); faqat narxsiz bo'lsa — ular */
-  const narxli = pool.filter(s => s.uzs > 0);
-  if (narxli.length) pool = narxli;
-  /* takrorlarni olib tashlash: bir xil sku+nom+qalinlik */
-  const ko = new Set();
-  pool = pool.filter(s => { const k = [s.sku, s.name, s.th].join('|'); if (ko.has(k)) return false; ko.add(k); return true; });
-  if (!pool.length) return yoq('dekor_yoq');
-  /* 2) SKU — nomda ERP SKU'si aynan yozilgan bo'lsa (qo'shimchasi bilan: "7045 BS") */
-  const sk = pool.filter(s => b.sku.includes(skuKalit(s.sku)) && /[a-z]/.test(skuKalit(s.sku).replace(/^[a-z]?\d+/, '')));
-  if (sk.length === 1) return { holat: 'aniq', sheet: sk[0], nomzodlar: [sk[0]], sabab: 'sku' };
-  /* 3) dekor so'zlari va ishlab chiqaruvchi */
-  const brendOk = (s) => !b.brend || !tahlilSheet(s).brend || tahlilSheet(s).brend === b.brend;
-  const dekorda = pool.filter(s => b.dekor.length && brendOk(s) && ichida(b.dekor, tahlilSheet(s).dekor));
-  const aynan = dekorda.filter(s => tengToplam(b.dekor, tahlilSheet(s).dekor));
-  /* nomzodlar tartibi: Bazis nomiga eng yaqin (ortiqcha dekor so'zi kam) → Ultradekor (sex standarti, #151) → arzoni */
-  const tartib = (list) => list.slice().sort((x, y) => (tahlilSheet(x).dekor.length - tahlilSheet(y).dekor.length)
-    || ((tahlilSheet(y).brend === 'ultradekor') - (tahlilSheet(x).brend === 'ultradekor')) || ((+x.uzs || 0) - (+y.uzs || 0)) || String(x.sku).localeCompare(String(y.sku)));
-  if (aynan.length === 1) return { holat: 'aniq', sheet: aynan[0], nomzodlar: [aynan[0]], sabab: 'dekor' };
-  if (aynan.length > 1) return { holat: 'nomzod', sheet: null, nomzodlar: tartib(aynan).slice(0, 6), sabab: 'kop' };
-  if (dekorda.length) return { holat: 'nomzod', sheet: null, nomzodlar: tartib(dekorda).slice(0, 6), sabab: 'kop' };
-  return yoq('dekor_yoq');
+  return r;
 }
 
 /** loyihadagi barcha Bazis materiallari → { [BZM kodi]: natija }. Stoleshnitsa va ERP kodi allaqachon tanlanganlar o'tkazib yuboriladi. */

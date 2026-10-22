@@ -205,8 +205,11 @@ function algoritmSinov(gd, real) {
     const mats = { panel_materials: [{ code: 'M', sheets: [r.fmt.slice()], sheet_price: 0 }] };
     const hamma = parts.map(p => Object.assign({}, p, { material: 'M' }));
     const run = (kerf, mode) => nestProject(hamma, mats, Object.assign({}, NEST_DEF, { kerf }, mode ? { mode } : {})).by_material.M;
-    const a = run(+NEST_DEF.kerf || 4), b = run(4.4), c = run(+NEST_DEF.kerf || 4, 'strip');
-    out[norm(nom)] = { soni: a.sheet_count, soni44: b.sheet_count, soniStrip: c.sheet_count, soniMin: Math.min(a.sheet_count, c.sheet_count), joyda: a.stats.placed_count, sigmadi: (a.unplaced || []).length, det: sum(parts.map(p => p.qty)), util: a.stats.utilization_pct, maydon: sum(parts.map(p => p.length * p.width * p.qty)) / 1e6 };
+    const tt = Date.now();
+    const a = run(+NEST_DEF.kerf || 4);
+    const vaqt = Date.now() - tt;
+    const b = run(4.4), c = run(+NEST_DEF.kerf || 4, 'strip');
+    out[norm(nom)] = { vaqt, soni: a.sheet_count, soni44: b.sheet_count, soniStrip: c.sheet_count, soniMin: Math.min(a.sheet_count, c.sheet_count), joyda: a.stats.placed_count, sigmadi: (a.unplaced || []).length, det: sum(parts.map(p => p.qty)), util: a.stats.utilization_pct, maydon: sum(parts.map(p => p.length * p.width * p.qty)) / 1e6 };
   }
   return out;
 }
@@ -324,7 +327,7 @@ async function bizHisob(rs, ms, { gibFormat = false, avto = false } = {}) {
     if (gibFormat && x.real && x.real.fmt) { const m = doc.erpMat[kod]; m.sheets = [x.real.fmt.slice()]; }
     doc.bazis.almash[x.g.kod] = kod; kodlar.set(x.nishon.i, kod);
   }
-  H.catalog[rs.fragment.code] = bazisAlmash(rs.fragment, doc.bazis.almash);
+  H.catalog[rs.fragment.code] = bazisAlmash(rs.fragment, doc.bazis.almash, H.materials.panel_materials);   // TZ-47 (A): tekstura yangi material nomiga qarab
   materiallarniQosh(H.materials, doc.bazis.materiallar);
   const r = H.recalc(doc, { materialCode: 'LDSP16', fasadCode: 'LDSP16', orqaCode: 'HDF3' });
   return { r, doc, kodlar, H };
@@ -547,9 +550,10 @@ chet.sort((a, b) => Math.abs(b.farq) - Math.abs(a.farq));
 /* ───────────────────────── chiqarish ───────────────────────── */
 const ELAPSED = Date.now() - t0;
 if (JSON_OUT) {
-  const sodda = natijalar.map(n => ({ id: n.id, varaq: n.varaq, kromka: n.kromka, raspil: n.raspil, prisadka: n.prisadka, bazis: n.bazis, qism: n.qism, jami: n.jami, siyosat: n.siyosat, ustamaERP: n.ustamaERP,
+  const sodda = natijalar.map(n => ({ id: n.id, algo: n.algo, varaq: n.varaq, kromka: n.kromka, raspil: n.raspil, prisadka: n.prisadka, bazis: n.bazis, qism: n.qism, jami: n.jami, siyosat: n.siyosat, ustamaERP: n.ustamaERP,
     moslash: n.ms.natija.map(x => ({ guruh: x.g.nom, detal: x.g.det, nishon: x.nishon === 'mijoz' ? 'mijoz' : x.nishon ? x.nishon.nom : null, usul: x.usul })) }));
   console.log(JSON.stringify({ natijalar: sodda, statistika, chetlanish: chet.slice(0, 10), xatolar }, null, 1));
+  await new Promise(r => process.stdout.write('', r));   // quvur (pipe) ga katta chiqish to'liq yozilsin
   process.exit(xatolar.length ? 1 : 0);
 }
 
@@ -752,4 +756,5 @@ P(`Eslatma 1 (kalibrovka): TZ-36 K1/K2/K3 shu 14 ta buyurtmaning 12 tasida (3770
 P(`Eslatma 2 (o'lchanmadi): .LC4 (Homag) — detal/operatsiya jadvali, varaq xaritasi yo'q (kalitlarda faqat 'waste') → varaq soni GibLab xlsx va .project dan; LC4 dagi kromka/teshik jadvali o'qilmadi. 3975 — GibLab xlsx da yo'q (varaq/kromka m GibLab bilan o'lchanmadi). ERP plita narxi — ERP ning joriy display_price_uzs (2026-10-22), buyurtma sanasidagi emas.`);
 P(`${natijalar.length} buyurtma hisoblandi (${(ELAPSED / 1000).toFixed(1)} s)` + (xatolar.length ? `; XATO: ${xatolar.join(' | ')}` : '; xatosiz'));
 console.log(out.join('\n'));
+await new Promise(r => process.stdout.write('', r));
 process.exit(xatolar.length ? 1 : 0);
