@@ -85,7 +85,7 @@ export function roverProgramlar(nest, cutlists, opts) {
     for (const sheet of nm.sheets || []) {
       const q = qal[mat] || +sheet.thickness || 16;
       const r = varaqDasturi(sheet, q, uslub, o);
-      out.push({ nom: String(mat).replace(/[^\w.-]+/g, '_') + '-varaq' + sheet.no + '.' + uslub, matn: r.matn, material: mat, varaq: sheet.no, qalinlik: q, detal: r.detal });
+      out.push({ nom: String(mat).replace(/[^\w.-]+/g, '_') + '-list' + sheet.no + '.' + uslub, matn: r.matn, material: mat, varaq: sheet.no, qalinlik: q, detal: r.detal });
     }
   }
   return out;

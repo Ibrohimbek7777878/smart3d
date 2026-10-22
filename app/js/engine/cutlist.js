@@ -678,7 +678,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
         sigmadi.push({ code: mat, name: meta.name || mat, soni: lost.length, yuza_m2: lostLine.yuza_m2, varaq: lq, amount: la,
           detallar: lost.slice(0, 5).map(it => `${it.src.length}×${it.src.width}`) });
       }
-      name = `${meta.name || mat} (${qty} varaq, ${nm.stats ? nm.stats.utilization_pct : 0}% unumdorlik)` + (mijoz ? mijozNom : '');
+      name = `${meta.name || mat} (${qty} list, ${nm.stats ? nm.stats.utilization_pct : 0}% unumdorlik)` + (mijoz ? mijozNom : '');
       group = 'Plita (Kroy)';
     } else {
       const area = (areaByMat[mat] || 0);
@@ -686,7 +686,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       qty = Math.round(sheetsExact * 100) / 100;
       amount = Math.round(sheetsExact * unitPrice);
       totalPanelArea += area / 1e6;
-      name = `${meta.name || mat} (~${qty} varaq, taxminiy)` + (mijoz ? mijozNom : '');
+      name = `${meta.name || mat} (~${qty} list, taxminiy)` + (mijoz ? mijozNom : '');
       group = 'Plita (Taxminiy)';
     }
     sheetCost += amount;
@@ -703,7 +703,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
       if (meta.thickness > 0 && meta.thickness <= RASPIL_YUPQA_MM) yupqaSheets += lostLine.varaq;
       sheetCostByMat[mat] += lostLine.amount;
       lines.push({ group: 'Plita (Taxminiy)', code: mat, sigmadi: lostLine,
-        name: `${meta.name || mat}: ${lostLine.soni} ta detal varaqqa sig'madi — yuza bo'yicha ~${lostLine.varaq} varaq (taxminiy)` + (mijoz ? mijozNom : ''),
+        name: `${meta.name || mat}: ${lostLine.soni} ta detal listga sig'madi — yuza bo'yicha ~${lostLine.varaq} list (taxminiy)` + (mijoz ? mijozNom : ''),
         qty: lostLine.varaq, unit: 'varaq', unit_price: unitPrice, amount: lostLine.amount, no_price: !mijoz && !(unitPrice > 0),
         ...(mijoz ? { mijoz: true, tasdiq: true, manba: 'mijoz' } : { tasdiq: false, manba: unitPrice > 0 ? 'taxmin' : 'yoq' }) });
     }
