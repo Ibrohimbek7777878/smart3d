@@ -19,7 +19,11 @@ const PETLYA_SUKUT = { D: 35, H: 13, Y: 21, D1: 3, H1: 2, Y1: 6, A1: 48, D2: 3, 
 /* Sxemasi o'qilmaydigan (shifrlangan) petlya: sexning haqiqiy KDT sidagi uch oila — "Turkiya Samet" 21,5 / 13 (barcha buyurtmada), ruscha nomli petlyalar 22 / 12 (305 ta) yoki 21 / 13 */
 const PETLYA_SAMET = { Y: 21.5, H: 13, H1: 3, H2: 3 };
 const PETLYA_SXEMASIZ = { Y: 22, H: 12 };
-const SAMOREZ_RE = /саморез|samorez|samarez|metka/i;                       // sxema yo'q/shifrlangan: 30 buyurtmadagi ochiq sxemalarning 90% idagi qiymat
+const SAMOREZ_RE = /саморез|samorez|samarez|metka/i;
+const RUCHKA_RE = /ручк|ruchk/i, PROFIL_RE = /профил|profil|gola/i;
+const RUCHKA = { d: 5 };                                              // sex KDT: Ø5 o'tuvchi, oralig'i ruchka nomida (160, 192 …)
+const POLKA_RE = /полкодерж|polkoder|polkader/i;
+const POLKA = { d: 5, dp: 9, past: 2.5 };                                       // sex KDT: Ø5 x 9 ko'r teshik (875 ta; sxemada diametr yo'q — f3d fayl)                       // sxema yo'q/shifrlangan: 30 buyurtmadagi ochiq sxemalarning 90% idagi qiymat
 
 /** global nuqta → panel freymi */
 function lok(pn, P) { const d = sub(P, pn.o.tf.pos), a = pn.o.tf.oq; return [dot(d, a[0]), dot(d, a[1]), dot(d, a[2])]; }
@@ -27,6 +31,16 @@ const bbIchida = (pn, x, y, tol) => x >= pn.bb.x0 - tol && x <= pn.bb.x1 + tol &
 
 /** sxemasi bor guruhdan mahkamlagich parametrlari ({d1, d2, h} yoki hinge/ekssentrik …) */
 const param = (o) => { const s = o.guruh && o.guruh.sxema && o.guruh.sxema.Scheme; return s && s.Furniture && s.Furniture.Param && typeof s.Furniture.Param === 'object' ? s.Furniture.Param : null; };
+
+
+/** obyekt (furnitura) turgan yuza: nuqta panel yuzasida (Z=0 yoki Z=qalinlik) va kontur ichida; obyektning X o'qi shu yuzaga tik bo'lgan panel
+ *  (qo'shni panel qirrasi ham nuqtani o'z ichiga olishi mumkin — masalan polka qirrasi yon devor yuzasida). Yagona bo'lmasa — null. */
+function yuzadagiPanel(panels, o, ok = 0) {
+  const p = o.tf.pos, u = o.tf.oq[ok];
+  const nomzod = panels.filter(pn => { const l = lok(pn, p); return (Math.abs(l[2]) < TOL || Math.abs(l[2] - pn.t) < TOL) && bbIchida(pn, l[0], l[1], TOL); });
+  const tik = nomzod.filter(pn => Math.abs(Math.abs(dot(u, pn.o.tf.oq[2])) - 1) < 1e-3);
+  return tik.length === 1 ? tik[0] : nomzod.length === 1 ? nomzod[0] : null;
+}
 
 /**
  * @param {Array} objects — daraxt.js obyektlari (tf global, guruh, sxema)
@@ -106,10 +120,35 @@ export function bazisTeshikJoy(objects, panels, opts = {}) {
   for (const o of objects) {
     if (o.modelCode !== 3001 || !o.tf || !SAMOREZ_RE.test(o.name || '')) continue;
     const p = o.tf.pos;
-    const Ss = panels.filter(pn => { const l = lok(pn, p); return (Math.abs(l[2]) < TOL || Math.abs(l[2] - pn.t) < TOL) && bbIchida(pn, l[0], l[1], TOL); });
-    if (Ss.length !== 1) continue;
-    const sp = Ss[0], l = lok(sp, p);
+    const sp = yuzadagiPanel(panels, o);
+    if (!sp) continue;
+    const l = lok(sp, p);
     qosh(sp, { X: l[0], Y: l[1], z0: l[2] < sp.t / 2, edge: null, d: 3, dp: 3, kind: 'd6_belgi' });
+  }
+
+  /* ── 4) Polka ushlagich ("Полкодержатель D5", "polkoderjatel nikel"): yon devor yuzasida Ø5 × 9 ko'r teshik, ushlagich obyekti turgan joyda ── */
+  for (const o of objects) {
+    if (o.modelCode !== 3001 || !o.tf || !POLKA_RE.test(o.name || '')) continue;
+    const p = o.tf.pos;
+    const sp = yuzadagiPanel(panels, o);
+    if (!sp) continue;
+    const hy = o.tf.oq[1], l = lok(sp, [p[0] + hy[0] * POLKA.past, p[1] + hy[1] * POLKA.past, p[2] + hy[2] * POLKA.past]);   // markaz polka ostidan 2,5 mm (ushlagich Y o'qi bo'ylab)
+    qosh(sp, { X: l[0], Y: l[1], z0: l[2] < sp.t / 2, edge: null, d: POLKA.d, dp: POLKA.dp, kind: 'd6_polka' });
+  }
+
+  /* ── 5) Ruchka ("Ручка 160 мм"): eshik/fasadda 2 ta o'tuvchi Ø5, ruchka markazidan ±oraliq/2 (ruchka X o'qi bo'ylab); oraliq — nomdagi son ── */
+  for (const o of objects) {
+    if (o.modelCode !== 3001 || !o.tf || !RUCHKA_RE.test(o.name || '') || PROFIL_RE.test(o.name || '')) continue;
+    const m = /(\d{2,3})\s*(?:мм|mm)/i.exec(o.name) || /[_\s](\d{2,3})(?!\d)/.exec(o.name);
+    const oraliq = m ? +m[1] : 0;
+    if (!(oraliq >= 32 && oraliq <= 600)) continue;
+    const sp = yuzadagiPanel(panels, o, 2);
+    if (!sp) continue;
+    const hx = o.tf.oq[0], p = o.tf.pos;
+    for (const sg of [-1, 1]) {
+      const l = lok(sp, [p[0] + hx[0] * sg * oraliq / 2, p[1] + hx[1] * sg * oraliq / 2, p[2] + hx[2] * sg * oraliq / 2]);
+      qosh(sp, { X: l[0], Y: l[1], z0: true, edge: null, d: RUCHKA.d, dp: sp.t, kind: 'd6_ruchka' });
+    }
   }
   return out;
 }
