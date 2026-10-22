@@ -50,7 +50,7 @@ function Tahrir({ m }) {
             return (
               <div key={v.kod} data-mat-variant={v.kod} style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '10px', borderTop: '1px solid var(--line)' }}>
                 <span style={{ fontSize: '13px', fontWeight: '700', overflowWrap: 'anywhere' }}>{v.nom || v.kod}</span>
-                <span style={izoh}>{[v.tur, v.th ? v.th + ' ' + t('umumiy.mm') : '', v.sku].filter(Boolean).join(' · ')} · {t('admin.mat_narx_fayl')}: {v.narx_fayl ? raqam(v.narx_fayl) : t('admin.narx_yoq')} {t('sarlavha.som')}</span>
+                <span style={izoh}>{[v.tur, v.th ? v.th + ' ' + t('umumiy.mm') : '', v.sku].filter(Boolean).join(' · ')} · {t('admin.mat_narx_fayl')}: {v.narx_fayl ? raqam(v.narx_fayl) : t('admin.narx_yoq')} {t('sarlavha.som')}{v.narx_erp > 0 ? <b data-mat-narx-erp={v.kod}> · {t('admin.mat_narx_erp')}: {raqam(v.narx_erp)} {t('sarlavha.som')}</b> : null}</span>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <input data-mat-narx={v.kod} inputMode="numeric" value={x.narx[v.kod] ?? ''} onChange={(ev) => m.narxYoz(v.kod, ev.target.value)} style={{ ...maydon, width: '170px', fontVariantNumeric: 'tabular-nums' }} />
                   <span style={izoh}>{t('sarlavha.som')} / {t('admin.mat_varaq')}</span>

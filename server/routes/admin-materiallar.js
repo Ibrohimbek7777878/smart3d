@@ -75,14 +75,15 @@ export default function adminMateriallarRouter({ db, jurnal }, { guard, yoz, him
     const bz = new Map(db.prepare('SELECT kalit, rang_hex FROM mat_admin').all().map(m => [m.kalit, m]));
     const rs = new Map(db.prepare('SELECT kalit, mime, hajm, sha FROM mat_rasm').all().map(m => [m.kalit, m]));
     const nr = new Map(db.prepare('SELECT kod, uzs FROM mat_narx').all().map(m => [m.kod, m.uzs]));
+    const er = new Map(db.prepare("SELECT kalit, uzs FROM erp_narx WHERE tur = 'plita'").all().map(m => [m.kalit, m.uzs]));   // TZ-37 (3-faza): ERP qatlami (fayl < ERP < qo'lda)
     const V = varaqlar();
     const dekorlar = asosiy().items.map(e => {
       const b = bz.get(e.kalit), rm = rs.get(e.kalit), fr = faylRasm(e.kalit);
       const rangBaza = !!(b && HEX_RE.test(b.rang_hex || ''));
       const variantlar = (e.kodlar || []).map(kod => {
-        const s = V.get(kod) || {}, baza = nr.get(kod);
+        const s = V.get(kod) || {}, baza = nr.get(kod), erp = er.get(kod) || 0;
         return { kod, nom: s.name || '', sku: s.sku || '', tur: s.type || '', th: s.th || 0, l: s.l || 0, w: s.w || 0,
-          narx_fayl: s.uzs || 0, narx: baza > 0 ? baza : (s.uzs || 0), narx_manba: baza > 0 ? 'baza' : 'fayl' };
+          narx_fayl: s.uzs || 0, narx_erp: erp, narx: baza > 0 ? baza : (erp > 0 ? erp : (s.uzs || 0)), narx_manba: baza > 0 ? 'baza' : (erp > 0 ? 'erp' : 'fayl') };
       });
       return {
         o: e.o, kalit: e.kalit, dekor: e.dekor, guruh: e.guruh, yuza: e.yuza, tur: e.tur, qalinlik: e.qalinlik,

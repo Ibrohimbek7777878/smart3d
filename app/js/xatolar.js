@@ -55,6 +55,12 @@ export const XATOLAR = {
   'S3D-ADM-016': { http: 404, matn: 'Qaytariladigan admin o\'zgartirishi yo\'q — qiymat allaqachon fayldagidek' },
   'S3D-ADM-017': { http: 409, matn: 'Bu akkauntni bloklab bo\'lmaydi (o\'zingiz yoki admin)' },
   'S3D-ADM-104': { matn: 'Rasm fayli o\'qilmadi' },
+  /* TZ-37 (3-faza): ERP sinxronlash (admin yuklagan JSON; ERP bilan jonli aloqa yo'q) */
+  'S3D-ADM-018': { http: 404, matn: 'ERP yuklashi topilmadi' },
+  'S3D-ADM-019': { http: 400, matn: 'ERP fayli noto\'g\'ri (mahsulotlar yoki xizmatlar ro\'yxati kerak)' },
+  'S3D-ADM-020': { http: 409, matn: 'Bu ERP yuklashi allaqachon qo\'llangan yoki bekor qilingan' },
+  'S3D-ADM-021': { http: 400, matn: 'Qo\'llash tasdiqlanmadi yoki hech narsa tanlanmagan' },
+  'S3D-ADM-105': { matn: 'ERP fayli o\'qilmadi (JSON emas yoki juda katta)' },
   /* TZ-24 B: shaxsiy shablonlar */
   'S3D-SHB-001': { http: 404, matn: 'Shablon topilmadi' },
   'S3D-SHB-002': { http: 409, matn: 'Shablonlar ko\'p — 100 tagacha; keraksizini o\'chiring' },
