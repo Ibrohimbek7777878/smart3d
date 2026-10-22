@@ -48,14 +48,21 @@ async function asosiy(page, R) {
     return [...qatorlar, ...opsiyalar].some(x => kodlar.includes(x));
   }, XOM);
 
+  /* til — sarlavhadagi menyu orqali (akkauntga ham saqlanadi): web.sh da suitlar bitta bazani bo'lishadi, localStorage dagi til akkaunt tiliga yutqazadi */
+  const tilTanla = async (kod) => {
+    const menyu = page.locator('[data-sarl="menyu"], [data-til-menyu]');
+    for (let i = 0, n = await menyu.count(); i < n; i++) { const b = menyu.nth(i); if (await b.isVisible()) { await b.click(); break; } }
+    await page.locator(`[role=menuitemradio][lang=${kod}]`).click(); await page.waitForTimeout(500);
+  };
   R.enlar = {};
   for (const til of ['uz', 'ru', 'en']) {
-    await M((t) => localStorage.setItem('s3d-til', t), til);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(orgn() + '/admin/katalog'); await page.locator('[data-kat-qator]').first().waitFor({ timeout: 15000 });
+    await tilTanla(til);
     for (const w of [390, 360, 320]) {
-      await page.setViewportSize({ width: w, height: 844 });
-      await page.goto(orgn() + '/admin/katalog'); await page.locator('[data-kat-qator]').first().waitFor({ timeout: 15000 }); await page.waitForTimeout(500);
+      await page.setViewportSize({ width: w, height: 844 }); await page.waitForTimeout(500);
       const u = await ustmaUst();
-      R.enlar[til + w] = { qator: u.jami, ustma: u.soni, misol: u.yomon[0] || null, skroll: await skroll0(), xom: await xom() };
+      R.enlar[til + w] = { qator: u.jami, ustma: u.soni, misol: u.yomon[0] || null, skroll: await skroll0(), xom: await xom(), til: await M(() => document.documentElement.lang) };
       if (w === 390) await page.screenshot({ path: `${OUT}/katalogMobil-${til}-390.png`, clip: { x: 0, y: 0, width: 390, height: 700 } });
     }
   }
@@ -63,14 +70,14 @@ async function asosiy(page, R) {
   R.tur = {};
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const til of ['uz', 'ru', 'en']) {
-    await M((t) => localStorage.setItem('s3d-til', t), til);
-    await page.goto(orgn() + '/admin/katalog'); await page.locator('[data-kat-qator]').first().waitFor({ timeout: 15000 });
+    await tilTanla(til); await page.waitForTimeout(300);
     await page.locator('[data-kat="qidir"]').fill('SP-K-001'); await page.waitForTimeout(300);
     R.tur[til] = await M(() => (document.querySelector('[data-kat-qator]') || { innerText: '' }).innerText.replace(/\s+/g, ' '));
     R.tur[til + '_filtr'] = await M(() => [...document.querySelectorAll('[data-kat-suzgich="kategoriya"] option')].slice(1, 4).map(o => o.textContent));
   }
+  await tilTanla('uz');
   R.xatolar = errs;
   const hammasi = Object.values(R.enlar);
-  R.ok = hammasi.length === 9 && hammasi.every(x => x.qator > 100 && x.ustma === 0 && x.skroll && !x.xom)
+  R.ok = hammasi.length === 9 && hammasi.every(x => x.qator > 100 && x.ustma === 0 && x.skroll && !x.xom) && ['uz', 'ru', 'en'].every(k => hammasi.filter(x => x.til === k).length === 3)
     && /Shkaf|Savat|shkaf/i.test(R.tur.uz) && !/cabinet/.test(R.tur.uz) && /Шкаф|шкаф/.test(R.tur.ru) && /Cabinet/.test(R.tur.en) && errs.length === 0;
 }
