@@ -1,0 +1,23 @@
+# TZ-49 — Narx tarkibi: kattaroq va chiroyli ko'rinish, chop etish (printer/PDF), narxsiz furnitura uchun qo'lda narx, ustama nolini tekshirish
+
+**Sana:** 2026-10-22 · **Navbat:** 49 · **Holat:** BOSHLANDI 2026-10-22 (egasi #302: 4 skrinshot, smart.bittada.uz/loyiha/12; "nima qancha ketgani ro'yxati chiroyli va kattaroq, printerdan chiqadigan, dashboardda; zapchast narxi aniq; ustamani o'chirish ishlamayapti; standart yoniq")
+**Asos:** egasi production'dagi ESKI versiyani ko'rmoqda. TZ-48 (boshqa chat, `agent/narx48`, main'da) allaqachon: ustama sukut 0% (narx panelida qo'lda yoqiladi), prisadka va Bazis sukutda yoqilgan, «Furniturasiz», +1 raspil, «Narx tarkibi» (qisqa ichki ro'yxat) qildi. Bu TZ shuning ustiga yangisini qo'shadi, dublikat qurmaydi.
+**Diqqat:** `web/src/features/editor/pricing/*` va narx tarkibi (`app/js/engine/narxTarkib.js`) — TZ-48 (smart3d-66 chati) fayllari; agent ularning commitlarini oladi, ustidan yozmaydi. Admin 3-faza va ERP jonli fayllariga tegilmaydi.
+
+## Bajariladigan ishlar
+1. **«Narx tarkibi» kattaroq va chiroyli:** hozirgi qisqa ichki ro'yxat o'rniga (yoki unga qo'shimcha «Kattalashtirish» tugmasi bilan) keng ko'rinish (varaq/modal): bo'limlar (plita, kromka, raspil, prisadka, Bazis, furnitura, qo'shilgan xizmatlar, ustama) → har qator: nom, miqdor × birlik narx = summa, **jamidagi ulushi (%) va ingichka chiziq (bar)**, manba belgisi (ERP / taxmin / qo'lda / mijoz); bo'lim yig'indisi; pastda: tannarx, ustama, **jami**, «Furniturasiz» jami. O'qishga qulay shrift va oraliqlar, mobilda ham sig'adi (390 px, gorizontal skroll yo'q). Mavjud dizayn tokenlari/Varaq/Ikon, emoji yo'q, 3 til.
+2. **Chop etish:** «Chop etish» tugmasi → A4 uchun toza ko'rinish (`@media print`: faqat sarlavha — loyiha nomi, sana, mijoz ismi (kiritilgan bo'lsa), narx tarkibi jadvali va jami; menyu/tugma/3D yo'q; sahifa bo'linishi bo'lim bo'yicha) va brauzer orqali printer yoki "PDF sifatida saqlash". Mavjud `eksport.js` (PDF/Excel kotirovka) bilan mos: shu hujjat ham kotirovkadagi manbalardan olinadi (yig'indi = jami).
+3. **Ustama «0/o'chirish» ishlashi:** Sozlamalar → «Ustama» va narx paneli ustama bloki. Tekshir va tuzat: (a) usta 0% qo'ysa — 0 saqlanadi va narxda 0 sifatida ISHLAYDI (bo'sh maydon ≠ 0: bo'sh = admin/sukutga qaytish; 0 jumlasi `||` bilan yo'qolmasin); (b) Sozlamalarda «Ustama yo'q (0%)» aniq tanlovi; (c) ustama manbasi ko'rinsin: "usta / admin 35% (2026-10-17) / sukut 0%" — production bazada admin ilgari saqlagan 35% bo'lishi mumkin va u ustun turadi (egasi bilishi kerak, admin «Narxlar» da sukutga qaytarish tugmasi bor — matnda ko'rsat); (d) test: 0 qo'yilganda mijoz narxi tannarxga teng (+xizmat), 35 qo'yilganda +35%.
+4. **Narxsiz furnitura (zapchast) — qo'lda narx:** «Narx tarkibi»da narxi yo'q qator (masalan Bazis furnitura nomi) yonida "Narx kiriting" maydoni: usta shu loyiha uchun narx yozadi (dona narxi), u shu loyihaning hisobiga kiradi, manba «qo'lda» deb belgilanadi, aniqlik hisobida tasdiqlangan hisoblanmaydi; loyiha bilan saqlanadi (`doc`); ERP/admin qatlamlariga YOZILMAYDI. Hozirgi "N ta zapchastning narxi bazada yo'q — 0 deb olindi" xabari shu qatorlarga havola qiladi. (Narxsiz furniturani ERP ga bog'lash — alohida: egasining 7 savoliga javob kerak.)
+5. **Dashboard:** egasi "shuni dashboardga ham qo'yib ber" dedi — qaysi ekran ekani aniq emas (TZ-49 dagi 1-bandni avval bajaring; dashboard o'rni egasi javobidan keyin: Loyihalar sahifasi / admin / bosh ish joyi). Hozircha mavjud bo'limlar dashboard bo'lib xizmat qiladigan joylar ro'yxatini (qisqa) hisobotga yozing.
+6. **Sukut tekshiruvi (TZ-48 qarori):** yangi loyihada prisadka va Bazis xizmati yoqilgan, ustama 0, furnitura narxda ekani brauzerda tasdiqlanadi (skrinshot).
+
+## Qabul
+- Narx tarkibi katta va tushunarli; yig'indi = narx paneli jami; chop etishda faqat hujjat (A4), telefon va kompyuterda ishlaydi.
+- Ustama 0 → narxda 0; bo'sh → sukut; manbasi ko'rinadi.
+- Narxsiz furnituraga qo'lda narx kiritilsa jami yangilanadi va saqlanadi; ERP/admin narxlari o'zgarmaydi.
+- Barcha eski testlar yashil (run-all, server, UI narx/narxMoslash/zapchast/til/sozlamalar).
+
+## Tegadigan fayllar
+`web/src/features/editor/pricing/*` (yangi komponent: NarxTarkibKatta + chop etish stili), `web/src/features/settings/{Sozlamalar.jsx,useSozlamalar.js}`, `web/src/services/{hisob,eksport}.js` (faqat zarur bo'lsa), `app/js/engine/cutlist.js` (qo'lda furnitura narxi opt), lug'atlar, testlar. **Tegilmaydi:** tasdiqlangan dizayn, ERP jonli va admin fayllari, narx formulalari.
+## Xavf: PAST–O'RTA (ko'rinish + kichik hisob qo'shimchasi). Orqaga qaytarish: `git revert`.
