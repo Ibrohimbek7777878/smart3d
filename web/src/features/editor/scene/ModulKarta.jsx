@@ -20,7 +20,7 @@ export default function ModulKarta() {
             <span className="sc-interp">{v.sm?.code}</span>
           </span>
         </div>
-        <button onClick={v.deselect} aria-label={t('umumiy.yopish')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"36px","height":"36px","background":"var(--sfc2)"}}>
+        <button onClick={v.deselect} aria-label={t('umumiy.yopish')} style={{"borderRadius":"14px","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"36px","height":"36px","background":"var(--sfc2)"}}>
           <Ikon n="yopish" size={18} gap={0} />
         </button>
       </div>
@@ -30,11 +30,11 @@ export default function ModulKarta() {
             <span style={{"flex":"1","fontSize":"14px","fontWeight":"700","color":"var(--mut)"}}>
               <span className="sc-interp">{r?.label}</span>
             </span>
-            <button onClick={r?.dec} aria-label={t('sahna.kamaytirish')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"40px","height":"40px","background":"var(--sfc2)"}}>
+            <button onClick={r?.dec} aria-label={t('sahna.kamaytirish')} style={{"borderRadius":"14px","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"40px","height":"40px","background":"var(--sfc2)"}}>
               <Ikon n="ayir" size={18} gap={0} />
             </button>
             <input type="number" value={r?.val} onChange={r?.onInput} onBlur={r?.commit} onKeyDown={r?.key} style={{"width":"76px","height":"40px","borderRadius":"12px","background":"var(--bg)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"16px","fontWeight":"800","textAlign":"center","fontVariantNumeric":"tabular-nums","outline":"none"}} />
-            <button onClick={r?.inc} aria-label={t('sahna.oshirish')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"40px","height":"40px","background":"var(--sfc2)"}}>
+            <button onClick={r?.inc} aria-label={t('sahna.oshirish')} style={{"borderRadius":"14px","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","width":"40px","height":"40px","background":"var(--sfc2)"}}>
               <Ikon n="qosh" size={18} gap={0} />
             </button>
           </div>
@@ -49,19 +49,19 @@ export default function ModulKarta() {
         </div>
       </>) : null}
       <div style={{"display":"flex","gap":"6px","flexWrap":"wrap"}}>
-        <button onClick={v.moveL} aria-label={t('sahna.chapga_50_mm')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"var(--sfc2)"}}>
+        <button onClick={v.moveL} aria-label={t('sahna.chapga_50_mm')} style={{"width":"44px","height":"44px","borderRadius":"14px","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"var(--sfc2)"}}>
           <Ikon n="chap" size={20} gap={0} />
         </button>
-        <button onClick={v.moveR} aria-label={t('sahna.ongga_50_mm')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"var(--sfc2)"}}>
+        <button onClick={v.moveR} aria-label={t('sahna.ongga_50_mm')} style={{"width":"44px","height":"44px","borderRadius":"14px","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"var(--sfc2)"}}>
           <Ikon n="ong" size={20} gap={0} />
         </button>
-        <button onClick={v.rotate} aria-label={t('sahna.90_gradus_burish')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"var(--sfc2)","fontSize":"14px"}}>
+        <button onClick={v.rotate} aria-label={t('sahna.90_gradus_burish')} style={{"width":"44px","height":"44px","borderRadius":"14px","border":"1px solid var(--line)","color":"var(--txt)","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"var(--sfc2)","fontSize":"14px"}}>
           <Ikon n="burish" size={18} gap={0} />
         </button>
-        <button onClick={v.dup} aria-label={t('sahna.nusxa')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"var(--sfc2)"}}>
+        <button onClick={v.dup} aria-label={t('sahna.nusxa')} style={{"width":"44px","height":"44px","borderRadius":"14px","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"var(--sfc2)"}}>
           <Ikon n="nusxa" size={18} gap={0} />
         </button>
-        <button onClick={v.askDel} aria-label={t('sahna.ochirish')} style={{"width":"44px","height":"44px","borderRadius":"14px","background":"var(--sfc)","border":"1px solid var(--line)","color":"var(--txt)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"rgba(255,123,123,.14)","color":"var(--danger)"}}>
+        <button onClick={v.askDel} aria-label={t('sahna.ochirish')} style={{"width":"44px","height":"44px","borderRadius":"14px","border":"1px solid var(--line)","fontSize":"17px","cursor":"pointer","display":"grid","placeItems":"center","flex":"0 0 auto","background":"rgba(255,123,123,.14)","color":"var(--danger)"}}>
           <Ikon n="ochirish" size={18} gap={0} />
         </button>
       </div>

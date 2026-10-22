@@ -3,6 +3,7 @@ import uz from './uz.json';
 import ru from './ru.json';
 import en from './en.json';
 import { XATOLAR } from '../../../app/js/xatolar.js';
+import { koplikKalit } from './kopl.js';
 
 /* TZ-18: uch til — o'zbek (asosiy), rus, ingliz. Har matn — kalit bo'yicha lug'atda (uz.json, ru.json, en.json).
  * Tarjima topilmasa — o'zbekchasi (keyin kalitning o'zi) ko'rinadi; to'liqlik testi (tests/verify_til.mjs) buni ushlaydi.
@@ -24,10 +25,11 @@ if (typeof document !== 'undefined') document.documentElement.lang = tilStore.ge
 
 export const til = () => tilStore.get().til.kod;
 
-/** t('kirish.sarlavha') yoki t('narx.zapchast', { n: 3 }) — {n} o'rniga qiymat */
-export function t(key, vars) {
+/** t('kirish.sarlavha') yoki t('narx.zapchast', { n: 3 }) — {n} o'rniga qiymat.
+ *  Uchinchi argument (ixtiyoriy) — ko'plik soni: t('narx.aniqlik_narxsiz', { n: 99, k: 1 }, 1) → tilga qarab "kalit.one" va hokazo (kopl.js) */
+export function t(key, vars, son) {
   const k = til();
-  let s = LUGAT[k][key];
+  let s = LUGAT[k][son == null ? key : koplikKalit(LUGAT[k], k, key, son)];
   if (s == null || s === '') s = LUGAT.uz[key];
   if (s == null) return key;
   return vars ? s.replace(/\{(\w+)\}/g, (m, n) => (vars[n] != null ? vars[n] : m)) : s;

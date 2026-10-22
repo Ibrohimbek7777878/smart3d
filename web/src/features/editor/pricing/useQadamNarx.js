@@ -72,12 +72,12 @@ export function useQadamNarx() {
   return {
     price: narxKorinishi(R),
     markupLabel: t('narx.foyda', { n: prod ? Math.round((prod.markupPct || 0) * 100) : 0 }),
-    hasMissing: missN > 0, missText: t('narx.zapchast_narxi_yoq', { n: missN }),
+    hasMissing: missN > 0, missText: t('narx.zapchast_narxi_yoq', { n: missN }, missN),
     /* TZ-20: "Narx aniqligi X%" — bosilsa taxminiy qatorlar (qaysi summa tasdiqlanmagan) */
     aniqlik: prod && prod.aniqlik && prod.aniqlik.pct != null ? {
-      label: prod.aniqlik.narxsiz ? t('narx.aniqlik_narxsiz', { n: prod.aniqlik.pct, k: prod.aniqlik.narxsiz }) : t('narx.aniqlik', { n: prod.aniqlik.pct }), ochiq: !!ed.aniq, toliq: prod.aniqlik.pct === 100 && !prod.aniqlik.narxsiz, flip: () => set('editor', { aniq: !ed.aniq }),
+      label: prod.aniqlik.narxsiz ? t('narx.aniqlik_narxsiz', { n: prod.aniqlik.pct, k: prod.aniqlik.narxsiz }, prod.aniqlik.narxsiz) : t('narx.aniqlik', { n: prod.aniqlik.pct }), ochiq: !!ed.aniq, toliq: prod.aniqlik.pct === 100 && !prod.aniqlik.narxsiz, flip: () => set('editor', { aniq: !ed.aniq }),
       rows: prod.aniqlik.taxmin.map(x => ({ n: x.group === 'Ustama' ? t('narx.aniq_ustama', { n: Math.round((prod.markupPct || 0) * 1000) / 10 }) : x.name.replace(/ — taxminiy$/, ''), m: x.manba === 'yoq' ? t('narx.aniq_yoq') : t('narx.aniq_taxmin'), p: raqam(x.amount) })),
-      narxsiz: prod.aniqlik.narxsiz ? t('narx.aniq_narxsiz', { n: prod.aniqlik.narxsiz }) : '',
+      narxsiz: prod.aniqlik.narxsiz ? t('narx.aniq_narxsiz', { n: prod.aniqlik.narxsiz }, prod.aniqlik.narxsiz) : '',
       bosh: !prod.aniqlik.taxmin.length ? t('narx.aniq_hammasi') : ''
     } : null,
     toggleMissing: () => set('editor', { miss: !ed.miss }), missOpen: ed.miss,

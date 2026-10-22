@@ -63,7 +63,7 @@ export default function QadamXona() {
           <span style={{"fontWeight":"800"}}>
             {t('xona.teshiklar')}
           </span>
-          <button onClick={v.addHole} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)","minHeight":"32px"}}>
+          <button onClick={v.addHole} style={{"padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","background":"var(--sfc2)","color":"var(--txt)","minHeight":"32px"}}>
             {t('xona.qoshish')}
           </button>
         </div>

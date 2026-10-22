@@ -27,7 +27,7 @@ export default function FurnituraVaraq() {
         {s.loyiha.map((r, i) => <Qator key={i} r={r} />)}
         {!s.loyiha.length ? <span style={hint}>{t('furnitura.loyihada_yoq')}</span> : null}
         {s.jami ? <div style={{ ...listRow, fontWeight: '800' }}><span>{s.jami}</span></div> : null}
-        {s.narxsiz ? <span style={hint}>{t('furnitura.narxsiz', { n: s.narxsiz })}</span> : null}
+        {s.narxsiz ? <span style={hint}>{t('furnitura.narxsiz', { n: s.narxsiz }, s.narxsiz)}</span> : null}
       </div>
     ) : (<>
       <input value={s.q} onChange={s.onQ} placeholder={t('furnitura.qidiruv')} style={input} />
