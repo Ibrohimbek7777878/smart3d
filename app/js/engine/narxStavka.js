@@ -271,6 +271,17 @@ export function prisadkaXizmat(S, key, kind) {
 export const raspilXizmat = (S) => (S && S.tanlov ? xz(S, S.tanlov.raspil) : null);
 /** TZ-36 K3: yupqa list (HDF ≤ 3 mm) uchun raspil xizmati (tanlov.raspil_yupqa) — ERP: Holzma 1 (25 000); tanlanmagan — null (umumiy raspil) */
 export const raspilYupqaXizmat = (S) => (S && S.tanlov ? xz(S, S.tanlov.raspil_yupqa) : null);
+/** TZ-48 (egasi #301, 6-qaror): usta narx panelida loyiha uchun raspil stanogini tanlaydi (Holzma 1/2/3, Altendorf 1/2/3) — xizmatlar.raspilStanok = xizmat kodi.
+ *  → tanlangan raspil xizmati (guruhi 'raspil' bo'lishi shart) yoki null (tanlov yo'q / mavjud emas — admin sukuti ishlaydi) */
+export const raspilStanokTanlovi = (S, kod) => { const r = kod && typeof kod === 'string' ? xz(S, kod) : null; return r && r.guruh === 'raspil' ? r : null; };
+/** tanlangan stanok uchun yupqa list (HDF ≤ 3 mm) raspili: shu stanokning 1-darajasi (14 real buyurtmada HDF har doim stanokning 1-darajasida kesilgan: Holzma 1 / Altendorf 1);
+ *  topilmasa — null (admin tanlov.raspil_yupqa ishlaydi) */
+export function raspilYupqaStanokka(S, r) {
+  const m = /(Holzma|Altendorf)/i.exec((r && r.nom) || '');
+  if (!m || !S || !S.xizmatlar) return null;
+  const re = new RegExp(m[1] + ' 1$', 'i');
+  return Object.values(S.xizmatlar).find(x => x.guruh === 'raspil' && re.test(x.nom)) || null;
+}
 /** TZ-32 E3: Bazis loyiha xizmati (tur: 'onlayn' | 'oflayn') → narx qatori (detal boshiga) yoki null */
 export const bazisXizmat = (S, tur) => (S && S.tanlov && S.tanlov.bazis ? xz(S, S.tanlov.bazis[tur]) : null);
 

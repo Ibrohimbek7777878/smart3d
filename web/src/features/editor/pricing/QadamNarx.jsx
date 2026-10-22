@@ -183,6 +183,13 @@ export default function QadamNarx() {
         </span>
         <Toggle label={t('narx.teshik_burgilash_prisadka')} sub={v.xz.sub} on={v.xz.on} onFlip={v.xz.flip} />
         {v.bz ? <Toggle label={v.bz.label} sub={v.bz.sub} on={v.bz.on} onFlip={v.bz.flip} /> : null}
+        {v.raspilStanok ? (
+          <label style={{"borderTop":"1px solid var(--line)","padding":"10px 0 4px","display":"flex","alignItems":"center","justifyContent":"space-between","gap":"10px","flexWrap":"wrap","fontSize":"15px","fontWeight":"700"}}>
+            {v.raspilStanok.label}
+            <select data-raspil-stanok="" value={v.raspilStanok.kod} onChange={v.raspilStanok.on} aria-label={v.raspilStanok.label} style={{ ...input, width: 'min(260px,100%)', height: '44px', fontSize: '14px' }}>
+              {v.raspilStanok.variantlar.map(o => <option key={o.kod} value={o.kod}>{o.label}</option>)}
+            </select>
+          </label>) : null}
         {/* TZ-48 (Q3): +1 qo'shimcha raspil — aniq ogohlantirish va olib tashlash/qaytarish */}
         {v.raspil1 ? (
           <div data-raspil1={v.raspil1.bor ? 'bor' : 'olingan'} style={{"borderTop":"1px solid var(--line)","padding":"10px 0 4px","display":"flex","flexDirection":"column","gap":"8px"}}>

@@ -2006,5 +2006,7 @@
  "narxlar.b_som": "so'm",
  "narxlar.b_koef": "× tannarx",
  "narx.raspil_qosh_nom": "Qo'shimcha raspil (+1 list)",
- "narx.raspil_yupqa_nom": "Raspil (HDF, yupqa list)"
+ "narx.raspil_yupqa_nom": "Raspil (HDF, yupqa list)",
+ "narx.raspil_stanok": "Raspil stanogi",
+ "narx.stanok_tanlandi": "Raspil stanogi: {nom}"
 }

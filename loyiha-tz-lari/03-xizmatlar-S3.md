@@ -1,6 +1,6 @@
 # TZ-03 — Xizmatlar smetaga avtomatik qo'shilmasin (qoida S3)
 
-**Sana:** 2026-10-15 · **Holat:** BAJARILDI (2026-10-15; egasi tanlovi: "Prisadka tanlanadi, ish haqi o'zi") · **Asos:** `qoidalar_qatiy_amalqilinsin.md`, S3 — "Xizmatlar avtomatik qo'shilmaydi — foydalanuvchi o'zi tanlaydi".
+**Sana:** 2026-10-15 · **TZ-48 (2026-10-22, egasi #301) bilan SUKUT O'ZGARDI:** prisadka va Bazis xizmati sukutda YOQILGAN, usta narx panelida o'chira oladi (`xizmatlar.teshik === false`, `xizmatlar.bazis === false/null`); quyidagi "standart — belgilanmagan" qoidasi eskirgan, mexanizm (usta tanlovi, `xizmat_taklif` summasi) o'zgarmagan. · **Holat:** BAJARILDI (2026-10-15; egasi tanlovi: "Prisadka tanlanadi, ish haqi o'zi") · **Asos:** `qoidalar_qatiy_amalqilinsin.md`, S3 — "Xizmatlar avtomatik qo'shilmaydi — foydalanuvchi o'zi tanlaydi".
 
 ## 0. Hozirgi holat (tekshirilgan)
 `productionCost` (`app/js/engine/cutlist.js`) tannarxga ikki xizmatni **so'ramasdan** qo'shadi:

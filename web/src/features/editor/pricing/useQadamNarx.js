@@ -10,7 +10,7 @@ import { t } from '../../../i18n/index.js';
 import * as L from '../../../services/loyiha.js';
 import { erpKorsatkich } from '../../../services/erpHolat.js';
 import { openSettings } from '../../settings/actions.js';
-import { flipPrisadka, flipBazis, flipRaspil1, ustamaFlip, ustamaFoiz, qoshSoni, qoshOlib, furnsizFlip, tarkibFlip } from './narxActions.js';
+import { flipPrisadka, flipBazis, flipRaspil1, raspilStanokTanla, ustamaFlip, ustamaFoiz, qoshSoni, qoshOlib, furnsizFlip, tarkibFlip } from './narxActions.js';
 
 /* TZ-19: ③ Narx — mijoz narxi, tannarx, foyda, kotirovka, xizmatlar (S3), tannarx tarkibi, raskroy varaqlari, detallar.
  * TZ-48 (egasi #301/#302): ustama bloki (sukut 0%, qo'lda yoqiladi), «Furniturasiz» ko'rinish, +1 raspil ogohlantirishi, «Xizmat qo'shish», narx tarkibi. */
@@ -90,6 +90,8 @@ export function useQadamNarx() {
   const xzt = (prod && prod.xizmat_taklif && prod.xizmat_taklif.teshik) || { tanlangan: false, qty: 0, amount: 0 };
   const xzb = (prod && prod.xizmat_taklif && prod.xizmat_taklif.bazis) || { tanlangan: null, qty: 0, narxBor: false };
   const xzr = (prod && prod.xizmat_taklif && prod.xizmat_taklif.raspil1) || { mumkin: false, bor: false, narx: 0 };
+  const xzs = (prod && prod.xizmat_taklif && prod.xizmat_taklif.raspilStanok) || { kod: null, variantlar: [] };
+  const stanokNom = (nom) => String(nom || '').replace(/^Услуга Распила\s+/, '');
   const taxminiy = (prod && prod.taxminiy) || [];
   const rs = raskroy(R, ed.rk);
   const det = {};
@@ -143,6 +145,9 @@ export function useQadamNarx() {
     /* TZ-48 (egasi #301/#302): Bazis loyiha xizmati — sukutda YOQILGAN; 5 000 so'm/detal, faqat 16/18/19 mm detallar (HDF hisobga olinmaydi) */
     bz: xzb.narxBor ? { label: t('narx.bazis'), on: !!xzb.tanlangan,
       sub: t('narx.bazis_sub', { n: xzb.qty, s: raqam(xzb.narx), j: raqam(xzb.qty * xzb.narx), h: Math.max(0, (xzb.jami || 0) - xzb.qty) }), flip: () => flipBazis(!xzb.tanlangan) } : null,
+    /* TZ-48 (6-qaror): raspil stanogi — Holzma 1/2/3 (sukut Holzma 2), Altendorf 1/2/3: usta loyiha uchun tanlaydi */
+    raspilStanok: xzs.variantlar.length ? { kod: xzs.kod || '', label: t('narx.raspil_stanok'), on: (ev) => raspilStanokTanla(ev.target.value, stanokNom((xzs.variantlar.find(x => x.kod === ev.target.value) || {}).nom)),
+      variantlar: xzs.variantlar.map(x => ({ kod: x.kod, label: stanokNom(x.nom) + ' — ' + raqam(x.narx) + ' ' + t('narx.som') })) } : null,
     /* TZ-48 (Q3): +1 qo'shimcha raspil — ustaga aniq ogohlantirish, olib tashlash va qaytarish */
     raspil1: xzr.mumkin ? { bor: xzr.bor, matn: xzr.bor ? t('narx.raspil1_qoshildi', { s: raqam(xzr.narx) }) : t('narx.raspil1_olindi_matn'), izoh: t('narx.raspil1_izoh'),
       tugma: xzr.bor ? t('narx.raspil1_olib') : t('narx.raspil1_qaytar'), flip: () => flipRaspil1(xzr.bor) } : null,

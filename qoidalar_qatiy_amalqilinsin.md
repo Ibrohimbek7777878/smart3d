@@ -115,6 +115,7 @@ Manba: `QOIDALAR-Bittada-2026-10-14.txt` (qavsda eski raqami). Bittada ERP'ga te
   bloklanadi.
 - **S2** (7.8). Raqamlar (quantity, stock) butun son — Math.ceil().
 - **S3** (7.9). Xizmatlar avtomatik qo'shilmaydi — foydalanuvchi o'zi tanlaydi.
+  *Izoh (2026-10-22, egasi #301, TZ-48): prisadka va Bazis xizmati sukutda YOQILGAN — usta narx panelida o'chira oladi; qolgan xizmatlar («Xizmat qo'shish», qo'shimcha raspil olib tashlash) foydalanuvchi tanlovi bo'lib qoladi.*
 - **S4** (8.5). Shartnomada (ekran, chop etish, PDF, har bet) Bittada logosi DOIM turadi; usta logosi ham bor,
   lekin kichikroq. Dizayn o'zgarsa ham olib tashlanmaydi.
 - **S5** (9.1). SketchUp / .b3d eksport — PAUZA, boshlanmaydi. Shu mavzuda so'rov kelsa eslatiladi.

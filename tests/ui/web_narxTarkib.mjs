@@ -92,6 +92,14 @@ async function asosiy(page, R) {
   /* tanlangan foiz keyingi yoqishda eslab qolinadi */
   await page.locator('[data-ustama-foiz]').count();
 
+  /* 3b) raspil stanogi: Holzma 1/2/3 va Altendorf 1/2/3 — usta tanlaydi (Altendorf 2 → 33 000; keyin sukut Holzma 2 ga qaytariladi) */
+  R.stanokVar = await M(() => [...document.querySelector('[data-raspil-stanok]').options].map(o => o.text.replace(/\s+/g, ' ')));
+  R.stanokSukut = await page.locator('[data-raspil-stanok]').inputValue();
+  await page.locator('[data-raspil-stanok]').selectOption('780236012336'); await hisob();
+  R.stanokAlt = await M(() => { const p = window.__app.res.prod, q = (c) => (p.lines.find(l => l.code === c) || {}).unit_price; return { raspil: q('raspil'), qosh: q('raspil_qosh'), doc: window.__app.doc.xizmatlar && window.__app.doc.xizmatlar.raspilStanok }; });
+  await page.locator('[data-raspil-stanok]').selectOption('7802360156'); await hisob();
+  R.stanokQayta = await M(() => (window.__app.res.prod.lines.find(l => l.code === 'raspil') || {}).unit_price);
+
   /* 4) +1 raspil */
   const r1Bor = R.s.raspil;
   await page.locator('[data-raspil1-tugma]').click(); await hisob();
@@ -196,6 +204,8 @@ async function asosiy(page, R) {
     && f.p.jami === s.jami && /Furniturasiz jami/.test(f.izoh) && R.furnsizOff.pressed === 'false' && raqam(R.furnsizOff.katta.matn.replace(R.furnsizOff.katta.label, '')) === s.jami
     /* 3 */ && R.u35.foiz === '35' && R.u35.p.mk === 0.35 && R.u35.p.jami === Math.round((s.sheetCost + s.hw) * 1.35) + s.tannarx - s.sheetCost - s.hw && R.u35.p.jami > s.jami
     && R.u20.mk === 0.2 && R.u20.jami < R.u35.p.jami && R.u125.mk === 0.125 && R.uTaklif.p.mk === 0.35 && R.uTaklif.foiz === '35' && R.uOff.p.mk === 0 && R.uOff.p.jami === s.jami && R.uOff.inputYoq === 0
+    /* 3b */ && R.stanokVar.length === 6 && R.stanokVar.some(x => /^Holzma 2 — 43 000/.test(x)) && R.stanokVar.some(x => /^Altendorf 3 — 38 000/.test(x)) && R.stanokSukut === '7802360156'
+    && R.stanokAlt.raspil === 33000 && R.stanokAlt.qosh === 33000 && R.stanokAlt.doc === '780236012336' && R.stanokQayta === 43000
     /* 4 */ && R.r1Olindi.holat === 'olingan' && /olib tashlandi/.test(R.r1Olindi.matn) && R.r1Olindi.tugma === 'Qaytarish' && !R.r1Olindi.p.r1.bor && R.r1Olindi.p.r1.mumkin && R.r1Olindi.p.raspil === s.raspil - 43000 && R.r1Olindi.p.jami === s.jami - 43000
     && R.r1Qaytdi.holat === 'bor' && R.r1Qaytdi.p.raspil === s.raspil && R.r1Qaytdi.p.jami === s.jami
     /* 5 */ && R.oyna0.qatorlar > 50 && ['hammasi', 'arra', 'kromka', 'prisadka', 'rover', 'bazis'].every(g => R.oyna0.guruhlar.some(x => x.startsWith(g + ':')))

@@ -18,6 +18,12 @@ export function flipPrisadka(on) {
   toast(on ? t('narx.prisadka_qoshildi') : t('narx.prisadka_olindi'));
 }
 
+/** TZ-48 (6-qaror): loyiha uchun raspil stanogi (Holzma 1/2/3, Altendorf 1/2/3) — usta tanlaydi; xizmat kodi doc.xizmatlar.raspilStanok da */
+export function raspilStanokTanla(kod, nom) {
+  yangila({ raspilStanok: kod || null });
+  toast(t('narx.stanok_tanlandi', { nom: nom || '—' }));
+}
+
 /** Bazis loyiha xizmati: yoqish/o'chirish (stavka — Bazis5 5 000/detal; faqat 16/18/19 mm detallar) */
 export function flipBazis(on) {
   yangila({ bazis: on ? true : false });

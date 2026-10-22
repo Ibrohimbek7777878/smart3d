@@ -15,7 +15,7 @@ import { resolveSlots } from './slots.js';
 import { chizmaYech } from './chizish.js';
 import { joyQutilar, d6Teshiklar, petlyaSoni } from './d6.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
-import { kromkaXizmat, prisadkaXizmat, raspilXizmat, raspilYupqaXizmat, bazisXizmat, tasdiqMi, ustamaManbasi, plitaSozlama, plitaNarxi, plitaERPMi, BAZIS_QALINLIKLAR } from './narxStavka.js';
+import { kromkaXizmat, prisadkaXizmat, raspilXizmat, raspilYupqaXizmat, raspilStanokTanlovi, raspilYupqaStanokka, bazisXizmat, tasdiqMi, ustamaManbasi, plitaSozlama, plitaNarxi, plitaERPMi, BAZIS_QALINLIKLAR } from './narxStavka.js';
 import { qoshXizmatTekshir } from './xizmatKatalog.js';
 import { narxTarkibiQur } from './narxTarkib.js';
 import { D6, petlyaSoni as d6PetlyaSoni } from './d6.js';            // TZ-32 B6: SP modul petlyasi (3c)
@@ -737,9 +737,12 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
 
   /* 1b) TZ-20: raspil — list boshiga, egasi tanlagan stanok stavkasi (tanlanmasa — qator yo'q, ish haqi ichida taxmin) */
   let raspilCost = 0;
-  const rx = raspilXizmat(S);
-  /* TZ-36 K3: yupqa list (HDF ≤ 3 mm) uchun alohida raspil stavkasi (ERP: Holzma 1 — 25 000, LDSP uchun Holzma 2 — 43 000); tanlanmagan bo'lsa — umumiy */
-  const rxY = raspilYupqaXizmat(S);
+  /* TZ-48: usta loyiha uchun stanokni o'zi tanlashi mumkin (xizmatlar.raspilStanok); tanlamasa — admin sukuti (Holzma 2) */
+  const rxUsta = raspilStanokTanlovi(S, xzO.raspilStanok);
+  const rx = rxUsta || raspilXizmat(S);
+  /* TZ-36 K3: yupqa list (HDF ≤ 3 mm) uchun alohida raspil stavkasi (ERP: Holzma 1 — 25 000, LDSP uchun Holzma 2 — 43 000); tanlanmagan bo'lsa — umumiy.
+     Usta stanokni almashtirsa — HDF shu stanokning 1-darajasida (Altendorf 1) */
+  const rxY = (rxUsta && raspilYupqaStanokka(S, rxUsta)) || raspilYupqaXizmat(S);
   const yupqaN = rxY && rx ? Math.round(Math.min(yupqaSheets, totalSheetsCount) * 100) / 100 : 0;
   if (rx && totalSheetsCount - yupqaN > 0) {
     const nList = Math.round((totalSheetsCount - yupqaN) * 100) / 100;
@@ -978,7 +981,10 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
         amount: bazisCost, taklif: bRate[bTur] ? bazisQty * bRate[bTur].qiymat : 0,
         onlayn: bRate.onlayn ? bazisQty * bRate.onlayn.qiymat : 0, oflayn: bRate.oflayn ? bazisQty * bRate.oflayn.qiymat : 0 },   // orqaga moslik (scripts/haqiqiy_solishtir.mjs)
       /* TZ-48: +1 qo'shimcha raspil — mumkin: stavka tanlangan va loyihada list bor; bor: hozir narxda; narx: bitta listning raspil narxi */
-      raspil1: { mumkin: raspil1Mumkin, bor: raspil1Bor, narx: rx ? rx.qiymat : 0, amount: raspil1Bor ? rx.qiymat : 0 } },
+      raspil1: { mumkin: raspil1Mumkin, bor: raspil1Bor, narx: rx ? rx.qiymat : 0, amount: raspil1Bor ? rx.qiymat : 0 },
+      /* TZ-48: raspil stanogi — tanlash ro'yxati (narx hujjatidagi raspil xizmatlari) va hozir qo'llanayotgan stanok kodi */
+      raspilStanok: { kod: rxUsta ? xzO.raspilStanok : ((S && S.tanlov && S.tanlov.raspil) || null), usta: !!rxUsta,
+        variantlar: Object.entries((S && S.xizmatlar) || {}).filter(([, x]) => x.guruh === 'raspil').map(([kod, x]) => ({ kod, nom: x.nom, narx: x.qiymat })).sort((a, b) => a.nom.localeCompare(b.nom)) } },
     sheetCost,
     raspilCost,
     edgeCost,

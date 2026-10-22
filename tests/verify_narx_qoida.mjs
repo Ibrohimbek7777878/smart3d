@@ -104,6 +104,18 @@ ok('raspil stanogi tanlanmagan bo\'lsa — +1 ham yo\'q (stavka o\'ylab topilmay
 ok('plitasiz (bo\'sh) loyiha — +1 raspil yo\'q', !rq(productionCost([{ parts: [], edges: [], holes: [], hardware: [] }], mats, { stavka: S0 })));
 ok('perModule yig\'indisi = jami (+1 raspil bilan ham)', sum(r1.perModule.map(m => m.client)) === r1.clientTotal);
 
+console.log('\n[3b] Raspil stanogi — usta loyiha uchun tanlaydi (egasi #301, 6-qaror: Altendorf variantlari qoladi)');
+const kodOf = (nom) => Object.entries(xz).find(([, q]) => q.nom === nom)[0];
+const HH = hisobla(mats, { korpus: 'LDSP16', polka: 'LDSP16', fasad: 'LDSP16', orqa: 'HDF3' });
+const base0 = HH.run({ stavka: S0 }), alt = HH.run({ stavka: S0, xizmatlar: { raspilStanok: kodOf('Услуга Распила Altendorf 2') } });
+ok('sukut: LDSP — Holzma 2 (43 000), HDF — Holzma 1 (25 000); stanok variantlari: 6 ta (Holzma 1/2/3, Altendorf 1/2/3), hozirgisi Holzma 2', base0.lines.find(l => l.code === 'raspil').unit_price === 43000 && !!base0.lines.find(l => l.code === 'raspil_yupqa') && base0.lines.find(l => l.code === 'raspil_yupqa').unit_price === 25000
+  && base0.xizmat_taklif.raspilStanok.variantlar.length === 6 && base0.xizmat_taklif.raspilStanok.kod === '7802360156' && !base0.xizmat_taklif.raspilStanok.usta);
+ok('usta Altendorf 2 ni tanlasa: LDSP — 33 000, HDF — Altendorf 1 (18 000), +1 raspil — 33 000; list soni o\'zgarmaydi', alt.lines.find(l => l.code === 'raspil').unit_price === 33000 && alt.lines.find(l => l.code === 'raspil_yupqa').unit_price === 18000 && alt.lines.find(l => l.code === 'raspil_qosh').unit_price === 33000
+  && alt.lines.find(l => l.code === 'raspil').qty === base0.lines.find(l => l.code === 'raspil').qty && alt.xizmat_taklif.raspilStanok.usta === true && alt.xizmat_taklif.raspilStanok.kod === kodOf('Услуга Распила Altendorf 2'));
+ok('Holzma 3 (48 000) tanlansa — HDF Holzma 1 (25 000); noto\'g\'ri kod (mavjud emas, raspil emas) — e\'tiborsiz, admin sukuti', HH.run({ stavka: S0, xizmatlar: { raspilStanok: kodOf('Услуга Распила Holzma 3') } }).lines.find(l => l.code === 'raspil_yupqa').unit_price === 25000
+  && HH.run({ stavka: S0, xizmatlar: { raspilStanok: 'YOQ' } }).raspilCost === base0.raspilCost && HH.run({ stavka: S0, xizmatlar: { raspilStanok: kodOf('ПРИСАДКА ЕВРО') } }).raspilCost === base0.raspilCost);
+ok('stanok almashsa narx tarkibida ham (qoida raspil, stanok nomi) va yig\'indi = jami', (() => { const T = alt.tarkib, b = T.bolimlar.find(x => x.kod === 'raspil'); return b.qatorlar.some(q => q.narx === 33000 && q.qv.xizmat === 'Услуга Распила Altendorf 2') && Math.abs(sum(T.bolimlar.map(x => x.jami)) - alt.clientTotal) < 1e-6; })());
+
 console.log('\n[4] Bazis: 5 000 × (16, 18, 19 mm) detallar; HDF hisobga olinmaydi (egasi #301/#302 Q2)');
 const qalin = (ts) => ({ parts: ts.map((t, i) => ({ length: 500 + i, width: 300, material: t <= 4 ? 'HDF3' : 'LDSP16', thickness: t, qty: 1 })), edges: [], holes: [], hardware: [] });
 const bz = (ts, xo = {}) => productionCost([qalin(ts)], mats, { stavka: S0, xizmatlar: xo });

@@ -1,6 +1,6 @@
 # TZ-48 — Narx qoidalari: egasi qarorlari (sukut siyosati, furniturasiz ko'rinish, Bazis/prisadka/raspil, narx tarkibi)
 
-**Sana:** 2026-10-22 · **Navbat:** 48 · **Holat:** TASDIQLANDI (egasi #301, #302); kod boshlandi.
+**Sana:** 2026-10-22 · **Navbat:** 48 · **Holat:** **BAJARILDI** 2026-10-22 (tarmoq `agent/narx48`; push va `main`ga o'tkazish — egasi ruxsati bilan); natija — §5. (TASDIQLANDI: egasi #301, #302.)
 **Asos:** narx auditi (14 real buyurtma, o'rtacha +33%; `47-natija-haqiqiy-solishtirish.md` bilan birga), egasi javoblari + fayllar `PRISADKA-USLUGA-2026-10-22.txt`, `STANOK-VA-HDF-NARXLARI-2026-10-22.txt`.
 **Xavf:** O'RTA (narx hisobi o'zgaradi; saqlangan buyurtma summasi o'zgarmaydi). **Moliya:** to'lov/yechish yo'q. **Orqaga qaytarish:** `git revert`; ustama va stavkalar admin "Narxlar" da sukutga qaytariladi.
 **Diqqat:** boshqa chat TZ-44/47 (ERP jonli narx, haqiqiy buyurtmalar) ustida — `cutlist.js`, `narxStavka.js`, `hisob.js` bo'yicha uning commitlarini ol, ustidan yozma.
@@ -30,3 +30,35 @@
 - "Furniturasiz" tugmasi to'g'ri jami ko'rsatadi; ustama foizi o'zgarsa narx darhol yangilanadi.
 - Narx tarkibida har qator manbasi va formulasi ko'rinadi; yig'indi = jami.
 - 14 real buyurtma bo'yicha oldin/keyin sapma jadvali (`47`-TZ vositasi bilan); barcha eski testlar yashil.
+
+## 5. Natija (agent/narx48, 2026-10-22)
+
+**Band bo'yicha** (hammasi bajarildi; hisob — `app/js/engine/cutlist.js productionCost`, `narxStavka.js`, yangi `narxTarkib.js`, `xizmatKatalog.js`; ko'rinish — `web/src/features/editor/pricing/*`):
+1. **Ustama sukutda 0%** (`materials.json pricing.markup_pct = 0`, taklif `markup_taklif = 0,35`). Narx panelida «Ustama» bloki (yoqish/o'chirish, foiz, «Taklif: 35%»), loyiha bilan saqlanadi (`doc.ustama`); Sozlamalardagi usta qiymati va admin «Narxlar» dagi qo'lda qiymat avvalgidek ustun. Admin sukut ustamasi — 0.
+2. **Furnitura sukutda narxda**; «Furniturasiz» tugmasi jami, tannarx va kotirovka satrlarini furniturasiz ko'rsatadi (`clientFurnsiz`; hisob o'zgarmaydi, satrlar yig'indisi ikkala jamga teng).
+3. **Prisadka va Bazis sukutda YOQILGAN** (usta o'chiradi: `doc.xizmatlar.teshik/bazis = false`). S3 sukuti shunga o'zgardi: `03-xizmatlar-S3.md` va `qoidalar_qatiy_amalqilinsin.md` S3 izohi yangilandi; testlar moslandi (§5.3). Saqlangan loyihadagi aniq tanlov (`teshik: false`, `bazis: null`) saqlanadi; tanlanmagan joy yangi sukutga o'tadi.
+4. **Bazis: 5 000 so'm/detal** (ERP Bazis5, kod `01`), faqat 16/18/19 mm detallar (`Math.round(qalinlik)`), HDF va boshqa qalinlik hisobga olinmaydi. **Prisadka xizmatlari 12 ta** (`sukut_narx.xizmatlar`): mavjud 8 ta + ОВАЛ КАТТА 10 000, ОВАЛ КИЧИК 3 000, ОВАЛ КИЧИК 5 5 000, Паз 4 000 qo'shildi; narxlar egasi fayllari (207 qator) va ERP 2026-10-18 xizmatlar jadvali bilan SO'ZMA-SO'Z mos (farq yo'q). ОВАЛ/Паз teshik sifatida avtomatik tanilmaydi (texnolog javobi; boshqa agent) — faqat «Xizmat qo'shish» orqali. **«Xizmat qo'shish» oynasi**: ERP xizmatlar (`app/data/erp-xizmatlar.json`, 192 ta: arra 15, kromka 147, prisadka 12, Rover 12, Bazis 4, VR 2) + Smart3D katalogi (`services.json`, «taxmin»), qidiruv va guruhlar, miqdor, olib tashlash; narx hujjatidagi yangi narx ustun; `doc.qoshXizmat` bilan saqlanadi.
+5. **Stoleshnitsa va akril sukutda narxga kiradi** (dvigatel avvaldan shunday edi — testda mustahkamlandi); `mijozMat` belgisi qo'lda chiqaradi. **+1 raspil**: butun loyihaga 1 list (tanlangan stanok stavkasida) alohida qator `raspil_qosh`; narx panelida «1 ta qo'shimcha raspil qo'shildi» ogohlantirishi, «Olib tashlash»/«Qaytarish» (`doc.xizmatlar.raspil1`), asosiy list soni o'zgarmaydi; katalog kartasi narxida va plitasiz loyihada yo'q.
+6. **Raspil Holzma**: 25 000 / 43 000 / 48 000, sukut Holzma 2. HDF = stanokning 1-darajasi (Holzma 1, 25 000) — **TASDIQLANDI**: 14 real buyurtmaning HDF sotilgan 9 tasida HDF listlari soni aynan Holzma 1 / Altendorf 1 miqdoriga teng. Usta narx panelida stanokni tanlaydi (Holzma 1/2/3, Altendorf 1/2/3); Altendorf tanlansa HDF — Altendorf 1 (18 000).
+7. **Narx tarkibi** (`prod.tarkib`, panelda «Narx tarkibi»): bo'limlar plita, kromka, raspil (+1), prisadka (teshik turlari bo'yicha), Bazis, furnitura, ish haqi, qo'shilgan xizmatlar, ustama; har qator: nom, miqdor × narx = summa, manba (ERP / egasi qarori / qo'lda / taxmin / mijoz), qoida; jami va «Furniturasiz» jami. Yig'indi = mijoz narxi (testda 9 sozlamada tekshiriladi).
+8. **Plita narxi** = ERP o'rtacha sotuv narxi: ro'yxat narxi (`lst`, katalogga ERP `price_list_uzs` dan yozildi: 584 plita) − 25 000; ro'yxat yo'q bo'lsa tannarx × 1,156; admin «Narxlar» da rejim (sotuv/tannarx), chegirma va koeffitsient (server: `plita` bo'limi, tarix, «sukutga qaytarish»). Faqat narx — kroy va list soni o'zgarmaydi; admin qo'lda narxi va taxminiy/xlsx narx o'zgarmaydi. **Taglik:** ro'yxat − 25 000 tannarxdan past chiqsa (195 plita, asosan «Акрил AGT»: ro'yxat = tannarx) tannarx olinadi — egasi qarori kerak (§5.4).
+
+### 5.1 Haqiqiy buyurtmalar (14 ta, `scripts/haqiqiy_solishtir.mjs`): mijoz narxi (furniturasiz) ↔ ERP sotuv
+| ko'rsatkich | OLDIN (main, 35% ustama) | KEYIN (0% ustama, yangi qoidalar) |
+|---|---:|---:|
+| o'rtacha abs(xato) | 36,7% | **32,0%** |
+| mediana abs(xato) | 30,8% | **24,0%** |
+| yig'indi (Σbiz/ΣERP − 1) | +25,1% | **+16,9%** |
+Plita narx qoidasining o'zi (ERP SKU lari va varaq sonida) ERP sotuvidan Σ +0,3% farq qiladi (qoida to'g'ri); qolgan xato: varaq soni (+14%, Bazis≠sex versiyasi, nesting), Bazis xizmati (+8%: ERP Bazis soni boshqa qoida bo'yicha, §5.4), +1 raspil va stanok. `tests/ui` / `scripts/narx_b3d.mjs` — Dilnoza va BIG ONE jadvallari hisobotda.
+
+### 5.2 Eski testlarga o'zgartirishlar (sabab bilan; qoida yumshatilmadi)
+`verify_narx_stavka` (sukut ustama 35→0, prisadka/Bazis yoqilgan, +1 raspil qatori; «hammasi tasdiqlangan» bo'limi prisadkasiz, aniqlik solishtirish 35% asosida), `verify_narx_erp` (Bazis5 5 000, 16/18/19 mm, oflayn endi admin bog'laganda), `verify_narx_kalibrovka` (+1 raspil qatori), `verify_narx_yakuniy` (35% → admin qo'yadi), `verify_xizmat`, `verify_hisob` (o'chirilgan holat), `verify_mc` (mijoz = tannarx), `verify_modul85` (katalog modullarining umumiy burg'ilash teshigi «kutilmoqda»), `verify_mat100`, `verify_admin_qatlam`, `verify_narx_moslash` (plita narxi = ERP o'rtacha sotuv narxi; admin qo'lda — o'zgarishsiz), server `narxlar` va `admin-faza3` (ustama 0, Bazis `{onlayn:'01'}`), UI `web_sozlamalar`, `web_material` (bir xil ro'yxat narxli dekor — bir xil narx), `web_muharrir` (egasi #300 dan qolgan «varaq» → «list» matni). Yangi: `verify_narx_qoida` (88), `ui/web_narxTarkib`, server «plita narx rejimi» testi.
+
+### 5.3 Saqlangan loyiha va serverdagi narx hujjati
+Saqlangan buyurtma summasi (`total_price`) o'zgarmaydi. Serverda admin avval narx hujjatini saqlagan bo'lsa (`settings.narx_stavkalari`), u eski qiymatlarda qoladi (qo'lda kiritilgan qiymat ustun) va yangi xizmatlar (Bazis5, 4 prisadka xizmati, `plita` bo'limi) unda bo'lmaydi — admin «Narxlar → Hamma stavkani sukutga qaytarish» ni bosadi (u endi `plita` ni ham qaytaradi). Stavka bo'lmasa Bazis/+1 raspil qo'shilmaydi (narx o'ylab topilmaydi).
+
+### 5.4 Egasi qarori kerak
+1. **Bazis soni**: ERP real buyurtmalarida Bazis miqdori 16/18/19 mm detallar sonidan ancha kam (masalan 3832: ERP 57, biz 340; 3770: 10 ta ×5 000). Qoida (16/18/19 mm × 5 000) bajarildi, lekin 14 buyurtmada Σ +4,9 mln (jami xatoning 8,2%) — haqiqiy hisob qoidasi (modul soni? chek bo'yicha?) aniqlansinmi?
+2. **Taglik** (ro'yxat − 25 000 < tannarx): 195 plitada tannarx olindi — to'g'rimi yoki ro'yxat − 25 000 qat'iy?
+3. Umumiy burg'ilash teshigi (`drill`, 52 katalog modulida) — qaysi ERP prisadka xizmati? Hozir 300 so'm «taxmin».
+4. Stoleshnitsa/akril sukutda narxda: mijoz o'zi olib kelgan holda usta belgilashi shart (BIG ONE da akril + stoleshnitsa = +1,72 mln).
