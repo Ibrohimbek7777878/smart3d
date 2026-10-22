@@ -22,6 +22,18 @@ const PETLYA_SXEMASIZ = { Y: 22, H: 12 };
 const SAMOREZ_RE = /саморез|samorez|samarez|metka/i;
 const RUCHKA_RE = /ручк|ruchk/i, PROFIL_RE = /профил|profil|gola/i;
 const RUCHKA = { d: 5 };                                              // sex KDT: Ø5 o'tuvchi, oralig'i ruchka nomida (160, 192 …)
+const EKS_RE = /эксцентрик|eksentrik|ekstsentrik/i;
+/* Ekssentrik (sxema Param: D=7 H=35 — qirra teshigi; D1=10 H1=11 — juft detal yuzasida; D2=15 H2=12.5 — korpus yuzasida; x2=35 — uchidan) — d6.js EKS bilan bir xil sex qiymatlari */
+const EKS_SUKUT = { D: 7, H: 35, D1: 10, H1: 11, D2: 15, H2: 12.5, x2: 35 };
+/* Nomi teshik o'lchami bo'lgan obyektlar (boshqa CAD kutubxonasi): "8х13.0" — Ø8 × 13, "4.5х34" — Ø4,5 × 34, "7" — Ø7 o'tuvchi */
+const NOM_TESHIK_RE = /^(\d+(?:[.,]\d+)?)\s*(?:[xх×]\s*(\d+(?:[.,]\d+)?))?$/i;
+/* "Стяжка Minifix EC02/16" + "Шкант 8х30" (IKSENTRIK SHKANTLI; 3489, 3975 KDT): kosa Ø15×13 (uchidan 34), uchida Ø8×28, juft yuzada Ø10×13; shkant Ø8 — yuzada 11, uchida 22 */
+const MINIFIX_RE = /minifix|минификс|стяжка/i;
+const MINIFIX = { D2: 15, H2: 13, D: 8, H: 28, x2: 34, D1: 10, H1: 13 };
+const SHKANT_RE = /^(шкант|shkant)/i;
+const SHKANT = { d: 8, yuza: 11, qirra: 22 };
+/* sxema Param (d, h1, h2) bo'lsa — o'sha; "Шкант 8х30404" (alohida "Шкант" guruhi; 3119, 3390, 3812, 4034 KDT): yuzada 10, uchida 20 */
+const SHKANT_404 = { d: 8, yuza: 10, qirra: 20 };
 const POLKA_RE = /полкодерж|polkoder|polkader/i;
 const POLKA = { d: 5, dp: 9, past: 2.5 };                                       // sex KDT: Ø5 x 9 ko'r teshik (875 ta; sxemada diametr yo'q — f3d fayl)                       // sxema yo'q/shifrlangan: 30 buyurtmadagi ochiq sxemalarning 90% idagi qiymat
 
@@ -148,6 +160,81 @@ export function bazisTeshikJoy(objects, panels, opts = {}) {
     for (const sg of [-1, 1]) {
       const l = lok(sp, [p[0] + hx[0] * sg * oraliq / 2, p[1] + hx[1] * sg * oraliq / 2, p[2] + hx[2] * sg * oraliq / 2]);
       qosh(sp, { X: l[0], Y: l[1], z0: true, edge: null, d: RUCHKA.d, dp: sp.t, kind: 'd6_ruchka' });
+    }
+  }
+
+  /* ── 6) Ekssentrik ("Эксцентрик 0.0", "Стяжка Minifix"): obyekt A detal uchida (yuzada, o'qi A uzunligi bo'ylab ichkariga); A yuzasida Ø D2 × H2 (uchidan x2),
+   *    A uchida (qirrada) Ø D × H (qalinlik o'rtasida), juft B detal yuzasida Ø D1 × H1 (A qalinligining o'rtasida). B — A uchi taqalgan panel. ── */
+  const eksP = new Map();
+  for (const o of objects) { const p = o.modelCode === 3001 ? param(o) : null; if (p && p.D2 && p.D && !eksP.has(o.name)) eksP.set(o.name, p); }
+  const eksBirikma = (o, P) => {
+    const p = o.tf.pos, u = o.tf.oq[0];
+    const As = panels.filter(pn => { const l = lok(pn, p); return Math.abs(dot(u, pn.o.tf.oq[2])) < 1e-3 && (Math.abs(l[2]) < TOL || Math.abs(l[2] - pn.t) < TOL) && bbIchida(pn, l[0], l[1], TOL); });
+    if (As.length !== 1) return;
+    const a = As[0], la = lok(a, p), z0 = la[2] < a.t / 2;
+    const ex = dot(u, a.o.tf.oq[0]), ey = dot(u, a.o.tf.oq[1]);
+    const lc = lok(a, [p[0] + u[0] * P.x2, p[1] + u[1] * P.x2, p[2] + u[2] * P.x2]);
+    let edge, X, Y;
+    if (Math.abs(ex) > 0.999) { edge = ex > 0 ? 'L' : 'R'; X = ex > 0 ? a.bb.x0 : a.bb.x1; Y = la[1]; }
+    else if (Math.abs(ey) > 0.999) { edge = ey > 0 ? 'B' : 'F'; Y = ey > 0 ? a.bb.y0 : a.bb.y1; X = la[0]; }
+    else return;
+    qosh(a, { X: lc[0], Y: lc[1], z0, edge: null, d: P.D2, dp: P.H2, kind: 'd6_eksentrik' });
+    qosh(a, { X, Y, z0: true, edge, d: P.D, dp: P.H, kind: 'd6_eks_qirra' });
+    const mid = [0, 1, 2].map(i => a.o.tf.pos[i] + la[0] * a.o.tf.oq[0][i] + la[1] * a.o.tf.oq[1][i] + (a.t / 2) * a.o.tf.oq[2][i]);
+    const Bs = panels.filter(pn => { if (pn === a) return false; const l = lok(pn, mid); return Math.abs(Math.abs(dot(u, pn.o.tf.oq[2])) - 1) < 1e-3 && (Math.abs(l[2]) < TOL || Math.abs(l[2] - pn.t) < TOL) && bbIchida(pn, l[0], l[1], TOL); });
+    if (Bs.length === 1) { const lb = lok(Bs[0], mid); qosh(Bs[0], { X: lb[0], Y: lb[1], z0: lb[2] < Bs[0].t / 2, edge: null, d: P.D1, dp: P.H1, kind: 'd6_eks_bolt' }); }
+  };
+  for (const o of objects) {
+    if (o.modelCode !== 3001 || !o.tf || !o.tf.oq || /шкант|shkant/i.test(o.name || '')) continue;
+    if (MINIFIX_RE.test(o.name || '')) { eksBirikma(o, MINIFIX); continue; }
+    if (!EKS_RE.test(o.name || '')) continue;
+    const g = param(o);
+    eksBirikma(o, { ...EKS_SUKUT, ...((g && g.D2 && g.D ? g : null) || eksP.get(o.name) || {}) });
+  }
+
+  /* ── 6b) Shkant ("Шкант 8х30", ekssentrik bilan birga): obyekt F panel yuzasida (o'qi yuzaga tik) — F yuzasida Ø8 × 11 ko'r teshik; o'q bo'ylab F dan o'tib,
+   *    qo'shni A panel uchiga kiradi — A uchida Ø8 × 22. ── */
+  for (const o of objects) {
+    if (o.modelCode !== 3001 || !o.tf || !o.tf.oq || !SHKANT_RE.test(o.name || '')) continue;
+    const p = o.tf.pos, u = o.tf.oq[0];
+    const Fs = panels.filter(pn => { const l = lok(pn, p); return Math.abs(Math.abs(dot(u, pn.o.tf.oq[2])) - 1) < 1e-3 && (Math.abs(l[2]) < TOL || Math.abs(l[2] - pn.t) < TOL) && bbIchida(pn, l[0], l[1], TOL); });
+    if (Fs.length !== 1) continue;
+    const f = Fs[0], lf = lok(f, p), n = dot(u, f.o.tf.oq[2]);
+    if ((n > 0) !== (lf[2] < f.t / 2)) continue;                     // o'q F ichiga qaragan bo'lishi kerak
+    const q = [p[0] + u[0] * (f.t + 1), p[1] + u[1] * (f.t + 1), p[2] + u[2] * (f.t + 1)];
+    const As = panels.filter(pn => { if (pn === f) return false; const l = lok(pn, q); return Math.abs(dot(u, pn.o.tf.oq[2])) < 1e-3 && l[2] > -0.01 && l[2] < pn.t + 0.01 && bbIchida(pn, l[0], l[1], 0.01); });
+    if (As.length !== 1) continue;
+    const a = As[0], la = lok(a, p), ex = dot(u, a.o.tf.oq[0]), ey = dot(u, a.o.tf.oq[1]);
+    let edge, X, Y;
+    if (Math.abs(ex) > 0.999) { edge = ex > 0 ? 'L' : 'R'; X = ex > 0 ? a.bb.x0 : a.bb.x1; Y = la[1]; }
+    else if (Math.abs(ey) > 0.999) { edge = ey > 0 ? 'B' : 'F'; Y = ey > 0 ? a.bb.y0 : a.bb.y1; X = la[0]; }
+    else continue;
+    const g = param(o), S = g && g.d && g.h1 && g.h2 ? { d: g.d, yuza: g.h1, qirra: g.h2 } : /404\s*$/.test(o.name) ? SHKANT_404 : SHKANT;
+    qosh(f, { X: lf[0], Y: lf[1], z0: lf[2] < f.t / 2, edge: null, d: S.d, dp: S.yuza, kind: 'd6_shkant' });
+    qosh(a, { X, Y, z0: true, edge, d: S.d, dp: S.qirra, kind: 'd6_shkant_qirra' });
+  }
+
+  /* ── 7) Nomi o'lcham bo'lgan teshik obyektlari ("8х13.0", "15х13", "4.5х34", "7"): chuqurlik qalinlikdan katta — qirra teshigi (qirrada, qalinlik o'rtasida),
+   *    aks holda — yuzadagi ko'r teshik; nomi faqat son — o'tuvchi. Obyekt joyi — teshik markazi. ── */
+  for (const o of objects) {
+    if (o.modelCode !== 3001 || !o.tf || !o.tf.oq) continue;
+    const m = NOM_TESHIK_RE.exec(String(o.name || '').trim());
+    if (!m) continue;
+    const d = +m[1].replace(',', '.'), dp = m[2] ? +m[2].replace(',', '.') : 0;
+    if (!(d >= 2 && d <= 40)) continue;
+    const p = o.tf.pos;
+    const yuza = panels.filter(pn => { const l = lok(pn, p); return (Math.abs(l[2]) < TOL || Math.abs(l[2] - pn.t) < TOL) && bbIchida(pn, l[0], l[1], TOL); });
+    const qirra = panels.filter(pn => { const l = lok(pn, p); return Math.abs(l[2] - pn.t / 2) < 1 && bbIchida(pn, l[0], l[1], TOL) && (Math.abs(l[0] - pn.bb.x0) < TOL || Math.abs(l[0] - pn.bb.x1) < TOL || Math.abs(l[1] - pn.bb.y0) < TOL || Math.abs(l[1] - pn.bb.y1) < TOL); });
+    const chuqur = yuza.length === 1 ? yuza[0] : null;
+    if (!dp || (chuqur && dp < chuqur.t - 0.5)) {                       // yuzadagi teshik (o'tuvchi yoki ko'r)
+      if (!chuqur) continue;
+      const l = lok(chuqur, p);
+      qosh(chuqur, { X: l[0], Y: l[1], z0: l[2] < chuqur.t / 2, edge: null, d, dp: dp || chuqur.t, kind: dp ? 'd6_nomli' : 'd6_nomli_otuvchi' });
+    } else if (qirra.length === 1) {                                     // qirra teshigi
+      const q = qirra[0], l = lok(q, p);
+      const eps = [['L', Math.abs(l[0] - q.bb.x0)], ['R', Math.abs(l[0] - q.bb.x1)], ['B', Math.abs(l[1] - q.bb.y0)], ['F', Math.abs(l[1] - q.bb.y1)]].sort((a, b) => a[1] - b[1])[0];
+      if (eps[1] > TOL) continue;
+      qosh(q, { X: l[0], Y: l[1], z0: true, edge: eps[0], d, dp, kind: 'd6_nomli_qirra' });
     }
   }
   return out;
