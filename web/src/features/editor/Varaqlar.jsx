@@ -3,21 +3,25 @@ import { t } from '../../i18n/index.js';
 import { useSlice } from '../../store/index.js';
 import { closeSheet } from '../../store/ui.js';
 import Varaq from '../../shared/ui/Varaq.jsx';
-import TeshikVaraq from './room/TeshikVaraq.jsx';
-import ShaklVaraq from './room/ShaklVaraq.jsx';
-import OshxonaVaraq from './room/OshxonaVaraq.jsx';
-import MaterialVaraq from './catalog/MaterialVaraq.jsx';
-import KonstruktorVaraq from './konstruktor/KonstruktorVaraq.jsx';
-import BazisVaraq from '../bazis/BazisVaraq.jsx';
-import FurnituraVaraq from './catalog/FurnituraVaraq.jsx';
-import DavomVaraq from '../projects/DavomVaraq.jsx';
-import BuyurtmaVaraq from '../buyurtma/BuyurtmaVaraq.jsx';
-import OshxonaAiVaraq from './ai/OshxonaVaraq.jsx';
-import BpjYoriq from './eksport/BpjYoriq.jsx';
-import B3dYoriq from './eksport/B3dYoriq.jsx';
-import AltendorfYoriq from './eksport/AltendorfYoriq.jsx';
 import { materialTitle } from './catalog/material.js';
 import Ikon from '../../shared/ui/Ikon.jsx';
+
+import { kechiktir } from '../../shared/lib/kechiktir.jsx';
+
+/* Tezlik (testchi nuqsonlari, 2026-10-22): varaq tanasi faqat varaq ochilganda kerak — har biri alohida bo'lak (ochilganda yuklanadi; birinchi ekran yengil) */
+const TeshikVaraq = kechiktir(() => import('./room/TeshikVaraq.jsx'), { joy: 'ichki' });
+const ShaklVaraq = kechiktir(() => import('./room/ShaklVaraq.jsx'), { joy: 'ichki' });
+const OshxonaVaraq = kechiktir(() => import('./room/OshxonaVaraq.jsx'), { joy: 'ichki' });
+const MaterialVaraq = kechiktir(() => import('./catalog/MaterialVaraq.jsx'), { joy: 'ichki' });
+const KonstruktorVaraq = kechiktir(() => import('./konstruktor/KonstruktorVaraq.jsx'), { joy: 'ichki' });
+const BazisVaraq = kechiktir(() => import('../bazis/BazisVaraq.jsx'), { joy: 'ichki' });
+const FurnituraVaraq = kechiktir(() => import('./catalog/FurnituraVaraq.jsx'), { joy: 'ichki' });
+const DavomVaraq = kechiktir(() => import('../projects/DavomVaraq.jsx'), { joy: 'ichki' });
+const BuyurtmaVaraq = kechiktir(() => import('../buyurtma/BuyurtmaVaraq.jsx'), { joy: 'ichki' });
+const OshxonaAiVaraq = kechiktir(() => import('./ai/OshxonaVaraq.jsx'), { joy: 'ichki' });
+const BpjYoriq = kechiktir(() => import('./eksport/BpjYoriq.jsx'), { joy: 'ichki' });
+const B3dYoriq = kechiktir(() => import('./eksport/B3dYoriq.jsx'), { joy: 'ichki' });
+const AltendorfYoriq = kechiktir(() => import('./eksport/AltendorfYoriq.jsx'), { joy: 'ichki' });
 
 /* TZ-19: muharrirdagi pastki varaqlar (dizaynda yo'q qismlar) — qaysi biri ochiq bo'lsa (ui.vq.kind) o'sha chiziladi. */
 const VARAQ = {
@@ -35,6 +39,10 @@ const VARAQ = {
   altendorfYoriq: { title: () => <><Ikon n="bazis" size={18} />{t('altendorf.sarlavha')}</>, label: 'altendorf.sarlavha', Body: AltendorfYoriq },   // egasi #223
   b3dYoriq: { title: () => <><Ikon n="bazis" size={18} />{t('b3d.sarlavha')}</>, label: 'b3d.sarlavha', Body: B3dYoriq }   // TZ-33 B2
 };
+
+const TANALAR = [TeshikVaraq, ShaklVaraq, OshxonaVaraq, MaterialVaraq, KonstruktorVaraq, BazisVaraq, FurnituraVaraq, DavomVaraq, BuyurtmaVaraq, OshxonaAiVaraq, BpjYoriq, B3dYoriq, AltendorfYoriq];
+/** varaq tanalarini oldindan yuklash (3D sahna ko'tarilgach, bo'sh vaqtda — app/App.jsx): varaq ochilganda kutish bo'lmaydi */
+export const varaqlarniOldindanYukla = () => TANALAR.forEach(B => B.oldindan());
 
 export default function Varaqlar() {
   const { vq } = useSlice('ui');

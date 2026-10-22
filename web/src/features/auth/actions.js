@@ -6,7 +6,7 @@ import { loadSettings } from '../settings/actions.js';
 import { openPending } from '../projects/actions.js';
 import { ishJoyiOch, yangiIshJoyi } from '../editor/ishjoyi/ishjoyi.js';
 import { checkAiStatus } from '../editor/ai/actions.js';
-import { t, til, serverXato } from '../../i18n/index.js';
+import { t, til, serverXato, tilKut } from '../../i18n/index.js';
 import { TELEGRAM } from '../../app/bridge/telegram.js';
 import { telegramUlash } from '../telegram/telegram.js';
 import { marshrutgaQayt } from '../../app/tarix.js';
@@ -30,19 +30,24 @@ export async function afterLogin() {
   else yangiIshJoyi();
 }
 
-/** sahifa ochilganda: saqlangan kirish kaliti tekshiriladi */
+/** sahifa ochilganda: saqlangan kirish kaliti tekshiriladi.
+ *  Tezlik (testchi, 2026-10-22): tekshiruv tugaguncha (auth.tiklash, bootstrap qo'yadi) kirish/ro'yxat ekrani EMAS, neutral "Yuklanmoqda…" ko'rinadi:
+ *  sessiya yaroqli — to'g'ridan-to'g'ri ilova (afterLogin), tugagan — kirish ekrani (S.logout → onUser), internet yo'q — kirgan holat saqlanadi. */
 export async function initSession() {
-  await checkAiStatus();
-  if (!S.loggedIn) return;
-  set('auth', { user: S.user });
   try {
-    const r = await S.api('/api/me');
-    if (r.status === 401 || r.status === 404) { S.logout(true); return; }
-    if (r.ok) set('auth', { user: { ...S.user, ...(await r.json()) } });
-    loadSettings();
-  } catch (_) { /* internet yo'q — kirgan holat saqlanadi */ }
-  const sc = get().nav.screen;
-  if (sc === 'reg' || sc === 'login') afterLogin();
+    await tilKut().catch(() => {});                  // tarmoqni birinchi navbatda til lug'ati oladi (project.load da ham)
+    const ai = checkAiStatus();                      // /api/me bilan BIR VAQTDA (ketma-ket emas) — neutral holat bir tarmoq sayohatiga qisqaradi
+    if (!S.loggedIn) { await ai; return; }
+    set('auth', { user: S.user });
+    try {
+      const [r] = await Promise.all([S.api('/api/me'), ai]);
+      if (r.status === 401 || r.status === 404) { S.logout(true); return; }
+      if (r.ok) set('auth', { user: { ...S.user, ...(await r.json()) } });
+      loadSettings();
+    } catch (_) { await ai.catch(() => {}); /* internet yo'q — kirgan holat saqlanadi */ }
+    const sc = get().nav.screen;
+    if (S.loggedIn && (sc === 'reg' || sc === 'login')) await afterLogin();
+  } finally { set('auth', { tiklash: false }); }
 }
 
 /** saytdan o'tish: #s=login|reg, #mod=MC-KP-02&w=800 (saytdagi "Bu modulni loyihamga qo'shish") */

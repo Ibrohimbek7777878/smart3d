@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { inflateRaw } from 'pako';
 import { get, set, useSlice } from '../../store/index.js';
 import { project } from '../../store/project.js';
 import { S } from '../../store/session.js';
@@ -74,6 +73,7 @@ export async function sexJadvalTanla(ev) {
   if (f.size > 10 * 1024 * 1024) { toast(t('narxlar.fayl_katta'), 'S3D-NARX-102'); return; }
   let res = null;
   try {
+    const { inflateRaw } = await import('pako');   // Tezlik (testchi, 2026-10-22): .xlsx ochish faqat shu yerda kerak — birinchi ekranni og'irlatmasin
     const varaqlar = xlsxOqish(new Uint8Array(await f.arrayBuffer()), inflateRaw);
     for (const rows of Object.values(varaqlar)) { res = xizmatJadvalOqish(rows); if (res) break; }
   } catch (e) { console.warn('S3D-NARX-102', e && e.message); }
