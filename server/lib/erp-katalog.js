@@ -10,19 +10,56 @@ import { nomKalit } from '../../app/js/engine/erpSinxron.js';
 
 let kesh = null;
 
+/** materials.json sukut_erp: sukut plita kodi (LDSP16, MDF16, HDF3 …) → ERP mahsuloti (id bo'yicha moslanadi, nom bo'yicha EMAS — katalogda nomi topilmaydi).
+ *  → Map(kod → { erp_id (matn), sku, nom, fayl (fayldagi narx) }) */
+export function sukutErpOl() {
+  const se = (readJsonData('materials.json') || {}).sukut_erp || {};
+  const m = new Map();
+  for (const [kod, v] of Object.entries(se)) {
+    if (kod[0] === '_' || !v || typeof v !== 'object' || !(Number(v.erp_id) > 0)) continue;
+    m.set(kod, { erp_id: String(v.erp_id), sku: String(v.sku || ''), nom: String(v.nom || ''), fayl: Number(v.uzs) > 0 ? Math.round(Number(v.uzs)) : 0 });
+  }
+  return m;
+}
+
 /** fayl katalogi: { plita:[{k, sku, nom, fayl}], furnitura:[…], stoleshnitsa:[…], kurs, kodlar:{plita:Set, furnitura:Set} } */
 export function erpKatalog() {
   if (!kesh) {
     const fc = readJsonData('furnitura-catalog.json') || {};
     kesh = {
-      plita: (((readJsonData('sheet-catalog.json') || {}).sheets) || []).map(s => ({ k: erpKod(s), sku: s.sku, nom: s.name, fayl: s.uzs > 0 ? Math.round(s.uzs) : 0 })),
-      furnitura: (fc.items || []).filter(i => i.id).map(i => ({ k: String(i.id), sku: i.sku, nom: i.name, fayl: !i.no_price && i.uzs > 0 ? Math.round(i.uzs) : 0 })),
-      stoleshnitsa: (((readJsonData('stoleshnitsa-erp.json') || {}).items) || []).map(s => ({ erp_id: s.erp_id, sku: s.sku, nom: s.nom, narx_m2: s.narx_m2 })),
+      plita: (((readJsonData('sheet-catalog.json') || {}).sheets) || []).map(s => ({ k: erpKod(s), sku: s.sku, nom: s.name, fayl: s.uzs > 0 ? Math.round(s.uzs) : 0, cat: s.cat || '' })),
+      furnitura: (fc.items || []).filter(i => i.id).map(i => ({ k: String(i.id), sku: i.sku, nom: i.name, fayl: !i.no_price && i.uzs > 0 ? Math.round(i.uzs) : 0, cat: i.cat || '' })),
+      stoleshnitsa: (((readJsonData('stoleshnitsa-erp.json') || {}).items) || []).map(s => ({ erp_id: s.erp_id, sku: s.sku, nom: s.nom, narx_m2: s.narx_m2, cat: s.kategoriya || '' })),
       kurs: fc.exchangeRate || 0
     };
-    kesh.kodlar = { plita: new Set(kesh.plita.map(x => x.k)), furnitura: new Set(kesh.furnitura.map(x => x.k)) };
+    kesh.kodlar = { plita: new Set(kesh.plita.map(x => x.k)), furnitura: new Set(kesh.furnitura.map(x => x.k)), sukut: new Set(sukutErpOl().keys()) };
   }
   return kesh;
+}
+
+/** kategoriya nomini solishtirish uchun: kichik harf, ё=е, faqat harf va raqam */
+export const katNomNorm = (s) => String(s == null ? '' : s).toLowerCase().replace(/ё/g, 'е').replace(/[^0-9a-zа-я]+/g, '');
+
+const catKesh = new WeakMap();
+/** katalog yozuvlarining kategoriya nomlari (katalogdagi `cat` ERP `category_name` bilan AYNAN bir xil — koordinator tekshirgan):
+ *  { plita: Map(kalit → norm), furnitura: Map(kalit → norm), nomlar: Map(norm → { nom, plita, furnitura, stol }) } */
+export function katCatXarita(kat) {
+  let x = catKesh.get(kat);
+  if (x) return x;
+  x = { plita: new Map(), furnitura: new Map(), nomlar: new Map() };
+  const qosh = (g, nom) => {
+    const n = katNomNorm(nom);
+    if (!n) return '';
+    const o = x.nomlar.get(n) || { nom: String(nom), plita: 0, furnitura: 0, stol: 0 };
+    o[g]++;
+    x.nomlar.set(n, o);
+    return n;
+  };
+  for (const it of kat.plita || []) { const n = qosh('plita', it.cat); if (n) x.plita.set(it.k, n); }
+  for (const it of kat.furnitura || []) { const n = qosh('furnitura', it.cat); if (n) x.furnitura.set(it.k, n); }
+  for (const it of kat.stoleshnitsa || []) qosh('stol', it.cat);
+  catKesh.set(kat, x);
+  return x;
 }
 
 export const qatlamMap = (db, tur) => new Map(db.prepare('SELECT kalit, uzs FROM erp_narx WHERE tur = ?').all(tur).map(x => [x.kalit, x.uzs]));
@@ -55,5 +92,5 @@ export function qaynoqKalitlar(db, kat = erpKatalog()) {
   const furnMavjud = kat.kodlar.furnitura;
   for (const id of Object.values(((readJsonData('furnitura-boglash.json') || {}).links) || {})) if (furnMavjud.has(String(id))) furnitura.add(String(id));
   try { for (const x of db.prepare('SELECT erp_id FROM furn_boglash').all()) if (furnMavjud.has(String(x.erp_id))) furnitura.add(String(x.erp_id)); } catch (_) { /* jadval yo'q — fayl bog'lanishlari yetadi */ }
-  return { plita, furnitura };
+  return { plita, furnitura, sukut: new Set(sukutErpOl().keys()) };
 }

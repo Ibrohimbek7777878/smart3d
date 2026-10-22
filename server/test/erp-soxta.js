@@ -63,8 +63,10 @@ export async function soxtaErp({ login = 'sinov-erp-login', parol = 'Sinov-Parol
       if (S.rejim === 'jsonemas') { res.writeHead(200, { 'Content-Type': 'text/html' }); return res.end('<html>texnik ishlar</html>'); }
       if (url.pathname === '/api/v2/products/categories/') return sahifa(res, req, url, S.kategoriyalar);
       if (url.pathname === '/api/v2/products/') {
-        const c = url.searchParams.get('category');
-        return sahifa(res, req, url, c ? S.mahsulotlar.filter(m => String(m.category) === c) : S.mahsulotlar);
+        const c = url.searchParams.get('category'), q = (url.searchParams.get('search') || '').toLowerCase();
+        let r = c ? S.mahsulotlar.filter(m => String(m.category) === c) : S.mahsulotlar;
+        if (q) r = r.filter(m => String(m.sku || '').toLowerCase().includes(q) || String(m.name || '').toLowerCase().includes(q));
+        return sahifa(res, req, url, r);
       }
       if (url.pathname === '/erp/services/api/manage/services/') return sahifa(res, req, url, S.xizmatlar);
       res.writeHead(404, { 'Content-Type': 'application/json' }); res.end('{}');

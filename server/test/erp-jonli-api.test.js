@@ -20,6 +20,7 @@ const ADMIN_PW = 'test-admin-erpjonli-9';
 const PAROL = 'Haqiqiy-ERP-Parol-Q7z!m4k';
 const LOGIN = 'erp-sinov-foydalanuvchi';
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+const SUKUT = J('materials.json').sukut_erp.LDSP16;
 let tmp, proc, base, dbPath, erp, out = '', ipN = 0, plita, furn;
 const admin = [];
 let adm = 0;
@@ -43,9 +44,10 @@ function tanlash() {
 before(async () => {
   [plita, furn] = tanlash();
   erp = await soxtaErp({
-    login: LOGIN, parol: PAROL, kategoriyalar: [{ id: 1, name: 'Плиты' }, { id: 2, name: 'Фурнитура' }],
+    login: LOGIN, parol: PAROL, kategoriyalar: [{ id: 1, name: 'Плиты', products_count: 6 }, { id: 2, name: 'Фурнитура', products_count: 1 }, { id: 3, name: 'Sukut plitalar', products_count: 1 }],
     mahsulotlar: [erpMahsulot({ id: 501, sku: plita.sku, name: plita.name, kat: 1, uzs: Math.round(plita.uzs) }), erpMahsulot({ id: 601, sku: furn.sku, name: furn.name, kat: 2, uzs: Math.round(furn.uzs) }),
-      ...Array.from({ length: 5 }, (_, i) => erpMahsulot({ id: 700 + i, sku: 'Z' + i, name: 'Boshqa mahsulot ' + i, kat: 1, uzs: 1000 + i }))],
+      ...Array.from({ length: 5 }, (_, i) => erpMahsulot({ id: 700 + i, sku: 'Z' + i, name: 'Boshqa mahsulot ' + i, kat: 1, uzs: 1000 + i })),
+      erpMahsulot({ id: 10807, sku: SUKUT.sku, name: SUKUT.nom, kat: 3, uzs: SUKUT.uzs })],            // materials.json sukut_erp.LDSP16 (ERP id 10807) — nom bo'yicha katalogda topilmaydi
     xizmatlar: [{ id: 6156, name: 'Услуга Распила Holzma 2', code: '7802360156', category_id: 1, category_name: 'Услуги Распила', is_active: true, client_price: 43000 }]
   });
   tmp = fs.mkdtempSync(path.join(os.tmpdir(), 's3d-erpjonli-'));
@@ -107,7 +109,8 @@ test('GET /api/erp-narx (ochiq): shakl, versiya, yangilangan, jonli maydonlari; 
   assert.equal(r2.headers.get('etag'), etag); assert.equal(r2.headers.get('x-erp-versiya'), String(b.versiya));
   const r3 = await api('/api/erp-narx', { headers: { 'if-none-match': 'W/"0-eski"' } });
   assert.equal(r3.status, 200);
-  assert.deepEqual(Object.keys(b).sort(), ['furnitura', 'jonli', 'plita', 'sana', 'versiya', 'yangilangan']);
+  assert.deepEqual(Object.keys(b).sort(), ['furnitura', 'jonli', 'plita', 'sana', 'sukut', 'versiya', 'yangilangan']);
+  assert.ok(b.sukut && typeof b.sukut === 'object');
 });
 
 test('admin endpointlari faqat admin uchun: kirmagan / usta — 404 S3D-AUTH-006', async () => {
@@ -211,6 +214,53 @@ test('katta o\'zgarish (>30%) qo\'llanmaydi — tasdiq kutadi; mavjud tasdiq oqi
   assert.equal(c.plita[plita.k], katta); assert.ok(c.versiya > b.versiya);
   const j2 = await jonli();
   assert.equal(j2.tasdiq_kutadi.partiya_id === id, false, 'qo\'llangan qoralama endi kutmaydi');
+});
+
+test('sukut plita (materials.json sukut_erp.LDSP16, ERP id bo\'yicha): /api/erp-narx `sukut` bo\'limi yangilanadi; >30% — tasdiq kutadi va mavjud oqim bilan qo\'llanadi; qaytarish; admin qo\'lda narxi ustun', async () => {
+  const b0 = await (await api('/api/erp-narx')).json();
+  assert.deepEqual(b0.sukut, {}, 'narx fayldagidek — qatlam bo\'sh');
+  const j0 = await jonli();
+  assert.ok(j0.kuzatilayotgan.sukut >= 1 && j0.katalog.qaynoq_sukut === 3, JSON.stringify([j0.kuzatilayotgan, j0.katalog]));
+  const yangi = Math.round(SUKUT.uzs * 1.04);
+  narxQoy(10807, yangi);
+  const h = await (await hozir()).json();
+  assert.equal(h.natija.xato, null);
+  const b1 = await (await api('/api/erp-narx')).json();
+  assert.deepEqual(b1.sukut, { LDSP16: yangi }, JSON.stringify(b1.sukut));
+  assert.ok(b1.versiya > b0.versiya);
+  /* qaytarish (Tarix): sukut qatlami olib tashlanadi → fayldagi narx */
+  const au = await (await A('/api/admin/audit?bolim=erp&limit=10')).json();
+  const x = au.find(y => y.yangi && y.yangi.tur === 'jonli' && y.yangi.qollandi && y.yangi.qollandi.sukut === 1);
+  assert.ok(x, JSON.stringify(au.slice(0, 2)));
+  assert.equal((await A('/api/admin/qaytar/' + x.id, { method: 'POST' })).status, 200);
+  assert.deepEqual((await (await api('/api/erp-narx')).json()).sukut, {}, 'qaytarildi');
+  assert.equal((await (await hozir()).json()).natija.rad >= 1, true, 'qaytarilgan narx qayta qo\'llanmadi');
+  assert.deepEqual((await (await api('/api/erp-narx')).json()).sukut, {});
+  /* >30%: tasdiq kutadi, public o'zgarmaydi; mavjud /qollash bilan qo'llanadi */
+  const katta = Math.round(SUKUT.uzs * 2);
+  narxQoy(10807, katta);
+  await hozir();
+  assert.deepEqual((await (await api('/api/erp-narx')).json()).sukut, {});
+  const j = await jonli();
+  const d = await (await A('/api/admin/erp/' + j.tasdiq_kutadi.partiya_id + '?guruh=sukut')).json();
+  const q = d.items.find(r => r.g === 'sukut' && r.k === 'LDSP16');
+  assert.ok(q && q.q === true && q.sabab === 'katta_ozgarish' && q.yangi === katta, JSON.stringify(d.items.slice(0, 2)));
+  const qo = await A('/api/admin/erp/' + j.tasdiq_kutadi.partiya_id + '/qollash', { method: 'POST', body: { tasdiq: true, guruhlar: ['sukut'] } });
+  assert.equal(qo.status, 200, JSON.stringify(await qo.clone().json()));
+  assert.equal((await qo.json()).qollandi.sukut, 1);
+  assert.deepEqual((await (await api('/api/erp-narx')).json()).sukut, { LDSP16: katta });
+  /* admin qo'lda narxi (mat_narx.kod = LDSP16) ustun */
+  const dbq = new Database(dbPath);
+  dbq.prepare("INSERT OR REPLACE INTO mat_narx (kod, uzs) VALUES ('LDSP16', 777000)").run(); dbq.close();
+  narxQoy(10807, Math.round(katta * 1.05));
+  await hozir();
+  assert.deepEqual((await (await api('/api/erp-narx')).json()).sukut, { LDSP16: katta }, 'qo\'lda narx bor — ERP o\'zgartirmaydi');
+  const dbw = new Database(dbPath);
+  dbw.prepare("DELETE FROM mat_narx WHERE kod = 'LDSP16'").run(); dbw.close();
+  narxQoy(10807, SUKUT.uzs);                                              // keyingi sinovlar uchun asl narx
+  const sk = await A('/api/admin/erp/sukut', { method: 'POST', body: { tasdiq: true, guruh: 'sukut' } });
+  assert.equal(sk.status, 200); assert.equal((await sk.json()).olib_tashlandi.sukut, 1);
+  assert.deepEqual((await (await api('/api/erp-narx')).json()).sukut, {}, 'sukutga qaytarish');
 });
 
 test('PUT /api/admin/erp/jonli: pauza va chegara_foiz (5…100) tekshiriladi; pauzada "Hozir" 409 S3D-ERP-006; audit yoziladi', async () => {
