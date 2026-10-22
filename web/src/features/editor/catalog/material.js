@@ -6,6 +6,10 @@ import { baseForSheet, slotForBase } from '../../../services/hisob.js';
 import { erpKod, erpQosh, materialRang, materialRasm, plitaRangi } from '../../../services/erpMaterial.js';
 import { RANG_GURUHLARI, GURUH_RANG } from '../../../../../app/js/engine/rang.js';
 import { asosiyRang } from '../../../../../app/js/engine/dekorAsosiy.js';
+import { plitaNarxi, plitaSozlama, plitaERPMi } from '../../../../../app/js/engine/narxStavka.js';
+
+/** TZ-48: katalog plitasining hisobdagi narxi — ERP o'rtacha sotuv narxi (ro'yxat − chegirma / tannarx × koef) yoki tannarx (admin rejimi); admin qo'lda narxi o'zgarmaydi */
+const korsatNarx = (H, sh) => (sh.qolda ? sh.uzs : plitaNarxi(sh.uzs, sh.lst, plitaSozlama(H && H.narxlar)).narx);
 import { raqam } from '../../../shared/lib/format.js';
 import { t } from '../../../i18n/index.js';
 import { dekorlarga, dekorNomi } from './dekor.js';
@@ -243,7 +247,7 @@ export function useMaterialVaraq() {
     /* sukut variant — hozirgi qalinlikka eng yaqini (korpus/polka — 16 mm), narxlisi oldin */
     const sukut = g.variantlar.slice().sort((a, b) => (Math.abs((+a.th || 0) - curTh) - Math.abs((+b.th || 0) - curTh)) || ((b.uzs > 0) - (a.uzs > 0)))[0];
     const tanla = (sh) => () => { const c = erpQosh(H, project.doc, sh); qoyish(c); tanlandi(sh.name); };
-    const narx = (sh) => (sh.uzs > 0 ? raqam(sh.uzs) + ' ' + t('umumiy.som') : t('mebel.narx_yoq'));
+    const narx = (sh) => (sh.uzs > 0 ? raqam(korsatNarx(H, sh)) + ' ' + t('umumiy.som') : t('mebel.narx_yoq'));   // TZ-48: hisobdagi narx (ERP o'rtacha sotuv) bilan bir xil
     const on = g.variantlar.find(v => erpKod(v) === cur) || null, kor = on || sukut;
     return {
       key: g.key, nom: g.nom, sub: [g.brend, g.tur].filter(Boolean).join(' · '), rang: r ? hex(r.rang) : null, yogoch: !!(r && r.yogoch), rasm: ((x) => (x ? '/' + x.src : null))(materialRasm(H, erpKod(kor), kor.name)),
@@ -280,7 +284,7 @@ export function useMaterialVaraq() {
     joriy: curM ? L.materialNomi(H, cur, curM.name) : t('mebel.standart_material'), joriyRang: curR ? hex(curR.rang) : null,
     joriyIzoh: [bz || /^ERP-/.test(cur || '') ? '' : t('mebel.dekorsiz'), p && !(p.slots && p.slots[SLOT[qism]]) ? t('mebel.loyihadan') : ''].filter(Boolean).join(' · '),
     joriyQalin: curM ? (curM.thickness || 0) + ' ' + t('umumiy.mm') : '',
-    joriyNarx: curM && curM.sheet_price > 0 ? raqam(curM.sheet_price) + ' ' + t('umumiy.som') : t('mebel.narx_yoq'),
+    joriyNarx: curM && curM.sheet_price > 0 ? raqam(plitaERPMi(curM) ? plitaNarxi(curM.sheet_price, curM.sheet_lst, plitaSozlama(H.narxlar)).narx : curM.sheet_price) + ' ' + t('umumiy.som') : t('mebel.narx_yoq'),
     qismlar: bz ? [] : QISMLAR.filter(x => !p || x !== 'stol').map(x => ({ label: t('mebel.qism_' + x), on: x === qism, pick: () => yangiFiltr({ qism: x, guruh: null, th: null, tur: null }) })),
     /* doira: faqat shu modul | butun loyiha (modul kartasidan ochilganda) */
     doiralar: !bz && q.modul0 && project.pl(q.modul0) ? [

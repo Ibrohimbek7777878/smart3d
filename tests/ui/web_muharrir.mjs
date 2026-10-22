@@ -69,12 +69,13 @@ async function asosiy(page, R) {
   await click(/^Narx$/); await page.waitForTimeout(1200);
   await shot('3-narx');
   const t = await txt();
-  R.narxBosqich = { foyda: (t.match(/Foyda \(\+(\d+)%\)/) || [])[1] || null, raskroy: (t.match(/(\d+) varaq · (\d+) detal · isrof (\d+)%/) || [])[0] || null };
+  /* egasi #300: ekranda plita «varaq» emas «list» deyiladi (test matni moslandi) */
+  R.narxBosqich = { foyda: (t.match(/Foyda \(\+(\d+)%\)/) || [])[1] || null, raskroy: (t.match(/(\d+) list · (\d+) detal · isrof (\d+)%/) || [])[0] || null };
 
   R.qadam = 'fayllar';
   await click(/^Fayllar$/); await page.waitForTimeout(1000);
   await shot('4-fayllar');
-  R.tekshiruv = await M(() => (document.body.innerText.match(/\d+ detal \d+ varaqqa sig'di/) || [])[0] || null);
+  R.tekshiruv = await M(() => (document.body.innerText.match(/\d+ detal \d+ listga sig'di/) || [])[0] || null);
 
   R.qadam = 'xona';
   await click(/^Xona$/); await page.waitForTimeout(1000);

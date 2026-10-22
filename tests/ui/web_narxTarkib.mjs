@@ -104,7 +104,7 @@ async function asosiy(page, R) {
 
   /* 5) Xizmat qo'shish oynasi */
   await page.locator('[data-xizmat-qosh]').scrollIntoViewIfNeeded();
-  await page.locator('[data-xizmat-qosh]').click(); await page.locator('[data-varaq="xizmat"]').waitFor({ timeout: 8000 });
+  await page.locator('[data-xizmat-qosh]').click(); await page.locator('[data-varaq="xizmat"]').waitFor({ timeout: 8000 }); await page.locator('[data-xizmat-qidiruv]').waitFor({ timeout: 8000 }); await page.waitForTimeout(200);
   R.oyna0 = await M(() => ({ guruhlar: [...document.querySelectorAll('[data-xizmat-guruh]')].map(b => b.getAttribute('data-xizmat-guruh') + ':' + b.innerText.replace(/\D+/g, ' ').trim()), qatorlar: document.querySelectorAll('[data-xizmat-qator]').length }));
   await page.screenshot({ path: `${OUT}/narxTarkib-1440-oyna.png` });
   await page.locator('[data-xizmat-qidiruv]').fill('овал'); await page.waitForTimeout(400);
@@ -135,7 +135,7 @@ async function asosiy(page, R) {
   await page.locator('[data-qosh-qator="780236010876"] [data-qosh-olib]').click(); await hisob();
   R.olibQosh = { p: await P(), qator: await page.locator('[data-qosh-qator="780236010876"]').count() };
   /* qaytadan qo'shamiz (7-bo'lim uchun saqlanadigan holat): ОВАЛ ×2 */
-  await page.locator('[data-xizmat-qosh]').click(); await page.locator('[data-varaq="xizmat"]').waitFor({ timeout: 8000 });
+  await page.locator('[data-xizmat-qosh]').click(); await page.locator('[data-varaq="xizmat"]').waitFor({ timeout: 8000 }); await page.locator('[data-xizmat-qidiruv]').waitFor({ timeout: 8000 }); await page.waitForTimeout(200);
   await page.locator('[data-xizmat-qidiruv]').fill('780236010876'); await page.waitForTimeout(300);
   await page.locator('[data-xizmat-qator="780236010876"] [data-xizmat-soni]').fill('2');
   await page.locator('[data-xizmat-qator="780236010876"] [data-xizmat-qoshish]').click(); await page.waitForTimeout(300);
@@ -178,7 +178,7 @@ async function asosiy(page, R) {
   await page.locator('[data-ustama]').scrollIntoViewIfNeeded();
   await page.screenshot({ path: `${OUT}/narxTarkib-390-ustama.png` });
   await page.locator('[data-xizmat-qosh]').scrollIntoViewIfNeeded();
-  await page.locator('[data-xizmat-qosh]').click(); await page.locator('[data-varaq="xizmat"]').waitFor({ timeout: 8000 });
+  await page.locator('[data-xizmat-qosh]').click(); await page.locator('[data-varaq="xizmat"]').waitFor({ timeout: 8000 }); await page.locator('[data-xizmat-qidiruv]').waitFor({ timeout: 8000 }); await page.waitForTimeout(200);
   R.telOyna = await M(() => { const v = document.querySelector('[data-varaq="xizmat"]').getBoundingClientRect(); return { sigadi: v.left >= -1 && v.right <= innerWidth + 1, hScroll: document.documentElement.scrollWidth > innerWidth + 1, qatorlar: document.querySelectorAll('[data-xizmat-qator]').length }; });
   await page.screenshot({ path: `${OUT}/narxTarkib-390-oyna.png` });
   await page.locator('[data-varaq="xizmat"] button[aria-label="Yopish"]').click(); await page.waitForTimeout(300);

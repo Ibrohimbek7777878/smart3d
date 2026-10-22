@@ -110,7 +110,9 @@ async function asosiy(page, R) {
   R.on = (await plitkalar()).filter(x => x.on).length;
   R.korpus = await st();
   R.korpusNomi = await M(() => { const s = window.__app.state, m = window.__app.H.materials.panel_materials.find(x => x.code === s.matCode); return m && m.name; });
-  R.narxOzgardi = R.korpus.jami !== R.boshi.jami;
+  /* TZ-48: sukut LDSP16 ham ERP o'rtacha sotuv narxida (ro'yxat 410 000 − 25 000), bir xil ro'yxat narxidagi boshqa Ultradekor dekori — xuddi shu narx; shuning uchun jami farq qilishi shart emas:
+     tanlangan dekorning narxi ERP'dan (manba "ERP", tannarx narx tarkibida) ekani tekshiriladi */
+  R.narxOzgardi = await M(() => { const s = window.__app.state, l = window.__app.res.prod.lines.find(x => x.code === s.matCode && /^Plita/.test(x.group)); return !!l && l.manba === 'ERP' && l.narx_tannarx > 0 && l.unit_price > 0 && l.unit_price >= l.narx_tannarx; });
   R.rang3d = await M(() => {
     const s = window.__app.sahna, rang = new Set();
     s.sp.groups.items.traverse(o => { if (o.isMesh && o.userData && o.userData.slot === 'korpus' && o.material && o.material.color) rang.add(o.material.color.getHex()); });

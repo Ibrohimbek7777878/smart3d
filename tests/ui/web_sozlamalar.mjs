@@ -45,7 +45,8 @@ async function asosiy(page, R) {
   await mk.fill('50'); await mk.press('Enter'); await page.waitForTimeout(1200);
   R.jami50 = await total();
   /* #222: ustama faqat plita va furnitura narxiga — xizmatlar ERP narxida ustamasiz, shuning uchun jami 1.5/1.35 dan kamroq oshadi */
-  R.ustamaIshladi = R.jami50 > R.jami35 * 1.01 && R.jami50 / R.jami35 <= 1.5 / 1.35 + 0.001;
+  /* TZ-48: sukut ustama 0% (avval 35%) — 0% → 50% da jami (plita + furnitura × 1,5, xizmatlar o'zgarmaydi) 1,5 martadan kam oshadi */
+  R.ustamaIshladi = R.jami50 > R.jami35 * 1.01 && R.jami50 / R.jami35 <= 1.5 + 0.001;
   R.server = await M(async () => (await (await fetch('/api/settings')).json()));   // cookie sessiya (TZ-19 X2)
 
   /* stanok profili: DXF o'chiriladi → Fayllar'da yo'q */
