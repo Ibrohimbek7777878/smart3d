@@ -13,6 +13,7 @@ import { bazisLoyiha, materiallarniQosh } from '../app/js/engine/bazis/loyiha.js
 import { bazisTeshiklar, TESHIK_TURI, teshikTuri } from '../app/js/engine/bazis/teshik.js';
 import { stanokModeli } from '../app/js/engine/post/smart3d.js';
 import { cutlist, productionCost } from '../app/js/engine/cutlist.js';
+import { haqiqiyBuyurtma, turi as kdtTuri } from '../scripts/prisadka_solishtir.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const J = (p) => JSON.parse(readFileSync(join(ROOT, 'app/data', p), 'utf8'));
@@ -33,8 +34,8 @@ ok('Евровинт ham konfirmat, "Направляющие" — teshiksiz', t
 const L = (name, n, modelCode = 3001) => Array.from({ length: n }, () => ({ modelCode, name }));
 const sint = [...L('Петля прямая', 10), ...L('Ручка 160 мм', 5), ...L('Полкодержатель D5', 8), ...L('Шкант 8х30', 3), ...L('metka samarezga', 4), ...L('Евро 51мм Алкан', 100), ...L('Евро 51мм Алкан', 100, 1005), ...L('IKSENTRIK SHKANTLI', 2, 1005)];
 const t = bazisTeshiklar(sint), by = Object.fromEntries(t.map(x => [x.tur, x.qty]));
-ok('sintetik: petlya 10, ruchka 10, polka 8, shkant 8 (3×2 + 2), konfirmat faqat 3001 dan', by.petlya === 10 && by.ruchka === 10 && by.polka === 8 && by.shkant === 8 && by.konfirmat_yuza === 81 && by.konfirmat_qirra === 70, JSON.stringify(by));
-ok('sintetik: belgi = metka + petlya·3.2 + ruchka·1.5', by.belgi === Math.round(4 + 10 * 3.2 + 5 * 1.5), String(by.belgi));
+ok('sintetik: petlya 10, ruchka 10, polka 8, shkant 8 (3×2 + 2), konfirmat faqat 3001 dan', by.petlya === 10 && by.ruchka === 10 && by.polka === 8 && by.shkant === 8 && by.konfirmat_yuza === 100 && by.konfirmat_qirra === 100, JSON.stringify(by));
+ok('sintetik: belgi = metka + 4 × petlya (kosa vinti ×2 + planka ×2; ruchka belgisi yo\'q)', by.belgi === 4 + 10 * 4, String(by.belgi));
 ok('bo\'sh/yaroqsiz kirish — bo\'sh ro\'yxat', bazisTeshiklar([]).length === 0 && bazisTeshiklar(null).length === 0 && bazisTeshiklar([{ modelCode: 3001 }]).length === 0);
 
 const fr = bazisLoyiha([], { fayl: 'x.b3d' });
@@ -56,17 +57,12 @@ const BZ = join(TOPLAM2, '01_buyurtma_fayllari', '04_bazis'), KP = join(TOPLAM2,
 if (!existsSync(BZ) || !existsSync(KP)) skip('7 buyurtma Bazis ↔ KDT (Smart3D_toplam_2026-10-16 yo\'q; SMART3D_TOPLAM=… bilan ko\'rsating)');
 else {
   const TUR = ['konfirmat_yuza', 'konfirmat_qirra', 'polka', 'ruchka', 'petlya', 'shkant', 'eksentrik', 'belgi'];
-  const kdtTur = (tn, d, dp) => d === 3 || d === 2.5 ? 'belgi' : d === 35 ? 'petlya' : tn === 'H' && (d === 4.5 || d === 5) ? 'konfirmat_qirra'
-    : tn === 'V' && (d === 6 || d === 7) && dp >= 12 ? 'konfirmat_yuza' : d === 5 && dp <= 12 ? 'polka' : d === 5 && dp >= 16 ? 'ruchka' : d === 15 ? 'eksentrik' : d === 8 ? 'shkant' : 'boshqa';
+  /* haqiqiy son — KDT teshiklari DETAL SONIGA ko'paytirilgan (Bazis .project count): jismoniy teshik soni (oldin fayl soni olinardi — nusxalar hisobga olinmagan) */
+  const TUR_MAP = { konf_yuza: 'konfirmat_yuza', konf_qirra: 'konfirmat_qirra', kosa: 'petlya', belgi: 'belgi', polka: 'polka', ruchka: 'ruchka', shkant: 'shkant', eks15: 'eksentrik' };
   const kdtSana = (id) => {
-    const dir = readdirSync(KP).find(x => x.startsWith(id + '_')), c = {};
-    if (!dir) return null;
-    for (const f of readdirSync(join(KP, dir)).filter(x => /\.xml$/i.test(x)))
-      for (const m of readFileSync(join(KP, dir, f), 'utf8').matchAll(/<CAD>([\s\S]*?)<\/CAD>/g)) {
-        const g = (k) => (m[1].match(new RegExp('<' + k + '>([^<]*)</' + k + '>')) || [])[1];
-        if (!g('Diameter')) continue;
-        const k = kdtTur((g('TypeName') || '?')[0], +g('Diameter'), +g('Depth')); c[k] = (c[k] || 0) + 1;
-      }
+    const H = haqiqiyBuyurtma(join(TOPLAM2, '01_buyurtma_fayllari'), id), c = {};
+    if (!H) return null;
+    for (const d of H.detallar) for (const h of d.holes) { const k = TUR_MAP[kdtTuri(h, d.T)]; if (k) c[k] = (c[k] || 0) + d.soni; }
     return c;
   };
   const biz = (id) => {
@@ -76,7 +72,7 @@ else {
     const rs = bazisLoyiha(r.objects, { fayl: f }); if (rs.xato) return null;
     const m2 = J('materials.json'); materiallarniQosh(m2, rs.materiallar);
     const cl = cutlist(rs.fragment, rs.fragment.w, rs.fragment.d, rs.fragment.h, m2, {});
-    const c = {}; for (const h of cl.holes) c[h.tur] = (c[h.tur] || 0) + h.qty * (h.nusxa || 1);
+    const c = {}; for (const h of cl.holes) { if (h.stanok_uchun) continue; c[h.tur] = (c[h.tur] || 0) + h.qty * (h.nusxa || 1); }
     return { c, cl, m2 };
   };
   const TEST = ['3276', '3311', '3329', '3646', '3877', '3926', '4034'];
@@ -98,7 +94,8 @@ else {
   ok('teshik yozuvlari joylashuvsiz (part yo\'q) va kind kodlari ma\'lum', joylashuvsiz && !xato.length, xato.join());
   ok('productionCost teshik qatorlarini tur bo\'yicha yig\'adi', narxli > 0);
   /* ±10% — erishilgan turlar. Qolganlari (konfirmat_qirra, eksentrik, shkant) — haqiqiy son yuqorida; sababi hisobotda. */
-  const OK10 = ['konfirmat_yuza', 'konfirmat_qirra', 'polka', 'ruchka', 'petlya', 'belgi'];
+  /* ruchka — KDT da «Ø5 o'tuvchi» sinfi ruchkadan boshqa o'tuvchi teshiklarni ham o'z ichiga oladi (3926: 10 teshik, ERP va Bazis'da 3 ta ruchka) — ma'lumot uchun */
+  const OK10 = ['konfirmat_yuza', 'konfirmat_qirra', 'polka', 'petlya', 'belgi'];
   for (const x of TUR) {
     const f = jKdt[x] ? Math.abs(jBiz[x] - jKdt[x]) / jKdt[x] : 1;
     if (OK10.includes(x)) ok(`${x}: jami ${jBiz[x]} ↔ KDT ${jKdt[x]} (±10%)`, f <= 0.10, (f * 100).toFixed(1) + '%');
