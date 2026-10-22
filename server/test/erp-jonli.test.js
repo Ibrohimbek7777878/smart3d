@@ -175,6 +175,20 @@ test('to\'liq aylanish 1000 kategoriyada: avval plita/furnitura, so\'ng nomi kat
   await m.yop();
 });
 
+test('eski bazada (nom_norm yo\'q, ro\'yxat yaqinda o\'qilgan) kategoriya ro\'yxati bir marta qayta o\'qiladi va nom ustuvorligi ishlaydi', async () => {
+  const m = await muhit({ erp: erp1000(), katalog: KATALOG_CAT });
+  m.db.prepare("INSERT INTO erp_jonli_kat (kat_id, nom) VALUES ('873', 'ЛДСП Тест')").run();     // eski sxemadagi qator: nom_norm bo'sh
+  m.db.prepare("INSERT INTO erp_jonli_holat (kalit, qiymat) VALUES ('kat_royxat_vaqti', ?)").run(new Date().toISOString());
+  const st = await m.jonli.aylanish('qaynoq');
+  assert.equal(st.xato, null);
+  assert.equal(m.erp.getlar().filter(x => x.path === '/api/v2/products/categories/').length, 20, 'ro\'yxat qayta o\'qildi');
+  assert.equal(m.layer()['plita:ERP-t1'], 312000);
+  m.erp.tozala();
+  await m.jonli.aylanish('qaynoq');
+  assert.equal(m.erp.getlar().filter(x => x.path === '/api/v2/products/categories/').length, 0, 'ikkinchi marta — yo\'q');
+  await m.yop();
+});
+
 test('katalogda cat yo\'q yoki ERP nomi mos kelmasa — eski yo\'l: qaynoq tsiklda kashf (kichik byudjet) topadi', async () => {
   const kat = { ...KAT, plita: PLITA.map(x => ({ ...x, cat: 'Mavjud-bo\'lmagan nom' })) };
   const m = await muhit({ erp: erp1000(), katalog: { ol: () => kat, qaynoq: KATALOG.qaynoq, sukut: BOSH_SUKUT } });

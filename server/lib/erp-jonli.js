@@ -554,7 +554,7 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
         katRoyxatYoz.run({ id: String(c.id), nom, norm, mos: mos ? mos.plita + mos.furnitura + mos.stol : 0, soni, sahifa: soni > 0 ? Math.ceil(soni / 50) : 0 }); n++;
       }
     })();
-    set('kat_royxat_vaqti', new Date().toISOString());
+    set('kat_royxat_vaqti', new Date().toISOString()); set('kat_royxat_v', '2');
     return n;
   }
   const katSoni = () => db.prepare('SELECT COUNT(*) AS n FROM erp_jonli_kat').get().n;
@@ -645,7 +645,7 @@ export function erpJonliYarat({ db, jurnal, env = process.env, fetchImpl = globa
       /* 1) kategoriyalar ro'yxati (hech yuklanmagan yoki 6 soatdan eski bo'lsa; ~1000 kategoriya = ~20 sahifa). Qaynoq aylanishda bu ham byudjetdan ayriladi */
       const royxatVaqti = Date.parse(kv('kat_royxat_vaqti', ''));
       let royxatSarf = 0;
-      if (katSoni() === 0 || !(Date.now() - royxatVaqti < S.katRoyxatMs)) {
+      if (katSoni() === 0 || kv('kat_royxat_v', '') !== '2' || !(Date.now() - royxatVaqti < S.katRoyxatMs)) {      // v2: nom_norm / products_count bilan (eski bazada bir marta qayta o'qiladi)
         const s0 = sorovSoni;
         try { await kategoriyalarYangila(m, signal); manbaOk++; } catch (e) { yengilXato(e, 'kategoriyalar'); }
         royxatSarf = sorovSoni - s0; st.kat_royxat_sorov = royxatSarf;
