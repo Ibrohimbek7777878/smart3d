@@ -12,6 +12,7 @@
  */
 import { PANEL_CODE } from './b3d.js';
 import { bazisTeshiklar } from './teshik.js';
+import { bazisTeshikJoy, joyQatorlar } from './teshikJoy.js';
 import { nomFormati } from '../plitaMoslash.js';
 
 const TUR = [
@@ -164,6 +165,7 @@ export function bazisLoyiha(objects, o = {}) {
   const matlar = new Map(), kromkalar = new Map(), guruh = new Map();
   const chiqarildi = {};
   const boxes = [], shakllar = [], matIdx = new Map(), bazisMat = [];
+  const pe = [];                 // barcha panellar (teshik joyi uchun: o, bb, t, ishlab) — mahkamlagich qaysi panelga kirishini topish uchun
   let nuqtaJami = 0;
   let mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
 
@@ -183,6 +185,8 @@ export function bazisLoyiha(objects, o = {}) {
     /* Smart3D o'qlari: x = −X, y = Z, z = Y */
     const a0 = [-c1[0], c0[2], c0[1]], a1 = [-c0[0], c1[2], c1[1]];
     for (let i = 0; i < 3; i++) { mn[i] = Math.min(mn[i], a0[i]); mx[i] = Math.max(mx[i], a1[i]); }
+    const entry = { o: p, bb, t: +p.thickness || 16, ishlab: !!mt.ishlab };
+    pe.push(entry);
     const slot = mt.tur === 'hdf' ? 'orqa' : (ESHIK.test(nom) || mt.tur === 'akril') ? 'fasad' : 'korpus';
     /* TZ-36 K3: barcha HDF (orqa devor) — bitta material = bitta kroy guruhi (ERP: bitta ЛХДФ 2,5мм 2800*2070 list, dekor farqi yo'q).
        TZ-36 K5: stoleshnitsa — varaq (LDSP) emas, katalogdagi standart bo'lak (STOL26-3050 …): narxi stoleshnitsa narxida */
@@ -228,8 +232,9 @@ export function bazisLoyiha(objects, o = {}) {
     }
     const imzo = Object.keys(tomonlar).sort().map(s => s + ':' + tomonlar[s]).join(',');
     const key = [nom, dl, dw, t, mkod, imzo].join('|');
-    if (!guruh.has(key)) guruh.set(key, { nom, dl, dw, t, mkod, tomonlar, slot, tur: mt.tur, mnom, soni: 0 });
+    if (!guruh.has(key)) guruh.set(key, { nom, dl, dw, t, mkod, tomonlar, slot, tur: mt.tur, mnom, soni: 0, pe: [] });
     guruh.get(key).soni++;
+    guruh.get(key).pe.push(entry);
   }
 
   if (!isFinite(mn[0])) return { xato: 'S3D-BAZIS-104' };   // panel topilmadi
@@ -261,6 +266,10 @@ export function bazisLoyiha(objects, o = {}) {
 
   const parts = [], edge = [];
   let n = 0;
+  /* Prisadka aniqligi: mahkamlagichlardan JOYLASHUVI BILAN teshiklar — faqat stanok/KDT fayli uchun (narx bazisTeshik'dan, o'zgarmagan) */
+  let joy = new Map();
+  try { joy = bazisTeshikJoy(objects || [], pe); } catch (_) { joy = new Map(); }
+  const bazisJoy = [], tahlil = new Map();     // tahlil (faqat o.tahlil bilan): detal nusxasi (kod#n) → panel yozuvi — scripts/prisadka_solishtir.mjs uchun
   for (const g of [...guruh.values()].sort((a, b) => b.soni - a.soni || (b.dl * b.dw) - (a.dl * a.dw))) {
     const code = 'bz' + (++n);
     parts.push({ code, nom: g.nom, qty: g.soni, len: String(g.dl), width: String(g.dw), slot: g.slot, material_code: g.mkod,
@@ -269,10 +278,12 @@ export function bazisLoyiha(objects, o = {}) {
          detalning uzun tomoni list uzunligi bo'ylab joylashadi. Avval X doim tola deb olinardi — tik eshik (599×1968) 2500×1830 listga
          "sig'madi" (eni 1968 > 1830, aylantirish taqiqlangan) va tannarxga kirmay qolardi. */
       tekstura: g.tur === 'hdf' || (g.tur === 'ldsp' && oddiyDekor(g.mnom)) ? 'erkin' : g.tur !== 'stoleshnitsa' && g.dl < g.dw ? 'en' : 'uzunlik', bazis_material: g.mnom });
+    g.pe.forEach((en, k) => { if (o.tahlil) tahlil.set(code + '#' + (k + 1), en); const hs = joy.get(en); if (hs && hs.length && bazisJoy.length < 2000) bazisJoy.push(...joyQatorlar(code + '#' + (k + 1), en, hs)); });
     const boyicha = {};
     for (const [s, k] of Object.entries(g.tomonlar)) (boyicha[k] = boyicha[k] || []).push(s);
     for (const [k, sides] of Object.entries(boyicha)) edge.push({ code, sides: sides.sort(), material: k, thickness: kromkalar.get(k).thickness });
   }
+  if (bazisJoy.length > 2000) bazisJoy.length = 2000;       // himoya.js: ro'yxat <= 2000
   const hardware = [];
   for (const [list, tur] of [[o.fittings || [], 'furnitura'], [o.fasteners || [], 'mahkamlagich']]) {
     for (const x of list) {
@@ -293,6 +304,7 @@ export function bazisLoyiha(objects, o = {}) {
     slots: { korpus: 'LDSP16', fasad: 'LDSP16', orqa: 'HDF3' },
     parts, edge, holes: [], hardware, bazis3d, bazisMat,
     ...(teshiklar.length ? { bazisTeshik: teshiklar } : {}),
+    ...(bazisJoy.length ? { bazisJoy } : {}),
     ...(bazisShakl.length ? { bazisShakl } : {}), ...(bazisFurn.length ? { bazisFurn } : {}),
     manba: { bazis: true, fayl: toza(o.fayl), format: o.format || '', panellar: panels.length }
   };
@@ -309,7 +321,7 @@ export function bazisLoyiha(objects, o = {}) {
     shakl3d: bazisShakl.length, furn3d: bazisFurn.length,
     teshik: teshiklar.reduce((a, t) => a + t.qty, 0)
   };
-  return { fragment, materiallar: { panel: [...matlar.values()], edge: [...kromkalar.values()] }, hisobot };
+  return { fragment, materiallar: { panel: [...matlar.values()], edge: [...kromkalar.values()] }, hisobot, ...(o.tahlil ? { tahlil } : {}) };
 }
 
 /**

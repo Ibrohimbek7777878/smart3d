@@ -25,13 +25,13 @@ export const KOEF = {
   petlya: 1,
   polka: 1,
   ruchka: 2,
-  konfirmat_yuza: 0.81,     // KDT bilan 23 buyurtma medianasi (Bazis'dagi "Евро" ning bir qismi boshqa usulda ulanadi)
-  konfirmat_qirra: 0.70,
+  konfirmat_yuza: 1,        // jismoniy: har "Евро" mahkamlagichi = 1 o'tuvchi (yuza) + 1 qirra teshigi. 30 buyurtma, detal soniga ko'paytirilgan KDT: 4261 / 4231 ↔ 4164 mahkamlagich
+  konfirmat_qirra: 1,       // (oldin 0,81 / 0,70 — KDT fayllar soni bo'yicha, detal nusxalari hisobga olinmagan edi)
   shkant: 2,                // shkantning ikki uchi — ikki detalda
   eksentrik: 1,
-  belgi_metka: 1,           // "metka samarezga" — 1 belgi
-  belgi_petlya: 3.2,        // petlya kosasi va plankasi vintlari belgisi (KDT bilan 23 buyurtmada eng kichik xato)
-  belgi_ruchka: 1.5,
+  belgi_metka: 1,           // "metka samarezga", "samorez 16 mm" — har obyekt 1 belgi (KDT Ø3)
+  belgi_petlya: 4,          // petlya: 2 kosa vinti + 2 planka belgisi (30 buyurtma: belgi = metka + samorez + 4 × petlya, 8/10 buyurtmada aynan)
+  belgi_ruchka: 0,
   shkant_eksentrikli: 1     // "IKSENTRIK SHKANTLI" (1005) — eksentrik shkanti, 1 ta shkant teshigi
 };
 
@@ -40,21 +40,30 @@ export const KOEF = {
  * 3936, 3877, 3888, 4034, 4250, 3812, 3832, 3860, 3926, 3978), Bazis fayli bilan solishtirildi:
  *  - «ПРИСАДКА ЕВРО» miqdori = Bazis «Евро 51мм Алкан» mahkamlagich soni (12/12 buyurtmada aynan); yuza va qirra teshigi bitta ЕВРО
  *    juftligi — qirra alohida sanalmaydi (cutlist.js: ЕВРО juftligi). Shuning uchun konfirmat_yuza narx soni = mahkamlagich soni (1,0).
- *  - «ПРИСАДКА МЕТКА»: ERP jismoniy belgidan kam yozadi (ERP/biz mediana 0,37; oralig'i 0…0,92) — 0,4.
  *  - ruchka: ERP 1 ta/dona, teshik 2 ta — cutlist.js narx uchun /2 qiladi (bu yerda emas).
- * Jismoniy son (qty) o'zgarmaydi: KDT stanok fayllari bilan tekshirilgan (tests/verify_bazis_teshik.mjs). */
-export const ERP_HISOB = { konfirmat_yuza: 1, belgi: 0.4 };
+ * Prisadka aniqligi (2026-10-22), ERP sotuv qatorlari (14 buyurtma, Smart3D_malumot/haqiqiy-buyurtmalar) ↔ Bazis obyektlari:
+ *  - «ПРИСАДКА МЕТКА 3-2,5» = «samorez …» + «metka samarezga» obyektlari soni (nomida samorez/саморез/metka): 10/10 buyurtmada AYNAN
+ *    (3770: 32, 3808: 24, 3832: 72, 3860: 88, 3877: 56, 3888: 40, 3926: 24, 3936: 72, 4034: 48, 4250: 112); petlya kosa vinti va planka belgilari
+ *    ERP da alohida МЕТКА emas (ПЕТЛЕ ichida). Avval: (metka + 3,2·petlya + 1,5·ruchka)·0,4 — o'rtacha xato 28,7% (TZ-47).
+ *  - «ПРИСАДКА ШКАНТ» = «Шкант 8х30…» obyektlari + yashirin yo'naltiruvchi «6x10» / «7x12» obyektlari (har biri 1 dona, jismoniy 2 teshik emas):
+ *    3770: 4, 3812: 6, 3877: 4, 3936: 6, 3975: 3 aynan; 4034: 16 ↔ 17, 4250: 10 ↔ 14. Avval 2 × shkant — ERP dan ~2 baravar ko'p.
+ * Jismoniy son (qty) KDT stanok fayllari bilan tekshirilgan (tests/verify_bazis_teshik.mjs, tests/verify_prisadka_real.mjs). */
+export const ERP_HISOB = { konfirmat_yuza: 1 };
 
 /** Furnitura nomi → tur (yoki null). Tartib muhim. */
 export function teshikTuri(nom) {
   const l = String(nom || '').toLowerCase();
-  if (/metka|метка/.test(l)) return 'metka';
+  if (/metka|метка|samorez|samarez|саморез/.test(l)) return 'metka';      // ERP: МЕТКА = samorez + metka obyektlari
   if (/петл|petl/.test(l)) return 'petlya';
   if (/ручк|ruchk/.test(l)) return 'ruchka';
   if (/полкодерж|polkoder|polkader/.test(l)) return 'polka';
   if (/minifix|минификс|эксцентрик|iksentrik|стяжк/.test(l)) return 'eksentrik';
   if (/шкант|shkant/.test(l)) return 'shkant';
+  if (/^(6x10|7x12)$/.test(l.replace(/\s+/g, '').replace(/х/g, 'x'))) return 'pin';       // yashirin yo'naltiruvchi pin teshigi (ERP: ШКАНТ)
   if (/^евро|евровинт|yevro|^evro/.test(l)) return 'konfirmat';
+  /* nomi teshik o'lchami bo'lgan obyektlar (boshqa CAD kutubxonasi; 3975): "7" — Ø7 o'tuvchi (evrovint), "15х13" — ekssentrik kosasi. ERP: 3975 ЕВРО 30 = 17 + 13, ЭКСЕРТРИК 46 = 42 + 4 */
+  if (/^7$/.test(l)) return 'konfirmat';
+  if (/^15\s*[xх]\s*13$/.test(l)) return 'eksentrik';
   return null;
 }
 
@@ -64,7 +73,7 @@ export function teshikTuri(nom) {
  * @returns {Array<{tur:string, kind:string, qty:number, dia:number, depth:number, nom:string}>}
  */
 export function bazisTeshiklar(objects) {
-  const n = { metka: 0, petlya: 0, ruchka: 0, polka: 0, eksentrik: 0, shkant: 0, konfirmat: 0, shkantEks: 0 };
+  const n = { metka: 0, petlya: 0, ruchka: 0, polka: 0, eksentrik: 0, shkant: 0, konfirmat: 0, shkantEks: 0, pin: 0 };
   for (const o of objects || []) {
     if (!o || !o.name) continue;
     const nom = String(o.name).replace(/\s+/g, ' ').trim();
@@ -79,18 +88,21 @@ export function bazisTeshiklar(objects) {
     petlya: n.petlya * KOEF.petlya,
     polka: n.polka * KOEF.polka,
     ruchka: n.ruchka * KOEF.ruchka,
-    shkant: n.shkant * KOEF.shkant + n.shkantEks * KOEF.shkant_eksentrikli,
+    shkant: n.shkant * KOEF.shkant + n.shkantEks * KOEF.shkant_eksentrikli + n.pin,
     eksentrik: n.eksentrik * KOEF.eksentrik,
-    belgi: n.metka * KOEF.belgi_metka + n.petlya * KOEF.belgi_petlya + n.ruchka * KOEF.belgi_ruchka
+    belgi: n.metka * KOEF.belgi_metka + n.petlya * KOEF.belgi_petlya + n.ruchka * KOEF.belgi_ruchka,
+    pin: n.pin
   };
+  /* narxQty — ERP prisadka hisobi (yuqoridagi dalillar): konfirmat_yuza — mahkamlagich soni, belgi (МЕТКА) — samorez + metka obyektlari, shkant — shkant + yo'naltiruvchi pin obyektlari */
+  const narx = { konfirmat_yuza: n.konfirmat * ERP_HISOB.konfirmat_yuza, belgi: n.metka, shkant: n.shkant + n.pin };
   const out = [];
   for (const [tur, v] of Object.entries(q)) {
+    if (tur === 'pin') continue;
     const qty = Math.round(v);
-    if (qty > 0) {
-      const it = { tur, kind: TESHIK_TURI[tur].kind, qty, dia: TESHIK_TURI[tur].dia, depth: TESHIK_TURI[tur].depth, nom: TESHIK_TURI[tur].nom };
-      /* narxQty — ERP prisadka hisobi (ERP_HISOB): konfirmat_yuza — mahkamlagich soni, belgi — 0,4 */
-      if (ERP_HISOB[tur] != null) it.narxQty = Math.round(tur === 'konfirmat_yuza' ? n.konfirmat * ERP_HISOB[tur] : v * ERP_HISOB[tur]);
-      out.push(it);
+    if (qty > 0 || narx[tur] > 0) {
+      const it = { tur, kind: TESHIK_TURI[tur].kind, qty: Math.max(qty, 0), dia: TESHIK_TURI[tur].dia, depth: TESHIK_TURI[tur].depth, nom: TESHIK_TURI[tur].nom };
+      if (narx[tur] != null) it.narxQty = Math.round(narx[tur]);
+      if (it.qty > 0 || it.narxQty > 0) out.push(it);
     }
   }
   return out;

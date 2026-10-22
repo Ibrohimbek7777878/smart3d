@@ -90,13 +90,24 @@ export function stanokModeli(o) {
           (h.yuza === 2 && !t0.otuvchi ? ikkinchi : teshiklar).push(t0);   // D6: ko'r teshik 2-yuzada — XNC side 2 (o'qlar bir xil)
         }
       }
+      /* Bazis importi (stanok_uchun): ko'r teshiklar FAQAT 2-yuzada bo'lsa — sex faylida ular 1-yuzada, panel qisqa o'q atrofida ag'darilgan holda yoziladi
+         (251 ta detal, 30 buyurtma): x → dl − x, chap ↔ o'ng qirra (kromka ham), ko'r teshiklar 1-yuzaga. Qo'lda chizilgan/MC (D6) modullar o'zgarmaydi. */
+      const bazisManba = hs.length > 0 && hs.every(h => h.stanok_uchun);
+      let kk = k;
+      if (bazisManba && ikkinchi.length && !teshiklar.some(h => h.tur === 'f' && !h.otuvchi)) {
+        const ag = (h) => (h.tur === 'f' || h.tur === 't' || h.tur === 'b' ? { ...h, x: r2(dl - h.x) } : { ...h, tur: h.tur === 'l' ? 'r' : 'l' });
+        const hammasi = teshiklar.map(ag).concat(ikkinchi.map(ag));
+        teshiklar.length = 0; teshiklar.push(...hammasi); ikkinchi.length = 0;
+        kk = { ...k, l: k.r, r: k.l };
+      }
       const xnc = [];
       if (teshiklar.length) xnc.push({ side: 1, dz: t, teshiklar });
       if (ikkinchi.length) xnc.push({ side: 2, dz: t, teshiklar: ikkinchi });
       const iz = (a) => JSON.stringify(a.map(x => [x.tur, x.x, x.y, x.z, x.d, x.dp, !!x.otuvchi]).sort());
-      const key = [pt.material, dl, dw, JSON.stringify(k), iz(teshiklar), iz(ikkinchi), nomi(code)].join('|');
-      if (!guruh.has(key)) guruh.set(key, { nom: nomi(code), dl: r2(dl), dw: r2(dw), soni: 0, varaq: varaq(pt.material), kromka: k, xnc, t });
+      const key = [pt.material, dl, dw, JSON.stringify(kk), iz(teshiklar), iz(ikkinchi), nomi(code)].join('|');
+      if (!guruh.has(key)) guruh.set(key, { nom: nomi(code), dl: r2(dl), dw: r2(dw), soni: 0, varaq: varaq(pt.material), kromka: kk, xnc, t, refs: [] });
       guruh.get(key).soni += pts.length * mul;
+      if (guruh.get(key).refs.length < 50) guruh.get(key).refs.push(...pts.map(x => x.ref).filter(Boolean));   // kesim ro'yxati nusxalari (kod#n) — kuzatish uchun
     }
   }
   const detallar = [...guruh.values()].map((d, i) => Object.assign({ id: String(i + 1), kod: String(i + 1) }, d));
