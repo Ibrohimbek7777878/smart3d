@@ -33,6 +33,28 @@ export function materiallarQollash(out, mv) {
   return out;
 }
 
+/** ERP sinxron qatlami (TZ-37, 3-faza; server ochiq GET /api/erp-narx): admin tasdiqlab qo'llagan ERP narxlari fayl narxi USTIGA qo'yiladi:
+ *  plita (varaq narxi, kalit — engine/erpKod.js) → sheetCat.sheets va matIdx.items .uzs; furnitura (katalog ID) → furnCat.items .uzs (narx qo'yilgani uchun
+ *  no_price olinadi, price_src 'erp_sinxron'). Admin qo'lda narxi (materiallarQollash) bundan KEYIN qo'llanadi va ustun. Fayllar o'zgarmaydi — faqat xotiradagi nusxa.
+ *  → { plita, furnitura } — qo'llangan yozuvlar soni */
+export function erpNarxQollash(out, ev) {
+  const natija = { plita: 0, furnitura: 0 };
+  if (!out || !ev || typeof ev !== 'object') return natija;
+  const butun = (v) => Number.isInteger(v) && v > 0;
+  const plita = new Map(Object.entries(obj(ev.plita)).filter(([k, v]) => /^ERP-/.test(k) && butun(v)));
+  if (plita.size) {
+    for (const royxat of [out.sheetCat && out.sheetCat.sheets, out.matIdx && out.matIdx.items]) {
+      for (const s of royxat || []) { const v = plita.get(erpKod(s)); if (v) { s.uzs = v; natija.plita++; } }
+    }
+  }
+  const furn = obj(ev.furnitura);
+  for (const it of (out.furnCat && out.furnCat.items) || []) {
+    const v = it.id != null ? furn[it.id] : undefined;
+    if (butun(v)) { it.uzs = v; delete it.no_price; it.price_src = 'erp_sinxron'; natija.furnitura++; }
+  }
+  return natija;
+}
+
 /** Modul nomlari (uz/ru/en). out.nomlarRu/nomlarEn ({ modullar: {kod: nom} }) to'ldiriladi; o'zbekcha nom out.nomlarUz da (H.nomlar.uz — modulNomi). */
 export function katalogNomlar(out, kv) {
   const M = obj(obj(kv).modullar);

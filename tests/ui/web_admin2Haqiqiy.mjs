@@ -1,5 +1,5 @@
 /* TZ-37 (2-faza): admin panel — Materiallar, Modullar katalogi, Foydalanuvchilar — HAQIQIY serverda (soxta API'siz).
- *   1) admin kiradi; 8 bo'lim tabi; Materiallar: 100 dekor, qidiruv; rang (noto'g'ri — so'rov ketmaydi; to'g'ri — saqlanadi), rasm yuklash (PNG),
+ *   1) admin kiradi; 10 bo'lim tabi; Materiallar: 100 dekor, qidiruv; rang (noto'g'ri — so'rov ketmaydi; to'g'ri — saqlanadi), rasm yuklash (PNG),
  *      varaq narxi; "Fayldagiga qaytarish" (tasdiq bilan);
  *   2) Katalog: yashirish tugmasi (ochiq GET /api/katalog), nom va o'lcham chegarasi, narx rejimi; fayldagiga qaytarish;
  *   3) Foydalanuvchilar: 3 tab, qidirish, telefon +998 XX XXX XX XX ko'rinishida, tafsilot (loyiha va buyurtma), bloklash (sabab bilan);
@@ -249,6 +249,6 @@ async function asosiy(page, R) {
     'blokPut', 'bloklanganRoyxatda', 'adminBlokYoq', 'fyLoyiha', 'fyLoyihaTel', 'fyBuyurtma', 'blokLogin', 'blokKalit', 'blokKirishXabar', 'ochildi', 'ilovaRang', 'ilovaRasm', 'ilovaChegara', 'ilovaNom', 'ilovaYashirin', 'ilovaNarx',
     'ro_yxatdaYoq', 'boshqaBor', 'katQaytdi', 'til_ru', 'til_en', 'til_uz'];
   R.yiqilgan = kutilgan.filter(k => !R[k]);
-  R.ok = !R.yiqilgan.length && R.tablar === 8 && R.matSoni === 100 && R.katSoni >= 130 && R.fyTablar === 3 && R.matYol === '/admin/materiallar' && R.katYol === '/admin/katalog' && R.fyYol === '/admin/foydalanuvchilar'
+  R.ok = !R.yiqilgan.length && R.tablar === 10 && R.matSoni === 100 && R.katSoni >= 130 && R.fyTablar === 3 && R.matYol === '/admin/materiallar' && R.katYol === '/admin/katalog' && R.fyYol === '/admin/foydalanuvchilar'
     && Object.values(R.skroll390).every(Boolean) && !errs.length;
 }

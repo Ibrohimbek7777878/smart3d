@@ -15,7 +15,7 @@ import { applySexStandart } from '../../../app/js/engine/standart.js';
 import { buildSearchIndex } from '../../../app/js/engine/search.js';
 import * as PriceMod from '../../../app/js/engine/price.js';
 import { asosiyIndeks } from '../../../app/js/engine/dekorAsosiy.js';
-import { materiallarQollash, katalogNomlar, katalogQollash, yashirinKodlar, korinadiKatalog } from '../../../app/js/engine/adminQatlam.js';
+import { erpNarxQollash, materiallarQollash, katalogNomlar, katalogQollash, yashirinKodlar, korinadiKatalog } from '../../../app/js/engine/adminQatlam.js';
 import { sukutErpQollash } from '../../../app/js/engine/narxStavka.js';
 import { stolKitchen, stolMaterialQollash } from '../../../app/js/engine/stoleshnitsa.js';
 
@@ -59,7 +59,8 @@ export async function loadData(read, api) {
     if (st && typeof st === 'object' && !st.error) out.standart = st;
     /* TZ-37 (2-faza): admin "Materiallar" (Asosiy 100: rang, rasm, varaq narxi) va "Modullar katalogi" (nom, yashirish, chegara, narx rejimi) — fayl ustiga;
        server yo'q yoki xato — jim (fayldagi qiymatlar). Narx/rang/rasm shu yerda, chegara va yashirish — createHisob'da (katalog yig'ilgach) */
-    const [mv, kv] = await Promise.all([api('/api/materiallar').catch(() => null), api('/api/katalog').catch(() => null)]);
+    const [mv, kv, ev] = await Promise.all([api('/api/materiallar').catch(() => null), api('/api/katalog').catch(() => null), api('/api/erp-narx').catch(() => null)]);
+    if (ev) erpNarxQollash(out, ev);                                  // TZ-37 (3-faza): ERP sinxron qatlami — fayl ustiga, admin qo'lda narxidan PASTDA
     if (mv) materiallarQollash(out, mv);
     if (kv && kv.modullar) { out.katalogAdmin = kv; katalogNomlar(out, kv); }
   }
