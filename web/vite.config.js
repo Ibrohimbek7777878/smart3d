@@ -68,6 +68,23 @@ function smart3dMarshrut() {
 /* service worker: navigatsiya so'rovi yo'li + so'rov qatori (/kirish?qaytish=…) — workbox NavigationRoute shuni tekshiradi */
 const SW_ILOVA_YOL = new RegExp(ILOVA_YOL_RE.source.replace(/\$$/, '(?:\\?.*)?$'));
 
+/* Tezlik (testchi nuqsonlari, 2026-10-22): ruscha/inglizcha til lug'ati alohida bo'lak (src/i18n/index.js). Uni asosiy kod bilan bir vaqtda yuklash uchun src/i18n/oldindan.js
+   alohida kirish nuqtasi sifatida quriladi va sayt/ilova HTML'iga asosiy skriptdan OLDIN qo'shiladi (xesh nomi shu yerda ma'lum bo'ladi). */
+function smart3dTilOldindan() {
+  return {
+    name: 'smart3d-til-oldindan',
+    transformIndexHtml: {
+      order: 'post',
+      handler(html, ctx) {
+        if (!ctx.bundle || !/(^|\/)(index|app)\.html$/.test(ctx.filename || '')) return html;
+        const c = Object.values(ctx.bundle).find((x) => x.type === 'chunk' && x.isEntry && x.name === 'oldindan');
+        if (!c) return html;
+        return html.replace(/(\s*)(<script type="module" crossorigin src="[^"]+"><\/script>)/, `$1<script type="module" crossorigin src="/${c.fileName}"></script>$1$2`);
+      }
+    }
+  };
+}
+
 // sahifalar: / (sayt), /app.html (ilova; TZ-30 — ekran manzillari ham), /404.html (topilmadi)
 export default defineConfig({
   plugins: [
@@ -75,6 +92,7 @@ export default defineConfig({
     smart3dMarshrut(),
     smart3dPrice(),
     smart3dData(),
+    smart3dTilOldindan(),
     /* internetsiz ishlash: sahifa, kod, shrift va ma'lumot oldindan keshlanadi; /api — doim tarmoqdan */
     VitePWA({
       registerType: 'autoUpdate',
@@ -118,8 +136,12 @@ export default defineConfig({
   /* preview (brauzer testlari): ilova sahifasidagidek — Telegram skriptiga ruxsat (TZ-16, server/himoya.js) */
   preview: { proxy: { '/api': API }, headers: { 'Content-Security-Policy': csp({ scriptHashes: inlineScriptHashes(r('../app/index.html')), scriptExtra: ['https://telegram.org'] }) } },
   build: {
+    /* Tezlik (testchi nuqsonlari, 2026-10-22): @fontsource shriftlari CSS ichiga base64 qilib joylanmasin. Kichik bo'laklar (kirill-ext, vyetnam — 16 ta, ~52 KB) CSS'ni
+       58 KB ga shishirib, birinchi chizishni to'sib turgan edi; endi ular alohida fayl — brauzer faqat kerakli unicode-range'ni yuklaydi
+       (ko'rinish o'zgarmaydi: shriftning o'zi bir xil, font-display: swap). Qolgan aktivlar (rasm, ikonka) — odatdagidek (4 KB gacha inline). */
+    assetsInlineLimit: (file) => (/\.woff2?$/.test(file) ? false : undefined),
     rollupOptions: {
-      input: { main: r('./index.html'), app: r('./app.html'), notfound: r('./404.html') },   // 404 — TZ-19
+      input: { main: r('./index.html'), app: r('./app.html'), notfound: r('./404.html'), oldindan: r('./src/i18n/oldindan.js') },   // 404 — TZ-19
     },
   },
 });

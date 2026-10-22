@@ -29,6 +29,9 @@ export function loadConfig(env = process.env) {
     TRUST_PROXY: env.TRUST_PROXY,
     ALLOWED_ORIGINS: (env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean),
     /* 10 ro'yxat / soat / IP. Brauzer testlari bitta serverda ko'p akkaunt ochadi — faqat production bo'lmaganda TEST_REGISTER_LIMIT */
-    REGISTER_MAX: (!PROD && +env.TEST_REGISTER_LIMIT) || 10
+    REGISTER_MAX: (!PROD && +env.TEST_REGISTER_LIMIT) || 10,
+    /* hamma /api: 300 / daqiqa / IP. Brauzer testlari bitta IP'dan juda tez sahifa ochadi (tezlashgan sahifa — soniyasiga ko'proq so'rov) —
+       faqat production bo'lmaganda TEST_API_LIMIT (production'da e'tiborga olinmaydi, 300 qoladi) */
+    API_MAX: (!PROD && +env.TEST_API_LIMIT) || 300
   });
 }

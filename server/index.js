@@ -83,7 +83,7 @@ const efir = narxEfiri({ server, app, allowed: cfg.ALLOWED_ORIGINS });          
 const kirish = createAuth({ db, cfg });
 const erpJonli = erpJonliYarat({ db, jurnal });                                 // TZ-44: ERP_JONLI=1 + ERP_LOGIN + ERP_PASSWORD bo'lmasa — o'chiq (xato emas)
 const ctx = { db, jurnal, cfg, tejash, erpJonli, ...kirish, broadcastPrice: efir.broadcastPrice };
-const apiLimiter = rateLimit({ windowMs: 60 * 1000, max: 300 });                // TZ-19 X5: hamma /api — 300 / daqiqa / IP
+const apiLimiter = rateLimit({ windowMs: 60 * 1000, max: cfg.API_MAX });         // TZ-19 X5: hamma /api — 300 / daqiqa / IP (testda TEST_API_LIMIT)
 
 app.use(sorovJurnali(jurnal));
 if (cfg.TRUST_PROXY) app.set('trust proxy', Number(cfg.TRUST_PROXY) || 1);

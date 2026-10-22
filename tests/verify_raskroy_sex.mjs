@@ -59,6 +59,26 @@ ok('TZ misoli: geometriya (trim, kerf, tekstura)', !geomXato(n9, 4, 'misol').len
 const s9 = nestPanels(P9, Object.assign({}, o9, { mode: 'strip' }));
 ok(`lenta rejimi ham: ${s9.sheet_count} list, geometriya to'g'ri`, s9.sheet_count === 3 && !geomXato(s9, 4, 'lenta').length, geomXato(s9, 4, 'lenta').slice(0, 2).join('; '));
 ok('natija deterministik (ikki marta — aynan bir xil)', toza(nestPanels(P9, o9)) === toza(n9));
+/* TZ-47 (C): "ortiqcha list" ni yo'qotish — eng bo'sh t ta varaq detallari t−1 varaqqa qayta teriladi (deterministik; faqat kamaysa qabul) */
+{
+  const D22 = [[468, 293], [199, 423], [809, 273], [1162, 208], [439, 399], [663, 510], [266, 185], [776, 419], [868, 146], [1153, 580], [498, 478], [154, 409], [413, 629], [158, 477], [1216, 259], [621, 465], [222, 655], [427, 532], [869, 591], [1188, 208], [610, 406], [931, 284]]
+    .map(([l, w], i) => ({ id: 'q' + i, length: l, width: w, qty: 1, texture: 'erkin', material: 'M' }));
+  const oc = { sheetL: 2440, sheetW: 1220, trimL: 8, trimW: 8, kerf: 4, mode: 'bssf' };
+  const eski = nestPanels(D22, Object.assign({ improve: false }, oc)), yangi = nestPanels(D22, oc);
+  ok(`qayta terish: 22 ta detal 2440×1220 — eski ${eski.sheet_count} list → yangi ${yangi.sheet_count} list (hammasi joylashdi, geometriya to'g'ri)`, eski.sheet_count === 3 && yangi.sheet_count === 2 && yangi.unplaced.length === 0 && !geomXato(yangi, 4, 'D22').length, geomXato(yangi, 4, 'D22').slice(0, 2).join('; '));
+  ok('qayta terish deterministik (ikki marta — aynan bir xil)', toza(nestPanels(D22, oc)) === toza(yangi));
+  let lcg = 777; const rnd = () => (lcg = (lcg * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  let yomon = 0, yaxshi = 0, buzuq = [];
+  for (let t = 0; t < 60; t++) {
+    const n = 8 + Math.floor(rnd() * 20), P = [];
+    for (let i = 0; i < n; i++) P.push({ id: 'p' + i, length: 150 + Math.floor(rnd() * 1100), width: 100 + Math.floor(rnd() * 600), qty: 1, texture: rnd() < 0.3 ? 'uzunlik' : 'erkin', material: 'M' });
+    const a = nestPanels(P, Object.assign({ improve: false }, oc)), b = nestPanels(P, oc);
+    if (b.sheet_count > a.sheet_count || b.unplaced.length > a.unplaced.length) yomon++;
+    if (b.sheet_count < a.sheet_count) yaxshi++;
+    buzuq.push(...geomXato(b, 4, 'rnd' + t));
+  }
+  ok(`60 ta tasodifiy to'plam: qayta terish hech birini yomonlashtirmadi (${yomon}), ${yaxshi} tasida list kamaydi; geometriya (trim, kerf, tekstura) hammasida to'g'ri`, yomon === 0 && yaxshi >= 1 && !buzuq.length, buzuq.slice(0, 2).join('; '));
+}
 /* tekstura belgisi: oddiy dekor aylantiriladi, yog'och/tosh naqshi va noma'lum rang — yo'nalish saqlanadi */
 const ODDIY = ['ЛДСП Ультрадекор 4,575 Белый гладкий 16мм', 'ЛДСП Ультрадекор 4,575 Кашемир 16мм', 'ЛДСП Ультрадекор 4,575 Серый Графит 16мм', 'Каштан 18мм A GREY A GP PEARL', 'LDSP ODDIY'];
 const NAQSHLI = ['ЛДСП Ультрадекор 4,575 Дуб Золотой 16мм', 'ЛДСП 5кв Kronospan 16мм Сосна Астана', 'ЛДСП Ультрадекор 4,575 Бодега Тёмный 16мм', 'ЛДСП Ультрадекор 5,796 Бетонный камень 16мм', 'ЛДСП Ультрадекор 4,575 Дуб Белый 16мм', 'Frente #1 _ 19мм', ''];

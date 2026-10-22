@@ -97,7 +97,7 @@ test('.env.example: sirlarsiz, kodda o\'qiladigan har bir o\'zgaruvchi izohlanga
     assert.ok(!/^[A-Za-z0-9+/_-]{32,}$/.test(qiymat), 'uzun kalit ko\'rinishi: ' + q);
   }
   /* server kodidagi process.env.X / env.X nomlari .env.example da bor (test uchun mo'ljallanganlar bundan mustasno) */
-  const faqatTest = new Set(['TEST_REGISTER_LIMIT', 'ERP_SINOV_REJIM', 'GOOGLE_JWKS_URL', 'TELEGRAM_API_URL', 'ESKIZ_BASE_URL', 'ANTHROPIC_BASE_URL']);
+  const faqatTest = new Set(['TEST_REGISTER_LIMIT', 'TEST_API_LIMIT', 'ERP_SINOV_REJIM', 'GOOGLE_JWKS_URL', 'TELEGRAM_API_URL', 'ESKIZ_BASE_URL', 'ANTHROPIC_BASE_URL']);
   const nomlar = new Set();
   const yur = (d) => { for (const f of fs.readdirSync(d, { withFileTypes: true })) {
     if (f.name === 'node_modules' || f.name === 'test' || f.name === 'src' || f.name === 'backups') continue;
