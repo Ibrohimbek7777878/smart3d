@@ -65,8 +65,8 @@ test('TZ-37/TZ-40: zaxira admin panel va AI jadvallarini ham qamraydi (material 
   /* init-db faqat asosiy jadvallarni yaratadi; admin panel jadvallari server ishga tushganda (lib/sxema.js) qo'shiladi — shu yerda ham xuddi shunday */
   const S = await import('../lib/sxema.js');
   const d = new Database(db);
-  for (const f of [S.yadroSxema, S.adminSxema, S.aiSxema, S.adminSxema2, S.adminSxema3].filter(Boolean)) f(d);   // adminSxema3 (3-faza) qo'shilganda ham o'zi qamraladi
-  const YANGI = ['furn_boglash', 'promptlar_admin', 'admin_audit', 'ai_kesh', 'ai_sarf', 'mat_admin', 'mat_rasm', 'mat_narx', 'katalog_admin'];
+  for (const f of [S.yadroSxema, S.adminSxema, S.aiSxema, S.adminSxema2, S.adminSxema3, S.erpJonliSxema].filter(Boolean)) f(d);   // adminSxema3 (3-faza) qo'shilganda ham o'zi qamraladi
+  const YANGI = ['furn_boglash', 'promptlar_admin', 'admin_audit', 'ai_kesh', 'ai_sarf', 'mat_admin', 'mat_rasm', 'mat_narx', 'katalog_admin', 'erp_jonli_holat', 'erp_jonli_obyekt', 'erp_jonli_kat', 'erp_jonli_tarix'];
   const rasm = Buffer.from(Array.from({ length: 4096 }, (_, i) => (i * 7 + 13) % 256));
   d.prepare("INSERT INTO mat_rasm (kalit, mime, hajm, sha, data) VALUES ('sinov-dekor', 'image/png', ?, 'abc123', ?)").run(rasm.length, rasm);
   d.prepare("INSERT INTO mat_admin (kalit, rang_hex) VALUES ('sinov-dekor', '#aabbcc')").run();
@@ -74,6 +74,8 @@ test('TZ-37/TZ-40: zaxira admin panel va AI jadvallarini ham qamraydi (material 
   d.prepare("INSERT INTO katalog_admin (kod, nom_uz, yashirin) VALUES ('MC-SINOV', 'Sinov modul', 1)").run();
   d.prepare("INSERT INTO furn_boglash (kod, erp_id, koef) VALUES ('BZ-sinov', '90000001', 2)").run();
   d.prepare("INSERT INTO promptlar_admin (id, kat) VALUES ('sinov-prompt', 'oshxona')").run();
+  d.prepare("INSERT INTO erp_jonli_holat (kalit, qiymat) VALUES ('versiya', '7')").run();                       // TZ-44: ERP jonli sinxron holati zaxirada
+  d.prepare("INSERT INTO erp_jonli_tarix (tur, kalit, harakat, yangi) VALUES ('plita', 'ERP-sinov', 'qollandi', 123000)").run();
   d.prepare("INSERT INTO admin_audit (user_id, bolim, kalit, eski, yangi) VALUES (1, 'materiallar', 'dekor:sinov-dekor', NULL, '{}')").run();
   d.prepare("INSERT INTO ai_kesh (kalit, yol, natija_json, yaratildi, muddat) VALUES ('k1', 'parse', '{}', 1, 2)").run();
   d.prepare("INSERT INTO ai_sarf (sana, manba) VALUES ('2026-10-22', 'kesh')").run();

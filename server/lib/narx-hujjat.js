@@ -14,7 +14,7 @@ export function narxCurrent(db, jurnal) {
 /** hujjatni saqlaydi va har o'zgarishni narx_history ga yozadi ([{ kalit, eski, yangi }]). Tranzaksiya ichida chaqiriladi.
  *  izoh — _meta.ozgartirildi oxiriga (masalan "(ERP sinxron)"). */
 export function narxSaqla(db, userId, next, ozgarish, izoh = '') {
-  next._meta = { ozgartirildi: `admin #${userId}, ${new Date().toISOString().slice(0, 16).replace('T', ' ')}${izoh ? ' ' + izoh : ''}` };
+  next._meta = { ozgartirildi: `${userId == null ? 'tizim' : 'admin #' + userId}, ${new Date().toISOString().slice(0, 16).replace('T', ' ')}${izoh ? ' ' + izoh : ''}` };   // userId yo'q — ERP jonli sinxron (TZ-44)
   db.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('narx_stavkalari', ?, CURRENT_TIMESTAMP)").run(JSON.stringify(next));
   const ins = db.prepare('INSERT INTO narx_history (user_id, kalit, eski, yangi) VALUES (?, ?, ?, ?)');
   const ids = [];

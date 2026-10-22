@@ -362,7 +362,8 @@ const erpEksport = (mahsulotlar, sana = '2026-10-20') => ({ _meta: { manba: 'meb
 const yuk = (X, json, o = {}) => X.A('/api/admin/erp/yuklash', { method: 'POST', body: { json, fayl_nom: 'erp-sinov.json', ...o } });
 const erpOl = async (X, id, q = '') => (await (await X.A(`/api/admin/erp/${id}${q}`)).json());
 const qollash = (X, id, body = { tasdiq: true }) => X.A(`/api/admin/erp/${id}/qollash`, { method: 'POST', body });
-const erpNarx = async (X) => (await (await X.api('/api/erp-narx')).json());
+/* TZ-44: /api/erp-narx ga versiya, yangilangan, jonli qo'shildi — bu sinov eski shartnomani ({ plita, furnitura, sana }) tekshiradi; yangi maydonlar — erp-jonli-api.test.js da */
+const erpNarx = async (X) => { const { plita, furnitura, sana } = await (await X.api('/api/erp-narx')).json(); return { plita, furnitura, sana }; };
 let E = {};          // ERP testlari orasidagi umumiy holat
 
 test('ERP: sinov ma\'lumoti yetarli (katalogda noyob nomli plita va furnitura)', () => {

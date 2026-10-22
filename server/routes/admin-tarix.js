@@ -108,7 +108,7 @@ export default function adminTarixRouter({ db, jurnal }, { guard, himoya, Kirish
     const rows = db.prepare(`${BIRLASH} SELECT t.*, u.name AS kim, u.email FROM t LEFT JOIN users u ON u.id = t.user_id ${f.where}
       ORDER BY t.created_at DESC, t.src DESC, t.rid DESC LIMIT ? OFFSET ?`).all(...f.p, limit, offset);
     const bolimlar = db.prepare(`${BIRLASH} SELECT bolim, COUNT(*) AS soni FROM t ${fb.where} GROUP BY bolim ORDER BY bolim`).all(...fb.p);
-    const kimlar = db.prepare(`${BIRLASH} SELECT t.user_id AS id, COALESCE(NULLIF(u.name, ''), u.email, '#' || t.user_id) AS nom, COUNT(*) AS soni
+    const kimlar = db.prepare(`${BIRLASH} SELECT t.user_id AS id, COALESCE(NULLIF(u.name, ''), u.email, '#' || t.user_id, 'tizim') AS nom, COUNT(*) AS soni
       FROM t LEFT JOIN users u ON u.id = t.user_id GROUP BY t.user_id ORDER BY soni DESC`).all();
     res.set('Cache-Control', 'no-store').json({
       jami, limit, offset,
@@ -117,7 +117,7 @@ export default function adminTarixRouter({ db, jurnal }, { guard, himoya, Kirish
         const qayt = x.qaytarilgan > 0;
         return { id: x.src + x.rid, manba: x.src === 'a' ? 'audit' : 'narx', bolim: x.bolim, kalit: x.kalit, eski, yangi, qaytarilgan: qayt,
           qaytariladi: !qayt && (x.src === 'a' ? QAYTARILADIGAN.has(x.bolim) : !!narxKalitTuri(x.kalit, eski)),
-          vaqt: x.created_at, kim: x.kim || x.email || (x.user_id ? '#' + x.user_id : '—'), kim_id: x.user_id };
+          vaqt: x.created_at, kim: x.kim || x.email || (x.user_id ? '#' + x.user_id : x.bolim === 'erp' ? 'tizim: ERP jonli' : 'tizim'), kim_id: x.user_id };
       }),
       bolimlar, kimlar
     });
