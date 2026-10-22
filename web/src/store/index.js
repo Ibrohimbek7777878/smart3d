@@ -12,7 +12,7 @@ import { t } from '../i18n/index.js';
  * features/editor/scene/sahna.js da; ular o'zgarganda tegishli hisoblagich (docV, dv, sceneV) oshadi. */
 export const store = createStore({
   nav: { screen: 'reg', from: 'projects', pending: null },
-  auth: { user: null, save: null, smsBor: false, googleId: '', f: { name: '', email: '', phone: '', pass: '', shop: '', show: false, err: {}, tried: false, usul: 'email', kod: '', yuborildi: false, qayta: 0 } },
+  auth: { user: null, save: null, smsBor: false, googleId: '', tiklash: false, f: { name: '', email: '', phone: '', pass: '', shop: '', show: false, err: {}, tried: false, usul: 'email', kod: '', yuborildi: false, qayta: 0 } },
   ui: { toast: '', toastCode: '', cf: null, vq: null, tilMenu: null },
   data: { ready: false, err: '' },
   onb: { kind: 'kitchen', room: { w: 5000, d: 4000, h: 2700 } },          // egasi #152: standart xona 5 × 4 m (ishjoyi STANDART_XONA bilan bir xil)
