@@ -88,7 +88,7 @@ else {
     console.log('  ' + id + ' biz | ' + TUR.map(x => String(b.c[x] || 0).padEnd(15)).join(''));
     console.log('  ' + id + ' KDT | ' + TUR.map(x => String(k[x] || 0).padEnd(15)).join(''));
     for (const x of TUR) { jBiz[x] = (jBiz[x] || 0) + (b.c[x] || 0); jKdt[x] = (jKdt[x] || 0) + (k[x] || 0); }
-    for (const h of b.cl.holes) { if (h.part !== '' && h.narx_uchun) joylashuvsiz = false; if (!kodlar.has(h.kind)) xato.push(h.kind); }
+    for (const h of b.cl.holes) { if (h.stanok_uchun) continue; /* joylashuvli stanok teshiklari (bazis/teshikJoy.js) — narxga kirmaydi, alohida tekshiriladi (verify_prisadka_real) */ if (h.part !== '' && h.narx_uchun) joylashuvsiz = false; if (!kodlar.has(h.kind)) xato.push(h.kind); }
     const pc = productionCost([b.cl], b.m2, { xizmatlar: { teshik: true } });
     narxli += pc.lines.filter(l => /^hole:/.test(l.code)).length;
   }
