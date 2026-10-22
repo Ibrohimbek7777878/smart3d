@@ -203,7 +203,7 @@ export function createHisob(data) {
          qiymatdan ustun. doc.ustama yo'q — avvalgidek: Sozlamalar (opt.markupPct) → admin stavkasi → materials.json (0) */
       const mp = markupPctOl(doc, opt.markupPct);
       const prod = productionCost(cutlists, m, Object.assign({ nestResult: nest, furnituraById: furnById, furnituraBoglash, furnituraKoef, xizmatlar: doc.xizmatlar || {}, stavka: H.narxlar, mijozMat: doc.mijozMat || {},
-        qoshXizmat: doc.qoshXizmat || [] }, mp != null ? { markupPct: mp } : {}));
+        qoshXizmat: doc.qoshXizmat || [], furnituraQolda: doc.furnituraNarx || {} }, mp != null ? { markupPct: mp } : {}));   // TZ-49 (4): narxsiz furnitura — usta qo'lda yozgan dona narxi (shu loyiha)
       /* 6) mijoz kotirovkasi — tannarx × (1 + ustama), modullarga taqsimlangan */
       const priceRes = buildQuote(placements, catalog, cutlists, prod, sizeCheck.warnings);
       return { priceRes, val, cutlists, prod, nest, placements, materials: m };

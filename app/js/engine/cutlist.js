@@ -15,7 +15,7 @@ import { resolveSlots } from './slots.js';
 import { chizmaYech } from './chizish.js';
 import { joyQutilar, d6Teshiklar, petlyaSoni } from './d6.js';
 import { panelFitsSheet, pickSheetSize, KERF_DEFAULT, TRIM_DEFAULT } from './nesting.js';
-import { kromkaXizmat, prisadkaXizmat, raspilXizmat, raspilYupqaXizmat, raspilStanokTanlovi, raspilYupqaStanokka, bazisXizmat, tasdiqMi, ustamaManbasi, plitaSozlama, plitaNarxi, plitaERPMi, BAZIS_QALINLIKLAR } from './narxStavka.js';
+import { kromkaXizmat, prisadkaXizmat, raspilXizmat, raspilYupqaXizmat, raspilStanokTanlovi, raspilYupqaStanokka, bazisXizmat, tasdiqMi, ustamaManbasi, ustamaAdmin, plitaSozlama, plitaNarxi, plitaERPMi, BAZIS_QALINLIKLAR } from './narxStavka.js';
 import { qoshXizmatTekshir } from './xizmatKatalog.js';
 import { narxTarkibiQur } from './narxTarkib.js';
 import { D6, petlyaSoni as d6PetlyaSoni } from './d6.js';            // TZ-32 B6: SP modul petlyasi (3c)
@@ -507,7 +507,7 @@ const USTAMA_GURUH = new Set(['Plita (Kroy)', 'Plita (Taxminiy)', 'Stoleshnitsa'
  *
  * @param {Array} cutlists — barcha modullar cutlist natijalari (doc.placements tartibida)
  * @param {Object} materials — materials.json (effektiv: tanlangan ERP varag'i bilan)
- * @param {Object} [opt] — { nestResult, markupPct, areaEstimate, furnituraById, xizmatlar, stavka, qoshXizmat }
+ * @param {Object} [opt] — { nestResult, markupPct, areaEstimate, furnituraById, xizmatlar, stavka, qoshXizmat, furnituraQolda }
  *   stavka: TZ-20 narx stavkalari (server /api/narxlar, engine/narxStavka.js) — raspil, kromka, prisadka, ish haqi, ustama;
  *     berilmagan (yoki tanlanmagan) joyda materials.json dagi qiymat "taxmin" belgisi bilan. Natijada aniqlik — "Narx aniqligi X%".
  *   xizmatlar: usta tanlovi (TZ-48, egasi #301: sukut YOQILGAN): teshik (prisadka) — false bo'lsa o'chadi; bazis — false/null bo'lsa o'chadi ('onlayn'/'oflayn' — eski loyiha,
@@ -539,11 +539,13 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   const teshikOn = xzO.teshik !== false;
   /* ustama: usta o'zi qo'ygan (Sozlamalar / narx paneli) → admin stavkasi (TZ-20) → materials.json. TZ-48: sukut 0% (avval 35%) */
   const sUst = S && S.ustama && S.ustama.foiz && S.ustama.foiz.qiymat != null ? S.ustama.foiz : null;
+  /* TZ-49 (3): 0 ≠ bo'sh — usta 0 qo'ygan bo'lsa (opt.markupPct === 0) ham u ustun; faqat null/undefined — admin/sukutga o'tadi */
   const markup = opt.markupPct != null ? opt.markupPct
     : sUst ? sUst.qiymat / 100
     : (materials.pricing && materials.pricing.markup_pct != null ? materials.pricing.markup_pct : 0);
   const plitaSz = plitaSozlama(S);          // TZ-48: plita narxi — ERP o'rtacha sotuv (ro'yxat − 25 000 / tannarx × 1,156) yoki tannarx
   const markupManba = opt.markupPct != null ? 'usta' : sUst ? sUst.manba : ustamaManbasi(materials);   // TZ-30: materials.json — egasi tasdiqlagan bo'lsa 'egasi'
+  const markupKelish = opt.markupPct != null ? { tur: 'usta', foiz: Math.round(opt.markupPct * 1000) / 10, manba: 'usta', sana: null } : ustamaAdmin(S, materials);   // TZ-49 (3): usta / admin / sukut — ekranda ko'rsatiladi
 
   const missing = [];
   /* TZ-04: narx manbasi egasi tasdig'i bo'lmasa (price_src "egasi, <sana>" emas) — qator "taxminiy" */
@@ -570,7 +572,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   };
   /* ERP furnitura (8 xonali ID) — app.js yuklaydi; ID bor bo'lsa narx FAQAT shu yerdan */
   const furnById = opt.furnituraById || {};
-  const hwUnitPrice = (hw) => {
+  const hwBazaNarx = (hw) => {
     const hid = hw.id || (opt.furnituraBoglash || {})[hw.code];   // TZ-20: kod → ID jadvali (id yozilmagan bo'lsa)
     /* TZ-37: admin koeffitsienti (furnituraKoef: kod → 0<x≤1000; yo'q = 1) — narx = katalog narxi × koef */
     const kf = +(opt.furnituraKoef || {})[hw.code];
@@ -579,6 +581,11 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     const m = hwByCode[hw.code];
     return m && m.price > 0 ? m.price * koef : 0;
   };
+  /* TZ-49 (4): bazada narxi YO'Q furnitura uchun usta shu loyihaga qo'lda yozgan dona narxi (opt.furnituraQolda = doc.furnituraNarx: kod → so'm).
+     Faqat bazada narx bo'lmasa ishlatiladi (ERP/admin narxi ustun); ERP/admin qatlamiga yozilmaydi; admin koeffitsienti qo'llanmaydi; aniqlikda "tasdiqlangan" emas. */
+  const hwQolda = (hw) => { const x = Number((opt.furnituraQolda || {})[hw.code]); return Number.isFinite(x) && x > 0 && x <= 1e9 ? x : 0; };
+  const hwQoldaIshlatildi = (hw) => !(hwBazaNarx(hw) > 0) && hwQolda(hw) > 0;
+  const hwUnitPrice = (hw) => hwBazaNarx(hw) || hwQolda(hw);
   /* TZ-32 E7: ERP'da aniq narxi topilmagan furnitura (materials.furnitura_yashirin.kodlar) smeta va narx ro'yxatidan yashiriladi —
      "narxsiz" qator bo'lib aniqlikni tushirmaydi. Narx/ID bog'lansa (hwUnitPrice > 0) yashirilmaydi. Yashirilganlar `yashirin` da qaytadi. */
   const yashirinKod = new Set((materials.furnitura_yashirin && materials.furnitura_yashirin.kodlar) || []);
@@ -814,13 +821,15 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     const a = hwAgg[k];
     const meta = hwByCode[a.code] || {};
     const price = hwPrice(a);
+    const qolda = hwQoldaIshlatildi(a);
     const amount = price * a.qty;
     hwCost += amount;
     const erp = !!(a.id || (opt.furnituraBoglash || {})[a.code]);   // ERP / do'kon narx ro'yxatidagi narx (TZ-20)
     lines.push({
       group: 'Furnitura', code: a.code, id: a.id, name: hwName(a),
       qty: a.qty, unit: meta.unit || a.unit || 'dona', unit_price: price, amount, no_price: !(price > 0),
-      tasdiq: price > 0 && (erp || tasdiqlangan(meta)), manba: price > 0 ? (erp ? 'ERP' : tasdiqlangan(meta) ? 'egasi' : 'taxmin') : 'yoq'
+      tasdiq: price > 0 && !qolda && (erp || tasdiqlangan(meta)), manba: price > 0 ? (qolda ? 'qolda' : erp ? 'ERP' : tasdiqlangan(meta) ? 'egasi' : 'taxmin') : 'yoq',
+      ...(qolda ? { qolda: true } : {})   // TZ-49 (4): usta qo'lda yozgan narx (shu loyiha uchun)
     });
   }
 
@@ -1001,6 +1010,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     suggestedClientPrice: clientTotal,
     margin: 1 + markup,
     markupPct: markup,
+    markupKelish,                              // TZ-49 (3): ustama manbasi — { tur: 'usta' | 'admin' | 'sukut', foiz (%), manba, sana }
     breakdown: {
       sheetCost,
       raspilCost,

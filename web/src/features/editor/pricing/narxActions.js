@@ -1,6 +1,6 @@
 import { set, get } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
-import { toast, xato } from '../../../store/ui.js';
+import { toast, xato, openSheet } from '../../../store/ui.js';
 import { t } from '../../../i18n/index.js';
 import { qoshXizmatTekshir, QOSH_LIMIT } from '../../../../../app/js/engine/xizmatKatalog.js';
 
@@ -10,6 +10,7 @@ import { qoshXizmatTekshir, QOSH_LIMIT } from '../../../../../app/js/engine/xizm
  *   doc.xizmatlar.raspil1 — +1 qo'shimcha raspil (sukut YOQILGAN; false — olib tashlangan)
  *   doc.ustama            — { yoqilgan, foiz }: sukutda yo'q (0%); usta yoqadi va foizini o'zgartiradi
  *   doc.qoshXizmat        — «Xizmat qo'shish» dan qo'shilgan ERP xizmatlari [{ kod, nom, guruh, birlik, narx, manba, sana, soni }]
+ *   doc.furnituraNarx     — TZ-49 (4): narxi bazada yo'q furnitura uchun usta qo'lda yozgan dona narxi { furnitura kodi: so'm } (faqat shu loyiha; ERP/admin qatlamiga yozilmaydi)
  * Hisob (kesim, kroy) o'zgarmaydi — faqat narx qayta hisoblanadi (project.scheduleRecalc → avtomatik saqlash). */
 const yangila = (patch) => { project.doc.xizmatlar = Object.assign({}, project.doc.xizmatlar, patch); project.scheduleRecalc(true); };
 
@@ -54,6 +55,27 @@ export function ustamaFoiz(raw) {
   project.scheduleRecalc(true);
 }
 
+/** TZ-49 (4): narxsiz furnitura uchun qo'lda dona narxi — shu loyihaning doc.furnituraNarx ida; hisobga kiradi (manba «qo'lda»), ERP/admin narxlari o'zgarmaydi.
+ *  Bo'sh qiymat — qo'lda narx olib tashlanadi. 1…1e9 oralig'idagi butun son; aks holda S3D-VAL-001. → true agar qabul qilingan */
+export const QOLDA_NARX_MAX = 1e9;
+export function furnituraNarxQoy(kod, nom, raw) {
+  const s = String(raw == null ? '' : raw).replace(/\s/g, '').replace(',', '.');
+  const cur = Object.assign({}, project.doc.furnituraNarx);
+  if (s === '') {
+    if (!(kod in cur)) return true;
+    delete cur[kod];
+    if (Object.keys(cur).length) project.doc.furnituraNarx = cur; else delete project.doc.furnituraNarx;
+    project.scheduleRecalc(true); toast(t('narx.qolda_olindi', { nom: nom || kod })); return true;
+  }
+  const n = Number(s);
+  if (!Number.isFinite(n) || n < 1 || n > QOLDA_NARX_MAX) { xato('S3D-NARX-106', { modul: 'furnitura-narx', matn: t('narx.qolda_chegara') }); return false; }
+  cur[kod] = Math.round(n);
+  project.doc.furnituraNarx = cur;
+  project.scheduleRecalc(true);
+  toast(t('narx.qolda_saqlandi', { nom: nom || kod, s: Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') }));
+  return true;
+}
+
 /* ─────────── «Xizmat qo'shish» ─────────── */
 const qoshSaqla = (list) => {
   if (list.length) project.doc.qoshXizmat = list; else delete project.doc.qoshXizmat;
@@ -91,4 +113,8 @@ export function qoshOlib(kod) {
 /** ko'rinish: «Furniturasiz» jami (hisob o'zgarmaydi) */
 export const furnsizFlip = () => set('editor', { furnsiz: !get().editor.furnsiz });
 export const tarkibFlip = () => set('editor', { tarkib: !get().editor.tarkib });
+/** TZ-49: «Narx tarkibi» katta ko'rinishi (varaq); bolim — qaysi bo'limga o'tish (masalan 'furnitura') */
+export const tarkibKatta = (bolim) => openSheet('tarkib', { bolim: bolim || null });
+/** TZ-49: A4 hujjat — brauzer oynasi orqali printerga yoki «PDF sifatida saqlash». Hujjat (ChopHujjat) narx tarkibidan yig'iladi; chop CSS — app.css */
+export const chopEt = () => { try { window.print(); } catch (e) { xato('S3D-NARX-107', { modul: 'chop', err: e }); } };
 

@@ -8,6 +8,7 @@ import { goProjects } from '../projects/actions.js';
 import { saveSettings, askLogout, loadXatolar } from './actions.js';
 import { STANOK, NEST_F, STD_DIMS, NEST_KEY } from './constants.js';
 import { t, serverXato, TILLAR, til, setTil } from '../../i18n/index.js';
+import { ustamaAdmin } from '../../../../app/js/engine/narxStavka.js';
 
 /* TZ-19: Sozlamalar sahifasi qiymatlari — akkaunt, ustama, logo, stanok profili, raskroy, sex standartlari (TZ-14). */
 const setIn = (patch) => set('settings', patch);
@@ -17,13 +18,20 @@ function back() {
   else goProjects();
 }
 
+/* TZ-49 (3): ustama — 0 ≠ bo'sh. 0 — «ustama yo'q» (saqlanadi va narxda 0 sifatida ishlaydi); bo'sh (null) — admin sozlamasi yoki sukutga qaytish.
+   Ikkalasi aniq tugmalar bilan ham tanlanadi: «Ustama yo'q (0%)» va «Standartga qaytarish». */
+async function saqlaUstama(qiymat) {
+  if (await saveSettings({ markup_pct: qiymat })) { setIn({ markupIn: null }); toast(t('sozlama.ustama_saqlandi')); return true; }
+  return false;
+}
 async function saveMarkup() {
   const raw = get().settings.markupIn;
   if (raw == null) return;
   const v = String(raw).trim(), n = son(v);
-  if (v !== '' && !(n >= 0 && n <= 300)) { toast(t('sozlama.ustama_chegara')); return; }
-  if (await saveSettings({ markup_pct: v === '' ? null : Math.round(n * 10) / 1000 })) { setIn({ markupIn: null }); toast(t('sozlama.ustama_saqlandi')); }
+  if (v !== '' && !(Number.isFinite(n) && n >= 0 && n <= 300)) { toast(t('sozlama.ustama_chegara')); return; }
+  await saqlaUstama(v === '' ? null : Math.round(n * 10) / 1000);
 }
+const f1 = (x) => String(Math.round(x * 10) / 10).replace('.', ',');
 
 function onLogo(ev) {
   const f = ev.target.files && ev.target.files[0];
@@ -70,7 +78,7 @@ export function useSozlamalar() {
   const std = (H && H.sexStd && H.sexStd.modullar) || {};
   const stdIn = st.stdIn || Object.fromEntries(Object.entries(std).map(([t, m]) => [t, Object.fromEntries(STD_DIMS.filter(k => m[k]).map(k => [k, { min: m[k].min ?? '', max: m[k].max ?? '' }]))]));
   const nc = st.nestIn || (H ? project.nestCfg() : {});
-  const std0 = H ? Math.round(((H.materials.pricing && H.materials.pricing.markup_pct) ?? 0) * 100) : 0;   // TZ-48: sukut ustama 0%
+  const std0 = H ? Math.round(ustamaAdmin(H.narxlar, H.materials).foiz) : 0;   // TZ-48: sukut ustama 0%; TZ-49: admin ilgari saqlagan qiymat (masalan 35%) bo'lsa — o'sha ko'rinadi (bo'sh qoldirilsa amal qiladigan)
   useEffect(() => { if (admin) loadXatolar(''); }, [admin]);
   const xj = st.xatolar;
   const setStd = (tur, k, patch) => setIn({ stdIn: { ...stdIn, [tur]: { ...stdIn[tur], [k]: { ...stdIn[tur][k], ...patch } } } });
@@ -80,6 +88,11 @@ export function useSozlamalar() {
     logout: askLogout,
     markup: st.markupIn ?? (sets.markup_pct != null ? Math.round(sets.markup_pct * 1000) / 10 : ''), markupPh: t('sozlama.standart_ph', { n: std0 }), markupStd: std0, markupIzoh: t('sozlama.ustama_izoh', { n: std0 }),
     onMarkup: ev => setIn({ markupIn: ev.target.value }), saveMarkup,
+    markupNol: () => saqlaUstama(0), markupStandart: () => saqlaUstama(null), markupNolOn: sets.markup_pct === 0, markupBosh: sets.markup_pct == null,
+    markupHolat: sets.markup_pct === 0 ? t('sozlama.ustama_holat_nol')
+      : sets.markup_pct != null ? t('sozlama.ustama_holat_n', { n: f1(sets.markup_pct * 100) })
+      : t('sozlama.ustama_holat_bosh', { manba: (() => { const a = H ? ustamaAdmin(H.narxlar, H.materials) : null;
+        return a && a.tur === 'admin' ? t('sozlama.ustama_m_admin', { n: f1(a.foiz), sana: a.sana || '—' }) : t('sozlama.ustama_m_sukut', { n: f1(a ? a.foiz : 0) }); })() }),
     enter: ev => { if (ev.key === 'Enter') ev.target.blur(); },
     logo: sets.logo, onLogo, removeLogo: async () => { if (await saveSettings({ logo: null })) toast(t('sozlama.logo_olindi')); },
     stanoklar: STANOK.map(([k, l, sub]) => {

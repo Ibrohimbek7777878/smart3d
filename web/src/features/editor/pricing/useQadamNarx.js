@@ -6,11 +6,12 @@ import { raqam } from '../../../shared/lib/format.js';
 import { nestQoldiqlari, qoldiqQosh } from '../../settings/qoldiq.js';
 import { goStep } from '../actions.js';
 import { narxKorinishi } from './narx.js';
-import { t } from '../../../i18n/index.js';
+import { t, til } from '../../../i18n/index.js';
 import * as L from '../../../services/loyiha.js';
 import { erpKorsatkich } from '../../../services/erpHolat.js';
 import { openSettings } from '../../settings/actions.js';
-import { flipPrisadka, flipBazis, flipRaspil1, raspilStanokTanla, ustamaFlip, ustamaFoiz, qoshSoni, qoshOlib, furnsizFlip, tarkibFlip } from './narxActions.js';
+import { flipPrisadka, flipBazis, flipRaspil1, raspilStanokTanla, ustamaFlip, ustamaFoiz, qoshSoni, qoshOlib, furnsizFlip, tarkibFlip, tarkibKatta, chopEt, furnituraNarxQoy } from './narxActions.js';
+import { ustamaManbaMatn } from './ustamaManba.js';
 
 /* TZ-19: ③ Narx — mijoz narxi, tannarx, foyda, kotirovka, xizmatlar (S3), tannarx tarkibi, raskroy varaqlari, detallar.
  * TZ-48 (egasi #301/#302): ustama bloki (sukut 0%, qo'lda yoqiladi), «Furniturasiz» ko'rinish, +1 raspil ogohlantirishi, «Xizmat qo'shish», narx tarkibi. */
@@ -52,10 +53,13 @@ function plitaQatorlari(R, prod, B) {
   return rows.length ? rows : [[t('narx.plita'), t('narx.plita_q', { n: B.sheetsCount || 0, m: dec(B.panelAreaM2) }), prod.sheetCost]];
 }
 
-/** TZ-48: narx tarkibi (prod.tarkib) → ko'rinish: bo'limlar, qatorlar (nom, miqdor × narx = summa, manba, qoida) */
-function tarkibKorinishi(prod) {
+/** TZ-48: narx tarkibi (prod.tarkib) → ko'rinish: bo'limlar, qatorlar (nom, miqdor × narx = summa, manba, qoida).
+ *  TZ-49: har qatorda jamidagi ulushi (%), qo'lda furnitura narxi; pastda tannarx, ustama, jami, «Furniturasiz» jami. Katta ko'rinish, kichik blok va chop hujjati
+ *  (ChopHujjat) shu BITTA ko'rinishdan chiziladi — yig'indi narx paneli jami bilan aynan teng. */
+export function tarkibKorinishi(prod) {
   const T = prod && prod.tarkib;
   if (!T) return null;
+  const doc = project.doc || {};
   const qatorNomi = (bolim, r) => {
     if (bolim === 'plita' && r.qoida !== 'sigmadi' && r.qoida !== 'stol' && project.H && project.H.materials.panel_materials.some(m => m.code === r.kod)) return project.matName(r.kod) + (r.qoida === 'mijoz' ? t('narx.mijoz_mat') : '');
     if (bolim === 'raspil') return r.kod === 'raspil_qosh' ? t('narx.raspil_qosh_nom') : r.kod === 'raspil_yupqa' ? t('narx.raspil_yupqa_nom') : t('narx.raspil');
@@ -68,18 +72,46 @@ function tarkibKorinishi(prod) {
     return t('narx.q_' + r.qoida, { lst: raqam(v.lst || 0), tannarx: raqam(v.tannarx || 0), chegirma: raqam(v.chegirma || 0), koef: dec(v.koef || 0), chiqit: dec(v.chiqit || 0), sof: dec(v.sof || 0),
       xizmat: v.xizmat || t('narx.q_katalog_narx'), soni: v.soni || 0, util: dec(v.util || 0), asos: raqam(v.asos || 0), foiz: dec(r.miqdor || 0), n: dec(r.miqdor || 0) });
   };
+  const jami = T.jami || 0;
+  const ulush = (x) => (jami > 0 ? Math.round((x || 0) / jami * 1000) / 10 : 0);
+  const qolda = doc.furnituraNarx || {};
+  const tannarx = prod.totalCost || 0, ustamaSumma = jami - tannarx;
   return {
     bolimlar: T.bolimlar.map(b => ({
-      kod: b.kod, nom: t('narx.b_' + b.kod), jami: raqam(b.jami),
-      qatorlar: b.qatorlar.map(r => ({
-        nom: b.kod === 'ustama' ? t('narx.ustama') : qatorNomi(b.kod, r),
-        formula: b.kod === 'ustama' ? t('narx.tarkib_ustama', { asos: raqam(r.narx), foiz: dec(r.miqdor), summa: raqam(r.summa) })
-          : t('narx.tarkib_formula', { n: dec(Math.round(r.miqdor * 100) / 100), u: birlikNomi(r.birlik), s: raqam(r.narx), j: raqam(r.summa) }),
-        manba: t('narx.m_' + (MANBA[r.manba] || 'taxmin')), manbaKod: MANBA[r.manba] || 'taxmin', qoida: sozlar(r), qoidaKod: r.qoida
-      }))
+      kod: b.kod, nom: t('narx.b_' + b.kod), jami: raqam(b.jami), ulush: ulush(b.jami), ulushMatn: dec(ulush(b.jami)) + '%',
+      qatorlar: b.qatorlar.map(r => {
+        const ust = b.kod === 'ustama', mk = MANBA[r.manba] || 'taxmin', narxsiz = r.manba === 'yoq';
+        return {
+          kod: r.kod, nom: ust ? t('narx.ustama') : qatorNomi(b.kod, r),
+          formula: ust ? t('narx.tarkib_ustama', { asos: raqam(r.narx), foiz: dec(r.miqdor), summa: raqam(r.summa) })
+            : t('narx.tarkib_formula', { n: dec(Math.round(r.miqdor * 100) / 100), u: birlikNomi(r.birlik), s: raqam(r.narx), j: raqam(r.summa) }),
+          miqdor: ust ? dec(r.miqdor) + '%' : dec(Math.round(r.miqdor * 100) / 100) + ' ' + birlikNomi(r.birlik), narx: raqam(r.narx), summa: raqam(r.summa), summaSon: r.summa,
+          ulush: ulush(r.summa), ulushMatn: dec(ulush(r.summa)) + '%', narxsiz,
+          manba: t('narx.m_' + mk), manbaKod: mk, qoida: sozlar(r), qoidaKod: r.qoida,
+          /* TZ-49 (4): narxsiz furnituraga qo'lda narx kiritish maydoni (narxsiz yoki qo'lda yozilgan qator) */
+          qoldaMumkin: b.kod === 'furnitura' && (narxsiz || r.manba === 'qolda'), qoldaNarx: qolda[r.kod] != null ? String(qolda[r.kod]) : '',
+          saqla: (raw) => furnituraNarxQoy(r.kod, qatorNomi(b.kod, r), raw)
+        };
+      })
     })),
-    jami: raqam(T.jami), furnsiz: raqam(T.furnsiz), furnituraJami: raqam(T.furnituraJami)
+    jami: raqam(T.jami), furnsiz: raqam(T.furnsiz), furnituraJami: raqam(T.furnituraJami),
+    jamiSon: T.jami, furnsizSon: T.furnsiz, tannarx: raqam(tannarx), tannarxSon: tannarx,
+    ustama: { summa: raqam(ustamaSumma), summaSon: ustamaSumma, foiz: Math.round((prod.markupPct || 0) * 1000) / 10, bor: ustamaSumma > 0 },
+    ustamaManba: ustamaManbaMatn(prod, doc)
   };
+}
+
+const LOC = { uz: 'uz-UZ', ru: 'ru-RU', en: 'en-GB' };
+/** TZ-49: katta ko'rinish (varaq) va chop hujjati uchun narx tarkibi + sarlavha (loyiha nomi, sana, mijoz) — useQadamNarx().tarkib bilan bir xil hisob */
+export function useTarkibKorinish() {
+  const ed = useSlice('editor'), pj = useSlice('project');
+  useSlice('data'); useSlice('settings');
+  const prod = project.res ? project.res.prod : null;
+  const k = prod && prod.tarkib ? tarkibKorinishi(prod) : null;
+  if (!k) return null;
+  let sana = '';
+  try { sana = new Date().toLocaleDateString(LOC[til()] || 'uz-UZ'); } catch (_) { sana = new Date().toISOString().slice(0, 10); }
+  return { ...k, furnsizOn: !!ed.furnsiz, meta: { nom: pj.name || '', mijoz: pj.client || '', sana } };
 }
 
 export function useQadamNarx() {
@@ -98,11 +130,14 @@ export function useQadamNarx() {
   if (R) for (const cl of R.cutlists) for (const pt of cl.parts) { const k = pt.material || '—'; det[k] = (det[k] || 0) + (+pt.qty || 1); }
   const ek = erpKorsatkich(erp, Date.now());
   const furnsiz = !!ed.furnsiz;
-  /* ustama (TZ-48): sukut 0% — usta yoqadi; foiz — hozirgi, bo'lmasa oldingi tanlov, bo'lmasa taklif (materials.json pricing.markup_taklif = 35%) */
+  /* ustama (TZ-48): sukut 0% — usta yoqadi; foiz — hozirgi, bo'lmasa oldingi tanlov, bo'lmasa taklif (materials.json pricing.markup_taklif = 35%).
+     TZ-49 (3): 0 ≠ bo'sh — loyihada «yoqilgan, 0%» tanlovi saqlanadi va blok ochiq qoladi (0 yozilganda blok yo'qolib qolmasin, foiz maydoni 0 ko'rsatsin) */
   const markup = prod ? prod.markupPct || 0 : 0;
   const taklif = Math.round((((project.H && project.H.materials.pricing) || {}).markup_taklif || 0.35) * 100);
-  const duFoiz = project.doc.ustama && project.doc.ustama.foiz > 0 ? project.doc.ustama.foiz : 0;
-  const foizYoq = markup > 0 ? Math.round(markup * 1000) / 10 : (duFoiz || taklif);
+  const du = project.doc.ustama && typeof project.doc.ustama.yoqilgan === 'boolean' ? project.doc.ustama : null;
+  const duFoiz = du && du.foiz > 0 ? du.foiz : 0;
+  const ustamaOn = markup > 0 || !!(du && du.yoqilgan);
+  const foizYoq = du && du.yoqilgan ? du.foiz : (markup > 0 ? Math.round(markup * 1000) / 10 : (duFoiz || taklif));
   const qosh = ((project.doc && project.doc.qoshXizmat) || []).filter(q => q && q.kod && q.soni > 0);
   const lineBy = (kod) => (prod && prod.lines.find(l => l.code === kod)) || {};
   return {
@@ -110,9 +145,10 @@ export function useQadamNarx() {
     furnsiz: { on: furnsiz, flip: furnsizFlip, label: t('narx.furnsiz'), izoh: furnsiz ? t('narx.furnsiz_izoh') : '', bigLabel: furnsiz ? t('narx.mijozga_narx_furnsiz') : t('narx.mijozga_narx'),
       furnituraJami: prod ? raqam(prod.clientTotal - prod.clientFurnsiz) : '…' },
     /* TZ-48 (egasi #301, 1-qaror): ustama sukutda qo'shilmaydi (0%); narx panelida qo'lda yoqiladi va foizi o'zgartiriladi */
-    ustama: { on: markup > 0, foiz: ed.ustamaIn != null ? ed.ustamaIn : String(foizYoq), taklif,
-      sub: markup > 0 ? t('narx.ustama_sub_on', { n: Math.round(markup * 1000) / 10 }) : t('narx.ustama_sub_off'),
-      flip: () => ustamaFlip(markup > 0, foizYoq), onFoiz: (ev) => ustamaFoiz(ev.target.value), taklifTugma: () => ustamaFoiz(String(taklif)) },
+    ustama: { on: ustamaOn, foiz: ed.ustamaIn != null ? ed.ustamaIn : String(foizYoq), taklif,
+      sub: ustamaOn ? t('narx.ustama_sub_on', { n: Math.round(markup * 1000) / 10 }) : t('narx.ustama_sub_off'),
+      manba: ustamaManbaMatn(prod, project.doc),
+      flip: () => ustamaFlip(ustamaOn, foizYoq), onFoiz: (ev) => ustamaFoiz(ev.target.value), taklifTugma: () => ustamaFoiz(String(taklif)) },
     /* TZ-44 (8): "ERP narxlari: HH:MM" — yangi bo'lsa oddiy; eski (> 10 daqiqa), jonli o'chiq, ERP xatosi yoki aloqa yo'q — ogohlantirish. Server jonli holat bermasa — chiqmaydi */
     erp: ek ? { eski: ek.eski, matn: !ek.eski ? t('narx.erp_vaqt', { vaqt: ek.vaqt }) : ek.vaqt ? t('narx.erp_eski', { vaqt: ek.vaqt }) : t('narx.erp_hali') } : null,
     markupLabel: t('narx.foyda', { n: prod ? Math.round((prod.markupPct || 0) * 1000) / 10 : 0 }),
@@ -120,12 +156,16 @@ export function useQadamNarx() {
     /* TZ-20: "Narx aniqligi X%" — bosilsa taxminiy qatorlar (qaysi summa tasdiqlanmagan) */
     aniqlik: prod && prod.aniqlik && prod.aniqlik.pct != null ? {
       label: prod.aniqlik.narxsiz ? t('narx.aniqlik_narxsiz', { n: prod.aniqlik.pct, k: prod.aniqlik.narxsiz }, prod.aniqlik.narxsiz) : t('narx.aniqlik', { n: prod.aniqlik.pct }), ochiq: !!ed.aniq, toliq: prod.aniqlik.pct === 100 && !prod.aniqlik.narxsiz, flip: () => set('editor', { aniq: !ed.aniq }),
-      rows: prod.aniqlik.taxmin.map(x => ({ n: x.group === 'Ustama' ? t('narx.aniq_ustama', { n: Math.round((prod.markupPct || 0) * 1000) / 10 }) : x.name.replace(/ — taxminiy$/, ''), m: x.manba === 'yoq' ? t('narx.aniq_yoq') : t('narx.aniq_taxmin'), p: raqam(x.amount) })),
+      rows: prod.aniqlik.taxmin.map(x => ({ n: x.group === 'Ustama' ? t('narx.aniq_ustama', { n: Math.round((prod.markupPct || 0) * 1000) / 10 }) : x.name.replace(/ — taxminiy$/, ''), m: x.manba === 'yoq' ? t('narx.aniq_yoq') : x.manba === 'qolda' ? t('narx.m_qolda') : t('narx.aniq_taxmin'), p: raqam(x.amount) })),
       narxsiz: prod.aniqlik.narxsiz ? t('narx.aniq_narxsiz', { n: prod.aniqlik.narxsiz }, prod.aniqlik.narxsiz) : '',
       bosh: !prod.aniqlik.taxmin.length ? t('narx.aniq_hammasi') : ''
     } : null,
     /* TZ-48 (7-qaror): narx tarkibi — "Narx aniqligi" nomi o'zgarmaydi; yonida alohida «Narx tarkibi» */
     tarkib: prod && prod.tarkib ? { ochiq: !!ed.tarkib, flip: tarkibFlip, label: t('narx.tarkib'), ...tarkibKorinishi(prod) } : null,
+    /* TZ-49 (egasi #303): «Katta ko'rinish» (varaq) va «PDF / Chop etish» — «Sex tannarxi» kartasida ham, katta narx tarkibida ham: ikkalasi BITTA hujjatni ochadi */
+    katta: { label: t('narx.katta'), ochish: () => tarkibKatta() },
+    chop: { label: t('narx.chop'), izoh: t('narx.chop_izoh'), yoz: chopEt, bor: !!(prod && prod.tarkib) },
+    zapchastKiritish: { label: t('narx.zapchast_narx_kiriting'), ochish: () => tarkibKatta('furnitura') },
     toggleMissing: () => set('editor', { miss: !ed.miss }), missOpen: ed.miss,
     missing: prod ? prod.missing.map(m => ({ n: m.name || m.code, c: m.qty ? '×' + m.qty : '' })) : [],
     client: pj.client, onClient: ev => { set('project', { client: ev.target.value }); S.changed(); },
