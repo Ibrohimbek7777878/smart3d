@@ -262,10 +262,10 @@ export function bazisLoyiha(objects, o = {}) {
 
   const parts = [], edge = [];
   let n = 0;
-  /* TZ-47 (prisadka): mahkamlagichlardan JOYLASHUVI BILAN teshiklar — faqat stanok/KDT fayli uchun (narx bazisTeshik'dan, o'zgarmagan) */
+  /* Prisadka aniqligi: mahkamlagichlardan JOYLASHUVI BILAN teshiklar — faqat stanok/KDT fayli uchun (narx bazisTeshik'dan, o'zgarmagan) */
   let joy = new Map();
   try { joy = bazisTeshikJoy(objects || [], pe); } catch (_) { joy = new Map(); }
-  const bazisJoy = [];
+  const bazisJoy = [], tahlil = new Map();     // tahlil (faqat o.tahlil bilan): detal nusxasi (kod#n) → panel yozuvi — scripts/prisadka_solishtir.mjs uchun
   for (const g of [...guruh.values()].sort((a, b) => b.soni - a.soni || (b.dl * b.dw) - (a.dl * a.dw))) {
     const code = 'bz' + (++n);
     parts.push({ code, nom: g.nom, qty: g.soni, len: String(g.dl), width: String(g.dw), slot: g.slot, material_code: g.mkod,
@@ -274,11 +274,12 @@ export function bazisLoyiha(objects, o = {}) {
          detalning uzun tomoni list uzunligi bo'ylab joylashadi. Avval X doim tola deb olinardi — tik eshik (599×1968) 2500×1830 listga
          "sig'madi" (eni 1968 > 1830, aylantirish taqiqlangan) va tannarxga kirmay qolardi. */
       tekstura: g.tur === 'hdf' || (g.tur === 'ldsp' && oddiyDekor(g.mnom)) ? 'erkin' : g.tur !== 'stoleshnitsa' && g.dl < g.dw ? 'en' : 'uzunlik', bazis_material: g.mnom });
-    g.pe.forEach((en, k) => { const hs = joy.get(en); if (hs && hs.length && bazisJoy.length < 2000) bazisJoy.push(...joyQatorlar(code + '#' + (k + 1), en, hs)); });
+    g.pe.forEach((en, k) => { if (o.tahlil) tahlil.set(code + '#' + (k + 1), en); const hs = joy.get(en); if (hs && hs.length && bazisJoy.length < 2000) bazisJoy.push(...joyQatorlar(code + '#' + (k + 1), en, hs)); });
     const boyicha = {};
     for (const [s, k] of Object.entries(g.tomonlar)) (boyicha[k] = boyicha[k] || []).push(s);
     for (const [k, sides] of Object.entries(boyicha)) edge.push({ code, sides: sides.sort(), material: k, thickness: kromkalar.get(k).thickness });
   }
+  if (bazisJoy.length > 2000) bazisJoy.length = 2000;       // himoya.js: ro'yxat <= 2000
   const hardware = [];
   for (const [list, tur] of [[o.fittings || [], 'furnitura'], [o.fasteners || [], 'mahkamlagich']]) {
     for (const x of list) {
@@ -316,7 +317,7 @@ export function bazisLoyiha(objects, o = {}) {
     shakl3d: bazisShakl.length, furn3d: bazisFurn.length,
     teshik: teshiklar.reduce((a, t) => a + t.qty, 0)
   };
-  return { fragment, materiallar: { panel: [...matlar.values()], edge: [...kromkalar.values()] }, hisobot };
+  return { fragment, materiallar: { panel: [...matlar.values()], edge: [...kromkalar.values()] }, hisobot, ...(o.tahlil ? { tahlil } : {}) };
 }
 
 /**

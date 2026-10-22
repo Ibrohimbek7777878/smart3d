@@ -159,7 +159,7 @@ export function bizningBuyurtma(top, id, hamma = {}) {
   if (!f) return null;
   const r = daraxt(new Uint8Array(readFileSync(join(bd, f))), { inflate });
   if (!r || !r.objects) return { xato: 'b3d o\'qilmadi' };
-  const rs = bazisLoyiha(r.objects, { fayl: f, nom: 'b' + id });
+  const rs = bazisLoyiha(r.objects, { fayl: f, nom: 'b' + id, tahlil: true });
   if (rs.xato) return { xato: rs.xato };
   const m2 = JSON.parse(JSON.stringify(hamma.materials));
   materiallarniQosh(m2, rs.materiallar);
@@ -177,12 +177,12 @@ export function bizningBuyurtma(top, id, hamma = {}) {
       for (const fy of kdtFayllar({ kod: d.kod, nom: d.nom, dl: d.dl, dw: d.dw, t: d.t, kromka }, dd.xnc)) holes.push(...kdtDetal(fy.matn, +/_(\d)\.XML$/.exec(fy.nom)[1]).holes);
       return holes;
     });
-    detallar.push({ kod: d.kod, L, W, T: d.t, nom: d.nom, soni: d.soni, holes: varyant[0], varyant });
+    detallar.push({ kod: d.kod, L, W, T: d.t, nom: d.nom, soni: d.soni, holes: varyant[0], varyant, refs: d.refs });
   }
   /* narx uchun teshik soni (joylashuvsiz; teshik.js) — hisobotning "soni darajasi" bo'limi */
   const narxSoni = {};
   for (const t of fr.bazisTeshik || []) { const k = NARX_TUR[t.tur] || t.tur; narxSoni[k] = (narxSoni[k] || 0) + t.qty; }
-  return { id, detallar, fragment: fr, panellar: fr.manba && fr.manba.panellar, narxSoni };
+  return { id, detallar, fragment: fr, panellar: fr.manba && fr.manba.panellar, narxSoni, tahlil: rs.tahlil };
 }
 
 /* ── teshiklarni solishtirish ── */
@@ -203,6 +203,7 @@ function juftSolishtir(biz, haq) {
   const hammasi = (biz.varyant || [biz.holes]).map(natija);
   let eng = hammasi[0];
   for (const r of hammasi) if (r.tp.length > eng.tp.length) eng = r;
+  const vi = hammasi.indexOf(eng);
   const aynan = Math.max(hammasi[0].tp.length, hammasi[1] ? hammasi[1].tp.length : 0);
   const tpA = new Set(eng.tp.map(p => p[0])), farq = [];
   eng.A.forEach((a, i) => {
@@ -212,7 +213,7 @@ function juftSolishtir(biz, haq) {
   });
   const tpB = new Set(eng.tp.map(p => p[0])), tpH = new Set(eng.tp.map(p => p[1]));
   return { tp: eng.tp.map(([i, j]) => [eng.A[i], haq.holes[j]]), farq: farq.map(([i, j]) => [eng.A[i], haq.holes[j]]), aynan,
-    bizQol: eng.A.filter((_, i) => !tpB.has(i)), haqQol: haq.holes.filter((_, j) => !tpH.has(j)) };
+    bizQol: eng.A.filter((_, i) => !tpB.has(i)), haqQol: haq.holes.filter((_, j) => !tpH.has(j)), vi };
 }
 
 /** Vengriya usuli: ball matritsasi (kattaroq — yaxshi), taqiqlangan juft = null. → [i → j | -1] */
