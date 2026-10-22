@@ -12,6 +12,7 @@
  */
 import { PANEL_CODE } from './b3d.js';
 import { bazisTeshiklar } from './teshik.js';
+import { nomFormati } from '../plitaMoslash.js';
 
 const TUR = [
   ['stoleshnitsa', /столешн|stoleshn/i],
@@ -24,8 +25,7 @@ const TUR = [
   ['ldsp', /лдсп|дсп|ldsp|\bdsp\b|egger|эггер|kronospan|кроношпан|ультрадекор|lamarty|ламарти|каштан|союз|шпон|фанера/i]
 ];
 const ISHLAB = { ldsp: 1, lmdf: 1, mdf: 1, akril: 1, hdf: 1, stoleshnitsa: 1 };
-/* list o'lchami material nomida yashirin (Smart3D_toplam README): maydon m² → o'lcham */
-const MAYDON = { '5.796': [2800, 2070], '5.0325': [2750, 1830], '5.175': [2500, 2070], '4.575': [2500, 1830], '2.9768': [2440, 1220], '2.928': [2440, 1200] };
+/* list o'lchami material nomida yashirin (Smart3D_toplam README): maydon m² → o'lcham — engine/plitaMoslash.js */
 
 const fnv = (s) => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(36); };
 const toza = (s) => String(s || '').replace(/[<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 200);
@@ -52,7 +52,7 @@ export function materialTuri(nom, t) {
   let varaq = null;
   const m = n.match(/(\d{4})\s*[*xхX×]\s*(\d{3,4})/);
   if (m) varaq = [+m[1], +m[2]].sort((a, b) => b - a);
-  else { const a = n.match(/(\d)[,.](\d{2,4})/); if (a && MAYDON[a[1] + '.' + a[2]]) varaq = MAYDON[a[1] + '.' + a[2]]; }
+  else varaq = nomFormati(n, false);   // faqat aniq maydon (4,575); "4,6кв" nominal — format ERP plitasi tanlangach aniqlanadi (TZ-42)
   return { tur, ishlab: !!ISHLAB[tur], asos, varaq };
 }
 
@@ -261,7 +261,10 @@ export function bazisLoyiha(objects, o = {}) {
     const code = 'bz' + (++n);
     parts.push({ code, nom: g.nom, qty: g.soni, len: String(g.dl), width: String(g.dw), slot: g.slot, material_code: g.mkod,
       ...(g.tur === 'stoleshnitsa' ? { stol_birga: true } : {}),
-      tekstura: g.tur === 'hdf' || (g.tur === 'ldsp' && oddiyDekor(g.mnom)) ? 'erkin' : 'uzunlik', bazis_material: g.mnom });
+      /* TZ-42: Bazis tekstura yo'nalishini o'qimaydi — yo'nalishli dekorda tola UZUN tomon bo'ylab (sex qoidasi): lokal X qisqa bo'lsa ('en')
+         detalning uzun tomoni list uzunligi bo'ylab joylashadi. Avval X doim tola deb olinardi — tik eshik (599×1968) 2500×1830 listga
+         "sig'madi" (eni 1968 > 1830, aylantirish taqiqlangan) va tannarxga kirmay qolardi. */
+      tekstura: g.tur === 'hdf' || (g.tur === 'ldsp' && oddiyDekor(g.mnom)) ? 'erkin' : g.tur !== 'stoleshnitsa' && g.dl < g.dw ? 'en' : 'uzunlik', bazis_material: g.mnom });
     const boyicha = {};
     for (const [s, k] of Object.entries(g.tomonlar)) (boyicha[k] = boyicha[k] || []).push(s);
     for (const [k, sides] of Object.entries(boyicha)) edge.push({ code, sides: sides.sort(), material: k, thickness: kromkalar.get(k).thickness });

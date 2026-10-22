@@ -3,6 +3,7 @@ import { dekorRang } from '../../../app/js/engine/rang.js';
 import { asosiyRang, dekorKalit } from '../../../app/js/engine/dekorAsosiy.js';
 import { dekorNomi } from '../features/editor/catalog/dekor.js';
 import { erpKod } from '../../../app/js/engine/erpKod.js';
+import { plitaFormati, bazisMoslashHammasi } from '../../../app/js/engine/plitaMoslash.js';
 
 /* TZ-23 E: ERP plitasi (1281 ta, materials-index.json) — alohida material kodi (ERP-…) bo'lib hisobga qo'shiladi:
  * har qism (korpus, fasad, orqa, stoleshnitsa) va har modul o'z dekorida bo'ladi, raskroy har dekorni alohida listda
@@ -21,7 +22,7 @@ export function erpMaterial(sh, mats) {
   return {
     code: erpKod(sh), name: String(sh.name || '').slice(0, 160), thickness: +sh.th || asos.thickness || 16,
     factor: asos.factor, sheet_price: narxBor ? +sh.uzs : asos.sheet_price,
-    sheets: +sh.l > 100 && +sh.w > 100 ? [[+sh.l, +sh.w]] : (asos.sheets || [[2800, 2070]]),
+    sheets: ((f) => (f ? [f] : (asos.sheets || [[2800, 2070]])))(plitaFormati(sh.name, sh.l, sh.w).f),   // TZ-42: nomdagi maydon (4,575 → 2500×1830) — katalogda sukut 2800×2070 bo'lishi mumkin
     src: narxBor ? 'ERP' : 'ERP (narx yo\'q) — ' + base + ' narxi, taxminiy', taxminiy: !narxBor, asos: base,
     erp: { id: sh.id || '', sku: sh.sku || '', type: sh.type || '' }
   };
@@ -46,6 +47,19 @@ export function erpQosh(H, doc, sh) {
   doc.erpMat[m.code] = m;
   erpUla(H, doc);
   return m.code;
+}
+
+/** TZ-42: Bazis materiali → ERP plitasi. Bir qiymatli moslik avtomatik (doc.bazis.almash + doc.erpMat; narx — ERP'dan, "ERP" manba);
+ *  noaniq (bir nechta nomzod) — O'YLAB TOPILMAYDI: foydalanuvchi "Almashtirish" oynasida nomzodlardan tanlaydi. → { aniq, nomzod } */
+export function bazisMoslash(doc, H) {
+  const b = doc && doc.bazis, sheets = H && H.sheetCatalog && H.sheetCatalog.sheets;
+  if (!b || !sheets || !b.materiallar) return { aniq: 0, nomzod: 0 };
+  let aniq = 0, nomzod = 0;
+  for (const [kod, x] of Object.entries(bazisMoslashHammasi(b.materiallar.panel, sheets, b.almash))) {
+    if (x.holat === 'aniq') { b.almash = Object.assign({}, b.almash, { [kod]: erpQosh(H, doc, x.sheet) }); aniq++; }
+    else if (x.holat === 'nomzod') nomzod++;
+  }
+  return { aniq, nomzod };
 }
 
 /** saqlashdan oldin: doc.erpMat — faqat loyihada ishlatilgan ERP materiallari (loyiha tanlovi + modullar) */

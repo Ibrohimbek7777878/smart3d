@@ -58,7 +58,17 @@ export default function MaterialVaraq() {
     <div data-material-tepa="" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       {s.qismlar.length ? <div data-material-qism=""><Chiplar list={s.qismlar} /></div> : null}
       {s.doiralar.length ? <div data-material-doira=""><Chiplar list={s.doiralar} /></div> : <span style={hint}>{s.doira}</span>}
+      {/* TZ-42: mijoz materiali — plita narxga kirmaydi; kesim, 3D va fayllar o'zgarmaydi */}
+      {s.mijoz ? <button data-material-mijoz="" onClick={s.mijoz.flip} aria-pressed={s.mijoz.on} title={t('mebel.mijoz_izoh')} style={{ ...chip(s.mijoz.on), alignSelf: 'flex-start', minHeight: '40px', fontSize: '13px' }}>{t('mebel.mijoz_material')}</button> : null}
     </div>
+    {/* TZ-42: Bazis materiali — ERP'dagi mos plitalar (bir bosish bilan tanlanadi; narx ERP'dan) */}
+    {s.nomzodlar && s.nomzodlar.length ? (
+      <section data-material-nomzod="" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <span style={hint}>{s.nomzodMatn}</span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(148px, 1fr))', gap: '10px' }}>
+          {s.nomzodlar.map(p => <Plitka key={p.key} p={p} />)}
+        </div>
+      </section>) : null}
     {/* #182: qidiruv — ikkala ko'rinishda (Asosiy 100 va Boshqa ranglar); bitta element — yozish paytida fokus yo'qolmaydi */}
     <input data-material-qidiruv="" value={s.q} onChange={s.onQ} placeholder={t('mebel.qidiruv_nom_yoki_sku_masalan')} style={input} />
     {s.mashhur.length ? (

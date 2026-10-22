@@ -18,6 +18,7 @@ import { asosiyIndeks } from '../../../app/js/engine/dekorAsosiy.js';
 import { materiallarQollash, katalogNomlar, katalogQollash, yashirinKodlar, korinadiKatalog } from '../../../app/js/engine/adminQatlam.js';
 import { sukutErpQollash } from '../../../app/js/engine/narxStavka.js';
 import { stolKitchen, stolMaterialQollash } from '../../../app/js/engine/stoleshnitsa.js';
+import { plitaFormati } from '../../../app/js/engine/plitaMoslash.js';
 
 /* price.js — UMD. Brauzerda (dev, eski sayt sahifasi) o'zi globalThis.SpPrice ga yoziladi; Vite build'i esa
    uni CommonJS deb o'qiydi (module.exports shoxobchasi) — u holda modulning default eksporti. Ikkalasi ham bir xil API. */
@@ -136,7 +137,8 @@ export function createHisob(data) {
       const pm = (m2.panel_materials || []).find(x => x.code === base);
       if (!pm) return mats;
       if (sh.uzs > 0) { pm.sheet_price = sh.uzs; delete pm.taxminiy; }   // TZ-32 A1: tanlangan ERP mahsulotining narxi — tasdiqlangan
-      if (sh.l > 100 && sh.w > 100) pm.sheets = [[sh.l, sh.w]];
+      const fm = plitaFormati(sh.name, sh.l, sh.w).f;   // TZ-42: list formati nomdagi maydondan (4,575 → 2500×1830) — katalogdagi eni/bo'yi ko'pincha sukut 2800×2070
+      if (fm) pm.sheets = [fm];
       return m2;
     },
 
@@ -179,7 +181,7 @@ export function createHisob(data) {
       const nest = nestProject(allParts, m, opt.nestCfg || nestDefaults);
       /* 5) ishlab chiqarish tannarxi (haqiqiy varaqlar soni bilan) */
       /* TZ-09: usta ustamasi (Sozlamalar) — berilmasa materials.json standarti (eski sayt bilan bir xil) */
-      const prod = productionCost(cutlists, m, Object.assign({ nestResult: nest, furnituraById: furnById, furnituraBoglash, furnituraKoef, xizmatlar: doc.xizmatlar || {}, stavka: H.narxlar },
+      const prod = productionCost(cutlists, m, Object.assign({ nestResult: nest, furnituraById: furnById, furnituraBoglash, furnituraKoef, xizmatlar: doc.xizmatlar || {}, stavka: H.narxlar, mijozMat: doc.mijozMat || {} },
         opt.markupPct != null ? { markupPct: opt.markupPct } : {}));
       /* 6) mijoz kotirovkasi — tannarx × (1 + ustama), modullarga taqsimlangan */
       const priceRes = buildQuote(placements, catalog, cutlists, prod, sizeCheck.warnings);
