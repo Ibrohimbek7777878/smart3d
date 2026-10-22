@@ -47,12 +47,13 @@ export function xizmatKatalog({ erp, services, narxlar } = {}) {
   return [...out.values()].sort((a, b) => tartib(a.guruh) - tartib(b.guruh) || a.nom.localeCompare(b.nom, 'ru'));
 }
 
-/** qidiruv: nom, kod, kategoriya bo'yicha (registrsiz); guruh — 'hammasi' yoki guruh nomi */
+/** qidiruv (registrsiz): so'zlarning HAMMASI nom yoki kategoriyada bo'lsa; yoki so'rov (kamida 3 belgi) xizmat kodining bir qismi bo'lsa. guruh — 'hammasi' yoki guruh nomi */
 export function xizmatQidir(katalog, q, guruh) {
-  const s = String(q || '').toLowerCase().replace(/ё/g, 'е').trim();
+  const norm = (v) => String(v || '').toLowerCase().replace(/ё/g, 'е');
+  const s = norm(q).trim();
   const sozlar = s ? s.split(/\s+/) : [];
   return (katalog || []).filter(x => (!guruh || guruh === 'hammasi' || x.guruh === guruh)
-    && sozlar.every(w => (x.nom + ' ' + x.kod + ' ' + x.kat).toLowerCase().replace(/ё/g, 'е').includes(w)));
+    && (sozlar.every(w => norm(x.nom + ' ' + x.kat).includes(w)) || (s.length >= 3 && norm(x.kod).includes(s))));
 }
 
 /** Hujjatdagi qo'shilgan xizmatlar (doc.qoshXizmat) → tekshirilgan ro'yxat (buzuq qator tashlanadi; takror kod birlashtiriladi). Miqdor — butun son, ko'tarilib (S2: Math.ceil). */

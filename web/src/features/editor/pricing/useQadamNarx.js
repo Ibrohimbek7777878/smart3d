@@ -1,19 +1,25 @@
 import { useSlice, set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { S } from '../../../store/session.js';
-import { toast } from '../../../store/ui.js';
+import { openSheet } from '../../../store/ui.js';
 import { raqam } from '../../../shared/lib/format.js';
-import { openSettings } from '../../settings/actions.js';
 import { nestQoldiqlari, qoldiqQosh } from '../../settings/qoldiq.js';
 import { goStep } from '../actions.js';
 import { narxKorinishi } from './narx.js';
 import { t } from '../../../i18n/index.js';
 import * as L from '../../../services/loyiha.js';
 import { erpKorsatkich } from '../../../services/erpHolat.js';
+import { openSettings } from '../../settings/actions.js';
+import { flipPrisadka, flipBazis, flipRaspil1, ustamaFlip, ustamaFoiz, qoshSoni, qoshOlib, furnsizFlip, tarkibFlip } from './narxActions.js';
 
-/* TZ-19: ③ Narx — mijoz narxi, tannarx, foyda, kotirovka, xizmatlar (S3), tannarx tarkibi, raskroy varaqlari, detallar. */
+/* TZ-19: ③ Narx — mijoz narxi, tannarx, foyda, kotirovka, xizmatlar (S3), tannarx tarkibi, raskroy varaqlari, detallar.
+ * TZ-48 (egasi #301/#302): ustama bloki (sukut 0%, qo'lda yoqiladi), «Furniturasiz» ko'rinish, +1 raspil ogohlantirishi, «Xizmat qo'shish», narx tarkibi. */
 const RANGLAR = ['#FF7A45', '#5FE1C4', '#B9A6FF', '#FFB59A', '#F3F0E9'];    // dizayndagi raskroy ranglari
 const dec = (x) => String(x || 0).replace('.', ',');
+/** birlik (varaq, list, m, m2, dona, detal …) → tilda; lug'atda yo'q birlik (ERP: «шт», «reys») — o'zi */
+const birlikNomi = (u) => { const k = 'narx.u_' + u, v = t(k); return v === k ? String(u || '') : v; };
+/** manba (dvigatel) → ko'rinadigan kalit: ERP / egasi / qo'lda / taxmin / narx yo'q / mijoz */
+const MANBA = { ERP: 'erp', 'sex jadvali': 'erp', egasi: 'egasi', usta: 'qolda', qolda: 'qolda', taxmin: 'taxmin', yoq: 'yoq', mijoz: 'mijoz' };
 
 /** raskroy varaqlari (haqiqiy) va joriy varaqdagi detallar — foizda (dizayndagi chizma) */
 function raskroy(R, idx) {
@@ -46,36 +52,65 @@ function plitaQatorlari(R, prod, B) {
   return rows.length ? rows : [[t('narx.plita'), t('narx.plita_q', { n: B.sheetsCount || 0, m: dec(B.panelAreaM2) }), prod.sheetCost]];
 }
 
-function flipPrisadka(on) {
-  project.doc.xizmatlar = Object.assign({}, project.doc.xizmatlar, { teshik: on });
-  project.scheduleRecalc(true);
-  toast(on ? t('narx.prisadka_qoshildi') : t('narx.prisadka_olindi'));
-}
-
-/** TZ-32 E3: Bazis loyiha xizmati — usta tanlaydi (onlayn / oflayn, bittasi); sukut o'chiq (S3) */
-function flipBazis(tur, joriy) {
-  const yangi = joriy === tur ? null : tur;
-  project.doc.xizmatlar = Object.assign({}, project.doc.xizmatlar, { bazis: yangi });
-  project.scheduleRecalc(true);
-  toast(yangi ? t('narx.bazis_qoshildi') : t('narx.bazis_olindi'));
+/** TZ-48: narx tarkibi (prod.tarkib) → ko'rinish: bo'limlar, qatorlar (nom, miqdor × narx = summa, manba, qoida) */
+function tarkibKorinishi(prod) {
+  const T = prod && prod.tarkib;
+  if (!T) return null;
+  const qatorNomi = (bolim, r) => {
+    if (bolim === 'plita' && r.qoida !== 'sigmadi' && r.qoida !== 'stol' && project.H && project.H.materials.panel_materials.some(m => m.code === r.kod)) return project.matName(r.kod) + (r.qoida === 'mijoz' ? t('narx.mijoz_mat') : '');
+    return String(r.nom || '').replace(/ — taxminiy$/, '').replace(/ — mijoz materiali$/, t('narx.mijoz_mat'));
+  };
+  const sozlar = (r) => {
+    const v = r.qv || {};
+    return t('narx.q_' + r.qoida, { lst: raqam(v.lst || 0), tannarx: raqam(v.tannarx || 0), chegirma: raqam(v.chegirma || 0), koef: dec(v.koef || 0), chiqit: dec(v.chiqit || 0), sof: dec(v.sof || 0),
+      xizmat: v.xizmat || t('narx.q_katalog_narx'), soni: v.soni || 0, util: dec(v.util || 0), asos: raqam(v.asos || 0), foiz: dec(r.miqdor || 0), n: dec(r.miqdor || 0) });
+  };
+  return {
+    bolimlar: T.bolimlar.map(b => ({
+      kod: b.kod, nom: t('narx.b_' + b.kod), jami: raqam(b.jami),
+      qatorlar: b.qatorlar.map(r => ({
+        nom: b.kod === 'ustama' ? t('narx.ustama') : qatorNomi(b.kod, r),
+        formula: b.kod === 'ustama' ? t('narx.tarkib_ustama', { asos: raqam(r.narx), foiz: dec(r.miqdor), summa: raqam(r.summa) })
+          : t('narx.tarkib_formula', { n: dec(Math.round(r.miqdor * 100) / 100), u: birlikNomi(r.birlik), s: raqam(r.narx), j: raqam(r.summa) }),
+        manba: t('narx.m_' + (MANBA[r.manba] || 'taxmin')), manbaKod: MANBA[r.manba] || 'taxmin', qoida: sozlar(r), qoidaKod: r.qoida
+      }))
+    })),
+    jami: raqam(T.jami), furnsiz: raqam(T.furnsiz), furnituraJami: raqam(T.furnituraJami)
+  };
 }
 
 export function useQadamNarx() {
   const ed = useSlice('editor'), pj = useSlice('project'), auth = useSlice('auth'), erp = useSlice('erp');
+  useSlice('data');
   const R = project.res, pr = R ? R.priceRes : null, prod = R ? R.prod : null, B = prod ? prod.breakdown : {}, NS = R ? R.nest.summary : {};
   const missN = prod ? prod.missing.length : 0;
   const xzt = (prod && prod.xizmat_taklif && prod.xizmat_taklif.teshik) || { tanlangan: false, qty: 0, amount: 0 };
   const xzb = (prod && prod.xizmat_taklif && prod.xizmat_taklif.bazis) || { tanlangan: null, qty: 0, narxBor: false };
+  const xzr = (prod && prod.xizmat_taklif && prod.xizmat_taklif.raspil1) || { mumkin: false, bor: false, narx: 0 };
   const taxminiy = (prod && prod.taxminiy) || [];
   const rs = raskroy(R, ed.rk);
   const det = {};
   if (R) for (const cl of R.cutlists) for (const pt of cl.parts) { const k = pt.material || '—'; det[k] = (det[k] || 0) + (+pt.qty || 1); }
   const ek = erpKorsatkich(erp, Date.now());
+  const furnsiz = !!ed.furnsiz;
+  /* ustama (TZ-48): sukut 0% — usta yoqadi; foiz — hozirgi, bo'lmasa oldingi tanlov, bo'lmasa taklif (materials.json pricing.markup_taklif = 35%) */
+  const markup = prod ? prod.markupPct || 0 : 0;
+  const taklif = Math.round((((project.H && project.H.materials.pricing) || {}).markup_taklif || 0.35) * 100);
+  const duFoiz = project.doc.ustama && project.doc.ustama.foiz > 0 ? project.doc.ustama.foiz : 0;
+  const foizYoq = markup > 0 ? Math.round(markup * 1000) / 10 : (duFoiz || taklif);
+  const qosh = ((project.doc && project.doc.qoshXizmat) || []).filter(q => q && q.kod && q.soni > 0);
+  const lineBy = (kod) => (prod && prod.lines.find(l => l.code === kod)) || {};
   return {
-    price: narxKorinishi(R),
+    price: narxKorinishi(R, { furnsiz }),
+    furnsiz: { on: furnsiz, flip: furnsizFlip, label: t('narx.furnsiz'), izoh: furnsiz ? t('narx.furnsiz_izoh') : '', bigLabel: furnsiz ? t('narx.mijozga_narx_furnsiz') : t('narx.mijozga_narx'),
+      furnituraJami: prod ? raqam(prod.clientTotal - prod.clientFurnsiz) : '…' },
+    /* TZ-48 (egasi #301, 1-qaror): ustama sukutda qo'shilmaydi (0%); narx panelida qo'lda yoqiladi va foizi o'zgartiriladi */
+    ustama: { on: markup > 0, foiz: ed.ustamaIn != null ? ed.ustamaIn : String(foizYoq), taklif,
+      sub: markup > 0 ? t('narx.ustama_sub_on', { n: Math.round(markup * 1000) / 10 }) : t('narx.ustama_sub_off'),
+      flip: () => ustamaFlip(markup > 0, foizYoq), onFoiz: (ev) => ustamaFoiz(ev.target.value), taklifTugma: () => ustamaFoiz(String(taklif)) },
     /* TZ-44 (8): "ERP narxlari: HH:MM" — yangi bo'lsa oddiy; eski (> 10 daqiqa), jonli o'chiq, ERP xatosi yoki aloqa yo'q — ogohlantirish. Server jonli holat bermasa — chiqmaydi */
     erp: ek ? { eski: ek.eski, matn: !ek.eski ? t('narx.erp_vaqt', { vaqt: ek.vaqt }) : ek.vaqt ? t('narx.erp_eski', { vaqt: ek.vaqt }) : t('narx.erp_hali') } : null,
-    markupLabel: t('narx.foyda', { n: prod ? Math.round((prod.markupPct || 0) * 100) : 0 }),
+    markupLabel: t('narx.foyda', { n: prod ? Math.round((prod.markupPct || 0) * 1000) / 10 : 0 }),
     hasMissing: missN > 0, missText: t('narx.zapchast_narxi_yoq', { n: missN }, missN),
     /* TZ-20: "Narx aniqligi X%" — bosilsa taxminiy qatorlar (qaysi summa tasdiqlanmagan) */
     aniqlik: prod && prod.aniqlik && prod.aniqlik.pct != null ? {
@@ -84,24 +119,34 @@ export function useQadamNarx() {
       narxsiz: prod.aniqlik.narxsiz ? t('narx.aniq_narxsiz', { n: prod.aniqlik.narxsiz }, prod.aniqlik.narxsiz) : '',
       bosh: !prod.aniqlik.taxmin.length ? t('narx.aniq_hammasi') : ''
     } : null,
+    /* TZ-48 (7-qaror): narx tarkibi — "Narx aniqligi" nomi o'zgarmaydi; yonida alohida «Narx tarkibi» */
+    tarkib: prod && prod.tarkib ? { ochiq: !!ed.tarkib, flip: tarkibFlip, label: t('narx.tarkib'), ...tarkibKorinishi(prod) } : null,
     toggleMissing: () => set('editor', { miss: !ed.miss }), missOpen: ed.miss,
     missing: prod ? prod.missing.map(m => ({ n: m.name || m.code, c: m.qty ? '×' + m.qty : '' })) : [],
     client: pj.client, onClient: ev => { set('project', { client: ev.target.value }); S.changed(); },
-    quote: pr ? pr.lines.map(l => ({ name: l.code + ' · ' + (project.H && project.H.catalog[l.code] ? L.modulNomi(project.H, project.H.catalog[l.code]) : l.name), dim: (l.w || 0) + '×' + (l.d || 0) + '×' + (l.h || 0), n: l.qty, p: raqam(l.amount) })) : [],
-    /* TZ-04: tasdiqlanmagan narx — "taxminiy" (eski saytdagidek); prisadka tanlanmagan bo'lsa — belgi (S3) */
+    quote: pr ? pr.lines.map(l => ({ name: l.code + ' · ' + (project.H && project.H.catalog[l.code] ? L.modulNomi(project.H, project.H.catalog[l.code]) : l.name), dim: (l.w || 0) + '×' + (l.d || 0) + '×' + (l.h || 0), n: l.qty, p: raqam(furnsiz ? l.amountFurnsiz : l.amount) })) : [],
+    /* TZ-04: tasdiqlanmagan narx — "taxminiy" (eski saytdagidek); prisadka o'chirilgan bo'lsa — belgi (S3) */
     costRows: prod ? [...plitaQatorlari(R, prod, B),
-      ...(prod.raspilCost ? [[t('narx.raspil'), t('narx.raspil_q', { n: dec((prod.lines.find(l => l.code === 'raspil') || {}).qty), s: raqam((prod.lines.find(l => l.code === 'raspil') || {}).unit_price) }), prod.raspilCost]] : []),   // TZ-20
+      ...(prod.raspilCost ? [[t('narx.raspil'), t('narx.raspil_q', { n: dec(lineBy('raspil').qty), s: raqam(lineBy('raspil').unit_price) }) + (xzr.bor ? t('narx.raspil_plus1') : ''), prod.raspilCost]] : []),   // TZ-20; TZ-48: +1 qo'shimcha raspil
       [t('narx.kromka') + (taxminiy.includes('Kromka') ? t('narx.taxminiy') : ''), t('narx.metr', { n: dec(B.edgeMeters) }), prod.edgeCost],
-      [t('narx.zapchast'), t('narx.dona_n', { n: B.hwCount || 0 }), prod.hwCost],
+      ...(furnsiz ? [] : [[t('narx.zapchast'), t('narx.dona_n', { n: B.hwCount || 0 }), prod.hwCost]]),   // TZ-48: «Furniturasiz» — furnitura qatori yashiriladi
       [t('narx.teshiklar') + (xzt.tanlangan ? (taxminiy.includes('Prisadka') ? t('narx.taxminiy') : '') : t('narx.tanlanmagan')), t('narx.prisadka_q', { n: B.holeCount || 0 }), prod.holeCost],
-      ...(prod.bazisCost ? [[t('narx.bazis'), t('narx.bazis_q', { n: xzb.qty, s: raqam(prod.bazisCost / (xzb.qty || 1)) }), prod.bazisCost]] : []),   // TZ-32 E3
+      ...(prod.bazisCost ? [[t('narx.bazis'), t('narx.bazis_q', { n: xzb.qty, s: raqam(prod.bazisCost / (xzb.qty || 1)) }), prod.bazisCost]] : []),   // TZ-32 E3; TZ-48: faqat 16/18/19 mm detallar
+      ...(prod.qoshCost ? [[t('narx.qosh_xizmat'), t('narx.qosh_n', { n: qosh.length }), prod.qoshCost]] : []),   // TZ-48: «Xizmat qo'shish» dan
       [t('narx.ish_haqi'), t('narx.sex'), prod.laborCost]].map(r => ({ name: r[0], q: r[1], p: raqam(r[2] || 0) })) : [],
     xz: { on: !!xzt.tanlangan, sub: xzt.qty ? t('narx.teshik_sub', { n: xzt.qty, s: raqam(xzt.amount) }) : t('narx.teshik_yoq'),
       note: !xzt.tanlangan && xzt.qty ? t('narx.prisadka_eslatma') : '',
       flip: () => flipPrisadka(!xzt.tanlangan) },
-    /* TZ-32 E3: Bazis loyiha — ikki variant (stavka bo'lsa); narx panelidagi tanlov, hisobga doc.xizmatlar.bazis orqali */
-    bz: xzb.narxBor ? ['onlayn', 'oflayn'].map(tur => ({ key: tur, label: t('narx.bazis_' + tur), on: xzb.tanlangan === tur,
-      sub: t('narx.bazis_sub', { n: xzb.qty, s: raqam(xzb[tur]) }), flip: () => flipBazis(tur, xzb.tanlangan) })) : [],
+    /* TZ-48 (egasi #301/#302): Bazis loyiha xizmati — sukutda YOQILGAN; 5 000 so'm/detal, faqat 16/18/19 mm detallar (HDF hisobga olinmaydi) */
+    bz: xzb.narxBor ? { label: t('narx.bazis'), on: !!xzb.tanlangan,
+      sub: t('narx.bazis_sub', { n: xzb.qty, s: raqam(xzb.narx), j: raqam(xzb.qty * xzb.narx), h: Math.max(0, (xzb.jami || 0) - xzb.qty) }), flip: () => flipBazis(!xzb.tanlangan) } : null,
+    /* TZ-48 (Q3): +1 qo'shimcha raspil — ustaga aniq ogohlantirish, olib tashlash va qaytarish */
+    raspil1: xzr.mumkin ? { bor: xzr.bor, matn: xzr.bor ? t('narx.raspil1_qoshildi', { s: raqam(xzr.narx) }) : t('narx.raspil1_olindi_matn'), izoh: t('narx.raspil1_izoh'),
+      tugma: xzr.bor ? t('narx.raspil1_olib') : t('narx.raspil1_qaytar'), flip: () => flipRaspil1(xzr.bor) } : null,
+    /* TZ-48: «Xizmat qo'shish» — ERP xizmatlar ro'yxatidan qo'shilgan qatorlar */
+    qosh: { royxat: qosh.map(q => ({ kod: q.kod, nom: q.nom, birlik: q.birlik, soni: q.soni, narx: raqam(q.narx), summa: raqam(q.soni * q.narx), manba: t('narx.m_' + (MANBA[q.manba] || 'taxmin')),
+      minus: () => qoshSoni(q.kod, q.soni - 1), plus: () => qoshSoni(q.kod, q.soni + 1), olib: () => qoshOlib(q.kod), setSoni: (ev) => { const n = Number(ev.target.value); if (ev.target.value !== '' && Number.isFinite(n)) qoshSoni(q.kod, n); } })),
+      ochish: () => openSheet('xizmat', { q: '', g: 'hammasi' }), label: t('narx.xizmat_qosh') },
     rk: { n: rs.rk + 1, rects: rs.rects, ar: rs.cur ? rs.cur.L + '/' + rs.cur.W : '2800/2070',
       summary: t('narx.raskroy_summary', { v: NS.total_sheets || 0, d: NS.panel_count || 0, i: Math.max(0, Math.round(100 - (NS.utilization_pct || 0))) }),
       dots: Array.from({ length: rs.n }, (_, i) => ({ w: i === rs.rk ? '22px' : '6px', c: i === rs.rk ? 'var(--acc)' : 'var(--sfc3)' })) },

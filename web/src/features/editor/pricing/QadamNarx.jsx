@@ -4,6 +4,7 @@ import Ikon from '../../../shared/ui/Ikon.jsx';
 import Toggle from '../../../shared/ui/Toggle.jsx';
 import { useQadamNarx } from './useQadamNarx.js';
 import { buyurtmaOch } from '../../buyurtma/buyurtma.js';
+import { input } from '../../../shared/ui/styles.js';
 
 /* TZ-19: ③ Narx — JSX va stillar tasdiqlangan dizayndan; qiymatlar useQadamNarx() dan. */
 export default function QadamNarx() {
@@ -20,8 +21,8 @@ export default function QadamNarx() {
       </div>
       <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fit,minmax(110px,1fr))","gap":"8px"}}>
         <div style={{"borderRadius":"18px","padding":"14px","background":"var(--acc)","color":"var(--ink)","display":"flex","flexDirection":"column","gap":"2px"}}>
-          <span style={{"fontSize":"12px","fontWeight":"800"}}>
-            {t('narx.mijozga_narx')}
+          <span style={{"fontSize":"12px","fontWeight":"800"}} data-jami-label="">
+            {v.furnsiz.bigLabel}
           </span>
           <span style={{"fontSize":"19px","fontWeight":"800","fontVariantNumeric":"tabular-nums","lineHeight":"1.15"}}>
             <span className="sc-interp">{v.price?.total}</span>
@@ -71,6 +72,56 @@ export default function QadamNarx() {
             </span>))}
           {v.aniqlik.narxsiz ? <span style={{"color":"var(--danger)","fontWeight":"700"}}>{v.aniqlik.narxsiz}</span> : null}
         </div>) : null}
+      {/* TZ-48 (dizaynda yo'q — "Narx aniqligi" chipi uslubida): «Narx tarkibi» va «Furniturasiz» (ko'rinish: furnitura narxi hisobda qoladi) */}
+      <div style={{"display":"flex","gap":"8px","flexWrap":"wrap","alignItems":"center"}}>
+        {v.tarkib ? <button onClick={v.tarkib.flip} data-tarkib-tugma="" aria-expanded={v.tarkib.ochiq} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"14px","fontWeight":"800","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","whiteSpace":"nowrap"}}>
+          <Ikon n="qatlam" size={16} gap={0} />{v.tarkib.label}<Ikon n={v.tarkib.ochiq ? "tepa" : "past"} size={16} gap={0} />
+        </button> : null}
+        <button onClick={v.furnsiz.flip} data-furnsiz="" aria-pressed={v.furnsiz.on} style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":v.furnsiz.on ? "0" : "1px solid var(--line)","background":v.furnsiz.on ? "var(--acc)" : "var(--sfc2)","color":v.furnsiz.on ? "var(--ink)" : "var(--txt)","fontSize":"14px","fontWeight":"800","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px","whiteSpace":"nowrap"}}>
+          <Ikon n="furnitura" size={16} gap={0} />{v.furnsiz.label}
+        </button>
+      </div>
+      {v.furnsiz.on ? <span data-furnsiz-izoh="" style={{"fontSize":"13px","color":"var(--mut)","fontWeight":"600"}}>{v.furnsiz.izoh} · {v.furnsiz.furnituraJami} {t('narx.som')}</span> : null}
+      {v.tarkib && v.tarkib.ochiq ? (
+        <div data-tarkib="" style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"4px 16px 12px","display":"flex","flexDirection":"column"}}>
+          {v.tarkib.bolimlar.map((b) => (
+            <div key={b.kod} data-tarkib-bolim={b.kod} style={{"display":"flex","flexDirection":"column"}}>
+              <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"12px 0 4px","fontWeight":"800","borderTop":"1px solid var(--line)"}}>
+                <span>{b.nom}</span>
+                <span style={{"fontVariantNumeric":"tabular-nums","whiteSpace":"nowrap"}} data-tarkib-jami="">{b.jami}</span>
+              </div>
+              {b.qatorlar.map((r, i) => (
+                <div key={i} data-tarkib-qator="" style={{"display":"flex","flexDirection":"column","gap":"1px","padding":"4px 0 6px","fontSize":"13px"}}>
+                  <span style={{"fontWeight":"700","minWidth":"0","overflowWrap":"anywhere"}}>{r.nom}</span>
+                  <span style={{"color":"var(--mut)","fontVariantNumeric":"tabular-nums"}}>{r.formula}</span>
+                  <span style={{"display":"flex","gap":"6px","flexWrap":"wrap","fontSize":"12px","color":"var(--mut)"}}>
+                    <span data-tarkib-manba={r.manbaKod} style={{"fontWeight":"800","color":r.manbaKod === 'erp' || r.manbaKod === 'egasi' || r.manbaKod === 'mijoz' ? "var(--cyan)" : "var(--acct)"}}>{r.manba}</span>
+                    <span data-tarkib-qoida={r.qoidaKod}>· {r.qoida}</span>
+                  </span>
+                </div>))}
+            </div>))}
+          <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"12px 0 2px","fontWeight":"800","borderTop":"1px solid var(--line)","fontSize":"15px"}}>
+            <span>{t('narx.tarkib_jami')}</span>
+            <span style={{"fontVariantNumeric":"tabular-nums"}} data-tarkib-hammasi="">{v.tarkib.jami}</span>
+          </div>
+          <div style={{"display":"flex","justifyContent":"space-between","gap":"10px","padding":"2px 0","fontWeight":"700","color":"var(--mut)","fontSize":"14px"}}>
+            <span>{t('narx.tarkib_furnsiz')}</span>
+            <span style={{"fontVariantNumeric":"tabular-nums"}} data-tarkib-furnsiz="">{v.tarkib.furnsiz}</span>
+          </div>
+        </div>) : null}
+      {/* TZ-48 (egasi #301, 1-qaror; dizaynda yo'q — "Xizmatlar" kartasi uslubida): ustama sukutda qo'shilmaydi (0%), usta qo'lda yoqadi va foizini o'zgartiradi */}
+      <div data-ustama="" style={{"background":"var(--sfc)","border":"1px solid var(--line)","borderRadius":"20px","padding":"16px","display":"flex","flexDirection":"column","gap":"2px"}}>
+        <Toggle label={t('narx.ustama')} sub={v.ustama.sub} on={v.ustama.on} onFlip={v.ustama.flip} />
+        {v.ustama.on ? (
+          <div style={{"display":"flex","alignItems":"center","gap":"8px","flexWrap":"wrap","paddingTop":"8px"}}>
+            <label style={{"display":"flex","alignItems":"center","gap":"8px","fontSize":"14px","color":"var(--mut)","fontWeight":"700"}}>
+              {t('narx.ustama_foiz')}
+              <input data-ustama-foiz="" type="number" inputMode="decimal" min="0" max="300" step="1" value={v.ustama.foiz} onChange={v.ustama.onFoiz} aria-label={t('narx.ustama_foiz')} style={{ ...input, width: '96px', height: '44px' }} />
+              <span>%</span>
+            </label>
+            <button onClick={v.ustama.taklifTugma} data-ustama-taklif="" style={{"minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"14px","fontWeight":"700","cursor":"pointer"}}>{t('narx.ustama_taklif', { n: v.ustama.taklif })}</button>
+          </div>) : null}
+      </div>
       {v.hasMissing ? (<>
       <div style={{"borderRadius":"16px","background":"rgba(255,123,123,.10)","border":"1px solid rgba(255,123,123,.38)"}}>
         <button onClick={v.toggleMissing} style={{"width":"100%","minHeight":"48px","display":"flex","justifyContent":"space-between","alignItems":"center","gap":"8px","padding":"10px 14px","background":"none","border":"0","color":"var(--danger)","fontWeight":"800","fontSize":"14px","cursor":"pointer","textAlign":"left"}}>
@@ -131,7 +182,33 @@ export default function QadamNarx() {
           {t('narx.xizmatlar_usta_tanlaydi')}
         </span>
         <Toggle label={t('narx.teshik_burgilash_prisadka')} sub={v.xz.sub} on={v.xz.on} onFlip={v.xz.flip} />
-        {(v.bz || []).map((b) => (<Toggle key={b.key} label={b.label} sub={b.sub} on={b.on} onFlip={b.flip} />))}
+        {v.bz ? <Toggle label={v.bz.label} sub={v.bz.sub} on={v.bz.on} onFlip={v.bz.flip} /> : null}
+        {/* TZ-48 (Q3): +1 qo'shimcha raspil — aniq ogohlantirish va olib tashlash/qaytarish */}
+        {v.raspil1 ? (
+          <div data-raspil1={v.raspil1.bor ? 'bor' : 'olingan'} style={{"borderTop":"1px solid var(--line)","padding":"10px 0 4px","display":"flex","flexDirection":"column","gap":"8px"}}>
+            <span style={{"display":"flex","alignItems":"center","gap":"8px","fontWeight":"700","fontSize":"14px","color":v.raspil1.bor ? "var(--acct)" : "var(--mut)"}}><Ikon n="ogohlantirish" size={16} gap={0} />{v.raspil1.matn}</span>
+            <span style={{"fontSize":"12px","color":"var(--mut)","fontWeight":"600"}}>{v.raspil1.izoh}</span>
+            <button onClick={v.raspil1.flip} data-raspil1-tugma="" style={{"alignSelf":"flex-start","minHeight":"36px","padding":"0 14px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"14px","fontWeight":"700","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px"}}>
+              <Ikon n={v.raspil1.bor ? "ochirish" : "qayta"} size={16} gap={0} />{v.raspil1.tugma}
+            </button>
+          </div>) : null}
+        {/* TZ-48: «Xizmat qo'shish» — ERP xizmatlar ro'yxatidan miqdor bilan; olib tashlash mumkin; loyiha bilan saqlanadi */}
+        {v.qosh.royxat.map((q) => (
+          <div key={q.kod} data-qosh-qator={q.kod} style={{"display":"flex","justifyContent":"space-between","alignItems":"center","gap":"8px","padding":"8px 0","borderTop":"1px solid var(--line)","fontSize":"13px","flexWrap":"wrap"}}>
+            <span style={{"display":"flex","flexDirection":"column","minWidth":"0","flex":"1 1 160px"}}>
+              <span style={{"fontWeight":"700","overflowWrap":"anywhere"}}>{q.nom}</span>
+              <span style={{"color":"var(--mut)","fontVariantNumeric":"tabular-nums"}}>{q.soni} {q.birlik} × {q.narx} = {q.summa} · {q.manba}</span>
+            </span>
+            <span style={{"display":"flex","alignItems":"center","gap":"6px"}}>
+              <button onClick={q.minus} aria-label={t('xizmatq.kamaytir')} data-qosh-minus="" style={{"width":"36px","height":"36px","borderRadius":"12px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","cursor":"pointer","display":"grid","placeItems":"center"}}><Ikon n="ayir" size={16} gap={0} /></button>
+              <input type="number" inputMode="numeric" min="1" step="1" value={q.soni} onChange={q.setSoni} aria-label={t('xizmatq.miqdor')} data-qosh-soni="" style={{ ...input, width: '72px', height: '36px', fontSize: '14px', padding: '0 8px', textAlign: 'center' }} />
+              <button onClick={q.plus} aria-label={t('xizmatq.ko_paytir')} data-qosh-plus="" style={{"width":"36px","height":"36px","borderRadius":"12px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","cursor":"pointer","display":"grid","placeItems":"center"}}><Ikon n="qosh" size={16} gap={0} /></button>
+              <button onClick={q.olib} aria-label={t('xizmatq.olib_tashlash')} data-qosh-olib="" style={{"width":"36px","height":"36px","borderRadius":"12px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--danger)","cursor":"pointer","display":"grid","placeItems":"center"}}><Ikon n="ochirish" size={16} gap={0} /></button>
+            </span>
+          </div>))}
+        <button onClick={v.qosh.ochish} data-xizmat-qosh="" style={{"alignSelf":"flex-start","marginTop":"8px","minHeight":"44px","padding":"0 16px","borderRadius":"999px","border":"1px solid var(--line)","background":"var(--sfc2)","color":"var(--txt)","fontSize":"14px","fontWeight":"800","cursor":"pointer","display":"flex","alignItems":"center","gap":"6px"}}>
+          <Ikon n="qosh" size={16} gap={0} />{v.qosh.label}
+        </button>
         {v.xz?.note ? (<>
           <span style={{"fontSize":"13px","color":"var(--danger)","fontWeight":"600","paddingTop":"6px","display":"flex","alignItems":"center","gap":"6px"}}><Ikon n="ogohlantirish" size={15} gap={0} />{v.xz?.note}</span>
         </>) : null}

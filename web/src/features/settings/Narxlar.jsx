@@ -113,6 +113,21 @@ export default function Narxlar() {
       <span style={hint}>{t('narxlar.prisadka_izoh')}</span>
       <div style={grid}>{pr.map((r, i) => <Tanlov key={i} r={r} variant={s.prisadkaVariant} admin={s.admin} bosh={t('narxlar.tanlanmagan_taxmin')} />)}</div>
 
+      {/* TZ-48 (egasi #302 Q1): plita narx rejimi — sotuv (ERP o'rtacha sotuv narxi) / tannarx; chegirma va koeffitsient */}
+      <span style={sub}>{t('narxlar.g_plita')}</span>
+      <span style={hint}>{t('narxlar.plita_izoh')}</span>
+      <div style={grid} data-narx-plita="">
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '14px', fontWeight: '700' }}>
+          <span style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>{t('narxlar.plita_rejim')}<span style={hint}>{s.plita.manba}{s.plita.sana !== '—' ? ' · ' + s.plita.sana : ''}</span></span>
+          <select value={s.plita.rejim} onChange={s.plita.on} disabled={!s.admin} aria-label={t('narxlar.plita_rejim')} data-narx-plita-rejim="" style={{ ...input, height: '44px', fontSize: '14px', minWidth: '0', width: '100%' }}>
+            <option value="sotuv">{t('narxlar.rejim_sotuv')}</option>
+            <option value="tannarx">{t('narxlar.rejim_tannarx')}</option>
+          </select>
+        </label>
+        <Qiymat label={t('narxlar.plita_chegirma')} q={s.plita.chegirma} admin={s.admin} />
+        <Qiymat label={t('narxlar.plita_koef')} q={s.plita.koef} admin={s.admin} />
+      </div>
+
       <span style={sub}>{t('narxlar.g_ish_haqi')}</span>
       <div style={grid}>
         <div style={{ borderTop: '1px solid var(--line)', paddingTop: '4px' }}>

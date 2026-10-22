@@ -6,7 +6,7 @@ import { xato, toast, confirm } from '../../store/ui.js';
 import { raqam } from '../../shared/lib/format.js';
 import { t, serverXato } from '../../i18n/index.js';
 import { xlsxOqish } from '../../../../app/js/engine/xlsxOqish.js';
-import { xizmatJadvalOqish, xizmatFarq, TESHIK_TURLARI, AQL } from '../../../../app/js/engine/narxStavka.js';
+import { xizmatJadvalOqish, xizmatFarq, TESHIK_TURLARI, AQL, plitaSozlama, KOEF_CHEGARA } from '../../../../app/js/engine/narxStavka.js';
 
 /* TZ-20 (2026-10-17): Sozlamalar → "Narxlar" — narx stavkalari (server /api/narxlar). Ko'rish — hamma; o'zgartirish — faqat admin
  * (server tekshiradi). Stavka faqat egasi kiritgan yoki sex xizmat jadvalidagi (qoida 4.3); qaysi qator ishlatilishi — egasi
@@ -91,13 +91,13 @@ async function yuklashSaqlash() {
 
 const sanaQ = (s) => (s ? String(s).slice(0, 10) : '—');
 const manbaQ = (m) => t('narxlar.m_' + ({ egasi: 'egasi', 'sex jadvali': 'sex', taxmin: 'taxmin', ERP: 'erp', usta: 'usta' }[m] || 'yoq'));
-const qiymatQ = (v) => (typeof v === 'boolean' ? (v ? t('narxlar.ha') : t('narxlar.yoq')) : v == null ? '—' : raqam(v));
+const qiymatQ = (v) => (typeof v === 'boolean' ? (v ? t('narxlar.ha') : t('narxlar.yoq')) : v == null ? '—' : typeof v === 'string' ? (t('narxlar.rejim_' + v) === 'narxlar.rejim_' + v ? v : t('narxlar.rejim_' + v)) : raqam(v));   // TZ-48: plita rejimi — matn
 /** tarix yozuvidagi qiymat: xizmat qatori, {qiymat}, kod yoki null */
 const tarixQ = (v, xz) => (v == null ? '—' : typeof v === 'string' ? ((xz[v] && xz[v].nom) || v) : typeof v === 'object' ? qiymatQ(v.qiymat) + (v.manba ? ' · ' + manbaQ(v.manba) : '') : qiymatQ(v));
 
 /** tarix kaliti → ekrandagi nom (ustama.foiz → "Ustama", tanlov.prisadka.polka → "Prisadka — …: Polka ushlagich") */
 function kalitNomi(k, mats) {
-  const ICH = { 'ustama.foiz': 'narxlar.ustama', 'ish_haqi.detal': 'narxlar.ish_detal', 'ish_haqi.modul': 'narxlar.ish_modul', 'ish_haqi.yoqilgan': 'narxlar.ish_haqi_yoqilgan', 'tanlov.raspil': 'narxlar.g_raspil' };
+  const ICH = { 'plita.rejim': 'narxlar.plita_rejim', 'plita.chegirma': 'narxlar.plita_chegirma', 'plita.koef': 'narxlar.plita_koef', 'ustama.foiz': 'narxlar.ustama', 'ish_haqi.detal': 'narxlar.ish_detal', 'ish_haqi.modul': 'narxlar.ish_modul', 'ish_haqi.yoqilgan': 'narxlar.ish_haqi_yoqilgan', 'tanlov.raspil': 'narxlar.g_raspil' };
   if (ICH[k]) return t(ICH[k]);
   let m = /^tanlov\.prisadka\.(\w+)$/.exec(k);
   if (m && TESHIK_TURLARI.includes(m[1])) return t('narxlar.g_prisadka') + ': ' + t('narxlar.t_' + m[1]);
@@ -145,16 +145,20 @@ export function useNarxlar() {
     return { nom: t('narxlar.t_' + k), kod, ...tanlovQ(kod, m && m.price > 0 ? raqam(m.price) + ' ' + t('narxlar.b_prisadka') : ''), on: pick(v => ({ prisadka: { [k]: v } })) };
   });
   const ih = N.ish_haqi || {}, us = N.ustama || {};
+  /* TZ-48 (egasi #302 Q1): plita narx rejimi (sotuv / tannarx), ro'yxat narxidan chegirma va koeffitsient — hujjatda yo'q (eski) bo'lsa sukut qiymat ko'rinadi */
+  const ps = plitaSozlama(N), pl = N.plita || {};
+  const plQ = (k, v) => (pl[k] && pl[k].qiymat != null ? pl[k] : { qiymat: v, manba: 'egasi', sana: null });
   const inp = st.narxIn || {};
   const setInp = (k) => (ev) => setIn({ narxIn: { ...inp, [k]: ev.target.value } });
   const qator = (k, q, birlik) => ({ val: inp[k] ?? (q && q.qiymat != null ? String(q.qiymat) : ''), on: setInp(k), manba: manbaQ(q && q.manba), sana: sanaQ(q && q.sana), birlik });
   /* Saqlash — ko'rinib turgan qiymatlar egasi qiymati bo'ladi (o'zgartirmasdan bosilsa ham: "taxmin" → "egasi" tasdig'i) */
   const saqlaQiymat = async () => {
     const p = {};
-    for (const [k, grp, max, q] of [['detal', 'ish_haqi', AQL.detal, ih.detal], ['modul', 'ish_haqi', AQL.modul, ih.modul], ['foiz', 'ustama', AQL.foiz, us.foiz]]) {
+    for (const [k, grp, max, q] of [['detal', 'ish_haqi', AQL.detal, ih.detal], ['modul', 'ish_haqi', AQL.modul, ih.modul], ['foiz', 'ustama', AQL.foiz, us.foiz],
+      ['chegirma', 'plita', AQL.chegirma, plQ('chegirma', ps.chegirma)], ['koef', 'plita', KOEF_CHEGARA[1], plQ('koef', ps.koef)]]) {
       const raw = inp[k] ?? (q && q.qiymat != null ? String(q.qiymat) : '');
       const n = Number(String(raw).replace(',', '.'));
-      if (String(raw).trim() === '' || !Number.isFinite(n) || n < 0 || n > max) { toast(t('narxlar.son_xato', { max: raqam(max) })); return; }
+      if (String(raw).trim() === '' || !Number.isFinite(n) || n < (k === 'koef' ? KOEF_CHEGARA[0] : 0) || n > max) { toast(t('narxlar.son_xato', { max: raqam(max) }), 'S3D-VAL-001'); return; }
       (p[grp] = p[grp] || {})[k] = n;
     }
     if (await saveNarxlar(p)) setIn({ narxIn: null });
@@ -174,6 +178,9 @@ export function useNarxlar() {
       flip: () => admin && saveNarxlar({ ish_haqi: { yoqilgan: !!(ih.yoqilgan && ih.yoqilgan.qiymat === false) } }),
       detal: qator('detal', ih.detal, t('narxlar.b_detal')), modul: qator('modul', ih.modul, t('narxlar.b_modul')) },
     ustama: qator('foiz', us.foiz, '%'),
+    plita: { rejim: ps.rejim, manba: manbaQ(pl.rejim && pl.rejim.manba), sana: sanaQ(pl.rejim && pl.rejim.sana),
+      on: (ev) => admin && saveNarxlar({ plita: { rejim: ev.target.value } }),
+      chegirma: qator('chegirma', plQ('chegirma', ps.chegirma), t('narxlar.b_som')), koef: qator('koef', plQ('koef', ps.koef), t('narxlar.b_koef')) },
     saqlaQiymat,
     sukutga: (q) => admin && sukutgaQaytar(q),
     jadval,

@@ -22,6 +22,7 @@ const OshxonaAiVaraq = kechiktir(() => import('./ai/OshxonaVaraq.jsx'), { joy: '
 const BpjYoriq = kechiktir(() => import('./eksport/BpjYoriq.jsx'), { joy: 'ichki' });
 const B3dYoriq = kechiktir(() => import('./eksport/B3dYoriq.jsx'), { joy: 'ichki' });
 const AltendorfYoriq = kechiktir(() => import('./eksport/AltendorfYoriq.jsx'), { joy: 'ichki' });
+const XizmatVaraq = kechiktir(() => import('./pricing/XizmatVaraq.jsx'), { joy: 'ichki' });
 
 /* TZ-19: muharrirdagi pastki varaqlar (dizaynda yo'q qismlar) — qaysi biri ochiq bo'lsa (ui.vq.kind) o'sha chiziladi. */
 const VARAQ = {
@@ -37,10 +38,11 @@ const VARAQ = {
   aioshxona: { title: (vq) => <><Ikon n={vq.sarlavha ? 'ai' : 'oshxona'} size={18} />{t(vq.sarlavha || 'ai.osh_sarlavha')}</>, label: 'ai.osh_sarlavha', Body: OshxonaAiVaraq },   // egasi #166, #168
   bpjYoriq: { title: () => <><Ikon n="bazis" size={18} />{t('bpj.sarlavha')}</>, label: 'bpj.sarlavha', Body: BpjYoriq },   // TZ-33 B1
   altendorfYoriq: { title: () => <><Ikon n="bazis" size={18} />{t('altendorf.sarlavha')}</>, label: 'altendorf.sarlavha', Body: AltendorfYoriq },   // egasi #223
-  b3dYoriq: { title: () => <><Ikon n="bazis" size={18} />{t('b3d.sarlavha')}</>, label: 'b3d.sarlavha', Body: B3dYoriq }   // TZ-33 B2
+  b3dYoriq: { title: () => <><Ikon n="bazis" size={18} />{t('b3d.sarlavha')}</>, label: 'b3d.sarlavha', Body: B3dYoriq },   // TZ-33 B2
+  xizmat: { title: () => <><Ikon n="qosh" size={18} />{t('xizmatq.sarlavha')}</>, label: 'xizmatq.sarlavha', Body: XizmatVaraq }   // TZ-48: «Xizmat qo'shish»
 };
 
-const TANALAR = [TeshikVaraq, ShaklVaraq, OshxonaVaraq, MaterialVaraq, KonstruktorVaraq, BazisVaraq, FurnituraVaraq, DavomVaraq, BuyurtmaVaraq, OshxonaAiVaraq, BpjYoriq, B3dYoriq, AltendorfYoriq];
+const TANALAR = [TeshikVaraq, ShaklVaraq, OshxonaVaraq, MaterialVaraq, KonstruktorVaraq, BazisVaraq, FurnituraVaraq, DavomVaraq, BuyurtmaVaraq, OshxonaAiVaraq, BpjYoriq, B3dYoriq, AltendorfYoriq, XizmatVaraq];
 /** varaq tanalarini oldindan yuklash (3D sahna ko'tarilgach, bo'sh vaqtda — app/App.jsx): varaq ochilganda kutish bo'lmaydi */
 export const varaqlarniOldindanYukla = () => TANALAR.forEach(B => B.oldindan());
 

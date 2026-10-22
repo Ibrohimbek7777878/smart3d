@@ -4,9 +4,10 @@ import { t } from '../../../i18n/index.js';
 /* TZ-19: narx ko'rinishi — sarlavhadagi tugma va "Narx" qadami uchun bitta hisob.
  * TZ-20 (2026-10-17): "* to'liq emas" o'rniga "Narx aniqligi X%" — mijoz narxining tasdiqlangan manbadan (ERP plita/furnitura,
  * egasi yoki sex jadvali stavkasi) kelgan qismi (productionCost → aniqlik). 100% va narxsiz qator yo'q bo'lsa — belgi yo'q (narxsiz qator bor bo'lsa aniqlik ko'pi bilan 99%). */
-export function narxKorinishi(res) {
+export function narxKorinishi(res, { furnsiz = false } = {}) {
   const pr = res ? res.priceRes : null, prod = res ? res.prod : null;
-  const total = pr ? pr.total : 0, cost = prod ? prod.totalCost : 0;
+  /* TZ-48: «Furniturasiz» ko'rinish — jami va tannarx furnitura (va unga qo'shilgan ustama) chiqarilgan; hisob o'zgarmaydi */
+  const total = pr ? (furnsiz ? pr.totalFurnsiz : pr.total) : 0, cost = prod ? (furnsiz ? prod.totalCostFurnsiz : prod.totalCost) : 0;
   const an = prod && prod.aniqlik ? prod.aniqlik : null;
   const pct = an && an.pct != null ? an.pct : null;
   const toliq = pct === 100 && !(an.narxsiz > 0);
