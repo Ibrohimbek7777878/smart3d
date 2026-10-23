@@ -21,7 +21,7 @@ const ok = (name, cond, extra = '') => { n++; if (!cond) { fails++; console.log(
 const SANA = /^\d{4}-\d{2}-\d{2}$/;
 
 console.log('\n[E4] Sukut plita — ERP mahsuloti');
-for (const [kod, id, narx] of [['LDSP16', 10807, 341761], ['MDF16', 11578, 580515], ['HDF3', 11750, 140000]]) {
+for (const [kod, id, narx] of [['LDSP16', 10807, 319030], ['MDF16', 11578, 580515], ['HDF3', 11750, 124961]]) {
   const v = mats.sukut_erp[kod];
   ok(`${kod}: sku, nom, narx ${narx}, sana, manba ERP, ERP id ${id}, varaq formati`, v && v.sku && v.nom && v.uzs === narx && SANA.test(v.sana) && v.manba === 'ERP' && v.erp_id === id && v.l > 1000 && v.w > 1000 && v.izoh);
 }

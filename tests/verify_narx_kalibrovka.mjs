@@ -1,7 +1,7 @@
 /* verify_narx_kalibrovka.mjs — TZ-36: narx kalibrovkasi (ERP buyurtmalariga yaqinlashtirish; egasi #194/#222: "ERP'da qanday bo'lsa shunday").
  *   K1  Bazis prisadka ERP hisobi: «ПРИСАДКА ЕВРО» soni = Евро mahkamlagich soni (qirra teshigi alohida emas), ruchka 1 ta/dona, belgi (МЕТКА) = samorez + metka obyektlari (prisadka aniqligi, 2026-10-22: 14 ERP buyurtmasida aynan)
  *   K2  kromka stavkasi eni/qalinligiga qarab (19/0,4 — 3 000, 19/1 — 4 000, 21/1 — 4 800, 35/1 — 5 700, 42/2 — 9 500) + metrga chiqit 8%
- *   K3  HDF: sukut_erp.HDF3 = ERP ЛХДФ 2,5мм 2800*2070 (140 000); barcha HDF — bitta kroy guruhi; raspil HDF/3 mm — Holzma 1 (25 000), LDSP — Holzma 2 (43 000)
+ *   K3  HDF: sukut_erp.HDF3 = ERP ЛХДФ 2,5мм 2800*2070 (140 000; TZ-50: yangi baza tannarxi 124 961); barcha HDF — bitta kroy guruhi; raspil HDF/3 mm — Holzma 1 (25 000), LDSP — Holzma 2 (43 000)
  *   K5  Bazis stoleshnitsa — stoleshnitsa narxida (STOL26-3050 …), LDSP varag'ida emas; bo'laklar standart uzunlikka birga joylashadi
  * Haqiqiy 12 ta ERP buyurtmasi bilan o'lchash (mijoz fayllari repoda yo'q) — natijasi TZ-36 hisobotida. Bu yerda — sintetik, har doim ishlaydi.
  * Ishlatish: node tests/verify_narx_kalibrovka.mjs */
@@ -74,7 +74,7 @@ ok('modullar bo\'yicha taqsimot jami bilan teng', pe.perModule.reduce((s, m) => 
 
 console.log('\n[K3] HDF — bitta list, raspil stavkasi');
 const hp = mats.panel_materials.find(m => m.code === 'HDF3');
-ok('HDF3 = ERP «ЛХДФ 2,5мм 2800*2070 Белый» 140 000, format 2800×2070, "taxminiy" emas', hp.sheet_price === 140000 && JSON.stringify(hp.sheets) === '[[2800,2070]]' && !hp.taxminiy && hp.sku === '0110 PE');
+ok('HDF3 = ERP «ЛХДФ 2,5мм 2800*2070 Белый» 124 961 (yangi baza tannarxi, TZ-50), format 2800×2070, "taxminiy" emas', hp.sheet_price === 124961 && JSON.stringify(hp.sheets) === '[[2800,2070]]' && !hp.taxminiy && hp.sku === '0110 PE');
 const R = (l, w) => [{ type: 'line', p1: [0, 0], p2: [l, 0] }, { type: 'line', p1: [l, 0], p2: [l, w] }, { type: 'line', p1: [l, w], p2: [0, w] }, { type: 'line', p1: [0, w], p2: [0, 0] }];
 const I = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
 const pan = (name, mat, t, l, w, x = 0) => ({ modelCode: B.PANEL_CODE, name, material: mat, thickness: t, contour_outer: R(l, w), butts: [], tf: { pos: [x, 0, 0], oq: I } });
@@ -86,7 +86,7 @@ ok('3 xil nomdagi HDF — bitta material (BZM-hdf), 3 detal', hdfM.length === 1 
 const m3 = JSON.parse(JSON.stringify(mats)); materiallarniQosh(m3, bz.materiallar);
 const c3 = cutlist(bz.fragment, bz.fragment.w, bz.fragment.d, bz.fragment.h, m3, {});
 const ns3 = nestProject(c3.parts.map(p => Object.assign({}, p, { id: 'x:' + p.ref })), m3, nestDef);
-ok('HDF — 1 list (3 detal 3 list emas), format 2800×2070', ns3.by_material['BZM-hdf'].sheet_count === 1 && ns3.by_material['BZM-hdf'].sheet_price === 140000, String(ns3.by_material['BZM-hdf'] && ns3.by_material['BZM-hdf'].sheet_count));
+ok('HDF — 1 list (3 detal 3 list emas), format 2800×2070', ns3.by_material['BZM-hdf'].sheet_count === 1 && ns3.by_material['BZM-hdf'].sheet_price === 124961, String(ns3.by_material['BZM-hdf'] && ns3.by_material['BZM-hdf'].sheet_count));
 const p3 = productionCost([c3], m3, { nestResult: ns3, stavka: S });
 ok('raspil: LDSP — Holzma 2 (43 000), HDF — Holzma 1 (25 000), alohida qatorlar', line(p3, 'raspil') && line(p3, 'raspil').unit_price === 43000 && line(p3, 'raspil_yupqa') && line(p3, 'raspil_yupqa').unit_price === 25000 && line(p3, 'raspil_yupqa').qty === 1
   && line(p3, 'raspil_qosh') && line(p3, 'raspil_qosh').qty === 1 && line(p3, 'raspil_qosh').unit_price === 43000   // TZ-48: +1 qo'shimcha raspil — alohida qator (Holzma 2)

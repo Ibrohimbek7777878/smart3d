@@ -31,7 +31,13 @@ const pj0 = { matCode: 'LDSP18', polkaCode: 'LDSP16', fasadCode: 'MDF16' };
 /* 1. ro'yxat */
 ochiq('dekor-asosiy.json: 100 yozuv, takrorsiz dekor, har birida ERP kodi, rang, manba', A.length === 100 && new Set(A.map(e => e.kalit)).size === 100 &&
   A.every(e => e.kodlar.length && /^#[0-9a-f]{6}$/.test(e.rang_hex) && ['yogoch', 'matt', 'glyanes'].includes(e.yuza) && ['aniq', 'taxminiy'].includes(e.rang_ishonch) && e.manba && e.manba.sex >= 0 && e.manba.qoldiq >= 0));
-ochiq('har ERP kodi katalogdagi narxli LDSP/LMDF/MDF 16–18 mm plitasi va shu dekor kaliti', A.every(e => e.kodlar.every(c => { const s = bySh.get(c); return s && s.uzs > 0 && ['LDSP', 'LMDF', 'MDF'].includes(s.type) && s.th >= 15.5 && s.th <= 18.5; })));
+/* TZ-50 (2026-10-23): katalog faqat yangi baza — Asosiy 100 ning 175 ERP kodidan 118 tasi katalogda qoldi (qolganlari yangi bazada yo'q yoki PAST — chiqarilgan); dekor-asosiy.json va erpKod
+ * O'ZGARMAGAN. 57 dekor to'liq (hamma kodi bor), 19 qisman, 24 dekor kodsiz (ilova tanlovda ko'rsatmaydi — material.js: kodi katalogda yo'q dekor o'tkazib yuboriladi; xato yo'q). */
+const hol = A.map(e => e.kodlar.filter(c => bySh.has(c)).length), jonli = A.filter((e, i) => hol[i] > 0);
+ochiq("Asosiy 100: 175 kodning 118 tasi katalogda — 57 dekor to'liq, 19 qisman, 24 kodsiz (UI ko'rsatmaydi)", hol.reduce((a, b) => a + b, 0) === 118 && A.filter((e, i) => hol[i] === e.kodlar.length).length === 57
+  && A.filter((e, i) => hol[i] > 0 && hol[i] < e.kodlar.length).length === 19 && A.filter((e, i) => !hol[i]).length === 24 && jonli.length === 76);
+ochiq('katalogda qolgan har ERP kodi — narxli LDSP/LMDF/MDF 16–18 mm plitasi', A.every(e => e.kodlar.every(c => { const s = bySh.get(c); return !s || (s.uzs > 0 && ['LDSP', 'LMDF', 'MDF'].includes(s.type) && s.th >= 15.5 && s.th <= 18.5); })));
+ochiq('kodsiz 24 dekor: asosiyIndeks va rang xato bermaydi (kodlari indeksda bor, katalogda yo\'q)', A.filter((e, i) => !hol[i]).every(e => (H.dekorAsosiy.kalit.get(e.kalit) || {}).kalit === e.kalit && e.kodlar.every(c => (H.dekorAsosiy.kod.get(c) || {}).kalit === e.kalit && !bySh.has(c))));
 ochiq('tartib: sexdagi buyurtmalar soni, keyin qoldiq (kamaymaydi)', A.every((e, i) => !i || A[i - 1].manba.sex > e.manba.sex || (A[i - 1].manba.sex === e.manba.sex && A[i - 1].manba.qoldiq >= e.manba.qoldiq)));
 ochiq('mijoz ma\'lumoti yo\'q (faqat dekor, son, kod)', !/aka|ака|opa|\+998|998\d{9}/i.test(readFileSync(DATA + 'dekor-asosiy.json', 'utf8')));
 ochiq('dekorKalit: ishlab chiqaruvchi/qalinlik/kod farqi — bitta dekor', dekorKalit('Белый гладкий 0110') === dekorKalit('белый гладкий') && dekorKalit('Дуб Cонома') === 'дуб сонома');
@@ -42,7 +48,7 @@ const tanla = (e, qism) => {
   return v.find(s => +s.th === 16) || v[0];
 };
 let holat = 0;
-for (const e of A) {
+for (const e of jonli) {
   const hexN = parseInt(e.rang_hex.slice(1), 16);
   for (const qism of ['korpus', 'fasad']) {
     const sh = tanla(e, qism);
@@ -70,6 +76,6 @@ for (const e of A) {
     }
   }
 }
-ochiq(`${holat} holat (100 dekor × korpus/fasad × MC/SP × modul/loyiha): doc, kesim, narx, 3D, plitka, qayta ochish`, xatolar.length === 0, xatolar.slice(0, 5).join(' | '));
+ochiq(`${holat} holat (${jonli.length} jonli dekor × korpus/fasad × MC/SP × modul/loyiha): doc, kesim, narx, 3D, plitka, qayta ochish`, xatolar.length === 0, xatolar.slice(0, 5).join(' | '));
 console.log(fail ? `=== XATO (${pass} pass, ${fail} fail) ===` : `=== HAMMASI OK (${pass} pass, 0 fail) ===`);
 process.exit(fail ? 1 : 0);

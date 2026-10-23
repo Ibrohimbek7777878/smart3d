@@ -16,8 +16,9 @@ const data = J('stoleshnitsa-erp.json');
 const raw = readFileSync(fileURLToPath(new URL('../app/data/stoleshnitsa-erp.json', import.meta.url)), 'utf8');
 
 console.log('[1] ma\'lumot fayli');
-ok(`${data.items.length} dekor, hammasi narxli (ERP m2), 26/38 mm, eni 600`, data.items.length > 200 && data.items.every(d => d.narx_m2 > 0 && [26, 38].includes(d.qalinlik) && d.eni === 600 && d.uzunliklar.length && d.sku !== undefined && d.erp_id > 0));
-ok('har qalinlikda sukut dekor bor va u eng ko\'p qoldiqli', ['26', '38'].every(T => { const m = Math.max(...data.items.filter(d => d.qalinlik === +T).map(d => d.qoldiq_m2)); const s = data.items.find(d => d.erp_id === data.sukut[T]); return s && s.qalinlik === +T && s.qoldiq_m2 === m; }));
+ok(`${data.items.length} dekor, hammasi narxli (ERP m2), 26/38 mm, eni 600`, data.items.length > 100 && data.items.every(d => d.narx_m2 > 0 && [26, 38].includes(d.qalinlik) && d.eni === 600 && d.uzunliklar.length && d.sku !== undefined && d.erp_id > 0));
+/* TZ-50 (2026-10-23): yangi bazada qoldiq ma'lumoti siyrak (132 dekordan 37 tasida), shuning uchun oldingi sukut dekor (egasi aytmagan; avval eng ko'p qoldiqli) saqlandi — u yangi bazada bor va narxli bo'lishi shart */
+ok('har qalinlikda sukut dekor bor, o\'sha qalinlikda va yangi baza narxli', ['26', '38'].every(T => { const s = data.items.find(d => d.erp_id === data.sukut[T]); return s && s.qalinlik === +T && s.narx_m2 > 0; }));
 ok('narxlar har xil (bitta narx emas): 26 mm da kamida 5 xil narx', new Set(data.items.filter(d => d.qalinlik === 26).map(d => d.narx_m2)).size >= 5);
 ok('ERP nomida o\'lchami yozilmagan dekorda manba aytilgan (egasi #162 standarti)', data.items.filter(d => d.uzunliklar.length === 2).every(d => /#162/.test(d.olcham_manba)) && data.items.filter(d => d.uzunliklar.length === 1).every(d => d.olcham_manba === 'ERP nomi'));
 ok('ichki host/IP/login/yo\'l yo\'q (repo ommaviy)', !/https?:\/\/|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|bittada\.uz|\/home\/|parol|password|login/i.test(raw));

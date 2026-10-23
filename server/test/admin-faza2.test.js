@@ -95,7 +95,9 @@ test('materiallar: ro\'yxat — 100 dekor, har birida rang, ERP varaqlari va fay
   const e = j.dekorlar[0];
   assert.equal(e.kalit, KALIT);
   assert.ok(/^#[0-9a-f]{6}$/.test(e.rang) && e.rang === e.rang_fayl && e.rang_manba === 'fayl' && !e.tahrir);
-  assert.ok(e.variantlar.length >= 1 && e.variantlar.every(v => /^ERP-/.test(v.kod) && v.nom && v.narx_fayl > 0 && v.narx === v.narx_fayl && v.narx_manba === 'fayl'));
+  /* TZ-50 (2026-10-23): katalog faqat yangi baza — Asosiy 100 ning 175 kodidan 118 tasi katalogda; qolgan 57 kod katalogdan chiqarilgan (admin ro'yxatda nomsiz, narxsiz qator — server kodi TZ-50 da tegilmagan) */
+  assert.ok(e.variantlar.length >= 1 && e.variantlar.every(v => /^ERP-/.test(v.kod) && (v.nom ? v.narx_fayl > 0 && v.narx === v.narx_fayl && v.narx_manba === 'fayl' : v.narx_fayl === 0 && v.narx === 0 && v.narx_manba === 'fayl')));
+  assert.equal(j.dekorlar.flatMap(d => d.variantlar).filter(v => v.nom).length, 118, 'katalogda qolgan Asosiy-100 kodlari');
   assert.equal(j.dekorlar.reduce((a, d) => a + d.variantlar.length, 0), 175, 'dekor-asosiy.json: 175 ERP varaq');
   assert.ok(j.dekorlar.some(d => d.rasm && d.rasm.manba === 'fayl' && d.rasm.url.startsWith('/data/rasm/material/')), 'fayldagi rasmlar');
   assert.ok(!JSON.stringify(j).includes('password'), 'maxfiy maydon yo\'q');

@@ -57,7 +57,7 @@ async function asosiy(page, R) {
       yashirin: !!document.querySelector('[data-material-qidiruv]') && !document.querySelector('[data-material-rang]') && !document.querySelector('[data-material-filtr]') }; });
   const tiles = () => M(() => [...document.querySelectorAll('[data-material-mashhur] [data-material-plitka]')].map(x => ({ t: x.innerText.replace(/\s+/g, ' ').trim(), ch: [...x.querySelectorAll('[data-material-qalinlik] button')].map(b => b.innerText.trim()) })));
   R.jadvalKorpus = await tiles();
-  R.kashemir = R.jadvalKorpus.some(x => /^Кашемир /.test(x.t) && /525 000/.test(x.t));   // ERP: ЛДСП Ультрадекор 5,796 Кашемир UR 16мм
+  R.kashemir = R.jadvalKorpus.some(x => /^Кашемир /.test(x.t) && /355 000/.test(x.t));   // TZ-50 yangi baza: ЛДСП Ультрадекор 4,575 Кашемир 16мм — sotuv 380 000 − 25 000 = 355 000 (avval 5,796 «UR» 525 000 — yangi bazada yo'q)
   R.birChip = R.jadvalKorpus.every(x => new Set(x.ch).size === x.ch.length);
   await page.screenshot({ path: `${OUT}/material-sodda-1440.png` });
   await page.setViewportSize({ width: 390, height: 844 }); await page.waitForTimeout(400);

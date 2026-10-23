@@ -84,6 +84,8 @@ async function asosiy(page, R) {
   R.doc = await M(() => ({ n: window.__app.doc.placements.length, frg: (window.__app.doc.placements[0] || {}).frg, bazis: !!window.__app.doc.bazis }));
   /* TZ-42: bir qiymatli moslik (Bazis nomi → ERP plitasi) import paytida avtomatik qo'llanadi: shu materiallar "asl"ga qaytganda narx yuklangandagidan farq qiladi */
   R.avto = await M(() => Object.keys((window.__app.doc.bazis && window.__app.doc.bazis.almash) || {}).length);
+  /* TZ-50 (yangi baza): 1-material (Белый гладкий 4,575) endi 4 nomzodli (avtomatik emas), avtomatik moslashgani — HDF; test 1-materialni almashtirib-asliga qaytaradi */
+  R.avto0 = await M(() => { const b = window.__app.doc.bazis; return !!(b.almash && b.almash[b.materiallar.panel[0].code]); });
   await page.locator('[data-varaq="bazis"] button', { hasText: 'Yopish' }).last().click(); await page.waitForTimeout(800);
   for (let i = 0; i < 30 && !(await M(() => window.__app.res && window.__app.res.priceRes && window.__app.res.priceRes.total > 0)); i++) await page.waitForTimeout(250);
   R.narx = await M(() => window.__app.res.priceRes.total);
@@ -120,11 +122,11 @@ async function asosiy(page, R) {
     await page.locator('[data-varaq="material"] [data-material-royxat] button', { hasText: "so'm" }).first().click(); await page.waitForTimeout(1500);
   };
   await almashtir();
-  R.almash = await M(() => { const b = window.__app.doc.bazis, a = b.almash || {}, k = Object.keys(a)[0]; const fr = window.__app.H.catalog[b.fragment.code];
+  R.almash = await M(() => { const b = window.__app.doc.bazis, a = b.almash || {}, k = b.materiallar.panel[0].code; const fr = window.__app.H.catalog[b.fragment.code];
     return { k, v: a[k], qismlar: fr.parts.filter(p => p.material_code === a[k]).length, narx: window.__app.res.priceRes.total }; });
   await page.screenshot({ path: `${OUT}/bazis-1440-almash.png` });
   await page.locator('[data-material-asli]').click(); await page.waitForTimeout(1500);
-  R.asli = await M(() => ({ almash: !!window.__app.doc.bazis.almash, narx: window.__app.res.priceRes.total }));
+  R.asli = await M(() => ({ almash: !!(window.__app.doc.bazis.almash && window.__app.doc.bazis.almash[window.__app.doc.bazis.materiallar.panel[0].code]), narx: window.__app.res.priceRes.total }));
   await page.locator('[data-varaq="material"] button[aria-label="Yopish"]').click(); await page.waitForTimeout(300);
   await almashtir();
   await page.locator('[data-varaq="material"] button[aria-label="Yopish"]').click(); await page.waitForTimeout(300);
@@ -157,5 +159,5 @@ async function asosiy(page, R) {
     R.narx > 0 && R.qaytaTugma && R.excel && R.serverda >= 1 && R.qayta.bazis && R.qayta.almash && Math.abs(R.qayta.narx - R.narxAlmash) < 1 && !R.hScroll &&
     R.fasadsizTugma && R.fasadsiz > 0 && R.fasadsizIzoh && R.fasadQaytdi &&
     R.aniq.shakl === R.aniq.kutilgan.shakl && R.aniq.furn > 0 && R.aniq.kutilgan.furn > 0 && R.aniq.rang.includes(0xeeece6) &&
-    /^ERP-/.test(R.almash.v || '') && R.almash.qismlar > 0 && R.almash.narx !== R.narx && !R.asli.almash && (R.avto ? R.asli.narx !== R.narx : Math.abs(R.asli.narx - R.narx) < 1) && errs.length === 0;
+    /^ERP-/.test(R.almash.v || '') && R.almash.qismlar > 0 && R.almash.narx !== R.narx && !R.asli.almash && (R.avto0 ? R.asli.narx !== R.narx : Math.abs(R.asli.narx - R.narx) < 1) && errs.length === 0;
 }

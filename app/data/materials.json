@@ -212,8 +212,8 @@
    "name": "Ультрадекор Столешница 26мм Черная бронза Gloss R9 3050×600×26",
    "thickness": 26,
    "factor": 1.0,
-   "sheet_price": 638939,
-   "price_src": "ERP 2026-10-18",
+   "sheet_price": 638553,
+   "price_src": "ERP 2026-10-23",
    "unit_piece": true,
    "std_l": 3050,
    "sheets": [
@@ -222,11 +222,11 @@
      600
     ]
    ],
-   "src": "sukut dekor ERP C514 GL (349147 so'm/m², qoldiq 2654.0 m²): eng ko'p qoldiqli; ilovada dekor tanlanadi (stoleshnitsa-erp.json)",
+   "src": "sukut dekor ERP C514 GL (348936 so'm/m²): ilovada dekor tanlanadi (stoleshnitsa-erp.json). Yangi baza 2026-10-23, narx_turi: tannarx",
    "erp": {
     "id": 16598,
     "sku": "C514 GL",
-    "narx_m2": 349147
+    "narx_m2": 348936
    }
   },
   {
@@ -235,7 +235,7 @@
    "thickness": 26,
    "factor": 1.0,
    "sheet_price": 0,
-   "price_src": "yoq — ERP'da 26 mm sukut dekorida 4200 mm uzunlik yo'q (ilova tanlangan dekor uzunligini ishlatadi)",
+   "price_src": "yoq — yangi bazada 26 mm sukut dekorida 4200 mm uzunlik yo'q (ilova tanlangan dekor uzunligini ishlatadi)",
    "unit_piece": true,
    "std_l": 4200,
    "sheets": [
@@ -251,8 +251,8 @@
    "name": "КЕДР ПРОФ Столешница 38мм Королевский опал светлый мат 3050×600×38",
    "thickness": 38,
    "factor": 1.0,
-   "sheet_price": 879242,
-   "price_src": "ERP 2026-10-18",
+   "sheet_price": 1052250,
+   "price_src": "ERP 2026-10-23",
    "unit_piece": true,
    "std_l": 3050,
    "sheets": [
@@ -261,11 +261,11 @@
      600
     ]
    ],
-   "src": "sukut dekor ERP 3062/S (480460 so'm/m², qoldiq 355.0 m²): eng ko'p qoldiqli; ilovada dekor tanlanadi (stoleshnitsa-erp.json)",
+   "src": "sukut dekor ERP 3062/S (575000 so'm/m²): ilovada dekor tanlanadi (stoleshnitsa-erp.json). Yangi baza 2026-10-23, narx_turi: sotuv",
    "erp": {
     "id": 16122,
     "sku": "3062/S",
-    "narx_m2": 480460
+    "narx_m2": 575000
    }
   },
   {
@@ -273,8 +273,8 @@
    "name": "КЕДР ПРОФ Столешница 38мм Королевский опал светлый мат 4200×600×38",
    "thickness": 38,
    "factor": 1.0,
-   "sheet_price": 1210759,
-   "price_src": "ERP 2026-10-18",
+   "sheet_price": 1449000,
+   "price_src": "ERP 2026-10-23",
    "unit_piece": true,
    "std_l": 4200,
    "sheets": [
@@ -283,11 +283,11 @@
      600
     ]
    ],
-   "src": "sukut dekor ERP 3062/S (480460 so'm/m², qoldiq 355.0 m²): eng ko'p qoldiqli; ilovada dekor tanlanadi (stoleshnitsa-erp.json)",
+   "src": "sukut dekor ERP 3062/S (575000 so'm/m²): ilovada dekor tanlanadi (stoleshnitsa-erp.json). Yangi baza 2026-10-23, narx_turi: sotuv",
    "erp": {
     "id": 16122,
     "sku": "3062/S",
-    "narx_m2": 480460
+    "narx_m2": 575000
    }
   }
  ],
@@ -297,14 +297,14 @@
   "LDSP16": {
    "sku": "0110 SM",
    "nom": "ЛДСП Ультрадекор 5,0325 Белый гладкий 0110 16мм",
-   "uzs": 341761,
+   "uzs": 319030,
    "lst": 410000,
    "l": 2750,
    "w": 1830,
    "manba": "ERP",
-   "sana": "2026-10-18",
+   "sana": "2026-10-23",
    "erp_id": 10807,
-   "izoh": "Egasi roziligi (2026-10-18): korpus uchun Ультрадекор Белый гладкий 16мм. ERP /api/v2/products id 10807: 2026-10-18 da display_price_uzs 341 761 (data paketi 2026-10-16 da 309 184 edi — narx oshgan; list 410 000 — mijozga sotuv narxi). Sexda eng ko'p: 56 buyurtmada 7 list (4,575 «фасадный SM» — 6 list). Varaq 2750×1830 — narx shu format uchun."
+   "izoh": "Egasi roziligi (2026-10-18): korpus uchun Ультрадекор Белый гладкий 16мм. ERP /api/v2/products id 10807: 2026-10-18 da display_price_uzs 341 761 (data paketi 2026-10-16 da 309 184 edi — narx oshgan; list 410 000 — mijozga sotuv narxi). Sexda eng ko'p: 56 buyurtmada 7 list (4,575 «фасадный SM» — 6 list). Varaq 2750×1830 — narx shu format uchun. | Yangi baza 2026-10-23 (TZ-50): uzs 319030 (tannarx), lst 410000 — YANGI-BAZA-ISHONCHLI-NARXLAR-2026-10-23.csv, ERP id 10807."
   },
   "MDF16": {
    "sku": "0101 SM",
@@ -314,21 +314,21 @@
    "l": 2800,
    "w": 2070,
    "manba": "ERP",
-   "sana": "2026-10-18",
+   "sana": "2026-10-23",
    "erp_id": 11578,
-   "izoh": "Fasad MDF16 (egasi: korpus bilan bir xil oq gladkiy): ERP id 11578, display_price_uzs 580 515 (list 640 000), varaq 2800×2070 (bizning standart format), qoldiq bor. Sexda LMDF kam sotiladi (56 buyurtmada eng ko'pi Кашемир 5981 — 4 list); oq gladkiy ularning orasida yagona, korpus tanloviga mos."
+   "izoh": "Fasad MDF16 (egasi: korpus bilan bir xil oq gladkiy): ERP id 11578, display_price_uzs 580 515 (list 640 000), varaq 2800×2070 (bizning standart format), qoldiq bor. Sexda LMDF kam sotiladi (56 buyurtmada eng ko'pi Кашемир 5981 — 4 list); oq gladkiy ularning orasida yagona, korpus tanloviga mos. | Yangi baza 2026-10-23 (TZ-50): uzs 580515 (tannarx), lst 640000 — YANGI-BAZA-ISHONCHLI-NARXLAR-2026-10-23.csv, ERP id 11578."
   },
   "HDF3": {
    "sku": "0110 PE",
    "nom": "ЛХДФ 2,5мм 2800*2070 Белый 5,796кв",
-   "uzs": 140000,
+   "uzs": 124961,
    "lst": 165000,
    "l": 2800,
    "w": 2070,
    "manba": "ERP",
-   "sana": "2026-10-18",
+   "sana": "2026-10-23",
    "erp_id": 11750,
-   "izoh": "TZ-36 K3: ERP buyurtmalarida (12 tadan 9 tasida HDF bor) shu mahsulot 140 000 so'mdan sotilgan, miqdori 1–5 list (2800×2070); mahsulot kartasida display_price_uzs 137 058,95 (list 165 000). Barcha HDF materiallari bitta kroy guruhi (bazis/loyiha.js), raspil — Holzma 1."
+   "izoh": "TZ-36 K3: ERP buyurtmalarida (12 tadan 9 tasida HDF bor) shu mahsulot 140 000 so'mdan sotilgan, miqdori 1–5 list (2800×2070); mahsulot kartasida display_price_uzs 137 058,95 (list 165 000). Barcha HDF materiallari bitta kroy guruhi (bazis/loyiha.js), raspil — Holzma 1. | Yangi baza 2026-10-23 (TZ-50): uzs 124961 (tannarx), lst 165000 — YANGI-BAZA-ISHONCHLI-NARXLAR-2026-10-23.csv, ERP id 11750."
   }
  },
  "sukut_narx": {

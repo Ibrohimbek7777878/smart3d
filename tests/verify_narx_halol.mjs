@@ -39,17 +39,19 @@ const narxli = mats.panel_materials.filter(m => m.sheet_price > 0 && !m.unit_pie
  *   (a) SKU bor — shu SKU, shu qalinlikdagi qator ERP'dan qayta narxlangan (LDSP18 W1000 ST19, LMDF16 5981 CD);
  *   (b) SKU yo'q (guruh narxi) — qatorning dollar narxi × eski kurs 11850 aynan shu narx (ERP hozir dollar narxlarini ×11950 da beradi; MDF18, HDF3).
  * Boshqa hech narsa qabul qilinmaydi (o'ylab topilgan narx baribir "yo'q" bo'lib qoladi — pastdagi taxminiy plitalar tekshiruvi). */
-const KURS_ESKI = 11850;
-const katalogda = (m) => sheets.some(s => Math.abs(+s.th - m.thickness) < 0.6 && (Math.round(s.uzs) === Math.round(m.sheet_price)
-  || (/^erp_api_/.test(s.src || '') && (m.sku ? s.sku === m.sku : s.usd > 0 && Math.round(s.usd * KURS_ESKI) === Math.round(m.sheet_price)))));
+/* 2026-10-23 (TZ-50): katalog FAQAT yangi baza (src "yangi_baza_<sana>"). Umumiy materiallar (LDSP18, LMDF16, MDF18, HDF3 (sukut_erp ulanguncha zaxira narxi), MDF8) —
+ * egasi tanlamaguncha O'ZGARTIRILMAGAN (TZ-50 §3): narxi eski dalilli fayl manbasida (xlsx/ERP 10-13…10-18), yangi bazaga bog'lanmagan — qiymat o'ylab topilmaydi, "yoq" emas, sanasi bor. */
+const ESKI_MANBA = ['LDSP18', 'LMDF16', 'MDF18', 'HDF3', 'MDF8'];
+const katalogda = (m) => sheets.some(s => Math.abs(+s.th - m.thickness) < 0.6 && /^yangi_baza_/.test(s.src || '') && Math.round(s.uzs) === Math.round(m.sheet_price));
 ok('har narxli plitada price_src bor', narxli.every(m => typeof m.price_src === 'string' && m.price_src.length > 2), narxli.filter(m => !m.price_src).map(m => m.code).join());
 const tasdiq = narxli.filter(m => !m.taxminiy), taxmin = narxli.filter(m => m.taxminiy);
-ok(`tasdiqlangan plita narxi ERP katalogida aynan bor (${tasdiq.map(m => m.code).join(', ')})`, tasdiq.every(katalogda) && tasdiq.every(m => !/^yoq/.test(m.price_src)),
-  tasdiq.filter(m => !katalogda(m)).map(m => m.code).join());
+const tasdiqOk = (m) => katalogda(m) || (ESKI_MANBA.includes(m.code) && /\d{4}-\d{2}-\d{2}/.test(m.price_src));
+ok(`tasdiqlangan plita narxi yangi baza katalogida aynan bor yoki egasi tanlamagan umumiy material (eski dalilli manba, sanali) (${tasdiq.map(m => m.code).join(', ')})`, tasdiq.every(tasdiqOk) && tasdiq.every(m => !/^yoq/.test(m.price_src)),
+  tasdiq.filter(m => !tasdiqOk(m)).map(m => m.code).join());
 ok(`faylda yo'q narx — "taxminiy", "yoq — faylda topilmadi" (${taxmin.map(m => m.code).join(', ')})`, taxmin.every(m => !katalogda(m) && /^yoq/.test(m.price_src)));
 ok('sukut LDSP16 va MDF16 — taxminiy; LDSP18, HDF3 — manbali (SKU/nom bilan)', pm(mats, 'LDSP16').taxminiy && pm(mats, 'MDF16').taxminiy
   && !pm(mats, 'LDSP18').taxminiy && pm(mats, 'LDSP18').sku === 'W1000 ST19' && !pm(mats, 'HDF3').taxminiy && !!pm(mats, 'HDF3').sku_nom);   // HDF3 — TZ-36 K3 dan sukut_erp (ERP 0110 PE)
-ok('stoleshnitsa — narxi ERP dekordan (TZ-32 yakuniy Q1); ERP\'da bo\'lmagan STOL26-4200 narxsiz', mats.panel_materials.filter(m => m.unit_piece).every(m => (m.sheet_price > 0 && m.price_src === 'ERP 2026-10-18') || (m.sheet_price === 0 && /^yoq/.test(m.price_src))));
+ok('stoleshnitsa — narxi ERP dekordan (TZ-32 yakuniy Q1); ERP\'da bo\'lmagan STOL26-4200 narxsiz', mats.panel_materials.filter(m => m.unit_piece).every(m => (m.sheet_price > 0 && /^ERP \d{4}-\d{2}-\d{2}$/.test(m.price_src)) || (m.sheet_price === 0 && /^yoq/.test(m.price_src))));
 /* hisobda */
 const shkaf = mc.find(f => f.code === 'MC-KU-04');
 const clK = cutlist(shkaf, shkaf.w, shkaf.d, shkaf.h, mats, { projectSlots: SLOTS });
@@ -62,12 +64,12 @@ ok('hisob: taxmin plita aniqlik ro\'yxatida', p0.aniqlik.taxmin.some(t => t.code
 /* TZ-32 E4 (egasi roziligi 2026-10-18): korpus plitasi LDSP16 = ERP "Ультрадекор Белый гладкий 16мм"; qolganlari hali bog'lanmagan (null) */
 const sl = mats.sukut_erp && mats.sukut_erp.LDSP16;
 const sh = mats.sukut_erp && mats.sukut_erp.HDF3;
-ok('sukut_erp: LDSP18 — bog\'lanmagan (null); LDSP16, MDF16 va HDF3 (TZ-36 K3: ЛХДФ 2,5мм 2800*2070, 140 000) — ERP mahsuloti (sku, nom, narx, sana, format)', mats.sukut_erp && ['LDSP18'].every(k => k in mats.sukut_erp && mats.sukut_erp[k] === null)
-  && sh && sh.sku === '0110 PE' && sh.uzs === 140000 && sh.l === 2800 && sh.w === 2070 && sh.manba === 'ERP' && /ЛХДФ.*2800\*2070/.test(sh.nom)
+ok('sukut_erp: LDSP18 — bog\'lanmagan (null); LDSP16, MDF16 va HDF3 (TZ-36 K3: ЛХДФ 2,5мм 2800*2070; TZ-50: yangi baza tannarxi 124 961, sotuv 165 000) — ERP mahsuloti (sku, nom, narx, sana, format)', mats.sukut_erp && ['LDSP18'].every(k => k in mats.sukut_erp && mats.sukut_erp[k] === null)
+  && sh && sh.sku === '0110 PE' && sh.uzs === 124961 && sh.lst === 165000 && sh.l === 2800 && sh.w === 2070 && sh.manba === 'ERP' && /ЛХДФ.*2800\*2070/.test(sh.nom)
   && mats.sukut_erp.MDF16 && mats.sukut_erp.MDF16.uzs === 580515 && mats.sukut_erp.MDF16.erp_id === 11578
-  && sl && sl.sku === '0110 SM' && sl.uzs === 341761 && /Ультрадекор.*Белый.*гладкий/.test(sl.nom) && sl.manba === 'ERP' && /^\d{4}-\d{2}-\d{2}$/.test(sl.sana) && sl.l === 2750 && sl.w === 1830);
+  && sl && sl.sku === '0110 SM' && sl.uzs === 319030 && sl.lst === 410000 && /Ультрадекор.*Белый.*гладкий/.test(sl.nom) && sl.manba === 'ERP' && /^\d{4}-\d{2}-\d{2}$/.test(sl.sana) && sl.l === 2750 && sl.w === 1830);
 const m0 = JSON.parse(JSON.stringify(mats));
-ok('sukutErpQollash: LDSP16 bog\'lanadi — narx, sku, manba, varaq formati; "taxminiy" tushadi', sukutErpQollash(m0) === 3 && pm(m0, 'LDSP16').sheet_price === 341761 && !pm(m0, 'LDSP16').taxminiy
+ok('sukutErpQollash: LDSP16 bog\'lanadi — narx, sku, manba, varaq formati; "taxminiy" tushadi', sukutErpQollash(m0) === 3 && pm(m0, 'LDSP16').sheet_price === 319030 && pm(m0, 'LDSP16').sheet_lst === 410000 && !pm(m0, 'LDSP16').taxminiy
   && pm(m0, 'LDSP16').sku === '0110 SM' && /^ERP, 2026-/.test(pm(m0, 'LDSP16').price_src) && JSON.stringify(pm(m0, 'LDSP16').sheets) === '[[2750,1830]]' && pm(m0, 'MDF16').sheet_price === 580515 && !pm(m0, 'MDF16').taxminiy);
 const m1 = JSON.parse(JSON.stringify(mats));
 m1.sukut_erp.LDSP16 = null; m1.sukut_erp.MDF16 = null; m1.sukut_erp.HDF3 = null;
@@ -85,7 +87,7 @@ const H = createHisob(await loadData((nom) => Promise.resolve(J(nom))));
 const erpSh = sheets.find(s => s.type === 'LDSP' && +s.th === 16 && s.uzs > 0);
 const eff = H.effectiveMaterials(erpSh);
 ok('effectiveMaterials: narxli ERP plitasi tanlansa — LDSP16 narxi ERP\'dan, "taxminiy" emas; asl materials.json o\'zgarmaydi',
-  pm(eff, 'LDSP16').sheet_price === erpSh.uzs && !pm(eff, 'LDSP16').taxminiy && pm(H.materials, 'LDSP16').sheet_price === 341761);   // asl (sukut ERP) o'zgarmaydi
+  pm(eff, 'LDSP16').sheet_price === erpSh.uzs && !pm(eff, 'LDSP16').taxminiy && pm(H.materials, 'LDSP16').sheet_price === 319030);   // asl (sukut ERP) o'zgarmaydi
 const mb = JSON.parse(JSON.stringify(mats));
 materiallarniQosh(mb, { panel: [{ code: 'BZ-T1', name: 'Bazis test', thickness: 16, asos: 'LDSP18' }] });
 ok('Bazis sintetik materiali (boshqa plitaning narxi) — "taxminiy"', pm(mb, 'BZ-T1').taxminiy === true && pm(mb, 'BZ-T1').sheet_price === pm(mats, 'LDSP18').sheet_price);
