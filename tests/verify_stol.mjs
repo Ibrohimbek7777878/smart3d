@@ -131,15 +131,15 @@ const pcs = (n, kit) => run(gor(n), kit);
   ok(!nest.by_material['STOL26-3050'], 'stoleshnitsa varaqqa kroy qilinmaydi');
   const pc = productionCost(cls, mats, { nestResult: nest, furnituraById: furn, furnituraBoglash: links });
   const sl = pc.lines.find(l => l.code === 'STOL26-3050');
-  /* TZ-32 yakuniy (egasi #222 Q1): narx — sukut ERP dekor (26 mm: eng ko'p qoldiqli, 638 939 = 349 147 so'm/m² × 3050×600) */
-  ok(sl && sl.qty === 2 && sl.unit === 'dona' && sl.no_price === false && sl.unit_price === 638939 && sl.amount === 2 * 638939 && sl.manba === 'ERP' && sl.tasdiq === true, 'narx qatori: STOL26-3050 × 2 dona, ERP dekor narxi (638 939)');
+  /* TZ-32 yakuniy (egasi #222 Q1): narx — sukut ERP dekor (26 mm sukut C514 GL: TZ-50 yangi baza tannarxi — 638 553 = 348 936 so'm/m² × 3050×600; avval 638 939) */
+  ok(sl && sl.qty === 2 && sl.unit === 'dona' && sl.no_price === false && sl.unit_price === 638553 && sl.amount === 2 * 638553 && sl.manba === 'ERP' && sl.tasdiq === true, 'narx qatori: STOL26-3050 × 2 dona, ERP dekor narxi (638 553, yangi baza)');
   ok(!pc.missing.some(m => /^STOL/.test(m.code)), '"narx yo\'q" ro\'yxatida stoleshnitsa yo\'q');
   const sy = pc.lines.find(l => l.code === 'STYAJKA-STOL');
   ok(sy && sy.qty === 1 && sy.id === undefined && sy.unit_price === 20000 && sy.amount === 20000 && /Стяжка/.test(sy.name), 'styajka qatori: 1 dona × 20 000 (90002044)');
   ok(pc.lines.filter(l => l.group === 'Plita (Kroy)').length === 0, 'stoleshnitsa maydon (varaq) qatori emas');
   ok(Number.isFinite(pc.totalCost) && pc.perModule.length === 2, 'tannarx hisoblanadi, perModule 2');
   const dona = mats.panel_materials.filter(m => m.unit_piece);
-  ok(dona.filter(m => m.sheet_price > 0).length === 3 && dona.filter(m => m.sheet_price > 0).every(m => m.price_src === 'ERP 2026-10-18' && m.erp && m.erp.narx_m2 > 0), 'stoleshnitsa materiallari: 3 tasi ERP dekor narxida (price_src ERP)');
+  ok(dona.filter(m => m.sheet_price > 0).length === 3 && dona.filter(m => m.sheet_price > 0).every(m => /^ERP \d{4}-\d{2}-\d{2}$/.test(m.price_src) && m.erp && m.erp.narx_m2 > 0), 'stoleshnitsa materiallari: 3 tasi ERP dekor narxida (price_src ERP)');
   ok(dona.filter(m => !(m.sheet_price > 0)).map(m => m.code).join() === 'STOL26-4200', 'STOL26-4200: sukut 26 mm dekorida 4200 uzunlik ERP\'da yo\'q — narxsiz, o\'ylab topilmaydi');
 }
 console.log(fail ? `=== XATO (${pass} pass, ${fail} fail) ===` : `=== HAMMASI OK (${pass} pass, 0 fail) ===`);

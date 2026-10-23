@@ -1,6 +1,6 @@
 # TZ-50 — Ilova katalogi FAQAT yangi baza (ERP 2026-10-23) narxlari asosida
 
-**Sana:** 2026-10-23 · **Navbat:** 50 · **Holat:** BOSHLANDI 2026-10-23 (egasi #325: "shundan kerakli larni ol va qo'sh, sayt shu narxlar asosida ishlasin"; avval #311: "eski bazadan olmasin, to'liq yangi bazadan olsin")
+**Sana:** 2026-10-23 · **Navbat:** 50 · **Holat:** BAJARILDI (agent/yangibaza, tekshiruvga tayyor) — boshlandi 2026-10-23 (egasi #325: "shundan kerakli larni ol va qo'sh, sayt shu narxlar asosida ishlasin"; avval #311: "eski bazadan olmasin, to'liq yangi bazadan olsin")
 **Manba (LOKAL, maxfiy, repoga KO'CHIRMA):** `Smart3D_malumot/YANGI-BAZA-ISHONCHLI-NARXLAR-2026-10-23.csv` (3 063 ta FAOL mahsulot; ustunlar: guruh, ERP_id, artikul, nomi, birlik, sotuv_UZS+sana, tannarx_UZS+manba (O/K/B), oxirgi_kirim_UZS, qoldiq, ilovada, faol, ishonch (YUQORI/O'RTA/PAST), belgilar). Qo'shimcha o'lcham/qalinlik/kategoriya uchun: `Smart3D_malumot/eski narxlar/erp-mahsulotlar-2026-10-22.json` (ERP id bo'yicha; narx maydonlarini ISHLATMA — ular eski). Tushuntirish: `Smart3D_malumot/00-NARX-FAYLLARI-RO'YXATI.txt`, `KERAKLI-HAMMA-NARXLAR-2026-10-23.txt`.
 **Qoida (egasi):** narx FAQAT shu fayldan; "Eski katalog" narxi (ishonchsiz) ishlatilmaydi; narx o'ylab topilmaydi (qoida 4.3). **Furnituraga TEGILMAYDI** (`furnitura-catalog.json`, `furnitura-boglash.json`).
 
@@ -25,3 +25,14 @@
 ## Tegadigan fayllar
 `app/data/{sheet-catalog,materials-index,stoleshnitsa-erp}.json`, `app/data/materials.json` (faqat sukut_erp), skript `scripts/katalog_yangi_baza.py` (yangi, qayta ishga tushiriladigan, idempotent), testlar, hujjat. **Tegilmaydi:** furnitura fayllari, narx formulalari, erpKod, dizayn, server/admin kodi.
 ## Xavf: O'RTA–YUQORI (katalog hajmi qisqaradi, ko'p test kutuvlari o'zgaradi). Orqaga qaytarish: `git revert`.
+
+## Natija (agent/yangibaza, 2026-10-23)
+Skript: `python3 -I scripts/katalog_yangi_baza.py <YANGI-BAZA…csv> <erp-mahsulotlar-2026-10-22.json> [--dry-run] [--hisobot h.json] [--chiqarilgan-csv yol.csv]` (idempotent: qayta ishga tushirilsa o'zgarish yo'q). Test: `tests/verify_katalog_yangi_baza.mjs`.
+- **Plita/list katalogi 1281 → 718:** saqlandi/yangilandi (narx o'zgardi) — LDSP 120/118, LMDF 28/25, MDF 21/18, HDF 1/1, AKRIL 48/77; qo'shildi 261 (LDSP 86, LMDF 115, MDF 22, HDF 11, AKRIL 27); chiqarildi 824 (693 yangi bazada yo'q, 131 ishonch PAST) — ro'yxat `Smart3D_malumot/KATALOGDAN-CHIQARILGAN-2026-10-23.csv` (+184 stoleshnitsa).
+- **Narx qoidasi:** `uzs` = tannarx (O/K) → oxirgi kirim → tannarx (B, `uzs_turi: tannarx_eski`) → tannarx va kirim yo'q bo'lsa SOTUV narxi (`uzs_turi: sotuv`, 453 yozuv — ochiq belgilangan); `lst` = sotuv; `usd` = 0 (yangi bazada dollar yo'q); yangi maydonlar `uzs_turi`, `ishonch`; `src = yangi_baza_2026-10-23`. th, erpKod, furnitura, dekor-asosiy.json — tegilmagan.
+- **Stoleshnitsa:** 261 → 132 (77 mos yozuv yangilandi/saqlandi, 55 qo'shildi, 184 chiqarildi); `narx_m2` = uzs qoidasi, `narx_list_m2` = sotuv; oldingi sukut dekorlar (16598, 16122) yangi bazada bor — saqlandi; `STOL26-3050/38-3050` narxi yangilandi, `STOL38-4200` — sukut dekorda 4200 yo'q → narx 0 (yoq).
+- **Sukut plitalar (materials.json sukut_erp):** LDSP16 319 030/410 000, MDF16 580 515/640 000, HDF3 124 961/165 000. Boshqa umumiy materiallar (LDSP18, LMDF16, MDF18, MDF8, oyna, OSB12) — o'zgarmadi (egasi tanlaguncha).
+- **Asosiy 100:** 175 kodning 118 tasi katalogda: 57 dekor to'liq, 19 qisman, 24 dekor kodsiz (UI ko'rsatmaydi; xato yo'q).
+- **Qo'shilmaganlar (YUQORI/O'RTA, qaror kerak):** 74 ta «ЛДСП/ЛМДФ 5кв» (Sigma Decor/Местные: qalinlik yoki format nomda va ERP'da yo'q — o'ylab topilmadi), 134 ta Каштан (80)/Смарт/Фаворит/Алкан/stenovoy panel (material turi nomdan aniq emas), 18 ta HPL столешница (4100×1300×12; 12 mm — stoleshnitsa qoidasiga kirmaydi), 3 ta Стекло/Зеркало (birligi м2), 8 ta ERP'da bir xil nomli dublikat (PET MDF/ЛМДФ 7,5), 30 ta namuna (образец); kromka (1276 narxli, UI yo'q) qo'shilmadi.
+- **Deploy eslatmasi:** server `materials` jadvali `materials-index.json` dan to'ladi (INSERT OR REPLACE) — mavjud bazada 824 chiqarilgan qator qoladi va 261 yangisi qo'shilishi uchun qayta to'ldirish/tozalash kerak.
+

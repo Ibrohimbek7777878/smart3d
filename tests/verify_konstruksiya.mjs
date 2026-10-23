@@ -99,7 +99,9 @@ const togri = (r, nom) => {
   ok(nom + ': furnitura — konfirmat, polkaderjatel, ruchka 1000 mm; OBJ buyrug\'i; to\'g\'rilashsiz', J(sp.furnitura) === J({ birikma: 'konfirmat', polka: 'polkaderjatel', ruchka: 1000 }) && sp.eksport === 'obj' && !r.tuzatish.length, J([sp.furnitura, sp.eksport, r.tuzatish]));
   ok(nom + ': xulosa — 2 bo\'lim · 8 polka · 1 shtanga · 2 eshik', J(K.specXulosa(sp)) === J({ bolim: 2, polka: 8, tortma: 0, shtanga: 1, eshik: 2 }), J(K.specXulosa(sp)));
   const pk = K.plitaTop(sheets, sp.material.korpus.nom, 16, 'korpus'), pf = K.plitaTop(sheets, sp.material.fasad.nom, 16, 'fasad');
-  ok(nom + ': ERP plitasi — korpus «Кашемир» LDSP 16, fasad «Дуб Золотой» LDSP 16', pk && pk.name === 'ЛДСП Ультрадекор 5,796 Кашемир UR 16мм' && pf && pf.name === 'ЛДСП Ультрадекор 4,575 Дуб Золотой 16мм', J([pk && pk.name, pf && pf.name]));
+  /* TZ-50 (2026-10-23): katalog faqat yangi baza — avvalgi tanlov 'ЛДСП Ультрадекор 5,796 Кашемир UR 16мм' yangi bazada yo'q; plitaTop (o'zgarmagan: qalinlik → ortiqcha so'z kam → tur) endi
+   * eng kam ortiqcha so'zli 'ЛМДФ Кашемир 5,0325' (LMDF 16) ni topadi; fasad «Дуб Золотой» — o'sha LDSP */
+  ok(nom + ': ERP plitasi — korpus «Кашемир» (yangi bazada: ЛМДФ Кашемир 5,0325, LMDF 16), fasad «Дуб Золотой» LDSP 16', pk && pk.name === 'ЛМДФ Кашемир 5,0325' && pk.type === 'LMDF' && +pk.th === 16 && pf && pf.name === 'ЛДСП Ультрадекор 4,575 Дуб Золотой 16мм', J([pk && pk.name, pf && pf.name]));
 };
 const rE = qur(EGA);
 ok('egasi prompti: modul (xona emas)', K.konstruksiyami(EGA) && K.konstruksiyami(RUS) && K.konstruksiyami(TOZA));

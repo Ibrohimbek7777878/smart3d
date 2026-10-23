@@ -34,11 +34,13 @@ ok('dekor: ERP plitalarining kamida 60% rangi aniqlanadi', qamrov / sheets.lengt
 
 /* 2. ERP plitasi → material kodi */
 const oq = sheets.find(s => s.type === 'LDSP' && +s.th === 16 && s.uzs > 0 && /бел/i.test(s.name));
-const narxsiz = sheets.find(s => s.type === 'LDSP' && +s.th === 16 && !(s.uzs > 0));
-ok('ERP: namunalar topildi (narxli oq LDSP 16, narxsiz LDSP 16)', !!oq && !!narxsiz);
+/* TZ-50 (2026-10-23): katalog FAQAT yangi baza narxli plitalari — katalogda narxsiz plita qolmadi; erpMaterial'ning narxsiz tarmog'i sinov namunasi bilan tekshiriladi (qiymat o'ylab topilmaydi: narx 0) */
+ok('katalogda narxsiz plita yo\'q (TZ-50: faqat yangi baza narxli yozuvlari)', sheets.every(s => s.uzs > 0));
+const narxsiz = { sku: '', name: 'ЛДСП 8мм 5кв Орех Калифорния ( Пр ) под заказ', cat: 'CRAFTWOOD (Тапоич)', type: 'LDSP', th: 16.0, l: 2750.0, w: 1830.0, uzs: 0, usd: 0.0, src: 'sinov' };   // avvalgi katalogdagi narxsiz yozuv (endi katalogda yo'q) — sinov namunasi
+ok('ERP: namunalar topildi (narxli oq LDSP 16, narxsiz sinov namunasi)', !!oq && !!narxsiz);
 ok('ERP kodi barqaror va har xil plitaga har xil', E.erpKod(oq) === E.erpKod({ ...oq }) && E.erpKod(oq) !== E.erpKod(narxsiz) && /^ERP-[0-9a-z]+$/.test(E.erpKod(oq)));
 const kodlar = new Set(sheets.map(E.erpKod));
-ok('ERP kodi: 1281 plitada to\'qnashuv yo\'q', kodlar.size === new Set(sheets.map(s => s.name + '|' + s.sku + '|' + s.th)).size, kodlar.size);
+ok(`ERP kodi: ${sheets.length} plitada to'qnashuv yo'q`, kodlar.size === new Set(sheets.map(s => s.name + '|' + s.sku + '|' + s.th)).size, kodlar.size);
 const mOq = E.erpMaterial(oq, H.materials), mNs = E.erpMaterial(narxsiz, H.materials);
 ok('ERP material: narxi ERP\'dan, qalinlik, varaq o\'lchami', mOq.sheet_price === oq.uzs && mOq.thickness === 16 && mOq.sheets[0][0] === oq.l && !mOq.taxminiy);
 const asos = H.materials.panel_materials.find(m => m.code === 'LDSP16');

@@ -151,7 +151,7 @@ async function asosiy(page, R) {
   }
 
   R.errs = errs;
-  R.ok = R.sel && R.izoh && !!R.asosiy && R.asosiy.n === 100 && R.asosiy.guruh.length >= 5 && R.asosiy.taxminiy > 0 && R.asosiy.rangsiz === 0 && R.asosiy.mashhurUstida &&
+  R.ok = R.sel && R.izoh && !!R.asosiy && R.asosiy.n === 76 &&      /* TZ-50: yangi bazada 100 dekordan 76 tasining kamida bitta kodi katalogda (24 tasi kodsiz — ko'rsatilmaydi) */ R.asosiy.guruh.length >= 5 && R.asosiy.taxminiy > 0 && R.asosiy.rangsiz === 0 && R.asosiy.mashhurUstida &&
     R.tanlov.length === 5 && R.tanlov.every(x => x.doc && x.tanlandi && x.plitka && x.rang3d && x.kesim && x.narx) &&
     R.tel && R.tel.sigadi && R.tel.asosiy && !R.tel.hScroll &&
     R.qidiruv.asosiy.length >= 1 && R.qidiruv.asosiy.every(n => /Сонома/i.test(n)) && R.qidiruv.royxat >= 1 && R.qidiruv.fokus &&

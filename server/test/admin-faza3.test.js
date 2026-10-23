@@ -367,7 +367,8 @@ const erpNarx = async (X) => { const { plita, furnitura, sana } = await (await X
 let E = {};          // ERP testlari orasidagi umumiy holat
 
 test('ERP: sinov ma\'lumoti yetarli (katalogda noyob nomli plita va furnitura)', () => {
-  assert.ok(sNarxli.length >= 4 && sNarxsiz.length >= 2 && sAsosiy.length >= 1 && fNarxli.length >= 3 && fNarxsiz.length >= 2, [sNarxli.length, sNarxsiz.length, sAsosiy.length, fNarxli.length, fNarxsiz.length].join());
+  /* TZ-50 (2026-10-23): katalog faqat yangi baza narxli yozuvlari — narxsiz plita QOLMAGAN (sNarxsiz = 0): plitada "to'ldirildi" holati kuzatilmaydi, o'rniga ikkita oddiy "o'zgardi" plita; furnitura "to'ldirildi" (fNarxsiz) qoladi */
+  assert.ok(sNarxli.length >= 6 && sNarxsiz.length === 0 && sAsosiy.length >= 1 && fNarxli.length >= 3 && fNarxsiz.length >= 2, [sNarxli.length, sNarxsiz.length, sAsosiy.length, fNarxli.length, fNarxsiz.length].join());
 });
 
 test('ERP: admin bo\'lmasa hamma /api/admin/erp* — 404 S3D-AUTH-006; ochiq /api/erp-narx boshida bo\'sh', async () => {
@@ -397,13 +398,13 @@ test('ERP: yuklash tekshiruvi — noto\'g\'ri fayl 400 S3D-ADM-019, hech narsa s
 
 test('ERP: mahsulotlarni yuklash — qoralama; farq: o\'zgardi / to\'ldirildi / bir xil / narxsiz / qo\'lda / yangi / noaniq; HECH NARSA o\'zgarmaydi', async () => {
   const X = S.A, t = TOK.t1;
-  const [p1, p2, p3, p4] = sNarxli, [z1, z2] = sNarxsiz, [f1, f2, f3] = fNarxli, [fz1] = fNarxsiz, [q1, a2, a3] = sAsosiy;
-  const skuli = sNarxli.find((s, i) => i > 5 && String(s.sku).trim());
+  const [p1, p2, p3, p4] = sNarxli, [z1, z2] = sNarxli.slice(-2), [f1, f2, f3] = fNarxli, [fz1] = fNarxsiz, [q1, a2, a3] = sAsosiy;
+  const skuli = sNarxli.find((s, i) => i > 5 && String(s.sku).trim() && s !== z1 && s !== z2);
   /* admin Asosiy-100 varag'iga qo'lda narx qo'ygan: ERP uni o'zgartirmaydi */
   assert.equal((await X.api('/api/admin/materiallar/narx/' + erpKod(q1), { method: 'PUT', token: t, body: { uzs: q1.uzs + 1234 } })).status, 200);
   const M = [
     erpQator(p1, p1.uzs + 10000), erpQator(p2, Math.max(1, p2.uzs - 5000)), erpQator(p3, p3.uzs), erpQator(p4, 0),          // ozgardi, ozgardi (kamaydi), bir_xil, narxsiz
-    erpQator(z1, 250000), erpQator(z2, 111000),                                                                              // toldirildi
+    erpQator(z1, 250000), erpQator(z2, 111000),                                                                              // ozgardi (TZ-50: avval toldirildi — katalogda narxsiz plita qolmagan)
     erpQator(q1, q1.uzs + 99999),                                                                                            // qolda
     erpQator(a2, a2.uzs + 7000), erpQator(a3, a3.uzs + 3000),                                                                // ozgardi (Asosiy 100; a2 ga keyin admin qo'lda narx qo'yadi)
     erpQator(f1, f1.uzs + 500), erpQator(f2, f2.uzs), erpQator(fz1, 7000),                                                  // furnitura: ozgardi, bir_xil, toldirildi
@@ -420,7 +421,7 @@ test('ERP: mahsulotlarni yuklash — qoralama; farq: o\'zgardi / to\'ldirildi / 
   assert.deepEqual([y.ok, y.tur, y.holat, y.erp_sana, y.fayl_nom], [true, 'mahsulot', 'qoralama', '2026-10-20', 'erp-sinov.json']);
   const x = y.xulosa;
   assert.equal(x.qatorlar, M.length - 4); assert.equal(x.rad, 4); assert.equal(x.rad_royxat.length, 4);
-  assert.deepEqual(x.guruh.plita, { ozgardi: 4, bir_xil: 1, narxsiz: 1, toldirildi: 2, qolda: 1 });
+  assert.deepEqual(x.guruh.plita, { ozgardi: 6, bir_xil: 1, narxsiz: 1, qolda: 1 });
   assert.equal(x.guruh.furnitura.toldirildi, 1); assert.equal(x.guruh.furnitura.bir_xil >= 1, true);
   assert.deepEqual(x.guruh.noaniq, { noaniq: 2 }); assert.deepEqual(x.guruh.yangi, { yangi: 3 });
   assert.equal(x.katalog.plita, sheets.length); assert.equal(x.katalog.furnitura, furnAll.length);
@@ -437,7 +438,7 @@ test('ERP: mahsulotlarni yuklash — qoralama; farq: o\'zgardi / to\'ldirildi / 
   const qator = (g, k) => d.items.find(i => i.g === g && i.k === k) || null;
   assert.deepEqual([qator('plita', erpKod(p1)).h, qator('plita', erpKod(p1)).eski, qator('plita', erpKod(p1)).yangi, qator('plita', erpKod(p1)).manba], ['ozgardi', p1.uzs, p1.uzs + 10000, 'fayl']);
   assert.equal(qator('plita', erpKod(p2)).h, 'ozgardi'); assert.ok(qator('plita', erpKod(p2)).foiz < 0);
-  assert.deepEqual([qator('plita', erpKod(z1)).h, qator('plita', erpKod(z1)).eski, qator('plita', erpKod(z1)).yangi], ['toldirildi', 0, 250000]);
+  assert.deepEqual([qator('plita', erpKod(z1)).h, qator('plita', erpKod(z1)).eski, qator('plita', erpKod(z1)).yangi], ['ozgardi', z1.uzs, 250000]);
   assert.deepEqual([qator('plita', erpKod(p3)).h, qator('plita', erpKod(p3)).q], ['bir_xil', false]);
   assert.deepEqual([qator('plita', erpKod(p4)).h, qator('plita', erpKod(p4)).q, qator('plita', erpKod(p4)).eski], ['narxsiz', false, p1 && p4.uzs]);
   const ql = qator('plita', erpKod(q1));
@@ -450,7 +451,7 @@ test('ERP: mahsulotlarni yuklash — qoralama; farq: o\'zgardi / to\'ldirildi / 
   assert.ok(d.items.every(i => !/[<>\u0000-\u001f]/.test(i.nom)), 'belgilar tozalangan');
   assert.ok(d.items.every(i => !('satr' in i)));
   /* filtr, qidiruv, sahifalash */
-  assert.equal((await erpOl(X, y.id, '?guruh=plita&holat=ozgardi')).jami, 4);
+  assert.equal((await erpOl(X, y.id, '?guruh=plita&holat=ozgardi')).jami, 6);
   assert.equal((await erpOl(X, y.id, '?holat=q')).jami, 4 + 2 + 2 + (u3.q ? 1 : 0));
   assert.equal((await erpOl(X, y.id, '?guruh=yangi')).jami, 3);
   assert.deepEqual((await erpOl(X, y.id, '?q=' + encodeURIComponent(String(p1.sku)))).items.some(i => i.k === erpKod(p1)), true);

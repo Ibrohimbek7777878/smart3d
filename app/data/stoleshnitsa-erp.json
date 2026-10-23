@@ -1,9 +1,10 @@
 {
  "_meta": {
-  "manba": "ERP 2026-10-18 (mahsulotlar, faqat o'qish); narx_m2 2026-10-23 ERP products API bilan yangilandi (scripts/katalog_erp_yangilash.py)",
+  "manba": "Yangi baza 2026-10-23 (YANGI-BAZA-ISHONCHLI-NARXLAR, ishonch YUQORI/O'RTA; scripts/katalog_yangi_baza.py, TZ-50). Nom/SKU/o'lcham — ERP eksporti",
   "birlik": "narx_m2 — 1 m2 narxi (ERP birligi m2: ombor qatorida miqdor x narx = jami); dona narxi = narx_m2 x uzunlik x eni / 1e6",
-  "sukut": "egasi aytmagan — qalinlik bo'yicha eng ko'p qoldiqli (qoldiq_m2) dekor",
-  "chiqarilgan": "narxsiz, eni 600 emas, qalinlik 26/38 emas, birligi m2 emas mahsulotlar kiritilmagan"
+  "sukut": "egasi aytmagan — qalinlik bo'yicha eng ko'p qoldiqli (qoldiq_m2) dekor; TZ-50: oldingi sukut dekor yangi bazada bo'lsa saqlanadi",
+  "chiqarilgan": "narxsiz, eni 600 emas, qalinlik 26/38 emas, birligi m2 emas mahsulotlar kiritilmagan",
+  "narx": "narx_m2 — tannarx asosi (narx_turi: tannarx | kirim | tannarx_eski | sotuv), narx_list_m2 — sotuv narxi (1 m²)"
  },
  "sukut": {
   "26": 16598,
@@ -11,89 +12,99 @@
  },
  "items": [
   {
-   "erp_id": 16440,
-   "sku": "911М",
-   "nom": "Союз Столешница 3050*600*26мм Кедровая сосна",
-   "brend": "Kedr",
-   "dekor": "Кедровая сосна",
+   "erp_id": 16684,
+   "sku": "4042м",
+   "nom": "ДАНА Столешница 3050*600*26мм Гренобль Мат",
+   "brend": "",
+   "dekor": "Гренобль Мат",
    "qalinlik": 26,
    "uzunliklar": [
     3050
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
+   "narx_m2": 405000,
+   "narx_list_m2": 405000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Дана Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16685,
+   "sku": "2052",
+   "nom": "ДАНА Столешница 3050*600*26мм Дуб Вотан Матовый",
+   "brend": "",
+   "dekor": "Дуб Вотан Матовый",
+   "qalinlik": 26,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 370000,
+   "narx_list_m2": 370000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Дана Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16690,
+   "sku": "3049",
+   "nom": "ДАНА Столешница 3050*600*26мм Мрамор Королевский Матовый",
+   "brend": "",
+   "dekor": "Мрамор Королевский Матовый",
+   "qalinlik": 26,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 350270,
+   "narx_list_m2": 405000,
    "qoldiq_m2": 1.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "kategoriya": "Дана Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "O'RTA"
   },
   {
-   "erp_id": 16462,
-   "sku": "910М",
-   "nom": "Союз Столешница 3050*600*26мм Таёжный кедр",
-   "brend": "Kedr",
-   "dekor": "Таёжный кедр",
+   "erp_id": 16677,
+   "sku": "3042",
+   "nom": "ДАНА Столешница 3050*600*26мм Семолина бежевая Глянцевая",
+   "brend": "",
+   "dekor": "Семолина бежевая Глянцевая",
    "qalinlik": 26,
    "uzunliklar": [
     3050
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 209006,
-   "narx_list_m2": null,
+   "narx_m2": 475000,
+   "narx_list_m2": 475000,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "kategoriya": "Дана Глянец",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
-   "erp_id": 16472,
-   "sku": "539Г",
-   "nom": "Союз Столешница 3050*600*26мм Авейру Глянец",
-   "brend": "Soyuz",
-   "dekor": "Авейру Глянец",
+   "erp_id": 16695,
+   "sku": "4059",
+   "nom": "ДАНА Столешница 3050*600*26мм Чёрная бронза Матовый",
+   "brend": "",
+   "dekor": "Чёрная бронза Матовый",
    "qalinlik": 26,
    "uzunliklar": [
     3050
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 139.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16493,
-   "sku": "539М",
-   "nom": "Союз Столешница 3050*600*26мм Авейру Матовый",
-   "brend": "Soyuz",
-   "dekor": "Авейру Матовый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 83.0,
-   "kategoriya": "Союз Спейшл Эдишн"
-  },
-  {
-   "erp_id": 16421,
-   "sku": "",
-   "nom": "Союз Столешница 3050*600*26мм Аламбра Матовый",
-   "brend": "Soyuz",
-   "dekor": "Аламбра Матовый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 209006,
-   "narx_list_m2": null,
+   "narx_m2": 360000,
+   "narx_list_m2": 360000,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "kategoriya": "Дана Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16473,
@@ -107,27 +118,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 458589,
+   "narx_m2": 500000,
    "narx_list_m2": 500000,
-   "qoldiq_m2": 4.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16422,
-   "sku": "4035М",
-   "nom": "Союз Столешница 3050*600*26мм Аламбра темная",
-   "brend": "Soyuz",
-   "dekor": "Аламбра темная",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 176382,
-   "narx_list_m2": null,
-   "qoldiq_m2": 1.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Союз Классик",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16474,
@@ -143,8 +139,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 475000,
    "narx_list_m2": 475000,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Союз Классик"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Союз Классик",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16475,
@@ -160,42 +158,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 429840,
    "narx_list_m2": 520000,
-   "qoldiq_m2": 12.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16423,
-   "sku": "415Г",
-   "nom": "Союз Столешница 3050*600*26мм Антарес (премиум!)",
-   "brend": "Soyuz",
-   "dekor": "Антарес (премиум!)",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 287398,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16424,
-   "sku": "902Г",
-   "nom": "Союз Столешница 3050*600*26мм Антика",
-   "brend": "Soyuz",
-   "dekor": "Антика",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 429200,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "kategoriya": "Союз Классик",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 16495,
@@ -211,42 +177,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 515000,
    "narx_list_m2": 515000,
-   "qoldiq_m2": 22.0,
-   "kategoriya": "Союз Стандарт ПРО"
-  },
-  {
-   "erp_id": 16425,
-   "sku": "249Г",
-   "nom": "Союз Столешница 3050*600*26мм Артстоун",
-   "brend": "Soyuz",
-   "dekor": "Артстоун",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16426,
-   "sku": "248М",
-   "nom": "Союз Столешница 3050*600*26мм Артстоун бежевый (премиум!)",
-   "brend": "Soyuz",
-   "dekor": "Артстоун бежевый (премиум!)",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 274253,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "kategoriya": "Союз Стандарт ПРО",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16476,
@@ -260,10 +194,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 441293,
+   "narx_m2": 490000,
    "narx_list_m2": 490000,
-   "qoldiq_m2": 424.0,
-   "kategoriya": "Союз Классик"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Союз Классик",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16477,
@@ -277,27 +213,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 355601,
+   "narx_m2": 475000,
    "narx_list_m2": 475000,
-   "qoldiq_m2": 4.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16478,
-   "sku": "10Г",
-   "nom": "Союз Столешница 3050*600*26мм Белый гл",
-   "brend": "Soyuz",
-   "dekor": "Белый гл",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Союз Классик"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Союз Классик",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16508,
@@ -311,10 +232,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 347957,
+   "narx_m2": 405000,
    "narx_list_m2": 405000,
-   "qoldiq_m2": 190.0,
-   "kategoriya": "Союз Юниверсал"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Союз Юниверсал",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16479,
@@ -328,10 +251,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 375348,
+   "narx_m2": 445000,
    "narx_list_m2": 445000,
-   "qoldiq_m2": 1042.0,
-   "kategoriya": "Союз Классик"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Союз Классик",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16509,
@@ -345,10 +270,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 353962,
+   "narx_m2": 380000,
    "narx_list_m2": 380000,
-   "qoldiq_m2": 52.0,
-   "kategoriya": "Союз Юниверсал"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Союз Юниверсал",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16480,
@@ -362,10 +289,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 429002,
+   "narx_m2": 480000,
    "narx_list_m2": 480000,
-   "qoldiq_m2": 1067.0,
-   "kategoriya": "Союз Классик"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Союз Классик",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16510,
@@ -379,112 +308,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 349959,
+   "narx_m2": 405000,
    "narx_list_m2": 405000,
-   "qoldiq_m2": 44.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16427,
-   "sku": "054М",
-   "nom": "Союз Столешница 3050*600*26мм Гравий белый",
-   "brend": "Soyuz",
-   "dekor": "Гравий белый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 176382,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16428,
-   "sku": "34Г",
-   "nom": "Союз Столешница 3050*600*26мм Гранит черный (Эверест)",
-   "brend": "Soyuz",
-   "dekor": "Гранит черный (Эверест)",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16429,
-   "sku": "3052М",
-   "nom": "Союз Столешница 3050*600*26мм Гранит черный (Эверест) матовый",
-   "brend": "Soyuz",
-   "dekor": "Гранит черный (Эверест) матовый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 5.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16430,
-   "sku": "3052г",
-   "nom": "Союз Столешница 3050*600*26мм Гранит черный глянец",
-   "brend": "Soyuz",
-   "dekor": "Гранит черный глянец",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16432,
-   "sku": "3852м",
-   "nom": "Союз Столешница 3050*600*26мм Дуб Корсика",
-   "brend": "Soyuz",
-   "dekor": "Дуб Корсика",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 176382,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16433,
-   "sku": "909Т",
-   "nom": "Союз Столешница 3050*600*26мм Дуб Прованс",
-   "brend": "Soyuz",
-   "dekor": "Дуб Прованс",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "kategoriya": "Союз Юниверсал",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16511,
@@ -498,333 +327,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 350388,
+   "narx_m2": 405000,
    "narx_list_m2": 405000,
-   "qoldiq_m2": 25.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16431,
-   "sku": "0443м",
-   "nom": "Союз Столешница 3050*600*26мм Дуб выветренный",
-   "brend": "Soyuz",
-   "dekor": "Дуб выветренный",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16434,
-   "sku": "908Т",
-   "nom": "Союз Столешница 3050*600*26мм Ель Эрбе",
-   "brend": "Soyuz",
-   "dekor": "Ель Эрбе",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16435,
-   "sku": "247Г",
-   "nom": "Союз Столешница 3050*600*26мм Золотой гранит",
-   "brend": "Soyuz",
-   "dekor": "Золотой гранит",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16436,
-   "sku": "802М",
-   "nom": "Союз Столешница 3050*600*26мм Иней",
-   "brend": "Soyuz",
-   "dekor": "Иней",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248820,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16512,
-   "sku": "2915М",
-   "nom": "Союз Столешница 3050*600*26мм Каньон",
-   "brend": "Soyuz",
-   "dekor": "Каньон",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16437,
-   "sku": "804М",
-   "nom": "Союз Столешница 3050*600*26мм Карибы Матовый",
-   "brend": "Soyuz",
-   "dekor": "Карибы Матовый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16438,
-   "sku": "14Г/1304Г",
-   "nom": "Союз Столешница 3050*600*26мм Каррара (мрамор) глянцевый",
-   "brend": "Soyuz",
-   "dekor": "Каррара (мрамор) глянцевый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16513,
-   "sku": "14М",
-   "nom": "Союз Столешница 3050*600*26мм Каррара (мрамор) матовый",
-   "brend": "Soyuz",
-   "dekor": "Каррара (мрамор) матовый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16481,
-   "sku": "4046Г",
-   "nom": "Союз Столешница 3050*600*26мм Кастилло темный глянцевый",
-   "brend": "Soyuz",
-   "dekor": "Кастилло темный глянцевый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 131.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16514,
-   "sku": "4046М",
-   "nom": "Союз Столешница 3050*600*26мм Кастилло тёмный",
-   "brend": "Soyuz",
-   "dekor": "Кастилло тёмный",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 9.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16439,
-   "sku": "808М",
-   "nom": "Союз Столешница 3050*600*26мм Кварц",
-   "brend": "Soyuz",
-   "dekor": "Кварц",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16515,
-   "sku": "3114М",
-   "nom": "Союз Столешница 3050*600*26мм Кварц розовый мат",
-   "brend": "Soyuz",
-   "dekor": "Кварц розовый мат",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16516,
-   "sku": "4057М",
-   "nom": "Союз Столешница 3050*600*26мм Кианит",
-   "brend": "Soyuz",
-   "dekor": "Кианит",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 4.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16496,
-   "sku": "67 Г",
-   "nom": "Союз Столешница 3050*600*26мм Корень Вяза",
-   "brend": "Soyuz",
-   "dekor": "Корень Вяза",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Стандарт ПРО"
-  },
-  {
-   "erp_id": 16441,
-   "sku": "707Г/050г",
-   "nom": "Союз Столешница 3050*600*26мм Королевский опал светлый",
-   "brend": "Soyuz",
-   "dekor": "Королевский опал светлый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16442,
-   "sku": "70,6Г",
-   "nom": "Союз Столешница 3050*600*26мм Королевский опал темный",
-   "brend": "Soyuz",
-   "dekor": "Королевский опал темный",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 209006,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16482,
-   "sku": "540Г",
-   "nom": "Союз Столешница 3050*600*26мм Ламегу",
-   "brend": "Soyuz",
-   "dekor": "Ламегу",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16443,
-   "sku": "807М",
-   "nom": "Союз Столешница 3050*600*26мм Лигурия Матовая",
-   "brend": "Soyuz",
-   "dekor": "Лигурия Матовая",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 209006,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16444,
-   "sku": "229М",
-   "nom": "Союз Столешница 3050*600*26мм Лино Бьянко (премиум!)",
-   "brend": "Soyuz",
-   "dekor": "Лино Бьянко (премиум!)",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 274253,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "kategoriya": "Союз Юниверсал",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16445,
@@ -840,25 +348,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 515000,
    "narx_list_m2": 515000,
-   "qoldiq_m2": 256.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16446,
-   "sku": "055М",
-   "nom": "Союз Столешница 3050*600*26мм Луара",
-   "brend": "Soyuz",
-   "dekor": "Луара",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 169810,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16517,
@@ -872,61 +365,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 351025,
+   "narx_m2": 344763,
    "narx_list_m2": 405000,
-   "qoldiq_m2": 55.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16518,
-   "sku": "053М",
-   "nom": "Союз Столешница 3050*600*26мм Миссури",
-   "brend": "Soyuz",
-   "dekor": "Миссури",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16483,
-   "sku": "538г",
-   "nom": "Союз Столешница 3050*600*26мм Монсараш",
-   "brend": "Soyuz",
-   "dekor": "Монсараш",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 27.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16520,
-   "sku": "064М",
-   "nom": "Союз Столешница 3050*600*26мм Мрамор Каспио",
-   "brend": "Soyuz",
-   "dekor": "Мрамор Каспио",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 163237,
-   "narx_list_m2": null,
-   "qoldiq_m2": 205.0,
-   "kategoriya": "Союз Юниверсал"
+   "qoldiq_m2": 2.0,
+   "kategoriya": "Союз Юниверсал",
+   "narx_turi": "tannarx",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16521,
@@ -940,44 +384,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 353571,
+   "narx_m2": 405000,
    "narx_list_m2": 405000,
-   "qoldiq_m2": 23.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16523,
-   "sku": "5203М",
-   "nom": "Союз Столешница 3050*600*26мм Мрамор Черный (акционный)",
-   "brend": "Soyuz",
-   "dekor": "Мрамор Черный (акционный)",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16448,
-   "sku": "1021/Q",
-   "nom": "Союз Столешница 3050*600*26мм Мрамор Черный мат",
-   "brend": "Soyuz",
-   "dekor": "Мрамор Черный мат",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 169810,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "kategoriya": "Союз Юниверсал",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16484,
@@ -991,27 +403,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 435918,
+   "narx_m2": 442392,
    "narx_list_m2": 480000,
-   "qoldiq_m2": 1130.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16519,
-   "sku": "3027М",
-   "nom": "Союз Столешница 3050*600*26мм Мрамор белый мат",
-   "brend": "Soyuz",
-   "dekor": "Мрамор белый мат",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 129.0,
-   "kategoriya": "Союз Юниверсал"
+   "qoldiq_m2": 1.0,
+   "kategoriya": "Союз Классик",
+   "narx_turi": "tannarx",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16497,
@@ -1027,110 +424,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 525000,
    "narx_list_m2": 525000,
-   "qoldiq_m2": 87.0,
-   "kategoriya": "Союз Стандарт ПРО"
-  },
-  {
-   "erp_id": 16447,
-   "sku": "242 Г",
-   "nom": "Союз Столешница 3050*600*26мм Мрамор кремовый",
-   "brend": "Soyuz",
-   "dekor": "Мрамор кремовый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 1.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16498,
-   "sku": "242 Г",
-   "nom": "Союз Столешница 3050*600*26мм Мрамор кремовый (сирень)",
-   "brend": "Soyuz",
-   "dekor": "Мрамор кремовый (сирень)",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Стандарт ПРО"
-  },
-  {
-   "erp_id": 16485,
-   "sku": "3028Г",
-   "nom": "Союз Столешница 3050*600*26мм Мрамор марквина Белый",
-   "brend": "Soyuz",
-   "dekor": "Мрамор марквина Белый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 13.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16486,
-   "sku": "906Г",
-   "nom": "Союз Столешница 3050*600*26мм Мрамор марквина Черный",
-   "brend": "Soyuz",
-   "dekor": "Мрамор марквина Черный",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 428.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16522,
-   "sku": "3028М",
-   "nom": "Союз Столешница 3050*600*26мм Мрамор марквина белый мат",
-   "brend": "Soyuz",
-   "dekor": "Мрамор марквина белый мат",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 180.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16449,
-   "sku": "2047М",
-   "nom": "Союз Столешница 3050*600*26мм Олдвуд",
-   "brend": "Soyuz",
-   "dekor": "Олдвуд",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 176382,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "kategoriya": "Союз Стандарт ПРО",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16524,
@@ -1144,61 +441,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 353234,
+   "narx_m2": 405000,
    "narx_list_m2": 405000,
-   "qoldiq_m2": 67.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16499,
-   "sku": "70Г",
-   "nom": "Союз Столешница 3050*600*26мм Оникс",
-   "brend": "Soyuz",
-   "dekor": "Оникс",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Стандарт ПРО"
-  },
-  {
-   "erp_id": 16500,
-   "sku": "70Г",
-   "nom": "Союз Столешница 3050*600*26мм Оникс - второй сорт",
-   "brend": "Soyuz",
-   "dekor": "Оникс - второй сорт",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Стандарт ПРО"
-  },
-  {
-   "erp_id": 16450,
-   "sku": "100М",
-   "nom": "Союз Столешница 3050*600*26мм Оникс бежевый - Лосось матовый",
-   "brend": "Soyuz",
-   "dekor": "Оникс бежевый - Лосось матовый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 209006,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "kategoriya": "Союз Юниверсал",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16525,
@@ -1212,214 +460,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 351650,
+   "narx_m2": 405000,
    "narx_list_m2": 405000,
-   "qoldiq_m2": 308.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16526,
-   "sku": "706АМ",
-   "nom": "Союз Столешница 3050*600*26мм Опал темный",
-   "brend": "Soyuz",
-   "dekor": "Опал темный",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 20.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16501,
-   "sku": "1079АГ",
-   "nom": "Союз Столешница 3050*600*26мм Палладио бежевый",
-   "brend": "Soyuz",
-   "dekor": "Палладио бежевый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 291.0,
-   "kategoriya": "Союз Стандарт ПРО"
-  },
-  {
-   "erp_id": 16502,
-   "sku": "1050АГ",
-   "nom": "Союз Столешница 3050*600*26мм Палладио светлый",
-   "brend": "Soyuz",
-   "dekor": "Палладио светлый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 133.0,
-   "kategoriya": "Союз Стандарт ПРО"
-  },
-  {
-   "erp_id": 16503,
-   "sku": "1049АГ",
-   "nom": "Союз Столешница 3050*600*26мм Палладио темный",
-   "brend": "Soyuz",
-   "dekor": "Палладио темный",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 207.0,
-   "kategoriya": "Союз Стандарт ПРО"
-  },
-  {
-   "erp_id": 16451,
-   "sku": "4038М",
-   "nom": "Союз Столешница 3050*600*26мм Песок",
-   "brend": "Soyuz",
-   "dekor": "Песок",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 169810,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16527,
-   "sku": "64М",
-   "nom": "Союз Столешница 3050*600*26мм Пестрый Камень",
-   "brend": "Soyuz",
-   "dekor": "Пестрый Камень",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16452,
-   "sku": "245 Г",
-   "nom": "Союз Столешница 3050*600*26мм Петра",
-   "brend": "Soyuz",
-   "dekor": "Петра",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16453,
-   "sku": "2328М",
-   "nom": "Союз Столешница 3050*600*26мм Римини",
-   "brend": "Soyuz",
-   "dekor": "Римини",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 169810,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16454,
-   "sku": "0,63Г",
-   "nom": "Союз Столешница 3050*600*26мм Роза Альба",
-   "brend": "Soyuz",
-   "dekor": "Роза Альба",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16455,
-   "sku": "700Г",
-   "nom": "Союз Столешница 3050*600*26мм Роза Альба.",
-   "brend": "Soyuz",
-   "dekor": "Роза Альба.",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16456,
-   "sku": "30М",
-   "nom": "Союз Столешница 3050*600*26мм Сахара 4040М",
-   "brend": "Soyuz",
-   "dekor": "Сахара 4040М",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 209006,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16457,
-   "sku": "3042Г",
-   "nom": "Союз Столешница 3050*600*26мм Семолина бежевая",
-   "brend": "Soyuz",
-   "dekor": "Семолина бежевая",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
+   "kategoriya": "Союз Юниверсал",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16528,
@@ -1433,10 +479,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 346643,
+   "narx_m2": 380000,
    "narx_list_m2": 380000,
-   "qoldiq_m2": 5.0,
-   "kategoriya": "Союз Юниверсал"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Союз Юниверсал",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16487,
@@ -1450,10 +498,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 439328,
+   "narx_m2": 490000,
    "narx_list_m2": 490000,
-   "qoldiq_m2": 8.0,
-   "kategoriya": "Союз Классик"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Союз Классик",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16529,
@@ -1467,163 +517,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 358792,
+   "narx_m2": 405000,
    "narx_list_m2": 405000,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16504,
-   "sku": "1545 Г",
-   "nom": "Союз Столешница 3050*600*26мм Серый",
-   "brend": "Soyuz",
-   "dekor": "Серый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Стандарт ПРО"
-  },
-  {
-   "erp_id": 16494,
-   "sku": "541М",
-   "nom": "Союз Столешница 3050*600*26мм Синтра Матовый",
-   "brend": "Soyuz",
-   "dekor": "Синтра Матовый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Спейшл Эдишн"
-  },
-  {
-   "erp_id": 16505,
-   "sku": "898Г",
-   "nom": "Союз Столешница 3050*600*26мм Слоникс",
-   "brend": "Soyuz",
-   "dekor": "Слоникс",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Стандарт ПРО"
-  },
-  {
-   "erp_id": 16458,
-   "sku": "109М",
-   "nom": "Союз Столешница 3050*600*26мм Слоновая Кость",
-   "brend": "Soyuz",
-   "dekor": "Слоновая Кость",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 169810,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16459,
-   "sku": "0439м",
-   "nom": "Союз Столешница 3050*600*26мм Соренто",
-   "brend": "Soyuz",
-   "dekor": "Соренто",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16460,
-   "sku": "919Т",
-   "nom": "Союз Столешница 3050*600*26мм Сосна Новара",
-   "brend": "Soyuz",
-   "dekor": "Сосна Новара",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16488,
-   "sku": "520М",
-   "nom": "Союз Столешница 3050*600*26мм Сосна Норвежская",
-   "brend": "Soyuz",
-   "dekor": "Сосна Норвежская",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 56.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16461,
-   "sku": "80,6М",
-   "nom": "Союз Столешница 3050*600*26мм Старый город",
-   "brend": "Soyuz",
-   "dekor": "Старый город",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 222031,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16489,
-   "sku": "535Г",
-   "nom": "Союз Столешница 3050*600*26мм Тавира",
-   "brend": "Soyuz",
-   "dekor": "Тавира",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Классик"
+   "kategoriya": "Союз Юниверсал",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16530,
@@ -1639,161 +538,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 380000,
    "narx_list_m2": 380000,
-   "qoldiq_m2": 82.0,
-   "kategoriya": "Союз Юниверсал"
-  },
-  {
-   "erp_id": 16506,
-   "sku": "1049Г",
-   "nom": "Союз Столешница 3050*600*26мм Темный блеск",
-   "brend": "Soyuz",
-   "dekor": "Темный блеск",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 134.0,
-   "kategoriya": "Союз Стандарт ПРО"
-  },
-  {
-   "erp_id": 16463,
-   "sku": "923Т",
-   "nom": "Союз Столешница 3050*600*26мм Тенерифе (премиум!)",
-   "brend": "Soyuz",
-   "dekor": "Тенерифе (премиум!)",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 274253,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16464,
-   "sku": "134М",
-   "nom": "Союз Столешница 3050*600*26мм Тростник",
-   "brend": "Soyuz",
-   "dekor": "Тростник",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 169810,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16490,
-   "sku": "063Г",
-   "nom": "Союз Столешница 3050*600*26мм Тунис",
-   "brend": "Soyuz",
-   "dekor": "Тунис",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 429200,
-   "narx_list_m2": null,
-   "qoldiq_m2": 253.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16465,
-   "sku": "136Т/АМ",
-   "nom": "Союз Столешница 3050*600*26мм Халцедон",
-   "brend": "Soyuz",
-   "dekor": "Халцедон",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 209006,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16466,
-   "sku": "969м",
-   "nom": "Союз Столешница 3050*600*26мм Черно-зеленый",
-   "brend": "Soyuz",
-   "dekor": "Черно-зеленый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 287398,
-   "narx_list_m2": null,
-   "qoldiq_m2": 7.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16467,
-   "sku": "713Г",
-   "nom": "Союз Столешница 3050*600*26мм Черный гранит глянцевый",
-   "brend": "Soyuz",
-   "dekor": "Черный гранит глянцевый",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 267.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16468,
-   "sku": "1021/Q",
-   "nom": "Союз Столешница 3050*600*26мм Черный мат",
-   "brend": "Soyuz",
-   "dekor": "Черный мат",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 169810,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16507,
-   "sku": "253Г",
-   "nom": "Союз Столешница 3050*600*26мм Черный мрамор",
-   "brend": "Soyuz",
-   "dekor": "Черный мрамор",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Стандарт ПРО"
+   "kategoriya": "Союз Юниверсал",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16469,
@@ -1810,75 +558,9 @@
    "narx_m2": 605000,
    "narx_list_m2": 605000,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16491,
-   "sku": "536Г",
-   "nom": "Союз Столешница 3050*600*26мм Эвора",
-   "brend": "Soyuz",
-   "dekor": "Эвора",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 235057,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз Классик"
-  },
-  {
-   "erp_id": 16470,
-   "sku": "805М",
-   "nom": "Союз Столешница 3050*600*26мм Юрский камень",
-   "brend": "Soyuz",
-   "dekor": "Юрский камень",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 222031,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16471,
-   "sku": "906т",
-   "nom": "Союз Столешница 3050*600*26мм Ясень альпийский",
-   "brend": "Soyuz",
-   "dekor": "Ясень альпийский",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16601,
-   "sku": "2707 CR",
-   "nom": "Ультрадекор Столешница 26мм Бискайская Сосна Matt R3",
-   "brend": "Ultradekor",
-   "dekor": "Бискайская Сосна Matt R3",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 163237,
-   "narx_list_m2": null,
-   "qoldiq_m2": 20.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "kategoriya": "Союз 3050*600*26мм - старые, выведенные декоры",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16602,
@@ -1892,10 +574,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 303476,
+   "narx_m2": 375000,
    "narx_list_m2": 375000,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16603,
@@ -1909,10 +593,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 304019,
-   "narx_list_m2": 375000,
-   "qoldiq_m2": 320.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "narx_m2": 350030,
+   "narx_list_m2": 400000,
+   "qoldiq_m2": 2.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 16604,
@@ -1926,10 +612,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 306261,
+   "narx_m2": 375000,
    "narx_list_m2": 375000,
-   "qoldiq_m2": 3.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16605,
@@ -1943,44 +631,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 302677,
+   "narx_m2": 375000,
    "narx_list_m2": 375000,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
-  },
-  {
-   "erp_id": 16606,
-   "sku": "K080 BS",
-   "nom": "Ультрадекор Столешница 26мм Дуб Приморский Белый Matt R9",
-   "brend": "Ultradekor",
-   "dekor": "Дуб Приморский Белый Matt R9",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 163237,
-   "narx_list_m2": null,
-   "qoldiq_m2": 17.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
-  },
-  {
-   "erp_id": 16607,
-   "sku": "K081 BS",
-   "nom": "Ультрадекор Столешница 26мм Дуб Приморский Сатиновый Matt R9",
-   "brend": "Ultradekor",
-   "dekor": "Дуб Приморский Сатиновый Matt R9",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 163237,
-   "narx_list_m2": null,
-   "qoldiq_m2": 163.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "kategoriya": "Ультрадекор 3050*600*26мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16608,
@@ -1994,10 +650,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 303448,
+   "narx_m2": 302614,
    "narx_list_m2": 375000,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "qoldiq_m2": 1.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16593,
@@ -2011,27 +669,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 347545,
+   "narx_m2": 445000,
    "narx_list_m2": 445000,
-   "qoldiq_m2": 102.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Глянец"
-  },
-  {
-   "erp_id": 16609,
-   "sku": "C507 CR",
-   "nom": "Ультрадекор Столешница 26мм Калакатта Matt R9",
-   "brend": "Ultradekor",
-   "dekor": "Калакатта Matt R9",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 163237,
-   "narx_list_m2": null,
-   "qoldiq_m2": 148.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Глянец",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16594,
@@ -2045,10 +688,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 349808,
+   "narx_m2": 342551,
    "narx_list_m2": 445000,
-   "qoldiq_m2": 615.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Глянец"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Глянец",
+   "narx_turi": "tannarx_eski",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16595,
@@ -2064,8 +709,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 343503,
    "narx_list_m2": 445000,
-   "qoldiq_m2": 1821.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Глянец"
+   "qoldiq_m2": 5.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Глянец",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 16611,
@@ -2079,10 +726,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 250495,
+   "narx_m2": 375000,
    "narx_list_m2": 375000,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "kategoriya": "Ультрадекор 3050*600*26мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16596,
@@ -2098,8 +747,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 342997,
    "narx_list_m2": 445000,
-   "qoldiq_m2": 2028.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Глянец"
+   "qoldiq_m2": 10.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Глянец",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 16612,
@@ -2113,44 +764,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 302351,
+   "narx_m2": 340000,
    "narx_list_m2": 340000,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
-  },
-  {
-   "erp_id": 16610,
-   "sku": "2703CR",
-   "nom": "Ультрадекор Столешница 26мм Мрамор белый Matt R9",
-   "brend": "Ultradekor",
-   "dekor": "Мрамор белый Matt R9",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 182835,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
-  },
-  {
-   "erp_id": 16597,
-   "sku": "C505 GL",
-   "nom": "Ультрадекор Столешница 26мм Семолина Бежевая Gloss R9",
-   "brend": "Ultradekor",
-   "dekor": "Семолина Бежевая Gloss R9",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2612.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Глянец"
+   "kategoriya": "Ультрадекор 3050*600*26мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16613,
@@ -2166,8 +785,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 368444,
    "narx_list_m2": 475000,
-   "qoldiq_m2": 315.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "qoldiq_m2": 2.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 16614,
@@ -2181,10 +802,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 303113,
+   "narx_m2": 375000,
    "narx_list_m2": 375000,
-   "qoldiq_m2": 516.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16598,
@@ -2198,27 +821,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 349147,
+   "narx_m2": 348936,
    "narx_list_m2": 440000,
-   "qoldiq_m2": 2654.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Глянец"
-  },
-  {
-   "erp_id": 16615,
-   "sku": "C514 CR",
-   "nom": "Ультрадекор Столешница 26мм Черная бронза Matt R9",
-   "brend": "Ultradekor",
-   "dekor": "Черная бронза Matt R9",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 163237,
-   "narx_list_m2": null,
    "qoldiq_m2": 6.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "kategoriya": "Ультрадекор 3050*600*26мм Глянец",
+   "narx_turi": "tannarx",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16599,
@@ -2232,10 +840,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 353501,
+   "narx_m2": 349041,
    "narx_list_m2": 445000,
-   "qoldiq_m2": 2103.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Глянец"
+   "qoldiq_m2": 10.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Глянец",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 16616,
@@ -2249,27 +859,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 303967,
+   "narx_m2": 375000,
    "narx_list_m2": 375000,
-   "qoldiq_m2": 7.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
-  },
-  {
-   "erp_id": 16600,
-   "sku": "K525 BS",
-   "nom": "Ультрадекор Столешница 3050*600*26мм Ясень Прибрежный Светлый Matt",
-   "brend": "Ultradekor",
-   "dekor": "Ясень Прибрежный Светлый Matt",
-   "qalinlik": 26,
-   "uzunliklar": [
-    3050
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 189408,
-   "narx_list_m2": null,
-   "qoldiq_m2": 43.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16617,
@@ -2283,27 +878,271 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 299559,
+   "narx_m2": 375000,
    "narx_list_m2": 375000,
-   "qoldiq_m2": 184.0,
-   "kategoriya": "Ультрадекор 3050*600*26мм Мат"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*26мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
-   "erp_id": 16750,
-   "sku": "F502 ST7",
-   "nom": "Эггер Столешница 4,1х0,6х38 Алюминий мелкоматированный",
-   "brend": "Egger",
-   "dekor": "Алюминий мелкоматированный",
+   "erp_id": 16270,
+   "sku": "111 мт",
+   "nom": "СКИФ Столешница 3050*600*38мм 111 Дуб Вотан мат",
+   "brend": "",
+   "dekor": "111 Дуб Вотан мат",
    "qalinlik": 38,
    "uzunliklar": [
-    4100
+    3050
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 474176,
-   "narx_list_m2": null,
-   "qoldiq_m2": 47.0,
-   "kategoriya": "Группа 1"
+   "narx_m2": 600000,
+   "narx_list_m2": 600000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "СКИФ Мат полнт. 38 мм",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16710,
+   "sku": "2052М",
+   "nom": "ДАНА Столешница 4,2*600*38мм Дуб Вотан",
+   "brend": "",
+   "dekor": "4,2*600*38мм Дуб Вотан",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 880000,
+   "narx_list_m2": 880000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Дана Мат 4,2*0,6*38мм",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16712,
+   "sku": "4030М",
+   "nom": "ДАНА Столешница 4,2*600*38мм Калакатта",
+   "brend": "",
+   "dekor": "4,2*600*38мм Калакатта",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 900000,
+   "narx_list_m2": 900000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Дана Мат 4,2*0,6*38мм",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16698,
+   "sku": "4030Г",
+   "nom": "ДАНА Столешница 4,2*600*38мм Калакатта гл",
+   "brend": "",
+   "dekor": "4,2*600*38мм Калакатта гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 900000,
+   "narx_list_m2": 900000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Дана Глянец 4,2*0,6*38мм",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16699,
+   "sku": "4046Г",
+   "nom": "ДАНА Столешница 4,2*600*38мм Кастилло темный гл",
+   "brend": "",
+   "dekor": "4,2*600*38мм Кастилло темный гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 925000,
+   "narx_list_m2": 925000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Дана Глянец 4,2*0,6*38мм",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16713,
+   "sku": "3094М",
+   "nom": "ДАНА Столешница 4,2*600*38мм Лавант",
+   "brend": "",
+   "dekor": "4,2*600*38мм Лавант",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 860000,
+   "narx_list_m2": 860000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Дана Мат 4,2*0,6*38мм",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16700,
+   "sku": "3027Г",
+   "nom": "ДАНА Столешница 4,2*600*38мм Мрамор белый гл",
+   "brend": "",
+   "dekor": "4,2*600*38мм Мрамор белый гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 925000,
+   "narx_list_m2": 925000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Дана Глянец 4,2*0,6*38мм",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16715,
+   "sku": "3062М",
+   "nom": "ДАНА Столешница 4,2*600*38мм Опал светлый",
+   "brend": "",
+   "dekor": "4,2*600*38мм Опал светлый",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 727582,
+   "narx_list_m2": 925000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Дана Мат 4,2*0,6*38мм",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16701,
+   "sku": "3062Г",
+   "nom": "ДАНА Столешница 4,2*600*38мм Опал светлый гл",
+   "brend": "",
+   "dekor": "4,2*600*38мм Опал светлый гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 925000,
+   "narx_list_m2": 925000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Дана Глянец 4,2*0,6*38мм",
+   "narx_turi": "sotuv",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16702,
+   "sku": "3042Г",
+   "nom": "ДАНА Столешница 4,2*600*38мм Семолина бежевая гл",
+   "brend": "",
+   "dekor": "4,2*600*38мм Семолина бежевая гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 800316,
+   "narx_list_m2": 925000,
+   "qoldiq_m2": 1.0,
+   "kategoriya": "Дана Глянец 4,2*0,6*38мм",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16705,
+   "sku": "4059Г",
+   "nom": "ДАНА Столешница 4,2*600*38мм Черная бронза гл",
+   "brend": "",
+   "dekor": "4,2*600*38мм Черная бронза гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 925000,
+   "narx_list_m2": 925000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Дана Глянец 4,2*0,6*38мм",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16706,
+   "sku": "4060Г",
+   "nom": "ДАНА Столешница 4,2*600*38мм Черное серебро гл",
+   "brend": "",
+   "dekor": "4,2*600*38мм Черное серебро гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 794109,
+   "narx_list_m2": 925000,
+   "qoldiq_m2": 3.0,
+   "kategoriya": "Дана Глянец 4,2*0,6*38мм",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16708,
+   "sku": "3074Г",
+   "nom": "ДАНА Столешница 4,2*600*38мм Черный тунис гл",
+   "brend": "",
+   "dekor": "4,2*600*38мм Черный тунис гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 925000,
+   "narx_list_m2": 925000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Дана Глянец 4,2*0,6*38мм",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16773,
@@ -2319,42 +1158,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 1445000,
    "narx_list_m2": 1445000,
-   "qoldiq_m2": 47.0,
-   "kategoriya": "Группа 3"
-  },
-  {
-   "erp_id": 16756,
-   "sku": "F186 ST9",
-   "nom": "Эггер Столешница 4,1х0,6х38 Бетон Чикаго светло-серый",
-   "brend": "Egger",
-   "dekor": "Бетон Чикаго светло-серый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 1251119,
-   "narx_list_m2": null,
-   "qoldiq_m2": 59.0,
-   "kategoriya": "Группа 2"
-  },
-  {
-   "erp_id": 16757,
-   "sku": "F187 ST9",
-   "nom": "Эггер Столешница 4,1х0,6х38 Бетон Чикаго тёмно-серый",
-   "brend": "Egger",
-   "dekor": "Бетон Чикаго тёмно-серый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 512177,
-   "narx_list_m2": null,
-   "qoldiq_m2": 77.0,
-   "kategoriya": "Группа 2"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Группа 3",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16758,
@@ -2370,42 +1177,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 1310000,
    "narx_list_m2": 1310000,
-   "qoldiq_m2": 25.0,
-   "kategoriya": "Группа 2"
-  },
-  {
-   "erp_id": 16768,
-   "sku": "F028 ST89",
-   "nom": "Эггер Столешница 4,1х0,6х38 Гранит Верчелли антрацит",
-   "brend": "Egger",
-   "dekor": "Гранит Верчелли антрацит",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 456729,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Группа 2 на вывод"
-  },
-  {
-   "erp_id": 16774,
-   "sku": "F032 ST78",
-   "nom": "Эггер Столешница 4,1х0,6х38 Гранит Кашиа серый",
-   "brend": "Egger",
-   "dekor": "Гранит Кашиа серый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 554839,
-   "narx_list_m2": null,
-   "qoldiq_m2": 41.0,
-   "kategoriya": "Группа 3"
+   "kategoriya": "Группа 2",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16784,
@@ -2419,10 +1194,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 1246026,
+   "narx_m2": 1246025,
    "narx_list_m2": 1375000,
-   "qoldiq_m2": 29.0,
-   "kategoriya": "Группа 3 на вывод"
+   "qoldiq_m2": 1.0,
+   "kategoriya": "Группа 3 на вывод",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 16759,
@@ -2436,197 +1213,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 867336,
+   "narx_m2": 1183161,
    "narx_list_m2": 1280000,
-   "qoldiq_m2": 40.0,
-   "kategoriya": "Группа 2"
-  },
-  {
-   "erp_id": 16797,
-   "sku": "H1176 ST37",
-   "nom": "Эггер Столешница 4,1х0,6х38 Дуб Галифакс белый",
-   "brend": "Egger",
-   "dekor": "Дуб Галифакс белый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 971535,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Группа 4 на вывод"
-  },
-  {
-   "erp_id": 16798,
-   "sku": "H1180 ST37",
-   "nom": "Эггер Столешница 4,1х0,6х38 Дуб Галифакс натуральный",
-   "brend": "Egger",
-   "dekor": "Дуб Галифакс натуральный",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 971535,
-   "narx_list_m2": null,
    "qoldiq_m2": 1.0,
-   "kategoriya": "Группа 4 на вывод"
-  },
-  {
-   "erp_id": 16796,
-   "sku": "H1181 ST37",
-   "nom": "Эггер Столешница 4,1х0,6х38 Дуб Галифакс табак",
-   "brend": "Egger",
-   "dekor": "Дуб Галифакс табак",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 1005354,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Группа 4"
-  },
-  {
-   "erp_id": 16751,
-   "sku": "H3303 ST10",
-   "nom": "Эггер Столешница 4,1х0,6х38 Дуб Гамильтон натуральный",
-   "brend": "Egger",
-   "dekor": "Дуб Гамильтон натуральный",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 474176,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Группа 1"
-  },
-  {
-   "erp_id": 16760,
-   "sku": "H3133 ST12",
-   "nom": "Эггер Столешница 4,1х0,6х38 Дуб Давос трюфель",
-   "brend": "Egger",
-   "dekor": "Дуб Давос трюфель",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 512177,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Группа 2"
-  },
-  {
-   "erp_id": 16761,
-   "sku": "H3331 ST10",
-   "nom": "Эггер Столешница 4,1х0,6х38 Дуб Небраска натуральный",
-   "brend": "Egger",
-   "dekor": "Дуб Небраска натуральный",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 1247308,
-   "narx_list_m2": null,
-   "qoldiq_m2": 1.0,
-   "kategoriya": "Группа 2"
-  },
-  {
-   "erp_id": 16775,
-   "sku": "H305 ST 12",
-   "nom": "Эггер Столешница 4,1х0,6х38 Дуб Тонсберг натуральный",
-   "brend": "Egger",
-   "dekor": "Дуб Тонсберг натуральный",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 554839,
-   "narx_list_m2": null,
-   "qoldiq_m2": 59.0,
-   "kategoriya": "Группа 3"
-  },
-  {
-   "erp_id": 16755,
-   "sku": "H1313 ST10",
-   "nom": "Эггер Столешница 4,1х0,6х38  Дуб Уайт-Ривер серо-коричневый",
-   "brend": "Egger",
-   "dekor": "Дуб Уайт-Ривер серо-коричневый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 512177,
-   "narx_list_m2": null,
-   "qoldiq_m2": 28.0,
-   "kategoriya": "Группа 2"
-  },
-  {
-   "erp_id": 16776,
-   "sku": "H2032 ST 10",
-   "nom": "Эггер Столешница 4,1х0,6х38 Дуб Хантон светлый",
-   "brend": "Egger",
-   "dekor": "Дуб Хантон светлый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 554839,
-   "narx_list_m2": null,
-   "qoldiq_m2": 51.0,
-   "kategoriya": "Группа 3"
-  },
-  {
-   "erp_id": 16799,
-   "sku": "H1344 ST32",
-   "nom": "Эггер Столешница 4,1х0,6х38 Дуб Шерман Коньяк коричневый",
-   "brend": "Egger",
-   "dekor": "Дуб Шерман Коньяк коричневый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 971535,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Группа 4 на вывод"
-  },
-  {
-   "erp_id": 16762,
-   "sku": "H1357 ST10",
-   "nom": "Эггер Столешница 4,1х0,6х38 Дуб Шпрее серо-бежевый",
-   "brend": "Egger",
-   "dekor": "Дуб Шпрее серо-бежевый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 512177,
-   "narx_list_m2": null,
-   "qoldiq_m2": 32.0,
-   "kategoriya": "Группа 2"
+   "kategoriya": "Группа 2",
+   "narx_turi": "tannarx",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16785,
@@ -2640,27 +1232,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 505246,
+   "narx_m2": 1329664,
    "narx_list_m2": 1375000,
-   "qoldiq_m2": 15.0,
-   "kategoriya": "Группа 3 на вывод"
-  },
-  {
-   "erp_id": 16763,
-   "sku": "F676 ST75",
-   "nom": "Эггер Столешница 4,1х0,6х38 Камень Кальвия песочно-серый",
-   "brend": "Egger",
-   "dekor": "Камень Кальвия песочно-серый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 512177,
-   "narx_list_m2": null,
    "qoldiq_m2": 1.0,
-   "kategoriya": "Группа 2"
+   "kategoriya": "Группа 3 на вывод",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 16764,
@@ -2674,27 +1251,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 1182178,
+   "narx_m2": 1320000,
    "narx_list_m2": 1320000,
-   "qoldiq_m2": 137.0,
-   "kategoriya": "Группа 2"
-  },
-  {
-   "erp_id": 16765,
-   "sku": "F205 ST9",
-   "nom": "Эггер Столешница 4,1х0,6х38 Камень Пьетра Гриджиа антрацит",
-   "brend": "Egger",
-   "dekor": "Камень Пьетра Гриджиа антрацит",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 512177,
-   "narx_list_m2": null,
-   "qoldiq_m2": 52.0,
-   "kategoriya": "Группа 2"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Группа 2",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16766,
@@ -2708,10 +1270,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 1161429,
+   "narx_m2": 1144238,
    "narx_list_m2": 1260000,
-   "qoldiq_m2": 117.0,
-   "kategoriya": "Группа 2"
+   "qoldiq_m2": 2.0,
+   "kategoriya": "Группа 2",
+   "narx_turi": "tannarx",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16777,
@@ -2725,44 +1289,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 1249148,
+   "narx_m2": 1390000,
    "narx_list_m2": 1390000,
-   "qoldiq_m2": 5.0,
-   "kategoriya": "Группа 3"
-  },
-  {
-   "erp_id": 16753,
-   "sku": "F041 ST15",
-   "nom": "Эггер Столешница 4,1х0,6х38 Камень Сонора белый",
-   "brend": "Egger",
-   "dekor": "Камень Сонора белый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 427571,
-   "narx_list_m2": null,
-   "qoldiq_m2": 1.0,
-   "kategoriya": "Группа 1 на вывод"
-  },
-  {
-   "erp_id": 16786,
-   "sku": "U702 ST89",
-   "nom": "Эггер Столешница 4,1х0,6х38 Кашемир серый",
-   "brend": "Egger",
-   "dekor": "Кашемир серый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 505246,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Группа 3 на вывод"
+   "kategoriya": "Группа 3",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16778,
@@ -2776,10 +1308,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 1281391,
+   "narx_m2": 1410000,
    "narx_list_m2": 1410000,
-   "qoldiq_m2": 28.0,
-   "kategoriya": "Группа 3"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Группа 3",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16769,
@@ -2795,59 +1329,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 1310000,
    "narx_list_m2": 1310000,
-   "qoldiq_m2": 1.0,
-   "kategoriya": "Группа 2 на вывод"
-  },
-  {
-   "erp_id": 16787,
-   "sku": "F204 ST75",
-   "nom": "Эггер Столешница 4,1х0,6х38 Мрамор Каррара белый",
-   "brend": "Egger",
-   "dekor": "Мрамор Каррара белый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 505246,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Группа 3 на вывод"
-  },
-  {
-   "erp_id": 16779,
-   "sku": "F229 ST75",
-   "nom": "Эггер Столешница 4,1х0,6х38 Мрамор Кремона",
-   "brend": "Egger",
-   "dekor": "Мрамор Кремона",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 1348915,
-   "narx_list_m2": null,
-   "qoldiq_m2": 4.0,
-   "kategoriya": "Группа 3"
-  },
-  {
-   "erp_id": 16780,
-   "sku": "F800 ST9",
-   "nom": "Эггер Столешница 4,1х0,6х38 Мрамор Кристалл",
-   "brend": "Egger",
-   "dekor": "Мрамор Кристалл",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 554839,
-   "narx_list_m2": null,
-   "qoldiq_m2": 9.0,
-   "kategoriya": "Группа 3"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Группа 2 на вывод",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16754,
@@ -2861,27 +1346,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 1102878,
+   "narx_m2": 1210000,
    "narx_list_m2": 1210000,
-   "qoldiq_m2": 1.0,
-   "kategoriya": "Группа 1 на вывод"
-  },
-  {
-   "erp_id": 16788,
-   "sku": "F812 ST9",
-   "nom": "Эггер Столешница 4,1х0,6х38 Мрамор Леванто белый",
-   "brend": "Egger",
-   "dekor": "Мрамор Леванто белый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 505246,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Группа 3 на вывод"
+   "kategoriya": "Группа 1 на вывод",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16770,
@@ -2897,76 +1367,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 1300000,
    "narx_list_m2": 1300000,
-   "qoldiq_m2": 22.0,
-   "kategoriya": "Группа 2 на вывод"
-  },
-  {
-   "erp_id": 16771,
-   "sku": "F093 ST15",
-   "nom": "Эггер Столешница 4,1х0,6х38 Мрамор Чиполлино серый",
-   "brend": "Egger",
-   "dekor": "Мрамор Чиполлино серый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 456729,
-   "narx_list_m2": null,
-   "qoldiq_m2": 1.0,
-   "kategoriya": "Группа 2 на вывод"
-  },
-  {
-   "erp_id": 16752,
-   "sku": "F093 ST7",
-   "nom": "Эггер Столешница 4,1х0,6х38 Мрамор Чиполлино серый ST7",
-   "brend": "Egger",
-   "dekor": "Мрамор Чиполлино серый ST7",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 474176,
-   "narx_list_m2": null,
-   "qoldiq_m2": 43.0,
-   "kategoriya": "Группа 1"
-  },
-  {
-   "erp_id": 16781,
-   "sku": "H011 STG8",
-   "nom": "Эггер Столешница 4,1х0,6х38 Пихта Неброди рустикальная",
-   "brend": "Egger",
-   "dekor": "Пихта Неброди рустикальная",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 554839,
-   "narx_list_m2": null,
-   "qoldiq_m2": 41.0,
-   "kategoriya": "Группа 3"
-  },
-  {
-   "erp_id": 16789,
-   "sku": "F242 ST10",
-   "nom": "Эггер Столешница 4,1х0,6х38 Сланец Юрский антрацит",
-   "brend": "Egger",
-   "dekor": "Сланец Юрский антрацит",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 505246,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Группа 3 на вывод"
+   "kategoriya": "Группа 2 на вывод",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16767,
@@ -2980,10 +1384,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 1182177,
+   "narx_m2": 1325000,
    "narx_list_m2": 1325000,
-   "qoldiq_m2": 80.0,
-   "kategoriya": "Группа 2"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Группа 2",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16790,
@@ -2997,27 +1403,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 1250188,
+   "narx_m2": 1390000,
    "narx_list_m2": 1390000,
-   "qoldiq_m2": 60.0,
-   "kategoriya": "Группа 3 на вывод"
-  },
-  {
-   "erp_id": 16772,
-   "sku": "F486 ST76",
-   "nom": "Эггер Столешница 4,1х0,6х38  Спаркл Грэйн белый",
-   "brend": "Egger",
-   "dekor": "Спаркл Грэйн белый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 554839,
-   "narx_list_m2": null,
-   "qoldiq_m2": 40.0,
-   "kategoriya": "Группа 3"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Группа 3 на вывод",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16782,
@@ -3033,25 +1424,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 510320,
    "narx_list_m2": 1390000,
-   "qoldiq_m2": 76.0,
-   "kategoriya": "Группа 3"
-  },
-  {
-   "erp_id": 16791,
-   "sku": "F637 ST16",
-   "nom": "Эггер Столешница 4,1х0,6х38 Хромикс белый",
-   "brend": "Egger",
-   "dekor": "Хромикс белый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    4100
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomi",
-   "narx_m2": 505246,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Группа 3 на вывод"
+   "qoldiq_m2": 1.46,
+   "kategoriya": "Группа 3",
+   "narx_turi": "tannarx",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16792,
@@ -3067,8 +1443,10 @@
    "olcham_manba": "ERP nomi",
    "narx_m2": 1420000,
    "narx_list_m2": 1420000,
-   "qoldiq_m2": 5.0,
-   "kategoriya": "Группа 3 на вывод"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Группа 3 на вывод",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16783,
@@ -3082,10 +1460,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomi",
-   "narx_m2": 1294912,
+   "narx_m2": 1410000,
    "narx_list_m2": 1410000,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Группа 3"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Группа 3",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 15952,
@@ -3100,10 +1480,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 1596221,
+   "narx_m2": 1750000,
    "narx_list_m2": 1750000,
-   "qoldiq_m2": 24.0,
-   "kategoriya": "3 ЦГ"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 15953,
@@ -3120,8 +1502,10 @@
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
    "narx_m2": 1614248,
    "narx_list_m2": 1750000,
-   "qoldiq_m2": 253.0,
-   "kategoriya": "3 ЦГ"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 15954,
@@ -3136,10 +1520,32 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 1231837,
+   "narx_m2": 1575071,
    "narx_list_m2": 1795000,
-   "qoldiq_m2": 135.0,
-   "kategoriya": "3 ЦГ"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "tannarx_eski",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 15950,
+   "sku": "3094/S",
+   "nom": "КЕДР Столешница 900*38мм 2U Лавант",
+   "brend": "Kedr",
+   "dekor": "900*38мм 2U Лавант",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 1546534,
+   "narx_list_m2": 1690000,
+   "qoldiq_m2": 1.0,
+   "kategoriya": "2 ЦГ",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 15955,
@@ -3157,25 +1563,9 @@
    "narx_m2": 1750000,
    "narx_list_m2": 1750000,
    "qoldiq_m2": 0.0,
-   "kategoriya": "3 ЦГ"
-  },
-  {
-   "erp_id": 15956,
-   "sku": "759/1",
-   "nom": "КЕДР Столешница 900*38мм 2U Черная бронза",
-   "brend": "Kedr",
-   "dekor": "900*38мм 2U Черная бронза",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 574676,
-   "narx_list_m2": null,
-   "qoldiq_m2": 61.0,
-   "kategoriya": "3 ЦГ"
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 15957,
@@ -3190,46 +1580,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 1581270,
+   "narx_m2": 1582719,
    "narx_list_m2": 1740000,
-   "qoldiq_m2": 206.0,
-   "kategoriya": "3 ЦГ"
-  },
-  {
-   "erp_id": 16148,
-   "sku": "7061/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Fossil",
-   "brend": "Kedr",
-   "dekor": "Fossil",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16149,
-   "sku": "7354/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Stromboly brown",
-   "brend": "Kedr",
-   "dekor": "Stromboly brown",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
+   "qoldiq_m2": 3.0,
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 16117,
@@ -3246,8 +1602,10 @@
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
    "narx_m2": 525000,
    "narx_list_m2": 525000,
-   "qoldiq_m2": 11.0,
-   "kategoriya": "2 ЦГ"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "2 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16100,
@@ -3262,118 +1620,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 467680,
+   "narx_m2": 468185,
    "narx_list_m2": 525000,
-   "qoldiq_m2": 47.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16101,
-   "sku": "1538/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Ароза",
-   "brend": "Kedr",
-   "dekor": "Ароза",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 42.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16102,
-   "sku": "1539/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Ароза темно-серая",
-   "brend": "Kedr",
-   "dekor": "Ароза темно-серая",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 88.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16150,
-   "sku": "4023/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Аттика",
-   "brend": "Kedr",
-   "dekor": "Аттика",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 228604,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16151,
-   "sku": "3063/XX",
-   "nom": "КЕДР ПРОФ Столешница 38мм Базаль (Кобальт)",
-   "brend": "Kedr",
-   "dekor": "Базаль (Кобальт)",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
    "qoldiq_m2": 1.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16152,
-   "sku": "521/PW",
-   "nom": "КЕДР ПРОФ Столешница 38мм Береза сандал",
-   "brend": "Kedr",
-   "dekor": "Береза сандал",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 261227,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16153,
-   "sku": "2058/FL",
-   "nom": "КЕДР ПРОФ Столешница 38мм Бискайская сосна",
-   "brend": "Kedr",
-   "dekor": "Бискайская сосна",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 5.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
+   "kategoriya": "1 ЦГ",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 16118,
@@ -3388,46 +1640,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 483048,
+   "narx_m2": 560000,
    "narx_list_m2": 560000,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16119,
-   "sku": "2238/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Брекчия светлая",
-   "brend": "Kedr",
-   "dekor": "Брекчия светлая",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 261227,
-   "narx_list_m2": null,
-   "qoldiq_m2": 177.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16154,
-   "sku": "1210/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Бриллиант белый",
-   "brend": "Kedr",
-   "dekor": "Бриллиант белый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 300423,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
+   "kategoriya": "2 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16120,
@@ -3442,118 +1660,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 407740,
+   "narx_m2": 567354,
    "narx_list_m2": 600000,
-   "qoldiq_m2": 18.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16155,
-   "sku": "3027/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Гранит белый",
-   "brend": "Kedr",
-   "dekor": "Гранит белый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16103,
-   "sku": "3122/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Даркстоун",
-   "brend": "Kedr",
-   "dekor": "Даркстоун",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 26.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16156,
-   "sku": "7046/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Дейли",
-   "brend": "Kedr",
-   "dekor": "Дейли",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 3.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16157,
-   "sku": "7052",
-   "nom": "КЕДР ПРОФ Столешница 38мм Дуб Вотан",
-   "brend": "Kedr",
-   "dekor": "Дуб Вотан",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 300423,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16131,
-   "sku": "2102/М",
-   "nom": "КЕДР ПРОФ Столешница 38мм Дуб Итальянский",
-   "brend": "Kedr",
-   "dekor": "Дуб Итальянский",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
-   "qoldiq_m2": 87.0,
-   "kategoriya": "3 ЦГ"
-  },
-  {
-   "erp_id": 16104,
-   "sku": "2075/FL",
-   "nom": "КЕДР ПРОФ Столешница 38мм Дуб Кера",
-   "brend": "Kedr",
-   "dekor": "Дуб Кера",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 88.0,
-   "kategoriya": "1 ЦГ"
+   "qoldiq_m2": 1.0,
+   "kategoriya": "2 ЦГ",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
    "erp_id": 16105,
@@ -3568,82 +1680,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 452769,
+   "narx_m2": 450290,
    "narx_list_m2": 505000,
-   "qoldiq_m2": 16.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16158,
-   "sku": "3852/P",
-   "nom": "КЕДР ПРОФ Столешница 38мм Дуб Корсика",
-   "brend": "Kedr",
-   "dekor": "Дуб Корсика",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16106,
-   "sku": "1003/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Дуб Крафт золотой",
-   "brend": "Kedr",
-   "dekor": "Дуб Крафт золотой",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 38.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16107,
-   "sku": "1004/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Дуб Крафт табачный",
-   "brend": "Kedr",
-   "dekor": "Дуб Крафт табачный",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 28.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16146,
-   "sku": "690/P",
-   "nom": "КЕДР ПРОФ Столешница 38мм Индийское дерево",
-   "brend": "Kedr",
-   "dekor": "Индийское дерево",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 300423,
-   "narx_list_m2": null,
-   "qoldiq_m2": 8.0,
-   "kategoriya": "4 ЦГ"
+   "qoldiq_m2": 1.0,
+   "kategoriya": "1 ЦГ",
+   "narx_turi": "tannarx",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16108,
@@ -3660,152 +1702,10 @@
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
    "narx_m2": 535000,
    "narx_list_m2": 535000,
-   "qoldiq_m2": 44.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16132,
-   "sku": "905/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Калакатта гл",
-   "brend": "Kedr",
-   "dekor": "Калакатта гл",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 397010,
-   "narx_list_m2": null,
-   "qoldiq_m2": 76.0,
-   "kategoriya": "3 ЦГ"
-  },
-  {
-   "erp_id": 16121,
-   "sku": "4163/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Калахари",
-   "brend": "Kedr",
-   "dekor": "Калахари",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 261227,
-   "narx_list_m2": null,
-   "qoldiq_m2": 115.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16109,
-   "sku": "9968/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Камешки",
-   "brend": "Kedr",
-   "dekor": "Камешки",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 29.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16159,
-   "sku": "2047/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Кантри",
-   "brend": "Kedr",
-   "dekor": "Кантри",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16160,
-   "sku": "7019/Q",
-   "nom": "КЕДР ПРОФ Столешница 38мм Капри темный",
-   "brend": "Kedr",
-   "dekor": "Капри темный",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16110,
-   "sku": "4046/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Кастилло темный",
-   "brend": "Kedr",
-   "dekor": "Кастилло темный",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 45.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16133,
-   "sku": "946/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Кастилло темный гл",
-   "brend": "Kedr",
-   "dekor": "Кастилло темный гл",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
-   "qoldiq_m2": 12.0,
-   "kategoriya": "3 ЦГ"
-  },
-  {
-   "erp_id": 16161,
-   "sku": "997/BR",
-   "nom": "КЕДР ПРОФ Столешница 38мм Королевский опал светлый",
-   "brend": "Kedr",
-   "dekor": "Королевский опал светлый",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 300423,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
+   "kategoriya": "1 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16122,
@@ -3820,226 +1720,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 480460,
+   "narx_m2": 575000,
    "narx_list_m2": 575000,
-   "qoldiq_m2": 355.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16162,
-   "sku": "0706/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Королевский опал темный",
-   "brend": "Kedr",
-   "dekor": "Королевский опал темный",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 300423,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16123,
-   "sku": "3094/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Лавант",
-   "brend": "Kedr",
-   "dekor": "Лавант",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 261227,
-   "narx_list_m2": null,
-   "qoldiq_m2": 9.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16124,
-   "sku": "3138/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Лаос",
-   "brend": "Kedr",
-   "dekor": "Лаос",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 261227,
-   "narx_list_m2": null,
-   "qoldiq_m2": 33.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16111,
-   "sku": "7771/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор Аврора",
-   "brend": "Kedr",
-   "dekor": "Мрамор Аврора",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 33.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16112,
-   "sku": "7772/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор Алексис",
-   "brend": "Kedr",
-   "dekor": "Мрамор Алексис",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 1.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16163,
-   "sku": "7031/Q",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор Бергамо",
-   "brend": "Kedr",
-   "dekor": "Мрамор Бергамо",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 300423,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16164,
-   "sku": "7032/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор Бергамо темный",
-   "brend": "Kedr",
-   "dekor": "Мрамор Бергамо темный",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 300423,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16113,
-   "sku": "2157/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор Верде",
-   "brend": "Kedr",
-   "dekor": "Мрамор Верде",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 146.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16165,
-   "sku": "7025/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор Джалло",
-   "brend": "Kedr",
-   "dekor": "Мрамор Джалло",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 267680,
-   "narx_list_m2": null,
-   "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16135,
-   "sku": "7024/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор Империал 3 гр",
-   "brend": "Kedr",
-   "dekor": "Мрамор Империал 3 гр",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
-   "qoldiq_m2": 1.0,
-   "kategoriya": "3 ЦГ"
-  },
-  {
-   "erp_id": 16167,
-   "sku": "3028/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор Марквина белый гл",
-   "brend": "Kedr",
-   "dekor": "Мрамор Марквина белый гл",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16136,
-   "sku": "3028/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор Марквина глянец",
-   "brend": "Kedr",
-   "dekor": "Мрамор Марквина глянец",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
-   "qoldiq_m2": 268.0,
-   "kategoriya": "3 ЦГ"
+   "kategoriya": "2 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16137,
@@ -4054,28 +1740,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 520361,
+   "narx_m2": 615000,
    "narx_list_m2": 615000,
-   "qoldiq_m2": 71.0,
-   "kategoriya": "3 ЦГ"
-  },
-  {
-   "erp_id": 16138,
-   "sku": "3029/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор Марквина черный",
-   "brend": "Kedr",
-   "dekor": "Мрамор Марквина черный",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
-   "qoldiq_m2": 106.0,
-   "kategoriya": "3 ЦГ"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16134,
@@ -4090,10 +1760,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 544047,
+   "narx_m2": 615000,
    "narx_list_m2": 615000,
-   "qoldiq_m2": 147.0,
-   "kategoriya": "3 ЦГ"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16125,
@@ -4108,35 +1780,19 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 488349,
+   "narx_m2": 560000,
    "narx_list_m2": 560000,
-   "qoldiq_m2": 38.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16166,
-   "sku": "7024/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор империал",
-   "brend": "Kedr",
-   "dekor": "Мрамор империал",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 300423,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
+   "kategoriya": "2 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
-   "erp_id": 16126,
-   "sku": "3028/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор марквина белый мат",
+   "erp_id": 16072,
+   "sku": "2238/S",
+   "nom": "КЕДР Столешница 38мм Полнотелый Брекчия светлая",
    "brend": "Kedr",
-   "dekor": "Мрамор марквина белый мат",
+   "dekor": "Полнотелый Брекчия светлая",
    "qalinlik": 38,
    "uzunliklar": [
     3050,
@@ -4144,100 +1800,212 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 261227,
-   "narx_list_m2": null,
-   "qoldiq_m2": 3.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16168,
-   "sku": "3034/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор марквина синий мат",
-   "brend": "Kedr",
-   "dekor": "Мрамор марквина синий мат",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 261227,
-   "narx_list_m2": null,
-   "qoldiq_m2": 2.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16114,
-   "sku": "3025/Q",
-   "nom": "КЕДР ПРОФ Столешница 38мм Мрамор черный",
-   "brend": "Kedr",
-   "dekor": "Мрамор черный",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 62.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16169,
-   "sku": "7081/Q",
-   "nom": "КЕДР ПРОФ Столешница 38мм Рамбла",
-   "brend": "Kedr",
-   "dekor": "Рамбла",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
-   "qoldiq_m2": 1.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
-  },
-  {
-   "erp_id": 16139,
-   "sku": "3042/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Семолина бежевая",
-   "brend": "Kedr",
-   "dekor": "Семолина бежевая",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
-   "qoldiq_m2": 9.0,
-   "kategoriya": "3 ЦГ"
-  },
-  {
-   "erp_id": 16170,
-   "sku": "2236/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Семолина бежевая мат",
-   "brend": "Kedr",
-   "dekor": "Семолина бежевая мат",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 261227,
-   "narx_list_m2": null,
+   "narx_m2": 645000,
+   "narx_list_m2": 645000,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
+   "kategoriya": "2 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16094,
+   "sku": "1210/Br",
+   "nom": "КЕДР Столешница 38мм Полнотелый Бриллиант Белый",
+   "brend": "Kedr",
+   "dekor": "Полнотелый Бриллиант Белый",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 672715,
+   "narx_list_m2": 755000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "4 ЦГ",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16081,
+   "sku": "727/1",
+   "nom": "КЕДР Столешница 38мм Полнотелый Гранит белый гл",
+   "brend": "Kedr",
+   "dekor": "Полнотелый Гранит белый гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 665307,
+   "narx_list_m2": 730000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16074,
+   "sku": "3062/S",
+   "nom": "КЕДР Столешница 38мм Полнотелый Королевский опал светлый",
+   "brend": "Kedr",
+   "dekor": "Полнотелый Королевский опал светлый",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 665000,
+   "narx_list_m2": 665000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "2 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16075,
+   "sku": "3094/S",
+   "nom": "КЕДР Столешница 38мм Полнотелый Лавант",
+   "brend": "Kedr",
+   "dekor": "Полнотелый Лавант",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 645000,
+   "narx_list_m2": 645000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "2 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16086,
+   "sku": "734/1",
+   "nom": "КЕДР Столешница 38мм Полнотелый Мрамор Марквина синий",
+   "brend": "Kedr",
+   "dekor": "Полнотелый Мрамор Марквина синий",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 730000,
+   "narx_list_m2": 730000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16087,
+   "sku": "3029/1",
+   "nom": "КЕДР Столешница 38мм Полнотелый Мрамор Марквина черный гл",
+   "brend": "Kedr",
+   "dekor": "Полнотелый Мрамор Марквина черный гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 730000,
+   "narx_list_m2": 730000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16091,
+   "sku": "759/1",
+   "nom": "КЕДР Столешница 38мм Полнотелый Черная бронза гл",
+   "brend": "Kedr",
+   "dekor": "Полнотелый Черная бронза гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 705000,
+   "narx_list_m2": 705000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16092,
+   "sku": "4060/1",
+   "nom": "КЕДР Столешница 38мм Полнотелый Черное серебро гл",
+   "brend": "Kedr",
+   "dekor": "Полнотелый Черное серебро гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 615798,
+   "narx_list_m2": 730000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "tannarx_eski",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16079,
+   "sku": "4060/S",
+   "nom": "КЕДР Столешница 38мм Полнотелый Черное серебро мат",
+   "brend": "Kedr",
+   "dekor": "Полнотелый Черное серебро мат",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 645000,
+   "narx_list_m2": 645000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "2 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16093,
+   "sku": "713/1",
+   "nom": "КЕДР Столешница 38мм Полнотелый Черный гранит гл",
+   "brend": "Kedr",
+   "dekor": "Полнотелый Черный гранит гл",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050,
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
+   "narx_m2": 615680,
+   "narx_list_m2": 730000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "tannarx_eski",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16127,
@@ -4252,46 +2020,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 484982,
+   "narx_m2": 550000,
    "narx_list_m2": 550000,
-   "qoldiq_m2": 150.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16115,
-   "sku": "2057/М",
-   "nom": "КЕДР ПРОФ Столешница 38мм Сосна Пондероса",
-   "brend": "Kedr",
-   "dekor": "Сосна Пондероса",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 161.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16140,
-   "sku": "3145/V",
-   "nom": "КЕДР ПРОФ Столешница 38мм Старк",
-   "brend": "Kedr",
-   "dekor": "Старк",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
-   "qoldiq_m2": 97.0,
-   "kategoriya": "3 ЦГ"
+   "qoldiq_m2": 0.0,
+   "kategoriya": "2 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16141,
@@ -4306,46 +2040,12 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 532079,
+   "narx_m2": 590000,
    "narx_list_m2": 590000,
-   "qoldiq_m2": 102.0,
-   "kategoriya": "3 ЦГ"
-  },
-  {
-   "erp_id": 16142,
-   "sku": "3153/Q",
-   "nom": "КЕДР ПРОФ Столешница 38мм Терра",
-   "brend": "Kedr",
-   "dekor": "Терра",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
-   "qoldiq_m2": 142.0,
-   "kategoriya": "3 ЦГ"
-  },
-  {
-   "erp_id": 16171,
-   "sku": "7493/Q",
-   "nom": "КЕДР ПРОФ Столешница 38мм Умбрия",
-   "brend": "Kedr",
-   "dekor": "Умбрия",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 261227,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16128,
@@ -4362,98 +2062,10 @@
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
    "narx_m2": 486049,
    "narx_list_m2": 565000,
-   "qoldiq_m2": 17.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16116,
-   "sku": "1154/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Фуджи",
-   "brend": "Kedr",
-   "dekor": "Фуджи",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 241629,
-   "narx_list_m2": null,
-   "qoldiq_m2": 102.0,
-   "kategoriya": "1 ЦГ"
-  },
-  {
-   "erp_id": 16129,
-   "sku": "4059/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Черная Бронза мат",
-   "brend": "Kedr",
-   "dekor": "Черная Бронза мат",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 248202,
-   "narx_list_m2": null,
-   "qoldiq_m2": 42.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16143,
-   "sku": "759/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Черная бронза гл",
-   "brend": "Kedr",
-   "dekor": "Черная бронза гл",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 450660,
-   "narx_list_m2": null,
-   "qoldiq_m2": 164.0,
-   "kategoriya": "3 ЦГ"
-  },
-  {
-   "erp_id": 16130,
-   "sku": "4060/S",
-   "nom": "КЕДР ПРОФ Столешница 38мм Черное Серебро мат",
-   "brend": "Kedr",
-   "dekor": "Черное Серебро мат",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 261227,
-   "narx_list_m2": null,
-   "qoldiq_m2": 133.0,
-   "kategoriya": "2 ЦГ"
-  },
-  {
-   "erp_id": 16144,
-   "sku": "4060/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Черное серебро гл",
-   "brend": "Kedr",
-   "dekor": "Черное серебро гл",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 504075,
-   "narx_list_m2": null,
-   "qoldiq_m2": 152.0,
-   "kategoriya": "3 ЦГ"
+   "qoldiq_m2": 2.0,
+   "kategoriya": "2 ЦГ",
+   "narx_turi": "tannarx",
+   "ishonch": "O'RTA"
   },
   {
    "erp_id": 16145,
@@ -4468,64 +2080,487 @@
    ],
    "eni": 600,
    "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 508690,
+   "narx_m2": 507475,
    "narx_list_m2": 615000,
-   "qoldiq_m2": 18.0,
-   "kategoriya": "3 ЦГ"
-  },
-  {
-   "erp_id": 16172,
-   "sku": "0713/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Черный гранит гл",
-   "brend": "Kedr",
-   "dekor": "Черный гранит гл",
-   "qalinlik": 38,
-   "uzunliklar": [
-    3050,
-    4200
-   ],
-   "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
+   "kategoriya": "3 ЦГ",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
-   "erp_id": 16173,
-   "sku": "3052/1",
-   "nom": "КЕДР ПРОФ Столешница 38мм Черный гранит глянец",
-   "brend": "Kedr",
-   "dekor": "Черный гранит глянец",
+   "erp_id": 16407,
+   "sku": "4060М",
+   "nom": "Союз Столешница 3050*600*38мм Галикарнас сильвер",
+   "brend": "Soyuz",
+   "dekor": "Галикарнас сильвер",
    "qalinlik": 38,
    "uzunliklar": [
-    3050,
-    4200
+    3050
    ],
    "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 280825,
-   "narx_list_m2": null,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 540000,
+   "narx_list_m2": 580000,
    "qoldiq_m2": 0.0,
-   "kategoriya": "Проф-стандарт 38 мм - старые, выведенные декоры"
+   "kategoriya": "Союз Юниверсал",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
   },
   {
-   "erp_id": 16147,
-   "sku": "2013/SO",
-   "nom": "КЕДР ПРОФ Столешница 38мм Юрский камень",
-   "brend": "Kedr",
-   "dekor": "Юрский камень",
+   "erp_id": 16641,
+   "sku": "C509 BS",
+   "nom": "Ультрадекор Столешница 4200*600*38мм Азул Оникс Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Азул Оникс Matt R3",
    "qalinlik": 38,
    "uzunliklar": [
-    3050,
     4200
    ],
    "eni": 600,
-   "olcham_manba": "ERP nomida uzunlik yo'q — egasi #162 standarti (3050/4200)",
-   "narx_m2": 300423,
-   "narx_list_m2": null,
-   "qoldiq_m2": 12.0,
-   "kategoriya": "4 ЦГ"
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 678770,
+   "narx_list_m2": 810000,
+   "qoldiq_m2": 1.0,
+   "kategoriya": "Ультрадекор 4200*600*38мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16624,
+   "sku": "K021 BS",
+   "nom": "Ультрадекор Столешница 38мм Блэквуд Ячменный Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Блэквуд Ячменный Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 434280,
+   "narx_list_m2": 499997,
+   "qoldiq_m2": 1.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16625,
+   "sku": "C501 CR",
+   "nom": "Ультрадекор Столешница 38мм Гранж Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Гранж Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 446590,
+   "narx_list_m2": 510000,
+   "qoldiq_m2": 1.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16626,
+   "sku": "2708 CR",
+   "nom": "Ультрадекор Столешница 38мм Дуб Бунратти Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Дуб Бунратти Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 510000,
+   "narx_list_m2": 510000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16642,
+   "sku": "U604 BS",
+   "nom": "Ультрадекор Столешница 4200*600*38мм Дуб Водан Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Дуб Водан Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 628627,
+   "narx_list_m2": 900000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 4200*600*38мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16627,
+   "sku": "U604 BS",
+   "nom": "Ультрадекор Столешница 38мм Дуб Вотан Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Дуб Вотан Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 425114,
+   "narx_list_m2": 510000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16618,
+   "sku": "2705 GL",
+   "nom": "Ультрадекор Столешница 38мм Королевский Опал Светлый GL R9",
+   "brend": "Ultradekor",
+   "dekor": "Королевский Опал Светлый GL R9",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 543422,
+   "narx_list_m2": 620000,
+   "qoldiq_m2": 1.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Глянец",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16628,
+   "sku": "2705 CR",
+   "nom": "Ультрадекор Столешница 38мм Королевский Опал светлый Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Королевский Опал светлый Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 429884,
+   "narx_list_m2": 510000,
+   "qoldiq_m2": 2.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16643,
+   "sku": "2705 CR",
+   "nom": "Ультрадекор Столешница 4200*600*38мм Королевский опал светлый Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Королевский опал светлый Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 625793,
+   "narx_list_m2": 900000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 4200*600*38мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16619,
+   "sku": "2703 GL",
+   "nom": "Ультрадекор Столешница 38мм Мрамор Белый GL R9",
+   "brend": "Ultradekor",
+   "dekor": "Мрамор Белый GL R9",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 567230,
+   "narx_list_m2": 625000,
+   "qoldiq_m2": 2.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Глянец",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16637,
+   "sku": "2703 GL",
+   "nom": "Ультрадекор Столешница 4200*600*38мм Мрамор Белый Gloss R9",
+   "brend": "Ultradekor",
+   "dekor": "Мрамор Белый Gloss R9",
+   "qalinlik": 38,
+   "uzunliklar": [
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 770791,
+   "narx_list_m2": 925000,
+   "qoldiq_m2": 1.0,
+   "kategoriya": "Ультрадекор 4200*600*38мм Глянец",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16629,
+   "sku": "2703 CR",
+   "nom": "Ультрадекор Столешница 38мм Мрамор Белый Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Мрамор Белый Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 510000,
+   "narx_list_m2": 510000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16620,
+   "sku": "C508 GL",
+   "nom": "Ультрадекор Столешница 38мм Мрамор Марквина Черный GL R9",
+   "brend": "Ultradekor",
+   "dekor": "Мрамор Марквина Черный GL R9",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 543129,
+   "narx_list_m2": 655000,
+   "qoldiq_m2": 5.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Глянец",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16630,
+   "sku": "2710 CR",
+   "nom": "Ультрадекор Столешница 38мм Мрамор Марквина белый Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Мрамор Марквина белый Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 510000,
+   "narx_list_m2": 510000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16631,
+   "sku": "C508 CR",
+   "nom": "Ультрадекор Столешница 38мм Мрамор Марквина черный Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Мрамор Марквина черный Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 429996,
+   "narx_list_m2": 510000,
+   "qoldiq_m2": 1.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16644,
+   "sku": "2710 CR",
+   "nom": "Ультрадекор Столешница 4200*600*38мм Мрамор марквина Белый Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Мрамор марквина Белый Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 900000,
+   "narx_list_m2": 900000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 4200*600*38мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16638,
+   "sku": "C508 GL",
+   "nom": "Ультрадекор Столешница 4200*600*38мм Мрамор марквина Черный Gloss R9",
+   "brend": "Ultradekor",
+   "dekor": "Мрамор марквина Черный Gloss R9",
+   "qalinlik": 38,
+   "uzunliklar": [
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 769123,
+   "narx_list_m2": 925000,
+   "qoldiq_m2": 4.0,
+   "kategoriya": "Ультрадекор 4200*600*38мм Глянец",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16645,
+   "sku": "C508 CR",
+   "nom": "Ультрадекор Столешница 4200*600*38мм Мрамор марквина Черный Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Мрамор марквина Черный Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 640730,
+   "narx_list_m2": 900000,
+   "qoldiq_m2": 1.0,
+   "kategoriya": "Ультрадекор 4200*600*38мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16632,
+   "sku": "2533 BS",
+   "nom": "Ультрадекор Столешница 38мм Сосна Бетонная Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Сосна Бетонная Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 510000,
+   "narx_list_m2": 510000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16621,
+   "sku": "C514 GL",
+   "nom": "Ультрадекор Столешница 38мм Черная Бронза GL R9",
+   "brend": "Ultradekor",
+   "dekor": "Черная Бронза GL R9",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 625000,
+   "narx_list_m2": 625000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Глянец",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
+  },
+  {
+   "erp_id": 16622,
+   "sku": "C516 GL",
+   "nom": "Ультрадекор Столешница 38мм Черное Серебро GL R9",
+   "brend": "Ultradekor",
+   "dekor": "Черное Серебро GL R9",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 543290,
+   "narx_list_m2": 625000,
+   "qoldiq_m2": 4.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Глянец",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16640,
+   "sku": "C516 GL",
+   "nom": "Ультрадекор Столешница 4200*600*38мм Черное серебро Gloss R9",
+   "brend": "Ultradekor",
+   "dekor": "Черное серебро Gloss R9",
+   "qalinlik": 38,
+   "uzunliklar": [
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 798419,
+   "narx_list_m2": 925000,
+   "qoldiq_m2": 2.0,
+   "kategoriya": "Ультрадекор 4200*600*38мм Глянец",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16649,
+   "sku": "C516 CR",
+   "nom": "Ультрадекор Столешница 4200*600*38мм Черное серебро Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Черное серебро Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    4200
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 651780,
+   "narx_list_m2": 925000,
+   "qoldiq_m2": 2.0,
+   "kategoriya": "Ультрадекор 4200*600*38мм Мат",
+   "narx_turi": "tannarx",
+   "ishonch": "YUQORI"
+  },
+  {
+   "erp_id": 16636,
+   "sku": "K524 BS",
+   "nom": "Ультрадекор Столешница 38мм Ясень Серфсайд Натуральный Matt R3",
+   "brend": "Ultradekor",
+   "dekor": "Ясень Серфсайд Натуральный Matt R3",
+   "qalinlik": 38,
+   "uzunliklar": [
+    3050
+   ],
+   "eni": 600,
+   "olcham_manba": "ERP nomi",
+   "narx_m2": 510000,
+   "narx_list_m2": 510000,
+   "qoldiq_m2": 0.0,
+   "kategoriya": "Ультрадекор 3050*600*38мм Мат",
+   "narx_turi": "sotuv",
+   "ishonch": "O'RTA"
   }
  ]
 }

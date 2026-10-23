@@ -6,6 +6,9 @@
  *   [3] furnitura katalogi: hajm pasaymagan (3089), takroriy ID yo'q, narx ≥ 0, no_price ↔ uzs 0, price_src to'g'ri, ERP narxi (erp_api_) > 0
  *   [4] ERP eksporti (lokal maxfiy fayl, gitda YO'Q) mavjud bo'lsa: plita, furnitura va stoleshnitsa ERP bilan to'liq mos (reja bo'sh: o'zgarishi kerak qator yo'q), qalinlik tegilmagan.
  *       Fayl yo'q bo'lsa — o'tkazib yuboriladi (boshqa mashinada ham yashil).
+ * 2026-10-23 (TZ-50, egasi #311/#325): plita va stoleshnitsa katalogi FAQAT yangi baza (YANGI-BAZA-ISHONCHLI-NARXLAR-2026-10-23) narxlariga o'tdi — hajm 1281 → 718 (yangi bazada yo'qlari chiqarildi),
+ * src "yangi_baza_<sana>". Shu sababli ERP products API (2026-10-22) narxi bilan tenglik tekshiruvlari plita/stoleshnitsa uchun TUGADI (narxning yagona manbai — yangi baza; ularni
+ * tests/verify_katalog_yangi_baza.mjs CSV bilan solishtiradi); list formati, takrorsizlik, indeks tengligi va furnitura (TZ-50 tegmagan) tekshiruvlari qoldi.
  * Ishga tushirish: node tests/verify_katalog_erp.mjs */
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -25,7 +28,7 @@ const SC = J('sheet-catalog.json'), FC = J('furnitura-catalog.json'), MI = J('ma
 const sheets = SC.sheets, items = FC.items;
 
 console.log('\n[1] plita katalogi');
-ok('hajm pasaymagan: ≥ 1281 plita', sheets.length >= 1281, sheets.length);
+ok('hajm: ≥ 700 plita (TZ-50: yangi baza ishonchli narxli yozuvlari; avval 1281)', sheets.length >= 700, sheets.length);
 const kodlar = sheets.map(erpKod);
 ok('takroriy ERP-kod yo\'q (nom|SKU|qalinlik)', new Set(kodlar).size === sheets.length, sheets.length - new Set(kodlar).size);
 const nomSku = sheets.map(s => s.name + '|' + s.sku + '|' + s.th);
@@ -36,21 +39,21 @@ const yomonNarx = sheets.filter(s => !(num(s.uzs) && s.uzs >= 0 && num(s.usd) &&
 ok('narx (uzs, usd) — son va ≥ 0', yomonNarx.length === 0, yomonNarx.slice(0, 3).map(s => s.name).join('; '));
 ok('qalinlik — musbat son', sheets.every(s => num(s.th) && s.th > 0));
 ok('l, w — butun mm (kasr yo\'q)', sheets.every(s => Number.isInteger(s.l) && Number.isInteger(s.w)));
-ok('src — matn (katalog | narx-2026 | erp_api_<sana>)', sheets.every(s => typeof s.src === 'string' && /^(katalog|narx-2026|erp_api_\d{4}-\d{2}-\d{2})$/.test(s.src)), [...new Set(sheets.map(s => s.src))].join());
-ok('_meta: ERP API yozuvi bor (2026-10-22 yoki 2026-10-23)', /ERP API 2026-10-2[23]/.test(SC._meta));
+ok('src — yangi_baza_<sana> (TZ-50: narx faqat yangi bazadan)', sheets.every(s => typeof s.src === 'string' && /^yangi_baza_\d{4}-\d{2}-\d{2}$/.test(s.src)), [...new Set(sheets.map(s => s.src))].join());
+ok('_meta: yangi baza yozuvi bor (TZ-50)', /yangi baza \(ERP 2026-10-23/i.test(SC._meta) && /TZ-50/.test(SC._meta));
 
 console.log('\n[2] list formati nomdagi maydonga mos (ERP formati)');
 /* nomda aniq o'lcham yozilgan ("2800*2070 … 5,175кv") yoki maydon "kv" yaxlitlangan nom — qoida faqat aniq maydon (4,575 / 5,0325 …) uchun */
 const kodli = sheets.filter(s => nomMaydoni(s.name, false) != null && !/\d{3,4}\s*[*xх×]\s*\d{3,4}/i.test(s.name));
 const zid = kodli.filter(s => { const f = nomFormati(s.name, false); return !f || f[0] !== s.l || f[1] !== s.w; });
-ok(`maydonli nomlar (${kodli.length} ta): format nomga mos — 4,575 → 2500×1830, 5,0325 → 2750×1830, 5,175 → 2500×2070, 5,796 → 2800×2070`, kodli.length > 500 && zid.length === 0,
+ok(`maydonli nomlar (${kodli.length} ta): format nomga mos — 4,575 → 2500×1830, 5,0325 → 2750×1830, 5,175 → 2500×2070, 5,796 → 2800×2070`, kodli.length > 400 && zid.length === 0,
   zid.slice(0, 4).map(s => s.name + ' ' + s.l + '×' + s.w).join('; '));
 const l4575 = sheets.filter(s => /(?<![\d.,])4[,.]575(?![\d])/.test(s.name));
 ok(`"4,575" nomli ${l4575.length} ta plita — hammasi 2500×1830 (sukut 2800×2070 emas)`, l4575.length >= 50 && l4575.every(s => s.l === 2500 && s.w === 1830));
 const l50325 = sheets.filter(s => /(?<![\d.,])5[,.]0325(?![\d])/.test(s.name));
 ok(`"5,0325" nomli ${l50325.length} ta plita — hammasi 2750×1830`, l50325.length >= 100 && l50325.every(s => s.l === 2750 && s.w === 1830));
 const sat = sheets.find(s => s.sku === '7045 BS' && /Ультрадекор 4,575 Сатин/.test(s.name));
-ok('Satin 7045 BS (BIG ONE): 2500×1830, narx 282 568 (ERP bilan bir xil)', !!sat && sat.l === 2500 && sat.w === 1830 && sat.uzs === 282568);
+ok('Satin 7045 BS (BIG ONE): 2500×1830, tannarx 282 971, sotuv 380 000 (yangi baza; avval ERP 282 568)', !!sat && sat.l === 2500 && sat.w === 1830 && sat.uzs === 282971 && sat.lst === 380000 && sat.uzs_turi === 'tannarx');
 ok('materials-index.json — sheet-catalog bilan bir xil (tartib, nom, SKU, l, w, qalinlik, narx)', MI.items.length === sheets.length
   && MI.items.every((m, i) => { const s = sheets[i]; return m.name === s.name && m.sku === s.sku && m.l === s.l && m.w === s.w && m.th === s.th && m.uzs === s.uzs && m.usd === s.usd; }));
 
@@ -75,12 +78,13 @@ if (!erpYol) skip('ERP eksporti (Smart3D_malumot/eski narxlar/erp-mahsulotlar-20
 else {
   const R = reja(JSON.parse(readFileSync(erpYol, 'utf8')), SC, FC, ST);
   const kutilmagan = (g) => R[g].filter(x => (x.yangi_uzs > 0 && x.eski_uzs !== x.yangi_uzs));
-  ok('plita: ERP narxi bilan farq qiladigan qator yo\'q (o\'zgarishi kerak 0)', kutilmagan('plita').length === 0, kutilmagan('plita').slice(0, 3).map(x => x.nom).join('; '));
-  ok('plita: ERP list formati bilan farq qiladigan qator yo\'q', R.plita.every(x => !x.yangi_lw || (x.yangi_lw[0] === x.eski_lw[0] && x.yangi_lw[1] === x.eski_lw[1])));
-  ok('furnitura: ERP so\'m narxi bilan farq qiladigan qator yo\'q', kutilmagan('furnitura').length === 0, kutilmagan('furnitura').slice(0, 3).map(x => x.nom).join('; '));
-  ok('stoleshnitsa: narx_m2 ERP (display_price_uzs) bilan bir xil — farq qiladigan dekor yo\'q', R.stoleshnitsa.length >= 250 && R.stoleshnitsa.every(x => x.h !== 'ozgardi'), R.stoleshnitsa.filter(x => x.h === 'ozgardi').slice(0, 3).map(x => x.nom).join('; '));
+  /* TZ-50: plita va stoleshnitsa narxi endi ERP products API (2026-10-22) bilan EMAS, yangi baza bilan tengligi tekshiriladi (verify_katalog_yangi_baza.mjs) — bu eksport eski narx manbai */
+  /* list formati: ERP length×width bilan teng; istisno — nomda aniq o'lcham yozilgan ("2500*1830*18": ERP'da 2400 — noto'g'ri, nomdagi o'lcham ustun, TZ-50) */
+  const lwFarq = R.plita.filter(x => x.yangi_lw && (x.yangi_lw[0] !== x.eski_lw[0] || x.yangi_lw[1] !== x.eski_lw[1]));
+  ok('plita: ERP list formati bilan farq qiladigan qator yo\'q (faqat nomida aniq o\'lcham yozilganlar istisno)', lwFarq.every(x => /\d{3,4}\s*[*xх×]\s*\d{3,4}/i.test(x.nom)), lwFarq.map(x => x.nom).join('; '));
+  ok('furnitura: ERP so\'m narxi bilan farq qiladigan qator yo\'q (TZ-50 furniturani o\'zgartirmagan)', kutilmagan('furnitura').length === 0, kutilmagan('furnitura').slice(0, 3).map(x => x.nom).join('; '));
   ok('nomdagi maydon ERP formatiga zid plita yo\'q (format_ziddiyat bo\'sh)', R.format_ziddiyat.length === 0);
-  ok(`mos kelgan plitalar ≥ 1270 (${R.plita.length}), noaniq ro'yxat faqat ERP dublikatlari (${R.noaniq.plita.length})`, R.plita.length >= 1270 && R.noaniq.plita.every(x => x.sabab === 'takror'));
+  ok(`mos kelgan plitalar ≥ 700 (${R.plita.length}); noaniq ro'yxat faqat ERP dublikatlari (${R.noaniq.plita.length}: Shanghai UV / Супер Мат / ЛМДФ 2/2 — ERP'da bir xil nomli ikki qator)`, R.plita.length >= 700 && R.noaniq.plita.every(x => x.sabab === 'takror'));
   console.log('  · qalinlik farqi (ERP ↔ katalog; erpKod kaliti — tegilmagan):', R.th_farq.length, 'ta');
 }
 

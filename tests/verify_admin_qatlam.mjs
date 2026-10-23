@@ -32,9 +32,12 @@ const sh0 = H0.sheetCatalog.sheets.find(s => erpKod(s) === kod0);
 
 console.log('\n[1] erpKod — bitta funksiya (server va brauzer)');
 ok('erpMaterial.erpKod === engine/erpKod.erpKod', E.erpKod === erpKod);
-ok('dekor-asosiy.json dagi 175 ERP kodining hammasi varaqlar katalogida va materials-index.json da', (() => {
+/* TZ-50 (2026-10-23): katalog faqat yangi baza — dekor-asosiy.json ning 175 ERP kodidan 118 tasi katalogda qoldi (57 dekor to'liq, 19 qisman, 24 tasi kodsiz: UI ularni ko'rsatmaydi);
+ * qolgan kodlar katalogdan chiqarilgan. Varaqlar katalogi va materials-index.json bir xil to'plam, kodlar ularda bir xil bor/yo'q */
+ok('dekor-asosiy.json ning 175 ERP kodidan 118 tasi varaqlar katalogida va materials-index.json da (bir xil to\'plam); qolganlari ikkalasida ham yo\'q', (() => {
   const a = new Set(H0.sheetCatalog.sheets.map(erpKod)), b = new Set(J('materials-index.json').items.map(erpKod));
-  return A.every(e => e.kodlar.every(c => a.has(c) && b.has(c)));
+  const kodlar = A.flatMap(e => e.kodlar);
+  return a.size === b.size && [...a].every(c => b.has(c)) && kodlar.length === 175 && kodlar.filter(c => a.has(c)).length === 118;
 })());
 
 console.log('\n[2] Admin o\'zgartirishi yo\'q → hech narsa o\'zgarmaydi');
@@ -67,7 +70,7 @@ const l0 = r0.prod.lines.find(l => l.code === erpKod(sh0)), l1 = r1.prod.lines.f
 /* TZ-48: ERP narxi (admin o'zgartirmagan) — o'rtacha sotuv narxi (plitaNarxi); admin qo'lda kiritgan narx (qolda) — AYNAN o'sha narx, sotuv koeffitsientiga tushmaydi */
 ok('HISOBGA ta\'sir: raskroydagi list narxi = admin narxi (qo\'lda — o\'zgarishsiz), admin tegmagan ERP plitasi — o\'rtacha sotuv narxi', !!l0 && !!l1 && l0.unit_price === plitaNarxi(sh0.uzs, sh0.lst, plitaSozlama(null)).narx && l1.unit_price === yangiNarx && l1.narx_qoida === undefined, JSON.stringify([l0 && l0.unit_price, l1 && l1.unit_price]));
 ok('HISOBGA ta\'sir: jami narx farq qiladi, list soni bir xil', r1.priceRes.total !== r0.priceRes.total && l0.qty === l1.qty);
-ok('yangi narx — faqat shu dekor tanlanganda (boshqa varaq narxi o\'zgarmagan)', (() => { const o = A[1].kodlar[0], s0 = H0.sheetCatalog.sheets.find(s => erpKod(s) === o), s1 = H1.sheetCatalog.sheets.find(s => erpKod(s) === o); return s0.uzs === s1.uzs; })());
+ok('yangi narx — faqat shu dekor tanlanganda (boshqa varaq narxi o\'zgarmagan)', (() => { /* TZ-50: Asosiy 100 ning ba'zi kodlari yangi bazada yo'q (katalogdan chiqarilgan) — kodi katalogda bor boshqa dekor olinadi */ const kodSet = new Set(H0.sheetCatalog.sheets.map(erpKod)), o = A.slice(1).flatMap(e => e.kodlar).find(c => c !== kod0 && kodSet.has(c)), s0 = H0.sheetCatalog.sheets.find(s => erpKod(s) === o), s1 = H1.sheetCatalog.sheets.find(s => erpKod(s) === o); return !!s0 && !!s1 && s0.uzs === s1.uzs; })());
 /* noto'g'ri qiymatlar e'tiborsiz */
 const yomon = createHisob(await loadData(read, apiFake({ dekor: { [e0.kalit]: { rang_hex: 'qizil', rasm: 'javascript:alert(1)' }, [A[1].kalit]: { rasm: 'https://evil.example/x.png' }, [A[2].kalit]: { rasm: '//evil.example/x.png' }, yoq: { rang_hex: '#000000' } },
   narx: { [kod0]: 12.5, 'ERP-yoq': 100, [A[1].kodlar[0]]: -5, [A[2].kodlar[0]]: '999', x: 1 } }, null)));

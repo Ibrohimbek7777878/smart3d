@@ -59,9 +59,11 @@ ok('"ЛДСП, Сатин 4,6кв" 16 mm — ikki nomzod (Кроношпан 704
   && sat.nomzodlar.some(s => s.sku === '7045 BS') && sat.nomzodlar.some(s => s.sku === '7045 PE'), J(sat.nomzodlar.map(s => s.sku)));
 ok('nomzodlar tartibi: Ultradekor birinchi (sex standarti), ikkalasi narxli ERP plitasi', sat.nomzodlar[0].sku === '7045 BS' && sat.nomzodlar.every(s => s.uzs > 0));
 const sat2 = bazisniERPga({ name: 'ЛДСП Ультрадекор 4,6кв Сатин', thickness: 16, tur: 'ldsp' }, sheets);
-ok('ishlab chiqaruvchi aytilsa ("Ультрадекор") — aniq: 7045 BS', sat2.holat === 'aniq' && sat2.sheet === bs && sat2.sabab === 'dekor');
-const sat3 = bazisniERPga({ name: 'ЛДСП Сатин 7045 BS', thickness: 16, tur: 'ldsp' }, sheets);
-ok('nomda ERP SKU\'si ("7045 BS") — aniq: sku bo\'yicha', sat3.holat === 'aniq' && sat3.sheet === bs && sat3.sabab === 'sku', J(sat3.nomzodlar.map(s => s.sku)));
+/* TZ-50 (2026-10-23): yangi bazada "Сатин" ko'proq (Ультрадекор 5,0325 va Silkway 5,796 ham bor) — "4,6кв" nominal bo'lgani uchun ishlab chiqaruvchi yolg'iz yetmaydi: faqat Ultradekor nomzodlari, format farqi sabab "nomzod" (jimgina tanlanmaydi) */
+ok('ishlab chiqaruvchi aytilsa ("Ультрадекор") — faqat Ultradekor nomzodlari (4,575 BS va 5,0325 PE), format farqi: "nomzod", avtomatik tanlanmaydi', sat2.holat === 'nomzod' && sat2.sabab === 'format' && !sat2.sheet && sat2.nomzodlar.length === 2
+  && sat2.nomzodlar[0] === bs && sat2.nomzodlar.every(s => /Ультрадекор/.test(s.name)), J(sat2.nomzodlar.map(s => s.sku + ' ' + s.name)));
+const sat3 = bazisniERPga({ name: 'ЛДСП Ультрадекор 4,575 Сатин 7045 BS', thickness: 16, tur: 'ldsp' }, sheets);
+ok('nomda ERP SKU\'si ("7045 BS") + ishlab chiqaruvchi + maydon — aniq: sku bo\'yicha (yangi bazada 7045 BS Silkway ham bor, SKU yolg\'iz yetmaydi)', sat3.holat === 'aniq' && sat3.sheet === bs && sat3.sabab === 'sku', J(sat3.nomzodlar.map(s => s.sku)));
 ok('qalinlik boshqa (18 mm) — mos plita yo\'q', bazisniERPga({ name: 'ЛДСП, Сатин 4,6кв', thickness: 18, tur: 'ldsp' }, sheets).holat === 'yoq');
 ok('dekor ERP\'da yo\'q — "yoq" (eng yaqinini tanlamaydi)', bazisniERPga({ name: 'ЛДСП Фиолетовый единорог 4,6кв', thickness: 16, tur: 'ldsp' }, sheets).holat === 'yoq');
 ok('LMDF alohida tur: "ЛМДФ Сатин 5,8кв" ni LDSP bilan aralashtirmaydi', bazisniERPga({ name: 'ЛМДФ Moonlight Сатин 5,8кв', thickness: 16, tur: 'lmdf' }, sheets).nomzodlar.every(s => s.type === 'LMDF'));
@@ -75,8 +77,11 @@ ok('format: dekor ikki formatda ham bor (Антрацит 4,575 va 5,0325) — "
   && ant.nomzodlar[0].sku === '0164 PE' && ant.nomzodlar.some(x => /5,0325/.test(x.name)), J(ant.nomzodlar.map(x => x.sku + ' ' + x.name)));
 const kas = bazisniERPga({ name: 'ЛДСП Ультрадекор 4,575 Кашемир 16мм', thickness: 16, tur: 'ldsp' }, sheets);
 ok('format: dekor faqat BOSHQA formatda bor (Кашемир 4,575 yo\'q) — avval "yoq", endi "nomzod" (sabab "format")', kas.holat === 'nomzod' && kas.sabab === 'format' && kas.nomzodlar.every(x => /Кашемир/i.test(x.name)), J([kas.holat, kas.sabab, kas.nomzodlar.map(x => x.name)]));
+/* TZ-50: "Белый гладкий" yangi bazada ikki formatda (4,575 va 5,0325) — "nomzod"; "faqat Bazis formatida bor" holati uchun yangi bazadagi yagona dekor olindi (Кроношпан 4,575 Береза) */
 const belg = bazisniERPga({ name: 'ЛДСП Ультрадекор 4,575 Белый гладкий 16мм', thickness: 16, tur: 'ldsp' }, sheets);
-ok('format: dekor faqat Bazis formatida bor (Белый гладкий 4,575, katalogda boshqa format yo\'q) — "aniq" qoladi', belg.holat === 'aniq' && belg.sabab === 'dekor' && belg.sheet.sku === '0110 SM', J([belg.holat, belg.sabab]));
+ok('format: dekor ikki formatda (Белый гладкий 4,575 va 5,0325) — "nomzod" (sabab "format"), Bazis formati (4,575) birinchi', belg.holat === 'nomzod' && belg.sabab === 'format' && !belg.sheet && /4,575/.test(belg.nomzodlar[0].name) && belg.nomzodlar.every(s => /Белый гладкий/i.test(s.name)), J([belg.holat, belg.sabab, belg.nomzodlar.map(s => s.name)]));
+const bereza = bazisniERPga({ name: 'ЛДСП Кроношпан 4,575 Береза 16мм', thickness: 16, tur: 'ldsp' }, sheets);
+ok('format: dekor faqat Bazis formatida bor (Кроношпан 4,575 Береза, katalogda boshqa format yo\'q) — "aniq" qoladi', bereza.holat === 'aniq' && bereza.sabab === 'dekor' && bereza.sheet.sku === '1715 PR' && bereza.sheet.l === 2500, J([bereza.holat, bereza.sabab]));
 ok('format: nomda aniq SKU ("7045 BS") — format farqi bo\'lsa ham "aniq" (foydalanuvchi o\'zi aytgan); nomda list maydoni yo\'q — oldingidek ("kop")', sat3.holat === 'aniq' && sat3.sabab === 'sku'
   && bazisniERPga({ name: 'ЛДСП Ультрадекор Антрацит', thickness: 16, tur: 'ldsp' }, sheets).sabab === 'kop');
 const antD = bazisMoslashHammasi([{ code: 'BZM-x', name: 'ЛДСП Ультрадекор 4,575 Антрацит 16мм', thickness: 16, tur: 'ldsp' }], sheets);
@@ -149,7 +154,7 @@ ok('detallar yo\'qolmaydi: joylashgan + sig\'magan = 31 (24 + 4 + 3)', nmA.stats
 
 /* bir qiymatli moslik — bazisMoslash avtomatik qo'llaydi; noaniq — qo'llamaydi */
 const dB = hujjat();
-dB.bazis.materiallar.panel[0].name = 'ЛДСП Ультрадекор 4,6кв Сатин';
+dB.bazis.materiallar.panel[0].name = 'ЛДСП Ультрадекор 4,575 Сатин 7045 BS';   // TZ-50: yangi bazada Сатин ko'p — maydon va SKU aytilsa bir qiymatli
 const mB = E.bazisMoslash(dB, H);
 ok('bazisMoslash: bir qiymatli ("Ультрадекор … Сатин") — avtomatik: doc.bazis.almash + doc.erpMat', mB.aniq === 1 && dB.bazis.almash[bm.code] === kodBS && !!dB.erpMat[kodBS]);
 const dC = hujjat();
