@@ -64,6 +64,7 @@
 | 47 | [Narxni haqiqiy ERP buyurtmalari bilan o'lchash va to'g'rilash](47-narx-haqiqiy-buyurtmalar.md) | **1-bosqich va 2A,B,C BAJARILDI** 2026-10-22 (`main`); xato 38,9% → 36,7% | egasi: ustama siyosati, furnitura, prisadka/Bazis sukuti, raspil stanoki |
 | 48 | [Narx qoidalari: ustama 0, furniturasiz, prisadka/Bazis sukutda, +1 raspil, narx tarkibi, plita sotuv narxi](48-narx-qoidalari.md) | **BAJARILDI** 2026-10-22 (tarmoq `agent/narx48`, main'ga o'tkazilmagan); 14 buyurtma xatosi 36,7% → 32,0% | egasi: main'ga o'tkazish va deploy; [§5.4](48-narx-qoidalari.md) savollari (Bazis soni, taglik, `drill` teshigi) |
 | 49 | [Narx tarkibi: kattaroq ko'rinish, chop etish, ustama nol, narxsiz furnituraga qo'lda narx](49-narx-tarkibi-chop-etish.md) | BOSHLANDI 2026-10-22 | egasi: "dashboard" qaysi ekran |
+| 50 | [Ilova katalogi FAQAT yangi baza (ERP 2026-10-23) narxlari asosida](50-katalog-faqat-yangi-baza.md) | BOSHLANDI 2026-10-23 | egasi: qolgan narxsiz mahsulotlar narxi (ERP'da) |
 
 > Eslatma: raqam takrorlangan — **37** (admin panel va `37-fragmentlar-50.md` — full base 61 modul) va **41** (`41-modul-minmax-standart-jadvali.md` va `41-natija-modul-minmax.md` — tahlil va natija). Fayl nomlari o'zgartirilmadi (commit xabarlari va havolalar buzilmasin).
 
