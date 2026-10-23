@@ -1,5 +1,5 @@
 {
- "_meta": "Furnitura katalogi (3089 ta). Narx manbai: Mahsulotlar_Katalog_Narxlari.xlsx / Zapchast_Furnitura, do'kon narx ro'yxati NARX.pdf (2026-10-17; dokon — qator kaliti, scripts/narx_pdf_import.py) va ERP /api/v2/products/ (2026-10-22; scripts/katalog_erp_yangilash.py). price_src: erp_api_<sana> (ERP display_price_uzs — ERP'ning o'zi qaytargan so'm narxi) | erp_uzs | erp_usd×kurs (kurs 11950: ERP dollar-yolg'iz mahsulotlarga qo'llagan kurs; faqat so'm narxi yo'q qatorlar uchun) | dokon_<sana> | yoq (narx yo'q — o'ylab topilmaydi). Qayta tiklash: scripts/furnitura_narx_tiklash.py (erp_api_ qatorlarga tegmaydi)",
+ "_meta": "Furnitura katalogi (3089 ta). Narx manbai: Mahsulotlar_Katalog_Narxlari.xlsx / Zapchast_Furnitura, do'kon narx ro'yxati NARX.pdf (2026-10-17; dokon — qator kaliti, scripts/narx_pdf_import.py) va ERP /api/v2/products/ (2026-10-23; scripts/katalog_erp_yangilash.py). price_src: erp_api_<sana> (ERP display_price_uzs — ERP'ning o'zi qaytargan so'm narxi) | erp_uzs | erp_usd×kurs (kurs 11950: ERP dollar-yolg'iz mahsulotlarga qo'llagan kurs; faqat so'm narxi yo'q qatorlar uchun) | dokon_<sana> | yoq (narx yo'q — o'ylab topilmaydi). Qayta tiklash: scripts/furnitura_narx_tiklash.py (erp_api_ qatorlarga tegmaydi)",
  "items": [
   {
    "sku": "S8109.71",

@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "manba": "ERP 2026-10-18 (mahsulotlar, faqat o'qish); narx_m2 2026-10-22 ERP products API bilan yangilandi (scripts/katalog_erp_yangilash.py)",
+  "manba": "ERP 2026-10-18 (mahsulotlar, faqat o'qish); narx_m2 2026-10-23 ERP products API bilan yangilandi (scripts/katalog_erp_yangilash.py)",
   "birlik": "narx_m2 — 1 m2 narxi (ERP birligi m2: ombor qatorida miqdor x narx = jami); dona narxi = narx_m2 x uzunlik x eni / 1e6",
   "sukut": "egasi aytmagan — qalinlik bo'yicha eng ko'p qoldiqli (qoldiq_m2) dekor",
   "chiqarilgan": "narxsiz, eni 600 emas, qalinlik 26/38 emas, birligi m2 emas mahsulotlar kiritilmagan"
