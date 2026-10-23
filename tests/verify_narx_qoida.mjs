@@ -80,7 +80,7 @@ ok('prisadka teshik turlari avvalgidek bog\'langan (ЕВРО, ПЕТЛЕ, ПОЛ
   && prisadkaXizmat(S0, 'shkant').qiymat === 800 && prisadkaXizmat(S0, 'eksentrik').qiymat === 1400 && prisadkaXizmat(S0, 'belgi').qiymat === 300
   && !Object.values(S0.tanlov.prisadka).some(k => /ОВАЛ|Паз/.test(xz[k].nom)));
 ok('narx hujjati server tekshiruvidan o\'tadi (qayta qo\'llash o\'zgarish bermaydi)', narxQollash(S0, { xizmatlar: S0.xizmatlar, tanlov: S0.tanlov }).ozgarish.length === 0);
-const ERP_X = join(ROOT, '..', 'Smart3D', 'Smart3D_malumot', 'erp-xizmatlar-2026-10-18.json');
+const ERP_X = join(ROOT, '..', 'Smart3D', 'Smart3D_malumot', 'eski narxlar', 'erp-xizmatlar-2026-10-18.json');
 if (!existsSync(ERP_X)) console.log('skip  maxfiy ERP xizmatlar fayli yo\'q — ERP bilan solishtirish o\'tkazib yuborildi');
 else {
   const erp = JSON.parse(readFileSync(ERP_X, 'utf8')).xizmatlar;

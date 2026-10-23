@@ -69,9 +69,9 @@ ok('exchangeRate — musbat son (ERP dollar-yolg\'iz mahsulotlarga qo\'llagan ku
 ok('_meta: ERP API yozuvi va kurs yozuvi', /ERP \/api\/v2\/products\/ \(2026-10-2[23]/.test(FC._meta) && /kurs 11950/.test(FC._meta));
 
 console.log('\n[4] ERP eksporti bilan to\'liq moslik (lokal maxfiy fayl bo\'lsa)');
-const NOMZOD = [process.env.ERP_MAHSULOT_JSON, ROOT + 'Smart3D_malumot/erp-mahsulotlar-2026-10-23.json', ROOT + '../Smart3D/Smart3D_malumot/erp-mahsulotlar-2026-10-23.json', ROOT + 'Smart3D_malumot/erp-mahsulotlar-2026-10-22.json', ROOT + '../Smart3D/Smart3D_malumot/erp-mahsulotlar-2026-10-22.json'].filter(Boolean);
+const NOMZOD = [process.env.ERP_MAHSULOT_JSON, ROOT + 'Smart3D_malumot/eski narxlar/erp-mahsulotlar-2026-10-23.json', ROOT + '../Smart3D/Smart3D_malumot/eski narxlar/erp-mahsulotlar-2026-10-23.json', ROOT + 'Smart3D_malumot/eski narxlar/erp-mahsulotlar-2026-10-22.json', ROOT + '../Smart3D/Smart3D_malumot/eski narxlar/erp-mahsulotlar-2026-10-22.json'].filter(Boolean);
 const erpYol = NOMZOD.find(p => existsSync(p));
-if (!erpYol) skip('ERP eksporti (Smart3D_malumot/erp-mahsulotlar-2026-10-22.json) bu mashinada yo\'q');
+if (!erpYol) skip('ERP eksporti (Smart3D_malumot/eski narxlar/erp-mahsulotlar-2026-10-22.json) bu mashinada yo\'q');
 else {
   const R = reja(JSON.parse(readFileSync(erpYol, 'utf8')), SC, FC, ST);
   const kutilmagan = (g) => R[g].filter(x => (x.yangi_uzs > 0 && x.eski_uzs !== x.yangi_uzs));
