@@ -1,11 +1,13 @@
 // Smart3D dizayn 3D dvigateli (three.js) — sayt va ilova uchun bitta. Dizayn prototipidan aynan ko'chirilgan — mantiqni o'zgartirmang.
 // TZ-19: ikki nusxa (landing/engine.js va app/engine.js) birlashtirildi; dizayn namunasidagi soxta ma'lumot (loyihalar, katalog narxlari,
 // raskroy varaqlari) va ishlatilmagan sahna kodi olib tashlandi — haqiqiy ma'lumot hisob dvigatelidan keladi (qoida 4.3).
+/* TZ-53: SVG zaxira rejimida (WebGL yo'q) qutilar bo'laklanadi (s3Box) — chuqurlik buferi yo'q, saralash aniqroq; WebGL yo'li o'zgarmaydi.
+ * TZ-52: stoleshnitsa ('top') eshik yog'ochi bilan bir xil. */
 let S3_SVG=null;
 function s3Load(){return import('three').then(async T=>{let gl=false;try{const c=document.createElement('canvas');gl=!!(c.getContext('webgl2')||c.getContext('webgl'))}catch(_){}
   let force=false;try{force=localStorage.getItem('s3d-force-svg')==='1'}catch(_){}
   if(!gl||force){const m=await import('three/examples/jsm/renderers/SVGRenderer.js');S3_SVG=m.SVGRenderer}return T})}
-function s3Box(T,x,y,z){const s=a=>1;return new T.BoxGeometry(x,y,z,s(x),s(y),s(z))}
+function s3Box(T,x,y,z){const s=a=>S3_SVG?Math.min(4,Math.max(1,Math.ceil(a/.15))):1;return new T.BoxGeometry(x,y,z,s(x),s(y),s(z))}
 const s3cl=x=>x<0?0:x>1?1:x;
 const s3f1=x=>x.toFixed(1).replace('.',',');
 function s3P(name,n,size,pos,dir,mat,dim,lab,edge,deco){const p={name,n,size,pos,dir,mat,dim,lab:lab!==false,edge:edge||''};if(deco){p.deco=true;p.lab=false}return p}
@@ -107,7 +109,7 @@ function s3Mats(T,pC,pP){const wood=s3WoodTex(T);const clip=m=>{if(pC)m.clipping
     white:()=>new T.MeshStandardMaterial({color:0xBDB5A6,roughness:.85}),
     wood:()=>clip(new T.MeshStandardMaterial(S3_SVG?{color:0xB4834F,roughness:.55}:{color:0xffffff,map:wood,roughness:.55})),
     hdf:()=>clip(new T.MeshStandardMaterial({color:0xC4A57F,roughness:.95})),
-    top:()=>new T.MeshStandardMaterial({color:0x5C5F68,roughness:.45}),
+    top:()=>new T.MeshStandardMaterial(S3_SVG?{color:0xB4834F,roughness:.45}:{color:0xffffff,map:wood,roughness:.45}),
     stone:()=>new T.MeshStandardMaterial({color:0xA79F92,roughness:.5}),
     dark:()=>new T.MeshStandardMaterial({color:0x2C2B31,roughness:.6}),
     metal:new T.MeshStandardMaterial({color:0xC8CCD3,metalness:.45,roughness:.3}),

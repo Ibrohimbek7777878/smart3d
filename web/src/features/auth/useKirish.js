@@ -35,9 +35,12 @@ export function useKirish() {
   useEffect(() => { if (!qoldi) return undefined; const id = setTimeout(() => setHozir(Date.now()), 1000); return () => clearTimeout(id); }, [qoldi, hozir]);
   const smsUsul = SMS_KORINADI && !reg && auth.smsBor && f.usul === 'sms';
   const gId = auth.googleId, googleBor = !!gId && !smsUsul;
+  /* TZ-54: Google bloki doim ko'rinadi; Client ID sozlanmagan bo'lsa tugma bosilganda tushuntirish xabari (jim 503 emas) */
+  const googleKor = !smsUsul, [gXabar, setGXabar] = useState(false);
   const gRef = useCallback(el => { if (el && gId) googleTugma(el, gId); }, [gId, reg, til()]);
   return {
     googleBor, gRef, googleNomi: t('kirish.google_davom'), yoki: t('kirish.yoki'),
+    googleKor, gXabar, gXabarMatn: t('kirish.google_sozlanmagan'), gBos: () => setGXabar(true),
     smsBor: SMS_KORINADI && !reg && auth.smsBor, smsUsul, yuborildi: smsUsul && f.yuborildi,
     usulCta: smsUsul ? t('kirish.email_bilan') : t('kirish.telefon_bilan'),
     usulAlmash: () => usulAlmash(smsUsul ? 'email' : 'sms'),

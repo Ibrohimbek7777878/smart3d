@@ -82,9 +82,13 @@ for (const k of ['BZ-petlya_pryamaya_kuxnya_simm', 'BZ-nojka_reguliruemaya_100_1
 /* o'ylab topilmaydigan (birlik/tur noaniq) qatorlar bog'lanmagan bo'lib qolishi shart — ular egasi javobisiz bog'lanmasin */
 const BOGLANMASIN = ['BZ-samorez_16_mm', 'BZ-evro_51mm_alkan', 'BZ-evrovint_7x50', 'BZ-evrovint_7x51_32_min60_simm', 'BZ-napravlyayushie_salazka', 'BZ-napravlyayushie_tandem',
   'BZ-napravlyayushie_shar_poln_vidv_l300_1045', 'BZ-sushilka_800mm', 'BZ-sushilka', 'BZ-sushka_su02_listovaya_nerjaveyushaya_sta', 'BZ-su02_derjatel',
-  'BZ-su02_reshetka_dlya_krujek_700', 'BZ-su02_reshetka_dlya_tarelok_700', 'BZ-derjateli', 'BZ-vityajka_2_dv', 'BZ-ekstsentrik_plastik_0_0',
-  'BZ-petlya_polugorbataya_kuxnya_simm', 'BZ-petlya_polugorb_kuxnya_simm', 'BZ-pr_1', 'BZ-pr_9', 'BZ-fragment3'];
-ok('birlik/tur noaniq 21 kod egasi javobisiz bog\'lanmagan (qoida 4.3)', BOGLANMASIN.every(k => !links[k]), BOGLANMASIN.filter(k => links[k]).join());
+  'BZ-su02_reshetka_dlya_krujek_700', 'BZ-su02_reshetka_dlya_tarelok_700', 'BZ-derjateli', 'BZ-vityajka_2_dv', 'BZ-pr_1', 'BZ-pr_9', 'BZ-fragment3'];
+/* TZ-57 (2026-10-23): egasi "qolganlarini ham bog'la" dedi — 3 yarim-gorbat petlya (→ 90002524) va plastik ekstsentrik (→ 90002094) bog'landi;
+   pr_N va fragmentN — Bazis'ning mahsulot bo'lmagan qatorlari: bog'lanmaydi, hisobda YASHIRILADI (`yashirin` da qaytadi) */
+const MAHSULOT_EMAS = ['BZ-pr_1', 'BZ-pr_9', 'BZ-fragment3'];
+ok('TZ-57: yangi bog\'langan 4 kod links da va TZ-57 yozuvida', ['BZ-petlya_polugorbataya_kuxnya_simm', 'BZ-petlya_polugorb_kuxnya_simm', 'BZ-ekstsentrik_plastik_0_0']
+  .every(k => links[k] && boglandi[k]));
+ok('birlik/tur noaniq ' + BOGLANMASIN.length + ' kod egasi javobisiz bog\'lanmagan (qoida 4.3)', BOGLANMASIN.every(k => !links[k]), BOGLANMASIN.filter(k => links[k]).join());
 ok('ular savol bo\'limida (admin panel narxsiz ro\'yxatida chiqadi)', BOGLANMASIN.every(k => savol[k]), BOGLANMASIN.filter(k => !savol[k]).join());
 
 console.log('\n[5] Hisob dvigateli: oldin / keyin');
@@ -101,13 +105,17 @@ const yashirin = new Set((mats.furnitura_yashirin && mats.furnitura_yashirin.kod
 ok('shu kodlarning hech biri yashirin ro\'yxatda emas (hisobda ko\'rinadi)', KODLAR.every(k => !yashirin.has(k)));
 console.log('      narxsiz: oldin ' + narxsizSoni(oldin) + ' / ' + NOMLAR.length + ' → keyin ' + narxsizSoni(keyin) + ' / ' + NOMLAR.length);
 const bogSoni = KODLAR.filter(k => links[k]).length;
-ok('oldin: ' + NOMLAR.length + ' nomning hammasi narxsiz', narxsizSoni(oldin) === NOMLAR.length, String(narxsizSoni(oldin)));
-ok('keyin: narxsiz = ' + (NOMLAR.length - bogSoni) + ' (faqat bog\'langanlari kamaydi)', narxsizSoni(keyin) === NOMLAR.length - bogSoni, String(narxsizSoni(keyin)));
+ok('oldin: ' + (NOMLAR.length - MAHSULOT_EMAS.length) + ' nom narxsiz (pr_N/fragmentN yashirin)', narxsizSoni(oldin) === NOMLAR.length - MAHSULOT_EMAS.length, String(narxsizSoni(oldin)));
+ok('keyin: narxsiz = ' + (NOMLAR.length - bogSoni - MAHSULOT_EMAS.length) + ' (faqat bog\'langanlari kamaydi)', narxsizSoni(keyin) === NOMLAR.length - bogSoni - MAHSULOT_EMAS.length, String(narxsizSoni(keyin)));
 for (const k of KODLAR.filter(k => links[k])) {
-  const l = keyin.lines.find(x => x.group === 'Furnitura' && x.code === k), f = katalog.get(links[k]);
-  ok(k + ': dvigatel narxi = katalog narxi (' + (f && f.uzs) + ')', !!l && l.unit_price === f.uzs && l.amount === f.uzs);
+  /* TZ-57: bir ERP mahsulotiga bog'langan turli Bazis kodlari hisobda BITTA qatorga birlashadi (qty yig'iladi) */
+  const f = katalog.get(links[k]), sher = KODLAR.filter(c => links[c] === links[k]).length;
+  const l = keyin.lines.find(x => x.group === 'Furnitura' && (x.code === k || String(x.id) === String(links[k])));
+  ok(k + ': dvigatel narxi = katalog narxi (' + (f && f.uzs) + ')' + (sher > 1 ? ' × ' + sher + ' (birlashgan)' : ''), !!l && l.unit_price === f.uzs && l.amount === f.uzs * sher);
 }
-for (const k of BOGLANMASIN.filter(k => KODLAR.includes(k))) ok(k + ': narxsiz (missing)', keyin.missing.some(m => m.group === 'Furnitura' && m.code === k) && !keyin.lines.some(x => x.group === 'Furnitura' && x.code === k && x.unit_price > 0));
+for (const k of MAHSULOT_EMAS) ok(k + ': mahsulot emas — yashirin (missing da yo\'q, lines da yo\'q, yashirin da qaytadi)',
+  !keyin.missing.some(m => m.code === k) && !keyin.lines.some(x => x.code === k) && keyin.yashirin.some(y => y.code === k));
+for (const k of BOGLANMASIN.filter(k => KODLAR.includes(k) && !MAHSULOT_EMAS.includes(k))) ok(k + ': narxsiz (missing)', keyin.missing.some(m => m.group === 'Furnitura' && m.code === k) && !keyin.lines.some(x => x.group === 'Furnitura' && x.code === k && x.unit_price > 0));
 /* koef bog'langan koddan boshqa kodga ta'sir qilmaydi va bog'langan narx koef bilan o'zgaradi (admin paneldagi koef bilan birga ishlaydi) */
 const kk = KODLAR.find(k => links[k]);
 const yarim = productionCost([{ parts, edges: [], holes: [], hardware: [{ code: kk, qty: 1 }] }], mats, { stavka: S, furnituraById: furnById, furnituraBoglash: links, furnituraKoef: { [kk]: 0.5 } });

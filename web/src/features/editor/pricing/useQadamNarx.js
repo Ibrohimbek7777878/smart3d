@@ -2,6 +2,7 @@ import { useSlice, set } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { S } from '../../../store/session.js';
 import { openSheet } from '../../../store/ui.js';
+import { openBazisMaterial } from '../catalog/material.js';
 import { raqam } from '../../../shared/lib/format.js';
 import { nestQoldiqlari, qoldiqQosh } from '../../settings/qoldiq.js';
 import { goStep } from '../actions.js';
@@ -19,6 +20,18 @@ const RANGLAR = ['#FF7A45', '#5FE1C4', '#B9A6FF', '#FFB59A', '#F3F0E9'];    // d
 const dec = (x) => String(x || 0).replace('.', ',');
 /** birlik (varaq, list, m, m2, dona, detal …) → tilda; lug'atda yo'q birlik (ERP: «шт», «reys») — o'zi */
 const birlikNomi = (u) => { const v = t('narx.u_' + u); return v === 'narx.u_' + u ? String(u || '') : v; };
+/** TZ-59: kromka — xulosada sof metr, narxda esa chiqit (+8%) bilan hisoblangan metr: ikkalasi birga ko'rinadi (narx tarkibidagi qatorlar bilan mos) */
+const kromkaMatn = (prod, B) => {
+  const narxM = ((prod && prod.lines) || []).filter(l => l.group === 'Kromka').reduce((s, l) => s + (+l.qty || 0), 0);
+  return narxM > (+B.edgeMeters || 0) + 0.05 ? t('narx.metr_chiqit', { n: dec(B.edgeMeters), m: dec(narxM) }) : t('narx.metr', { n: dec(B.edgeMeters) });
+};
+
+/** TZ-57: shu material kodi Bazis plitasi va hali ERP plitasiga almashtirilmaganmi */
+const bazisPlitaTanlanmagan = (kod) => {
+  const b = project.doc && project.doc.bazis;
+  return !!(b && b.materiallar && (b.materiallar.panel || []).some(m => m.code === kod) && !(b.almash && b.almash[kod]));
+};
+
 /** manba (dvigatel) → ko'rinadigan kalit: ERP / egasi / qo'lda / taxmin / narx yo'q / mijoz */
 const MANBA = { ERP: 'erp', 'sex jadvali': 'erp', egasi: 'egasi', usta: 'qolda', qolda: 'qolda', taxmin: 'taxmin', yoq: 'yoq', mijoz: 'mijoz' };
 
@@ -30,8 +43,11 @@ function raskroy(R, idx) {
   const col = {}; let ci = 0;
   const rects = cur ? (cur.sh.parts || []).map(pt => {
     const w = pt.rotated ? pt.width : pt.length, h = pt.rotated ? pt.length : pt.width;
-    const key = pt.fragment || pt.code; if (!(key in col)) col[key] = RANGLAR[ci++ % RANGLAR.length];
-    return { l: (pt.x / cur.L * 100) + '%', t: (pt.y / cur.W * 100) + '%', w: (w / cur.L * 100) + '%', h: (h / cur.W * 100) + '%', c: col[key] };
+    /* TZ-59: rang — detal turi bo'yicha (oldin faqat modul bo'yicha: Bazis loyihada hamma detal bitta modul — bitta rang, chegarasiz, bitta blok bo'lib ko'rinardi) */
+    const key = [pt.fragment, pt.code || pt.ref].filter(Boolean).join('|'); if (!(key in col)) col[key] = RANGLAR[ci++ % RANGLAR.length];
+    const o = Math.round(pt.length) + '×' + Math.round(pt.width);
+    return { l: (pt.x / cur.L * 100) + '%', t: (pt.y / cur.W * 100) + '%', w: (w / cur.L * 100) + '%', h: (h / cur.W * 100) + '%', c: col[key],
+      o, tip: (pt.name || pt.code || pt.ref || '') + ' ' + o, katta: w / cur.L > 0.09 && h / cur.W > 0.07 };
   }) : [];
   return { n: sheets.length, rk, cur, rects };
 }
@@ -156,7 +172,10 @@ export function useQadamNarx() {
     /* TZ-20: "Narx aniqligi X%" — bosilsa taxminiy qatorlar (qaysi summa tasdiqlanmagan) */
     aniqlik: prod && prod.aniqlik && prod.aniqlik.pct != null ? {
       label: prod.aniqlik.narxsiz ? t('narx.aniqlik_narxsiz', { n: prod.aniqlik.pct, k: prod.aniqlik.narxsiz }, prod.aniqlik.narxsiz) : t('narx.aniqlik', { n: prod.aniqlik.pct }), ochiq: !!ed.aniq, toliq: prod.aniqlik.pct === 100 && !prod.aniqlik.narxsiz, flip: () => set('editor', { aniq: !ed.aniq }),
-      rows: prod.aniqlik.taxmin.map(x => ({ n: x.group === 'Ustama' ? t('narx.aniq_ustama', { n: Math.round((prod.markupPct || 0) * 1000) / 10 }) : x.name.replace(/ — taxminiy$/, ''), m: x.manba === 'yoq' ? t('narx.aniq_yoq') : x.manba === 'qolda' ? t('narx.m_qolda') : t('narx.aniq_taxmin'), p: raqam(x.amount) })),
+      rows: prod.aniqlik.taxmin.map(x => ({ n: x.group === 'Ustama' ? t('narx.aniq_ustama', { n: Math.round((prod.markupPct || 0) * 1000) / 10 }) : x.name.replace(/ — taxminiy$/, ''), m: x.manba === 'yoq' ? t('narx.aniq_yoq') : x.manba === 'qolda' ? t('narx.m_qolda') : t('narx.aniq_taxmin'), p: raqam(x.amount),
+        /* TZ-57: tasdiqlanmagan Bazis plitasi — shu qatordan ERP plitasini tanlash (mavjud material oynasi, nomzodlar bilan) */
+        tanla: x.group !== 'Ustama' && bazisPlitaTanlanmagan(x.code) ? () => openBazisMaterial(x.code) : null })),
+      tanlaLabel: t('narx.erp_tanla'),
       narxsiz: prod.aniqlik.narxsiz ? t('narx.aniq_narxsiz', { n: prod.aniqlik.narxsiz }, prod.aniqlik.narxsiz) : '',
       bosh: !prod.aniqlik.taxmin.length ? t('narx.aniq_hammasi') : ''
     } : null,
@@ -173,7 +192,7 @@ export function useQadamNarx() {
     /* TZ-04: tasdiqlanmagan narx — "taxminiy" (eski saytdagidek); prisadka o'chirilgan bo'lsa — belgi (S3) */
     costRows: prod ? [...plitaQatorlari(R, prod, B),
       ...(prod.raspilCost ? [[t('narx.raspil'), t('narx.raspil_q', { n: dec(lineBy('raspil').qty), s: raqam(lineBy('raspil').unit_price) }) + (xzr.bor ? t('narx.raspil_plus1') : ''), prod.raspilCost]] : []),   // TZ-20; TZ-48: +1 qo'shimcha raspil
-      [t('narx.kromka') + (taxminiy.includes('Kromka') ? t('narx.taxminiy') : ''), t('narx.metr', { n: dec(B.edgeMeters) }), prod.edgeCost],
+      [t('narx.kromka') + (taxminiy.includes('Kromka') ? t('narx.taxminiy') : ''), kromkaMatn(prod, B), prod.edgeCost],   // TZ-59: sof metr va chiqit bilan hisoblangan metr birga
       ...(furnsiz ? [] : [[t('narx.zapchast'), t('narx.dona_n', { n: B.hwCount || 0 }), prod.hwCost]]),   // TZ-48: «Furniturasiz» — furnitura qatori yashiriladi
       [t('narx.teshiklar') + (xzt.tanlangan ? (taxminiy.includes('Prisadka') ? t('narx.taxminiy') : '') : t('narx.tanlanmagan')), t('narx.prisadka_q', { n: B.holeCount || 0 }), prod.holeCost],
       ...(prod.bazisCost ? [[t('narx.bazis'), t('narx.bazis_q', { n: xzb.qty, s: raqam(prod.bazisCost / (xzb.qty || 1)) }), prod.bazisCost]] : []),   // TZ-32 E3; TZ-48: faqat 16/18/19 mm detallar

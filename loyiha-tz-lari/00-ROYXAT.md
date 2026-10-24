@@ -65,6 +65,7 @@
 | 48 | [Narx qoidalari: ustama 0, furniturasiz, prisadka/Bazis sukutda, +1 raspil, narx tarkibi, plita sotuv narxi](48-narx-qoidalari.md) | **BAJARILDI** 2026-10-22 (`main`'da); 14 buyurtma xatosi 36,7% → 32,0% | egasi: main'ga o'tkazish va deploy; [§5.4](48-narx-qoidalari.md) savollari (Bazis soni, taglik, `drill` teshigi) |
 | 49 | [Narx tarkibi: kattaroq ko'rinish, chop etish, ustama nol, narxsiz furnituraga qo'lda narx](49-narx-tarkibi-chop-etish.md) | **BAJARILDI** 2026-10-23 (`main`): PDF/chop etish, katta narx tarkibi, ustama 0, qo'lda furnitura narxi; 7-band (haqiqiy tannarx va foyda) bajarilmadi | egasi: "dashboard" qaysi ekran |
 | 50 | [Ilova katalogi FAQAT yangi baza (ERP 2026-10-23) narxlari asosida](50-katalog-faqat-yangi-baza.md) | **BAJARILDI** 2026-10-23 (`main` ebb5755; productionda): plita 1281→718, stoleshnitsa 261→132; ERP'da 91 ta mahsulot narxi kerak | egasi: ERP'da narx kiritish, 24 nomzod tanlash |
+| 52–59 | [Serverda to'g'ridan-to'g'ri yozilgan ishlar GitHub'ga olindi (plita moslash xotirasi, furnitura rasmi, kromka, Google tugma, SVG zaxira)](52-59-serverdan-olingan-kod.md) | **BAJARILDI** 2026-10-24 (`main`) — rasmlar.json va 32 rasm fayli qo'shilmagan (serverda) | egasi: 32 ta rasm faylini olib kelish |
 
 > Eslatma: raqam takrorlangan — **37** (admin panel va `37-fragmentlar-50.md` — full base 61 modul) va **41** (`41-modul-minmax-standart-jadvali.md` va `41-natija-modul-minmax.md` — tahlil va natija). Fayl nomlari o'zgartirilmadi (commit xabarlari va havolalar buzilmasin).
 

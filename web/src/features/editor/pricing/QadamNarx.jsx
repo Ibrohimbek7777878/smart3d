@@ -71,6 +71,7 @@ export default function QadamNarx() {
             <span key={i} style={{"display":"flex","justifyContent":"space-between","gap":"8px"}}>
               <span style={{"minWidth":"0"}}>{r.n} <span style={{"color":"var(--mut)"}}>· {r.m}</span></span>
               <span style={{"fontWeight":"800","fontVariantNumeric":"tabular-nums","whiteSpace":"nowrap"}}>{r.p}</span>
+              {r.tanla ? <button onClick={r.tanla} data-aniqlik-tanla="" style={{"alignSelf":"center","flexShrink":"0","minHeight":"32px","padding":"0 12px","borderRadius":"999px","border":"1px solid var(--acc)","background":"transparent","color":"var(--acc)","fontSize":"13px","fontWeight":"700","cursor":"pointer","whiteSpace":"nowrap"}}>{v.aniqlik.tanlaLabel}</button> : null}
             </span>))}
           {v.aniqlik.narxsiz ? <span style={{"color":"var(--danger)","fontWeight":"700"}}>{v.aniqlik.narxsiz}</span> : null}
         </div>) : null}
@@ -249,7 +250,7 @@ export default function QadamNarx() {
         </div>
         <div style={{"position":"relative","width":"100%","aspectRatio":v.rk?.ar,"borderRadius":"8px","background":"repeating-linear-gradient(135deg,#2A4D57 0 6px,#244550 6px 12px)","border":"1px solid var(--line)","overflow":"hidden"}}>
           {(v.rk?.rects || []).map((r, $index) => (<React.Fragment key={$index}>
-            <div style={{"position":"absolute","left":r?.l,"top":r?.t,"width":r?.w,"height":r?.h,"background":r?.c,"borderRadius":"2px","opacity":".92"}}></div>
+            <div title={r?.tip} data-rk-detal="" style={{"position":"absolute","left":r?.l,"top":r?.t,"width":r?.w,"height":r?.h,"background":r?.c,"borderRadius":"2px","opacity":".92","boxShadow":"inset 0 0 0 1px rgba(8,22,28,.55)","boxSizing":"border-box","overflow":"hidden","display":"grid","placeItems":"center"}}>{r?.katta ? <span style={{"fontSize":"10px","fontWeight":"700","color":"rgba(8,22,28,.8)","lineHeight":"1","whiteSpace":"nowrap"}}>{r?.o}</span> : null}</div>
           </React.Fragment>))}
         </div>
         <div style={{"display":"flex","gap":"4px","justifyContent":"center"}}>

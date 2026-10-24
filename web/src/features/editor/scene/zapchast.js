@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useSlice, get } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { zapchastRoyxat } from '../../../services/zapchast.js';
+import { rasmYol, rasmNamuna } from '../../../services/furnRasm.js';
 import { raqam } from '../../../shared/lib/format.js';
 import { t } from '../../../i18n/index.js';
 import { korinishOzgar } from './korinish.js';
@@ -64,6 +65,7 @@ export function useZapchast() {
     return {
       id: ri, nom, ochiq, bomsiz: r.bomsiz, noPrice: r.noPrice, tur: r.tur, rang: r.tur ? hex(RANG[r.tur] != null ? RANG[r.tur] : RANG.zapchast) : null,
       kod: r.bomsiz ? t('zapchast.narxda_yoq') : (r.id ? 'ID ' + r.id : r.code),
+      rasm: r.bomsiz ? null : rasmYol(project.H, r.id), rasmNamuna: !r.bomsiz && rasmNamuna(project.H, r.id),   // TZ-59: oddiy rasm (3D joyi noaniq bo'lgan Bazis loyihalarida ham)
       soni: r.bomsiz ? '' : r.qty + ' ' + (r.unit && r.unit !== 'dona' ? r.unit : t('hujjat.u_dona')),
       narx: r.bomsiz ? '' : r.noPrice ? t('mebel.narx_yoq') : raqam(r.amount) + ' ' + t('umumiy.som'),
       belgi: r.belgilar.length ? t('zapchast.belgi_n', { n: r.belgilar.length }) : t('zapchast.joyi_yoq'), joyiYoq: !r.belgilar.length,

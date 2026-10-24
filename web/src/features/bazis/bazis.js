@@ -8,6 +8,7 @@ import { t } from '../../i18n/index.js';
 import { openBazisMaterial } from '../editor/catalog/material.js';
 import { dekorRang } from '../../../../app/js/engine/rang.js';
 import { materialRang, bazisMoslash } from '../../services/erpMaterial.js';
+import { xotiraYukla } from '../../services/plitaXotira.js';
 import { bazisniERPga } from '../../../../app/js/engine/plitaMoslash.js';
 import { ishJoyiOch } from '../editor/ishjoyi/ishjoyi.js';
 
@@ -58,7 +59,7 @@ export async function bazisFayl(f) {
   set('bazis', { yuk: nom });
   toast(t('bazis.oqilmoqda', { nom }));
   try {
-    const [buf] = await Promise.all([f.arrayBuffer(), project.load()]);
+    const [buf] = await Promise.all([f.arrayBuffer(), project.load(), xotiraYukla()]);   // TZ-57: oldingi plita tanlovlari (xotira) yuklangan bo'lsin
     const res = await ishchida(buf, nom);
     if (!res.ok) { xato(res.xato || 'S3D-BAZIS-103', { modul: 'bazis', xabar: (res.xabar ? res.xabar + ' · ' : '') + 'fayl: ' + nom }); return; }
     S.resetCurrent();

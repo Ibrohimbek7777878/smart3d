@@ -135,7 +135,8 @@ const pcs = (n, kit) => run(gor(n), kit);
   ok(sl && sl.qty === 2 && sl.unit === 'dona' && sl.no_price === false && sl.unit_price === 638553 && sl.amount === 2 * 638553 && sl.manba === 'ERP' && sl.tasdiq === true, 'narx qatori: STOL26-3050 × 2 dona, ERP dekor narxi (638 553, yangi baza)');
   ok(!pc.missing.some(m => /^STOL/.test(m.code)), '"narx yo\'q" ro\'yxatida stoleshnitsa yo\'q');
   const sy = pc.lines.find(l => l.code === 'STYAJKA-STOL');
-  ok(sy && sy.qty === 1 && sy.id === undefined && sy.unit_price === 20000 && sy.amount === 20000 && /Стяжка/.test(sy.name), 'styajka qatori: 1 dona × 20 000 (90002044)');
+  /* TZ-59: ERP jadvali (furnitura-boglash) orqali bog'langan qatorda ham ID bor — rasm/zapchast shu ID bo'yicha topadi */
+  ok(sy && sy.qty === 1 && String(sy.id) === '90002044' && sy.unit_price === 20000 && sy.amount === 20000 && /Стяжка/.test(sy.name), 'styajka qatori: 1 dona × 20 000 (90002044)');
   ok(pc.lines.filter(l => l.group === 'Plita (Kroy)').length === 0, 'stoleshnitsa maydon (varaq) qatori emas');
   ok(Number.isFinite(pc.totalCost) && pc.perModule.length === 2, 'tannarx hisoblanadi, perModule 2');
   const dona = mats.panel_materials.filter(m => m.unit_piece);

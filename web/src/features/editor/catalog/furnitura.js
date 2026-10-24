@@ -1,3 +1,5 @@
+import { takrorsiz } from '../../../services/furnTakror.js';
+import { rasmYol, rasmNamuna } from '../../../services/furnRasm.js';
 import { useSlice } from '../../../store/index.js';
 import { project } from '../../../store/project.js';
 import { openSheet, patchSheet } from '../../../store/ui.js';
@@ -11,20 +13,19 @@ const MAX = 100;
 const nr = (s) => String(s || '').toLowerCase().replace(/ё/g, 'е');
 
 /** furnitura zapchasti rasmi (rasmlar.json.furnitura: katalog id → yo'l); yo'q bo'lsa — null (hozirgi ko'rinish) */
-const rasmYol = (H, id) => { const y = H && H.rasmlar && H.rasmlar.furnitura && H.rasmlar.furnitura[id]; return y ? '/' + y : null; };
 
 export function openFurnitura() { openSheet('furnitura', { q: '', cat: null, tab: 'loyiha' }); }
 
 export function useFurnituraVaraq() {
   const q = useSlice('ui').vq || {};
   useSlice('project');
-  const H = project.H, items = Object.values((H && H.furnById) || {}).filter(it => it.uzs > 0 && it.price_src !== 'no_price' && it.price_src !== 'yoq');   // #151: narxsizlar katalogda ko'rinmaydi (loyihadagilari "Loyihada" ro'yxatida qoladi)
+  const H = project.H, items = takrorsiz(Object.values((H && H.furnById) || {}).filter(it => it.uzs > 0 && it.price_src !== 'no_price' && it.price_src !== 'yoq'));   // #151: narxsizlar katalogda ko'rinmaydi (loyihadagilari "Loyihada" ro'yxatida qoladi)
   const narx = (uzs) => (uzs > 0 ? raqam(uzs) + ' ' + t('umumiy.som') : t('mebel.narx_yoq'));
 
   /* loyihada: hisobdagi "Furnitura" satrlari */
   const lines = ((project.res && project.res.prod && project.res.prod.lines) || []).filter(l => l.group === 'Furnitura');
   const loyiha = lines.map(l => ({ name: l.name || l.code, sub: [l.id ? 'ID ' + l.id : l.code, l.qty + ' ' + (l.unit && l.unit !== 'dona' ? l.unit : t('hujjat.u_dona'))].join(' · '),
-    price: l.no_price ? t('mebel.narx_yoq') : raqam(l.amount) + ' ' + t('umumiy.som'), yoq: !!l.no_price, rasm: rasmYol(H, l.id) }));
+    price: l.no_price ? t('mebel.narx_yoq') : raqam(l.amount) + ' ' + t('umumiy.som'), yoq: !!l.no_price, rasm: rasmYol(H, l.id), namuna: rasmNamuna(H, l.id) }));
   const jami = lines.reduce((a, l) => a + (l.amount || 0), 0);
 
   /* katalog: toifalar (ko'pidan kamiga) va qidiruv */

@@ -76,6 +76,7 @@ export default function ZapchastPanel({ tel }) {
                 onClick={() => setOchiq(o => ({ ...o, [r.id]: !o[r.id] }))} style={QATOR(r.ochiq)}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   {r.rang ? <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: r.rang, flex: '0 0 auto' }}></span> : null}
+                  {r.rasm ? <img data-zap-rasm="" data-namuna={r.rasmNamuna ? "" : undefined} title={r.rasmNamuna ? t("zapchast.rasm_namuna") : undefined} src={r.rasm} alt="" width="36" height="36" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = 'none'; }} style={{ width: '36px', height: '36px', flex: '0 0 36px', objectFit: 'contain', borderRadius: '8px', background: '#fff', border: '1px solid var(--line)' }} /> : null}
                   <span style={{ flex: '1', minWidth: '0', fontSize: '13px', fontWeight: '700', lineHeight: '1.25', overflowWrap: 'anywhere' }}>{r.nom}</span>
                   {r.belgilar.length ? <span style={{ flex: '0 0 auto', color: 'var(--mut)', display: 'grid' }}><Ikon n={och ? 'tepa' : 'past'} size={16} gap={0} /></span> : null}
                 </span>

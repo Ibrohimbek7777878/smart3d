@@ -4,6 +4,7 @@ import { toast, openSheet, patchSheet } from '../../../store/ui.js';
 import * as L from '../../../services/loyiha.js';
 import { baseForSheet, slotForBase } from '../../../services/hisob.js';
 import { erpKod, erpQosh, materialRang, materialRasm, plitaRangi } from '../../../services/erpMaterial.js';
+import { xotiraSaqla } from '../../../services/plitaXotira.js';
 import { RANG_GURUHLARI, GURUH_RANG } from '../../../../../app/js/engine/rang.js';
 import { asosiyRang } from '../../../../../app/js/engine/dekorAsosiy.js';
 import { plitaNarxi, plitaSozlama, plitaERPMi } from '../../../../../app/js/engine/narxStavka.js';
@@ -13,7 +14,7 @@ const korsatNarx = (H, sh) => (sh.qolda ? sh.uzs : plitaNarxi(sh.uzs, sh.lst, pl
 import { raqam } from '../../../shared/lib/format.js';
 import { t } from '../../../i18n/index.js';
 import { dekorlarga, dekorNomi } from './dekor.js';
-import { bazisniERPga } from '../../../../../app/js/engine/plitaMoslash.js';
+import { bazisniERPga, plitaFormati } from '../../../../../app/js/engine/plitaMoslash.js';
 import { dekorRang } from '../../../../../app/js/engine/rang.js';
 import { stolQalinlik } from '../../../../../app/js/engine/kitchen.js';
 import { stolDekor, stolDonaNarx } from '../../../../../app/js/engine/stoleshnitsa.js';
@@ -246,7 +247,7 @@ export function useMaterialVaraq() {
   const plitka = ({ g, r }) => {
     /* sukut variant — hozirgi qalinlikka eng yaqini (korpus/polka — 16 mm), narxlisi oldin */
     const sukut = g.variantlar.slice().sort((a, b) => (Math.abs((+a.th || 0) - curTh) - Math.abs((+b.th || 0) - curTh)) || ((b.uzs > 0) - (a.uzs > 0)))[0];
-    const tanla = (sh) => () => { const c = erpQosh(H, project.doc, sh); qoyish(c); tanlandi(sh.name); };
+    const tanla = (sh) => () => { const c = erpQosh(H, project.doc, sh); qoyish(c); tanlandi(sh.name); if (bz && bzM) xotiraSaqla(bzM, sh); };   // TZ-57: Bazis plitasi tanlovi eslab qolinadi
     const narx = (sh) => (sh.uzs > 0 ? raqam(korsatNarx(H, sh)) + ' ' + t('umumiy.som') : t('mebel.narx_yoq'));   // TZ-48: hisobdagi narx (ERP o'rtacha sotuv) bilan bir xil
     const on = g.variantlar.find(v => erpKod(v) === cur) || null, kor = on || sukut;
     return {
@@ -261,7 +262,7 @@ export function useMaterialVaraq() {
   const nomzodlar = erpMos ? erpMos.nomzodlar.map(sh => {
     const d = dekorNomi(sh.name, sh.type);
     return Object.assign(plitka({ g: { key: 'nomzod|' + erpKod(sh), nom: d.nom, brend: d.brend, tur: sh.type, variantlar: [sh] }, r: plitaRangi(H, sh) }),
-      { sub: [sh.sku, d.brend, (+sh.th || 0) + ' ' + t('umumiy.mm')].filter(Boolean).join(' · '), variantlar: [] });
+      { sub: [sh.sku, d.brend, (+sh.th || 0) + ' ' + t('umumiy.mm'), ((f) => (f ? f[0] + '×' + f[1] : ''))(plitaFormati(sh.name, sh.l, sh.w).f)].filter(Boolean).join(' · '), variantlar: [] });   // TZ-57: list formati ham ko'rinsin (bir dekor bir nechta formatda — qaysi biri tanlanayotgani ma'lum bo'lsin)
   }) : [];
   let qolgan = chek;
   const bolimlar = GURUHLAR.map(k => {

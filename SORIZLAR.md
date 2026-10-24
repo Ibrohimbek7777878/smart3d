@@ -805,3 +805,41 @@ bu prompt lekin natija oddiy 2ta shkaf qilb berdi nega bundya bold kosntruskiay 
 313. 91tani bita txt faylga yozb ber
 
 314. YANGI-NARXLAR-91-TA-2026-10-23.txt bu fayln korchi
+
+315. qara hozir narx yangilig va toliqlig nech foiz 100dan yani eski narx bazan chopib yubora olamizmi
+
+316. ey hoizr 2ta fyal berdim senga har brin ichida naxlra royxat bor edi nega 100dan 100 emas neg amenga togir royxatin bermayasban va claude bergnan narxlar royxat nega mos va toliq bolmayabd
+
+317. (skrinshot: <ichki-host-kod> — boshqa Claude javobi: "hamma mahsulotning narxi bu ikki faylda yo'q"; faol 19 136: haqiqiy narxi 3 092) ey qara men bergan bita fayln ozida 91ta mahsulotnik bor edi undan olding faylda esa mingtadan oshiq mahsulotnik bor ediku mana rasmga qara
+
+318. blet hoz eski narx fayllarni ochir undan oldin narx yangi bolgan mahsulotlarni narx bor mahsulotlarni bita fyalga yozb qoy qolgnalar kere emas va yoq va eski narx bilan qolb ektgan mahsulotlarni hamasin bita faylga yozb berasan
+
+319. (savollarga javob: hech narsani ochirma, faqat 2 ta fayl; furnituraga teginma; hozir narx boyicha nimalar bold — 2ta yangi fayl va eski bilan farq — shuntirb ber)
+
+320. qaysi mahsulotlar va nimalar kere shuni hammasin bita fyalga shunarli qilb yoz shuanrsz bolmasin va eskilarini bugn bergan 2ta faylimni alohida papkaga tawab qoy va undan eskilarn eski narxlar degna papkaga tawab qoy va menga bita faylga hammasin yozb ber qaysi mahsulotlarnik kerleign toliq bolsin ey chala qolib ketmasin
+
+321. hoz bu fyalda toliq hamma kerlei mahsulotlarni narx bormi
+
+322. (skrinshot: ERP bilan ulangan Claude mening KERAKLI-HAMMA-NARXLAR faylimni tahlil qildi: Bazis3/5/6 tayyor emas; stoleshnitsa 38x4200 nomzod; furniturada 14 ta tayyor nofaol 11.08.2026 birlik noaniq; 113 ta qayta hisoblash; ikki savol) nima fayln togir yozb bera olmadingmi
+
+323. qara eski xatos bor fayllaring ochir hozir 4ta bir xil fayl bolb qolgan qaysi brin olishn bilb bolmayd ochir eskilarini keyin xato qilma
+
+324. YANGI-BAZA-ISHONCHLI-NARXLAR-2026-10-23.csv bu fyaln korib chiq
+
+325. shundan kerelilarn ol va qosh hamda sayt shu narxlar asosid aishlasin
+
+326. agent ishlatam ozing qil
+
+327. narxlarni ham githubga psuh qildingmi
+
+328. qara senga api key tawagan edim
+
+329. unda claude api keyn menga ber serverda turgan claudega beraman ozi joylashtirb qoyad sen api key va qayerga qanday joylashtrshn bita text qilb yozb ebr
+
+330. serverga kirb kora olasanmi loyhan hozirg holatini
+
+331. yoq loyhan serverdagi hoaltin kor toliq bilishn kere loyha hozir qandya holatda va qays jarayonga kelganini
+
+332. senga login paroln berganman kirb kor serverga (<ichki-host-kod>, faqat oqish uchun; parol chatda berildi)
+
+333. (10 ta skrinshot: Telegram'dagi samorez (shurup) rasmlari — har birida do'kon narx yorlig'i (32 000, 53 000, 50 000, 22 000 ...) va izoh: "Qora samarez 12 tasi 50 gram 70lik", "Mexmash 5 tasi 50 gram 80 lik", "7 tasi 50", "23 tasi 50 gram", "5 tasi 50 gram", "Oq samarez 1 yarim rovne 74 50 gram", "5 lik yevro samarez 9 tasi 50 gram", "Oq samarez 15 lik 64 tasi 50 gram" (+ egasi: 40 ming), "124 50 gram 3lik", "29 50 gram", "41 50 gram", "Qora samarez 26 50 grami", "50 tasi 51 gram", "45 tasi 50 gram") qara bu rasmdagilar samarezlar va bular kiloga sotiladi bularni neshta 50grm bolishn bilib olding end qolgan shunga qarab hisoblab ketaver ozing shuna oldingmi va menga bularni hammasin bita royxatn qilb yozb ber men ularni boshqa claudega beraman va uni ozi joylashtrb qoyad

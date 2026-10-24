@@ -85,10 +85,12 @@ async function asosiy(page, R) {
   await click(/^Ro'yxatdan o'tish$/); await page.waitForTimeout(1200);
   R.takrorEmail = await has('Bu email bilan akkaunt bor — kirish');
 
-  /* TZ-31: Google sozlanmagan serverda "Google bilan kirish" tugmasi yo'q */
+  /* TZ-31 + TZ-54: Google sozlanmagan serverda blok baribir ko'rinadi; tugma bosilganda tushuntirish xabari chiqadi (jim 503 emas) */
   await M(() => { localStorage.removeItem('smart3d.token'); localStorage.removeItem('smart3d.user'); });
   await yangiSahifa('login'); await page.waitForTimeout(1500);
-  R.googleYoq = (await page.locator('[data-google]').count()) === 0;
+  R.googleKorinadi = (await page.locator('[data-google]').count()) === 1 && (await page.locator('[data-google-sozlanmagan]').count()) === 1 && (await page.locator('[data-google-xabar]').count()) === 0;
+  await page.locator('[data-google-sozlanmagan]').click(); await page.waitForTimeout(300);
+  R.googleXabar = /sozlanmagan/.test(await page.locator('[data-google-xabar]').innerText().catch(() => ''));
   R.smsYoq = (await page.locator('[data-kirish-usul]').count()) === 0;
   /* #229: Google sozlangan (soxta client id) — konteyner saytning maydonlari bilan bir xil o'lchamda */
   await page.route('**/api/auth/usullar', r => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ sms: false, google: true, googleClientId: '123456-fake.apps.googleusercontent.com' }) }));
@@ -99,5 +101,5 @@ async function asosiy(page, R) {
 
   R.errs = errs;
   R.ok = R.boshForma.every(Boolean) && R.onboarding && R.serverTogri && R.kalitJSdaYoq && R.chiqdi === 401 && R.qaytaOchildi && R.emailEsda === 'usta.web@test.uz' &&
-    R.notogriParol && R.kirdi && R.takrorEmail && R.telefonYoq && R.smsYoq && R.googleYoq && R.googleKonteynerOk && errs.length === 0;
+    R.notogriParol && R.kirdi && R.takrorEmail && R.telefonYoq && R.smsYoq && R.googleKorinadi && R.googleXabar && R.googleKonteynerOk && errs.length === 0;
 }

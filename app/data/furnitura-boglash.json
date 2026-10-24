@@ -9,8 +9,6 @@
    "BZ-sharikovie_napravl_400_pr": "birligi dona, katalogda komplekt narxi — bo'lib narx o'ylab topilmaydi",
    "BZ-sharikovie_napravl_400_lev": "xuddi shu",
    "BZ-napravlyayushie_salazka": "uzunligi yo'q",
-   "BZ-petlya_polugorbataya_kuxnya_simm": "yarim-gorbat petlya: bir nechta bir xil sinf — 90002524 PETLE NS POL GARBAT 3 000 (tasdiqlangan 90002525 bilan bir oila) / 90002527 POL GOR (ODDIY) 2 500 / 90002528 BAYFU 6 000 / 90002534 SAMET FO 6 000 / 90002659 SEVEN 7 000. ERP'da aynan nomli 90001966 «Петля Полугорбатый.» bor, lekin narxi yo'q. Taklif: 90002524.",
-   "BZ-petlya_polugorb_kuxnya_simm": "xuddi shu (yozilishi 'полугорб'): taklif 90002524, nomzodlar yuqoridagidek.",
    "BZ-napravlyayushie_tandem": "uzunligi nomda yo'q; TANDEM 30–50 sm, 75 000–130 000 (90002721/22/23, 90002727/28, 90002361/62, 90002724–26, 90002729–31, 90002733); katalog narxi juft (komplekt) ekani yozilmagan.",
    "BZ-napravlyayushie_shar_poln_vidv_l300_1045": "L300 uchun SAMET SREDNIY 30 sm yo'q (faqat 35/40/45). 30 sm nomzodlar: 90002587 ROLIK ASD/SRED-30 SM 20 000 / 90002335 BALBIN ROLIK QORA 30 30 000 / 90002661 SEVEN ROLIK 30 VAKUM 34 000 / 90002574 ROLIK 30 LIK VAKUM (ALKAN) 40 000; ERP: 90001959 «Направляющие 30см (Белый)» narxsiz.",
    "BZ-sushilka_800mm": "tur/narx sinfi noaniq (3,4 baravar farq): 90002704 SUSHILKA 80 LIK (OSHXONAGA) 140 000 / 90002705 80 LIK QORA 170 000 / 90003067 S-5165-C 368 125 / 90003063 S-5161-C 475 250 (modul SUSHILKA-800 uchun tasdiqlangan) / 90002908 S-2033-C 1 235 750. SU02 to'plami (Сушка SU02 700) bilan ikki marta sanalishi mumkin — bu Bazis guruhi bo'lishi ehtimoli.",
@@ -23,7 +21,6 @@
    "BZ-vityajka_2_dv": "oshxona vityajkasi (texnika) — furnitura katalogida yo'q; mebel tannarxiga kirmasligi mumkin (mijoz texnikasi). Egasi qarori: narxga kirmasin yoki alohida narx.",
    "BZ-evrovint_7x50": "ERP'da aynan 90001977 «Стяжка 7*50 Шестигран (1 ком = 100шт)» bor (birlik: 1 komplekt = 100 dona), lekin ERP'da narxi yo'q (no_price). Narx kiritilsa: bog'lash + koef 0.01. Do'kon: 90002813 YEVRO FIKS 30 000 (birligi noma'lum).",
    "BZ-evrovint_7x51_32_min60_simm": "7x51 o'lchamli evrovint katalogda dona narxida yo'q; 90002638 SAMAREZ YEVRO (ALKAN) 30 000 / 90002814 YEVRO SAMOREZ 70 LIK 53 000 — quti narxi bo'lishi mumkin (birligi yo'q).",
-   "BZ-ekstsentrik_plastik_0_0": "plastik ekstsentrik: 90002094 MSFIX ekstsentrik-dyubel komplekt 10 mm 1 800 (BZ-ekstsentrik_0_0 uchun tasdiqlangan) / 90002389 HOHLER EKSENTRIK 1 000 / 90002643 SamFix Ø15x12 sink 795 — 'пластик' ekani katalogda tasdiqlanmagan, dona yoki komplekt noaniq.",
    "BZ-pr_1": "mahsulot emas: Bazis guruhi (modelCode 1005 'modul (guruh)') bo'lishi ehtimoli katta; ichidagi furnitura alohida sanaladi. Narx qo'yilmaydi — egasi qarori (taklif: guruh sifatida o'tkazib yuborish).",
    "BZ-pr_9": "xuddi BZ-pr_1.",
    "BZ-fragment3": "mahsulot emas: Bazis 'Фрагмент' (guruh) — standart nom bo'lishi ehtimoli katta. Taklif: o'tkazib yuborish (narxsiz ro'yxatiga kirmasin)."
@@ -92,10 +89,46 @@
      "narx": 430,
      "koef": 1,
      "asos": "egasi tasdiqlagan BZ-polkoderjatel_nikel / BZ-polkoderjatel_d5_nikel_16 bilan bir xil (shtiftli polkaderjatel, rang narxga ta'sir qilmaydi). Muqobil: 90002547 POLKADERJATEL XITOY OQ 300 (farq 130 so'm/dona). Birlik: dona."
+    },
+    "BZ-petlya_polugorbataya": {
+     "erp_id": "90002524",
+     "nom": "PETLE NS POL GARBAT",
+     "narx": 3000,
+     "koef": 1,
+     "asos": "yarim-gorbat petlya: egasi TZ-57 da (2026-10-23) \"qolganlarini ham bog'la\" dedi; avvalgi tahlil taklifi 90002524 (3 000, tasdiqlangan 90002525 bilan bir oila, nomzodlar 2 500–7 000). Birlik: dona (petlya soni). Noto'g'ri bo'lsa — shu yozuvni links dan olib tashlang."
+    },
+    "BZ-petlya_polugorbataya_kuxnya_simm": {
+     "erp_id": "90002524",
+     "nom": "PETLE NS POL GARBAT",
+     "narx": 3000,
+     "koef": 1,
+     "asos": "yarim-gorbat petlya: BZ-petlya_polugorbataya bilan bir xil mahsulot; 'кухня симм' — Bazis qo'shimchasi. Taklif 90002524 (egasi TZ-57, 2026-10-23). Birlik: dona."
+    },
+    "BZ-petlya_polugorb_kuxnya_simm": {
+     "erp_id": "90002524",
+     "nom": "PETLE NS POL GARBAT",
+     "narx": 3000,
+     "koef": 1,
+     "asos": "yozilishi 'полугорб' — BZ-petlya_polugorbataya_kuxnya_simm bilan bir xil mahsulot. Taklif 90002524 (egasi TZ-57, 2026-10-23). Birlik: dona."
+    },
+    "BZ-ekstsentrik_plastik_0_0": {
+     "erp_id": "90002094",
+     "nom": "MSFIX Эксцентрик - дюбель комплект 10мм",
+     "narx": 1800,
+     "koef": 1,
+     "asos": "ekstsentrik: egasi tasdiqlagan BZ-ekstsentrik_0_0 (90002094) bilan bir mahsulot deb olindi (TZ-57, 2026-10-23); katalogda 'komplekt' = ekstsentrik + dyubel (1 dona ekstsentrik). 'plastik' ekani katalogda tasdiqlanmagan — shu taxmin tasdiqlanmasa links dan olib tashlang."
+    },
+    "BZ-nojka_reguliruemaya_100_125_mm_192": {
+     "erp_id": "90002491",
+     "nom": "NOSHKA 10 LIK",
+     "narx": 3500,
+     "koef": 1,
+     "asos": "egasi tasdiqlagan BZ-nojka_reguliruemaya_100_125_mm (90002491) bilan bir xil mahsulot: Bazis nomiga '192' (Bazis ichki raqami) qo'shilgan, kodi shu sababli boshqa chiqqan. Birlik: dona. (TZ-57, 2026-10-23: 7 Bazis loyihasida 64 dona)"
     }
    },
    "faylda_koef": "Hozircha hamma koef = 1: bog'langan 3 mahsulot ham dona narxi (petlya, nojka, polkaderjatel)."
-  }
+  },
+  "tz57_2026-10-23": "Egasi (TZ-57 3-qadam, 2026-10-23): 'bog'langanlarga qarab qolganlarini ham bog'la'. Faqat bitta aniq taklifi bor 4 kod bog'landi (3 petlya → 90002524, plastik ekstsentrik → 90002094). Qolgan 17 kod (quti/komplekt narxi, uzunlik, SU02 to'plami, texnika) — birlik/tur noaniq, egasi javobisiz bog'lanmaydi (qoida 4.3); pr -N va Фрагмент — mahsulot emas (hisobdan yashirilgan)."
  },
  "links": {
   "BZ-petle_oddiy": "90002525",
@@ -126,6 +159,11 @@
   "STYAJKA-STOL": "90002044",
   "BZ-petlya_pryamaya_kuxnya_simm": "90002525",
   "BZ-nojka_reguliruemaya_100_125_mm": "90002491",
-  "BZ-polkaderjatel": "90002019"
+  "BZ-polkaderjatel": "90002019",
+  "BZ-petlya_polugorbataya": "90002524",
+  "BZ-petlya_polugorbataya_kuxnya_simm": "90002524",
+  "BZ-petlya_polugorb_kuxnya_simm": "90002524",
+  "BZ-ekstsentrik_plastik_0_0": "90002094",
+  "BZ-nojka_reguliruemaya_100_125_mm_192": "90002491"
  }
 }

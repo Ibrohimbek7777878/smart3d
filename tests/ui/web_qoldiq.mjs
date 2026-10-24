@@ -3,8 +3,9 @@
  * Furnitura: loyihadagisi (soni, narxi, jami) va ERP katalogi (qidiruv, toifa). Telefon (390) — sig'adi.
  * Ishlatish: bash tests/ui/web.sh qoldiq */
 import { readFileSync } from 'node:fs';
+import { takrorsiz } from '../../web/src/services/furnTakror.js';   // TZ-57: ro'yxatda takror ID'lar bir marta
 /* furnitura katalogi soni — fayldan (ERP + do'kon narx ro'yxati, scripts/narx_pdf_import.py) */
-const KATALOG_SONI = JSON.parse(readFileSync(new URL('../../app/data/furnitura-catalog.json', import.meta.url), 'utf8')).items.filter(i => i.uzs > 0).length;   // #151: narxsizlar katalogda ko'rinmaydi
+const KATALOG_SONI = takrorsiz(JSON.parse(readFileSync(new URL('../../app/data/furnitura-catalog.json', import.meta.url), 'utf8')).items.filter(i => i.uzs > 0)).length;   // #151: narxsizlar katalogda ko'rinmaydi
 /* furnitura zapchast rasmi: rasmi bor va narxli birinchi katalog yozuvi (app/data/rasmlar.json) */
 const RASMLI = (() => {
   const r = JSON.parse(readFileSync(new URL('../../app/data/rasmlar.json', import.meta.url), 'utf8')).furnitura;

@@ -5,6 +5,7 @@ import { dekorNomi } from '../features/editor/catalog/dekor.js';
 import { erpKod } from '../../../app/js/engine/erpKod.js';
 import { plitaFormati, bazisMoslashHammasi } from '../../../app/js/engine/plitaMoslash.js';
 import { dekorYonalishi } from '../../../app/js/engine/bazis/loyiha.js';
+import { xotiradanSheet } from './plitaXotira.js';
 
 /* TZ-23 E: ERP plitasi (1281 ta, materials-index.json) — alohida material kodi (ERP-…) bo'lib hisobga qo'shiladi:
  * har qism (korpus, fasad, orqa, stoleshnitsa) va har modul o'z dekorida bo'ladi, raskroy har dekorni alohida listda
@@ -58,6 +59,12 @@ export function bazisMoslash(doc, H) {
   const b = doc && doc.bazis, sheets = H && H.sheetCatalog && H.sheetCatalog.sheets;
   if (!b || !sheets || !b.materiallar) return { aniq: 0, nomzod: 0 };
   let aniq = 0, nomzod = 0;
+  /* TZ-57: foydalanuvchi oldin o'zi tanlagan moslik (xotira) — eng oldin; u tanlagan narsa tasdiq hisoblanadi */
+  for (const m of b.materiallar.panel || []) {
+    if (!m || !m.code || (b.almash && b.almash[m.code])) continue;
+    const sh = xotiradanSheet(m, sheets);
+    if (sh) { b.almash = Object.assign({}, b.almash, { [m.code]: erpQosh(H, doc, sh) }); aniq++; }
+  }
   for (const [kod, x] of Object.entries(bazisMoslashHammasi(b.materiallar.panel, sheets, b.almash))) {
     if (x.holat === 'aniq') { b.almash = Object.assign({}, b.almash, { [kod]: erpQosh(H, doc, x.sheet) }); aniq++; }
     else if (x.holat === 'nomzod') nomzod++;

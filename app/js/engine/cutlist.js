@@ -589,8 +589,17 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
   /* TZ-32 E7: ERP'da aniq narxi topilmagan furnitura (materials.furnitura_yashirin.kodlar) smeta va narx ro'yxatidan yashiriladi —
      "narxsiz" qator bo'lib aniqlikni tushirmaydi. Narx/ID bog'lansa (hwUnitPrice > 0) yashirilmaydi. Yashirilganlar `yashirin` da qaytadi. */
   const yashirinKod = new Set((materials.furnitura_yashirin && materials.furnitura_yashirin.kodlar) || []);
-  const yashirinMi = (hw) => yashirinKod.has(hw.code) && !(hwUnitPrice(hw) > 0);
+  /* TZ-57: Bazis fayli mahsulot bo'lmagan qatorlar ham beradi — "pr -1", "pr -9" (BZ-pr_N) va fragment nomi "Фрагмент3" (BZ-fragmentN): ular furnitura EMAS.
+     Narxsiz qator bo'lib aniqlikni tushirmasin: xuddi shu yashirish mexanizmi (narx/ID bog'lansa qaytadi; Bazis hisobotidan O'CHIRILMAYDI, `yashirin` da qaytadi — qoida 2.7). */
+  const MAHSULOT_EMAS = /^BZ-(pr_\d+|fragment\d*)$/i;
+  const yashirinMi = (hw) => (yashirinKod.has(hw.code) || MAHSULOT_EMAS.test(String(hw.code))) && !(hwUnitPrice(hw) > 0);
   const yashirinAgg = {};
+  const hwBirlashKalit = (hw) => {
+    const hid = hw.id || (opt.furnituraBoglash || {})[hw.code];
+    if (!hid || !(hwBazaNarx(hw) > 0)) return hw.code;
+    const kf = +(opt.furnituraKoef || {})[hw.code];
+    return 'erp:' + hid + '|' + (kf > 0 && Number.isFinite(kf) ? kf : 1) + '|' + (hw.unit || '');
+  };
   const hwName = (hw) => (furnById[hw.id || (opt.furnituraBoglash || {})[hw.code]] || {}).name || (hwByCode[hw.code] || {}).name || hw.name || hw.code;
   const hwPrice = (hw) => {
     const price = hwUnitPrice(hw);
@@ -650,8 +659,11 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     }
     for (const hw of cl.hardware || []) {
       if (yashirinMi(hw)) { const y = yashirinAgg[hw.code] = yashirinAgg[hw.code] || { code: hw.code, qty: 0 }; y.qty += hw.qty; continue; }
-      hwAgg[hw.code] = hwAgg[hw.code] || { code: hw.code, qty: 0, id: hw.id, name: hw.name, unit: hw.unit };
-      hwAgg[hw.code].qty += hw.qty;
+      /* TZ-57: bir ERP mahsulotiga bog'langan turli Bazis kodlari (masalan "Петля прямая" va "Петля прямая кухня симм" → bitta ID) — BITTA qator, miqdorlari qo'shiladi
+         (avval bir xil nomli qator 2–3 marta chiqardi). Faqat ERP narxi bor, koeffitsienti va birligi bir xil bo'lsa; shartlar mos emas — kod bo'yicha alohida (narx o'zgarmaydi). */
+      const hk = hwBirlashKalit(hw);
+      hwAgg[hk] = hwAgg[hk] || { code: hw.code, qty: 0, id: hw.id, name: hw.name, unit: hw.unit };
+      hwAgg[hk].qty += hw.qty;
     }
     for (const hl of cl.holes || []) {
       if (hl.stanok_uchun) continue;           // Bazis mahkamlagichlaridan joyli teshiklar — faqat stanok fayli; narx bazisTeshik bo'yicha
@@ -826,7 +838,7 @@ export function productionCost(cutlists, materials = {}, opt = {}) {
     hwCost += amount;
     const erp = !!(a.id || (opt.furnituraBoglash || {})[a.code]);   // ERP / do'kon narx ro'yxatidagi narx (TZ-20)
     lines.push({
-      group: 'Furnitura', code: a.code, id: a.id, name: hwName(a),
+      group: 'Furnitura', code: a.code, id: a.id || (opt.furnituraBoglash || {})[a.code] || undefined, name: hwName(a),   // TZ-59: ERP jadvali orqali bog'langanlarda ham ERP ID (ichki kod o'rniga)
       qty: a.qty, unit: meta.unit || a.unit || 'dona', unit_price: price, amount, no_price: !(price > 0),
       tasdiq: price > 0 && !qolda && (erp || tasdiqlangan(meta)), manba: price > 0 ? (qolda ? 'qolda' : erp ? 'ERP' : tasdiqlangan(meta) ? 'egasi' : 'taxmin') : 'yoq',
       ...(qolda ? { qolda: true } : {})   // TZ-49 (4): usta qo'lda yozgan narx (shu loyiha uchun)

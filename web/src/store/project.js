@@ -6,7 +6,8 @@ import { konstruksiya } from '../../../app/js/engine/konstruktor/index.js';
 import { materiallarniQosh } from '../../../app/js/engine/bazis/loyiha.js';
 import { eskiKodlar } from '../../../app/js/engine/kodlar.js';
 import { erpKod } from '../../../app/js/engine/erpKod.js';
-import { erpUla, erpSaqla, bazisAlmash } from '../services/erpMaterial.js';
+import { erpUla, erpSaqla, bazisAlmash, bazisMoslash } from '../services/erpMaterial.js';
+import { xotiraBor, xotiraYukla } from '../services/plitaXotira.js';
 import { chizmaUla } from '../services/chizma.js';
 import { report } from '../shared/lib/jurnal.js';
 import { xato } from './ui.js';
@@ -118,6 +119,12 @@ export const project = {
   reset(doc, yangi) { this.doc = doc || L.newDoc(); eskiKodlar(this.doc); this.bazisUla(); if (!doc || yangi) tarix.tozala(); },   // eski katalog kodlari — yangisiga; yangi loyiha — tarix bo'sh (AI qurish, shablon — bitta qadam)
   /** TZ-21: Bazis'dan yuklangan loyiha — o'z fragmenti va materiallari hisob bazasiga (katalog ro'yxatida ko'rinmaydi) */
   bazisUla() {
+    /* TZ-57: SAQLANGAN loyiha ochilganda ham ERP plitasiga moslash (avval faqat fayl yuklanganda ishlardi): bir qiymatli moslik va foydalanuvchining oldingi tanlovi avtomatik;
+     bir nechta nomzod bo'lsa — o'ylab topilmaydi (narx panelida "ERP dan tanlash"). Tanlangan (almash) joylar o'zgarmaydi. */
+    if (this.H && this.doc && this.doc.bazis) {
+      bazisMoslash(this.doc, this.H);
+      if (!xotiraBor()) { const d = this.doc; xotiraYukla().then(() => { if (this.doc === d && bazisMoslash(d, this.H).aniq > 0) { this.bazisUla(); this.rebuildEstimator(); this.hisobla(); set('project', st => ({ dv: st.dv + 1 })); } }); }
+    }
     if (this.H && this.doc) erpUla(this.H, this.doc);     // TZ-23 E: loyihada tanlangan ERP plitalari (material kodlari)
     if (this.H && this.doc) chizmaUla(this.H, this.doc);  // TZ-24 A: qo'lda chizilgan modullar
     const b = this.doc && this.doc.bazis;

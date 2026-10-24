@@ -50,6 +50,7 @@ import settingsRouter from './routes/settings.js';
 import sexStandartlariRouter from './routes/sex-standartlari.js';
 import narxlarRouter from './routes/narxlar.js';
 import furnituraRouter from './routes/furnitura.js';
+import plitaMoslashRouter from './routes/plita-moslash.js';
 import remnantsRouter from './routes/remnants.js';
 import aiRouter from './routes/ai.js';
 import logRouter from './routes/log.js';
@@ -102,7 +103,7 @@ app.use(sahifa.statik);
 
 /* ── API (har modul — o'z routerida, manzillar to'liq: /api/...) ── */
 for (const router of [authRouter, authSmsRouter, authGoogleRouter, telegramRouter, projectsRouter, shablonlarRouter, materialsRouter, fragmentsRouter,
-  ordersRouter, servicesRouter, settingsRouter, sexStandartlariRouter, narxlarRouter, furnituraRouter, remnantsRouter, aiRouter,
+  ordersRouter, servicesRouter, settingsRouter, sexStandartlariRouter, narxlarRouter, furnituraRouter, plitaMoslashRouter, remnantsRouter, aiRouter,
   adminPanelRouter, logRouter, healthRouter]) app.use(router(ctx));
 
 /* ── xatolar: noma'lum API — JSON 404; noma'lum sahifa — 404.html; qolgani — xato ishlovchisi ── */

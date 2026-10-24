@@ -102,9 +102,17 @@ export default function Kirish() {
             </p>
           </div>
           {/* TZ-31: Google bilan kirish — #209: kirishda ham, ro'yxatda ham eng tepada — birinchi kirish = ro'yxat; faqat server GOOGLE_CLIENT_ID sozlagan bo'lsa */}
-          {v.googleBor ? (
+          {v.googleKor ? (
             <div data-google="" style={{"display":"flex","flexDirection":"column","gap":"12px","alignItems":"center"}}>
+              {v.googleBor ? (
               <div ref={v.gRef} aria-label={v.googleNomi} data-google-tugma="" className="g-tugma" style={{"width":"100%","maxWidth":"440px","height":"52px","borderRadius":"14px","overflow":"hidden","border":"1px solid var(--line)","background":"var(--sfc)","display":"flex","alignItems":"center","justifyContent":"center","transition":"border-color .15s"}}></div>
+            ) : (
+              <button type="button" onClick={v.gBos} data-google-tugma="" data-google-sozlanmagan="" style={{"width":"100%","maxWidth":"440px","height":"52px","borderRadius":"14px","border":"1px solid var(--line)","background":"var(--sfc)","color":"var(--txt)","display":"flex","alignItems":"center","justifyContent":"center","gap":"10px","fontSize":"15px","fontWeight":"700","cursor":"pointer"}}>
+                <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.9 2.4 30.4 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 0 1 0-9.4l-7.9-6.1a24 24 0 0 0 0 21.6l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2 1.4-4.7 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+                {v.googleNomi}
+              </button>
+            )}
+              {v.gXabar && !v.googleBor ? (<span role="status" data-google-xabar="" style={{"fontSize":"13px","color":"var(--mut)","fontWeight":"600","textAlign":"center"}}>{v.gXabarMatn}</span>) : null}
               <div style={{"display":"flex","alignItems":"center","gap":"12px","width":"100%","color":"var(--mut)","fontSize":"13px","fontWeight":"700"}}>
                 <span style={{"flex":"1","height":"1px","background":"var(--line)"}}></span>{v.yoki}<span style={{"flex":"1","height":"1px","background":"var(--line)"}}></span>
               </div>
